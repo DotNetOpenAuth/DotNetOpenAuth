@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="encoder">The encoder.</param>
 		internal ValueMapping(IMessagePartEncoder encoder) {
-			ErrorUtilities.VerifyArgumentNotNull(encoder, "encoder");
+			Contract.Requires<ArgumentNullException>(encoder != null);
 			var nullEncoder = encoder as IMessagePartNullEncoder;
 			string nullString = nullEncoder != null ? nullEncoder.EncodedNullValue : null;
 
