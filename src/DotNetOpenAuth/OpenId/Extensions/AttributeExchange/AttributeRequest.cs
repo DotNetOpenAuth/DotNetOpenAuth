@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -98,8 +99,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// the <see cref="FetchResponse"/> object.
 		/// </returns>
 		public AttributeValues Respond(params string[] values) {
-			ErrorUtilities.VerifyArgumentNotNull(values, "values");
-			ErrorUtilities.VerifyArgument(values.Length <= this.Count, OpenIdStrings.AttributeTooManyValues, this.Count, this.TypeUri, values.Length);
+			Contract.Requires<ArgumentNullException>(values != null);
+			Contract.Requires<ArgumentException>(values.Length <= this.Count, string.Format(CultureInfo.CurrentCulture, OpenIdStrings.AttributeTooManyValues, this.Count, this.TypeUri, values.Length));
 			return new AttributeValues(this.TypeUri, values);
 		}
 
