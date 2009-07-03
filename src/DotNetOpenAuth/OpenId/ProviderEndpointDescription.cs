@@ -131,8 +131,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
 		public bool IsExtensionSupported(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
-			ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName);
 			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
 			return this.IsExtensionSupported(extension);
 		}
