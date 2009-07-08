@@ -291,4 +291,7 @@
   <data name="UnsupportedHttpVerb" xml:space="preserve">
     <value>The HTTP verb '{0}' is unrecognized and unsupported.</value>
   </data>
+  <data name="StreamMustHaveKnownLength" xml:space="preserve">
+    <value>The stream must have a known length.</value>
+  </data>
 </root>

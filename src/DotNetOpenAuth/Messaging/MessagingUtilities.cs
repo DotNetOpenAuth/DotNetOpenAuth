@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -138,6 +139,36 @@ namespace DotNetOpenAuth.Messaging {
 			} else {
 				return uri;
 			}
+		}
+
+		/// <summary>
+		/// Sends an multipart HTTP POST request (useful for posting files).
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <param name="parts">The parts to include in the POST entity.</param>
+		/// <returns>The HTTP response.</returns>
+		internal static HttpWebResponse PostMultipart(this HttpWebRequest request, IEnumerable<MultiPartPostPart> parts) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			string boundary = Guid.NewGuid().ToString();
+			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
+			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
+
+			request.Method = "POST";
+			request.ContentType = "multipart/form-data;boundary=" + boundary;
+			request.ContentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
+
+			using (var requestStream = request.GetRequestStream()) {
+				StreamWriter writer = new StreamWriter(requestStream);
+				foreach (var part in parts) {
+					writer.Write(partLeadingBoundary);
+					part.Serialize(writer);
+				}
+
+				writer.Write(finalTrailingBoundary);
+			}
+
+			return (HttpWebResponse)request.GetResponse();
 		}
 
 		/// <summary>

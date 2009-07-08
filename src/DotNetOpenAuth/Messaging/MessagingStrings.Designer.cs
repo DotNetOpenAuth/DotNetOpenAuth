@@ -394,6 +394,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stream must have a known length..
+        /// </summary>
+        internal static string StreamMustHaveKnownLength {
+            get {
+                return ResourceManager.GetString("StreamMustHaveKnownLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The stream&apos;s CanRead property returned false..
         /// </summary>
         internal static string StreamUnreadable {
