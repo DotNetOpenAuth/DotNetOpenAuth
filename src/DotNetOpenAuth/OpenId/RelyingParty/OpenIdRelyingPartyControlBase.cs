@@ -73,6 +73,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const bool UsePersistentCookieDefault = false;
 
 		/// <summary>
+		/// Default value of <see cref="LoginMode"/>.
+		/// </summary>
+		private const LoginSiteNotification LoginModeDefault = LoginSiteNotification.FormsAuthentication;
+
+		/// <summary>
 		/// The default value for the <see cref="RealmUrl"/> property.
 		/// </summary>
 		private const string RealmUrlDefault = "~/";
@@ -100,6 +105,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The viewstate key to use for the <see cref="UsePersistentCookie"/> property.
 		/// </summary>
 		private const string UsePersistentCookieViewStateKey = "UsePersistentCookie";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="LoginMode"/> property.
+		/// </summary>
+		private const string LoginModeViewStateKey = "LoginMode";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="RealmUrl"/> property.
@@ -198,6 +208,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public event EventHandler<OpenIdEventArgs> Canceled;
 
 		#endregion
+
+		/// <summary>
+		/// Methods of indicating to the rest of the web site that the user has logged in.
+		/// </summary>
+		public enum LoginSiteNotification {
+			/// <summary>
+			/// The rest of the web site is unaware that the user just completed an OpenID login.
+			/// </summary>
+			None,
+
+			/// <summary>
+			/// After the <see cref="OpenIdRelyingPartyControl.LoggedIn"/> event is fired
+			/// the control automatically calls <see cref="FormsAuthentication.RedirectFromLoginPage"/>
+			/// with the <see cref="IAuthenticationResponse.ClaimedIdentifier"/> as the username
+			/// unless the <see cref="OpenIdRelyingPartyControl.LoggedIn"/> event handler sets
+			/// <see cref="OpenIdEventArgs.Cancel"/> property to true.
+			/// </summary>
+			FormsAuthentication,
+		}
 
 		/// <summary>
 		/// Gets or sets the <see cref="OpenIdRelyingParty"/> instance to use.
@@ -309,6 +338,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public virtual bool UsePersistentCookie {
 			get { return (bool)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
 			set { this.ViewState[UsePersistentCookieViewStateKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the way a completed login is communicated to the rest of the web site.
+		/// </summary>
+		[Bindable(true), DefaultValue(LoginModeDefault), Category(BehaviorCategory)]
+		[Description("The way a completed login is communicated to the rest of the web site.")]
+		public LoginSiteNotification LoginMode {
+			get { return (LoginSiteNotification)(this.ViewState[LoginModeViewStateKey] ?? LoginModeDefault); }
+			set { this.ViewState[LoginModeViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -515,7 +554,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (!args.Cancel) {
-				FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie);
+				switch (this.LoginMode) {
+					case LoginSiteNotification.FormsAuthentication:
+						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie);
+						break;
+					case LoginSiteNotification.None:
+					default:
+						break;
+				}
 			}
 		}
 
