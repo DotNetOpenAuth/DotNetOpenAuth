@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
 	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
-	public abstract class OpenIdRelyingPartyControlBase : Control {
+	public abstract class OpenIdRelyingPartyControlBase : Control, IDisposable {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
 		/// </summary>
@@ -184,6 +184,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private OpenIdRelyingParty relyingParty;
 
 		/// <summary>
+		/// A value indicating whether the <see cref="relyingParty"/> field contains
+		/// an instance that we own and should Dispose.
+		/// </summary>
+		private bool relyingPartyOwned;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyControlBase"/> class.
 		/// </summary>
 		protected OpenIdRelyingPartyControlBase() {
@@ -278,12 +284,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get {
 				if (this.relyingParty == null) {
 					this.relyingParty = this.CreateRelyingParty();
+					this.relyingPartyOwned = true;
 				}
 				return this.relyingParty;
 			}
 
 			set {
+				if (this.relyingPartyOwned && this.relyingParty != null) {
+					this.relyingParty.Dispose();
+				}
+
 				this.relyingParty = value;
+				this.relyingPartyOwned = false;
 			}
 		}
 
@@ -440,6 +452,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.ScriptPopupWindow(request);
 			} else {
 				request.RedirectToProvider();
+			}
+		}
+
+		/// <summary>
+		/// Enables a server control to perform final clean up before it is released from memory.
+		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
+		public sealed override void Dispose() {
+			this.Dispose(true);
+			base.Dispose();
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				if (this.relyingPartyOwned && this.relyingParty != null) {
+					this.relyingParty.Dispose();
+					this.relyingParty = null;
+				}
 			}
 		}
 
