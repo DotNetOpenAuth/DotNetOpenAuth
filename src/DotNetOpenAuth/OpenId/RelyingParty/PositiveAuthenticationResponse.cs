@@ -19,17 +19,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
 	internal class PositiveAuthenticationResponse : PositiveAnonymousResponse {
 		/// <summary>
-		/// The OpenID service endpoint reconstructed from the assertion message.
-		/// </summary>
-		/// <remarks>
-		/// This information is straight from the Provider, and therefore must not
-		/// be trusted until verified as matching the discovery information for
-		/// the claimed identifier to avoid a Provider asserting an Identifier
-		/// for which it has no authority. 
-		/// </remarks>
-		private readonly ServiceEndpoint endpoint;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAuthenticationResponse"/> class.
 		/// </summary>
 		/// <param name="response">The positive assertion response that was just received by the Relying Party.</param>
@@ -39,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires(relyingParty != null);
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
 
-			this.endpoint = ServiceEndpoint.CreateForClaimedIdentifier(
+			this.Endpoint = ServiceEndpoint.CreateForClaimedIdentifier(
 				this.Response.ClaimedIdentifier,
 				this.Response.GetReturnToArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName),
 				this.Response.LocalIdentifier,
@@ -69,7 +58,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </para>
 		/// </remarks>
 		public override Identifier ClaimedIdentifier {
-			get { return this.endpoint.ClaimedIdentifier; }
+			get { return this.Endpoint.ClaimedIdentifier; }
 		}
 
 		/// <summary>
@@ -102,7 +91,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </para>
 		/// </remarks>
 		public override string FriendlyIdentifierForDisplay {
-			get { return this.endpoint.FriendlyIdentifierForDisplay; }
+			get { return this.Endpoint.FriendlyIdentifierForDisplay; }
 		}
 
 		/// <summary>
@@ -120,6 +109,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected internal new PositiveAssertionResponse Response {
 			get { return (PositiveAssertionResponse)base.Response; }
 		}
+
+		/// <summary>
+		/// The OpenID service endpoint reconstructed from the assertion message.
+		/// </summary>
+		/// <remarks>
+		/// This information is straight from the Provider, and therefore must not
+		/// be trusted until verified as matching the discovery information for
+		/// the claimed identifier to avoid a Provider asserting an Identifier
+		/// for which it has no authority. 
+		/// </remarks>
+		internal ServiceEndpoint Endpoint { get; private set; }
 
 		/// <summary>
 		/// Verifies that the positive assertion data matches the results of
@@ -146,9 +146,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// is merely a hint that must be verified by performing discovery again here.
 			var discoveryResults = this.Response.ClaimedIdentifier.Discover(relyingParty.WebRequestHandler);
 			ErrorUtilities.VerifyProtocol(
-				discoveryResults.Contains(this.endpoint),
+				discoveryResults.Contains(this.Endpoint),
 				OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery,
-				this.endpoint,
+				this.Endpoint,
 				discoveryResults.ToStringDeferred(true));
 		}
 	}
