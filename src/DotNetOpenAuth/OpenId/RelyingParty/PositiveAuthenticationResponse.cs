@@ -104,14 +104,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
-		/// Gets the positive assertion response message.
-		/// </summary>
-		protected internal new PositiveAssertionResponse Response {
-			get { return (PositiveAssertionResponse)base.Response; }
-		}
-
-		/// <summary>
-		/// The OpenID service endpoint reconstructed from the assertion message.
+		/// Gets the OpenID service endpoint reconstructed from the assertion message.
 		/// </summary>
 		/// <remarks>
 		/// This information is straight from the Provider, and therefore must not
@@ -120,6 +113,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// for which it has no authority. 
 		/// </remarks>
 		internal ServiceEndpoint Endpoint { get; private set; }
+
+		/// <summary>
+		/// Gets the positive assertion response message.
+		/// </summary>
+		protected internal new PositiveAssertionResponse Response {
+			get { return (PositiveAssertionResponse)base.Response; }
+		}
 
 		/// <summary>
 		/// Verifies that the positive assertion data matches the results of
