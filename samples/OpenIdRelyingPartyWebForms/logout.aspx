@@ -7,6 +7,7 @@
 		State.FriendlyLoginName = null;
 		State.ProfileFields = null;
 		System.Web.Security.FormsAuthentication.SignOut();
+		DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.LogOff();
 		Response.Redirect("~/");
 	}
 </script>

@@ -36,6 +36,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string EmbeddedJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyControlBase.js";
 
+		/// <summary>
+		/// The cookie used to persist the Identifier the user logged in with.
+		/// </summary>
+		internal const string PersistentIdentifierCookieName = OpenIdUtilities.CustomParameterPrefix + "OpenIDIdentifier";
+
 		#region Property category constants
 
 		/// <summary>
@@ -70,7 +75,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
 		/// </summary>
-		private const bool UsePersistentCookieDefault = false;
+		private const LoginPersistence UsePersistentCookieDefault = LoginPersistence.None;
 
 		/// <summary>
 		/// Default value of <see cref="LoginMode"/>.
@@ -169,6 +174,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// The lifetime of the cookie used to persist the Identifier the user logged in with.
+		/// </summary>
+		private static readonly TimeSpan PersistentIdentifierTimeToLiveDefault = TimeSpan.FromDays(14);
+
+		/// <summary>
 		/// Backing field for the <see cref="RelyingParty"/> property.
 		/// </summary>
 		private OpenIdRelyingParty relyingParty;
@@ -219,13 +229,37 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			None,
 
 			/// <summary>
-			/// After the <see cref="OpenIdRelyingPartyControl.LoggedIn"/> event is fired
-			/// the control automatically calls <see cref="FormsAuthentication.RedirectFromLoginPage"/>
+			/// After the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event is fired
+			/// the control automatically calls <see cref="System.Web.Security.FormsAuthentication.RedirectFromLoginPage(string, bool)"/>
 			/// with the <see cref="IAuthenticationResponse.ClaimedIdentifier"/> as the username
-			/// unless the <see cref="OpenIdRelyingPartyControl.LoggedIn"/> event handler sets
+			/// unless the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event handler sets
 			/// <see cref="OpenIdEventArgs.Cancel"/> property to true.
 			/// </summary>
 			FormsAuthentication,
+		}
+
+		/// <summary>
+		/// How an OpenID user session should be persisted across visits.
+		/// </summary>
+		public enum LoginPersistence {
+			/// <summary>
+			/// The user should only be logged in as long as the browser window remains open.
+			/// Nothing is persisted to help the user on a return visit.  Public kiosk mode.
+			/// </summary>
+			None,
+
+			/// <summary>
+			/// The user should only be logged in as long as the browser window remains open.
+			/// The OpenID Identifier is persisted to help expedite re-authentication when
+			/// the user visits the next time.
+			/// </summary>
+			PersistIdentifier,
+
+			/// <summary>
+			/// The user is issued a persistent authentication ticket so that no login is
+			/// necessary on their return visit.
+			/// </summary>
+			PersistAuthentication,
 		}
 
 		/// <summary>
@@ -335,8 +369,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(UsePersistentCookieDefault), Category(BehaviorCategory)]
 		[Description("Whether to send a persistent cookie upon successful " +
 			"login so the user does not have to log in upon returning to this site.")]
-		public virtual bool UsePersistentCookie {
-			get { return (bool)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
+		public virtual LoginPersistence UsePersistentCookie {
+			get { return (LoginPersistence)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
 			set { this.ViewState[UsePersistentCookieViewStateKey] = value; }
 		}
 
@@ -388,6 +422,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets the default association preference to set on authentication requests.
 		/// </summary>
 		internal AssociationPreference AssociationPreference { get; set; }
+
+		/// <summary>
+		/// Clears any cookie set by this control to help the user on a returning visit next time.
+		/// </summary>
+		public static void LogOff() {
+			HttpContext.Current.Response.SetCookie(CreateIdentifierPersistingCookie(null));
+		}
 
 		/// <summary>
 		/// Immediately redirects to the OpenID Provider to verify the Identifier
@@ -460,7 +501,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// Add state that needs to survive across the redirect.
 				if (!this.Stateless) {
-					req.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+					req.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
 					req.AddCallbackArguments(ReturnToReceivingControlId, this.ClientID);
 				}
 
@@ -483,6 +524,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
+			if (this.Identifier == null) {
+				this.TryPresetIdentifierWithCookie();
+			}
+
 			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
 			// assertion is coming in.  We shouldn't process assertions in a popup window.
 			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
@@ -499,9 +544,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				var response = this.RelyingParty.GetResponse();
 				if (response != null) {
 					string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
-					bool persistentBool;
-					if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
-						this.UsePersistentCookie = persistentBool;
+					if (persistentString != null) {
+						this.UsePersistentCookie = (LoginPersistence)Enum.Parse(typeof(LoginPersistence), persistentString);
 					}
 
 					switch (response.Status) {
@@ -554,9 +598,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (!args.Cancel) {
+				if (this.UsePersistentCookie == LoginPersistence.PersistIdentifier) {
+					Page.Response.SetCookie(CreateIdentifierPersistingCookie(response));
+				}
+
 				switch (this.LoginMode) {
 					case LoginSiteNotification.FormsAuthentication:
-						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie);
+						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie == LoginPersistence.PersistAuthentication);
 						break;
 					case LoginSiteNotification.None:
 					default:
@@ -685,6 +733,42 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Creates the identifier-persisting cookie, either for saving or deleting.
+		/// </summary>
+		/// <param name="response">The positive authentication response; or <c>null</c> to clear the cookie.</param>
+		/// <returns>An persistent cookie.</returns>
+		private static HttpCookie CreateIdentifierPersistingCookie(IAuthenticationResponse response) {
+			HttpCookie cookie = new HttpCookie(PersistentIdentifierCookieName);
+			bool clearingCookie = false;
+
+			// We'll try to store whatever it was the user originally typed in, but fallback
+			// to the final claimed_id.
+			if (response != null && response.Status == AuthenticationStatus.Authenticated) {
+				var positiveResponse = (PositiveAuthenticationResponse)response;
+
+				// We must escape the value because XRIs start with =, and any leading '=' gets dropped (by ASP.NET?)
+				cookie.Value = Uri.EscapeDataString(positiveResponse.Endpoint.UserSuppliedIdentifier ?? response.ClaimedIdentifier);
+			} else {
+				clearingCookie = true;
+				cookie.Value = string.Empty;
+				if (HttpContext.Current.Request.Browser["supportsEmptyStringInCookieValue"] == "false") {
+					cookie.Value = "NoCookie";
+				}
+			}
+
+			if (clearingCookie) {
+				// mark the cookie has having already expired to cause the user agent to delete
+				// the old persisted cookie.
+				cookie.Expires = DateTime.Now.Subtract(TimeSpan.FromDays(1));
+			} else {
+				// Make the cookie persistent by setting an expiration date
+				cookie.Expires = DateTime.Now + PersistentIdentifierTimeToLiveDefault;
+			}
+
+			return cookie;
+		}
+
+		/// <summary>
 		/// Gets the javascript to executee to redirect or POST an OpenID message to a remote party.
 		/// </summary>
 		/// <param name="request">The authentication request to send.</param>
@@ -712,9 +796,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendLine("window.dnoa_internal = new Object();");
 			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
 			startupScript.AppendLine("window.dnoa_internal.popupWindow = function() {");
-				startupScript.AppendFormat(
-					@"\tvar openidPopup = {0}",
-					UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
+			startupScript.AppendFormat(
+				@"\tvar openidPopup = {0}",
+				UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
 			startupScript.AppendLine("};");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "loginPopup", startupScript.ToString(), true);
@@ -733,6 +817,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// TODO: alternately we should probably take over rendering this page here to avoid
 			// a lot of unnecessary work on the server and possible momentary display of the 
 			// page in the popup window.
+		}
+
+		/// <summary>
+		/// Tries to preset the <see cref="Identifier"/> property based on a persistent
+		/// cookie on the browser.
+		/// </summary>
+		/// <returns>
+		/// A value indicating whether the <see cref="Identifier"/> property was
+		/// successfully preset to some non-empty value.
+		/// </returns>
+		private bool TryPresetIdentifierWithCookie() {
+			HttpCookie cookie = this.Page.Request.Cookies[PersistentIdentifierCookieName];
+			if (cookie != null) {
+				this.Identifier = Uri.UnescapeDataString(cookie.Value);
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
