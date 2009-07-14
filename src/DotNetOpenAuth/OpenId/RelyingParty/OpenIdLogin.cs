@@ -877,8 +877,14 @@ idselector_input_id = '" + this.ClientID + @"';
 			}
 
 			IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
-			ErrorUtilities.VerifyProtocol(request != null, OpenIdStrings.OpenIdEndpointNotFound);
-			this.LogOn(request);
+			if (request != null) {
+				this.LogOn(request);
+			} else {
+				if (!string.IsNullOrEmpty(this.FailedMessageText)) {
+					this.errorLabel.Text = string.Format(CultureInfo.CurrentCulture, this.FailedMessageText, OpenIdStrings.OpenIdEndpointNotFound);
+					this.errorLabel.Visible = true;
+				}
+			}
 		}
 
 		/// <summary>
