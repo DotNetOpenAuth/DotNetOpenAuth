@@ -41,6 +41,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string PersistentIdentifierCookieName = OpenIdUtilities.CustomParameterPrefix + "OpenIDIdentifier";
 
+		/// <summary>
+		/// The callback parameter name to use to store which control initiated the auth request.
+		/// </summary>
+		internal const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
+
 		#region Property category constants
 
 		/// <summary>
@@ -159,11 +164,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The callback parameter to use for recognizing when the callback is in the parent window.
 		/// </summary>
 		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
-
-		/// <summary>
-		/// The callback parameter name to use to store which control initiated the auth request.
-		/// </summary>
-		private const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
 
 		/// <summary>
 		/// The parameter name to include in the formulated auth request so that javascript can know whether
@@ -448,6 +448,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		public void LogOn() {
 			IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+			ErrorUtilities.VerifyProtocol(request != null, OpenIdStrings.OpenIdEndpointNotFound);
+			this.LogOn(request);
+		}
+
+		/// <summary>
+		/// Immediately redirects to the OpenID Provider to verify the Identifier
+		/// provided in the text box.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		public void LogOn(IAuthenticationRequest request) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
+
 			if (this.IsPopupAppropriate(request)) {
 				this.ScriptPopupWindow(request);
 			} else {
@@ -541,9 +554,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				}
 
 				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
-				this.OnLoggingIn(req);
-
-				yield return req;
+				if (this.OnLoggingIn(req)) {
+					yield return req;
+				}
 			}
 		}
 
