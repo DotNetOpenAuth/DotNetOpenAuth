@@ -20,7 +20,9 @@ namespace DotNetOpenAuth.Messaging {
 	/// or its configuration.</para>
 	/// <para>It is an internal exception to assist in making it uncatchable.</para>
 	/// </remarks>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class HostErrorException : Exception {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostErrorException"/> class.
@@ -45,6 +47,7 @@ namespace DotNetOpenAuth.Messaging {
 			: base(message, inner) {
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostErrorException"/> class.
 		/// </summary>
@@ -60,5 +63,6 @@ namespace DotNetOpenAuth.Messaging {
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
 			: base(info, context) { }
+#endif
 	}
 }

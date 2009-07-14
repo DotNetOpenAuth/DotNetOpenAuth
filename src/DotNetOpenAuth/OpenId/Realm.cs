@@ -25,7 +25,9 @@ namespace DotNetOpenAuth.OpenId {
 	/// This fills the OpenID Authentication 2.0 specification for realms.
 	/// See http://openid.net/specs/openid-authentication-2_0.html#realms
 	/// </remarks>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	[Pure]
 	public sealed class Realm {
 		/// <summary>

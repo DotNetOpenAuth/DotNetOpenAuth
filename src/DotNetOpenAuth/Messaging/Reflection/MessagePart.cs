@@ -10,10 +10,14 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
+#if !SILVERLIGHT
 	using System.Net.Security;
+#endif
 	using System.Reflection;
 	using System.Xml;
+#if !SILVERLIGHT
 	using DotNetOpenAuth.OpenId;
+#endif
 
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
@@ -65,9 +69,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<byte[]>(bytes => Convert.ToBase64String(bytes), str => Convert.FromBase64String(str));
+#if !SILVERLIGHT
 			Map<Realm>(realm => realm.ToString(), str => new Realm(str));
 			Map<Identifier>(id => id.ToString(), str => Identifier.Parse(str));
-			Map<bool>(value => value.ToString().ToLowerInvariant(), str => bool.Parse(str));
+#endif
+			Map<bool>(value => value.ToString().ToLower(CultureInfo.InvariantCulture), str => bool.Parse(str));
 			Map<CultureInfo>(c => c.Name, str => new CultureInfo(str));
 		}
 

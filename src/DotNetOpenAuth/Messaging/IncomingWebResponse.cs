@@ -11,7 +11,9 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+#if !SILVERLIGHT
 	using System.Net.Mime;
+#endif
 	using System.Text;
 
 	/// <summary>
@@ -43,12 +45,21 @@ namespace DotNetOpenAuth.Messaging {
 			this.RequestUri = requestUri;
 			if (!string.IsNullOrEmpty(response.ContentType)) {
 				try {
+#if !SILVERLIGHT
 					this.ContentType = new ContentType(response.ContentType);
+#else
+					this.ContentType = response.ContentType;
+#endif
 				} catch (FormatException) {
 					Logger.Messaging.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", response.ResponseUri.AbsoluteUri, response.ContentType);
 				}
 			}
+
+#if SILVERLIGHT
+			this.ContentEncoding = string.IsNullOrEmpty(response.Headers["Content-Encoding"]) ? DefaultContentEncoding : response.Headers["Content-Encoding"];
+#else
 			this.ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
+#endif
 			this.FinalUri = response.ResponseUri;
 			this.Status = response.StatusCode;
 			this.Headers = response.Headers;
@@ -69,8 +80,12 @@ namespace DotNetOpenAuth.Messaging {
 			this.Status = statusCode;
 			if (!string.IsNullOrEmpty(contentType)) {
 				try {
+#if !SILVERLIGHT
 					this.ContentType = new ContentType(contentType);
-				} catch (FormatException) {
+#else
+					this.ContentType = contentType;
+#endif
+					} catch (FormatException) {
 					Logger.Messaging.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", responseUri.AbsoluteUri, contentType);
 				}
 			}
@@ -82,7 +97,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the type of the content.
 		/// </summary>
+#if !SILVERLIGHT
 		public ContentType ContentType { get; private set; }
+#else
+		public string ContentType { get; private set; }
+#endif
 
 		/// <summary>
 		/// Gets the content encoding.

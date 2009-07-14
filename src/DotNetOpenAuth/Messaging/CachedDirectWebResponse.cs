@@ -86,7 +86,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The text reader, initialized for the proper encoding.</returns>
 		public override StreamReader GetResponseReader() {
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);
+#if SILVERLIGHT
+			string contentEncoding = this.Headers["Content-Encoding"];
+#else
 			string contentEncoding = this.Headers[HttpResponseHeader.ContentEncoding];
+#endif
 			if (string.IsNullOrEmpty(contentEncoding)) {
 				return new StreamReader(this.ResponseStream);
 			} else {
@@ -134,7 +138,11 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			Encoding encoding = Encoding.UTF8;
+#if SILVERLIGHT
+			this.Headers["Content-Encoding"] = encoding.WebName;
+#else
 			this.Headers[HttpResponseHeader.ContentEncoding] = encoding.HeaderName;
+#endif
 			this.responseStream = new MemoryStream();
 			StreamWriter writer = new StreamWriter(this.ResponseStream, encoding);
 			writer.Write(body);

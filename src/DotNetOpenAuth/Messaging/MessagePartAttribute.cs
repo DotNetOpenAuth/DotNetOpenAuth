@@ -7,8 +7,11 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+#if !SILVERLIGHT
 	using System.Net.Security;
+#endif
 	using System.Reflection;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// Applied to fields and properties that form a key/value in a protocol message.

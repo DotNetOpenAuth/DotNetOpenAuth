@@ -16,7 +16,9 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// An Identifier is either a "http" or "https" URI, or an XRI.
 	/// </summary>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	[ContractVerification(true)]
 	[Pure]
 	[ContractClass(typeof(IdentifierContract))]

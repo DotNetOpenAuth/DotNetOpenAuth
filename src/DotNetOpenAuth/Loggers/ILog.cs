@@ -27,8 +27,10 @@ namespace DotNetOpenAuth.Loggers
 {
 	using System;
 	using System.Reflection;
+#if !SILVERLIGHT
 	using log4net;
 	using log4net.Core;
+#endif
 
 	/// <summary>
 	/// The ILog interface is use by application to log messages into

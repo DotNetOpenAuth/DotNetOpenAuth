@@ -13,7 +13,9 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.Reflection;
 	using DotNetOpenAuth.Messaging.Reflection;
+#if !SILVERLIGHT
 	using DotNetOpenAuth.OAuth.ChannelElements;
+#endif
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.

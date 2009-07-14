@@ -16,9 +16,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
+#if !SILVERLIGHT
 	using System.Web;
 	using System.Web.Mvc;
+#endif
 	using DotNetOpenAuth.Messaging.Reflection;
+	using System.Windows.Browser;
+using System.Globalization;
 
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
@@ -84,6 +88,7 @@ namespace DotNetOpenAuth.Messaging {
 			{ "=", @"\x3d" },
 		};
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
 		/// </summary>
@@ -139,6 +144,7 @@ namespace DotNetOpenAuth.Messaging {
 				return uri;
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
@@ -217,6 +223,7 @@ namespace DotNetOpenAuth.Messaging {
 			return new string(randomString);
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
@@ -266,6 +273,7 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Copies the contents of one stream to another.
@@ -354,20 +362,26 @@ namespace DotNetOpenAuth.Messaging {
 				switch (headerName) {
 					case "Accept": newRequest.Accept = request.Accept; break;
 					case "Connection": break; // Keep-Alive controls this
-					case "Content-Length": newRequest.ContentLength = request.ContentLength; break;
 					case "Content-Type": newRequest.ContentType = request.ContentType; break;
-					case "Expect": newRequest.Expect = request.Expect; break;
 					case "Host": break; // implicitly copied as part of the RequestUri
+					case "Proxy-Connection": break; // no property equivalent?
+#if !SILVERLIGHT
+					case "Content-Length": newRequest.ContentLength = request.ContentLength; break;
+					case "Expect": newRequest.Expect = request.Expect; break;
 					case "If-Modified-Since": newRequest.IfModifiedSince = request.IfModifiedSince; break;
 					case "Keep-Alive": newRequest.KeepAlive = request.KeepAlive; break;
-					case "Proxy-Connection": break; // no property equivalent?
 					case "Referer": newRequest.Referer = request.Referer; break;
 					case "Transfer-Encoding": newRequest.TransferEncoding = request.TransferEncoding; break;
 					case "User-Agent": newRequest.UserAgent = request.UserAgent; break;
+#endif
 					default: newRequest.Headers[headerName] = request.Headers[headerName]; break;
 				}
 			}
 
+			newRequest.CookieContainer = request.CookieContainer;
+			newRequest.Credentials = request.Credentials;
+			newRequest.Method = request.Method;
+#if !SILVERLIGHT
 			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
 			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
 			newRequest.AuthenticationLevel = request.AuthenticationLevel;
@@ -376,13 +390,10 @@ namespace DotNetOpenAuth.Messaging {
 			newRequest.ClientCertificates = request.ClientCertificates;
 			newRequest.ConnectionGroupName = request.ConnectionGroupName;
 			newRequest.ContinueDelegate = request.ContinueDelegate;
-			newRequest.CookieContainer = request.CookieContainer;
-			newRequest.Credentials = request.Credentials;
 			newRequest.ImpersonationLevel = request.ImpersonationLevel;
 			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
 			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
 			newRequest.MediaType = request.MediaType;
-			newRequest.Method = request.Method;
 			newRequest.Pipelined = request.Pipelined;
 			newRequest.PreAuthenticate = request.PreAuthenticate;
 			newRequest.ProtocolVersion = request.ProtocolVersion;
@@ -397,6 +408,7 @@ namespace DotNetOpenAuth.Messaging {
 			} catch (SecurityException) {
 				Logger.Messaging.Warn("Unable to clone some HttpWebRequest properties due to partial trust.");
 			}
+#endif
 
 			return newRequest;
 		}
@@ -573,15 +585,24 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
 
 			if (args != null && args.Count() > 0) {
-				NameValueCollection aggregatedArgs = HttpUtility.ParseQueryString(builder.Query);
+				var aggregatedArgs = ParseQueryString(builder.Query);
 				foreach (var pair in args) {
 					aggregatedArgs[pair.Key] = pair.Value;
 				}
 
-				builder.Query = CreateQueryString(aggregatedArgs.ToDictionary());
+				builder.Query = CreateQueryString(aggregatedArgs);
 			}
 		}
 
+		internal static IDictionary<string, string> ParseQueryString(string query) {
+#if SILVERLIGHT
+			throw new NotImplementedException();
+#else
+			return HttpUtility.ParseQueryString(query).ToDictionary();
+#endif
+		}
+
+#if !SILVERLIGHT
 		/// <summary>
 		/// Extracts the recipient from an HttpRequestInfo.
 		/// </summary>
@@ -590,6 +611,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
 			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, request.HttpMethod == "GET" ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest);
 		}
+#endif
 
 		/// <summary>
 		/// Copies some extra parameters into a message.
@@ -606,6 +628,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
 		/// </summary>
@@ -619,7 +642,9 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures((nvc != null && Contract.Result<Dictionary<string, string>>() != null) || (nvc == null && Contract.Result<Dictionary<string, string>>() == null));
 			return ToDictionary(nvc, false);
 		}
+#endif
 
+		#if !SILVERLIGHT
 		/// <summary>
 		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
 		/// </summary>
@@ -653,6 +678,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return dictionary;
 		}
+#endif
 
 		/// <summary>
 		/// Sorts the elements of a sequence in ascending order by using a specified comparer.
@@ -743,7 +769,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (var pair in javascriptStaticStringEscaping) {
 				builder.Replace(pair.Key, pair.Value);
 			}
-			builder.Insert(0, '\'');
+			builder.Insert(0, "\'");
 			builder.Append('\'');
 			return builder.ToString();
 		}
@@ -768,11 +794,19 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Upgrade the escaping to RFC 3986, if necessary.
 			for (int i = 0; i < UriRfc3986CharsToEscape.Length; i++) {
-				escaped.Replace(UriRfc3986CharsToEscape[i], Uri.HexEscape(UriRfc3986CharsToEscape[i][0]));
+				escaped.Replace(UriRfc3986CharsToEscape[i], HexEscape(UriRfc3986CharsToEscape[i][0]));
 			}
 
 			// Return the fully-RFC3986-escaped string.
 			return escaped.ToString();
+		}
+
+		private static string HexEscape(char ch) {
+#if SILVERLIGHT
+			return string.Format(CultureInfo.InvariantCulture, "%{0:x2}", (int)ch);
+#else
+			return Uri.HexEscape(ch);
+#endif
 		}
 
 		/// <summary>
