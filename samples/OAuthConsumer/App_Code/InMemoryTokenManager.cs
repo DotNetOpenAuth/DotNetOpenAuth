@@ -28,14 +28,6 @@ public class InMemoryTokenManager : IConsumerTokenManager {
 
 	#region ITokenManager Members
 
-	public string GetConsumerSecret(string consumerKey) {
-		if (consumerKey == this.ConsumerKey) {
-			return this.ConsumerSecret;
-		} else {
-			throw new ArgumentException("Unrecognized consumer key.", "consumerKey");
-		}
-	}
-
 	public string GetTokenSecret(string token) {
 		return this.tokensAndSecrets[token];
 	}
