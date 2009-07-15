@@ -288,7 +288,7 @@ namespace DotNetOpenAuth.OAuth {
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), "The consumer key and the realm did not match according to the token manager.");
 
-			AttachAuthorizationResponse(openIdAuthenticationRequest, scope);
+			this.AttachAuthorizationResponse(openIdAuthenticationRequest, scope);
 		}
 
 		/// <summary>
