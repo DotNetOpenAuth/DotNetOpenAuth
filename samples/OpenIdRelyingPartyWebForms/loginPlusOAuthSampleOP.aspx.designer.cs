@@ -8,90 +8,81 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OpenIdProviderWebForms {
+namespace OpenIdRelyingPartyWebForms {
     
     
-    public partial class decide {
+    public partial class loginPlusOAuthSampleOP {
         
         /// <summary>
-        /// siteRequestLabel control.
+        /// MultiView1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label siteRequestLabel;
+        protected global::System.Web.UI.WebControls.MultiView MultiView1;
         
         /// <summary>
-        /// relyingPartyVerificationResultLabel control.
+        /// View1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label relyingPartyVerificationResultLabel;
+        protected global::System.Web.UI.WebControls.View View1;
         
         /// <summary>
-        /// identityUrlLabel control.
+        /// identifierBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label identityUrlLabel;
+        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdTextBox identifierBox;
         
         /// <summary>
-        /// realmLabel control.
+        /// RequiredFieldValidator1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label realmLabel;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
         
         /// <summary>
-        /// OAuthPanel control.
+        /// beginButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel OAuthPanel;
+        protected global::System.Web.UI.WebControls.Button beginButton;
         
         /// <summary>
-        /// oauthPermission control.
+        /// AuthorizationGiven control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox oauthPermission;
+        protected global::System.Web.UI.WebControls.View AuthorizationGiven;
         
         /// <summary>
-        /// profileFields control.
+        /// AuthorizationDenied control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::OpenIdProviderWebForms.ProfileFields profileFields;
+        protected global::System.Web.UI.WebControls.View AuthorizationDenied;
         
         /// <summary>
-        /// yes_button control.
+        /// AuthenticationFailed control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button yes_button;
-        
-        /// <summary>
-        /// no_button control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button no_button;
+        protected global::System.Web.UI.WebControls.View AuthenticationFailed;
     }
 }

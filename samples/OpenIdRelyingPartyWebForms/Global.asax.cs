@@ -42,6 +42,20 @@
 			}
 		}
 
+		internal static InMemoryTokenManager OwnSampleOPHybridTokenManager {
+			get {
+				var tokenManager = (InMemoryTokenManager)HttpContext.Current.Application["OwnSampleOPHybridTokenManager"];
+				if (tokenManager == null) {
+					string consumerKey = new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath).AbsoluteUri;
+					string consumerSecret = "some crazy secret";
+					tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
+					HttpContext.Current.Application["OwnSampleOPHybridTokenManager"] = tokenManager;
+				}
+
+				return tokenManager;
+			}
+		}
+
 		public static string ToString(NameValueCollection collection) {
 			using (StringWriter sw = new StringWriter()) {
 				foreach (string key in collection.Keys) {
