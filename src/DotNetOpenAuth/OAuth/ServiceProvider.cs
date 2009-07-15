@@ -236,11 +236,12 @@ namespace DotNetOpenAuth.OAuth {
 
 		/// <summary>
 		/// Gets the OAuth authorization request included with an OpenID authentication
-		/// request.
+		/// request, if there is one.
 		/// </summary>
 		/// <param name="openIdRequest">The OpenID authentication request.</param>
 		/// <returns>
-		/// The scope of access the relying party is requesting.
+		/// The scope of access the relying party is requesting, or null if no OAuth request
+		/// is present.
 		/// </returns>
 		/// <remarks>
 		/// <para>Call this method rather than simply extracting the OAuth extension
@@ -270,24 +271,43 @@ namespace DotNetOpenAuth.OAuth {
 			return authzRequest;
 		}
 
-		/// <summary>
+				/// <summary>
 		/// Attaches the authorization response to an OpenID authentication response.
 		/// </summary>
 		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
-		/// <param name="consumerKey">The consumer key.  May and should be <c>null</c> if and only if <paramref name="scope"/> is null.</param>
+		/// <param name="consumerKey">The consumer key.  Must be <c>null</c> if and only if <paramref name="scope"/> is null.</param>
 		/// <param name="scope">The approved access scope.  Use <c>null</c> to indicate no access was granted.  The empty string will be interpreted as some default level of access is granted.</param>
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
-		public void AttachAuthorizationResponse(IAuthenticationRequest openIdAuthenticationRequest, string consumerKey, string scope) {
+		[Obsolete("Call the overload that doesn't take a consumerKey instead.")]
+		public void AttachAuthorizationResponse(IHostProcessedRequest openIdAuthenticationRequest, string consumerKey, string scope) {
 			Contract.Requires(openIdAuthenticationRequest != null);
 			Contract.Requires((consumerKey == null) == (scope == null));
 			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
 			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
-			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
+			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
+			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), "The consumer key and the realm did not match according to the token manager.");
+
+			AttachAuthorizationResponse(openIdAuthenticationRequest, scope);
+		}
+
+		/// <summary>
+		/// Attaches the authorization response to an OpenID authentication response.
+		/// </summary>
+		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
+		/// <param name="scope">The approved access scope.  Use <c>null</c> to indicate no access was granted.  The empty string will be interpreted as some default level of access is granted.</param>
+		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
+		public void AttachAuthorizationResponse(IHostProcessedRequest openIdAuthenticationRequest, string scope) {
+			Contract.Requires(openIdAuthenticationRequest != null);
+			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
+			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
+			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
+			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(ICombinedOpenIdProviderTokenManager).FullName);
 
 			IOpenIdMessageExtension response;
 			if (scope != null) {
 				// Generate an authorized request token to return to the relying party.
+				string consumerKey = openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm);
 				var approvedResponse = new AuthorizationApprovedResponse {
 					RequestToken = this.TokenGenerator.GenerateRequestToken(consumerKey),
 					Scope = scope,
