@@ -19,10 +19,11 @@ namespace DotNetOpenAuth.Messaging {
 #if !SILVERLIGHT
 	using System.Web;
 	using System.Web.Mvc;
+#else
+	using System.Windows.Browser;
 #endif
 	using DotNetOpenAuth.Messaging.Reflection;
-	using System.Windows.Browser;
-using System.Globalization;
+	using System.Globalization;
 
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.

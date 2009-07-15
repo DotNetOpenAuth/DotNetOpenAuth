@@ -12,7 +12,9 @@ namespace DotNetOpenAuth.Messaging {
 	/// An empty, read-only list.
 	/// </summary>
 	/// <typeparam name="T">The type the list claims to include.</typeparam>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class EmptyList<T> : IList<T> {
 		/// <summary>
 		/// The singleton instance of the empty list.

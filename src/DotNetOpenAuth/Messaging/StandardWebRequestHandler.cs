@@ -127,10 +127,16 @@ namespace DotNetOpenAuth.Messaging {
 
 			try {
 				Logger.Http.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
+#if !SILVERLIGHT
 				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+#else
+				var async = request.BeginGetResponse(null, null);
+				HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(async);
+#endif
 				return new NetworkDirectWebResponse(request.RequestUri, response);
 			} catch (WebException ex) {
 				HttpWebResponse response = (HttpWebResponse)ex.Response;
+#if !SILVERLIGHT
 				if (response != null && response.StatusCode == HttpStatusCode.ExpectationFailed &&
 					request.ServicePoint.Expect100Continue) {
 					// Some OpenID servers doesn't understand the Expect header and send 417 error back.
@@ -147,6 +153,7 @@ namespace DotNetOpenAuth.Messaging {
 					// but we'd have to set it BEFORE each request.
 					////request.Expect = "";  
 				}
+#endif
 
 				if ((options & DirectWebRequestOptions.AcceptAllHttpResponses) != 0 && response != null &&
 					response.StatusCode != HttpStatusCode.ExpectationFailed) {
@@ -215,8 +222,13 @@ namespace DotNetOpenAuth.Messaging {
 			PrepareRequest(request, true);
 
 			try {
+#if !SILVERLIGHT
 				return request.GetRequestStream();
-			} catch (SocketException ex) {
+#else
+				var async = request.BeginGetRequestStream(null, null);
+				return request.EndGetRequestStream(async);
+#endif
+				} catch (SocketException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
 			} catch (WebException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.WebRequestFailed, request.RequestUri);
@@ -233,11 +245,13 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Be careful to not try to change the HTTP headers that have already gone out.
 			if (preparingPost || request.Method == "GET") {
+#if !SILVERLIGHT
 				// Some sites, such as Technorati, return 403 Forbidden on identity
 				// pages unless a User-Agent header is included.
 				if (string.IsNullOrEmpty(request.UserAgent)) {
 					request.UserAgent = userAgentValue;
 				}
+#endif
 			}
 		}
 	}

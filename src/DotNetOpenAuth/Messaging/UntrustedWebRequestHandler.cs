@@ -12,10 +12,12 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
-	using System.Net.Cache;
 	using System.Text.RegularExpressions;
-	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+#if !SILVERLIGHT
+	using System.Net.Cache;
+	using DotNetOpenAuth.Configuration;
+#endif
 
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote

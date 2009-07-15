@@ -74,10 +74,18 @@
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
+    <Compile Include="Messaging\Channel.cs" />
+    <Compile Include="Messaging\ChannelContract.cs" />
+    <Compile Include="Messaging\ChannelEventArgs.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
+    <Compile Include="Messaging\EmptyDictionary.cs" />
+    <Compile Include="Messaging\EmptyEnumerator.cs" />
+    <Compile Include="Messaging\EmptyList.cs" />
+    <Compile Include="Messaging\EnumerableCache.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\HttpDeliveryMethods.cs" />
+    <Compile Include="Messaging\IChannelBindingElement.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\IDirectWebRequestHandler.cs">
@@ -86,16 +94,22 @@
     <Compile Include="Messaging\IExtensionMessage.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IMessage.cs" />
+    <Compile Include="Messaging\IMessageFactory.cs" />
     <Compile Include="Messaging\IMessageWithEvents.cs" />
     <Compile Include="Messaging\IncomingWebResponse.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
+    <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
+    <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
+    <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
     <Compile Include="Messaging\MessageProtections.cs" />
+    <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs" />
     <Compile Include="Messaging\MessagingUtilities.cs" />
+    <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
@@ -105,6 +119,8 @@
     <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\Reflection\ProtectionLevel.cs" />
     <Compile Include="Messaging\Reflection\ValueMapping.cs" />
+    <Compile Include="Messaging\StandardWebRequestHandler.cs" />
+    <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings.Designer.cs" />
     <Compile Include="Util.cs" />
@@ -144,6 +160,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v3.0\Microsoft.Silverlight.CSharp.targets" Condition="" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

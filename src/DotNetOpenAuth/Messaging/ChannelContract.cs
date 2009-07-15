@@ -34,6 +34,7 @@ namespace DotNetOpenAuth.Messaging {
 			throw new NotImplementedException();
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
@@ -50,5 +51,6 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			throw new NotImplementedException();
 		}
+#endif
 	}
 }

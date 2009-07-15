@@ -11,7 +11,9 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// An exception thrown when messages cannot receive all the protections they require.
 	/// </summary>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class UnprotectedMessageException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnprotectedMessageException"/> class.
@@ -22,6 +24,7 @@ namespace DotNetOpenAuth.Messaging {
 			: base(string.Format(CultureInfo.CurrentCulture, MessagingStrings.InsufficientMessageProtection, faultedMessage.GetType().Name, faultedMessage.RequiredProtection, appliedProtection), faultedMessage) {
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnprotectedMessageException"/> class.
 		/// </summary>
@@ -33,5 +36,6 @@ namespace DotNetOpenAuth.Messaging {
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
 			: base(info, context) { }
+#endif
 	}
 }

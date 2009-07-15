@@ -61,7 +61,12 @@ namespace DotNetOpenAuth.Messaging {
 				throw new ObjectDisposedException(GetType().Name);
 			}
 
+#if !SILVERLIGHT
 			string contentEncoding = this.Headers[HttpResponseHeader.ContentEncoding];
+#else
+			string contentEncoding = this.Headers["Content-Encoding"];
+#endif
+
 			if (string.IsNullOrEmpty(contentEncoding)) {
 				return new StreamReader(this.ResponseStream);
 			} else {

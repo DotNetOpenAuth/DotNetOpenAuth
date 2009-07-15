@@ -15,11 +15,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
-	using System.Net.Cache;
 	using System.Text;
 	using System.Threading;
-	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
+#if !SILVERLIGHT
+	using System.Net.Cache;
+	using System.Web;
+#endif
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
@@ -96,10 +98,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		private IMessageFactory messageTypeProvider;
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Backing store for the <see cref="CachePolicy"/> property.
 		/// </summary>
 		private RequestCachePolicy cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+#endif
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
@@ -197,6 +201,7 @@ namespace DotNetOpenAuth.Messaging {
 			get { return this.messageTypeProvider; }
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets or sets the cache policy to use for direct message requests.
 		/// </summary>
@@ -377,6 +382,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return requestMessage;
 		}
+#endif
 
 		/// <summary>
 		/// Sends a direct message to a remote party and waits for the response.
@@ -436,6 +442,7 @@ namespace DotNetOpenAuth.Messaging {
 
 		#endregion
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets the current HTTP request being processed.
 		/// </summary>
@@ -451,6 +458,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return new HttpRequestInfo(HttpContext.Current.Request);
 		}
+#endif
 
 		/// <summary>
 		/// Checks whether a given HTTP method is expected to include an entity body in its request.
@@ -556,6 +564,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual void OnReceivingDirectResponse(IncomingWebResponse response, IDirectResponseProtocolMessage message) {
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
@@ -576,6 +585,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
 		}
+#endif
 
 		/// <summary>
 		/// Deserializes a dictionary of values into a message.
@@ -605,6 +615,7 @@ namespace DotNetOpenAuth.Messaging {
 			return message;
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Queues an indirect message for transmittal via the user agent.
 		/// </summary>
@@ -697,6 +708,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return response;
 		}
+#endif
 
 		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
@@ -721,6 +733,7 @@ namespace DotNetOpenAuth.Messaging {
 			throw new NotImplementedException();
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
@@ -731,6 +744,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
 		protected abstract OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response);
+#endif
 
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
@@ -832,7 +846,9 @@ namespace DotNetOpenAuth.Messaging {
 			var fields = messageAccessor.Serialize();
 
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+#if !SILVERLIGHT
 			httpRequest.CachePolicy = this.CachePolicy;
+#endif
 			httpRequest.Method = "POST";
 			this.SendParametersInEntity(httpRequest, fields);
 
@@ -863,7 +879,11 @@ namespace DotNetOpenAuth.Messaging {
 
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
+#if !SILVERLIGHT
 			httpRequest.ContentLength = requestBytes.Length;
+#else
+			httpRequest.Headers["Content-Length"] = requestBytes.Length.ToString(CultureInfo.InvariantCulture);
+#endif
 			Stream requestStream = this.WebRequestHandler.GetRequestStream(httpRequest);
 			try {
 				requestStream.Write(requestBytes, 0, requestBytes.Length);
@@ -996,7 +1016,12 @@ namespace DotNetOpenAuth.Messaging {
 				elements.Where(element => element.Protection != MessageProtections.None));
 
 			bool wasLastProtectionPresent = true;
-			foreach (MessageProtections protectionKind in Enum.GetValues(typeof(MessageProtections))) {
+#if !SILVERLIGHT
+			IEnumerable<MessageProtections> availableProtections = Enum.GetValues(typeof(MessageProtections));
+#else
+			IEnumerable<MessageProtections> availableProtections = new MessageProtections[] { MessageProtections.All, MessageProtections.Expiration, MessageProtections.None, MessageProtections.ReplayProtection, MessageProtections.TamperProtection };
+#endif
+			foreach (MessageProtections protectionKind in availableProtections) {
 				if (protectionKind == MessageProtections.None) {
 					continue;
 				}

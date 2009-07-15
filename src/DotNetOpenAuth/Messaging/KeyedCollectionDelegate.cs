@@ -15,7 +15,9 @@ namespace DotNetOpenAuth.Messaging {
 	/// </summary>
 	/// <typeparam name="TKey">The type of the key.</typeparam>
 	/// <typeparam name="TItem">The type of the item.</typeparam>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class KeyedCollectionDelegate<TKey, TItem> : KeyedCollection<TKey, TItem> {
 		/// <summary>
 		/// The delegate that returns a key for the given item.

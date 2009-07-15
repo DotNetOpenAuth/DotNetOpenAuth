@@ -13,8 +13,10 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+#if !SILVERLIGHT
 	using System.ServiceModel.Channels;
 	using System.Web;
+#endif
 
 	/// <summary>
 	/// A property store of details of an incoming HTTP request.
@@ -28,17 +30,29 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The key/value pairs found in the entity of a POST request.
 		/// </summary>
+#if SILVERLIGHT
+		private Dictionary<string, string> form;
+#else
 		private NameValueCollection form;
+#endif
 
 		/// <summary>
 		/// The key/value pairs found in the querystring of the incoming request.
 		/// </summary>
+#if SILVERLIGHT
+		private Dictionary<string, string> queryString;
+#else
 		private NameValueCollection queryString;
+#endif
 
 		/// <summary>
 		/// Backing field for the <see cref="QueryStringBeforeRewriting"/> property.
 		/// </summary>
+#if SILVERLIGHT
+		private Dictionary<string, string> queryStringBeforeRewriting;
+#else
 		private NameValueCollection queryStringBeforeRewriting;
+#endif
 
 		/// <summary>
 		/// Backing field for the <see cref="Message"/> property.
