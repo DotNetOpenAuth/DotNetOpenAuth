@@ -572,7 +572,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// true if the server control's state changes as a result of the postback; otherwise, false.
 		/// </returns>
 		protected virtual bool LoadPostData(string postDataKey, NameValueCollection postCollection) {
-			Identifier identifier = postCollection[this.Name];
+			Identifier identifier = string.IsNullOrEmpty(postCollection[this.Name]) ? null : postCollection[this.Name];
 			if (identifier != this.Identifier) {
 				this.Identifier = identifier;
 				return true;
