@@ -539,6 +539,8 @@
     <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="Messaging\Exceptions.cd" />
     <None Include="Messaging\Messaging.cd" />
+    <None Include="OpenId\RelyingParty\Controls.cd" />
+    <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Messaging\MessagingStrings.resx">

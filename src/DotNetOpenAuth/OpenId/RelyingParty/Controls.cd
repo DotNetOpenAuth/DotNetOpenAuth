@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase">
+    <Position X="0.5" Y="9.75" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>BARAAAAAAAAAAACQAAAAAAAEAAAgAAAAAQAFAAAAAFk=</HashCode>
+      <FileName>OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdMobileTextBox">
+    <Position X="8.5" Y="5.25" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AI0JADgFQRQQDAIw4lAYSEIWCAMZhMVlELAASQIAgSI=</HashCode>
+      <FileName>OpenId\RelyingParty\OpenIdMobileTextBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdLogin">
+    <Position X="6.25" Y="1.25" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdLogin.InPlaceControl" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>OpenId\RelyingParty\OpenIdLogin.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gIMgADAIAQEQIJAYOQBSADiQBgiIECk0jQCggdAp4BQ=</HashCode>
+      <FileName>OpenId\RelyingParty\OpenIdLogin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox">
+    <Position X="3.75" Y="10" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACBEEbABZzOzAKCYJNOEwM3uSIR5AAOkUFANCQ7DsVs=</HashCode>
+      <FileName>OpenId\RelyingParty\OpenIdAjaxTextBox.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdButton">
+    <Position X="8.75" Y="1" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <InheritanceLine Type="DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2.875" Y="0.5" />
+        <Point X="7.194" Y="0.5" />
+        <Point X="7.194" Y="1" />
+        <Point X="8.75" Y="1" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>BAAEQAAAAAAAAAACAAAgAAAAAIAAAACQABAECABAAAA=</HashCode>
+      <FileName>OpenId\RelyingParty\OpenIdButton.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdTextBox">
+    <Position X="3.5" Y="1.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AIEVQjgBIxYITIARcAAACEc2CIAIlER1CBAQSQoEpCg=</HashCode>
+      <FileName>OpenId\RelyingParty\OpenIdTextBox.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase">
+    <Position X="0.5" Y="0.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.LoginSiteNotification" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.LoginPersistence" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.DuplicateRequestedHostsComparer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>BA0AAsAAQCAwQAJAoFAWwADSAgE5EIEEEbAGSAwAgfI=</HashCode>
+      <FileName>OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
