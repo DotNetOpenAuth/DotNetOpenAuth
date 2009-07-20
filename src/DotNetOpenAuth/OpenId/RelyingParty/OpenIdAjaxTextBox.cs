@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdAjaxTextBox runat=\"server\" />")]
-	public sealed class OpenIdAjaxTextBox : WebControl, ICallbackEventHandler {
+	public sealed class OpenIdAjaxTextBox : WebControl, ICallbackEventHandler, ITextControl {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
