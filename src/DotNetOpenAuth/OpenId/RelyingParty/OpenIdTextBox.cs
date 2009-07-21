@@ -552,6 +552,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.AddStyleAttribute(HtmlTextWriterStyle.BorderColor, "lightgray");
 			}
 
+			if (!string.IsNullOrEmpty(this.CssClass)) {
+				writer.AddAttribute(HtmlTextWriterAttribute.Class, this.CssClass);
+			}
+
 			writer.AddAttribute(HtmlTextWriterAttribute.Id, this.ClientID);
 			writer.AddAttribute(HtmlTextWriterAttribute.Name, HttpUtility.HtmlEncode(this.Name));
 			writer.AddAttribute(HtmlTextWriterAttribute.Type, "text");
