@@ -232,6 +232,28 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Makes a key/value pair available when the authentication is completed.
+		/// </summary>
+		/// <param name="key">The parameter name.</param>
+		/// <param name="value">The value of the argument.  Must not be null.</param>
+		/// <remarks>
+		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
+		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>The value stored here can be retrieved using
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
+		/// </remarks>
+		public void SetCallbackArgument(string key, string value) {
+			ErrorUtilities.VerifyNonZeroLength(key, "key");
+			ErrorUtilities.VerifyArgumentNotNull(value, "value");
+			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
+
+			this.returnToArgs[key] = value;
+		}
+
+		/// <summary>
 		/// Adds an OpenID extension to the request directed at the OpenID provider.
 		/// </summary>
 		/// <param name="extension">The initialized extension to add to the request.</param>
