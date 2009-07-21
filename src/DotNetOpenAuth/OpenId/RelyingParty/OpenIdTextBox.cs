@@ -576,10 +576,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// true if the server control's state changes as a result of the postback; otherwise, false.
 		/// </returns>
 		protected virtual bool LoadPostData(string postDataKey, NameValueCollection postCollection) {
-			Identifier identifier = string.IsNullOrEmpty(postCollection[this.Name]) ? null : postCollection[this.Name];
-			if (identifier != this.Identifier) {
-				this.Identifier = identifier;
-				return true;
+			// If the control was temporarily hidden, it won't be in the Form data,
+			// and we'll just implicitly keep the last Text setting.
+			if (postCollection[this.Name] != null) {
+				Identifier identifier = postCollection[this.Name].Length == 0 ? null : postCollection[this.Name];
+				if (identifier != this.Identifier) {
+					this.Identifier = identifier;
+					return true;
+				}
 			}
 
 			return false;
