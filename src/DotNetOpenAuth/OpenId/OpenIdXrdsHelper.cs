@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		internal static IEnumerable<ServiceEndpoint> CreateServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
 			var endpoints = new List<ServiceEndpoint>();
-			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(claimedIdentifier));
+			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 
 			// If any OP Identifier service elements were found, we must not proceed
 			// to return any Claimed Identifier services.
@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Generates OpenID Providers that can authenticate using directed identity.
 		/// </summary>
 		/// <param name="xrds">The XrdsDocument instance to use in this process.</param>
-		/// <param name="opIdentifier">The OP Identifier entered (and resolved) by the user.</param>
+		/// <param name="opIdentifier">The OP Identifier entered (and resolved) by the user.  Essentially the user-supplied identifier.</param>
 		/// <returns>A sequence of the providers that can offer directed identity services.</returns>
 		private static IEnumerable<ServiceEndpoint> GenerateOPIdentifierServiceEndpoints(this XrdsDocument xrds, Identifier opIdentifier) {
 			Contract.Requires(xrds != null);

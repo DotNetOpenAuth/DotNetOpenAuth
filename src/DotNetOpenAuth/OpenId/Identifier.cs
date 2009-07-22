@@ -28,9 +28,15 @@ namespace DotNetOpenAuth.OpenId {
 		/// Whether the derived class is prepared to guarantee end-to-end discovery
 		/// and initial redirect for authentication is performed using SSL.
 		/// </param>
-		protected Identifier(bool isDiscoverySecureEndToEnd) {
+		protected Identifier(string originalString, bool isDiscoverySecureEndToEnd) {
+			this.OriginalString = originalString;
 			this.IsDiscoverySecureEndToEnd = isDiscoverySecureEndToEnd;
 		}
+
+		/// <summary>
+		/// Gets or sets the original string that was normalized to create this Identifier.
+		/// </summary>
+		public string OriginalString { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether this Identifier will ensure SSL is 
