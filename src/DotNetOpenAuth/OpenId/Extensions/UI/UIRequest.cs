@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
 		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
-			if (typeUri == UITypeUri && isProviderRole) {
+			if (typeUri == UIConstants.UITypeUri && isProviderRole) {
 				return new UIRequest();
 			}
 
@@ -41,9 +41,12 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		};
 
 		/// <summary>
-		/// The type URI associated with this extension.
+		/// Additional type URIs that this extension is sometimes known by remote parties.
 		/// </summary>
-		private const string UITypeUri = "http://specs.openid.net/extensions/ui/1.0";
+		private static readonly string[] additionalTypeUris = new string[] {
+			UIConstants.LangPrefSupported,
+			UIConstants.PopupSupported,
+		};
 
 		/// <summary>
 		/// Backing store for <see cref="ExtraData"/>.
@@ -93,7 +96,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// Gets the TypeURI the extension uses in the OpenID protocol and in XRDS advertisements.
 		/// </summary>
 		/// <value></value>
-		public string TypeUri { get { return UITypeUri; } }
+		public string TypeUri { get { return UIConstants.UITypeUri; } }
 
 		/// <summary>
 		/// Gets the additional TypeURIs that are supported by this extension, in preferred order.
@@ -110,7 +113,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// given the version of the extension in the request message.
 		/// The <see cref="Extensions.SimpleRegistration.ClaimsRequest.CreateResponse"/> for an example.
 		/// </remarks>
-		public IEnumerable<string> AdditionalSupportedTypeUris { get { return Enumerable.Empty<string>(); } }
+		public IEnumerable<string> AdditionalSupportedTypeUris { get { return additionalTypeUris; } }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this extension was
