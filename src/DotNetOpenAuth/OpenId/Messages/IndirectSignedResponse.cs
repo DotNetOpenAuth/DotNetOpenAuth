@@ -201,7 +201,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </exception>
 		DateTime IExpiringProtocolMessage.UtcCreationDate {
 			get { return this.creationDateUtc; }
-			set { this.creationDateUtc = value.ToUniversalTime(); }
+			set { this.creationDateUtc = value.ToUniversalTimeSafe(); }
 		}
 
 		/// <summary>

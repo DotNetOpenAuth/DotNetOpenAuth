@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 
 					// Convert to UTC and cut to the second, since the protocol only allows for
 					// that level of precision.
-					this.authenticationTimeUtc = OpenIdUtilities.CutToSecond(value.Value.ToUniversalTime());
+					this.authenticationTimeUtc = OpenIdUtilities.CutToSecond(value.Value.ToUniversalTimeSafe());
 				} else {
 					this.authenticationTimeUtc = null;
 				}
