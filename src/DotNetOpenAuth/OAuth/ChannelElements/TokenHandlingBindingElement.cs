@@ -166,7 +166,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <exception cref="ProtocolException">Thrown when the token in the message has expired.</exception>
 		private void VerifyThrowTokenTimeToLive(ITokenContainingMessage message) {
 			ErrorUtilities.VerifyInternal(!(message is AccessProtectedResourceRequest), "We shouldn't be verifying TTL on access tokens.");
-			if (message == null) {
+			if (message == null || string.IsNullOrEmpty(message.Token)) {
 				return;
 			}
 
