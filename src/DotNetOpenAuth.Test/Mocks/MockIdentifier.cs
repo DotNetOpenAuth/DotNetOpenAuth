@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private Identifier wrappedIdentifier;
 
 		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<ServiceEndpoint> endpoints)
-			: base(false) {
+			: base(wrappedIdentifier.OriginalString, false) {
 			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
 			ErrorUtilities.VerifyArgumentNotNull(mockHttpRequest, "mockHttpRequest");
 			ErrorUtilities.VerifyArgumentNotNull(endpoints, "endpoints");

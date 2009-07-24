@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthenticationResponseSnapshot.cs" company="Andrew Arnott">
+// <copyright file="PositiveAuthenticationResponseSnapshot.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -16,17 +16,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A serializable snapshot of a verified authentication message.
 	/// </summary>
 	[Serializable]
-	internal class AuthenticationResponseSnapshot : IAuthenticationResponse {
+	internal class PositiveAuthenticationResponseSnapshot : IAuthenticationResponse {
 		/// <summary>
 		/// The callback arguments that came with the authentication response.
 		/// </summary>
 		private IDictionary<string, string> callbackArguments;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthenticationResponseSnapshot"/> class.
+		/// Initializes a new instance of the <see cref="PositiveAuthenticationResponseSnapshot"/> class.
 		/// </summary>
 		/// <param name="copyFrom">The authentication response to copy from.</param>
-		internal AuthenticationResponseSnapshot(IAuthenticationResponse copyFrom) {
+		internal PositiveAuthenticationResponseSnapshot(IAuthenticationResponse copyFrom) {
 			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
 
 			this.ClaimedIdentifier = copyFrom.ClaimedIdentifier;

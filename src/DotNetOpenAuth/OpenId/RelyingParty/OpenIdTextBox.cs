@@ -277,7 +277,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(""), Category(AppearanceCategory)]
 		[Description("The content of the text box.")]
 		public string Text {
-			get { return this.Identifier; }
+			get { return this.Identifier.OriginalString; }
 			set { this.Identifier = value; }
 		}
 

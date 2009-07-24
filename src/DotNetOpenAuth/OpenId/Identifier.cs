@@ -24,17 +24,16 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Identifier"/> class.
 		/// </summary>
-		/// <param name="isDiscoverySecureEndToEnd">
-		/// Whether the derived class is prepared to guarantee end-to-end discovery
-		/// and initial redirect for authentication is performed using SSL.
-		/// </param>
+		/// <param name="originalString">The original string before any normalization.</param>
+		/// <param name="isDiscoverySecureEndToEnd">Whether the derived class is prepared to guarantee end-to-end discovery
+		/// and initial redirect for authentication is performed using SSL.</param>
 		protected Identifier(string originalString, bool isDiscoverySecureEndToEnd) {
 			this.OriginalString = originalString;
 			this.IsDiscoverySecureEndToEnd = isDiscoverySecureEndToEnd;
 		}
 
 		/// <summary>
-		/// Gets or sets the original string that was normalized to create this Identifier.
+		/// Gets the original string that was normalized to create this Identifier.
 		/// </summary>
 		public string OriginalString { get; private set; }
 

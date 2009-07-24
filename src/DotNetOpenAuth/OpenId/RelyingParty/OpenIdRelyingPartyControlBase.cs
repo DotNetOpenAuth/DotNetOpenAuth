@@ -65,6 +65,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
+		#region Callback parameter names
+
+		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in a popup window or hidden iframe.
+		/// </summary>
+		protected const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
+
+		/// <summary>
+		/// The parameter name to include in the formulated auth request so that javascript can know whether
+		/// the OP advertises support for the UI extension.
+		/// </summary>
+		protected const string PopupUISupportedJsHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
+
+		/// <summary>
+		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
+		/// </summary>
+		private const string UsePersistentCookieCallbackKey = OpenIdUtilities.CustomParameterPrefix + "UsePersistentCookie";
+
+		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in the parent window.
+		/// </summary>
+		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
+
+		#endregion
+
 		#region Property default values
 
 		/// <summary>
@@ -148,31 +173,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		#region Callback parameter names
-
-		/// <summary>
-		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
-		/// </summary>
-		private const string UsePersistentCookieCallbackKey = OpenIdUtilities.CustomParameterPrefix + "UsePersistentCookie";
-
-		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in a popup window.
-		/// </summary>
-		private const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
-
-		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in the parent window.
-		/// </summary>
-		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
-
-		/// <summary>
-		/// The parameter name to include in the formulated auth request so that javascript can know whether
-		/// the OP advertises support for the UI extension.
-		/// </summary>
-		private const string PopupUISupportedJsHint = "dotnetopenid.popupUISupported";
-
-		#endregion
-
 		/// <summary>
 		/// The lifetime of the cookie used to persist the Identifier the user logged in with.
 		/// </summary>
@@ -198,11 +198,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Events
 
 		/// <summary>
-		/// Fired after the user clicks the log in button, but before the authentication
-		/// process begins.  Offers a chance for the web application to disallow based on 
-		/// OpenID URL before redirecting the user to the OpenID Provider.
+		/// Fired when the user has typed in their identifier, discovery was successful
+		/// and a login attempt is about to begin.
 		/// </summary>
-		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider."), Category(OpenIdCategory)]
+		[Description("Fired when the user has typed in their identifier, discovery was successful and a login attempt is about to begin."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> LoggingIn;
 
 		/// <summary>
@@ -391,7 +390,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		[Bindable(true), DefaultValue(LoginModeDefault), Category(BehaviorCategory)]
 		[Description("The way a completed login is communicated to the rest of the web site.")]
-		public LoginSiteNotification LoginMode {
+		public virtual LoginSiteNotification LoginMode {
 			get { return (LoginSiteNotification)(this.ViewState[LoginModeViewStateKey] ?? LoginModeDefault); }
 			set { this.ViewState[LoginModeViewStateKey] = value; }
 		}
@@ -532,25 +531,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Configure each generated request.
 			foreach (var req in requests) {
 				if (this.IsPopupAppropriate(req)) {
-					// Inform the OP that we'll be using a popup window.
-					req.AddExtension(new UIRequest());
-
 					// Inform ourselves in return_to that we're in a popup.
-					req.AddCallbackArguments(UIPopupCallbackKey, "1");
+					req.SetCallbackArgument(UIPopupCallbackKey, "1");
 
 					if (req.Provider.IsExtensionSupported<UIRequest>()) {
+						// Inform the OP that we'll be using a popup window consistent with the UI extension.
+						req.AddExtension(new UIRequest());
+
 						// Provide a hint for the client javascript about whether the OP supports the UI extension.
 						// This is so the window can be made the correct size for the extension.
 						// If the OP doesn't advertise support for the extension, the javascript will use
 						// a bigger popup window.
-						req.AddCallbackArguments(PopupUISupportedJsHint, "1");
+						req.SetCallbackArgument(PopupUISupportedJsHint, "1");
 					}
 				}
 
 				// Add state that needs to survive across the redirect.
 				if (!this.Stateless) {
-					req.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
-					req.AddCallbackArguments(ReturnToReceivingControlId, this.ClientID);
+					req.SetCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
+					req.SetCallbackArgument(ReturnToReceivingControlId, this.ClientID);
 				}
 
 				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
@@ -581,7 +580,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
 				// We're in a popup window.  We need to close it and pass the
 				// message back to the parent window for processing.
-				this.ScriptClosingPopup();
+				this.ScriptClosingPopupOrIFrame();
 				return; // don't do any more processing on it now
 			}
 
@@ -590,32 +589,41 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId] ?? this.Page.Request.Form[ReturnToReceivingControlId];
 			if (receiver == null || receiver == this.ClientID) {
 				var response = this.RelyingParty.GetResponse();
-				if (response != null) {
-					string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
-					if (persistentString != null) {
-						this.UsePersistentCookie = (LoginPersistence)Enum.Parse(typeof(LoginPersistence), persistentString);
-					}
+				this.ProcessResponse(response);
+			}
+		}
 
-					switch (response.Status) {
-						case AuthenticationStatus.Authenticated:
-							this.OnLoggedIn(response);
-							break;
-						case AuthenticationStatus.Canceled:
-							this.OnCanceled(response);
-							break;
-						case AuthenticationStatus.Failed:
-							this.OnFailed(response);
-							break;
-						case AuthenticationStatus.SetupRequired:
-						case AuthenticationStatus.ExtensionsOnly:
-						default:
-							// The NotApplicable (extension-only assertion) is NOT one that we support
-							// in this control because that scenario is primarily interesting to RPs
-							// that are asking a specific OP, and it is not user-initiated as this textbox
-							// is designed for.
-							throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
-					}
-				}
+		/// <summary>
+		/// Processes the response.
+		/// </summary>
+		/// <param name="response">The response.</param>
+		protected virtual void ProcessResponse(IAuthenticationResponse response) {
+			if (response == null) {
+				return;
+			}
+			string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+			if (persistentString != null) {
+				this.UsePersistentCookie = (LoginPersistence)Enum.Parse(typeof(LoginPersistence), persistentString);
+			}
+
+			switch (response.Status) {
+				case AuthenticationStatus.Authenticated:
+					this.OnLoggedIn(response);
+					break;
+				case AuthenticationStatus.Canceled:
+					this.OnCanceled(response);
+					break;
+				case AuthenticationStatus.Failed:
+					this.OnFailed(response);
+					break;
+				case AuthenticationStatus.SetupRequired:
+				case AuthenticationStatus.ExtensionsOnly:
+				default:
+					// The NotApplicable (extension-only assertion) is NOT one that we support
+					// in this control because that scenario is primarily interesting to RPs
+					// that are asking a specific OP, and it is not user-initiated as this textbox
+					// is designed for.
+					throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
 			}
 		}
 
@@ -719,8 +727,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
 		protected virtual OpenIdRelyingParty CreateRelyingParty() {
+			return this.CreateRelyingParty(true);
+		}
+
+		/// <summary>
+		/// Creates the relying party instance used to generate authentication requests.
+		/// </summary>
+		/// <param name="verifySignature">
+		/// A value indicating whether message protections should be applied to the processed messages.
+		/// Use <c>false</c> to postpone verification to a later time without invalidating nonces.
+		/// </param>
+		/// <returns>The instantiated relying party.</returns>
+		protected virtual OpenIdRelyingParty CreateRelyingParty(bool verifySignature) {
 			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
-			var rp = new OpenIdRelyingParty(store);
+			var rp = verifySignature ? new OpenIdRelyingParty(store) : OpenIdRelyingParty.CreateNonVerifying();
 
 			// Only set RequireSsl to true, as we don't want to override 
 			// a .config setting of true with false.
@@ -778,6 +798,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.AddAttribute("onMouseOver", "window.status = " + MessagingUtilities.GetSafeJavascriptValue(windowStatus));
 				writer.AddAttribute("onMouseOut", "window.status = null");
 			}
+		}
+
+		/// <summary>
+		/// Wires the popup window to close itself and pass the authentication result to the parent window.
+		/// </summary>
+		protected virtual void ScriptClosingPopupOrIFrame() {
+			StringBuilder startupScript = new StringBuilder();
+			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL);");
+			startupScript.AppendLine("window.close();");
+
+			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
+
+			// TODO: alternately we should probably take over rendering this page here to avoid
+			// a lot of unnecessary work on the server and possible momentary display of the 
+			// page in the popup window.
 		}
 
 		/// <summary>
@@ -850,21 +885,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendLine("};");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "loginPopup", startupScript.ToString(), true);
-		}
-
-		/// <summary>
-		/// Wires the popup window to close itself and pass the authentication result to the parent window.
-		/// </summary>
-		private void ScriptClosingPopup() {
-			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
-			startupScript.AppendLine("window.close();");
-
-			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
-
-			// TODO: alternately we should probably take over rendering this page here to avoid
-			// a lot of unnecessary work on the server and possible momentary display of the 
-			// page in the popup window.
 		}
 
 		/// <summary>
