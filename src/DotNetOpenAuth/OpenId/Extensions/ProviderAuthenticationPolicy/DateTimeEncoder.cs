@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Globalization;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -39,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		public string Encode(object value) {
 			DateTime? dateTime = value as DateTime?;
 			if (dateTime.HasValue) {
-				return dateTime.Value.ToUniversalTime().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture);
+				return dateTime.Value.ToUniversalTimeSafe().ToString(PermissibleDateTimeFormats[0], CultureInfo.InvariantCulture);
 			} else {
 				return null;
 			}

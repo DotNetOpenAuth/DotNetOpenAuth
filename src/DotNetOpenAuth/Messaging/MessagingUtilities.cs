@@ -776,6 +776,30 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Ensures that UTC times are converted to local times.  Unspecified kinds are unchanged.
+		/// </summary>
+		/// <returns>Local time.</returns>
+		internal static DateTime ToLocalTimeSafe(this DateTime value) {
+			if (value.Kind == DateTimeKind.Unspecified) {
+				return value;
+			}
+
+			return value.ToLocalTime();
+		}
+
+		/// <summary>
+		/// Ensures that local times are converted to UTC times.  Unspecified kinds are unchanged.
+		/// </summary>
+		/// <returns>UTC time.</returns>
+		internal static DateTime ToUniversalTimeSafe(this DateTime value) {
+			if (value.Kind == DateTimeKind.Unspecified) {
+				return value;
+			}
+
+			return value.ToUniversalTime();
+		}
+
+		/// <summary>
 		/// A class to convert a <see cref="Comparison&lt;T&gt;"/> into an <see cref="IComparer&lt;T&gt;"/>.
 		/// </summary>
 		/// <typeparam name="T">The type of objects being compared.</typeparam>
