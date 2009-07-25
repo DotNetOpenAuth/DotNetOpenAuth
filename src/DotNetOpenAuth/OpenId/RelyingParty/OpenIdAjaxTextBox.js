@@ -146,13 +146,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.op_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			}
 			//trace("OP icon size: " + box.dnoi_internal.op_logo.fileSize);
-			// This just doesn't seem to work any more.
-//			if (opLogo == null || box.dnoi_internal.op_logo.fileSize == -1 /*IE*/ || box.dnoi_internal.op_logo.fileSize === undefined /* FF */) {
-//				trace('recovering from missing OP icon');
-//				box.dnoi_internal.op_logo.style.visibility = 'hidden';
-//				box.dnoi_internal.openid_logo.style.visibility = 'visible';
-//				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
-//			}
+			// The filesize check just doesn't seem to work any more.
+			if (opLogo == null) {// || box.dnoi_internal.op_logo.fileSize == -1 /*IE*/ || box.dnoi_internal.op_logo.fileSize === undefined /* FF */) {
+				trace('recovering from missing OP icon');
+				box.dnoi_internal.op_logo.style.visibility = 'hidden';
+				box.dnoi_internal.openid_logo.style.visibility = 'visible';
+				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
+			}
 			box.dnoi_internal.success_icon.style.visibility = 'visible';
 			box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
 			box.title = box.dnoi_internal.claimedIdentifier;
@@ -350,8 +350,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint) {
 		// visual cue that auth was successful
-		box.dnoi_internal.claimedIdentifier = discoveryResult.claimedIdentifier;
-		box.dnoi_internal.setVisualCue('authenticated', respondingEndpoint.endpoint, discoveryResult.claimedIdentifier);
+		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
+		box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
+		box.dnoi_internal.setVisualCue('authenticated', parsedPositiveAssertion.endpoint, parsedPositiveAssertion.claimedIdentifier);
 		if (box.dnoi_internal.onauthenticated) {
 			box.dnoi_internal.onauthenticated(box);
 		}
@@ -389,27 +390,5 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
 
 	// Restore a previously achieved state (from pre-postback) if it is given.
-	var oldAuth = findOrCreateHiddenField().value;
-	if (oldAuth.length > 0) {
-		var oldAuthResult = new window.dnoa_internal.Uri(oldAuth);
-		// The control ensures that we ALWAYS have an OpenID 2.0-style claimed_id attribute, even against
-		// 1.0 Providers via the return_to URL mechanism.
-		var claimedId = oldAuthResult.getQueryArgValue("dnoa.claimed_id");
-		var endpoint = oldAuthResult.getQueryArgValue("dnoa.op_endpoint");
-		var userSuppliedIdentifier = oldAuthResult.getQueryArgValue('dnoa.userSuppliedIdentifier');
-
-// TODO:
-		// We weren't given a full discovery history, but we can spoof this much from the
-		// authentication assertion.
-		//new window.OpenIdIdentifier(userSuppliedIdentifier).discover
-		var discoveryResult = {
-			claimedIdentifier: claimedId,
-			requests: [{ endpoint: endpoint }]
-		};
-
-		// window.dnoa_internal.discoveryResults[box.value] = discoveryResult;
-
-		// restore old state from before postback
-		//window.dnoa_internal.processAuthorizationResult(oldAuthResult.toString());
-	}
+	window.dnoa_internal.deserializePreviousAuthentication(findOrCreateHiddenField().value, box.dnoi_internal.onAuthSuccess);
 }

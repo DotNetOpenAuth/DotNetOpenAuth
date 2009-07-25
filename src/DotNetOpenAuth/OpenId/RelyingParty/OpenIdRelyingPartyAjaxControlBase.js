@@ -107,222 +107,6 @@ window.OpenIdIdentifier = function(identifier) {
 	/// <param name="onDiscoverSuccess">A function(DiscoveryResult) callback to be called when discovery has completed successfully.</param>
 	/// <param name="onDiscoverFailure">A function callback to be called when discovery has completed in failure.</param>
 	this.discover = function(onDiscoverSuccess, onDiscoverFailure) {
-		/// <summary>Instantiates an object that stores discovery results of some identifier.</summary>
-		function DiscoveryResult(identifier, discoveryInfo) {
-			var thisDiscoveryResult = this;
-
-			/// <summary>
-			/// Instantiates an object that describes an OpenID service endpoint and facilitates 
-			/// initiating and tracking an authentication request.
-			/// </summary>
-			function ServiceEndpoint(requestInfo, userSuppliedIdentifier) {
-				this.immediate = requestInfo.immediate ? new window.dnoa_internal.Uri(requestInfo.immediate) : null;
-				this.setup = requestInfo.setup ? new window.dnoa_internal.Uri(requestInfo.setup) : null;
-				this.endpoint = new window.dnoa_internal.Uri(requestInfo.endpoint);
-				this.host = this.endpoint.getHost();
-				this.userSuppliedIdentifier = userSuppliedIdentifier;
-				var thisServiceEndpoint = this; // closure so that delegates have the right instance
-				this.loginPopup = function(onAuthSuccess, onAuthFailed) {
-					thisServiceEndpoint.abort(); // ensure no concurrent attempts
-					thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
-					thisDiscoveryResult.onAuthFailed = onAuthFailed;
-					var width = 800;
-					var height = 600;
-					if (thisServiceEndpoint.setup.getQueryArgValue("openid.return_to").indexOf("dnoa.popupUISupported") >= 0) {
-						trace('This OP supports the UI extension.  Using smaller window size.');
-						width = 450;
-						height = 500;
-					} else {
-						trace("This OP doesn't appear to support the UI extension.  Using larger window size.");
-					}
-
-					var left = (screen.width - width) / 2;
-					var top = (screen.height - height) / 2;
-					thisServiceEndpoint.popup = window.open(thisServiceEndpoint.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
-
-					// If the OP supports the UI extension it MAY close its own window
-					// for a negative assertion.  We must be able to recover from that scenario.
-					var thisServiceEndpointLocal = thisServiceEndpoint;
-					thisServiceEndpoint.popupCloseChecker = window.setInterval(function() {
-						if (thisServiceEndpointLocal.popup && thisServiceEndpointLocal.popup.closed) {
-							// The window closed, either because the user closed it, canceled at the OP,
-							// or approved at the OP and the popup window closed itself due to our script.
-							// If we were graying out the entire page while the child window was up,
-							// we would probably revert that here.
-							window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
-							thisServiceEndpointLocal.popup = null;
-
-							// The popup may have managed to inform us of the result already,
-							// so check whether the callback method was cleared already, which
-							// would indicate we've already processed this.
-							if (window.dnoa_internal.processAuthorizationResult) {
-								trace('User or OP canceled by closing the window.');
-								if (thisDiscoveryResult.onAuthFailed) {
-									thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
-								}
-								window.dnoa_internal.processAuthorizationResult = null;
-							}
-						}
-					}, 250);
-				};
-
-				this.loginBackgroundJob = function(iframe, timeout) {
-					thisServiceEndpoint.abort(); // ensure no concurrent attempts
-					if (timeout) {
-						thisServiceEndpoint.timeout = setTimeout(function() { thisServiceEndpoint.onAuthenticationTimedOut(); }, timeout);
-					}
-					trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now OPENING (timeout ' + timeout + ').');
-					//trace('initiating auth attempt with: ' + thisServiceEndpoint.immediate);
-					thisServiceEndpoint.iframe = iframe;
-					return thisServiceEndpoint.immediate.toString();
-				};
-
-				this.busy = function() {
-					return thisServiceEndpoint.iframe != null || thisServiceEndpoint.popup != null;
-				};
-
-				this.completeAttempt = function(successful) {
-					if (!thisServiceEndpoint.busy()) return false;
-					window.clearInterval(thisServiceEndpoint.timeout);
-					if (thisServiceEndpoint.iframe) {
-						trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now CLOSING.');
-						thisDiscoveryResult.frameManager.closeFrame(thisServiceEndpoint.iframe);
-						thisServiceEndpoint.iframe = null;
-					}
-					if (thisServiceEndpoint.popup) {
-						thisServiceEndpoint.popup.close();
-						thisServiceEndpoint.popup = null;
-					}
-					if (thisServiceEndpoint.timeout) {
-						window.clearTimeout(thisServiceEndpoint.timeout);
-						thisServiceEndpoint.timeout = null;
-					}
-
-					if (!successful && !thisDiscoveryResult.busy() && thisDiscoveryResult.findSuccessfulRequest() == null) {
-						if (thisDiscoveryResult.onLastAttemptFailed) {
-							thisDiscoveryResult.onLastAttemptFailed();
-						}
-					}
-
-					return true;
-				};
-
-				this.onAuthenticationTimedOut = function() {
-					if (thisServiceEndpoint.completeAttempt()) {
-						trace(thisServiceEndpoint.host + " timed out");
-						thisServiceEndpoint.result = window.dnoa_internal.timedOut;
-					}
-				};
-
-				this.onAuthSuccess = function(authUri) {
-					if (thisServiceEndpoint.completeAttempt(true)) {
-						trace(thisServiceEndpoint.host + " authenticated!");
-						thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
-						thisServiceEndpoint.response = authUri;
-						thisDiscoveryResult.abortAll();
-						if (thisDiscoveryResult.onAuthSuccess) {
-							thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint);
-						}
-					}
-				};
-
-				this.onAuthFailed = function() {
-					if (thisServiceEndpoint.completeAttempt()) {
-						trace(thisServiceEndpoint.host + " failed authentication");
-						thisServiceEndpoint.result = window.dnoa_internal.authRefused;
-						if (thisDiscoveryResult.onAuthFailed) {
-							thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
-						}
-					}
-				};
-
-				this.abort = function() {
-					if (thisServiceEndpoint.completeAttempt()) {
-						trace(thisServiceEndpoint.host + " aborted");
-						// leave the result as whatever it was before.
-					}
-				};
-
-			};
-
-			this.userSuppliedIdentifier = identifier;
-
-			if (discoveryInfo) {
-				this.claimedIdentifier = discoveryInfo.claimedIdentifier; // The claimed identifier may be null if the user provided an OP Identifier.
-				this.length = discoveryInfo.requests.length;
-				for (var i = 0; i < discoveryInfo.requests.length; i++) {
-					this[i] = new ServiceEndpoint(discoveryInfo.requests[i], identifier);
-				}
-			} else {
-				this.length = 0;
-			}
-
-			trace('Discovered claimed identifier: ' + (this.claimedIdentifier ? this.claimedIdentifier : "(directed identity)"));
-
-			// Add extra tracking bits and behaviors.
-			this.findByEndpoint = function(opEndpoint) {
-				for (var i = 0; i < thisDiscoveryResult.length; i++) {
-					if (thisDiscoveryResult[i].endpoint == opEndpoint) {
-						return thisDiscoveryResult[i];
-					}
-				}
-			};
-
-			this.busy = function() {
-				for (var i = 0; i < thisDiscoveryResult.length; i++) {
-					if (thisDiscoveryResult[i].busy()) {
-						return true;
-					}
-				}
-			};
-
-			// Add extra tracking bits and behaviors.
-			this.findSuccessfulRequest = function() {
-				for (var i = 0; i < thisDiscoveryResult.length; i++) {
-					if (thisDiscoveryResult[i].result === window.dnoa_internal.authSuccess) {
-						return thisDiscoveryResult[i];
-					}
-				}
-			};
-
-			this.abortAll = function() {
-				if (thisDiscoveryResult.frameManager) {
-					// Abort all other asynchronous authentication attempts that may be in progress.
-					thisDiscoveryResult.frameManager.cancelAllWork();
-					for (var i = 0; i < thisDiscoveryResult.length; i++) {
-						thisDiscoveryResult[i].abort();
-					}
-				} else {
-					trace('abortAll called without a frameManager being previously set.');
-				}
-			};
-
-			/// <summary>Initiates an asynchronous checkid_immediate login attempt against all possible service endpoints for an Identifier.</summary>
-			/// <param name="frameManager">The work queue for authentication iframes.</param>
-			/// <param name="onAuthSuccess">Fired when an endpoint responds affirmatively.</param>
-			/// <param name="onAuthFailed">Fired when an endpoint responds negatively.</param>
-			/// <param name="onLastAuthFailed">Fired when all authentication attempts have responded negatively or timed out.</param>
-			/// <param name="timeout">Timeout for an individual service endpoint to respond before the iframe closes.</param>
-			this.loginBackground = function(frameManager, onAuthSuccess, onAuthFailed, onLastAuthFailed, timeout) {
-				if (!frameManager) {
-					throw "No frameManager specified.";
-				}
-				if (thisDiscoveryResult.findSuccessfulRequest() != null) {
-					onAuthSuccess(thisDiscoveryResult, thisDiscoveryResult.findSuccessfulRequest());
-				} else {
-					thisDiscoveryResult.frameManager = frameManager;
-					thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
-					thisDiscoveryResult.onAuthFailed = onAuthFailed;
-					thisDiscoveryResult.onLastAttemptFailed = onLastAuthFailed;
-					if (thisDiscoveryResult.length > 0) {
-						for (var i = 0; i < thisDiscoveryResult.length; i++) {
-							thisDiscoveryResult.frameManager.enqueueWork(thisDiscoveryResult[i].loginBackgroundJob, timeout);
-						}
-					}
-				}
-			};
-		};
-
 		/// <summary>Receives the results of a successful discovery (even if it yielded 0 results).</summary>
 		function discoverSuccessCallback(discoveryResult, identifier) {
 			trace('Discovery completed for: ' + identifier);
@@ -331,7 +115,7 @@ window.OpenIdIdentifier = function(identifier) {
 			discoveryResult = eval('(' + discoveryResult + ')');
 
 			// Add behavior for later use.
-			discoveryResult = new DiscoveryResult(identifier, discoveryResult);
+			discoveryResult = new window.dnoa_internal.DiscoveryResult(identifier, discoveryResult);
 			window.dnoa_internal.discoveryResults[identifier] = discoveryResult;
 
 			if (onDiscoverSuccess) {
@@ -415,16 +199,16 @@ window.dnoa_internal.processAuthorizationResult = function(resultUrl) {
 
 	var opEndpoint = resultUri.getQueryArgValue("openid.op_endpoint") ? resultUri.getQueryArgValue("openid.op_endpoint") : resultUri.getQueryArgValue("dnoa.op_endpoint");
 	var respondingEndpoint = discoveryResult.findByEndpoint(opEndpoint);
-	trace('Auth result for ' + respondingEndpoint.host + ' received.');//: ' + resultUrl);
+	trace('Auth result for ' + respondingEndpoint.host + ' received.'); //: ' + resultUrl);
 
 	if (window.dnoa_internal.isAuthSuccessful(resultUri)) {
 		discoveryResult.successAuthData = resultUrl;
 		respondingEndpoint.onAuthSuccess(resultUri);
 
-		var claimed_id = resultUri.getQueryArgValue("openid.claimed_id");
-		if (claimed_id && claimed_id != discoveryResult.claimedIdentifier) {
-			discoveryResult.claimedIdentifier = resultUri.getQueryArgValue("openid.claimed_id");
-			trace('Authenticated as ' + claimed_id);
+		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(resultUri);
+		if (parsedPositiveAssertion.claimedIdentifier && parsedPositiveAssertion.claimedIdentifier != discoveryResult.claimedIdentifier) {
+			discoveryResult.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
+			trace('Authenticated as ' + parsedPositiveAssertion.claimedIdentifier);
 		}
 	} else {
 		respondingEndpoint.onAuthFailed();
@@ -443,3 +227,266 @@ window.dnoa_internal.isOpenID2Response = function(resultUri) {
 	return resultUri.containsQueryArg("openid.ns");
 };
 
+/// <summary>Instantiates an object that stores discovery results of some identifier.</summary>
+window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
+	var thisDiscoveryResult = this;
+
+	/// <summary>
+	/// Instantiates an object that describes an OpenID service endpoint and facilitates 
+	/// initiating and tracking an authentication request.
+	/// </summary>
+	function ServiceEndpoint(requestInfo, userSuppliedIdentifier) {
+		this.immediate = requestInfo.immediate ? new window.dnoa_internal.Uri(requestInfo.immediate) : null;
+		this.setup = requestInfo.setup ? new window.dnoa_internal.Uri(requestInfo.setup) : null;
+		this.endpoint = new window.dnoa_internal.Uri(requestInfo.endpoint);
+		this.host = this.endpoint.getHost();
+		this.userSuppliedIdentifier = userSuppliedIdentifier;
+		var thisServiceEndpoint = this; // closure so that delegates have the right instance
+		this.loginPopup = function(onAuthSuccess, onAuthFailed) {
+			thisServiceEndpoint.abort(); // ensure no concurrent attempts
+			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
+			thisDiscoveryResult.onAuthFailed = onAuthFailed;
+			var width = 800;
+			var height = 600;
+			if (thisServiceEndpoint.setup.getQueryArgValue("openid.return_to").indexOf("dnoa.popupUISupported") >= 0) {
+				trace('This OP supports the UI extension.  Using smaller window size.');
+				width = 450;
+				height = 500;
+			} else {
+				trace("This OP doesn't appear to support the UI extension.  Using larger window size.");
+			}
+
+			var left = (screen.width - width) / 2;
+			var top = (screen.height - height) / 2;
+			thisServiceEndpoint.popup = window.open(thisServiceEndpoint.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
+
+			// If the OP supports the UI extension it MAY close its own window
+			// for a negative assertion.  We must be able to recover from that scenario.
+			var thisServiceEndpointLocal = thisServiceEndpoint;
+			thisServiceEndpoint.popupCloseChecker = window.setInterval(function() {
+				if (thisServiceEndpointLocal.popup && thisServiceEndpointLocal.popup.closed) {
+					// The window closed, either because the user closed it, canceled at the OP,
+					// or approved at the OP and the popup window closed itself due to our script.
+					// If we were graying out the entire page while the child window was up,
+					// we would probably revert that here.
+					window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
+					thisServiceEndpointLocal.popup = null;
+
+					// The popup may have managed to inform us of the result already,
+					// so check whether the callback method was cleared already, which
+					// would indicate we've already processed this.
+					if (window.dnoa_internal.processAuthorizationResult) {
+						trace('User or OP canceled by closing the window.');
+						if (thisDiscoveryResult.onAuthFailed) {
+							thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+						}
+						window.dnoa_internal.processAuthorizationResult = null;
+					}
+				}
+			}, 250);
+		};
+
+		this.loginBackgroundJob = function(iframe, timeout) {
+			thisServiceEndpoint.abort(); // ensure no concurrent attempts
+			if (timeout) {
+				thisServiceEndpoint.timeout = setTimeout(function() { thisServiceEndpoint.onAuthenticationTimedOut(); }, timeout);
+			}
+			trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now OPENING (timeout ' + timeout + ').');
+			//trace('initiating auth attempt with: ' + thisServiceEndpoint.immediate);
+			thisServiceEndpoint.iframe = iframe;
+			return thisServiceEndpoint.immediate.toString();
+		};
+
+		this.busy = function() {
+			return thisServiceEndpoint.iframe != null || thisServiceEndpoint.popup != null;
+		};
+
+		this.completeAttempt = function(successful) {
+			if (!thisServiceEndpoint.busy()) return false;
+			window.clearInterval(thisServiceEndpoint.timeout);
+			if (thisServiceEndpoint.iframe) {
+				trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now CLOSING.');
+				thisDiscoveryResult.frameManager.closeFrame(thisServiceEndpoint.iframe);
+				thisServiceEndpoint.iframe = null;
+			}
+			if (thisServiceEndpoint.popup) {
+				thisServiceEndpoint.popup.close();
+				thisServiceEndpoint.popup = null;
+			}
+			if (thisServiceEndpoint.timeout) {
+				window.clearTimeout(thisServiceEndpoint.timeout);
+				thisServiceEndpoint.timeout = null;
+			}
+
+			if (!successful && !thisDiscoveryResult.busy() && thisDiscoveryResult.findSuccessfulRequest() == null) {
+				if (thisDiscoveryResult.onLastAttemptFailed) {
+					thisDiscoveryResult.onLastAttemptFailed();
+				}
+			}
+
+			return true;
+		};
+
+		this.onAuthenticationTimedOut = function() {
+			if (thisServiceEndpoint.completeAttempt()) {
+				trace(thisServiceEndpoint.host + " timed out");
+				thisServiceEndpoint.result = window.dnoa_internal.timedOut;
+			}
+		};
+
+		this.onAuthSuccess = function(authUri) {
+			if (thisServiceEndpoint.completeAttempt(true)) {
+				trace(thisServiceEndpoint.host + " authenticated!");
+				thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
+				thisServiceEndpoint.claimedIdentifier = authUri//////////////////////////////////
+				thisServiceEndpoint.response = authUri;
+				thisDiscoveryResult.abortAll();
+				if (thisDiscoveryResult.onAuthSuccess) {
+					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint);
+				}
+			}
+		};
+
+		this.onAuthFailed = function() {
+			if (thisServiceEndpoint.completeAttempt()) {
+				trace(thisServiceEndpoint.host + " failed authentication");
+				thisServiceEndpoint.result = window.dnoa_internal.authRefused;
+				if (thisDiscoveryResult.onAuthFailed) {
+					thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+				}
+			}
+		};
+
+		this.abort = function() {
+			if (thisServiceEndpoint.completeAttempt()) {
+				trace(thisServiceEndpoint.host + " aborted");
+				// leave the result as whatever it was before.
+			}
+		};
+
+	};
+
+	this.userSuppliedIdentifier = identifier;
+
+	if (discoveryInfo) {
+		this.claimedIdentifier = discoveryInfo.claimedIdentifier; // The claimed identifier may be null if the user provided an OP Identifier.
+		this.length = discoveryInfo.requests.length;
+		for (var i = 0; i < discoveryInfo.requests.length; i++) {
+			this[i] = new ServiceEndpoint(discoveryInfo.requests[i], identifier);
+		}
+	} else {
+		this.length = 0;
+	}
+
+	trace('Discovered claimed identifier: ' + (this.claimedIdentifier ? this.claimedIdentifier : "(directed identity)"));
+
+	// Add extra tracking bits and behaviors.
+	this.findByEndpoint = function(opEndpoint) {
+		for (var i = 0; i < thisDiscoveryResult.length; i++) {
+			if (thisDiscoveryResult[i].endpoint == opEndpoint) {
+				return thisDiscoveryResult[i];
+			}
+		}
+	};
+
+	this.busy = function() {
+		for (var i = 0; i < thisDiscoveryResult.length; i++) {
+			if (thisDiscoveryResult[i].busy()) {
+				return true;
+			}
+		}
+	};
+
+	// Add extra tracking bits and behaviors.
+	this.findSuccessfulRequest = function() {
+		for (var i = 0; i < thisDiscoveryResult.length; i++) {
+			if (thisDiscoveryResult[i].result === window.dnoa_internal.authSuccess) {
+				return thisDiscoveryResult[i];
+			}
+		}
+	};
+
+	this.abortAll = function() {
+		if (thisDiscoveryResult.frameManager) {
+			// Abort all other asynchronous authentication attempts that may be in progress.
+			thisDiscoveryResult.frameManager.cancelAllWork();
+			for (var i = 0; i < thisDiscoveryResult.length; i++) {
+				thisDiscoveryResult[i].abort();
+			}
+		} else {
+			trace('abortAll called without a frameManager being previously set.');
+		}
+	};
+
+	/// <summary>Initiates an asynchronous checkid_immediate login attempt against all possible service endpoints for an Identifier.</summary>
+	/// <param name="frameManager">The work queue for authentication iframes.</param>
+	/// <param name="onAuthSuccess">Fired when an endpoint responds affirmatively.</param>
+	/// <param name="onAuthFailed">Fired when an endpoint responds negatively.</param>
+	/// <param name="onLastAuthFailed">Fired when all authentication attempts have responded negatively or timed out.</param>
+	/// <param name="timeout">Timeout for an individual service endpoint to respond before the iframe closes.</param>
+	this.loginBackground = function(frameManager, onAuthSuccess, onAuthFailed, onLastAuthFailed, timeout) {
+		if (!frameManager) {
+			throw "No frameManager specified.";
+		}
+		if (thisDiscoveryResult.findSuccessfulRequest() != null) {
+			onAuthSuccess(thisDiscoveryResult, thisDiscoveryResult.findSuccessfulRequest());
+		} else {
+			thisDiscoveryResult.frameManager = frameManager;
+			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
+			thisDiscoveryResult.onAuthFailed = onAuthFailed;
+			thisDiscoveryResult.onLastAttemptFailed = onLastAuthFailed;
+			if (thisDiscoveryResult.length > 0) {
+				for (var i = 0; i < thisDiscoveryResult.length; i++) {
+					thisDiscoveryResult.frameManager.enqueueWork(thisDiscoveryResult[i].loginBackgroundJob, timeout);
+				}
+			}
+		}
+	};
+};
+
+/// <summary>
+/// Called in a page had an AJAX control that had already obtained a positive assertion
+/// when a postback occurred, and now that control wants to restore its 'authenticated' state.
+/// </summary>
+/// <param name="positiveAssertion">The string form of the URI that contains the positive assertion.</param>
+/// <param name="onAuthSuccess">Fired if the positive assertion is successfully processed, as if it had just come in.</param>
+window.dnoa_internal.deserializePreviousAuthentication = function(positiveAssertion, onAuthSuccess) {
+	if (!positiveAssertion || positiveAssertion.length === 0) {
+		return;
+	}
+
+	trace('Revitalizing an old positive assertion from a prior postback.');
+	var oldAuthResult = new window.dnoa_internal.Uri(positiveAssertion);
+
+	// The control ensures that we ALWAYS have an OpenID 2.0-style claimed_id attribute, even against
+	// 1.0 Providers via the return_to URL mechanism.
+	var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(positiveAssertion);
+
+	// We weren't given a full discovery history, but we can spoof this much from the
+	// authentication assertion.
+	trace('Deserialized claimed_id: ' + parsedPositiveAssertion.claimedIdentifier + ' and endpoint: ' + parsedPositiveAssertion.endpoint);
+	var discoveryInfo = {
+		claimedIdentifier: parsedPositiveAssertion.claimedIdentifier,
+		requests: [{ endpoint: parsedPositiveAssertion.endpoint }]
+	};
+
+	window.dnoa_internal.discoveryResults[box.value] = discoveryResult = new window.dnoa_internal.DiscoveryResult(parsedPositiveAssertion.userSuppliedIdentifier, discoveryInfo);
+	discoveryResult[0].result = window.dnoa_internal.authSuccess;
+	discoveryResult.successAuthData = positiveAssertion;
+
+	// restore old state from before postback
+	if (onAuthSuccess) {
+		onAuthSuccess(discoveryResult, discoveryResult[0]);
+	}
+};
+
+window.dnoa_internal.PositiveAssertion = function(uri) {
+	uri = new window.dnoa_internal.Uri(uri.toString());
+	this.endpoint = new window.dnoa_internal.Uri(uri.getQueryArgValue("dnoa.op_endpoint"));
+	this.userSuppliedIdentifier = uri.getQueryArgValue('dnoa.userSuppliedIdentifier');
+	this.claimedIdentifier = uri.getQueryArgValue('openid.claimed_id');
+	if (!this.claimedIdentifier) {
+		this.claimedIdentifier = uri.getQueryArgValue('dnoa.claimed_id');
+	}
+	this.toString = function() { return uri.toString(); };
+};
