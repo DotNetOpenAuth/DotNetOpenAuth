@@ -767,7 +767,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Ensures that UTC times are converted to local times.  Unspecified kinds are unchanged.
 		/// </summary>
-		/// <returns>Local time.</returns>
+		/// <param name="value">The date-time to convert.</param>
+		/// <returns>The date-time in local time.</returns>
 		internal static DateTime ToLocalTimeSafe(this DateTime value) {
 			if (value.Kind == DateTimeKind.Unspecified) {
 				return value;
@@ -779,7 +780,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Ensures that local times are converted to UTC times.  Unspecified kinds are unchanged.
 		/// </summary>
-		/// <returns>UTC time.</returns>
+		/// <param name="value">The date-time to convert.</param>
+		/// <returns>The date-time in UTC time.</returns>
 		internal static DateTime ToUniversalTimeSafe(this DateTime value) {
 			if (value.Kind == DateTimeKind.Unspecified) {
 				return value;
