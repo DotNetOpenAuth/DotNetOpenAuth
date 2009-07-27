@@ -75,6 +75,18 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		[MessagePart("mode", AllowEmpty = false, IsRequired = true)]
 		public string Mode { get { return UIModes.Popup; } }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the Relying Party has an icon
+		/// it would like the Provider to display to the user while asking them
+		/// whether they would like to log in.
+		/// </summary>
+		/// <value><c>true</c> if the Provider should display an icon; otherwise, <c>false</c>.</value>
+		/// <remarks>
+		/// By default, the Provider displays the relying party's favicon.ico.
+		/// </remarks>
+		[MessagePart("popup", AllowEmpty = false, IsRequired = false)]
+		public bool Icon { get; set; }
+
 		#region IOpenIdMessageExtension Members
 
 		/// <summary>
