@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -21,6 +22,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// requests look like Simple Registration requests, and to convert the response
 	/// to the originally requested extension and format.
 	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 	public class AXFetchAsSregTransform : IRelyingPartyBehavior, IProviderBehavior {
 		/// <summary>
 		/// Initializes static members of the <see cref="AXFetchAsSregTransform"/> class.

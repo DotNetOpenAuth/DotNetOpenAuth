@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Runtime.InteropServices;
@@ -15,6 +16,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// Represents an OAuth consumer that is impersonating a known user on the system.
 	/// </summary>
+	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "Not cocreatable.")]
 	[Serializable]
 	[ComVisible(true)]
 	public class OAuthPrincipal : IPrincipal {

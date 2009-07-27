@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Provider;
+using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// Offers OpenID Providers automatic PPID Claimed Identifier generation when requested
@@ -23,10 +24,12 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// <c>Application_Start</c> method in the global.asax.cs file.</para>
 	/// </remarks>
 	[Serializable]
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ppid", Justification = "Abbreviation")]
 	public sealed class PpidGeneration : IProviderBehavior {
 		/// <summary>
 		/// Gets or sets the provider for generating PPID identifiers.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ppid", Justification = "Abbreviation")]
 		public static IDirectedIdentityIdentifierProvider PpidIdentifierProvider { get; set; }
 
 		#region IProviderBehavior Members

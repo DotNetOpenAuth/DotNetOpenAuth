@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// All known schemas.
 		/// </summary>
-		All = 0xff,
+		All = AXSchemaOrg | SchemaOpenIdNet | OpenIdNetSchema,
 
 		/// <summary>
 		/// The most common schemas.

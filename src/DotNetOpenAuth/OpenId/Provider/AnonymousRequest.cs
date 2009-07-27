@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// Provides access to a host Provider to read an incoming extension-only checkid request message,
@@ -26,6 +27,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="provider">The provider that received the request.</param>
 		/// <param name="request">The incoming authentication request message.</param>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts require it.")]
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
 			Contract.Requires(provider != null);

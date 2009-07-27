@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="PrivatePersonalIdentifierProviderBase"/> class.
 		/// </summary>
 		/// <param name="baseIdentifier">The base URI on which to append the anonymous part.</param>
-		public PrivatePersonalIdentifierProviderBase(Uri baseIdentifier) {
+		protected PrivatePersonalIdentifierProviderBase(Uri baseIdentifier) {
 			Contract.Requires(baseIdentifier != null);
 			ErrorUtilities.VerifyArgumentNotNull(baseIdentifier, "baseIdentifier");
 
@@ -47,6 +47,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// A granularity description for who wide of an audience sees the same generated PPID.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "Breaking change")]
 		public enum AudienceScope {
 			/// <summary>
 			/// A unique Identifier is generated for every realm.  This is the highest security setting.
@@ -78,6 +79,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// for the authenticating uesr.
 		/// </summary>
 		/// <value>The default value is <see cref="AudienceScope.Realm"/>.</value>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Pairwise", Justification = "Meaningful word")]
 		public AudienceScope PairwiseUnique { get; set; }
 
 		/// <summary>

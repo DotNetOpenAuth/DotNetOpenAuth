@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
 
@@ -31,6 +32,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <value>
 		/// The name of the user who authorized the OAuth request token originally.
 		/// </value>
+		[SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Username", Justification = "Breaking change.")]
 		string Username { get; }
 
 		/// <summary>
@@ -40,6 +42,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The roles that the user belongs to, or a subset of these according to the rights
 		/// granted when the user authorized the request token.
 		/// </value>
+		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "By design.")]
 		string[] Roles { get; }
 	}
 }
