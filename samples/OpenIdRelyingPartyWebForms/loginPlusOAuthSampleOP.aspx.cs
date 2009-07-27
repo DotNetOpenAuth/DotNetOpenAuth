@@ -33,13 +33,13 @@
 
 			AuthorizedTokenResponse accessToken = consumer.ProcessUserAuthorization(e.Response);
 			if (accessToken != null) {
-				MultiView1.SetActiveView(AuthorizationGiven);
+				this.MultiView1.SetActiveView(AuthorizationGiven);
 
 				// At this point, the access token would be somehow associated with the user
 				// account at the RP.
 				////Database.Associate(e.Response.ClaimedIdentifier, accessToken.AccessToken);
 			} else {
-				MultiView1.SetActiveView(AuthorizationDenied);
+				this.MultiView1.SetActiveView(AuthorizationDenied);
 			}
 
 			// Avoid the redirect
