@@ -69,14 +69,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
-		/// The authentication response that just came in.
-		/// </summary>
-		private IAuthenticationResponse authenticationResponse;
-
-		/// <summary>
 		/// Backing field for the <see cref="RelyingPartyNonVerifying"/> property.
 		/// </summary>
 		private static OpenIdRelyingParty relyingPartyNonVerifying;
+
+		/// <summary>
+		/// The authentication response that just came in.
+		/// </summary>
+		private IAuthenticationResponse authenticationResponse;
 
 		/// <summary>
 		/// Stores the result of a AJAX callback discovery.
