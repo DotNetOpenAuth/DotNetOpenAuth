@@ -185,6 +185,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="uriHash">The unique part of the Identifier to append to the common first part.</param>
 		/// <returns>The full PPID Identifier.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "NOT equivalent overload.  The recommended one breaks on relative URIs.")]
 		protected virtual Uri AppendIdentifiers(string uriHash) {
 			Contract.Requires(!String.IsNullOrEmpty(uriHash));
 			ErrorUtilities.VerifyNonZeroLength(uriHash, "uriHash");
