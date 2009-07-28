@@ -91,7 +91,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\bin\CodeAnalysis\</OutputPath>
-    <DefineConstants>CONTRACTS_FULL;DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);CONTRACTS_FULL;DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\..\bin\CodeAnalysis\DotNetOpenAuth.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
