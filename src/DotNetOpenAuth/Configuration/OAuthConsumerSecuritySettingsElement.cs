@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth;
@@ -26,6 +27,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "By design")]
 		internal ConsumerSecuritySettings CreateSecuritySettings() {
 			return new ConsumerSecuritySettings();
 		}

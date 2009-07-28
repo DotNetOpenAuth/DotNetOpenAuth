@@ -89,6 +89,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets a value indicating whether the Service Provider recognized the callback parameter in the request.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Message serialization invoked.")]
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Message parts must be instance members.")]
 		[MessagePart("oauth_callback_confirmed", IsRequired = true, MinVersion = Protocol.V10aVersion)]
 		private bool CallbackConfirmed {
 			get { return true; }
