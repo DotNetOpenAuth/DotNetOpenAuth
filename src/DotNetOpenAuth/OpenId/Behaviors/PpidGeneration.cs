@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Provider;
-using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// Offers OpenID Providers automatic PPID Claimed Identifier generation when requested

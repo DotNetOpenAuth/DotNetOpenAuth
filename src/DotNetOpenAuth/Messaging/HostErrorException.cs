@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
-	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// An exception to call out a configuration or runtime failure on the part of the
