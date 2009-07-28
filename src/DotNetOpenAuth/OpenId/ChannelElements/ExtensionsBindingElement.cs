@@ -23,11 +23,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
 		/// <summary>
-		/// The security settings that apply to this binding element.
-		/// </summary>
-		private readonly SecuritySettings securitySettings;
-
-		/// <summary>
 		/// The security settings that apply to this relying party, if it is a relying party.
 		/// </summary>
 		private readonly RelyingPartySecuritySettings relyingPartySecuritySettings;
@@ -42,7 +37,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.ExtensionFactory = extensionFactory;
-			this.securitySettings = securitySettings;
 			this.relyingPartySecuritySettings = securitySettings as RelyingPartySecuritySettings;
 		}
 

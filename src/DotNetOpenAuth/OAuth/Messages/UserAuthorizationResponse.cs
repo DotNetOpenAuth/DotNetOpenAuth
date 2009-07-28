@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	/// <remarks>
 	/// The class is sealed because extra parameters are determined by the callback URI provided by the Consumer.
 	/// </remarks>
+	[Serializable]
 	public sealed class UserAuthorizationResponse : MessageBase, ITokenContainingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAuthorizationResponse"/> class.

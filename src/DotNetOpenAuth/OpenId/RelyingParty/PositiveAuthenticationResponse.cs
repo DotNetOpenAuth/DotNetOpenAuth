@@ -135,6 +135,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void VerifyDiscoveryMatchesAssertion(OpenIdRelyingParty relyingParty) {
 			Logger.OpenId.Debug("Verifying assertion matches identifier discovery results...");
 
+			// Ensure that we abide by the RP's rules regarding RequireSsl for this discovery step.
+			Identifier claimedId = this.Response.ClaimedIdentifier;
+			if (relyingParty.SecuritySettings.RequireSsl) {
+				if (!claimedId.TryRequireSsl(out claimedId)) {
+					Logger.OpenId.ErrorFormat("This site is configured to accept only SSL-protected OpenIDs, but {0} was asserted and must be rejected.", this.Response.ClaimedIdentifier);
+					ErrorUtilities.ThrowProtocol(OpenIdStrings.RequireSslNotSatisfiedByAssertedClaimedId, this.Response.ClaimedIdentifier);
+				}
+			}
+
 			// While it LOOKS like we're performing discovery over HTTP again
 			// Yadis.IdentifierDiscoveryCachePolicy is set to HttpRequestCacheLevel.CacheIfAvailable
 			// which means that the .NET runtime is caching our discoveries for us.  This turns out
@@ -144,7 +153,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// is signed by the RP before it's considered reliable.  In 1.x stateless mode, this RP
 			// doesn't (and can't) sign its own return_to URL, so its cached discovery information
 			// is merely a hint that must be verified by performing discovery again here.
-			var discoveryResults = this.Response.ClaimedIdentifier.Discover(relyingParty.WebRequestHandler);
+			var discoveryResults = claimedId.Discover(relyingParty.WebRequestHandler);
 			ErrorUtilities.VerifyProtocol(
 				discoveryResults.Contains(this.endpoint),
 				OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery,

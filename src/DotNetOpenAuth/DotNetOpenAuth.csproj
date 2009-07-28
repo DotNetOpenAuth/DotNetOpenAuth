@@ -393,6 +393,7 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\Constants.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\DemandLevel.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Gender.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIConstants.cs" />
     <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
     <Compile Include="OpenId\Extensions\UI\UIModes.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
@@ -540,6 +541,7 @@
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Configuration\DotNetOpenAuth.xsd" />
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />

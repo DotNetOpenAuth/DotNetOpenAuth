@@ -71,9 +71,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>
 		/// 	<c>true</c> if the given identifier is the valid, unique identifier for some uesr (and NOT a PPID); otherwise, <c>false</c>.
 		/// </returns>
-		public bool IsUserLocalIdentifier(Identifier identifier) {
+		bool IDirectedIdentityIdentifierProvider.IsUserLocalIdentifier(Identifier identifier) {
 			Contract.Requires(identifier != null);
-
 			throw new NotImplementedException();
 		}
 
