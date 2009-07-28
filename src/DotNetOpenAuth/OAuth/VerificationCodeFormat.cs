@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth {
+	using System.Diagnostics.CodeAnalysis;
+
 	/// <summary>
 	/// The different formats a user authorization verifier code can take
 	/// in order to be as secure as possible while being compatible with
@@ -33,6 +35,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// Some letters and numbers will be skipped where they are visually similar
 		/// enough that they can be difficult to distinguish when displayed with most fonts.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Alikes", Justification = "Breaking change of existing API")]
+		[SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AlphaNumeric", Justification = "Breaking change of existing API")]
 		AlphaNumericNoLookAlikes,
 
 		/// <summary>
