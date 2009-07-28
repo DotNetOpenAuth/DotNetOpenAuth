@@ -219,10 +219,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			None,
 
 			/// <summary>
-			/// After the <see cref="OpenIdRelyingPartyControl.LoggedIn"/> event is fired
-			/// the control automatically calls <see cref="FormsAuthentication.RedirectFromLoginPage"/>
+			/// After the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event is fired
+			/// the control automatically calls <see cref="System.Web.Security.FormsAuthentication.RedirectFromLoginPage(string, bool)"/>
 			/// with the <see cref="IAuthenticationResponse.ClaimedIdentifier"/> as the username
-			/// unless the <see cref="OpenIdRelyingPartyControl.LoggedIn"/> event handler sets
+			/// unless the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event handler sets
 			/// <see cref="OpenIdEventArgs.Cancel"/> property to true.
 			/// </summary>
 			FormsAuthentication,
