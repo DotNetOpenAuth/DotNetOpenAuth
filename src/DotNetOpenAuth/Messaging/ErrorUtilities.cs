@@ -272,12 +272,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="paramName">Name of the parameter, which will be used in the <see cref="ArgumentException"/>, if thrown.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> is null.</exception>
 		internal static void VerifyArgumentNotNull(object value, string paramName) {
-			Contract.EndContractBlock();
 			if (value == null) {
 				throw new ArgumentNullException(paramName);
 			}
-
 			Contract.Ensures(value != null);
+			Contract.EndContractBlock();
 		}
 
 		/// <summary>
