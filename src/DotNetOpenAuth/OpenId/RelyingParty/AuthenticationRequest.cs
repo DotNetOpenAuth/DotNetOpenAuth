@@ -345,11 +345,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// before calling this method.
 		/// </remarks>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(realm != null);
-			Contract.Requires(serviceEndpoints != null);
-			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
+			// DO NOT USE CODE CONTRACTS IN THIS METHOD, since it uses yield return
+			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
+			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
+			ErrorUtilities.VerifyArgumentNotNull(serviceEndpoints, "serviceEndpoints");
+			////Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
 			// If shared associations are required, then we had better have an association store.
 			ErrorUtilities.VerifyOperation(!relyingParty.SecuritySettings.RequireAssociation || relyingParty.AssociationManager.HasAssociationStore, OpenIdStrings.AssociationStoreRequired);

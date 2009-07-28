@@ -11,6 +11,7 @@ namespace DotNetOpenAuth {
 	using System.Net;
 	using System.Reflection;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A grab-bag utility class.
@@ -74,7 +75,8 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(
 				pairs,
 				p => {
-					Contract.Requires(pairs != null);
+					////Contract.Requires(pairs != null); // CC: anonymous method can't handle it
+					ErrorUtilities.VerifyArgumentNotNull(pairs, "pairs");
 					var dictionary = pairs as IDictionary<K, V>;
 					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
 					foreach (var pair in pairs) {
@@ -102,13 +104,15 @@ namespace DotNetOpenAuth {
 		/// <param name="list">The list of elements.</param>
 		/// <param name="multiLineElements">if set to <c>true</c>, special formatting will be applied to the output to make it clear where one element ends and the next begins.</param>
 		/// <returns>An object whose ToString method will perform the actual work of generating the string.</returns>
+		[ContractVerification(false)]
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements) {
 			return new DelayedToString<IEnumerable<T>>(
 				list,
 				l => {
-					Contract.Requires(l != null);
+					////Contract.Requires(l != null); // CC: anonymous method can't handle it
+					ErrorUtilities.VerifyArgumentNotNull(l, "l");
 					string newLine = Environment.NewLine;
-					Contract.Assume(newLine != null && newLine.Length > 0);
+					////Contract.Assume(newLine != null && newLine.Length > 0); // CC: anonymous method can't handle it
 					StringBuilder sb = new StringBuilder();
 					if (multiLineElements) {
 						sb.AppendLine("[{");
