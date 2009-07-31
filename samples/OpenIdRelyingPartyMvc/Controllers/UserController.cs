@@ -10,6 +10,8 @@
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	public class UserController : Controller {
+		private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
+
 		public ActionResult Index() {
 			if (!User.Identity.IsAuthenticated) {
 				Response.Redirect("/User/Login?ReturnUrl=Index");
@@ -33,7 +35,6 @@
 		}
 
 		public ActionResult Authenticate(string returnUrl) {
-			var openid = new OpenIdRelyingParty();
 			var response = openid.GetResponse();
 			if (response == null) {
 				// Stage 2: user submitting Identifier
