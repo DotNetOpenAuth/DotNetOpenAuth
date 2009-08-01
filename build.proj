@@ -19,7 +19,9 @@
 		                                 $(ProjectRoot)\lib\Microsoft.Contracts.dll; "/>
 		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
 		                                $(OutputPath)\$(ProductName).dll;
-		                                $(OutputPath)\$(ProductName).Test.dll" />
+		                                $(OutputPath)\$(ProductName).Contracts.dll;
+		                                $(OutputPath)\$(ProductName).Test.dll;
+		                                $(ProjectRoot)\samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
 
 	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
@@ -88,7 +90,8 @@
 		<Message Text="Signing delay-signed assemblies." />
 		<ReSignDelaySignedAssemblies
 			KeyContainer="$(KeyPairContainer)"
-			Assemblies="@(DelaySignedAssemblies)" />
+			Assemblies="@(DelaySignedAssemblies)"
+			Condition="Exists(%(Identity))" />
 	</Target>
 
 	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct">
