@@ -196,7 +196,7 @@
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
 	</Target>
 
-	<Target Name="Nightly" DependsOnTargets="Drop;Test">
+	<Target Name="Nightly" DependsOnTargets="Drop">
 
 	</Target>
 
