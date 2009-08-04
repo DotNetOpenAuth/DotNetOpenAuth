@@ -15,6 +15,8 @@
 	<ItemGroup>
 		<SampleProjects Include="$(ProjectRoot)\samples\**\*.csproj" />
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
+		<SampleWebConfigs Include="$(ProjectRoot)\samples\*\web.config" />
+		<PublishableWebSamples Include="@(SampleWebConfigs->'%(RootDir)%(Directory)')" />
 		<ILMergeInputAssemblies Include="$(OutputPath)\$(ProductName).dll;
 		                                 $(ProjectRoot)\lib\Microsoft.Contracts.dll; "/>
 		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
@@ -24,7 +26,7 @@
 		                                $(ProjectRoot)\samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
 
-	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
 		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 		<ItemGroup>
 			<DirtyDirectories Include="
@@ -257,7 +259,56 @@
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" />
 	</Target>
 
-	<Target Name="Nightly" DependsOnTargets="Drop;Tools">
+	<Target Name="PrepareForPublish">
+		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
+		<PropertyGroup>
+			<PublishSamplesWebSiteSubPath>/$(BranchName)</PublishSamplesWebSiteSubPath>
+			<PublishDocsWebSiteSubPath>/$(BranchName)</PublishDocsWebSiteSubPath>
+		</PropertyGroup>
+
+		<!-- Trim the trailing slash on the web sample paths so we can just get the leaf directory name. -->
+		<Trim
+			Inputs="@(PublishableWebSamples)"
+			EndCharacters="\">
+			<Output TaskParameter="Outputs" ItemName="_PublishableWebSamplesNoTrailingSlash" />
+		</Trim>
+
+		<ItemGroup>
+			<PublishableWebSamplesVirtualPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(PublishSamplesWebSiteSubPath)/%(Filename)')" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="PublishSamples" DependsOnTargets="PrepareForPublish;BuildSamples" Condition=" '$(PublishSamplesWebSiteName)' != '' ">
+		<CreateWebApplication
+			WebSiteName="$(PublishSamplesWebSiteName)"
+			PhysicalPaths="@(PublishableWebSamples)"
+			VirtualPaths="@(PublishableWebSamplesVirtualPaths)"
+			/>
+	</Target>
+
+	<Target Name="UnpublishSamples" DependsOnTargets="PrepareForPublish" Condition=" '$(PublishSamplesWebSiteName)' != '' ">
+		<DeleteWebApplication
+			WebSiteName="$(PublishSamplesWebSiteName)"
+			VirtualPaths="@(PublishableWebSamplesVirtualPaths)"
+			/>
+	</Target>
+
+	<Target Name="PublishDocumentation" DependsOnTargets="PrepareForPublish;Documentation" Condition=" '$(PublishDocsWebSiteName)' != '' ">
+		<CreateWebApplication
+			WebSiteName="$(PublishDocsWebSiteName)"
+			PhysicalPaths="$(ProjectRoot)\doc\api"
+			VirtualPaths="$(PublishDocsWebSiteSubPath)"
+			/>
+	</Target>
+
+	<Target Name="UnpublishDocumentation" DependsOnTargets="PrepareForPublish" Condition=" '$(PublishDocsWebSiteName)' != '' ">
+		<DeleteWebApplication
+			WebSiteName="$(PublishDocsWebSiteName)"
+			VirtualPaths="$(PublishDocsWebSiteSubPath)"
+			/>
+	</Target>
+
+	<Target Name="Nightly" DependsOnTargets="Drop;Tools;PublishSamples;PublishDocumentation">
 
 	</Target>
 </Project>

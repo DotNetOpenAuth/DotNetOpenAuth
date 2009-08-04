@@ -36,6 +36,10 @@
     <Reference Include="Microsoft.Build.Utilities.v3.5">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(SystemRoot)\System32\inetsrv\Microsoft.Web.Administration.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -47,6 +51,8 @@
     <Compile Include="ChangeProjectReferenceToAssemblyReference.cs" />
     <Compile Include="CompareFiles.cs" />
     <Compile Include="ChangeAssemblyReference.cs" />
+    <Compile Include="CreateWebApplication.cs" />
+    <Compile Include="DeleteWebApplication.cs" />
     <Compile Include="GetBuildVersion.cs" />
     <Compile Include="CheckAdminRights.cs" />
     <Compile Include="ReSignDelaySignedAssemblies.cs" />
@@ -54,6 +60,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignatureVerification.cs" />
     <Compile Include="SnToolTask.cs" />
+    <Compile Include="TaskStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TaskStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Trim.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TaskStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TaskStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
