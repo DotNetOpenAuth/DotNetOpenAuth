@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
-			: base(uri.OriginalString, requireSslDiscovery) {
+			: base(uri != null ? uri.OriginalString : null, requireSslDiscovery) {
 			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
 			if (!TryCanonicalize(new UriBuilder(uri), out uri)) {
 				throw new UriFormatException();
