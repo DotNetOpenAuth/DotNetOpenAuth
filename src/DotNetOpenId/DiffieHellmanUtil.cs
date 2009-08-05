@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using Org.Mentalis.Security.Cryptography;
 
