@@ -14,7 +14,7 @@ namespace DotNetOpenId {
 			/// </summary>
 			internal int SecretLength { get { return BaseHashAlgorithm.HashSize / 8; } }
 		}
-		static HmacSha[] HmacShaAssociationTypes = {
+		static HmacSha[] HmacShaAssociationTypes = new List<HmacSha> {
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA512(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
@@ -35,7 +35,7 @@ namespace DotNetOpenId {
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
 				BaseHashAlgorithm = new SHA1Managed(),
 			},
-		};
+		}.ToArray();
 
 		public static HmacShaAssociation Create(Protocol protocol, string associationType,
 			string handle, byte[] secret, TimeSpan totalLifeLength) {
