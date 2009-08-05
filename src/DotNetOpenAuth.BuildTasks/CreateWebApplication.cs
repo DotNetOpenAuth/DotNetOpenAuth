@@ -66,11 +66,13 @@ namespace DotNetOpenAuth.BuildTasks {
 				return false;
 			}
 
+			Log.LogMessage(MessageImportance.Normal, "Creating web applications under web site: {0}", site.Name);
+
 			for (int i = 0; i < this.PhysicalPaths.Length; i++) {
 				string physicalPath = this.PhysicalPaths[i].ItemSpec;
 				string virtualPath = this.VirtualPaths[i].ItemSpec;
 
-				Log.LogMessage(MessageImportance.Normal, "Creating web application: {0} -> {1}", virtualPath, physicalPath);
+				Log.LogMessage(MessageImportance.Normal, "\t{0} -> {1}", virtualPath, physicalPath);
 
 				var app = site.Applications.FirstOrDefault(a => string.Equals(a.Path, virtualPath, StringComparison.OrdinalIgnoreCase));
 				if (app == null) {

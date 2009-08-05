@@ -14,5 +14,6 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="CreateWebApplication" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="DeleteWebApplication" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="Trim" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="FilterItems" />
 
 </Project>
