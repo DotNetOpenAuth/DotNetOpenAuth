@@ -1,0 +1,122 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- Properties that must be set for these targets to function:
+	        $(BranchName): The name of the branch being built.  Used to determine the web subdirectory for publishing.
+          
+          For creating web sites:
+          $(PublishSamplesWebSiteName): The name of the web site under which the sample web applications will be created/deleted.
+          $(PublishDocsWebSiteName): The name of the web site under which the documentation web applications will be created/deleted.
+
+          For creating or publishing to web sites:
+          $(SampleWebRoot): the full physical path to where samples should be copied to, excluding $(BranchName)
+	        $(DocWebRoot): the full physical path to where documentation should be copied to, excluding $(BranchName)
+	-->
+
+	<Target Name="PrepareForIIS">
+		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
+		
+		<PropertyGroup>
+			<PublishSamplesWebSiteVirtualPath>/$(BranchName)</PublishSamplesWebSiteVirtualPath>
+			<PublishDocsWebSiteVirtualPath>/$(BranchName)</PublishDocsWebSiteVirtualPath>
+		</PropertyGroup>
+
+		<!-- Trim the trailing slash on the web sample paths so we can just get the leaf directory name. -->
+		<Trim
+			Inputs="@(PublishableWebSamples)"
+			EndCharacters="\">
+			<Output TaskParameter="Outputs" ItemName="_PublishableWebSamplesNoTrailingSlash" />
+		</Trim>
+
+		<ItemGroup>
+			<PublishableWebSamplesVirtualPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(PublishSamplesWebSiteVirtualPath)/%(Filename)')" />
+			<PublishableWebSamplesPhysicalPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(SampleWebRoot)\$(BranchName)\%(Filename)')" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="PrepareForPublishSamples"
+	        Condition=" '$(SampleWebRoot)' != '' "
+		DependsOnTargets="BuildSamples">
+		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
+
+		<ItemGroup>
+			<_SampleWebConfigs Include="$(ProjectRoot)\samples\*\web.config" />
+			<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
+			<SampleSources Include="$(ProjectRoot)\samples\**\*" />
+			<SampleSources>
+				<PublishedLocation>$(SampleWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)</PublishedLocation>
+			</SampleSources>
+		</ItemGroup>
+
+		<FilterItems
+			InputItems="@(SampleSources)"
+			StartsWithAny="@(PublishableWebSamples)">
+			<Output TaskParameter="FilteredItems" ItemName="PublishableWebSampleSources" />
+		</FilterItems>
+
+		<ItemGroup>
+			<PublishableWebSampleTargets Include="@(PublishableWebSampleSources->'%(PublishedLocation)')" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="PublishSamples" 
+					DependsOnTargets="PrepareForPublishSamples"
+					Inputs="@(PublishableWebSampleSources)"
+					Outputs="@(PublishableWebSampleTargets)"
+					Condition=" '$(SampleWebRoot)' != '' ">
+		<RemoveDir Directories="$(SampleWebRoot)\$(BranchName)" />
+		<MakeDir Directories="$(SampleWebRoot)\$(BranchName)" />
+		<Copy SourceFiles="@(PublishableWebSampleSources)" DestinationFiles="@(PublishableWebSampleTargets)" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="PrepareForPublishDocumentation" DependsOnTargets="Documentation">
+		<ItemGroup>
+			<DocSources Include="$(ProjectRoot)\doc\api\**\*" />
+			<DocTargets Include="@(DocSources->'$(DocWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)')" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="PublishDocumentation"
+					DependsOnTargets="PrepareForPublishDocumentation"
+					Inputs="@(DocSources)"
+					Outputs="@(DocTargets)"
+					Condition=" '$(DocWebRoot)' != '' ">
+		<RemoveDir Directories="$(DocWebRoot)\$(BranchName)" />
+		<MakeDir Directories="$(DocWebRoot)\$(BranchName)" />
+		<Copy SourceFiles="@(DocSources)" DestinationFiles="@(DocTargets)" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="CreateSampleSitesOnIis" DependsOnTargets="PrepareForIIS">
+		<Error Text="The PublishSamplesWebSiteName property must be set." Condition=" '$(PublishSamplesWebSiteName)' == '' "/>
+		<Error Text="The SampleWebRoot property must be set." Condition=" '$(SampleWebRoot)' == '' " />
+		<CreateWebApplication
+			WebSiteName="$(PublishSamplesWebSiteName)"
+			PhysicalPaths="@(PublishableWebSamplesPhysicalPaths)"
+			VirtualPaths="@(PublishableWebSamplesVirtualPaths)"
+			/>
+	</Target>
+
+	<Target Name="DeleteSampleSitesOnIis" DependsOnTargets="PrepareForIIS">
+		<Error Text="The PublishSamplesWebSiteName property must be set." Condition=" '$(PublishSamplesWebSiteName)' == '' "/>
+		<DeleteWebApplication
+			WebSiteName="$(PublishSamplesWebSiteName)"
+			VirtualPaths="@(PublishableWebSamplesVirtualPaths)"
+			/>
+	</Target>
+
+	<Target Name="CreateDocumentationSiteOnIis" DependsOnTargets="PrepareForIIS">
+		<Error Text="The PublishDocsWebSiteName property must be set." Condition=" '$(PublishDocsWebSiteName)' == '' "/>
+		<Error Text="The DocWebRoot property must be set." Condition=" '$(DocWebRoot)' == '' " />
+		<CreateWebApplication
+			WebSiteName="$(PublishDocsWebSiteName)"
+			PhysicalPaths="$(DocWebRoot)\$(BranchName)"
+			VirtualPaths="$(PublishDocsWebSiteVirtualPath)"
+			/>
+	</Target>
+
+	<Target Name="DeleteDocumentationSiteOnIis" DependsOnTargets="PrepareForIIS">
+		<Error Text="The PublishDocsWebSiteName property must be set." Condition=" '$(PublishDocsWebSiteName)' == '' "/>
+		<DeleteWebApplication
+			WebSiteName="$(PublishDocsWebSiteName)"
+			VirtualPaths="$(PublishDocsWebSiteVirtualPath)"
+			/>
+	</Target>
+</Project>
