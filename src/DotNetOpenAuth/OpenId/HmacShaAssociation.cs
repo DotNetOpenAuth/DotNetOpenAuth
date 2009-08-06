@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// A list of HMAC-SHA algorithms in order of decreasing bit lengths.
 		/// </summary>
-		private static HmacSha[] hmacShaAssociationTypes = {
+		private static HmacSha[] hmacShaAssociationTypes = new List<HmacSha> {
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA512(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OpenId {
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
 				BaseHashAlgorithm = new SHA1Managed(),
 			},
-		};
+		}.ToArray();
 
 		/// <summary>
 		/// The specific variety of HMAC-SHA this association is based on (whether it be HMAC-SHA1, HMAC-SHA256, etc.)
