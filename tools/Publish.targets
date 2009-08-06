@@ -18,18 +18,6 @@
 			<PublishSamplesWebSiteVirtualPath>/$(BranchName)</PublishSamplesWebSiteVirtualPath>
 			<PublishDocsWebSiteVirtualPath>/$(BranchName)</PublishDocsWebSiteVirtualPath>
 		</PropertyGroup>
-
-		<!-- Trim the trailing slash on the web sample paths so we can just get the leaf directory name. -->
-		<Trim
-			Inputs="@(PublishableWebSamples)"
-			EndCharacters="\">
-			<Output TaskParameter="Outputs" ItemName="_PublishableWebSamplesNoTrailingSlash" />
-		</Trim>
-
-		<ItemGroup>
-			<PublishableWebSamplesVirtualPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(PublishSamplesWebSiteVirtualPath)/%(Filename)')" />
-			<PublishableWebSamplesPhysicalPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(SampleWebRoot)\$(BranchName)\%(Filename)')" />
-		</ItemGroup>
 	</Target>
 
 	<Target Name="PrepareForPublishSamples"
@@ -44,6 +32,20 @@
 			<SampleSources>
 				<PublishedLocation>$(SampleWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)</PublishedLocation>
 			</SampleSources>
+		</ItemGroup>
+
+		<!-- Trim the trailing slash on the web sample paths so we can just get the leaf directory name. -->
+		<Trim
+			Inputs="@(PublishableWebSamples)"
+			EndCharacters="\">
+			<Output TaskParameter="Outputs" ItemName="_PublishableWebSamplesNoTrailingSlash" />
+		</Trim>
+
+		<Message TExt="PublishableWebSamples: @(PublishableWebSamples)"/>
+
+		<ItemGroup>
+			<PublishableWebSamplesVirtualPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(PublishSamplesWebSiteVirtualPath)/%(Filename)')" />
+			<PublishableWebSamplesPhysicalPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(SampleWebRoot)\$(BranchName)\%(Filename)')" />
 		</ItemGroup>
 
 		<FilterItems
@@ -84,9 +86,10 @@
 		<Copy SourceFiles="@(DocSources)" DestinationFiles="@(DocTargets)" SkipUnchangedFiles="true" />
 	</Target>
 
-	<Target Name="CreateSampleSitesOnIis" DependsOnTargets="PrepareForIIS">
+	<Target Name="CreateSampleSitesOnIis" DependsOnTargets="PrepareForIIS;PrepareForPublishSamples">
 		<Error Text="The PublishSamplesWebSiteName property must be set." Condition=" '$(PublishSamplesWebSiteName)' == '' "/>
 		<Error Text="The SampleWebRoot property must be set." Condition=" '$(SampleWebRoot)' == '' " />
+<Message Text="PublishableWebSamplesVirtualPaths: @(PublishableWebSamplesVirtualPaths)"/>
 		<CreateWebApplication
 			WebSiteName="$(PublishSamplesWebSiteName)"
 			PhysicalPaths="@(PublishableWebSamplesPhysicalPaths)"
