@@ -10,13 +10,6 @@
           $(SampleWebRoot): the full physical path to where samples should be copied to, excluding $(BranchName)
 	        $(DocWebRoot): the full physical path to where documentation should be copied to, excluding $(BranchName)
 	-->
-	<ItemGroup>
-		<_SampleWebConfigs Include="$(ProjectRoot)\samples\*\web.config" />
-		<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
-		<SampleSources Include="$(ProjectRoot)\samples\**\*" />
-		<DocSources Include="$(ProjectRoot)\doc\api\**\*" />
-		<DocTargets Include="@(DocSources->'$(DocWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)')" />
-	</ItemGroup>
 
 	<Target Name="PrepareForIIS">
 		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
@@ -25,6 +18,21 @@
 			<PublishSamplesWebSiteVirtualPath>/$(BranchName)</PublishSamplesWebSiteVirtualPath>
 			<PublishDocsWebSiteVirtualPath>/$(BranchName)</PublishDocsWebSiteVirtualPath>
 		</PropertyGroup>
+	</Target>
+
+	<Target Name="PrepareForPublishSamples"
+	        Condition=" '$(SampleWebRoot)' != '' "
+		DependsOnTargets="BuildSamples">
+		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
+
+		<ItemGroup>
+			<_SampleWebConfigs Include="$(ProjectRoot)\samples\*\web.config" />
+			<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
+			<SampleSources Include="$(ProjectRoot)\samples\**\*" />
+			<SampleSources>
+				<PublishedLocation>$(SampleWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)</PublishedLocation>
+			</SampleSources>
+		</ItemGroup>
 
 		<!-- Trim the trailing slash on the web sample paths so we can just get the leaf directory name. -->
 		<Trim
@@ -36,16 +44,6 @@
 		<ItemGroup>
 			<PublishableWebSamplesVirtualPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(PublishSamplesWebSiteVirtualPath)/%(Filename)')" />
 			<PublishableWebSamplesPhysicalPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(SampleWebRoot)\$(BranchName)\%(Filename)')" />
-		</ItemGroup>
-	</Target>
-
-	<Target Name="PrepareForPublishSamples" Condition=" '$(SampleWebRoot)' != '' ">
-		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
-
-		<ItemGroup>
-			<SampleSources>
-				<PublishedLocation>$(SampleWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)</PublishedLocation>
-			</SampleSources>
 		</ItemGroup>
 
 		<FilterItems
@@ -69,8 +67,15 @@
 		<Copy SourceFiles="@(PublishableWebSampleSources)" DestinationFiles="@(PublishableWebSampleTargets)" SkipUnchangedFiles="true" />
 	</Target>
 
+	<Target Name="PrepareForPublishDocumentation" DependsOnTargets="Documentation">
+		<ItemGroup>
+			<DocSources Include="$(ProjectRoot)\doc\api\**\*" />
+			<DocTargets Include="@(DocSources->'$(DocWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)')" />
+		</ItemGroup>
+	</Target>
+
 	<Target Name="PublishDocumentation"
-					DependsOnTargets="Documentation"
+					DependsOnTargets="PrepareForPublishDocumentation"
 					Inputs="@(DocSources)"
 					Outputs="@(DocTargets)"
 					Condition=" '$(DocWebRoot)' != '' ">
@@ -79,7 +84,7 @@
 		<Copy SourceFiles="@(DocSources)" DestinationFiles="@(DocTargets)" SkipUnchangedFiles="true" />
 	</Target>
 
-	<Target Name="CreateSampleSitesOnIis" DependsOnTargets="PrepareForIIS">
+	<Target Name="CreateSampleSitesOnIis" DependsOnTargets="PrepareForIIS;PrepareForPublishSamples">
 		<Error Text="The PublishSamplesWebSiteName property must be set." Condition=" '$(PublishSamplesWebSiteName)' == '' "/>
 		<Error Text="The SampleWebRoot property must be set." Condition=" '$(SampleWebRoot)' == '' " />
 		<CreateWebApplication
