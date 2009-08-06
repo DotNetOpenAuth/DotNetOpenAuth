@@ -30,6 +30,50 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(request.HttpMethod, info.HttpMethod);
 		}
 
+		// All these tests are ineffective because ServerVariables[] cannot be set.
+		////[TestMethod]
+		////public void CtorRequestWithDifferentPublicHttpHost() {
+		////    HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
+		////    request.ServerVariables["HTTP_HOST"] = "publichost";
+		////    HttpRequestInfo info = new HttpRequestInfo(request);
+		////    Assert.AreEqual("publichost", info.UrlBeforeRewriting.Host);
+		////    Assert.AreEqual(80, info.UrlBeforeRewriting.Port);
+		////    Assert.AreEqual(request.Url.Query, info.Query);
+		////    Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
+		////}
+
+		////[TestMethod]
+		////public void CtorRequestWithDifferentPublicHttpsHost() {
+		////    HttpRequest request = new HttpRequest("file", "https://someserver?a=b", "a=b");
+		////    request.ServerVariables["HTTP_HOST"] = "publichost";
+		////    HttpRequestInfo info = new HttpRequestInfo(request);
+		////    Assert.AreEqual("publichost", info.UrlBeforeRewriting.Host);
+		////    Assert.AreEqual(443, info.UrlBeforeRewriting.Port);
+		////    Assert.AreEqual(request.Url.Query, info.Query);
+		////    Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
+		////}
+
+		////[TestMethod]
+		////public void CtorRequestWithDifferentPublicHostNonstandardPort() {
+		////    HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
+		////    request.ServerVariables["HTTP_HOST"] = "publichost:550";
+		////    HttpRequestInfo info = new HttpRequestInfo(request);
+		////    Assert.AreEqual("publichost", info.UrlBeforeRewriting.Host);
+		////    Assert.AreEqual(550, info.UrlBeforeRewriting.Port);
+		////    Assert.AreEqual(request.Url.Query, info.Query);
+		////    Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
+		////}
+
+		////[TestMethod]
+		////public void CtorRequestWithDifferentPublicIPv6Host() {
+		////    HttpRequest request = new HttpRequest("file", "http://[fe80::587e:c6e5:d3aa:657a]:8089/v3.1/", "");
+		////    request.ServerVariables["HTTP_HOST"] = "[fe80::587e:c6e5:d3aa:657b]:8089";
+		////    HttpRequestInfo info = new HttpRequestInfo(request);
+		////    Assert.AreEqual("[fe80::587e:c6e5:d3aa:657b]", info.UrlBeforeRewriting.Host);
+		////    Assert.AreEqual(8089, info.UrlBeforeRewriting.Port);
+		////    Assert.AreEqual(request.Url.Query, info.Query);
+		////}
+
 		/// <summary>
 		/// Checks that a property dependent on another null property
 		/// doesn't generate a NullReferenceException.

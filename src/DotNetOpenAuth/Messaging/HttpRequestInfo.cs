@@ -326,13 +326,9 @@ namespace DotNetOpenAuth.Messaging {
 			if (request.ServerVariables["HTTP_HOST"] != null) {
 				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
-				string[] hostAndPort = request.ServerVariables["HTTP_HOST"].Split(new[] { ':' }, 2);
-				publicRequestUri.Host = hostAndPort[0];
-				if (hostAndPort.Length > 1) {
-					publicRequestUri.Port = Convert.ToInt32(hostAndPort[1], CultureInfo.InvariantCulture);
-				} else {
-					publicRequestUri.Port = publicRequestUri.Scheme == Uri.UriSchemeHttps ? 443 : 80;
-				}
+				Uri hostAndPort = new Uri(request.Url.Scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
+				publicRequestUri.Host = hostAndPort.Host;
+				publicRequestUri.Port = hostAndPort.Port;
 				return publicRequestUri.Uri;
 			} else {
 				// Failover to the method that works for non-web farm enviroments.
