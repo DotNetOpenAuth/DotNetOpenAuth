@@ -7,7 +7,7 @@
 		<VersionCsFile>$(ProjectRoot)\obj\$(Configuration)\$(AssemblyName).Version.cs</VersionCsFile>
 	</PropertyGroup>
 
-	<Import Project="$(ProjectRoot)\lib\DotNetOpenId.BuildTasks.targets" />
+	<Import Project="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.targets" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
 
 	<Target Name="GetBuildVersion">
