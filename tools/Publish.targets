@@ -41,8 +41,6 @@
 			<Output TaskParameter="Outputs" ItemName="_PublishableWebSamplesNoTrailingSlash" />
 		</Trim>
 
-		<Message TExt="PublishableWebSamples: @(PublishableWebSamples)"/>
-
 		<ItemGroup>
 			<PublishableWebSamplesVirtualPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(PublishSamplesWebSiteVirtualPath)/%(Filename)')" />
 			<PublishableWebSamplesPhysicalPaths Include="@(_PublishableWebSamplesNoTrailingSlash->'$(SampleWebRoot)\$(BranchName)\%(Filename)')" />
@@ -89,7 +87,6 @@
 	<Target Name="CreateSampleSitesOnIis" DependsOnTargets="PrepareForIIS;PrepareForPublishSamples">
 		<Error Text="The PublishSamplesWebSiteName property must be set." Condition=" '$(PublishSamplesWebSiteName)' == '' "/>
 		<Error Text="The SampleWebRoot property must be set." Condition=" '$(SampleWebRoot)' == '' " />
-<Message Text="PublishableWebSamplesVirtualPaths: @(PublishableWebSamplesVirtualPaths)"/>
 		<CreateWebApplication
 			WebSiteName="$(PublishSamplesWebSiteName)"
 			PhysicalPaths="@(PublishableWebSamplesPhysicalPaths)"
