@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
 		/// </summary>
-		private const LoginPersistence UsePersistentCookieDefault = LoginPersistence.None;
+		private const LoginPersistence UsePersistentCookieDefault = LoginPersistence.Session;
 
 		/// <summary>
 		/// Default value of <see cref="LoginMode"/>.
@@ -251,20 +251,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			/// The user should only be logged in as long as the browser window remains open.
 			/// Nothing is persisted to help the user on a return visit.  Public kiosk mode.
 			/// </summary>
-			None,
+			Session,
 
 			/// <summary>
 			/// The user should only be logged in as long as the browser window remains open.
 			/// The OpenID Identifier is persisted to help expedite re-authentication when
 			/// the user visits the next time.
 			/// </summary>
-			PersistIdentifier,
+			SessionAndPersistentIdentifier,
 
 			/// <summary>
 			/// The user is issued a persistent authentication ticket so that no login is
 			/// necessary on their return visit.
 			/// </summary>
-			PersistAuthentication,
+			PersistentAuthentication,
 		}
 
 		/// <summary>
@@ -654,13 +654,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (!args.Cancel) {
-				if (this.UsePersistentCookie == LoginPersistence.PersistIdentifier) {
+				if (this.UsePersistentCookie == LoginPersistence.SessionAndPersistentIdentifier) {
 					Page.Response.SetCookie(CreateIdentifierPersistingCookie(response));
 				}
 
 				switch (this.LoginMode) {
 					case LoginSiteNotification.FormsAuthentication:
-						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie == LoginPersistence.PersistAuthentication);
+						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie == LoginPersistence.PersistentAuthentication);
 						break;
 					case LoginSiteNotification.None:
 					default:

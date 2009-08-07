@@ -551,8 +551,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[DefaultValue(RememberMeDefault)]
 		[Description("Whether a successful authentication should result in a persistent cookie being saved to the browser.")]
 		public bool RememberMe {
-			get { return this.UsePersistentCookie != LoginPersistence.None; }
-			set { this.UsePersistentCookie = value ? LoginPersistence.PersistAuthentication : LoginPersistence.None; }
+			get { return this.UsePersistentCookie != LoginPersistence.Session; }
+			set { this.UsePersistentCookie = value ? LoginPersistence.PersistentAuthentication : LoginPersistence.Session; }
 		}
 
 		/// <summary>
@@ -644,7 +644,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// use conditional here to prevent infinite recursion
 				// with CheckedChanged event.
-				bool rememberMe = value != LoginPersistence.None;
+				bool rememberMe = value != LoginPersistence.Session;
 				if (this.rememberMeCheckBox.Checked != rememberMe) {
 					this.rememberMeCheckBox.Checked = rememberMe;
 				}
