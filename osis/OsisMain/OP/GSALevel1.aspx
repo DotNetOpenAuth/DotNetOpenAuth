@@ -13,6 +13,8 @@
 			<br />
 			<asp:CheckBox ID="includePii" Text="Ask for PII" runat="server" 
 				oncheckedchanged="includePii_CheckedChanged" />
+			<br />
+			max_auth_age: <asp:TextBox ID="maxAuthAgeBox" runat="server" Columns="4" MaxLength="4" /> (seconds)
 		</asp:View>
 		<asp:View ID="View2" runat="server">
 			<osis:TestResultDisplay runat="server" ID="testResultDisplay" />

@@ -19,6 +19,10 @@ public partial class OP_GSALevel1 : System.Web.UI.Page {
 		if (!OpenIdBox.EnableRequestProfile) {
 			var pape = new PolicyRequest();
 			pape.PreferredPolicies.Add(AuthenticationPolicies.NoPersonallyIdentifiableInformation);
+			if (maxAuthAgeBox.Text.Trim().Length > 0) {
+				pape.MaximumAuthenticationAge = TimeSpan.FromSeconds(double.Parse(maxAuthAgeBox.Text.Trim()));
+			}
+
 			e.Request.AddExtension(pape);
 		}
 
