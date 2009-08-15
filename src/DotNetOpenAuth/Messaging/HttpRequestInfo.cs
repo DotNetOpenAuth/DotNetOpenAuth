@@ -329,6 +329,9 @@ namespace DotNetOpenAuth.Messaging {
 				Uri hostAndPort = new Uri(request.Url.Scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
 				publicRequestUri.Host = hostAndPort.Host;
 				publicRequestUri.Port = hostAndPort.Port;
+				if (request.ServerVariables["HTTP_X_FORWARDED_PROTO"] != null) {
+					publicRequestUri.Scheme = request.ServerVariables["HTTP_X_FORWARDED_PROTO"];
+				}
 				return publicRequestUri.Uri;
 			} else {
 				// Failover to the method that works for non-web farm enviroments.
