@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
@@ -215,14 +216,18 @@ namespace DotNetOpenAuth.OpenId {
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
-					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
+					try {
+						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+						var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
 
-					// Filter out insecure endpoints if high security is required.
-					if (IsDiscoverySecureEndToEnd) {
-						xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
+						// Filter out insecure endpoints if high security is required.
+						if (IsDiscoverySecureEndToEnd) {
+							xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
+						}
+						endpoints.AddRange(xrdsEndpoints);
+					} catch (XmlException ex) {
+						Logger.Yadis.Error("Error while parsing the XRDS document.  Falling back to HTML discovery.", ex);
 					}
-					endpoints.AddRange(xrdsEndpoints);
 				}
 
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
