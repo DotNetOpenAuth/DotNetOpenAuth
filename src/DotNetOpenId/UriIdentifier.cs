@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Web.UI.HtmlControls;
+using System.Xml;
 using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Yadis;
 
@@ -188,13 +189,17 @@ namespace DotNetOpenId {
 			DiscoveryResult yadisResult = Yadis.Yadis.Discover(this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
-					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri);
-					// Filter out insecure endpoints if high security is required.
-					if (IsDiscoverySecureEndToEnd) {
-						xrdsEndpoints = Util.Where(xrdsEndpoints, se => se.IsSecure);
+					try {
+						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+						var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri);
+						// Filter out insecure endpoints if high security is required.
+						if (IsDiscoverySecureEndToEnd) {
+							xrdsEndpoints = Util.Where(xrdsEndpoints, se => se.IsSecure);
+						}
+						endpoints.AddRange(xrdsEndpoints);
+					} catch (XmlException ex) {
+						Logger.Error("Error while parsing the XRDS document.  Falling back to HTML discovery.", ex);
 					}
-					endpoints.AddRange(xrdsEndpoints);
 				}
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
