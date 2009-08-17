@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
-	/// Implements the Identity, Credential, & Access Management (ICAM) OpenID 2.0 Profile
+	/// Implements the Identity, Credential, &amp; Access Management (ICAM) OpenID 2.0 Profile
 	/// for the General Services Administration (GSA).
 	/// </summary>
 	/// <remarks>
