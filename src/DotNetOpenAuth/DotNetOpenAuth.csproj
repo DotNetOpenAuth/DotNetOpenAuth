@@ -243,11 +243,14 @@
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderAccessToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthIdentity.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthPrincipal.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
@@ -531,6 +534,7 @@
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Configuration\DotNetOpenAuth.xsd" />
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />

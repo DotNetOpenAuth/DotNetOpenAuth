@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.Security.Principal;
 	using System.ServiceModel.Channels;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
@@ -467,6 +468,19 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			return accessMessage;
+		}
+
+		/// <summary>
+		/// Creates a security principal that may be used.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>The <see cref="IPrincipal"/> instance that can be used for access control of resources.</returns>
+		public OAuthPrincipal CreatePrincipal(AccessProtectedResourceRequest request) {
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			IServiceProviderAccessToken accessToken = this.TokenManager.GetAccessToken(request.AccessToken);
+			return new OAuthPrincipal(accessToken);
 		}
 
 		#region IDisposable Members

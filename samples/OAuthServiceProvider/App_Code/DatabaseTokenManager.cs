@@ -26,7 +26,15 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 
 	public IServiceProviderRequestToken GetRequestToken(string token) {
 		try {
-			return Global.DataContext.OAuthTokens.First(t => t.Token == token);
+			return Global.DataContext.OAuthTokens.First(t => t.Token == token && t.State != TokenAuthorizationState.AccessToken);
+		} catch (InvalidOperationException ex) {
+			throw new KeyNotFoundException("Unrecognized token", ex);
+		}
+	}
+
+	public IServiceProviderAccessToken GetAccessToken(string token) {
+		try {
+			return Global.DataContext.OAuthTokens.First(t => t.Token == token && t.State == TokenAuthorizationState.AccessToken);
 		} catch (InvalidOperationException ex) {
 			throw new KeyNotFoundException("Unrecognized token", ex);
 		}

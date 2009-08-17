@@ -67,7 +67,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		private const string IndirectMessageFormPostFormat = @"
 <html>
-<body onload=""var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; document.getElementById('openid_message').submit()"">
+<head>
+</head>
+<body onload=""document.body.style.display = 'none'; var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; document.getElementById('openid_message').submit()"">
 <form id=""openid_message"" action=""{0}"" method=""post"" accept-charset=""UTF-8"" enctype=""application/x-www-form-urlencoded"" onSubmit=""var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; return true;"">
 {1}
 	<input id=""submit_button"" type=""submit"" value=""Continue"" />
@@ -675,6 +677,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
+			headers.Add(HttpResponseHeader.ContentType, "text/html");
 			StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture);
 			StringBuilder hiddenFields = new StringBuilder();
 			foreach (var field in fields) {

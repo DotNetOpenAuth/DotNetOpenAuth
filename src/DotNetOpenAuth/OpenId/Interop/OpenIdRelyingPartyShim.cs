@@ -87,6 +87,19 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	[ClassInterface(ClassInterfaceType.None)]
 	public sealed class OpenIdRelyingPartyShim : IOpenIdRelyingParty {
 		/// <summary>
+		/// The OpenIdRelyingParty instance to use for requests.
+		/// </summary>
+		private static OpenIdRelyingParty RelyingParty;
+
+		/// <summary>
+		/// Initializes the <see cref="OpenIdRelyingPartyShim"/> class.
+		/// </summary>
+		static OpenIdRelyingPartyShim() {
+			RelyingParty = new OpenIdRelyingParty(null);
+			RelyingParty.Behaviors.Add(new Behaviors.AXFetchAsSregTransform());
+		}
+
+		/// <summary>
 		/// Creates an authentication request to verify that a user controls
 		/// some given Identifier.
 		/// </summary>
@@ -109,9 +122,8 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "COM requires primitive types")]
 		public string CreateRequest(string userSuppliedIdentifier, string realm, string returnToUrl) {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);
-			var request = rp.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl));
-			return request.RedirectingResponse.GetDirectUriRequest(rp.Channel).AbsoluteUri;
+			var request = RelyingParty.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl));
+			return request.RedirectingResponse.GetDirectUriRequest(RelyingParty.Channel).AbsoluteUri;
 		}
 
 		/// <summary>
@@ -133,8 +145,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "COM requires primitive types")]
 		public string CreateRequestWithSimpleRegistration(string userSuppliedIdentifier, string realm, string returnToUrl, string optionalSreg, string requiredSreg) {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);
-			var request = rp.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl));
+			var request = RelyingParty.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl));
 
 			ClaimsRequest sreg = new ClaimsRequest();
 			if (!string.IsNullOrEmpty(optionalSreg)) {
@@ -144,7 +155,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 				sreg.SetProfileRequestFromList(requiredSreg.Split(','), DemandLevel.Require);
 			}
 			request.AddExtension(sreg);
-			return request.RedirectingResponse.GetDirectUriRequest(rp.Channel).AbsoluteUri;
+			return request.RedirectingResponse.GetDirectUriRequest(RelyingParty.Channel).AbsoluteUri;
 		}
 
 		/// <summary>
@@ -155,14 +166,13 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <param name="form">The form data that may have been included in the case of a POST request.</param>
 		/// <returns>The Provider's response to a previous authentication request, or null if no response is present.</returns>
 		public AuthenticationResponseShim ProcessAuthentication(string url, string form) {
-			OpenIdRelyingParty rp = new OpenIdRelyingParty(null);
 			HttpRequestInfo requestInfo = new HttpRequestInfo { UrlBeforeRewriting = new Uri(url) };
 			if (!string.IsNullOrEmpty(form)) {
 				requestInfo.HttpMethod = "POST";
 				requestInfo.InputStream = new MemoryStream(Encoding.Unicode.GetBytes(form));
 			}
 
-			var response = rp.GetResponse(requestInfo);
+			var response = RelyingParty.GetResponse(requestInfo);
 			if (response != null) {
 				return new AuthenticationResponseShim(response);
 			}

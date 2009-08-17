@@ -127,10 +127,37 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				this.VerifyThrowTokenTimeToLive(userAuthorizationRequest);
 			}
 
+			var accessResourceRequest = message as AccessProtectedResourceRequest;
+			if (accessResourceRequest != null) {
+				this.VerifyThrowTokenNotExpired(accessResourceRequest);
+			}
+
 			return null;
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Ensures that access tokens have not yet expired.
+		/// </summary>
+		/// <param name="message">The incoming message carrying the access token.</param>
+		private void VerifyThrowTokenNotExpired(AccessProtectedResourceRequest message) {
+			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+
+			try {
+				IServiceProviderAccessToken token = this.tokenManager.GetAccessToken(message.AccessToken);
+				if (token.ExpirationDate.HasValue && DateTime.Now >= token.ExpirationDate.Value.ToLocalTime()) {
+					Logger.OAuth.ErrorFormat(
+						"OAuth access token {0} rejected because it expired at {1}, and it is now {2}.",
+						token.Token,
+						token.ExpirationDate.Value,
+						DateTime.Now);
+					ErrorUtilities.ThrowProtocol(OAuthStrings.TokenNotFound);
+				}
+			} catch (KeyNotFoundException ex) {
+				throw ErrorUtilities.Wrap(ex, OAuthStrings.TokenNotFound);
+			}
+		}
 
 		/// <summary>
 		/// Ensures that short-lived request tokens included in incoming messages have not expired.
@@ -148,7 +175,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				TimeSpan ttl = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.MaximumRequestTokenTimeToLive;
 				if (DateTime.Now >= token.CreatedOn.ToLocalTime() + ttl) {
 					Logger.OAuth.ErrorFormat(
-						"OAuth token {0} rejected because it was originally issued at {1}, expired at {2}, and it is now {3}.",
+						"OAuth request token {0} rejected because it was originally issued at {1}, expired at {2}, and it is now {3}.",
 						token.Token,
 						token.CreatedOn,
 						token.CreatedOn + ttl,

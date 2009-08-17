@@ -101,6 +101,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			IRequest request = this.hostedProvider.Provider.GetRequest(requestInfo);
 			if (request == null) {
 				App.Logger.Error("A request came in that did not carry an OpenID message.");
+				response.ContentType = "text/html";
 				response.StatusCode = (int)HttpStatusCode.BadRequest;
 				using (StreamWriter sw = new StreamWriter(response.OutputStream)) {
 					sw.WriteLine("<html><body>This is an OpenID Provider endpoint.</body></html>");
