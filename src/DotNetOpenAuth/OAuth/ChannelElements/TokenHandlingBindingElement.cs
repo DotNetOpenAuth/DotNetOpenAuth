@@ -72,7 +72,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			var userAuthResponse = message as UserAuthorizationResponse;
 			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
-				this.tokenManager.GetRequestToken(userAuthResponse.RequestToken).VerificationCode = userAuthResponse.VerificationCode;
+				var requestToken = this.tokenManager.GetRequestToken(userAuthResponse.RequestToken);
+				requestToken.VerificationCode = userAuthResponse.VerificationCode;
+				this.tokenManager.UpdateToken(requestToken);
 				return MessageProtections.None;
 			}
 
@@ -80,10 +82,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var grantRequestTokenResponse = message as UnauthorizedTokenResponse;
 			if (grantRequestTokenResponse != null) {
 				this.tokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
-				this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken).ConsumerVersion = grantRequestTokenResponse.Version;
+
+				// The host may have already set these properties, but just to make sure...
+				var requestToken = this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken);
+				requestToken.ConsumerVersion = grantRequestTokenResponse.Version;
 				if (grantRequestTokenResponse.RequestMessage.Callback != null) {
-					this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken).Callback = grantRequestTokenResponse.RequestMessage.Callback;
+					requestToken.Callback = grantRequestTokenResponse.RequestMessage.Callback;
 				}
+				this.tokenManager.UpdateToken(requestToken);
 
 				return MessageProtections.None;
 			}

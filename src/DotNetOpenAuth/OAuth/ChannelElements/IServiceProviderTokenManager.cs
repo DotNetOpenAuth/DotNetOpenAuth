@@ -50,5 +50,19 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// log and throw the appropriate error.
 		/// </remarks>
 		IServiceProviderAccessToken GetAccessToken(string token);
+
+		/// <summary>
+		/// Persists any changes made to the token.
+		/// </summary>
+		/// <param name="token">The token whose properties have been changed.</param>
+		/// <remarks>
+		/// This library will invoke this method after making a set
+		/// of changes to the token as part of a web request to give the host
+		/// the opportunity to persist those changes to a database.
+		/// Depending on the object persistence framework the host site uses,
+		/// this method MAY not need to do anything (if changes made to the token
+		/// will automatically be saved without any extra handling).
+		/// </remarks>
+		void UpdateToken(IServiceProviderRequestToken token);
 	}
 }

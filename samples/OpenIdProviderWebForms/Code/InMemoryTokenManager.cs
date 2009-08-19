@@ -48,6 +48,10 @@ namespace OpenIdProviderWebForms.Code {
 			throw new NotImplementedException();
 		}
 
+		public void UpdateToken(IServiceProviderRequestToken token) {
+			// Nothing to do here, since there's not database in this sample.
+		}
+
 		#endregion
 
 		#region ITokenManager Members
