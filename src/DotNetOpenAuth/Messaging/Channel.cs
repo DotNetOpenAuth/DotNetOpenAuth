@@ -843,6 +843,42 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a PUT request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP PUT request with the message parts serialized to the query string.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsPut(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires(requestMessage != null);
+			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
+			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "PUT";
+			return request;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a DELETE request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP DELETE request with the message parts serialized to the query string.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsDelete(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires(requestMessage != null);
+			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
+			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "DELETE";
+			return request;
+		}
+
+		/// <summary>
 		/// Sends the given parameters in the entity stream of an HTTP request.
 		/// </summary>
 		/// <param name="httpRequest">The HTTP request.</param>

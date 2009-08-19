@@ -164,11 +164,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="httpMethod">The HTTP method that the incoming request came in on, whether or not <paramref name="message"/> is null.</param>
 		internal HttpRequestInfo(IDirectedProtocolMessage message, HttpDeliveryMethods httpMethod) {
 			this.message = message;
-			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
-				this.HttpMethod = "GET";
-			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
-				this.HttpMethod = "POST";
-			}
+			this.HttpMethod = MessagingUtilities.GetHttpVerb(httpMethod);
 		}
 
 		/// <summary>

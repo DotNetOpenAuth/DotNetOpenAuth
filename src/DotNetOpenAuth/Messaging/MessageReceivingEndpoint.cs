@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Messaging {
 		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
 			ErrorUtilities.VerifyArgumentNotNull(location, "location");
 			ErrorUtilities.VerifyArgumentInRange(method != HttpDeliveryMethods.None, "method");
-			ErrorUtilities.VerifyArgumentInRange((method & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.GetRequest)) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
+			ErrorUtilities.VerifyArgumentInRange((method & HttpDeliveryMethods.HttpVerbMask) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
 
 			this.Location = location;
 			this.AllowedMethods = method;

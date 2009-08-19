@@ -588,7 +588,47 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to get recipient information from.</param>
 		/// <returns>The recipient.</returns>
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
-			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, request.HttpMethod == "GET" ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest);
+			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, GetHttpDeliveryMethod(request.HttpMethod));
+		}
+
+		/// <summary>
+		/// Gets the <see cref="HttpDeliveryMethod"/> enum value for a given HTTP verb.
+		/// </summary>
+		/// <param name="httpVerb">The HTTP verb.</param>
+		/// <returns>A <see cref="HttpDeliveryMethod"/> enum value that is within the <see cref="HttpDeliveryMethod.HttpVerbMask"/>.</returns>
+		internal static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
+			if (httpVerb == "GET") {
+				return HttpDeliveryMethods.GetRequest;
+			} else if (httpVerb == "POST") {
+				return HttpDeliveryMethods.PostRequest;
+			} else if (httpVerb == "PUT") {
+				return HttpDeliveryMethods.PutRequest;
+			} else if (httpVerb == "DELETE") {
+				return HttpDeliveryMethods.DeleteRequest;
+			} else {
+				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
+			}
+		}
+
+		/// <summary>
+		/// Gets the HTTP verb to use for a given <see cref="HttpDeliveryMethods"/> enum value.
+		/// </summary>
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <returns>An HTTP verb, such as GET, POST, PUT, or DELETE.</returns>
+		internal static string GetHttpVerb(HttpDeliveryMethods httpMethod) {
+			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
+				return "GET";
+			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
+				return "POST";
+			} else if ((httpMethod & HttpDeliveryMethods.PutRequest) != 0) {
+				return "PUT";
+			} else if ((httpMethod & HttpDeliveryMethods.DeleteRequest) != 0) {
+				return "DELETE";
+			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
+				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
+			} else {
+				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
+			}
 		}
 
 		/// <summary>

@@ -203,6 +203,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				httpRequest = this.InitializeRequestAsPost(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.PutRequest) != 0) {
+				httpRequest = this.InitializeRequestAsPut(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.DeleteRequest) != 0) {
+				httpRequest = InitializeRequestAsDelete(request);
 			} else {
 				throw new NotSupportedException();
 			}
@@ -292,7 +296,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (signedMessage != null) {
 				return signedMessage.HttpMethod;
 			} else {
-				return (message.HttpMethods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
+				return MessagingUtilities.GetHttpVerb(message.HttpMethods);
 			}
 		}
 
