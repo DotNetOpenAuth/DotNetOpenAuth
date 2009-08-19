@@ -592,10 +592,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the <see cref="HttpDeliveryMethod"/> enum value for a given HTTP verb.
+		/// Gets the <see cref="HttpDeliveryMethods"/> enum value for a given HTTP verb.
 		/// </summary>
 		/// <param name="httpVerb">The HTTP verb.</param>
-		/// <returns>A <see cref="HttpDeliveryMethod"/> enum value that is within the <see cref="HttpDeliveryMethod.HttpVerbMask"/>.</returns>
+		/// <returns>A <see cref="HttpDeliveryMethod"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
 		internal static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
 			if (httpVerb == "GET") {
 				return HttpDeliveryMethods.GetRequest;
