@@ -26,7 +26,7 @@ public partial class OAuthConsumer : IConsumerDescription {
 	}
 
 	Uri IConsumerDescription.Callback {
-		get { return this.Callback != null ? new Uri(this.Callback) : null; }
+		get { return string.IsNullOrEmpty(this.Callback) ? null : new Uri(this.Callback); }
 	}
 
 	DotNetOpenAuth.OAuth.VerificationCodeFormat IConsumerDescription.VerificationCodeFormat {
