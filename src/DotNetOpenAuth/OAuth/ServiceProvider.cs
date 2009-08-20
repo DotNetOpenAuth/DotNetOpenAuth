@@ -55,15 +55,36 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
-		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider) {
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
+			: this(serviceDescription, tokenManager, new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge), messageTypeProvider) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+		/// </summary>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
+		/// <param name="nonceStore">The nonce store.</param>
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore)
+			: this(serviceDescription, tokenManager, nonceStore, new OAuthServiceProviderMessageFactory(tokenManager)) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+		/// </summary>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
+		/// <param name="nonceStore">The nonce store.</param>
+		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore, OAuthServiceProviderMessageFactory messageTypeProvider) {
 			ErrorUtilities.VerifyArgumentNotNull(serviceDescription, "serviceDescription");
 			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 			ErrorUtilities.VerifyArgumentNotNull(messageTypeProvider, "messageTypeProvider");
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
-			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.ServiceDescription = serviceDescription;
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider);
+			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
 		}
