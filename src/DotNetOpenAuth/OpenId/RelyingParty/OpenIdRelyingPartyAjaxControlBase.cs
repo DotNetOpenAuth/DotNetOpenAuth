@@ -79,7 +79,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private IAuthenticationResponse authenticationResponse;
 
 		/// <summary>
-		/// Stores the result of a AJAX callback discovery.
+		/// Stores the result of an AJAX discovery request while it is waiting
+		/// to be picked up by ASP.NET on the way down to the user agent.
 		/// </summary>
 		private string discoveryResult;
 
@@ -108,7 +109,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <b>No security critical decisions should be made within event handlers
 		/// for this event</b> as the authenticity of the assertion has not been
 		/// verified yet.  All security related code should go in the event handler
-		/// for the <see cref="LoggedIn"/> event.
+		/// for the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event.
 		/// </remarks>
 		[Description("Fired when a Provider sends back a positive assertion to this control, but the authentication has not yet been verified.")]
 		public event EventHandler<OpenIdEventArgs> UnconfirmedPositiveAssertion;

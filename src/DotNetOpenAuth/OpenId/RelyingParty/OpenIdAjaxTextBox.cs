@@ -235,12 +235,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private Dictionary<Type, string> clientScriptExtensions = new Dictionary<Type, string>();
 
-		/// <summary>
-		/// Stores the result of an AJAX discovery request while it is waiting
-		/// to be picked up by ASP.NET on the way down to the user agent.
-		/// </summary>
-		private string discoveryResult;
-
 		#region Events
 
 		/// <summary>
