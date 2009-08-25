@@ -300,7 +300,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// but our AJAX controls hide an old OpenID message in a postback payload,
 			// so we deserialize it and process it when appropriate.
 			if (this.Page.IsPostBack) {
-				if (!this.AuthenticationProcessedAlready && this.AuthenticationResponse != null) {
+				if (this.AuthenticationResponse != null && !this.AuthenticationProcessedAlready) {
 					// Only process messages targeted at this control.
 					// Note that Stateless mode causes no receiver to be indicated.
 					string receiver = this.AuthenticationResponse.GetCallbackArgument(ReturnToReceivingControlId);
