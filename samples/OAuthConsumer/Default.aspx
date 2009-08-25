@@ -9,5 +9,6 @@
 		<li><a href="GoogleAddressBook.aspx">Download your Gmail address book</a></li>
 		<li><a href="Twitter.aspx">Get your Twitter updates</a></li>
 		<li><a href="SampleWcf.aspx">Interop with Service Provider sample using WCF w/ OAuth</a></li>
+		<li><a href="Custom.aspx">Custom MVC Provider with OAuth</a></li>
 	</ul>
 </asp:Content>
