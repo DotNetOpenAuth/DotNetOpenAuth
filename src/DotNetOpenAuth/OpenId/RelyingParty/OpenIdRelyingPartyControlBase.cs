@@ -457,8 +457,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		public void LogOn(IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			Contract.Requires<ArgumentNullException>(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			if (this.IsPopupAppropriate(request)) {
 				this.ScriptPopupWindow(request);
