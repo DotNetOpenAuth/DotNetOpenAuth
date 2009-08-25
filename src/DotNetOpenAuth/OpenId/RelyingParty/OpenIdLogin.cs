@@ -8,10 +8,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.Linq;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// An ASP.NET control providing a complete OpenID login experience.
@@ -105,7 +108,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The default value for the <see cref="RememberMe"/> property.
 		/// </summary>
-		private const bool RememberMeDefault = UsePersistentCookieDefault;
+		private const bool RememberMeDefault = false;
 
 		/// <summary>
 		/// The default value for the <see cref="UriValidatorEnabled"/> property.
@@ -226,14 +229,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Events
 
 		/// <summary>
-		/// Fired after the user clicks the log in button, but before the authentication
-		/// process begins.  Offers a chance for the web application to disallow based on 
-		/// OpenID URL before redirecting the user to the OpenID Provider.
-		/// </summary>
-		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider.")]
-		public event EventHandler<OpenIdEventArgs> LoggingIn;
-
-		/// <summary>
 		/// Fired when the Remember Me checkbox is changed by the user.
 		/// </summary>
 		[Description("Fires when the Remember Me checkbox is changed by the user.")]
@@ -242,6 +237,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		#region Properties
+
+		/// <summary>
+		/// Gets a <see cref="T:System.Web.UI.ControlCollection"/> object that represents the child controls for a specified server control in the UI hierarchy.
+		/// </summary>
+		/// <returns>
+		/// The collection of child controls for the specified server control.
+		/// </returns>
+		public override ControlCollection Controls {
+			get {
+				this.EnsureChildControls();
+				return base.Controls;
+			}
+		}
+
 		/// <summary>
 		/// Gets or sets the caption that appears before the text box.
 		/// </summary>
@@ -251,8 +260,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The caption that appears before the text box.")]
 		public string LabelText {
-			get { return this.label.InnerText; }
-			set { this.label.InnerText = value; }
+			get {
+				EnsureChildControls();
+				return this.label.InnerText;
+			}
+
+			set {
+				EnsureChildControls();
+				this.label.InnerText = value;
+			}
 		}
 
 		/// <summary>
@@ -264,8 +280,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The text that introduces the example OpenID url.")]
 		public string ExamplePrefix {
-			get { return this.examplePrefixLabel.Text; }
-			set { this.examplePrefixLabel.Text = value; }
+			get {
+				EnsureChildControls();
+				return this.examplePrefixLabel.Text;
+			}
+
+			set {
+				EnsureChildControls();
+				this.examplePrefixLabel.Text = value;
+			}
 		}
 
 		/// <summary>
@@ -278,8 +301,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The example OpenID Identifier to display to the user.")]
 		public string ExampleUrl {
-			get { return this.exampleUrlLabel.Text; }
-			set { this.exampleUrlLabel.Text = value; }
+			get {
+				EnsureChildControls();
+				return this.exampleUrlLabel.Text;
+			}
+
+			set {
+				EnsureChildControls();
+				this.exampleUrlLabel.Text = value;
+			}
 		}
 
 		/// <summary>
@@ -292,8 +322,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The text to display if the user attempts to login without providing an Identifier.")]
 		public string RequiredText {
-			get { return this.requiredValidator.Text.Substring(0, this.requiredValidator.Text.Length - RequiredTextSuffix.Length); }
-			set { this.requiredValidator.ErrorMessage = this.requiredValidator.Text = value + RequiredTextSuffix; }
+			get {
+				EnsureChildControls();
+				return this.requiredValidator.Text.Substring(0, this.requiredValidator.Text.Length - RequiredTextSuffix.Length);
+			}
+
+			set {
+				EnsureChildControls();
+				this.requiredValidator.ErrorMessage = this.requiredValidator.Text = value + RequiredTextSuffix;
+			}
 		}
 
 		/// <summary>
@@ -306,8 +343,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The text to display if the user provides an invalid form for an Identifier.")]
 		public string UriFormatText {
-			get { return this.identifierFormatValidator.Text.Substring(0, this.identifierFormatValidator.Text.Length - RequiredTextSuffix.Length); }
-			set { this.identifierFormatValidator.ErrorMessage = this.identifierFormatValidator.Text = value + RequiredTextSuffix; }
+			get {
+				EnsureChildControls();
+				return this.identifierFormatValidator.Text.Substring(0, this.identifierFormatValidator.Text.Length - RequiredTextSuffix.Length);
+			}
+
+			set {
+				EnsureChildControls();
+				this.identifierFormatValidator.ErrorMessage = this.identifierFormatValidator.Text = value + RequiredTextSuffix;
+			}
 		}
 
 		/// <summary>
@@ -319,8 +363,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[DefaultValue(UriValidatorEnabledDefault)]
 		[Description("Whether to perform Identifier format validation prior to an authentication attempt.")]
 		public bool UriValidatorEnabled {
-			get { return this.identifierFormatValidator.Enabled; }
-			set { this.identifierFormatValidator.Enabled = value; }
+			get {
+				EnsureChildControls();
+				return this.identifierFormatValidator.Enabled;
+			}
+
+			set {
+				EnsureChildControls();
+				this.identifierFormatValidator.Enabled = value;
+			}
 		}
 
 		/// <summary>
@@ -332,8 +383,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The text of the link users can click on to obtain an OpenID.")]
 		public string RegisterText {
-			get { return this.registerLink.Text; }
-			set { this.registerLink.Text = value; }
+			get {
+				EnsureChildControls();
+				return this.registerLink.Text;
+			}
+
+			set {
+				EnsureChildControls();
+				this.registerLink.Text = value;
+			}
 		}
 
 		/// <summary>
@@ -346,8 +404,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The URL to link users to who click the link to obtain a new OpenID.")]
 		public string RegisterUrl {
-			get { return this.registerLink.NavigateUrl; }
-			set { this.registerLink.NavigateUrl = value; }
+			get {
+				EnsureChildControls();
+				return this.registerLink.NavigateUrl;
+			}
+
+			set {
+				EnsureChildControls();
+				this.registerLink.NavigateUrl = value;
+			}
 		}
 
 		/// <summary>
@@ -360,8 +425,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The text of the tooltip to display when the user hovers over the link to obtain a new OpenID.")]
 		public string RegisterToolTip {
-			get { return this.registerLink.ToolTip; }
-			set { this.registerLink.ToolTip = value; }
+			get {
+				EnsureChildControls();
+				return this.registerLink.ToolTip;
+			}
+
+			set {
+				EnsureChildControls();
+				this.registerLink.ToolTip = value;
+			}
 		}
 
 		/// <summary>
@@ -373,8 +445,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[DefaultValue(RegisterVisibleDefault)]
 		[Description("Whether to display a link to allow users to easily obtain a new OpenID.")]
 		public bool RegisterVisible {
-			get { return this.registerLink.Visible; }
-			set { this.registerLink.Visible = value; }
+			get {
+				EnsureChildControls();
+				return this.registerLink.Visible;
+			}
+
+			set {
+				EnsureChildControls();
+				this.registerLink.Visible = value;
+			}
 		}
 
 		/// <summary>
@@ -386,8 +465,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The text that appears on the button that initiates login.")]
 		public string ButtonText {
-			get { return this.loginButton.Text; }
-			set { this.loginButton.Text = value; }
+			get {
+				EnsureChildControls();
+				return this.loginButton.Text;
+			}
+
+			set {
+				EnsureChildControls();
+				this.loginButton.Text = value;
+			}
 		}
 
 		/// <summary>
@@ -399,8 +485,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The text of the \"Remember Me\" checkbox.")]
 		public string RememberMeText {
-			get { return this.rememberMeCheckBox.Text; }
-			set { this.rememberMeCheckBox.Text = value; }
+			get {
+				EnsureChildControls();
+				return this.rememberMeCheckBox.Text;
+			}
+
+			set {
+				EnsureChildControls();
+				this.rememberMeCheckBox.Text = value;
+			}
 		}
 
 		/// <summary>
@@ -438,8 +531,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[DefaultValue(RememberMeVisibleDefault)]
 		[Description("Whether the \"Remember Me\" checkbox should be displayed.")]
 		public bool RememberMeVisible {
-			get { return this.rememberMeCheckBox.Visible; }
-			set { this.rememberMeCheckBox.Visible = value; }
+			get {
+				EnsureChildControls();
+				return this.rememberMeCheckBox.Visible;
+			}
+
+			set {
+				EnsureChildControls();
+				this.rememberMeCheckBox.Visible = value;
+			}
 		}
 
 		/// <summary>
@@ -448,11 +548,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		[Bindable(true)]
 		[Category("Appearance")]
-		[DefaultValue(UsePersistentCookieDefault)]
+		[DefaultValue(RememberMeDefault)]
 		[Description("Whether a successful authentication should result in a persistent cookie being saved to the browser.")]
 		public bool RememberMe {
-			get { return this.UsePersistentCookie; }
-			set { this.UsePersistentCookie = value; }
+			get { return this.UsePersistentCookie != LoginPersistence.Session; }
+			set { this.UsePersistentCookie = value ? LoginPersistence.PersistentAuthentication : LoginPersistence.Session; }
 		}
 
 		/// <summary>
@@ -468,7 +568,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			set {
 				unchecked {
-					this.WrappedTextBox.TabIndex = (short)(value + TextBoxTabIndexOffset);
+					base.TabIndex = (short)(value + TextBoxTabIndexOffset);
 					this.loginButton.TabIndex = (short)(value + LoginButtonTabIndexOffset);
 					this.rememberMeCheckBox.TabIndex = (short)(value + RememberMeTabIndexOffset);
 					this.registerLink.TabIndex = (short)(value + RegisterTabIndexOffset);
@@ -485,8 +585,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Localizable(true)]
 		[Description("The tooltip to display when the user hovers over the login button.")]
 		public string ButtonToolTip {
-			get { return this.loginButton.ToolTip; }
-			set { this.loginButton.ToolTip = value; }
+			get {
+				EnsureChildControls();
+				return this.loginButton.ToolTip;
+			}
+
+			set {
+				EnsureChildControls();
+				this.loginButton.ToolTip = value;
+			}
 		}
 
 		/// <summary>
@@ -497,10 +604,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Description("The validation group that the login button and text box validator belong to.")]
 		public string ValidationGroup {
 			get {
+				EnsureChildControls();
 				return this.requiredValidator.ValidationGroup;
 			}
 
 			set {
+				EnsureChildControls();
 				this.requiredValidator.ValidationGroup = value;
 				this.loginButton.ValidationGroup = value;
 			}
@@ -525,7 +634,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// cookie should persist across user sessions.
 		/// </summary>
 		[Browsable(false), Bindable(false)]
-		public override bool UsePersistentCookie {
+		public override LoginPersistence UsePersistentCookie {
 			get {
 				return base.UsePersistentCookie;
 			}
@@ -535,8 +644,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// use conditional here to prevent infinite recursion
 				// with CheckedChanged event.
-				if (this.rememberMeCheckBox.Checked != value) {
-					this.rememberMeCheckBox.Checked = value;
+				bool rememberMe = value != LoginPersistence.Session;
+				if (this.rememberMeCheckBox.Checked != rememberMe) {
+					this.rememberMeCheckBox.Checked = rememberMe;
 				}
 			}
 		}
@@ -544,27 +654,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Outputs server control content to a provided <see cref="T:System.Web.UI.HtmlTextWriter"/> object and stores tracing information about the control if tracing is enabled.
+		/// </summary>
+		/// <param name="writer">The <see cref="T:System.Web.UI.HTmlTextWriter"/> object that receives the control content.</param>
+		public override void RenderControl(HtmlTextWriter writer) {
+			this.RenderChildren(writer);
+		}
+
+		/// <summary>
 		/// Creates the child controls.
 		/// </summary>
 		protected override void CreateChildControls() {
-			// Don't call base.CreateChildControls().  This would add the WrappedTextBox
-			// to the Controls collection, which would implicitly remove it from the table
-			// we have already added it to.
+			this.InitializeControls();
 
 			// Just add the panel we've assembled earlier.
-			this.Controls.Add(this.panel);
-
-			if (ShouldBeFocused) {
-				WrappedTextBox.Focus();
-			}
+			base.Controls.Add(this.panel);
 		}
 
 		/// <summary>
 		/// Initializes the child controls.
 		/// </summary>
-		protected override void InitializeControls() {
-			base.InitializeControls();
-
+		protected void InitializeControls() {
 			this.panel = new Panel();
 
 			Table table = new Table();
@@ -583,7 +693,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// top row, middle cell
 			cell = new TableCell();
-			cell.Controls.Add(this.WrappedTextBox);
+			cell.Controls.Add(new InPlaceControl(this));
 			row1.Cells.Add(cell);
 
 			// top row, right cell
@@ -611,7 +721,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.requiredValidator.ErrorMessage = RequiredTextDefault + RequiredTextSuffix;
 			this.requiredValidator.Text = RequiredTextDefault + RequiredTextSuffix;
 			this.requiredValidator.Display = ValidatorDisplay.Dynamic;
-			this.requiredValidator.ControlToValidate = WrappedTextBox.ID;
+			this.requiredValidator.ControlToValidate = this.ID;
 			this.requiredValidator.ValidationGroup = ValidationGroupDefault;
 			cell.Controls.Add(this.requiredValidator);
 			this.identifierFormatValidator = new CustomValidator();
@@ -620,7 +730,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.identifierFormatValidator.ServerValidate += this.IdentifierFormatValidator_ServerValidate;
 			this.identifierFormatValidator.Enabled = UriValidatorEnabledDefault;
 			this.identifierFormatValidator.Display = ValidatorDisplay.Dynamic;
-			this.identifierFormatValidator.ControlToValidate = WrappedTextBox.ID;
+			this.identifierFormatValidator.ControlToValidate = this.ID;
 			this.identifierFormatValidator.ValidationGroup = ValidationGroupDefault;
 			cell.Controls.Add(this.identifierFormatValidator);
 			this.errorLabel = new Label();
@@ -680,26 +790,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Customizes HTML rendering of the control.
-		/// </summary>
-		/// <param name="writer">An <see cref="T:System.Web.UI.HtmlTextWriter"/> that represents the output stream to render HTML content on the client.</param>
-		protected override void Render(HtmlTextWriter writer) {
-			// avoid writing begin and end SPAN tags for XHTML validity.
-			RenderContents(writer);
-		}
-
-		/// <summary>
 		/// Renders the child controls.
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the rendered content.</param>
 		protected override void RenderChildren(HtmlTextWriter writer) {
 			if (!this.DesignMode) {
-				this.label.Attributes["for"] = this.WrappedTextBox.ClientID;
+				this.label.Attributes["for"] = this.ClientID;
 
 				if (!string.IsNullOrEmpty(this.IdSelectorIdentifier)) {
 					this.idselectorJavascript.Visible = true;
 					this.idselectorJavascript.Text = @"<script type='text/javascript'><!--
-idselector_input_id = '" + WrappedTextBox.ClientID + @"';
+idselector_input_id = '" + this.ClientID + @"';
 // --></script>
 <script type='text/javascript' id='__openidselector' src='https://www.idselector.com/selector/" + this.IdSelectorIdentifier + @"' charset='utf-8'></script>";
 				} else {
@@ -733,30 +834,6 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 			if (!string.IsNullOrEmpty(this.CanceledText)) {
 				this.errorLabel.Text = this.CanceledText;
 				this.errorLabel.Visible = true;
-			}
-		}
-
-		/// <summary>
-		/// Fires the <see cref="LoggingIn"/> event.
-		/// </summary>
-		/// <returns>
-		/// Returns whether the login should proceed.  False if some event handler canceled the request.
-		/// </returns>
-		protected virtual bool OnLoggingIn() {
-			EventHandler<OpenIdEventArgs> loggingIn = this.LoggingIn;
-			if (this.Request == null) {
-				this.CreateRequest();
-			}
-
-			if (this.Request != null) {
-				OpenIdEventArgs args = new OpenIdEventArgs(this.Request);
-				if (loggingIn != null) {
-					loggingIn(this, args);
-				}
-
-				return !args.Cancel;
-			} else {
-				return false;
 			}
 		}
 
@@ -799,8 +876,49 @@ idselector_input_id = '" + WrappedTextBox.ClientID + @"';
 				return;
 			}
 
-			if (this.OnLoggingIn()) {
-				this.LogOn();
+			IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+			if (request != null) {
+				this.LogOn(request);
+			} else {
+				if (!string.IsNullOrEmpty(this.FailedMessageText)) {
+					this.errorLabel.Text = string.Format(CultureInfo.CurrentCulture, this.FailedMessageText, OpenIdStrings.OpenIdEndpointNotFound);
+					this.errorLabel.Visible = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Renders the control inner.
+		/// </summary>
+		/// <param name="writer">The writer.</param>
+		private void RenderControlInner(HtmlTextWriter writer) {
+			base.RenderControl(writer);
+		}
+
+		/// <summary>
+		/// A control that acts as a placeholder to indicate where
+		/// the OpenIdLogin control should render its OpenIdTextBox parent.
+		/// </summary>
+		private class InPlaceControl : PlaceHolder {
+			/// <summary>
+			/// The owning control to render.
+			/// </summary>
+			private OpenIdLogin renderControl;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="InPlaceControl"/> class.
+			/// </summary>
+			/// <param name="renderControl">The render control.</param>
+			internal InPlaceControl(OpenIdLogin renderControl) {
+				this.renderControl = renderControl;
+			}
+
+			/// <summary>
+			/// Sends server control content to a provided <see cref="T:System.Web.UI.HtmlTextWriter"/> object, which writes the content to be rendered on the client.
+			/// </summary>
+			/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
+			protected override void Render(HtmlTextWriter writer) {
+				this.renderControl.RenderControlInner(writer);
 			}
 		}
 	}

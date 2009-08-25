@@ -30,11 +30,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
 	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
-	public abstract class OpenIdRelyingPartyControlBase : Control {
+	public abstract class OpenIdRelyingPartyControlBase : Control, IDisposable {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
 		/// </summary>
 		internal const string EmbeddedJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyControlBase.js";
+
+		/// <summary>
+		/// The cookie used to persist the Identifier the user logged in with.
+		/// </summary>
+		internal const string PersistentIdentifierCookieName = OpenIdUtilities.CustomParameterPrefix + "OpenIDIdentifier";
+
+		/// <summary>
+		/// The callback parameter name to use to store which control initiated the auth request.
+		/// </summary>
+		internal const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
 
 		#region Property category constants
 
@@ -55,6 +65,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
+		#region Callback parameter names
+
+		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in a popup window or hidden iframe.
+		/// </summary>
+		protected const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
+
+		/// <summary>
+		/// The parameter name to include in the formulated auth request so that javascript can know whether
+		/// the OP advertises support for the UI extension.
+		/// </summary>
+		protected const string PopupUISupportedJsHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
+
+		/// <summary>
+		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
+		/// </summary>
+		private const string UsePersistentCookieCallbackKey = OpenIdUtilities.CustomParameterPrefix + "UsePersistentCookie";
+
+		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in the parent window.
+		/// </summary>
+		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
+
+		#endregion
+
 		#region Property default values
 
 		/// <summary>
@@ -70,7 +105,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
 		/// </summary>
-		private const bool UsePersistentCookieDefault = false;
+		private const LoginPersistence UsePersistentCookieDefault = LoginPersistence.Session;
 
 		/// <summary>
 		/// Default value of <see cref="LoginMode"/>.
@@ -138,40 +173,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		#region Callback parameter names
-
 		/// <summary>
-		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
+		/// The lifetime of the cookie used to persist the Identifier the user logged in with.
 		/// </summary>
-		private const string UsePersistentCookieCallbackKey = OpenIdUtilities.CustomParameterPrefix + "UsePersistentCookie";
-
-		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in a popup window.
-		/// </summary>
-		private const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
-
-		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in the parent window.
-		/// </summary>
-		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
-
-		/// <summary>
-		/// The callback parameter name to use to store which control initiated the auth request.
-		/// </summary>
-		private const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
-
-		/// <summary>
-		/// The parameter name to include in the formulated auth request so that javascript can know whether
-		/// the OP advertises support for the UI extension.
-		/// </summary>
-		private const string PopupUISupportedJsHint = "dotnetopenid.popupUISupported";
-
-		#endregion
+		private static readonly TimeSpan PersistentIdentifierTimeToLiveDefault = TimeSpan.FromDays(14);
 
 		/// <summary>
 		/// Backing field for the <see cref="RelyingParty"/> property.
 		/// </summary>
 		private OpenIdRelyingParty relyingParty;
+
+		/// <summary>
+		/// A value indicating whether the <see cref="relyingParty"/> field contains
+		/// an instance that we own and should Dispose.
+		/// </summary>
+		private bool relyingPartyOwned;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyControlBase"/> class.
@@ -182,11 +198,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Events
 
 		/// <summary>
-		/// Fired after the user clicks the log in button, but before the authentication
-		/// process begins.  Offers a chance for the web application to disallow based on 
-		/// OpenID URL before redirecting the user to the OpenID Provider.
+		/// Fired when the user has typed in their identifier, discovery was successful
+		/// and a login attempt is about to begin.
 		/// </summary>
-		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider."), Category(OpenIdCategory)]
+		[Description("Fired when the user has typed in their identifier, discovery was successful and a login attempt is about to begin."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> LoggingIn;
 
 		/// <summary>
@@ -229,6 +244,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// How an OpenID user session should be persisted across visits.
+		/// </summary>
+		public enum LoginPersistence {
+			/// <summary>
+			/// The user should only be logged in as long as the browser window remains open.
+			/// Nothing is persisted to help the user on a return visit.  Public kiosk mode.
+			/// </summary>
+			Session,
+
+			/// <summary>
+			/// The user should only be logged in as long as the browser window remains open.
+			/// The OpenID Identifier is persisted to help expedite re-authentication when
+			/// the user visits the next time.
+			/// </summary>
+			SessionAndPersistentIdentifier,
+
+			/// <summary>
+			/// The user is issued a persistent authentication ticket so that no login is
+			/// necessary on their return visit.
+			/// </summary>
+			PersistentAuthentication,
+		}
+
+		/// <summary>
 		/// Gets or sets the <see cref="OpenIdRelyingParty"/> instance to use.
 		/// </summary>
 		/// <value>The default value is an <see cref="OpenIdRelyingParty"/> instance initialized according to the web.config file.</value>
@@ -244,12 +283,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get {
 				if (this.relyingParty == null) {
 					this.relyingParty = this.CreateRelyingParty();
+					this.relyingPartyOwned = true;
 				}
 				return this.relyingParty;
 			}
 
 			set {
+				if (this.relyingPartyOwned && this.relyingParty != null) {
+					this.relyingParty.Dispose();
+				}
+
 				this.relyingParty = value;
+				this.relyingPartyOwned = false;
 			}
 		}
 
@@ -335,8 +380,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(UsePersistentCookieDefault), Category(BehaviorCategory)]
 		[Description("Whether to send a persistent cookie upon successful " +
 			"login so the user does not have to log in upon returning to this site.")]
-		public virtual bool UsePersistentCookie {
-			get { return (bool)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
+		public virtual LoginPersistence UsePersistentCookie {
+			get { return (LoginPersistence)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
 			set { this.ViewState[UsePersistentCookieViewStateKey] = value; }
 		}
 
@@ -345,7 +390,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		[Bindable(true), DefaultValue(LoginModeDefault), Category(BehaviorCategory)]
 		[Description("The way a completed login is communicated to the rest of the web site.")]
-		public LoginSiteNotification LoginMode {
+		public virtual LoginSiteNotification LoginMode {
 			get { return (LoginSiteNotification)(this.ViewState[LoginModeViewStateKey] ?? LoginModeDefault); }
 			set { this.ViewState[LoginModeViewStateKey] = value; }
 		}
@@ -390,15 +435,58 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal AssociationPreference AssociationPreference { get; set; }
 
 		/// <summary>
+		/// Clears any cookie set by this control to help the user on a returning visit next time.
+		/// </summary>
+		public static void LogOff() {
+			HttpContext.Current.Response.SetCookie(CreateIdentifierPersistingCookie(null));
+		}
+
+		/// <summary>
 		/// Immediately redirects to the OpenID Provider to verify the Identifier
 		/// provided in the text box.
 		/// </summary>
 		public void LogOn() {
 			IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+			ErrorUtilities.VerifyProtocol(request != null, OpenIdStrings.OpenIdEndpointNotFound);
+			this.LogOn(request);
+		}
+
+		/// <summary>
+		/// Immediately redirects to the OpenID Provider to verify the Identifier
+		/// provided in the text box.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		public void LogOn(IAuthenticationRequest request) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
+
 			if (this.IsPopupAppropriate(request)) {
 				this.ScriptPopupWindow(request);
 			} else {
 				request.RedirectToProvider();
+			}
+		}
+
+		/// <summary>
+		/// Enables a server control to perform final clean up before it is released from memory.
+		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
+		public sealed override void Dispose() {
+			this.Dispose(true);
+			base.Dispose();
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				if (this.relyingPartyOwned && this.relyingParty != null) {
+					this.relyingParty.Dispose();
+					this.relyingParty = null;
+				}
 			}
 		}
 
@@ -443,31 +531,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Configure each generated request.
 			foreach (var req in requests) {
 				if (this.IsPopupAppropriate(req)) {
-					// Inform the OP that we'll be using a popup window.
-					req.AddExtension(new UIRequest());
-
 					// Inform ourselves in return_to that we're in a popup.
-					req.AddCallbackArguments(UIPopupCallbackKey, "1");
+					req.SetCallbackArgument(UIPopupCallbackKey, "1");
 
 					if (req.Provider.IsExtensionSupported<UIRequest>()) {
+						// Inform the OP that we'll be using a popup window consistent with the UI extension.
+						req.AddExtension(new UIRequest());
+
 						// Provide a hint for the client javascript about whether the OP supports the UI extension.
 						// This is so the window can be made the correct size for the extension.
 						// If the OP doesn't advertise support for the extension, the javascript will use
 						// a bigger popup window.
-						req.AddCallbackArguments(PopupUISupportedJsHint, "1");
+						req.SetCallbackArgument(PopupUISupportedJsHint, "1");
 					}
 				}
 
 				// Add state that needs to survive across the redirect.
 				if (!this.Stateless) {
-					req.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
-					req.AddCallbackArguments(ReturnToReceivingControlId, this.ClientID);
+					req.SetCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
+					req.SetCallbackArgument(ReturnToReceivingControlId, this.ClientID);
 				}
 
 				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
-				this.OnLoggingIn(req);
-
-				yield return req;
+				if (this.OnLoggingIn(req)) {
+					yield return req;
+				}
 			}
 		}
 
@@ -483,12 +571,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
+			if (this.Identifier == null) {
+				this.TryPresetIdentifierWithCookie();
+			}
+
 			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
 			// assertion is coming in.  We shouldn't process assertions in a popup window.
 			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
 				// We're in a popup window.  We need to close it and pass the
 				// message back to the parent window for processing.
-				this.ScriptClosingPopup();
+				this.ScriptClosingPopupOrIFrame();
 				return; // don't do any more processing on it now
 			}
 
@@ -497,33 +589,41 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId] ?? this.Page.Request.Form[ReturnToReceivingControlId];
 			if (receiver == null || receiver == this.ClientID) {
 				var response = this.RelyingParty.GetResponse();
-				if (response != null) {
-					string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
-					bool persistentBool;
-					if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
-						this.UsePersistentCookie = persistentBool;
-					}
+				this.ProcessResponse(response);
+			}
+		}
 
-					switch (response.Status) {
-						case AuthenticationStatus.Authenticated:
-							this.OnLoggedIn(response);
-							break;
-						case AuthenticationStatus.Canceled:
-							this.OnCanceled(response);
-							break;
-						case AuthenticationStatus.Failed:
-							this.OnFailed(response);
-							break;
-						case AuthenticationStatus.SetupRequired:
-						case AuthenticationStatus.ExtensionsOnly:
-						default:
-							// The NotApplicable (extension-only assertion) is NOT one that we support
-							// in this control because that scenario is primarily interesting to RPs
-							// that are asking a specific OP, and it is not user-initiated as this textbox
-							// is designed for.
-							throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
-					}
-				}
+		/// <summary>
+		/// Processes the response.
+		/// </summary>
+		/// <param name="response">The response.</param>
+		protected virtual void ProcessResponse(IAuthenticationResponse response) {
+			if (response == null) {
+				return;
+			}
+			string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+			if (persistentString != null) {
+				this.UsePersistentCookie = (LoginPersistence)Enum.Parse(typeof(LoginPersistence), persistentString);
+			}
+
+			switch (response.Status) {
+				case AuthenticationStatus.Authenticated:
+					this.OnLoggedIn(response);
+					break;
+				case AuthenticationStatus.Canceled:
+					this.OnCanceled(response);
+					break;
+				case AuthenticationStatus.Failed:
+					this.OnFailed(response);
+					break;
+				case AuthenticationStatus.SetupRequired:
+				case AuthenticationStatus.ExtensionsOnly:
+				default:
+					// The NotApplicable (extension-only assertion) is NOT one that we support
+					// in this control because that scenario is primarily interesting to RPs
+					// that are asking a specific OP, and it is not user-initiated as this textbox
+					// is designed for.
+					throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
 			}
 		}
 
@@ -554,9 +654,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (!args.Cancel) {
+				if (this.UsePersistentCookie == LoginPersistence.SessionAndPersistentIdentifier) {
+					Page.Response.SetCookie(CreateIdentifierPersistingCookie(response));
+				}
+
 				switch (this.LoginMode) {
 					case LoginSiteNotification.FormsAuthentication:
-						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie);
+						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie == LoginPersistence.PersistentAuthentication);
 						break;
 					case LoginSiteNotification.None:
 					default:
@@ -623,8 +727,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
 		protected virtual OpenIdRelyingParty CreateRelyingParty() {
+			return this.CreateRelyingParty(true);
+		}
+
+		/// <summary>
+		/// Creates the relying party instance used to generate authentication requests.
+		/// </summary>
+		/// <param name="verifySignature">
+		/// A value indicating whether message protections should be applied to the processed messages.
+		/// Use <c>false</c> to postpone verification to a later time without invalidating nonces.
+		/// </param>
+		/// <returns>The instantiated relying party.</returns>
+		protected virtual OpenIdRelyingParty CreateRelyingParty(bool verifySignature) {
 			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
-			var rp = new OpenIdRelyingParty(store);
+			var rp = verifySignature ? new OpenIdRelyingParty(store) : OpenIdRelyingParty.CreateNonVerifying();
 
 			// Only set RequireSsl to true, as we don't want to override 
 			// a .config setting of true with false.
@@ -685,6 +801,57 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Wires the popup window to close itself and pass the authentication result to the parent window.
+		/// </summary>
+		protected virtual void ScriptClosingPopupOrIFrame() {
+			StringBuilder startupScript = new StringBuilder();
+			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL);");
+			startupScript.AppendLine("window.close();");
+
+			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
+
+			// TODO: alternately we should probably take over rendering this page here to avoid
+			// a lot of unnecessary work on the server and possible momentary display of the 
+			// page in the popup window.
+		}
+
+		/// <summary>
+		/// Creates the identifier-persisting cookie, either for saving or deleting.
+		/// </summary>
+		/// <param name="response">The positive authentication response; or <c>null</c> to clear the cookie.</param>
+		/// <returns>An persistent cookie.</returns>
+		private static HttpCookie CreateIdentifierPersistingCookie(IAuthenticationResponse response) {
+			HttpCookie cookie = new HttpCookie(PersistentIdentifierCookieName);
+			bool clearingCookie = false;
+
+			// We'll try to store whatever it was the user originally typed in, but fallback
+			// to the final claimed_id.
+			if (response != null && response.Status == AuthenticationStatus.Authenticated) {
+				var positiveResponse = (PositiveAuthenticationResponse)response;
+
+				// We must escape the value because XRIs start with =, and any leading '=' gets dropped (by ASP.NET?)
+				cookie.Value = Uri.EscapeDataString(positiveResponse.Endpoint.UserSuppliedIdentifier ?? response.ClaimedIdentifier);
+			} else {
+				clearingCookie = true;
+				cookie.Value = string.Empty;
+				if (HttpContext.Current.Request.Browser["supportsEmptyStringInCookieValue"] == "false") {
+					cookie.Value = "NoCookie";
+				}
+			}
+
+			if (clearingCookie) {
+				// mark the cookie has having already expired to cause the user agent to delete
+				// the old persisted cookie.
+				cookie.Expires = DateTime.Now.Subtract(TimeSpan.FromDays(1));
+			} else {
+				// Make the cookie persistent by setting an expiration date
+				cookie.Expires = DateTime.Now + PersistentIdentifierTimeToLiveDefault;
+			}
+
+			return cookie;
+		}
+
+		/// <summary>
 		/// Gets the javascript to executee to redirect or POST an OpenID message to a remote party.
 		/// </summary>
 		/// <param name="request">The authentication request to send.</param>
@@ -712,27 +879,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendLine("window.dnoa_internal = new Object();");
 			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
 			startupScript.AppendLine("window.dnoa_internal.popupWindow = function() {");
-				startupScript.AppendFormat(
-					@"\tvar openidPopup = {0}",
-					UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
+			startupScript.AppendFormat(
+				@"\tvar openidPopup = {0}",
+				UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
 			startupScript.AppendLine("};");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "loginPopup", startupScript.ToString(), true);
 		}
 
 		/// <summary>
-		/// Wires the popup window to close itself and pass the authentication result to the parent window.
+		/// Tries to preset the <see cref="Identifier"/> property based on a persistent
+		/// cookie on the browser.
 		/// </summary>
-		private void ScriptClosingPopup() {
-			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
-			startupScript.AppendLine("window.close();");
+		/// <returns>
+		/// A value indicating whether the <see cref="Identifier"/> property was
+		/// successfully preset to some non-empty value.
+		/// </returns>
+		private bool TryPresetIdentifierWithCookie() {
+			HttpCookie cookie = this.Page.Request.Cookies[PersistentIdentifierCookieName];
+			if (cookie != null) {
+				this.Identifier = Uri.UnescapeDataString(cookie.Value);
+				return true;
+			}
 
-			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
-
-			// TODO: alternately we should probably take over rendering this page here to avoid
-			// a lot of unnecessary work on the server and possible momentary display of the 
-			// page in the popup window.
+			return false;
 		}
 
 		/// <summary>

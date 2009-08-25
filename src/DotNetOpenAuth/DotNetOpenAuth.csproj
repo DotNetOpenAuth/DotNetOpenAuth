@@ -153,8 +153,14 @@
     <Reference Include="System.IdentityModel.Selectors">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -498,7 +504,7 @@
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyApplicationStore.cs" />
-    <Compile Include="OpenId\RelyingParty\AuthenticationResponseSnapshot.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
     <Compile Include="OpenId\RelyingParty\PrivateSecretManager.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
@@ -547,6 +553,8 @@
     <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="Messaging\Exceptions.cd" />
     <None Include="Messaging\Messaging.cd" />
+    <None Include="OpenId\RelyingParty\Controls.cd" />
+    <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Messaging\MessagingStrings.resx">
