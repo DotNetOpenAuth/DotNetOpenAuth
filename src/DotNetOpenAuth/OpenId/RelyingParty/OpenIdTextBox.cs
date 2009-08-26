@@ -518,6 +518,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// </summary>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected override IEnumerable<IAuthenticationRequest> CreateRequests() {
+			// We delegate all our logic to another method, since invoking base. methods
+			// within an iterator method results in unverifiable code.
+			return this.CreateRequestsCore(base.CreateRequests());
+		}
+
+		/// <summary>
 		/// Checks for incoming OpenID authentication responses and fires appropriate events.
 		/// </summary>
 		/// <param name="e">The <see cref="T:System.EventArgs"/> object that contains the event data.</param>
@@ -603,6 +616,26 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			EventHandler textChanged = this.TextChanged;
 			if (textChanged != null) {
 				textChanged(this, EventArgs.Empty);
+			}
+		}
+
+		/// <summary>
+		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// </summary>
+		/// <param name="requests">The authentication requests to prepare.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
+			Contract.Requires(requests != null);
+
+			foreach (var request in requests) {
+				if (this.EnableRequestProfile) {
+					this.AddProfileArgs(request);
+				}
+
+				yield return request;
 			}
 		}
 
