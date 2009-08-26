@@ -188,7 +188,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						this.field.SetValue(message, this.ToValue(value));
 					}
 				}
-			} catch (FormatException ex) {
+			} catch (Exception ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartReadFailure, message.GetType(), this.Name, value);
 			}
 		}

@@ -304,4 +304,7 @@ Discovered endpoint info:
   <data name="RequireSslNotSatisfiedByAssertedClaimedId" xml:space="preserve">
     <value>Sorry.  This site only accepts OpenIDs that are HTTPS-secured, but {0} is not a secure Identifier.</value>
   </data>
+  <data name="BadExtension" xml:space="preserve">
+    <value>The {0} extension failed to deserialize and will be skipped.  {1}</value>
+  </data>
 </root>

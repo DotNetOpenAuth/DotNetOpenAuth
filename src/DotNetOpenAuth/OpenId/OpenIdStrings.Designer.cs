@@ -133,6 +133,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} extension failed to deserialize and will be skipped.  {1}.
+        /// </summary>
+        internal static string BadExtension {
+            get {
+                return ResourceManager.GetString("BadExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Callback arguments are only supported when a {0} is provided to the {1}..
         /// </summary>
         internal static string CallbackArgumentsRequireSecretStore {
