@@ -48,9 +48,7 @@
 	</Target>
 
 	<Target Name="SkipVerification" Condition="'$(IsElevated)' == 'true'">
-		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName)" PublicKeyToken="$(PublicKeyToken)" />
-		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName)_Accessor" PublicKeyToken="$(PublicKeyToken)" />
-		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName).Test" PublicKeyToken="$(PublicKeyToken)" />
+		<SignatureVerification SkipVerification="true" AssemblyName="*" PublicKeyToken="$(PublicKeyToken)" />
 	</Target>
 	
 	<Target Name="BuildProduct" DependsOnTargets="SkipVerification">
