@@ -255,6 +255,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// An empty sreg request, used to compare with others to see if they too are empty.
+		/// </summary>
+		private static readonly ClaimsRequest EmptyClaimsRequest = new ClaimsRequest();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdTextBox"/> class.
 		/// </summary>
 		public OpenIdTextBox() {
@@ -647,7 +652,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void AddProfileArgs(IAuthenticationRequest request) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			request.AddExtension(new ClaimsRequest() {
+			var sreg = new ClaimsRequest() {
 				Nickname = this.RequestNickname,
 				Email = this.RequestEmail,
 				FullName = this.RequestFullName,
@@ -659,7 +664,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
 					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(this.PolicyUrl)),
-			});
+			};
+
+			// Only actually add the extension request if fields are actually being requested.
+			if (!sreg.Equals(EmptyClaimsRequest)) {
+				request.AddExtension(sreg);
+			}
 		}
 	}
 }
