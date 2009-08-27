@@ -22,6 +22,15 @@
 			this.identifierBox.LogOn();
 		}
 
+		protected void identifierBox_LoggingIn(object sender, OpenIdEventArgs e) {
+			ServiceProviderDescription serviceDescription = new ServiceProviderDescription {
+				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
+			};
+
+			WebConsumer consumer = new WebConsumer(serviceDescription, Global.OwnSampleOPHybridTokenManager);
+			consumer.AttachAuthorizationRequest(e.Request, "http://tempuri.org/IDataApi/GetName");
+		}
+
 		protected void identifierBox_LoggedIn(object sender, OpenIdEventArgs e) {
 			State.FetchResponse = e.Response.GetExtension<FetchResponse>();
 

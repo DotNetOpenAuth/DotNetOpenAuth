@@ -10,7 +10,8 @@
 		<asp:View ID="View1" runat="server">
 			<asp:Label runat="server" Text="OpenIdProviderWebForms sample's OP Identifier or Claimed Identifier: " />
 			<rp:OpenIdTextBox runat="server" ID="identifierBox" Text="http://localhost:4860/"
-				OnCanceled="identifierBox_Failed" OnFailed="identifierBox_Failed" OnLoggedIn="identifierBox_LoggedIn" />
+				OnLoggingIn="identifierBox_LoggingIn" OnLoggedIn="identifierBox_LoggedIn" OnCanceled="identifierBox_Failed"
+				OnFailed="identifierBox_Failed" />
 			<asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="required"
 				ControlToValidate="identifierBox" />
 			<br />
