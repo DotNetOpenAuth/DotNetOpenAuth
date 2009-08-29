@@ -613,11 +613,18 @@
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="InfoCard\InfoCardStrings.sr.resx" />
+    <EmbeddedResource Include="Messaging\MessagingStrings.sr.resx" />
+    <EmbeddedResource Include="OAuth\OAuthStrings.sr.resx" />
     <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>BehaviorStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.sr.resx" />
+    <EmbeddedResource Include="OpenId\OpenIdStrings.sr.resx" />
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
+    <EmbeddedResource Include="Strings.sr.resx" />
+    <EmbeddedResource Include="Xrds\XrdsStrings.sr.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />

@@ -132,6 +132,7 @@
     <Compile Include="Hosting\HostingTests.cs" />
     <Compile Include="Hosting\HttpHost.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
+    <Compile Include="LocalizationTests.cs" />
     <Compile Include="Messaging\CollectionAssert.cs" />
     <Compile Include="Messaging\EnumerableCacheTests.cs" />
     <Compile Include="Messaging\ErrorUtilitiesTests.cs" />
