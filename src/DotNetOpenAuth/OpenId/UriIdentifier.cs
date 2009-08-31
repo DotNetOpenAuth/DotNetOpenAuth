@@ -129,6 +129,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// The <paramref name="obj"/> parameter is null.
 		/// </exception>
 		public override bool Equals(object obj) {
+			// This first check is for a test hook
+			if (Identifier.EqualityOnStrings && obj != null) {
+				return string.Equals(this.ToString(), obj.ToString(), StringComparison.Ordinal);
+			}
+
 			UriIdentifier other = obj as UriIdentifier;
 			if (other == null) {
 				return false;

@@ -58,6 +58,28 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.ParameterizedAuthenticationTest(false, false, false);
 		}
 
+		/// <summary>
+		/// Verifies that unsolicited assertions can be sent and received.
+		/// </summary>
+		[TestMethod]
+		public void UnsolicitedAssertion() {
+			var coordinator = new OpenIdCoordinator(
+				rp => {
+					// register with RP so that id discovery passes
+					rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+
+					// Receive the unsolicited assertion
+					var response = rp.GetResponse();
+					Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
+				},
+				op => {
+					Identifier id = GetMockIdentifier(ProtocolVersion.V20);
+					op.SendUnsolicitedAssertion(OPUri, GetMockRealm(false), id, id);
+					AutoProvider(op);
+				});
+			coordinator.Run();
+		}
+
 		private void ParameterizedAuthenticationTest(bool sharedAssociation, bool positive, bool tamper) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
 				foreach (bool statelessRP in new[] { false, true }) {
