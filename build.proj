@@ -178,6 +178,7 @@
 											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
 																$(ILMergeOutputAssemblyDirectory)\$(ProductName).???;
+																$(OutputPath)\**\$(ProductName).resources.dll;
 																$(OutputPath)\$(ProductName).xml;
 																$(OutputPath)\$(ProductName).Contracts.???;
 																$(ProjectRoot)\Doc\README.Bin.html;
