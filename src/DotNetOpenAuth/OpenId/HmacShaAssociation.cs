@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OpenId {
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
 				BaseHashAlgorithm = new SHA1Managed(),
 			},
-		}.ToArray();
+		} .ToArray();
 
 		/// <summary>
 		/// The specific variety of HMAC-SHA this association is based on (whether it be HMAC-SHA1, HMAC-SHA256, etc.)

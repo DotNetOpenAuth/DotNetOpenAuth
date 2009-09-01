@@ -150,7 +150,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			// Scrape the query string
 			foreach (string key in request.QueryStringBeforeRewriting) {
-				fields.Add(key, request.QueryStringBeforeRewriting[key]);
+				if (key != null) {
+					fields.Add(key, request.QueryStringBeforeRewriting[key]);
+				} else {
+					Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", request.QueryStringBeforeRewriting[key]);
+				}
 			}
 
 			// Deserialize the message using all the data we've collected.

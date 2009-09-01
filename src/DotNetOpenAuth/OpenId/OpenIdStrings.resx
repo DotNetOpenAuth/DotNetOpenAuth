@@ -307,4 +307,7 @@ Discovered endpoint info:
   <data name="BadExtension" xml:space="preserve">
     <value>The {0} extension failed to deserialize and will be skipped.  {1}</value>
   </data>
+  <data name="PositiveAssertionFromNonWhitelistedProvider" xml:space="preserve">
+    <value>An positive OpenID assertion was received from OP endpoint {0} that is not on this relying party's whitelist.</value>
+  </data>
 </root>

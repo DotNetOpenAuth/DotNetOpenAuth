@@ -247,6 +247,8 @@ TimeZone = '{8}'";
 		internal void SetProfileRequestFromList(IEnumerable<string> fieldNames, DemandLevel requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
+					case "": // this occurs for empty lists
+						break;
 					case Constants.nickname:
 						this.Nickname = requestLevel;
 						break;

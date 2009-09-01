@@ -104,6 +104,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIdRelyingPartyClassicAs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthConsumerWpf", "..\samples\OAuthConsumerWpf\OAuthConsumerWpf.csproj", "{6EC36418-DBC5-4AD1-A402-413604AA7A08}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7ADCCD5C-AC2B-4340-9410-FE3A31A48191} = {7ADCCD5C-AC2B-4340-9410-FE3A31A48191}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenID", "OpenID", "{034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}"
 EndProject

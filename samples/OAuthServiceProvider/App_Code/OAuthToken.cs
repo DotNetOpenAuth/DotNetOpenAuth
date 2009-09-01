@@ -26,7 +26,7 @@ public partial class OAuthToken : IServiceProviderRequestToken {
 	}
 
 	Uri IServiceProviderRequestToken.Callback {
-		get { return new Uri(this.RequestTokenCallback); }
+		get { return string.IsNullOrEmpty(this.RequestTokenCallback) ? null : new Uri(this.RequestTokenCallback); }
 		set { this.RequestTokenCallback = value.AbsoluteUri; }
 	}
 
