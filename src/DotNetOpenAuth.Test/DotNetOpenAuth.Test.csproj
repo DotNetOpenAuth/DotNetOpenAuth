@@ -153,6 +153,7 @@
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
     <Compile Include="Mocks\MockOpenIdExtension.cs" />
+    <Compile Include="Mocks\MockRealm.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
     <Compile Include="Mocks\MockReplayProtectionBindingElement.cs" />
     <Compile Include="Mocks\TestBaseMessage.cs" />

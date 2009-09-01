@@ -130,6 +130,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </exception>
 		public override bool Equals(object obj) {
 			XriIdentifier other = obj as XriIdentifier;
+			if (obj != null && other == null && Identifier.EqualityOnStrings) { // test hook to enable MockIdentifier comparison
+				other = Identifier.Parse(obj.ToString()) as XriIdentifier;
+			}
 			if (other == null) {
 				return false;
 			}
