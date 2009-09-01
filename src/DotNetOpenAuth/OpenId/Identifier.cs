@@ -38,6 +38,16 @@ namespace DotNetOpenAuth.OpenId {
 		public string OriginalString { get; private set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether <see cref="Identifier"/> instances are considered equal
+		/// based solely on their string reprsentations.
+		/// </summary>
+		/// <remarks>
+		/// This property serves as a test hook, so that MockIdentifier instances can be considered "equal"
+		/// to UriIdentifier instances.
+		/// </remarks>
+		protected internal static bool EqualityOnStrings { get; set; }
+
+		/// <summary>
 		/// Gets a value indicating whether this Identifier will ensure SSL is 
 		/// used throughout the discovery phase and initial redirect of authentication.
 		/// </summary>

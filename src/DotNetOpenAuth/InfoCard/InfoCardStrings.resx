@@ -129,6 +129,9 @@
   <data name="PpidClaimRequired" xml:space="preserve">
     <value>This operation requires the PPID claim to be included in the InfoCard token.</value>
   </data>
+  <data name="PrivacyVersionRequiredWithPrivacyUrl" xml:space="preserve">
+    <value>The PrivacyVersion property must be set whenever the PrivacyUrl property is set.</value>
+  </data>
   <data name="SelectorClickPrompt" xml:space="preserve">
     <value>Click here to select your Information Card.</value>
   </data>
