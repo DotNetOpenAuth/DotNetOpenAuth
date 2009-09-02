@@ -100,11 +100,27 @@ namespace DotNetOpenAuth.Configuration {
 					source = HttpContext.Current.Server.MapPath(source);
 				}
 				using (Stream xamlFile = File.OpenRead(source)) {
-					return (T)XamlReader.Load(xamlFile);
+					return this.CreateInstanceFromXaml(xamlFile);
 				}
 			} else {
 				return defaultValue;
 			}
+		}
+
+		/// <summary>
+		/// Creates the instance from xaml.
+		/// </summary>
+		/// <param name="xaml">The stream of xaml to deserialize.</param>
+		/// <returns>The deserialized object.</returns>
+		/// <remarks>
+		/// This exists as its own method to prevent the CLR's JIT compiler from failing
+		/// to compile the CreateInstance method just because the PresentationFramework.dll
+		/// may be missing (which it is on some shared web hosts).  This way, if the
+		/// XamlSource attribute is never used, the PresentationFramework.dll never need
+		/// be present.
+		/// </remarks>
+		private T CreateInstanceFromXaml(Stream xaml) {
+			return (T)XamlReader.Load(xaml);
 		}
 	}
 }

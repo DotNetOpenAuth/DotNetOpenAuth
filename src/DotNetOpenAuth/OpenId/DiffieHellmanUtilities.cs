@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId {
 			new DHSha(new SHA384Managed(), protocol => protocol.Args.SessionType.DH_SHA384),
 			new DHSha(new SHA256Managed(), protocol => protocol.Args.SessionType.DH_SHA256),
 			new DHSha(new SHA1Managed(), protocol => protocol.Args.SessionType.DH_SHA1),
-		}.ToArray();
+		} .ToArray();
 
 		/// <summary>
 		/// Finds the hashing algorithm to use given an openid.session_type value.
