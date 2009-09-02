@@ -211,6 +211,13 @@ namespace DotNetOpenAuth.InfoCard {
 		[Category(InfoCardCategory)]
 		public event EventHandler<TokenProcessingErrorEventArgs> TokenProcessingError;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="InfoCardSelector"/> class.
+		/// </summary>
+		public InfoCardSelector() {
+			this.ToolTip = InfoCardStrings.SelectorClickPrompt;
+		}
+
 		#region Properties
 
 		/// <summary>
@@ -553,7 +560,7 @@ namespace DotNetOpenAuth.InfoCard {
 			Image image = new Image();
 			image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
 			image.AlternateText = InfoCardStrings.SelectorClickPrompt;
-			image.ToolTip = InfoCardStrings.SelectorClickPrompt;
+			image.ToolTip = this.ToolTip;
 			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
 
 			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
