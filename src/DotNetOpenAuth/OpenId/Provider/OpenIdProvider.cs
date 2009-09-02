@@ -363,7 +363,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
 			if (!discoveredEndpoints.Contains(serviceEndpoint)) {
 				Logger.OpenId.DebugFormat(
-					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint.  This endpoint: {1}{2}  Discovered endpoints: {1}{3}",
+					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
 					claimedIdentifier,
 					Environment.NewLine,
 					serviceEndpoint,

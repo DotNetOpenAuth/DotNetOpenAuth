@@ -60,15 +60,39 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
-		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider) {
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
+			: this(serviceDescription, tokenManager, new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge), messageTypeProvider) {
 			Contract.Requires<ArgumentNullException>(serviceDescription != null);
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+		/// </summary>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
+		/// <param name="nonceStore">The nonce store.</param>
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore)
+			: this(serviceDescription, tokenManager, nonceStore, new OAuthServiceProviderMessageFactory(tokenManager)) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+		/// </summary>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
+		/// <param name="nonceStore">The nonce store.</param>
+		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore, OAuthServiceProviderMessageFactory messageTypeProvider) {
+			Contract.Requires<ArgumentNullException>(serviceDescription != null);
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
+			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
-			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.ServiceDescription = serviceDescription;
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider);
+			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
 		}
@@ -234,11 +258,12 @@ namespace DotNetOpenAuth.OAuth {
 
 		/// <summary>
 		/// Gets the OAuth authorization request included with an OpenID authentication
-		/// request.
+		/// request, if there is one.
 		/// </summary>
 		/// <param name="openIdRequest">The OpenID authentication request.</param>
 		/// <returns>
-		/// The scope of access the relying party is requesting.
+		/// The scope of access the relying party is requesting, or null if no OAuth request
+		/// is present.
 		/// </returns>
 		/// <remarks>
 		/// <para>Call this method rather than simply extracting the OAuth extension
@@ -267,23 +292,42 @@ namespace DotNetOpenAuth.OAuth {
 			return authzRequest;
 		}
 
+				/// <summary>
+		/// Attaches the authorization response to an OpenID authentication response.
+		/// </summary>
+		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
+		/// <param name="consumerKey">The consumer key.  Must be <c>null</c> if and only if <paramref name="scope"/> is null.</param>
+		/// <param name="scope">The approved access scope.  Use <c>null</c> to indicate no access was granted.  The empty string will be interpreted as some default level of access is granted.</param>
+		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
+		[Obsolete("Call the overload that doesn't take a consumerKey instead.")]
+		public void AttachAuthorizationResponse(IHostProcessedRequest openIdAuthenticationRequest, string consumerKey, string scope) {
+			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
+			Contract.Requires<ArgumentException>((consumerKey == null) == (scope == null));
+			Contract.Requires<InvalidOperationException>(this.TokenManager is ICombinedOpenIdProviderTokenManager);
+			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
+			var openidTokenManager = (ICombinedOpenIdProviderTokenManager)this.TokenManager;
+			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), "The consumer key and the realm did not match according to the token manager.");
+
+			this.AttachAuthorizationResponse(openIdAuthenticationRequest, scope);
+		}
+
 		/// <summary>
 		/// Attaches the authorization response to an OpenID authentication response.
 		/// </summary>
 		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
-		/// <param name="consumerKey">The consumer key.  May and should be <c>null</c> if and only if <paramref name="scope"/> is null.</param>
 		/// <param name="scope">The approved access scope.  Use <c>null</c> to indicate no access was granted.  The empty string will be interpreted as some default level of access is granted.</param>
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
-		public void AttachAuthorizationResponse(IAuthenticationRequest openIdAuthenticationRequest, string consumerKey, string scope) {
-			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
-			Contract.Requires<ArgumentException>((consumerKey == null) == (scope == null));
-			Contract.Requires<InvalidOperationException>(this.TokenManager is IOpenIdOAuthTokenManager);
-			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
-			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
+		public void AttachAuthorizationResponse(IHostProcessedRequest openIdAuthenticationRequest, string scope) {
+			Contract.Requires(openIdAuthenticationRequest != null);
+			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
+			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
+			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
+			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(ICombinedOpenIdProviderTokenManager).FullName);
 
 			IOpenIdMessageExtension response;
 			if (scope != null) {
 				// Generate an authorized request token to return to the relying party.
+				string consumerKey = openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm);
 				var approvedResponse = new AuthorizationApprovedResponse {
 					RequestToken = this.TokenGenerator.GenerateRequestToken(consumerKey),
 					Scope = scope,

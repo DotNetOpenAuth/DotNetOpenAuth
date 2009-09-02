@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// only succeed if it can be done entirely using SSL.
 		/// </param>
 		internal XriIdentifier(string xri, bool requireSsl)
-			: base(requireSsl) {
+			: base(xri, requireSsl) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(xri));
 			Contract.Requires<FormatException>(IsValidXri(xri), OpenIdStrings.InvalidXri);
 			Contract.Assume(xri != null); // Proven by IsValidXri
@@ -130,6 +130,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </exception>
 		public override bool Equals(object obj) {
 			XriIdentifier other = obj as XriIdentifier;
+			if (obj != null && other == null && Identifier.EqualityOnStrings) { // test hook to enable MockIdentifier comparison
+				other = Identifier.Parse(obj.ToString()) as XriIdentifier;
+			}
 			if (other == null) {
 				return false;
 			}

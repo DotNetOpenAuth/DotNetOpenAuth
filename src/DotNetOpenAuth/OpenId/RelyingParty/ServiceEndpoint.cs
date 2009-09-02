@@ -428,7 +428,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Creates a <see cref="ServiceEndpoint"/> instance to represent some OP Identifier.
 		/// </summary>
-		/// <param name="providerIdentifier">The provider identifier.</param>
+		/// <param name="providerIdentifier">The provider identifier (actually the user-supplied identifier).</param>
 		/// <param name="providerEndpoint">The provider endpoint.</param>
 		/// <param name="servicePriority">The service priority.</param>
 		/// <param name="uriPriority">The URI priority.</param>

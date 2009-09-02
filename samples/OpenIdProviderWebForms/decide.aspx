@@ -17,6 +17,10 @@
 			<td><asp:Label runat="server" ID='realmLabel' /> </td>
 		</tr>
 	</table>
+	<asp:Panel runat="server" ID="OAuthPanel" Visible="false">
+		<p>In addition the relying party has asked for permission to access your private data. </p>
+		<asp:CheckBox runat="server" Text="Allow the relying party to access my private data" ID="oauthPermission" />
+	</asp:Panel>
 	<p>Allow this to proceed? </p>
 	<uc1:ProfileFields ID="profileFields" runat="server" Visible="false" />
 	<asp:Button ID="yes_button" OnClick="Yes_Click" Text="  yes  " runat="Server" />

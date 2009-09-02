@@ -25,11 +25,6 @@ if (window.dnoa_internal === undefined) {
 	window.dnoa_internal = new Object();
 };
 
-// The possible authentication results
-window.dnoa_internal.authSuccess = new Object();
-window.dnoa_internal.authRefused = new Object();
-window.dnoa_internal.timedOut = new Object();
-
 /// <summary>Instantiates an object that provides string manipulation services for URIs.</summary>
 window.dnoa_internal.Uri = function(url) {
 	this.originalUri = url.toString();

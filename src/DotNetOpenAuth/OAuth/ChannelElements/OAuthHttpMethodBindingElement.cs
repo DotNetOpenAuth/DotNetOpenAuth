@@ -42,15 +42,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			if (oauthMessage != null) {
 				HttpDeliveryMethods transmissionMethod = oauthMessage.HttpMethods;
-				if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
-					oauthMessage.HttpMethod = "POST";
-				} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
-					oauthMessage.HttpMethod = "GET";
-				} else {
+				try {
+					oauthMessage.HttpMethod = MessagingUtilities.GetHttpVerb(transmissionMethod);
+					return MessageProtections.None;
+				} catch (ArgumentException ex) {
+					Logger.OAuth.Error("Unrecognized HttpDeliveryMethods value.", ex);
 					return null;
 				}
-
-				return MessageProtections.None;
 			} else {
 				return null;
 			}

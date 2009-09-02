@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Prevents a default instance of the IdentifierContract class from being created.
 		/// </summary>
 		private IdentifierContract()
-			: base(false) {
+			: base(null, false) {
 		}
 
 		/// <summary>

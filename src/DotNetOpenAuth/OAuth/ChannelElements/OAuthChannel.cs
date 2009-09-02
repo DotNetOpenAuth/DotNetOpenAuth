@@ -148,7 +148,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			// Scrape the query string
 			foreach (string key in request.QueryStringBeforeRewriting) {
-				fields.Add(key, request.QueryStringBeforeRewriting[key]);
+				if (key != null) {
+					fields.Add(key, request.QueryStringBeforeRewriting[key]);
+				} else {
+					Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", request.QueryStringBeforeRewriting[key]);
+				}
 			}
 
 			// Deserialize the message using all the data we've collected.
@@ -196,6 +200,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				httpRequest = this.InitializeRequestAsPost(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.PutRequest) != 0) {
+				httpRequest = this.InitializeRequestAsPut(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.DeleteRequest) != 0) {
+				httpRequest = InitializeRequestAsDelete(request);
 			} else {
 				throw new NotSupportedException();
 			}
@@ -282,7 +290,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (signedMessage != null) {
 				return signedMessage.HttpMethod;
 			} else {
-				return (message.HttpMethods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
+				return MessagingUtilities.GetHttpVerb(message.HttpMethods);
 			}
 		}
 
@@ -297,7 +305,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// 	<para>This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).</para>
 		/// </remarks>
 		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
-			var protocol = Protocol.Lookup(requestMessage.Version);
 			var dictionary = this.MessageDescriptions.GetAccessor(requestMessage);
 
 			// copy so as to not modify original

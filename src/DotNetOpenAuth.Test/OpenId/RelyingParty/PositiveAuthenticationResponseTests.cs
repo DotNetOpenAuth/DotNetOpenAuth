@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.IsNull(authResponse.Exception);
 			Assert.AreEqual<string>(assertion.ClaimedIdentifier, authResponse.ClaimedIdentifier);
-			Assert.AreEqual<string>(authResponseAccessor.endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
+			Assert.AreEqual<string>(authResponse.Endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension(typeof(ClaimsResponse)));
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension<ClaimsResponse>());
 			Assert.IsNull(authResponse.GetCallbackArgument("a"));
@@ -57,6 +57,18 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var rp = CreateRelyingParty();
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
 			Assert.AreEqual(AuthenticationStatus.Failed, authResponse.Status);
+		}
+
+		/// <summary>
+		/// Verifies that the RP rejects positive assertions with HTTP Claimed
+		/// Cdentifiers when RequireSsl is set to true.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void InsecureIdentifiersRejectedWithRequireSsl() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
+			var rp = CreateRelyingParty();
+			rp.SecuritySettings.RequireSsl = true;
+			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
 		}
 
 		[TestMethod]

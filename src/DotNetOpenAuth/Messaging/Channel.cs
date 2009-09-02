@@ -67,7 +67,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		private const string IndirectMessageFormPostFormat = @"
 <html>
-<body onload=""var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; document.getElementById('openid_message').submit()"">
+<head>
+</head>
+<body onload=""document.body.style.display = 'none'; var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; document.getElementById('openid_message').submit()"">
 <form id=""openid_message"" action=""{0}"" method=""post"" accept-charset=""UTF-8"" enctype=""application/x-www-form-urlencoded"" onSubmit=""var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; return true;"">
 {1}
 	<input id=""submit_button"" type=""submit"" value=""Continue"" />
@@ -677,6 +679,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			WebHeaderCollection headers = new WebHeaderCollection();
+			headers.Add(HttpResponseHeader.ContentType, "text/html");
 			StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture);
 			StringBuilder hiddenFields = new StringBuilder();
 			foreach (var field in fields) {
@@ -839,6 +842,42 @@ namespace DotNetOpenAuth.Messaging {
 			this.SendParametersInEntity(httpRequest, fields);
 
 			return httpRequest;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a PUT request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP PUT request with the message parts serialized to the query string.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsPut(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires(requestMessage != null);
+			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
+			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "PUT";
+			return request;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a DELETE request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP DELETE request with the message parts serialized to the query string.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsDelete(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires(requestMessage != null);
+			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
+			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "DELETE";
+			return request;
 		}
 
 		/// <summary>

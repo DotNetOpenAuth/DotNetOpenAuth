@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// </remarks>
 	[Serializable]
 	[Pure]
-	public sealed class Realm {
+	public class Realm {
 		/// <summary>
 		/// A regex used to detect a wildcard that is being used in the realm.
 		/// </summary>
@@ -381,7 +381,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The details of the endpoints if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
-		internal IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+		internal virtual IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this.UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {
@@ -399,6 +399,18 @@ namespace DotNetOpenAuth.OpenId {
 
 			return null;
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.uri != null);
+			Contract.Invariant(this.uri.AbsoluteUri != null);
+		}
+#endif
 
 		/// <summary>
 		/// Calls <see cref="UriBuilder.ToString"/> if the argument is non-null.
@@ -420,18 +432,5 @@ namespace DotNetOpenAuth.OpenId {
 			// is safe: http://blog.nerdbank.net/2008/04/uriabsoluteuri-and-uritostring-are-not.html
 			return realmUriBuilder.ToString();
 		}
-
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.uri != null);
-			Contract.Invariant(this.uri.AbsoluteUri != null);
-		}
-#endif
 	}
 }

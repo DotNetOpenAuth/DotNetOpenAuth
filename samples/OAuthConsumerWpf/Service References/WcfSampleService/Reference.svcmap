@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="2ed8bfde-ddd6-4e80-8c91-c4c0ee21026d" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:65169/OAuthServiceProvider/DataApi.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="DataApi.wsdl" MetadataType="Wsdl" ID="3e4bf2a2-224e-4651-bbfb-67b29c58b1e8" SourceId="1" SourceUrl="http://localhost:65169/OAuthServiceProvider/DataApi.svc?wsdl" />
+    <MetadataFile FileName="DataApi.xsd" MetadataType="Schema" ID="431abff0-dec3-4e99-9173-9f8b69a27f94" SourceId="1" SourceUrl="http://localhost:65169/OAuthServiceProvider/DataApi.svc?xsd=xsd2" />
+    <MetadataFile FileName="DataApi1.xsd" MetadataType="Schema" ID="150d6701-aa42-49bc-8042-108207e19493" SourceId="1" SourceUrl="http://localhost:65169/OAuthServiceProvider/DataApi.svc?xsd=xsd0" />
+    <MetadataFile FileName="DataApi.disco" MetadataType="Disco" ID="d9c6ecfd-3dc0-4b71-80ba-b2b25c42238a" SourceId="1" SourceUrl="http://localhost:65169/OAuthServiceProvider/DataApi.svc?disco" />
+    <MetadataFile FileName="DataApi2.xsd" MetadataType="Schema" ID="3f8e1950-7d27-4def-acf9-8e1a0e4e03df" SourceId="1" SourceUrl="http://localhost:65169/OAuthServiceProvider/DataApi.svc?xsd=xsd1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

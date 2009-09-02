@@ -22,7 +22,16 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// Generates the full path to tool.
 		/// </summary>
 		protected override string GenerateFullPathToTool() {
-			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Microsoft SDKs\Windows\v6.0A\bin\" + this.ToolName);
+			string[] versions = new[] { "v6.0A", "v6.1" };
+			string fullPath = null;
+			foreach (string version in versions) {
+				fullPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Microsoft SDKs\Windows\" + version + @"\bin\" + this.ToolName);
+				if (File.Exists(fullPath)) {
+					return fullPath;
+				}
+			}
+
+			throw new FileNotFoundException("Unable to find sn.exe tool.", fullPath);
 		}
 	}
 }

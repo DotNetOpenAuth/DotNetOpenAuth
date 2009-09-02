@@ -6,6 +6,7 @@ namespace OpenIdProviderWebForms {
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Provider;
+	using OpenIdProviderWebForms.Code;
 
 	/// <summary>
 	/// Page for giving the user the option to continue or cancel out of authentication with a consumer.
@@ -20,6 +21,11 @@ namespace OpenIdProviderWebForms {
 				ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider) == RelyingPartyDiscoveryResult.Success ? "passed" : "failed";
 
 			this.realmLabel.Text = ProviderEndpoint.PendingRequest.Realm.ToString();
+
+			var oauthRequest = OAuthHybrid.ServiceProvider.ReadAuthorizationRequest(ProviderEndpoint.PendingRequest);
+			if (oauthRequest != null) {
+				this.OAuthPanel.Visible = true;
+			}
 
 			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
 				if (ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity) {
@@ -51,6 +57,24 @@ namespace OpenIdProviderWebForms {
 		}
 
 		protected void Yes_Click(object sender, EventArgs e) {
+			if (!Page.IsValid) {
+				return;
+			}
+
+			if (this.OAuthPanel.Visible) {
+				string consumerKey = null;
+				string grantedScope = null;
+				if (this.oauthPermission.Checked) {
+					// This SIMPLE sample merely uses the realm as the consumerKey,
+					// but in a real app this will probably involve a database lookup to translate
+					// the realm to a known consumerKey.
+					consumerKey = ProviderEndpoint.PendingRequest.Realm;
+					grantedScope = string.Empty; // we don't scope individual access rights on this sample
+				}
+
+				OAuthHybrid.ServiceProvider.AttachAuthorizationResponse(ProviderEndpoint.PendingRequest, consumerKey, grantedScope);
+			}
+
 			var sregRequest = ProviderEndpoint.PendingRequest.GetExtension<ClaimsRequest>();
 			ClaimsResponse sregResponse = null;
 			if (sregRequest != null) {

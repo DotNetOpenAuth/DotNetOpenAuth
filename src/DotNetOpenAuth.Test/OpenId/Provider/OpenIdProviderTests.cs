@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System;
+	using System.IO;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -128,15 +129,19 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 
 		[TestMethod]
 		public void BadRequestsGenerateValidErrorResponsesHosted() {
-			using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
-				Uri opEndpoint = new Uri(host.BaseUri, "/OpenIdProviderEndpoint.ashx");
-				var rp = new OpenIdRelyingParty(null);
-				var nonOpenIdMessage = new Mocks.TestDirectedMessage();
-				nonOpenIdMessage.Recipient = opEndpoint;
-				nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
-				MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
-				var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
-				Assert.IsNotNull(response.ErrorMessage);
+			try {
+				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
+					Uri opEndpoint = new Uri(host.BaseUri, "/OpenIdProviderEndpoint.ashx");
+					var rp = new OpenIdRelyingParty(null);
+					var nonOpenIdMessage = new Mocks.TestDirectedMessage();
+					nonOpenIdMessage.Recipient = opEndpoint;
+					nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
+					MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
+					var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
+					Assert.IsNotNull(response.ErrorMessage);
+				}
+			} catch (FileNotFoundException ex) {
+				Assert.Inconclusive("Unable to execute hosted ASP.NET tests because {0} could not be found.  {1}", ex.FileName, ex.FusionLog);
 			}
 		}
 	}

@@ -1,0 +1,340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AssociationSecretAndTypeLengthMismatch" xml:space="preserve">
+    <value>Dužina deljene tajne ({0}) ne slaže se sa dužinom zahtevanom od povezujućeg tipa ('{1}').</value>
+  </data>
+  <data name="AssociationSecretHashLengthMismatch" xml:space="preserve">
+    <value>Dužina šifrovane deljene tajne ({0}) ne slaže se sa dužinom hashing algoritma ({1}).</value>
+  </data>
+  <data name="AssociationStoreRequiresNonceStore" xml:space="preserve">
+    <value>Ako je dato povezujuće skladište, jedinstveni identifikator skladišta takođe mora biti prisutan.</value>
+  </data>
+  <data name="BadAssociationPrivateData" xml:space="preserve">
+    <value>Dostavljeni privatni podaci ne slažu se ni sa jednim poznatim Association tipom.  Dužina im je možda prekratka ili su podaci neispravni.</value>
+  </data>
+  <data name="CallbackArgumentsRequireSecretStore" xml:space="preserve">
+    <value>Callback argumenti su podržani jedino kada je {0} dustupan za {1}.</value>
+  </data>
+  <data name="CallDeserializeBeforeCreateResponse" xml:space="preserve">
+    <value>Simple Registration zahtev može generisati odgovor jedino na prijemnoj strani.</value>
+  </data>
+  <data name="ClaimedIdAndLocalIdMustBothPresentOrAbsent" xml:space="preserve">
+    <value>openid.claimed_id i openid.identity parametri moraju istovremeno biti prisutni ili nedostajati.</value>
+  </data>
+  <data name="ClaimedIdentifierCannotBeSetOnDelegatedAuthentication" xml:space="preserve">
+    <value>ClaimedIdentifier svojstvo ne može se podesiti kada IsDelegatedIdentifier ima vrednost true da bi se izbeglo narušavanje OpenID URL delegiranja.</value>
+  </data>
+  <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
+    <value>ClaimedIdentifier svojstvo se najpre mora podesiti.</value>
+  </data>
+  <data name="DiffieHellmanRequiredPropertiesNotSet" xml:space="preserve">
+    <value>Sledeća svojstva moraju biti podešena pre nego što Diffie-Hellmanov algoritam može generisati javni ključ: {0}</value>
+  </data>
+  <data name="ExplicitHttpUriSuppliedWithSslRequirement" xml:space="preserve">
+    <value>URI nije SSL a svojstvo requireSslDiscovery je podešeno na true.</value>
+  </data>
+  <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
+    <value>Prostor deljenja proširenja '{0}' je već dodat. Samo jedno proširenje po prostoru je dozvoljeno u datom zahtevu.</value>
+  </data>
+  <data name="ExtensionLookupSupportUnavailable" xml:space="preserve">
+    <value>Ne može se tražiti podrška za proširenja na rehidriranom ServiceEndpoint.</value>
+  </data>
+  <data name="FragmentNotAllowedOnXRIs" xml:space="preserve">
+    <value>Segmenti fragmenta se ne primenjuju na XRI identifikatore.</value>
+  </data>
+  <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
+    <value>ClaimedIdentifier i LocalIdentifier moraju biti isti kada IsIdentifierSelect ima vrednost true.</value>
+  </data>
+  <data name="IndirectErrorFormattedMessage" xml:space="preserve">
+    <value>{0} (Kontakt: {1}, Referenca: {2})</value>
+  </data>
+  <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
+    <value>Ne može se enkodovati '{0}' jer sadrži nevalidan znak za Key-Value Form enkodiranje.  (linija {1}: '{2}')</value>
+  </data>
+  <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
+    <value>Ne može se dekodovati Key-Value Form jer je pronađena linija bez  '{0}' znaka.  (linija {1}: '{2}')</value>
+  </data>
+  <data name="InvalidScheme" xml:space="preserve">
+    <value>Šema mora biti http ili https a bila je '{0}'.</value>
+  </data>
+  <data name="InvalidUri" xml:space="preserve">
+    <value>Vrednost '{0}' nije validan URI.</value>
+  </data>
+  <data name="InvalidXri" xml:space="preserve">
+    <value>Nije prepoznat XRI format: '{0}'.</value>
+  </data>
+  <data name="IssuedAssertionFailsIdentifierDiscovery" xml:space="preserve">
+    <value>OpenID Provider dao je iskaz za Identifier čije se informacije o pronalaženju ne slažu. 
+Informacije o krajnoj tački iskaza: 
+{0}
+Informacije o otkrivenoj krajnjoj tački:
+{1}</value>
+  </data>
+  <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
+    <value>Lista ključeva se ne slaže sa ponuđenim rečnikom.</value>
+  </data>
+  <data name="MatchingArgumentsExpected" xml:space="preserve">
+    <value>Parametri '{0}' i '{1}' moraju oba biti ili ne smeju oba biti '{2}'.</value>
+  </data>
+  <data name="NoAssociationTypeFoundByLength" xml:space="preserve">
+    <value>Ni jedan prepoznati tip asociranja se ne uklapa sa zahtevanom dužinom {0}.</value>
+  </data>
+  <data name="NoAssociationTypeFoundByName" xml:space="preserve">
+    <value>Ni jedan prepoznati tip asociranja se ne uklapa sa zahtevanim imenom '{0}'.</value>
+  </data>
+  <data name="NoEncryptionSessionRequiresHttps" xml:space="preserve">
+    <value>Osim ako se ne koristi enkripcija transportnog sloja, "no-encryption" NE SME biti korišćen.</value>
+  </data>
+  <data name="NoSessionTypeFound" xml:space="preserve">
+    <value>Diffie-Hellman sesija tipa '{0}' nije pronađena za OpenID {1}.</value>
+  </data>
+  <data name="OpenIdEndpointNotFound" xml:space="preserve">
+    <value>Nijedna OpenID krajnja tačka nije pronađena.</value>
+  </data>
+  <data name="OperationOnlyValidForSetupRequiredState" xml:space="preserve">
+    <value>Ova operacija je jedino dozvoljena kada je IAuthenticationResponse.State == AuthenticationStatus.SetupRequired.</value>
+  </data>
+  <data name="ProviderVersionUnrecognized" xml:space="preserve">
+    <value>Nije moguće utvrditi verziju OpenID protokola implementiranog od strane Provider-a na krajnjoj tački '{0}'.</value>
+  </data>
+  <data name="RealmCausedRedirectUponDiscovery" xml:space="preserve">
+    <value>HTTP zahtev ka URL-u domena ({0}) rezultovao je redirekcijom, koja nije dozvoljena u togu pronalaženja Relying Party.</value>
+  </data>
+  <data name="ReturnToNotUnderRealm" xml:space="preserve">
+    <value>return_to '{0}' nije unutar domena '{1}'.</value>
+  </data>
+  <data name="ReturnToParamDoesNotMatchRequestUrl" xml:space="preserve">
+    <value>{0} parametar ({1}) se ne slaže sa trenutnim URL ({2}) sa kojim je zahtev napravljen.</value>
+  </data>
+  <data name="ReturnToRequiredForResponse" xml:space="preserve">
+    <value>openid.return_to parametar je neophodan u poruci zahteva da bi se konstruisao odgovor, ali ovaj parametar nedostaje.</value>
+  </data>
+  <data name="SignatureDoesNotIncludeMandatoryParts" xml:space="preserve">
+    <value>Sledeći parametri nisu uključeni u potpis a moraju da budu: {0}</value>
+  </data>
+  <data name="SregInvalidBirthdate" xml:space="preserve">
+    <value>Neispravna vrednost za datum rođenja.  Mora biti u formi gggg-MM-dd.</value>
+  </data>
+  <data name="TypeMustImplementX" xml:space="preserve">
+    <value>Tip mora implementirati {0}.</value>
+  </data>
+  <data name="UnsolicitedAssertionsNotAllowedFrom1xOPs" xml:space="preserve">
+    <value>Nezahtevani iskazi nisu dozvoljeni od strane 1.0 OpenID Providers.</value>
+  </data>
+  <data name="UserSetupUrlRequiredInImmediateNegativeResponse" xml:space="preserve">
+    <value>openid.user_setup_url parametar je neophodan prilikom slanja negativnih poruka sa iskazima prilikom odgovaranja na zahteve u trenutnom modu.</value>
+  </data>
+  <data name="XriResolutionFailed" xml:space="preserve">
+    <value>XRI razrešivanje neuspešno.</value>
+  </data>
+  <data name="StoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
+    <value>Tekući HttpContext nije detektovan, tako da {0} instanca mora biti eksplicitno postavljena ili specificirana u .config fajlu.  Pozvati preklopljeni konstruktor koji uzima parametar {0}.</value>
+  </data>
+  <data name="AttributeAlreadyAdded" xml:space="preserve">
+    <value>Atribut sa URI tipom '{0}' je već dodat.</value>
+  </data>
+  <data name="AttributeTooManyValues" xml:space="preserve">
+    <value>Samo {0} vrednosti za atribut '{1}' su zahtevane, ali {2} su ponuđene.</value>
+  </data>
+  <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
+    <value>Prosleđivanje objekta tipa DateTime čije svojstvo Kind ima vrednost Unspecified nije dozvoljeno.</value>
+  </data>
+  <data name="AssociationOrSessionTypeUnrecognizedOrNotSupported" xml:space="preserve">
+    <value>Zahtevani tip asocijacije '{0}' sa sesijom tipa '{1}' nije prepoznat ili nije podržan od strane ovog Provider-a  zbog bezbedonosnih zahteva.</value>
+  </data>
+  <data name="IncompatibleAssociationAndSessionTypes" xml:space="preserve">
+    <value>Provider je zahtevao asocijaciju tipa '{0}' i sesiju tipa '{1}', koje nisu međusobno kompatibilne.</value>
+  </data>
+  <data name="CreateRequestAlreadyCalled" xml:space="preserve">
+    <value>Zahtev za autentifikacijom je već kreiran korišćenjem CreateRequest().</value>
+  </data>
+  <data name="OpenIdTextBoxEmpty" xml:space="preserve">
+    <value>Nijedan OpenID url nije ponuđen.</value>
+  </data>
+  <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
+    <value>Ekstenzija sa svojstvom ovog imena ('{0}') je već registrovana.</value>
+  </data>
+  <data name="ClientScriptExtensionTypeCollision" xml:space="preserve">
+    <value>Ekstenzija '{0}' je već registrovana.</value>
+  </data>
+  <data name="UnexpectedHttpStatusCode" xml:space="preserve">
+    <value>Neočekivani HTTP statusni kod {0} {1} primljen u direktnom odgovoru.</value>
+  </data>
+  <data name="NotSupportedByAuthenticationSnapshot" xml:space="preserve">
+    <value>Ova operacija nije podržana od strane serijalizovanih odgovora za autentifikaciju. Pokušati ovu operaciju iz LoggedIn handler-a događaja.</value>
+  </data>
+  <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
+    <value>Nijedan XRDS dokument koji sadrži informaciju o OpenID Relying Party krajnjoj tački nije pronadjen u {0}.</value>
+  </data>
+  <data name="AbsoluteUriRequired" xml:space="preserve">
+    <value>Absolutni URI je zahtevan za ovu vrednost.</value>
+  </data>
+  <data name="UnsolicitedAssertionForUnrelatedClaimedIdentifier" xml:space="preserve">
+    <value>Nezahtevani iskaz ne može biti poslat za navedeni identifikator {0} jer ovo nije autorizovani Provider za taj identifikator.</value>
+  </data>
+  <data name="MaximumAuthenticationTimeExpired" xml:space="preserve">
+    <value>Maksimalno dozvoljeno vreme za kompletiranje autentifikacije je isteklo. Molimo pokušajte ponovo.</value>
+  </data>
+  <data name="PrivateRPSecretNotFound" xml:space="preserve">
+    <value>Ne može se pronaći tajna za potpisivanje od strane handle-a '{0}'.</value>
+  </data>
+  <data name="ResponseNotReady" xml:space="preserve">
+    <value>Odgovor nije spreman.  Koristiti najpre IsResponseReady za proveru da li je odgovor spreman.</value>
+  </data>
+  <data name="UnsupportedChannelConfiguration" xml:space="preserve">
+    <value>Ovo svojstvo nije dostupno zbog nepoznate konfiguracije kanala.</value>
+  </data>
+  <data name="IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent" xml:space="preserve">
+    <value>openid.identity i openid.claimed_id parametri moraju istovremeno biti prisutna ili istovremeno odsutna u poruci.</value>
+  </data>
+  <data name="ReturnToRequiredForOperation" xml:space="preserve">
+    <value>Svojstvo ReturnTo ne sme biti null da bi se podržala ova operacija.</value>
+  </data>
+  <data name="UnsolicitedAssertionRejectionRequiresNonceStore" xml:space="preserve">
+    <value>Odbijanje nezahtevanih iskaza zahteva skladište jedinstvenih identifikatora i skladište asocijacija.</value>
+  </data>
+  <data name="UnsolicitedAssertionsNotAllowed" xml:space="preserve">
+    <value>Nezahtevani iskazi nisu dozvoljeni od strane ovog Relying Party.</value>
+  </data>
+  <data name="DelegatingIdentifiersNotAllowed" xml:space="preserve">
+    <value>Samo OpenID-jevi izdati direktno od strane njihovog OpenID Provider-a su ovde dozvoljeni.</value>
+  </data>
+  <data name="XriResolutionDisabled" xml:space="preserve">
+    <value>XRI podrška je onemogućena na ovom sajtu.</value>
+  </data>
+  <data name="AssociationStoreRequired" xml:space="preserve">
+    <value>Skladište asocijacija nije dato a zahtevano je za trenutnu konfiguraciju.</value>
+  </data>
+  <data name="UnexpectedEnumPropertyValue" xml:space="preserve">
+    <value>Svojstvo {0} je imalo neočekivanu vrednost {1}.</value>
+  </data>
+  <data name="NoIdentifierSet" xml:space="preserve">
+    <value>Ni jedan identifikator nije podešen.</value>
+  </data>
+  <data name="PropertyValueNotSupported" xml:space="preserve">
+    <value>Ova vrednost svojstva nije podržana od strane ove kontrole.</value>
+  </data>
+  <data name="ArgumentIsPpidIdentifier" xml:space="preserve">
+    <value>Ovo je već PPID Identifier.</value>
+  </data>
+  <data name="RequireSslNotSatisfiedByAssertedClaimedId" xml:space="preserve">
+    <value>Žao nam je.  Ovaj sajt jedino prihvata OpenID-jeve koji su HTTPS-bezbedni, a {0} nije bezbedni Identifier.</value>
+  </data>
+</root>

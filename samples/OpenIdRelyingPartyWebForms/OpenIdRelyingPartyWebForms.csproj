@@ -101,6 +101,13 @@
     <Compile Include="Code\InMemoryTokenManager.cs" />
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
+    <Compile Include="loginPlusOAuthSampleOP.aspx.cs">
+      <DependentUpon>loginPlusOAuthSampleOP.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="loginPlusOAuthSampleOP.aspx.designer.cs">
+      <DependentUpon>loginPlusOAuthSampleOP.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -169,6 +176,7 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="loginPlusOAuthSampleOP.aspx" />
     <Content Include="images\attention.png" />
     <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="images\openid_login.gif" />

@@ -16,6 +16,8 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Linq;
+	using System.Text.RegularExpressions;
+	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
@@ -256,8 +258,27 @@ namespace DotNetOpenAuth.InfoCard {
 		[Description("The URL to this site's privacy policy.")]
 		[Category(InfoCardCategory), DefaultValue(PrivacyUrlDefault)]
 		public string PrivacyUrl {
-			get { return (string)this.ViewState[PrivacyUrlViewStateKey] ?? PrivacyUrlDefault; }
-			set { this.ViewState[PrivacyUrlViewStateKey] = value; }
+			get {
+				return (string)this.ViewState[PrivacyUrlViewStateKey] ?? PrivacyUrlDefault;
+			}
+
+			set {
+				if (this.Page != null && !this.DesignMode) {
+					// Validate new value by trying to construct a Uri based on it.
+					new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
+				} else {
+					// We can't fully test it, but it should start with either ~/ or a protocol.
+					if (Regex.IsMatch(value, @"^https?://")) {
+						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+						// this is valid too
+					} else {
+						throw new UriFormatException();
+					}
+				}
+
+				this.ViewState[PrivacyUrlViewStateKey] = value;
+			}
 		}
 
 		/// <summary>
@@ -480,6 +501,20 @@ namespace DotNetOpenAuth.InfoCard {
 		}
 
 		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
+
+			if (!this.DesignMode) {
+				// The Cardspace selector will display an ugly error to the user if
+				// the privacy URL is present but the privacy version is not.
+				ErrorUtilities.VerifyOperation(string.IsNullOrEmpty(this.PrivacyUrl) || !string.IsNullOrEmpty(this.PrivacyVersion), InfoCardStrings.PrivacyVersionRequiredWithPrivacyUrl);
+			}
+		}
+
+		/// <summary>
 		/// Creates a control that renders to &lt;Param Name="{0}" Value="{1}" /&gt;
 		/// </summary>
 		/// <param name="name">The parameter name.</param>
@@ -609,7 +644,8 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			if (!string.IsNullOrEmpty(this.PrivacyUrl)) {
-				cardSpaceControl.Controls.Add(CreateParam("privacyUrl", this.PrivacyUrl));
+				string privacyUrl = this.DesignMode ? this.PrivacyUrl : new Uri(Page.Request.Url, Page.ResolveUrl(this.PrivacyUrl)).AbsoluteUri;
+				cardSpaceControl.Controls.Add(CreateParam("privacyUrl", privacyUrl));
 			}
 
 			if (!string.IsNullOrEmpty(this.PrivacyVersion)) {

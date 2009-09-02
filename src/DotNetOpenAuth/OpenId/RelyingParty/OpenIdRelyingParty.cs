@@ -490,6 +490,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				NegativeAssertionResponse negativeAssertion;
 				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
+					if (this.EndpointFilter != null) {
+						// We need to make sure that this assertion is coming from an endpoint
+						// that the host deems acceptable.
+						var providerEndpoint = new SimpleXrdsProviderEndpoint(positiveAssertion);
+						ErrorUtilities.VerifyProtocol(
+							this.EndpointFilter(providerEndpoint),
+							OpenIdStrings.PositiveAssertionFromNonWhitelistedProvider,
+							providerEndpoint.Uri);
+					}
+
 					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
 					foreach (var behavior in this.Behaviors) {
 						behavior.OnIncomingPositiveAssertion(response);

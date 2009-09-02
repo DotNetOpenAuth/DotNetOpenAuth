@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// An immutable description of a URL that receives messages.
 	/// </summary>
 	[DebuggerDisplay("{AllowedMethods} {Location}")]
+	[Serializable]
 	public class MessageReceivingEndpoint {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageReceivingEndpoint"/> class.
@@ -30,7 +31,7 @@ namespace DotNetOpenAuth.Messaging {
 		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
 			Contract.Requires<ArgumentNullException>(location != null);
 			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None, "method");
-			Contract.Requires<ArgumentOutOfRangeException>((method & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.GetRequest)) != 0, MessagingStrings.GetOrPostFlagsRequired);
+			Contract.Requires<ArgumentOutOfRangeException>((method & HttpDeliveryMethods.HttpVerbMask) != 0, MessagingStrings.GetOrPostFlagsRequired);
 
 			this.Location = location;
 			this.AllowedMethods = method;

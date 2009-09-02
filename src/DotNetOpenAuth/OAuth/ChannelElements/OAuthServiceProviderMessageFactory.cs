@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Initializes a new instance of the <see cref="OAuthServiceProviderMessageFactory"/> class.
 		/// </summary>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		protected internal OAuthServiceProviderMessageFactory(IServiceProviderTokenManager tokenManager) {
+		public OAuthServiceProviderMessageFactory(IServiceProviderTokenManager tokenManager) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
 
 			this.tokenManager = tokenManager;

@@ -229,6 +229,28 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Makes a key/value pair available when the authentication is completed.
+		/// </summary>
+		/// <param name="key">The parameter name.</param>
+		/// <param name="value">The value of the argument.  Must not be null.</param>
+		/// <remarks>
+		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
+		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>The value stored here can be retrieved using
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
+		/// </remarks>
+		public void SetCallbackArgument(string key, string value) {
+			ErrorUtilities.VerifyNonZeroLength(key, "key");
+			ErrorUtilities.VerifyArgumentNotNull(value, "value");
+			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
+
+			this.returnToArgs[key] = value;
+		}
+
+		/// <summary>
 		/// Adds an OpenID extension to the request directed at the OpenID provider.
 		/// </summary>
 		/// <param name="extension">The initialized extension to add to the request.</param>
@@ -336,11 +358,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// before calling this method.
 		/// </remarks>
 		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<ServiceEndpoint> serviceEndpoints, bool createNewAssociationsAsNeeded) {
-			// Can't use code contracts here because this is a yield return method.
+			// DO NOT USE CODE CONTRACTS IN THIS METHOD, since it uses yield return
 			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
 			ErrorUtilities.VerifyArgumentNotNull(serviceEndpoints, "serviceEndpoints");
+			////Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
 			// If shared associations are required, then we had better have an association store.
 			ErrorUtilities.VerifyOperation(!relyingParty.SecuritySettings.RequireAssociation || relyingParty.AssociationManager.HasAssociationStore, OpenIdStrings.AssociationStoreRequired);
@@ -468,7 +491,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			request.AssociationHandle = association != null ? association.Handle : null;
 			request.AddReturnToArguments(this.returnToArgs);
 			if (this.endpoint.UserSuppliedIdentifier != null) {
-				request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.endpoint.UserSuppliedIdentifier);
+				request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.endpoint.UserSuppliedIdentifier.OriginalString);
 			}
 			foreach (IOpenIdMessageExtension extension in this.extensions) {
 				request.Extensions.Add(extension);

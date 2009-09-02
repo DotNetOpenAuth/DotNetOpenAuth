@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			signedMessage.UtcCreationDate = DateTime.Parse("1/1/2009");
 			signedMessage.AssociationHandle = association.Handle;
 			Assert.IsNotNull(signer.ProcessOutgoingMessage(message));
-			Assert.AreEqual("0wOdvNgzCZ5I5AzbU58Nq2Tg8EJZ7QoNz4gpx2r7jII=", signedMessage.Signature);
+			Assert.AreEqual("o9+uN7qTaUS9v0otbHTuNAtbkpBm14+es9QnNo6IHD4=", signedMessage.Signature);
 		}
 
 		/// <summary>

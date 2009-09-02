@@ -9,6 +9,7 @@
 
 	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
 	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
+	<Import Project="$(ProjectRoot)\tools\Publish.targets"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
@@ -19,10 +20,12 @@
 		                                 $(ProjectRoot)\lib\Microsoft.Contracts.dll; "/>
 		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
 		                                $(OutputPath)\$(ProductName).dll;
-		                                $(OutputPath)\$(ProductName).Test.dll" />
+		                                $(OutputPath)\$(ProductName).Contracts.dll;
+		                                $(OutputPath)\$(ProductName).Test.dll;
+		                                $(ProjectRoot)\samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
 
-	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
 		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 		<ItemGroup>
 			<DirtyDirectories Include="
@@ -45,9 +48,7 @@
 	</Target>
 
 	<Target Name="SkipVerification" Condition="'$(IsElevated)' == 'true'">
-		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName)" PublicKeyToken="$(PublicKeyToken)" />
-		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName)_Accessor" PublicKeyToken="$(PublicKeyToken)" />
-		<SignatureVerification SkipVerification="true" AssemblyName="$(ProductName).Test" PublicKeyToken="$(PublicKeyToken)" />
+		<SignatureVerification SkipVerification="true" AssemblyName="*" PublicKeyToken="$(PublicKeyToken)" />
 	</Target>
 	
 	<Target Name="BuildProduct" DependsOnTargets="SkipVerification">
@@ -88,7 +89,8 @@
 		<Message Text="Signing delay-signed assemblies." />
 		<ReSignDelaySignedAssemblies
 			KeyContainer="$(KeyPairContainer)"
-			Assemblies="@(DelaySignedAssemblies)" />
+			Assemblies="@(DelaySignedAssemblies)"
+			Condition="Exists(%(Identity))" />
 	</Target>
 
 	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct">
@@ -176,9 +178,11 @@
 											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
 																$(ILMergeOutputAssemblyDirectory)\$(ProductName).???;
+																$(OutputPath)\**\$(ProductName).resources.dll;
 																$(OutputPath)\$(ProductName).xml;
 																$(OutputPath)\$(ProductName).Contracts.???;
 																$(ProjectRoot)\Doc\README.Bin.html;
+																$(ProjectRoot)\src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)\Lib\log4net.*;
@@ -197,6 +201,8 @@
 															$(ProjectRoot)\**\Settings.StyleCop;
 															$(ProjectRoot)\Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)\Samples\**\log4net.???;
+															$(ProjectRoot)\Samples\**\PresentationCore.dll;
+															$(ProjectRoot)\Samples\**\System.Printing.dll;
 															$(ProjectRoot)\Samples\**\*.refresh_;
 															" />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
@@ -251,7 +257,9 @@
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" />
 	</Target>
 
-	<Target Name="Nightly" DependsOnTargets="Drop;Tools">
+	<!-- Although Nightly includes publishing samples and docs, those targets are conditioned for
+	     running only when the SampleWebRoot and DocWebRoot properties are set, respectively. -->
+	<Target Name="Nightly" DependsOnTargets="Drop;Tools;PublishSamples;PublishDocumentation">
 
 	</Target>
 </Project>

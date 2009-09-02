@@ -197,7 +197,11 @@ namespace DotNetOpenAuth.Loggers {
 		/// </summary>
 		/// <returns>The created <see cref="ILog"/> instance.</returns>
 		internal static ILog Initialize(string name) {
-			return IsLog4NetPresent ? CreateLogger(name) : null;
+			try {
+				return IsLog4NetPresent ? CreateLogger(name) : null;
+			} catch (FileLoadException) { // wrong log4net.dll version
+				return null;
+			}
 		}
 
 		/// <summary>

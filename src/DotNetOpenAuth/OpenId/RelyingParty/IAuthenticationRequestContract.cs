@@ -70,6 +70,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			throw new NotImplementedException();
 		}
 
+		void IAuthenticationRequest.SetCallbackArgument(string key, string value) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(key));
+			Contract.Requires<ArgumentNullException>(value != null);
+			throw new NotImplementedException();
+		}
+
 		void IAuthenticationRequest.AddExtension(IOpenIdMessageExtension extension) {
 			Contract.Requires<ArgumentNullException>(extension != null);
 			throw new NotImplementedException();

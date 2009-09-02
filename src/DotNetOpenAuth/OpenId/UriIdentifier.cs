@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
@@ -42,7 +43,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(string uri, bool requireSslDiscovery)
-			: base(requireSslDiscovery) {
+			: base(uri, requireSslDiscovery) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 			Uri canonicalUri;
 			bool schemePrepended;
@@ -69,7 +70,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
-			: base(requireSslDiscovery) {
+			: base(uri != null ? uri.OriginalString : null, requireSslDiscovery) {
 			Contract.Requires<ArgumentNullException>(uri != null);
 			if (!TryCanonicalize(new UriBuilder(uri), out uri)) {
 				throw new UriFormatException();
@@ -129,6 +130,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </exception>
 		public override bool Equals(object obj) {
 			UriIdentifier other = obj as UriIdentifier;
+			if (obj != null && other == null && Identifier.EqualityOnStrings) { // test hook to enable MockIdentifier comparison
+				other = Identifier.Parse(obj.ToString()) as UriIdentifier;
+			}
 			if (other == null) {
 				return false;
 			}
@@ -215,14 +219,18 @@ namespace DotNetOpenAuth.OpenId {
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
-					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
+					try {
+						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+						var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
 
-					// Filter out insecure endpoints if high security is required.
-					if (IsDiscoverySecureEndToEnd) {
-						xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
+						// Filter out insecure endpoints if high security is required.
+						if (IsDiscoverySecureEndToEnd) {
+							xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
+						}
+						endpoints.AddRange(xrdsEndpoints);
+					} catch (XmlException ex) {
+						Logger.Yadis.Error("Error while parsing the XRDS document.  Falling back to HTML discovery.", ex);
 					}
-					endpoints.AddRange(xrdsEndpoints);
 				}
 
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.

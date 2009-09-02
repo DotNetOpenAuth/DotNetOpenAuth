@@ -18,15 +18,19 @@ namespace DotNetOpenAuth.Test.Hosting {
 	public class HostingTests : TestBase {
 		[TestMethod]
 		public void AspHostBasicTest() {
-			using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
-				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(host.BaseUri);
-				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-					using (StreamReader sr = new StreamReader(response.GetResponseStream())) {
-						string content = sr.ReadToEnd();
-						StringAssert.Contains(content, "Test home page");
+			try {
+				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
+					HttpWebRequest request = (HttpWebRequest)WebRequest.Create(host.BaseUri);
+					using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+						Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+						using (StreamReader sr = new StreamReader(response.GetResponseStream())) {
+							string content = sr.ReadToEnd();
+							StringAssert.Contains(content, "Test home page");
+						}
 					}
 				}
+			} catch (FileNotFoundException ex) {
+				Assert.Inconclusive("Unable to execute hosted ASP.NET tests because {0} could not be found.  {1}", ex.FileName, ex.FusionLog);
 			}
 		}
 	}

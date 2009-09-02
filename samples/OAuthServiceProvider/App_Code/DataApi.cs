@@ -7,20 +7,25 @@ using System.ServiceModel;
 /// <remarks>
 /// Note how there is no code here that is bound to OAuth or any other
 /// credential/authorization scheme.  That's all part of the channel/binding elsewhere.
-/// And the reference to Global.LoggedInUser is the user being impersonated by the WCF client.
+/// And the reference to OperationContext.Current.ServiceSecurityContext.PrimaryIdentity 
+/// is the user being impersonated by the WCF client.
 /// In the OAuth case, it is the user who authorized the OAuth access token that was used
 /// to gain access to the service.
 /// </remarks>
 public class DataApi : IDataApi {
+	private User User {
+		get { return OperationContext.Current.ServiceSecurityContext.PrimaryIdentity.GetUser(); }
+	}
+
 	public int? GetAge() {
-		return Global.LoggedInUser.Age;
+		return User.Age;
 	}
 
 	public string GetName() {
-		return Global.LoggedInUser.FullName;
+		return User.FullName;
 	}
 
 	public string[] GetFavoriteSites() {
-		return Global.LoggedInUser.FavoriteSites.Select(site => site.SiteUrl).ToArray();
+		return User.FavoriteSites.Select(site => site.SiteUrl).ToArray();
 	}
 }

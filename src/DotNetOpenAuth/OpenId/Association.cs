@@ -163,7 +163,7 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Requires<ArgumentNullException>(privateData != null);
 			Contract.Ensures(Contract.Result<Association>() != null);
 
-			expires = expires.ToUniversalTime();
+			expires = expires.ToUniversalTimeSafe();
 			TimeSpan remainingLifeLength = expires - DateTime.UtcNow;
 			byte[] secret = privateData; // the whole of privateData is the secret key for now.
 			// We figure out what derived type to instantiate based on the length of the secret.
