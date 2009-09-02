@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F
 		..\doc\specs\openid-provider-authentication-policy-extension-1_0-02.html = ..\doc\specs\openid-provider-authentication-policy-extension-1_0-02.html
 		..\doc\specs\openid-simple-registration-extension-1_0.html = ..\doc\specs\openid-simple-registration-extension-1_0.html
 		..\doc\specs\openid_ui_extension_draft01.html = ..\doc\specs\openid_ui_extension_draft01.html
+		..\doc\specs\SimpleAuth-v3.docx = ..\doc\specs\SimpleAuth-v3.docx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{B4C6F647-C046-4B54-BE12-7701C4119EE7}"
