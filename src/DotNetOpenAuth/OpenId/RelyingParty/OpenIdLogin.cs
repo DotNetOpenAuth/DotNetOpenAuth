@@ -568,6 +568,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			set {
 				unchecked {
+					EnsureChildControls();
 					base.TabIndex = (short)(value + TextBoxTabIndexOffset);
 					this.loginButton.TabIndex = (short)(value + LoginButtonTabIndexOffset);
 					this.rememberMeCheckBox.TabIndex = (short)(value + RememberMeTabIndexOffset);
