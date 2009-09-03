@@ -673,6 +673,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
+
+			EnsureChildControls();
+			EnsureID();
+			this.requiredValidator.ControlToValidate = this.ID;
+			this.identifierFormatValidator.ControlToValidate = this.ID;
+		}
+
+		/// <summary>
 		/// Initializes the child controls.
 		/// </summary>
 		protected void InitializeControls() {
@@ -722,7 +735,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.requiredValidator.ErrorMessage = RequiredTextDefault + RequiredTextSuffix;
 			this.requiredValidator.Text = RequiredTextDefault + RequiredTextSuffix;
 			this.requiredValidator.Display = ValidatorDisplay.Dynamic;
-			this.requiredValidator.ControlToValidate = this.ID;
 			this.requiredValidator.ValidationGroup = ValidationGroupDefault;
 			cell.Controls.Add(this.requiredValidator);
 			this.identifierFormatValidator = new CustomValidator();
@@ -731,7 +743,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.identifierFormatValidator.ServerValidate += this.IdentifierFormatValidator_ServerValidate;
 			this.identifierFormatValidator.Enabled = UriValidatorEnabledDefault;
 			this.identifierFormatValidator.Display = ValidatorDisplay.Dynamic;
-			this.identifierFormatValidator.ControlToValidate = this.ID;
 			this.identifierFormatValidator.ValidationGroup = ValidationGroupDefault;
 			cell.Controls.Add(this.identifierFormatValidator);
 			this.errorLabel = new Label();
