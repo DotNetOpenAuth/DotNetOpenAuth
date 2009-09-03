@@ -158,6 +158,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string NameViewStateKey = "Name";
 
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Text"/> property.
+		/// </summary>
+		private const string TextViewStateKey = "Text";
+
 		#endregion
 
 		#region Property defaults
@@ -282,8 +287,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(""), Category(AppearanceCategory)]
 		[Description("The content of the text box.")]
 		public string Text {
-			get { return this.Identifier != null ? this.Identifier.OriginalString : string.Empty; }
-			set { this.Identifier = value; }
+			get {
+				return this.Identifier != null ? this.Identifier.OriginalString : (this.ViewState[TextViewStateKey] as string ?? string.Empty);
+			}
+
+			set {
+				// Try to store it as a validated identifier,
+				// but failing that at least store the text.
+				Identifier id;
+				if (Identifier.TryParse(value, out id)) {
+					this.Identifier = id;
+				} else {
+					this.Identifier = null;
+					this.ViewState[TextViewStateKey] = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -549,6 +567,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Called when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected override void OnIdentifierChanged() {
+			this.ViewState.Remove(TextViewStateKey);
+			base.OnIdentifierChanged();
+		}
+
+		/// <summary>
 		/// Sends server control content to a provided <see cref="T:System.Web.UI.HtmlTextWriter"/> object, which writes the content to be rendered on the client.
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
@@ -597,11 +623,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If the control was temporarily hidden, it won't be in the Form data,
 			// and we'll just implicitly keep the last Text setting.
 			if (postCollection[this.Name] != null) {
-				Identifier identifier = postCollection[this.Name].Length == 0 ? null : postCollection[this.Name];
-				if (identifier != this.Identifier) {
-					this.Identifier = identifier;
-					return true;
-				}
+				this.Text = postCollection[this.Name];
+				return true;
 			}
 
 			return false;

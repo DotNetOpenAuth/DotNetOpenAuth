@@ -222,6 +222,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Description("Fired when an authentication attempt is canceled at the OpenID Provider."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> Canceled;
 
+		/// <summary>
+		/// Occurs when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected event EventHandler IdentifierChanged;
+
 		#endregion
 
 		/// <summary>
@@ -424,9 +429,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), Category(OpenIdCategory)]
 		[Description("The OpenID Identifier that this button will use to initiate login.")]
 		[TypeConverter(typeof(IdentifierConverter))]
-		public Identifier Identifier {
-			get { return (Identifier)ViewState[IdentifierViewStateKey]; }
-			set { ViewState[IdentifierViewStateKey] = value; }
+		public virtual Identifier Identifier {
+			get {
+				return (Identifier)ViewState[IdentifierViewStateKey];
+			}
+
+			set {
+				ViewState[IdentifierViewStateKey] = value;
+				this.OnIdentifierChanged();
+			}
 		}
 
 		/// <summary>
@@ -590,6 +601,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (receiver == null || receiver == this.ClientID) {
 				var response = this.RelyingParty.GetResponse();
 				this.ProcessResponse(response);
+			}
+		}
+
+		/// <summary>
+		/// Called when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected virtual void OnIdentifierChanged() {
+			var identifierChanged = this.IdentifierChanged;
+			if (identifierChanged != null) {
+				identifierChanged(this, EventArgs.Empty);
 			}
 		}
 
