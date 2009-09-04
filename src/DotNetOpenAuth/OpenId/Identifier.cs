@@ -27,6 +27,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="originalString">The original string before any normalization.</param>
 		/// <param name="isDiscoverySecureEndToEnd">Whether the derived class is prepared to guarantee end-to-end discovery
 		/// and initial redirect for authentication is performed using SSL.</param>
+		[SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "string", Justification = "Emphasis on string instead of the strong-typed Identifier.")]
 		protected Identifier(string originalString, bool isDiscoverySecureEndToEnd) {
 			this.OriginalString = originalString;
 			this.IsDiscoverySecureEndToEnd = isDiscoverySecureEndToEnd;

@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
@@ -228,12 +229,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RetryTextDefault = "RETRY";
 
 		#endregion
-
-		/// <summary>
-		/// A dictionary of extension response types and the javascript member 
-		/// name to map them to on the user agent.
-		/// </summary>
-		private Dictionary<Type, string> clientScriptExtensions = new Dictionary<Type, string>();
 
 		#region Events
 
@@ -627,6 +622,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// When implemented by a class, signals the server control to notify the ASP.NET application that the state of the control has changed.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
 		protected virtual void RaisePostDataChangedEvent() {
 			this.OnTextChanged();
 		}
