@@ -27,6 +27,50 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 
 	/// <summary>
+	/// Methods of indicating to the rest of the web site that the user has logged in.
+	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "OnSite", Justification = "Two words intended.")]
+	public enum LogOnSiteNotification {
+		/// <summary>
+		/// The rest of the web site is unaware that the user just completed an OpenID login.
+		/// </summary>
+		None,
+
+		/// <summary>
+		/// After the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event is fired
+		/// the control automatically calls <see cref="System.Web.Security.FormsAuthentication.RedirectFromLoginPage(string, bool)"/>
+		/// with the <see cref="IAuthenticationResponse.ClaimedIdentifier"/> as the username
+		/// unless the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event handler sets
+		/// <see cref="OpenIdEventArgs.Cancel"/> property to true.
+		/// </summary>
+		FormsAuthentication,
+	}
+
+	/// <summary>
+	/// How an OpenID user session should be persisted across visits.
+	/// </summary>
+	public enum LogOnPersistence {
+		/// <summary>
+		/// The user should only be logged in as long as the browser window remains open.
+		/// Nothing is persisted to help the user on a return visit.  Public kiosk mode.
+		/// </summary>
+		Session,
+
+		/// <summary>
+		/// The user should only be logged in as long as the browser window remains open.
+		/// The OpenID Identifier is persisted to help expedite re-authentication when
+		/// the user visits the next time.
+		/// </summary>
+		SessionAndPersistentIdentifier,
+
+		/// <summary>
+		/// The user is issued a persistent authentication ticket so that no login is
+		/// necessary on their return visit.
+		/// </summary>
+		PersistentAuthentication,
+	}
+
+	/// <summary>
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
 	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
@@ -76,7 +120,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The parameter name to include in the formulated auth request so that javascript can know whether
 		/// the OP advertises support for the UI extension.
 		/// </summary>
-		protected const string PopupUISupportedJsHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
+		protected const string PopupUISupportedJSHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
 
 		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
@@ -105,12 +149,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
 		/// </summary>
-		private const LoginPersistence UsePersistentCookieDefault = LoginPersistence.Session;
+		private const LogOnPersistence UsePersistentCookieDefault = LogOnPersistence.Session;
 
 		/// <summary>
-		/// Default value of <see cref="LoginMode"/>.
+		/// Default value of <see cref="LogOnMode"/>.
 		/// </summary>
-		private const LoginSiteNotification LoginModeDefault = LoginSiteNotification.FormsAuthentication;
+		private const LogOnSiteNotification LogOnModeDefault = LogOnSiteNotification.FormsAuthentication;
 
 		/// <summary>
 		/// The default value for the <see cref="RealmUrl"/> property.
@@ -142,9 +186,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string UsePersistentCookieViewStateKey = "UsePersistentCookie";
 
 		/// <summary>
-		/// The viewstate key to use for the <see cref="LoginMode"/> property.
+		/// The viewstate key to use for the <see cref="LogOnMode"/> property.
 		/// </summary>
-		private const string LoginModeViewStateKey = "LoginMode";
+		private const string LogOnModeViewStateKey = "LogOnMode";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="RealmUrl"/> property.
@@ -222,50 +266,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Description("Fired when an authentication attempt is canceled at the OpenID Provider."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> Canceled;
 
+		/// <summary>
+		/// Occurs when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected event EventHandler IdentifierChanged;
+
 		#endregion
-
-		/// <summary>
-		/// Methods of indicating to the rest of the web site that the user has logged in.
-		/// </summary>
-		public enum LoginSiteNotification {
-			/// <summary>
-			/// The rest of the web site is unaware that the user just completed an OpenID login.
-			/// </summary>
-			None,
-
-			/// <summary>
-			/// After the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event is fired
-			/// the control automatically calls <see cref="System.Web.Security.FormsAuthentication.RedirectFromLoginPage(string, bool)"/>
-			/// with the <see cref="IAuthenticationResponse.ClaimedIdentifier"/> as the username
-			/// unless the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event handler sets
-			/// <see cref="OpenIdEventArgs.Cancel"/> property to true.
-			/// </summary>
-			FormsAuthentication,
-		}
-
-		/// <summary>
-		/// How an OpenID user session should be persisted across visits.
-		/// </summary>
-		public enum LoginPersistence {
-			/// <summary>
-			/// The user should only be logged in as long as the browser window remains open.
-			/// Nothing is persisted to help the user on a return visit.  Public kiosk mode.
-			/// </summary>
-			Session,
-
-			/// <summary>
-			/// The user should only be logged in as long as the browser window remains open.
-			/// The OpenID Identifier is persisted to help expedite re-authentication when
-			/// the user visits the next time.
-			/// </summary>
-			SessionAndPersistentIdentifier,
-
-			/// <summary>
-			/// The user is issued a persistent authentication ticket so that no login is
-			/// necessary on their return visit.
-			/// </summary>
-			PersistentAuthentication,
-		}
 
 		/// <summary>
 		/// Gets or sets the <see cref="OpenIdRelyingParty"/> instance to use.
@@ -380,19 +386,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(UsePersistentCookieDefault), Category(BehaviorCategory)]
 		[Description("Whether to send a persistent cookie upon successful " +
 			"login so the user does not have to log in upon returning to this site.")]
-		public virtual LoginPersistence UsePersistentCookie {
-			get { return (LoginPersistence)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
+		public virtual LogOnPersistence UsePersistentCookie {
+			get { return (LogOnPersistence)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
 			set { this.ViewState[UsePersistentCookieViewStateKey] = value; }
 		}
 
 		/// <summary>
 		/// Gets or sets the way a completed login is communicated to the rest of the web site.
 		/// </summary>
-		[Bindable(true), DefaultValue(LoginModeDefault), Category(BehaviorCategory)]
+		[Bindable(true), DefaultValue(LogOnModeDefault), Category(BehaviorCategory)]
 		[Description("The way a completed login is communicated to the rest of the web site.")]
-		public virtual LoginSiteNotification LoginMode {
-			get { return (LoginSiteNotification)(this.ViewState[LoginModeViewStateKey] ?? LoginModeDefault); }
-			set { this.ViewState[LoginModeViewStateKey] = value; }
+		public virtual LogOnSiteNotification LogOnMode {
+			get { return (LogOnSiteNotification)(this.ViewState[LogOnModeViewStateKey] ?? LogOnModeDefault); }
+			set { this.ViewState[LogOnModeViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -424,9 +430,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), Category(OpenIdCategory)]
 		[Description("The OpenID Identifier that this button will use to initiate login.")]
 		[TypeConverter(typeof(IdentifierConverter))]
-		public Identifier Identifier {
-			get { return (Identifier)ViewState[IdentifierViewStateKey]; }
-			set { ViewState[IdentifierViewStateKey] = value; }
+		public virtual Identifier Identifier {
+			get {
+				return (Identifier)ViewState[IdentifierViewStateKey];
+			}
+
+			set {
+				ViewState[IdentifierViewStateKey] = value;
+				this.OnIdentifierChanged();
+			}
 		}
 
 		/// <summary>
@@ -541,7 +553,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						// This is so the window can be made the correct size for the extension.
 						// If the OP doesn't advertise support for the extension, the javascript will use
 						// a bigger popup window.
-						req.SetCallbackArgument(PopupUISupportedJsHint, "1");
+						req.SetCallbackArgument(PopupUISupportedJSHint, "1");
 					}
 				}
 
@@ -593,6 +605,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Called when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected virtual void OnIdentifierChanged() {
+			var identifierChanged = this.IdentifierChanged;
+			if (identifierChanged != null) {
+				identifierChanged(this, EventArgs.Empty);
+			}
+		}
+
+		/// <summary>
 		/// Processes the response.
 		/// </summary>
 		/// <param name="response">The response.</param>
@@ -602,7 +624,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 			string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
 			if (persistentString != null) {
-				this.UsePersistentCookie = (LoginPersistence)Enum.Parse(typeof(LoginPersistence), persistentString);
+				this.UsePersistentCookie = (LogOnPersistence)Enum.Parse(typeof(LogOnPersistence), persistentString);
 			}
 
 			switch (response.Status) {
@@ -651,15 +673,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			if (!args.Cancel) {
-				if (this.UsePersistentCookie == LoginPersistence.SessionAndPersistentIdentifier) {
+				if (this.UsePersistentCookie == LogOnPersistence.SessionAndPersistentIdentifier) {
 					Page.Response.SetCookie(CreateIdentifierPersistingCookie(response));
 				}
 
-				switch (this.LoginMode) {
-					case LoginSiteNotification.FormsAuthentication:
-						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie == LoginPersistence.PersistentAuthentication);
+				switch (this.LogOnMode) {
+					case LogOnSiteNotification.FormsAuthentication:
+						FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie == LogOnPersistence.PersistentAuthentication);
 						break;
-					case LoginSiteNotification.None:
+					case LogOnSiteNotification.None:
 					default:
 						break;
 				}

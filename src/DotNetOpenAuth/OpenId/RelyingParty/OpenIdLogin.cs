@@ -551,8 +551,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[DefaultValue(RememberMeDefault)]
 		[Description("Whether a successful authentication should result in a persistent cookie being saved to the browser.")]
 		public bool RememberMe {
-			get { return this.UsePersistentCookie != LoginPersistence.Session; }
-			set { this.UsePersistentCookie = value ? LoginPersistence.PersistentAuthentication : LoginPersistence.Session; }
+			get { return this.UsePersistentCookie != LogOnPersistence.Session; }
+			set { this.UsePersistentCookie = value ? LogOnPersistence.PersistentAuthentication : LogOnPersistence.Session; }
 		}
 
 		/// <summary>
@@ -568,6 +568,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			set {
 				unchecked {
+					EnsureChildControls();
 					base.TabIndex = (short)(value + TextBoxTabIndexOffset);
 					this.loginButton.TabIndex = (short)(value + LoginButtonTabIndexOffset);
 					this.rememberMeCheckBox.TabIndex = (short)(value + RememberMeTabIndexOffset);
@@ -634,7 +635,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// cookie should persist across user sessions.
 		/// </summary>
 		[Browsable(false), Bindable(false)]
-		public override LoginPersistence UsePersistentCookie {
+		public override LogOnPersistence UsePersistentCookie {
 			get {
 				return base.UsePersistentCookie;
 			}
@@ -644,7 +645,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// use conditional here to prevent infinite recursion
 				// with CheckedChanged event.
-				bool rememberMe = value != LoginPersistence.Session;
+				bool rememberMe = value != LogOnPersistence.Session;
 				if (this.rememberMeCheckBox.Checked != rememberMe) {
 					this.rememberMeCheckBox.Checked = rememberMe;
 				}
@@ -669,6 +670,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Just add the panel we've assembled earlier.
 			base.Controls.Add(this.panel);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnPreRender(EventArgs e) {
+			base.OnPreRender(e);
+
+			EnsureChildControls();
+			EnsureID();
+			this.requiredValidator.ControlToValidate = this.ID;
+			this.identifierFormatValidator.ControlToValidate = this.ID;
 		}
 
 		/// <summary>
@@ -721,7 +735,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.requiredValidator.ErrorMessage = RequiredTextDefault + RequiredTextSuffix;
 			this.requiredValidator.Text = RequiredTextDefault + RequiredTextSuffix;
 			this.requiredValidator.Display = ValidatorDisplay.Dynamic;
-			this.requiredValidator.ControlToValidate = this.ID;
 			this.requiredValidator.ValidationGroup = ValidationGroupDefault;
 			cell.Controls.Add(this.requiredValidator);
 			this.identifierFormatValidator = new CustomValidator();
@@ -730,7 +743,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.identifierFormatValidator.ServerValidate += this.IdentifierFormatValidator_ServerValidate;
 			this.identifierFormatValidator.Enabled = UriValidatorEnabledDefault;
 			this.identifierFormatValidator.Display = ValidatorDisplay.Dynamic;
-			this.identifierFormatValidator.ControlToValidate = this.ID;
 			this.identifierFormatValidator.ValidationGroup = ValidationGroupDefault;
 			cell.Controls.Add(this.identifierFormatValidator);
 			this.errorLabel = new Label();

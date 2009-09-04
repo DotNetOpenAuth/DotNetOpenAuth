@@ -231,12 +231,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		/// <summary>
-		/// A dictionary of extension response types and the javascript member 
-		/// name to map them to on the user agent.
-		/// </summary>
-		private Dictionary<Type, string> clientScriptExtensions = new Dictionary<Type, string>();
-
 		#region Events
 
 		/// <summary>
@@ -628,6 +622,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// When implemented by a class, signals the server control to notify the ASP.NET application that the state of the control has changed.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
 		protected virtual void RaisePostDataChangedEvent() {
 			this.OnTextChanged();
 		}

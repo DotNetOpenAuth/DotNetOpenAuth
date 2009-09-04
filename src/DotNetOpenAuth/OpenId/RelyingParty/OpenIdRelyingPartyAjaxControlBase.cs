@@ -32,12 +32,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The name of the javascript function that will initiate a synchronous callback.
 		/// </summary>
-		protected const string CallbackJsFunction = "window.dnoa_internal.callback";
+		protected const string CallbackJSFunction = "window.dnoa_internal.callback";
 
 		/// <summary>
 		/// The name of the javascript function that will initiate an asynchronous callback.
 		/// </summary>
-		protected const string CallbackJsFunctionAsync = "window.dnoa_internal.callbackAsync";
+		protected const string CallbackJSFunctionAsync = "window.dnoa_internal.callbackAsync";
 
 		/// <summary>
 		/// The "dnoa.op_endpoint" string.
@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			base.Popup = PopupBehavior.Always;
 
 			// The expected use case for the AJAX login box is for comments... not logging in.
-			this.LoginMode = LoginSiteNotification.None;
+			this.LogOnMode = LogOnSiteNotification.None;
 		}
 
 		/// <summary>
@@ -216,8 +216,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The result of the callback.</returns>
 		/// <value>A whitespace delimited list of URLs that can be used to initiate authentication.</value>
 		string ICallbackEventHandler.GetCallbackResult() {
-			this.Page.Response.ContentType = "text/javascript";
-			return this.discoveryResult;
+			return this.GetCallbackResult();
 		}
 
 		/// <summary>
@@ -225,10 +224,32 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// AJAX callback mechanisms.
 		/// </summary>
 		/// <param name="eventArgument">The identifier to perform discovery on.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "We want to preserve the signature of the interface.")]
 		void ICallbackEventHandler.RaiseCallbackEvent(string eventArgument) {
-			ErrorUtilities.VerifyNonZeroLength(eventArgument, "eventArgument");
+			this.RaiseCallbackEvent(eventArgument);
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Returns the results of a callback event that targets a control.
+		/// </summary>
+		/// <returns>The result of the callback.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "We want to preserve the signature of the interface.")]
+		protected virtual string GetCallbackResult() {
+			this.Page.Response.ContentType = "text/javascript";
+			return this.discoveryResult;
+		}
+
+		/// <summary>
+		/// Processes a callback event that targets a control.
+		/// </summary>
+		/// <param name="eventArgument">A string that represents an event argument to pass to the event handler.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "We want to preserve the signature of the interface.")]
+		protected virtual void RaiseCallbackEvent(string eventArgument) {
 			string userSuppliedIdentifier = eventArgument;
 
+			ErrorUtilities.VerifyNonZeroLength(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
 
 			// We prepare a JSON object with this interface:
@@ -276,8 +297,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			discoveryResultBuilder.Append("}");
 			this.discoveryResult = discoveryResultBuilder.ToString();
 		}
-
-		#endregion
 
 		/// <summary>
 		/// Fires the <see cref="UnconfirmedPositiveAssertion"/> event.
@@ -334,8 +353,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			StringBuilder initScript = new StringBuilder();
 
-			initScript.AppendLine(CallbackJsFunctionAsync + " = " + this.GetJsCallbackConvenienceFunction(true));
-			initScript.AppendLine(CallbackJsFunction + " = " + this.GetJsCallbackConvenienceFunction(false));
+			initScript.AppendLine(CallbackJSFunctionAsync + " = " + this.GetJsCallbackConvenienceFunction(true));
+			initScript.AppendLine(CallbackJSFunction + " = " + this.GetJsCallbackConvenienceFunction(false));
 
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
