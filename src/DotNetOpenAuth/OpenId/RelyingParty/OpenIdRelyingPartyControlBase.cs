@@ -470,7 +470,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="request">The request.</param>
 		public void LogOn(IAuthenticationRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			if (this.IsPopupAppropriate(request)) {
 				this.ScriptPopupWindow(request);
@@ -869,7 +868,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The javascript that should execute.</returns>
 		private string CreateGetOrPostAHrefValue(IAuthenticationRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			Uri directUri = request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel);
 			return "window.dnoa_internal.GetOrPost(" + MessagingUtilities.GetSafeJavascriptValue(directUri.AbsoluteUri) + ");";

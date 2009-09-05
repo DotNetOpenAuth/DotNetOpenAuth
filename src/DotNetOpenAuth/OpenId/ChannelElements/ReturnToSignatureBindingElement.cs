@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="secretStore">The secret store from which to retrieve the secret used for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal ReturnToSignatureBindingElement(IAssociationStore<Uri> secretStore, RelyingPartySecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
+			Contract.Requires<ArgumentNullException>(secretStore != null);
 
 			this.secretManager = new PrivateSecretManager(securitySettings, secretStore);
 		}

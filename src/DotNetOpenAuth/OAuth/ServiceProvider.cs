@@ -304,7 +304,6 @@ namespace DotNetOpenAuth.OAuth {
 			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
 			Contract.Requires<ArgumentException>((consumerKey == null) == (scope == null));
 			Contract.Requires<InvalidOperationException>(this.TokenManager is ICombinedOpenIdProviderTokenManager);
-			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
 			var openidTokenManager = (ICombinedOpenIdProviderTokenManager)this.TokenManager;
 			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), "The consumer key and the realm did not match according to the token manager.");
 
@@ -318,12 +317,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="scope">The approved access scope.  Use <c>null</c> to indicate no access was granted.  The empty string will be interpreted as some default level of access is granted.</param>
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
 		public void AttachAuthorizationResponse(IHostProcessedRequest openIdAuthenticationRequest, string scope) {
-			Contract.Requires(openIdAuthenticationRequest != null);
-			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
-			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
-			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
-			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(ICombinedOpenIdProviderTokenManager).FullName);
+			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
+			Contract.Requires<InvalidOperationException>(this.TokenManager is ICombinedOpenIdProviderTokenManager);
 
+			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
 			IOpenIdMessageExtension response;
 			if (scope != null) {
 				// Generate an authorized request token to return to the relying party.

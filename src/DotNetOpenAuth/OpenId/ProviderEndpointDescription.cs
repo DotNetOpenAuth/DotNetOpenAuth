@@ -158,7 +158,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
 		/// </returns>
 		protected internal bool IsExtensionSupported(IOpenIdMessageExtension extension) {
-			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
+			Contract.Requires<ArgumentNullException>(extension != null);
 
 			// Consider the primary case.
 			if (this.IsExtensionSupported(extension.TypeUri)) {

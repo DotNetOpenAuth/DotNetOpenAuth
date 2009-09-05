@@ -36,7 +36,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="baseIdentifier">The base URI on which to append the anonymous part.</param>
 		protected PrivatePersonalIdentifierProviderBase(Uri baseIdentifier) {
 			Contract.Requires<ArgumentNullException>(baseIdentifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(baseIdentifier, "baseIdentifier");
 
 			this.Hasher = HashAlgorithm.Create(HashAlgorithmName);
 			this.Encoder = Encoding.UTF8;

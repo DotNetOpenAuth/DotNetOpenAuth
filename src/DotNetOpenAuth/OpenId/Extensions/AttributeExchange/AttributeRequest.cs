@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// the <see cref="FetchResponse"/> object.
 		/// </returns>
 		public AttributeValues Respond(params string[] values) {
-			ErrorUtilities.VerifyArgumentNotNull(values, "values");
+			Contract.Requires<ArgumentNullException>(values != null);
 			ErrorUtilities.VerifyArgument(values.Length <= this.Count, OpenIdStrings.AttributeTooManyValues, this.Count, this.TypeUri, values.Length);
 			return new AttributeValues(this.TypeUri, values);
 		}

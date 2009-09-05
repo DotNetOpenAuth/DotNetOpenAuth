@@ -853,9 +853,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method is simply a standard HTTP PUT request with the message parts serialized to the query string.
 		/// </remarks>
 		protected virtual HttpWebRequest InitializeRequestAsPut(IDirectedProtocolMessage requestMessage) {
-			Contract.Requires(requestMessage != null);
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
 			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
 			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
 			request.Method = "PUT";
@@ -871,9 +870,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method is simply a standard HTTP DELETE request with the message parts serialized to the query string.
 		/// </remarks>
 		protected virtual HttpWebRequest InitializeRequestAsDelete(IDirectedProtocolMessage requestMessage) {
-			Contract.Requires(requestMessage != null);
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
 			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
 			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
 			request.Method = "DELETE";
