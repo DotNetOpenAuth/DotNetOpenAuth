@@ -65,10 +65,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageFactory messageTypeProvider)
 			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager)) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
+			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 
 			this.TokenManager = tokenManager;
-			ErrorUtilities.VerifyArgumentNamed(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
-
 			signingBindingElement.SignatureCallback = this.SignatureCallback;
 		}
 
@@ -188,12 +188,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The <see cref="HttpRequest"/> prepared to send the request.
 		/// </returns>
 		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
-			IDirectedProtocolMessage oauthRequest = request as IDirectedProtocolMessage;
-			ErrorUtilities.VerifyArgument(oauthRequest != null, MessagingStrings.UnexpectedType, typeof(IDirectedProtocolMessage), request.GetType());
-
 			HttpWebRequest httpRequest;
 
-			HttpDeliveryMethods transmissionMethod = oauthRequest.HttpMethods;
+			HttpDeliveryMethods transmissionMethod = request.HttpMethods;
 			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				httpRequest = this.InitializeRequestAsAuthHeader(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {

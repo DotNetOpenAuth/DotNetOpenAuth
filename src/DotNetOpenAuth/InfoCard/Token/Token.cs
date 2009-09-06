@@ -194,6 +194,7 @@ namespace DotNetOpenAuth.InfoCard {
 			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
 			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
+				Contract.Assume(tokenReader != null); // CC missing for XmlReader.Create
 				return IsEncrypted(tokenReader);
 			}
 		}

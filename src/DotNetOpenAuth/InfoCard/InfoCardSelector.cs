@@ -263,17 +263,19 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			set {
-				if (this.Page != null && !this.DesignMode) {
-					// Validate new value by trying to construct a Uri based on it.
-					new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
-				} else {
-					// We can't fully test it, but it should start with either ~/ or a protocol.
-					if (Regex.IsMatch(value, @"^https?://")) {
-						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
-					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
-						// this is valid too
+				if (!string.IsNullOrEmpty(value)) {
+					if (this.Page != null && !this.DesignMode) {
+						// Validate new value by trying to construct a Uri based on it.
+						new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
 					} else {
-						throw new UriFormatException();
+						// We can't fully test it, but it should start with either ~/ or a protocol.
+						if (Regex.IsMatch(value, @"^https?://")) {
+							new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+						} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+							// this is valid too
+						} else {
+							throw new UriFormatException();
+						}
 					}
 				}
 

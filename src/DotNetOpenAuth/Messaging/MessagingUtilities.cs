@@ -294,8 +294,8 @@ namespace DotNetOpenAuth.Messaging {
 		internal static int CopyTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
 			Contract.Requires<ArgumentNullException>(copyFrom != null);
 			Contract.Requires<ArgumentNullException>(copyTo != null);
-			ErrorUtilities.VerifyArgument(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
-			ErrorUtilities.VerifyArgument(copyTo.CanWrite, MessagingStrings.StreamUnwritable, "copyTo");
+			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
+			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
 
 			byte[] buffer = new byte[1024];
 			int readBytes;

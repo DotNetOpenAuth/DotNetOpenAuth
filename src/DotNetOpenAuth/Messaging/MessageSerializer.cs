@@ -36,14 +36,6 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(messageType != null);
 			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
 			Contract.Ensures(this.messageType != null);
-
-			ErrorUtilities.VerifyArgumentNamed(
-				typeof(IMessage).IsAssignableFrom(messageType),
-				"messageType",
-				MessagingStrings.UnexpectedType,
-				typeof(IMessage).FullName,
-				messageType.FullName);
-
 			this.messageType = messageType;
 		}
 

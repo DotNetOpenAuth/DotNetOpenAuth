@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString() {
-			return this.Name != null ? this.Name : null;
+			return this.Name ?? "<no name>";
 		}
 	}
 }

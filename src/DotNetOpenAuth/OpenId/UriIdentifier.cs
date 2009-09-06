@@ -35,6 +35,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		internal UriIdentifier(string uri)
 			: this(uri, false) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 		}
 
 		/// <summary>

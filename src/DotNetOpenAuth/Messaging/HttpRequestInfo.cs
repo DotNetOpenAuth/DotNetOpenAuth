@@ -336,7 +336,7 @@ namespace DotNetOpenAuth.Messaging {
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
 				Uri hostAndPort = new Uri(request.Url.Scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
 				publicRequestUri.Host = hostAndPort.Host;
-				publicRequestUri.Port = hostAndPort.Port;
+				publicRequestUri.Port = hostAndPort.Port; // CC missing Uri.Port contract that's on UriBuilder.Port
 				if (request.ServerVariables["HTTP_X_FORWARDED_PROTO"] != null) {
 					publicRequestUri.Scheme = request.ServerVariables["HTTP_X_FORWARDED_PROTO"];
 				}
@@ -370,7 +370,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="pairs">The collection a HTTP headers.</param>
 		/// <returns>A new collection of the given headers.</returns>
 		private static WebHeaderCollection GetHeaderCollection(NameValueCollection pairs) {
-			Debug.Assert(pairs != null, "pairs == null");
+			Contract.Requires<ArgumentNullException>(pairs != null);
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			foreach (string key in pairs) {

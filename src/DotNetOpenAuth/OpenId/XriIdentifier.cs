@@ -63,6 +63,7 @@ namespace DotNetOpenAuth.OpenId {
 		internal XriIdentifier(string xri)
 			: this(xri, false) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(xri));
+			Contract.Requires<FormatException>(IsValidXri(xri), OpenIdStrings.InvalidXri);
 		}
 
 		/// <summary>

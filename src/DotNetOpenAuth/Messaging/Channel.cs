@@ -1035,8 +1035,6 @@ namespace DotNetOpenAuth.Messaging {
 				return new IChannelBindingElement[0];
 			}
 
-			ErrorUtilities.VerifyArgumentNamed(!elements.Contains(null), "elements", MessagingStrings.SequenceContainsNullElement);
-
 			// Filter the elements between the mere transforming ones and the protection ones.
 			var transformationElements = new List<IChannelBindingElement>(
 				elements.Where(element => element.Protection == MessageProtections.None));

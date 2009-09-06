@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </returns>
 		public AttributeValues Respond(params string[] values) {
 			Contract.Requires<ArgumentNullException>(values != null);
-			ErrorUtilities.VerifyArgument(values.Length <= this.Count, OpenIdStrings.AttributeTooManyValues, this.Count, this.TypeUri, values.Length);
+			Contract.Requires<ArgumentException>(values.Length <= this.Count);
 			return new AttributeValues(this.TypeUri, values);
 		}
 

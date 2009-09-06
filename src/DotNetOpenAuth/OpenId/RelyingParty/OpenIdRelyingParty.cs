@@ -87,8 +87,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
-			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null);
-			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
+			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
