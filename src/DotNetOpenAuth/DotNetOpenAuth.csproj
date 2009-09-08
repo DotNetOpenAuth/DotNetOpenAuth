@@ -380,7 +380,7 @@
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PapeUtilities.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyRequest.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyResponse.cs" />
-    <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\TimespanSecondsEncoder.cs" />
+    <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequest.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponse.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Constants.cs" />
@@ -510,9 +510,13 @@
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="SimpleAuth\ChannelElements\SimpleAuthChannel.cs" />
     <Compile Include="SimpleAuth\ChannelElements\SimpleAuthMessageFactory.cs" />
+    <Compile Include="SimpleAuth\ChannelElements\UriOrOutOfBandEncoding.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\MessageBase.cs" />
     <Compile Include="SimpleAuth\Messages\RequestAccessTokenWithVerifier.cs" />
+    <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentDeniedResponse.cs" />
     <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentRequest.cs" />
-    <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentGrantedResponse.cs" />
     <Compile Include="SimpleAuth\Protocol.cs" />
     <Compile Include="SimpleAuth\SimpleAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>

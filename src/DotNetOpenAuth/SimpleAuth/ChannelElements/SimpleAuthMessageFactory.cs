@@ -34,19 +34,19 @@ using DotNetOpenAuth.SimpleAuth.Messages;
 		/// A newly instantiated <see cref="IProtocolMessage"/>-derived object that this message can
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
-		public IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
+		public IDirectedProtocolMessage GetNewRequestMessage(Uri recipient, IDictionary<string, string> fields) {
 			Version version = Protocol.DefaultVersion;
 
-			if (fields.ContainsKey("sa_consumer_key") && fields.ContainsKey("sa_callback")) {
+			if (fields.ContainsKey(Protocol.sa_consumer_key) && fields.ContainsKey(Protocol.sa_callback)) {
 				return new UserAuthorizationInUserAgentRequest(recipient, version);
 			}
 
-			if (fields.ContainsKey("sa_consumer_key") && fields.ContainsKey("sa_verifier")) {
-				return new RequestAccessTokenWithVerifier(recipient.Location, version);
+			if (fields.ContainsKey(Protocol.sa_consumer_key) && fields.ContainsKey(Protocol.sa_verifier)) {
+				return new RequestAccessTokenWithVerifier(recipient, version);
 			}
 
-			if (fields.ContainsKey("sa_verifier")) {
-				return new UserAuthorizationInUserAgentResponse(recipient.Location, version);
+			if (fields.ContainsKey(Protocol.sa_verifier)) {
+				return new UserAuthorizationInUserAgentGrantedResponse(recipient, version);
 			}
 
 			return null;

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
+namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -13,6 +13,12 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	/// Encodes and decodes the <see cref="TimeSpan"/> as an integer of total seconds.
 	/// </summary>
 	internal class TimespanSecondsEncoder : IMessagePartEncoder {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TimespanSecondsEncoder"/> class.
+		/// </summary>
+		internal TimespanSecondsEncoder() {
+		}
+
 		#region IMessagePartEncoder Members
 
 		/// <summary>
