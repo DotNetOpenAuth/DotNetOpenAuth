@@ -511,6 +511,7 @@
     <Compile Include="SimpleAuth\ChannelElements\SimpleAuthChannel.cs" />
     <Compile Include="SimpleAuth\ChannelElements\SimpleAuthMessageFactory.cs" />
     <Compile Include="SimpleAuth\ChannelElements\UriOrOutOfBandEncoding.cs" />
+    <Compile Include="SimpleAuth\ConsumerBase.cs" />
     <Compile Include="SimpleAuth\Messages\AccessTokenResponse.cs" />
     <Compile Include="SimpleAuth\Messages\MessageBase.cs" />
     <Compile Include="SimpleAuth\Messages\RequestAccessTokenWithVerifier.cs" />
