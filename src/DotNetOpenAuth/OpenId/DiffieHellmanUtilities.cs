@@ -21,12 +21,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// An array of known Diffie Hellman sessions, sorted by decreasing hash size.
 		/// </summary>
-		private static DHSha[] diffieHellmanSessionTypes = {
+		private static DHSha[] diffieHellmanSessionTypes = new List<DHSha> {
 			new DHSha(new SHA512Managed(), protocol => protocol.Args.SessionType.DH_SHA512),
 			new DHSha(new SHA384Managed(), protocol => protocol.Args.SessionType.DH_SHA384),
 			new DHSha(new SHA256Managed(), protocol => protocol.Args.SessionType.DH_SHA256),
 			new DHSha(new SHA1Managed(), protocol => protocol.Args.SessionType.DH_SHA1),
-		};
+		} .ToArray();
 
 		/// <summary>
 		/// Finds the hashing algorithm to use given an openid.session_type value.

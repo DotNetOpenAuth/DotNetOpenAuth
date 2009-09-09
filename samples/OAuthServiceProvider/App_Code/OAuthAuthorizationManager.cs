@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Policy;
 using System.Linq;
+using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Security;
@@ -27,10 +28,12 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 		if (auth != null) {
 			var accessToken = Global.DataContext.OAuthTokens.Single(token => token.Token == auth.AccessToken);
 
-			var policy = new OAuthPrincipalAuthorizationPolicy(sp.CreatePrincipal(auth));
+			var principal = sp.CreatePrincipal(auth);
+			var policy = new OAuthPrincipalAuthorizationPolicy(principal);
 			var policies = new List<IAuthorizationPolicy> {
 				policy,
 			};
+
 			var securityContext = new ServiceSecurityContext(policies.AsReadOnly());
 			if (operationContext.IncomingMessageProperties.Security != null) {
 				operationContext.IncomingMessageProperties.Security.ServiceSecurityContext = securityContext;
@@ -39,6 +42,10 @@ public class OAuthAuthorizationManager : ServiceAuthorizationManager {
 					ServiceSecurityContext = securityContext,
 				};
 			}
+
+			securityContext.AuthorizationContext.Properties["Identities"] = new List<IIdentity> {
+				principal.Identity,
+			};
 
 			// Only allow this method call if the access token scope permits it.
 			string[] scopes = accessToken.Scope.Split('|');

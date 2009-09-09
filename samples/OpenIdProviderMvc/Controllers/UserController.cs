@@ -21,7 +21,7 @@ namespace OpenIdProviderMvc.Controllers {
 				return redirect;
 			}
 
-			if (Request.AcceptTypes.Contains("application/xrds+xml")) {
+			if (Request.AcceptTypes != null && Request.AcceptTypes.Contains("application/xrds+xml")) {
 				return View("Xrds");
 			}
 

@@ -146,7 +146,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			try {
 				IServiceProviderAccessToken token = this.tokenManager.GetAccessToken(message.AccessToken);
-				if (token.ExpirationDate.HasValue && DateTime.Now >= token.ExpirationDate.Value.ToLocalTime()) {
+				if (token.ExpirationDate.HasValue && DateTime.Now >= token.ExpirationDate.Value.ToLocalTimeSafe()) {
 					Logger.OAuth.ErrorFormat(
 						"OAuth access token {0} rejected because it expired at {1}, and it is now {2}.",
 						token.Token,
@@ -166,14 +166,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <exception cref="ProtocolException">Thrown when the token in the message has expired.</exception>
 		private void VerifyThrowTokenTimeToLive(ITokenContainingMessage message) {
 			ErrorUtilities.VerifyInternal(!(message is AccessProtectedResourceRequest), "We shouldn't be verifying TTL on access tokens.");
-			if (message == null) {
+			if (message == null || string.IsNullOrEmpty(message.Token)) {
 				return;
 			}
 
 			try {
 				IServiceProviderRequestToken token = this.tokenManager.GetRequestToken(message.Token);
 				TimeSpan ttl = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.MaximumRequestTokenTimeToLive;
-				if (DateTime.Now >= token.CreatedOn.ToLocalTime() + ttl) {
+				if (DateTime.Now >= token.CreatedOn.ToLocalTimeSafe() + ttl) {
 					Logger.OAuth.ErrorFormat(
 						"OAuth request token {0} rejected because it was originally issued at {1}, expired at {2}, and it is now {3}.",
 						token.Token,

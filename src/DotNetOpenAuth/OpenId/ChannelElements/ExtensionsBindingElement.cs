@@ -23,11 +23,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
 		/// <summary>
-		/// The security settings that apply to this binding element.
-		/// </summary>
-		private readonly SecuritySettings securitySettings;
-
-		/// <summary>
 		/// The security settings that apply to this relying party, if it is a relying party.
 		/// </summary>
 		private readonly RelyingPartySecuritySettings relyingPartySecuritySettings;
@@ -42,7 +37,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
 
 			this.ExtensionFactory = extensionFactory;
-			this.securitySettings = securitySettings;
 			this.relyingPartySecuritySettings = securitySettings as RelyingPartySecuritySettings;
 		}
 
@@ -198,18 +192,25 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				// Initialize this particular extension.
 				IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, message, isAtProvider);
 				if (extension != null) {
-					MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
-					foreach (var pair in extensionData) {
-						extensionDictionary[pair.Key] = pair.Value;
+					try {
+						MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
+						foreach (var pair in extensionData) {
+							extensionDictionary[pair.Key] = pair.Value;
+						}
+
+						// Give extensions that require custom serialization a chance to do their work.
+						var customSerializingExtension = extension as IMessageWithEvents;
+						if (customSerializingExtension != null) {
+							customSerializingExtension.OnReceiving();
+						}
+					} catch (ProtocolException ex) {
+						Logger.OpenId.ErrorFormat(OpenIdStrings.BadExtension, extension.GetType(), ex);
+						extension = null;
 					}
 
-					// Give extensions that require custom serialization a chance to do their work.
-					var customSerializingExtension = extension as IMessageWithEvents;
-					if (customSerializingExtension != null) {
-						customSerializingExtension.OnReceiving();
+					if (extension != null) {
+						yield return extension;
 					}
-
-					yield return extension;
 				} else {
 					Logger.OpenId.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
 				}

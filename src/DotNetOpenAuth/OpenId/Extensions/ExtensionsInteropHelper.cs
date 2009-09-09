@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -39,6 +40,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// 	<para>If the request does not carry an sreg extension, the method logs a warning but
 		/// otherwise quietly returns doing nothing.</para>
 		/// </remarks>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 		public static void SpreadSregToAX(this RelyingParty.IAuthenticationRequest request, AXAttributeFormats attributeFormats) {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
@@ -95,6 +97,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// or a fabricated one based on the Attribute Exchange extension if found,
 		/// or just an empty <see cref="ClaimsResponse"/> if there was no data.
 		/// Never <c>null</c>.</returns>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 		public static ClaimsResponse UnifyExtensionsAsSreg(this RelyingParty.IAuthenticationResponse response, bool allowUnsigned) {
 			Contract.Requires(response != null);
 			ErrorUtilities.VerifyArgumentNotNull(response, "response");
