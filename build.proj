@@ -165,7 +165,6 @@
 											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
 																$(OutputPath)\$(ProductName).???;
-																$(OutputPath)\$(ProductName).Contracts.???;
 																$(ProjectRoot)\Doc\README.Bin.html;
 																$(ProjectRoot)\src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
