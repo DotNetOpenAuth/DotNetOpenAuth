@@ -194,6 +194,13 @@ namespace DotNetOpenAuth.InfoCard {
 		private bool audienceSet;
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="InfoCardSelector"/> class.
+		/// </summary>
+		public InfoCardSelector() {
+			this.ToolTip = InfoCardStrings.SelectorClickPrompt;
+		}
+
+		/// <summary>
 		/// Occurs when an InfoCard has been submitted but not decoded yet.
 		/// </summary>
 		[Category(InfoCardCategory)]
@@ -257,6 +264,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		[Description("The URL to this site's privacy policy.")]
 		[Category(InfoCardCategory), DefaultValue(PrivacyUrlDefault)]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "We construct a Uri to validate the format of the string.")]
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "That overload is NOT the same.")]
 		public string PrivacyUrl {
 			get {
 				return (string)this.ViewState[PrivacyUrlViewStateKey] ?? PrivacyUrlDefault;
@@ -553,7 +562,7 @@ namespace DotNetOpenAuth.InfoCard {
 			Image image = new Image();
 			image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
 			image.AlternateText = InfoCardStrings.SelectorClickPrompt;
-			image.ToolTip = InfoCardStrings.SelectorClickPrompt;
+			image.ToolTip = this.ToolTip;
 			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
 
 			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
