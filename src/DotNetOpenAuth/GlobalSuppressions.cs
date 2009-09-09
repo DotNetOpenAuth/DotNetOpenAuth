@@ -44,3 +44,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenAuth.OpenId.Extensions.UI")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenAuth.Messaging.Reflection")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "oauthverifier", Scope = "resource", Target = "DotNetOpenAuth.OAuth.OAuthStrings.resources")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "whitelist", Scope = "resource", Target = "DotNetOpenAuth.OpenId.OpenIdStrings.resources")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "icam", Scope = "resource", Target = "DotNetOpenAuth.OpenId.Behaviors.BehaviorStrings.resources")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "idmanagement", Scope = "resource", Target = "DotNetOpenAuth.OpenId.Behaviors.BehaviorStrings.resources")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "no-pii", Scope = "resource", Target = "DotNetOpenAuth.OpenId.Behaviors.BehaviorStrings.resources")]
