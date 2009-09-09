@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -25,6 +26,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// indicates that they want to use this profile. </para>
 	/// </remarks>
 	[Serializable]
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Icam", Justification = "Acronym")]
 	public sealed class GsaIcamProfile : IRelyingPartyBehavior, IProviderBehavior {
 		/// <summary>
 		/// The maximum time a shared association can live.
@@ -43,6 +45,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// <summary>
 		/// Gets or sets the provider for generating PPID identifiers.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ppid", Justification = "Acronym")]
 		public static IDirectedIdentityIdentifierProvider PpidIdentifierProvider { get; set; }
 
 		/// <summary>
