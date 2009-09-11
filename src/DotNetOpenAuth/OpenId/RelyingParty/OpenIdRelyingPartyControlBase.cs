@@ -469,7 +469,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		public void LogOn(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			if (this.IsPopupAppropriate(request)) {

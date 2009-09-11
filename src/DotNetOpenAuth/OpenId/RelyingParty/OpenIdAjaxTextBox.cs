@@ -286,7 +286,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
+				Contract.Requires(value >= 0);
 				ErrorUtilities.VerifyArgumentInRange(value >= 0, "value");
 				this.ViewState[ColumnsViewStateKey] = value;
 			}
