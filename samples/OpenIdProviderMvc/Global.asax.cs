@@ -34,6 +34,7 @@
 		protected void Application_Start() {
 			RegisterRoutes(RouteTable.Routes);
 			DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+			DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
 		}
 	}
 }

@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.Configuration {
 					source = HttpContext.Current.Server.MapPath(source);
 				}
 				using (Stream xamlFile = File.OpenRead(source)) {
-					return this.CreateInstanceFromXaml(xamlFile);
+					return CreateInstanceFromXaml(xamlFile);
 				}
 			} else {
 				return defaultValue;
@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// XamlSource attribute is never used, the PresentationFramework.dll never need
 		/// be present.
 		/// </remarks>
-		private T CreateInstanceFromXaml(Stream xaml) {
+		private static T CreateInstanceFromXaml(Stream xaml) {
 			return (T)XamlReader.Load(xaml);
 		}
 	}

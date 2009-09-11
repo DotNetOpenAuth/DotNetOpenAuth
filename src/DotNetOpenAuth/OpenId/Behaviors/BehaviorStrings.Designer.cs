@@ -61,11 +61,65 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The PAPE request has an incomplete set of authentication policies..
+        /// </summary>
+        internal static string PapeRequestMissingRequiredPolicies {
+            get {
+                return ResourceManager.GetString("PapeRequestMissingRequiredPolicies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PAPE response is missing or is missing required policies..
+        /// </summary>
+        internal static string PapeResponseOrRequiredPoliciesMissing {
+            get {
+                return ResourceManager.GetString("PapeResponseOrRequiredPoliciesMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No personally identifiable information should be included in authentication responses when the PAPE authentication policy http://www.idmanagement.gov/schema/2009/05/icam/no-pii.pdf is present..
+        /// </summary>
+        internal static string PiiIncludedWithNoPiiPolicy {
+            get {
+                return ResourceManager.GetString("PiiIncludedWithNoPiiPolicy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No personally identifiable information should be requested when the http://www.idmanagement.gov/schema/2009/05/icam/no-pii.pdf PAPE policy is present..
+        /// </summary>
+        internal static string PiiRequestedWithNoPiiPolicy {
+            get {
+                return ResourceManager.GetString("PiiRequestedWithNoPiiPolicy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No PPID provider has been configured..
         /// </summary>
         internal static string PpidProviderNotGiven {
             get {
                 return ResourceManager.GetString("PpidProviderNotGiven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discovery on the Realm URL MUST be performed before sending a positive assertion..
+        /// </summary>
+        internal static string RealmDiscoveryNotPerformed {
+            get {
+                return ResourceManager.GetString("RealmDiscoveryNotPerformed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Realm in an authentication request must be an HTTPS URL..
+        /// </summary>
+        internal static string RealmMustBeHttps {
+            get {
+                return ResourceManager.GetString("RealmMustBeHttps", resourceCulture);
             }
         }
     }

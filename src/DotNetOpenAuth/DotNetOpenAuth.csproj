@@ -515,6 +515,7 @@
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
+    <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
     <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
