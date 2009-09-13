@@ -104,10 +104,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The value of the argument, or null if the named parameter could not be found.
 		/// </returns>
 		/// <remarks>
-		/// 	<para>This may return any argument on the querystring that came with the authentication response,
-		/// which may include parameters not explicitly added using
-		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
+		/// Callback parameters are only available if they are complete and untampered with
+		/// since the original request message (as proven by a signature).
+		/// If the relying party is operating in stateless mode <c>null</c> is always
+		/// returned since the callback arguments could not be signed to protect against
+		/// tampering.
 		/// </remarks>
 		string GetCallbackArgument(string key);
 
@@ -118,13 +119,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>A name-value dictionary.  Never null.</returns>
 		/// <remarks>
-		/// <para>This MAY return any argument on the querystring that came with the authentication response,
-		/// which may include parameters not explicitly added using 
-		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.</para>
-		/// <para>Note that these values are NOT protected against tampering in transit.</para>
+		/// Callback parameters are only available if they are complete and untampered with
+		/// since the original request message (as proven by a signature).
+		/// If the relying party is operating in stateless mode an empty dictionary is always
+		/// returned since the callback arguments could not be signed to protect against
+		/// tampering.
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Historically an expensive operation.")]
-		IDictionary<string, string> GetCallbackArguments(); // TODO: change this to a property, and return a cached ReadOnlyDictionary
+		IDictionary<string, string> GetCallbackArguments();
 
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.

@@ -1035,7 +1035,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
-				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+				// We don't use response.GetCallbackArgument because it will return null in stateless
+				// mode since the arg may have been tampered with, but this isn't a security decision.
+				string persistentString = this.Page.Request.QueryString[UsePersistentCookieCallbackKey];
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
 					this.UsePersistentCookie = persistentBool;
