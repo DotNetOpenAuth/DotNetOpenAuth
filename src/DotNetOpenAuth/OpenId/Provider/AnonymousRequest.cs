@@ -37,6 +37,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}
 
+		#region HostProcessedRequest members
+
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		public override Uri ProviderEndpoint {
+			get { return this.positiveResponse.ProviderEndpoint; }
+			set { this.positiveResponse.ProviderEndpoint = value; }
+		}
+
+		#endregion
+
 		#region IAnonymousRequest Members
 
 		/// <summary>
