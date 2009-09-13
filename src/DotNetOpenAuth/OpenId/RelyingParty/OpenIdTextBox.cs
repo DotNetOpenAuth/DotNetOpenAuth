@@ -1221,7 +1221,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private bool IsPopupAppropriate() {
 			Contract.Requires(this.Request != null);
 
-			return this.Popup == PopupBehavior.Always || this.Request.Provider.IsExtensionSupported<UIRequest>();
+			switch (this.Popup) {
+				case PopupBehavior.Never:
+					return false;
+				case PopupBehavior.Always:
+					return true;
+				case PopupBehavior.IfProviderSupported:
+					return this.Request.Provider.IsExtensionSupported<UIRequest>();
+				default:
+					throw new InternalErrorException();
+			}
 		}
 
 		/// <summary>
