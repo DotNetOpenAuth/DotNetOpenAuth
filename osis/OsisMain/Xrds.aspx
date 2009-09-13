@@ -19,6 +19,7 @@
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/IdentitylessCheckId.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/GSALevel1.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/MaxAuthAge.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/ReplayProtection.aspx"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>
