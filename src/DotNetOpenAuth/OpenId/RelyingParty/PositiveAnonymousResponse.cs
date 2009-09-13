@@ -156,6 +156,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.response.ReturnToParametersSignatureValidated) {
 				return this.response.GetReturnToArgument(key);
 			} else {
+				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 				return null;
 			}
 		}
@@ -186,6 +187,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				return args;
 			} else {
+				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 				return EmptyDictionary<string, string>.Instance;
 			}
 		}
