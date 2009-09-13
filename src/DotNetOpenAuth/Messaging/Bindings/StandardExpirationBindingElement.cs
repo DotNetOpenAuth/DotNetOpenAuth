@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
 				// but just in case a given message failed to guarantee that, we do it here.
-				DateTime expirationDate = expiringMessage.UtcCreationDate.ToUniversalTime() + MaximumMessageAge;
+				DateTime expirationDate = expiringMessage.UtcCreationDate.ToUniversalTimeSafe() + MaximumMessageAge;
 				if (expirationDate < DateTime.UtcNow) {
 					throw new ExpiredMessageException(expirationDate, expiringMessage);
 				}

@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:vs="http://schemas.microsoft.com/Visual-Studio-Intellisense"
+		elementFormDefault="qualified"
+		attributeFormDefault="unqualified">
+	<xs:element name="dotNetOpenAuth">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="messaging">
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="untrustedWebRequest">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="whitelistHosts">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="whitelistHostsRegex">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="blacklistHosts">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="blacklistHostsRegex">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+									<xs:attribute name="timeout" type="xs:string" />
+									<xs:attribute name="readWriteTimeout" type="xs:string" />
+									<xs:attribute name="maximumBytesToRead" type="xs:int" />
+									<xs:attribute name="maximumRedirections" type="xs:int" />
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+						<xs:attribute name="lifetime" type="xs:string" />
+						<xs:attribute name="clockSkew" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="openid">
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="relyingParty">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="security">
+											<xs:complexType>
+												<xs:attribute name="requireSsl" type="xs:boolean" default="false" />
+												<xs:attribute name="minimumRequiredOpenIdVersion">
+													<xs:simpleType>
+														<xs:restriction base="xs:NMTOKEN">
+															<xs:enumeration value="V10" />
+															<xs:enumeration value="V11" />
+															<xs:enumeration value="V20" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="minimumHashBitLength" type="xs:int" />
+												<xs:attribute name="maximumHashBitLength" type="xs:int" />
+												<xs:attribute name="privateSecretMaximumAge" type="xs:string" />
+												<xs:attribute name="requireDirectedIdentity" type="xs:boolean" />
+												<xs:attribute name="requireAssociation" type="xs:boolean" />
+												<xs:attribute name="rejectUnsolicitedAssertions" type="xs:boolean" />
+												<xs:attribute name="rejectDelegatingIdentifiers" type="xs:boolean" />
+												<xs:attribute name="ignoreUnsignedExtensions" type="xs:boolean" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="behaviors">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="optional" />
+															<xs:attribute name="xaml" type="xs:string" use="optional" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="store">
+											<xs:complexType>
+												<xs:attribute name="type" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="provider">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="security">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="associations">
+														<xs:complexType>
+															<xs:choice minOccurs="0" maxOccurs="unbounded">
+																<xs:element name="add">
+																	<xs:complexType>
+																		<xs:attribute name="type" type="xs:string" use="required" />
+																		<xs:attribute name="lifetime" type="xs:string" use="required" />
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="remove">
+																	<xs:complexType>
+																		<xs:attribute name="type" type="xs:string" use="required" />
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="clear">
+																	<xs:complexType>
+																		<!--tag is empty-->
+																	</xs:complexType>
+																</xs:element>
+															</xs:choice>
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+												<xs:attribute name="requireSsl" type="xs:boolean" default="false" />
+												<xs:attribute name="protectDownlevelReplayAttacks" type="xs:boolean" />
+												<xs:attribute name="minimumHashBitLength" type="xs:int" />
+												<xs:attribute name="maximumHashBitLength" type="xs:int" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="behaviors">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="optional" />
+															<xs:attribute name="xaml" type="xs:string" use="optional" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="type" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="store">
+											<xs:complexType>
+												<xs:attribute name="type" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="extensionFactories">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="add">
+											<xs:complexType>
+												<xs:attribute name="type" type="xs:string" use="optional" />
+												<xs:attribute name="xaml" type="xs:string" use="optional" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="remove">
+											<xs:complexType>
+												<xs:attribute name="type" type="xs:string" use="required" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="clear">
+											<xs:complexType>
+												<!--tag is empty-->
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="xriResolver">
+								<xs:complexType>
+									<xs:attribute name="enabled" type="xs:boolean" />
+									<xs:attribute name="proxy" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+						<xs:attribute name="maxAuthenticationTime" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

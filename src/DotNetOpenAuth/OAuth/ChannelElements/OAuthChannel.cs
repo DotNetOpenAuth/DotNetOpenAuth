@@ -150,7 +150,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			// Scrape the query string
 			foreach (string key in request.QueryStringBeforeRewriting) {
-				fields.Add(key, request.QueryStringBeforeRewriting[key]);
+				if (key != null) {
+					fields.Add(key, request.QueryStringBeforeRewriting[key]);
+				} else {
+					Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", request.QueryStringBeforeRewriting[key]);
+				}
 			}
 
 			// Deserialize the message using all the data we've collected.
@@ -307,7 +311,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// 	<para>This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).</para>
 		/// </remarks>
 		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
-			var protocol = Protocol.Lookup(requestMessage.Version);
 			var dictionary = this.MessageDescriptions.GetAccessor(requestMessage);
 
 			// copy so as to not modify original

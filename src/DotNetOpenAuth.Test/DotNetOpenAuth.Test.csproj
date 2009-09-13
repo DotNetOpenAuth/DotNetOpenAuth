@@ -153,6 +153,7 @@
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
     <Compile Include="Mocks\MockOpenIdExtension.cs" />
+    <Compile Include="Mocks\MockRealm.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
     <Compile Include="Mocks\MockReplayProtectionBindingElement.cs" />
     <Compile Include="Mocks\TestBaseMessage.cs" />
@@ -221,6 +222,7 @@
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
+    <Compile Include="OpenId\Provider\PerformanceTests.cs" />
     <Compile Include="OpenId\ProviderEndpointDescriptionTests.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequestTests.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequestTest.cs" />

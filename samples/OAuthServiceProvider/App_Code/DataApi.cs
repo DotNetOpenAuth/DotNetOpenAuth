@@ -1,20 +1,31 @@
 ﻿using System.Linq;
 using System.ServiceModel;
 
+/// <summary>
+/// The WCF service API.
+/// </summary>
+/// <remarks>
+/// Note how there is no code here that is bound to OAuth or any other
+/// credential/authorization scheme.  That's all part of the channel/binding elsewhere.
+/// And the reference to OperationContext.Current.ServiceSecurityContext.PrimaryIdentity 
+/// is the user being impersonated by the WCF client.
+/// In the OAuth case, it is the user who authorized the OAuth access token that was used
+/// to gain access to the service.
+/// </remarks>
 public class DataApi : IDataApi {
-	private static OAuthToken AccessToken {
-		get { return OperationContext.Current.IncomingMessageProperties["OAuthAccessToken"] as OAuthToken; }
+	private User User {
+		get { return OperationContext.Current.ServiceSecurityContext.PrimaryIdentity.GetUser(); }
 	}
 
 	public int? GetAge() {
-		return AccessToken.User.Age;
+		return User.Age;
 	}
 
 	public string GetName() {
-		return AccessToken.User.FullName;
+		return User.FullName;
 	}
 
 	public string[] GetFavoriteSites() {
-		return AccessToken.User.FavoriteSites.Select(site => site.SiteUrl).ToArray();
+		return User.FavoriteSites.Select(site => site.SiteUrl).ToArray();
 	}
 }

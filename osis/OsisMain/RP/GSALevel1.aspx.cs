@@ -17,7 +17,7 @@ public partial class RP_GSALevel1 : System.Web.UI.Page {
 
 	protected void Page_Load(object sender, EventArgs e) {
 		if (!IsPostBack) {
-			if (!USGovernmentLevel1.DisableSslRequirement) {
+			if (!GsaIcamProfile.DisableSslRequirement) {
 				Util.EnsureHttpsByRedirection();
 			}
 			IRequest request = provider.GetRequest();

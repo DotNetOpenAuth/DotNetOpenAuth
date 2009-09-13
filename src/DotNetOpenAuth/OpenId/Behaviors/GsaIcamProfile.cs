@@ -1,11 +1,12 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="USGovernmentLevel1.cs" company="Andrew Arnott">
+// <copyright file="GsaIcamProfile.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -16,7 +17,8 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
-	/// Implements the GSA level 1 OpenID profile.
+	/// Implements the Identity, Credential, &amp; Access Management (ICAM) OpenID 2.0 Profile
+	/// for the General Services Administration (GSA).
 	/// </summary>
 	/// <remarks>
 	/// <para>Relying parties that include this profile are always held to the terms required by the profile,
@@ -24,16 +26,17 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// indicates that they want to use this profile. </para>
 	/// </remarks>
 	[Serializable]
-	public sealed class USGovernmentLevel1 : IRelyingPartyBehavior, IProviderBehavior {
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Icam", Justification = "Acronym")]
+	public sealed class GsaIcamProfile : IRelyingPartyBehavior, IProviderBehavior {
 		/// <summary>
 		/// The maximum time a shared association can live.
 		/// </summary>
 		private static readonly TimeSpan MaximumAssociationLifetime = TimeSpan.FromSeconds(86400);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="USGovernmentLevel1"/> class.
+		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.
 		/// </summary>
-		public USGovernmentLevel1() {
+		public GsaIcamProfile() {
 			if (DisableSslRequirement) {
 				Logger.OpenId.Warn("GSA level 1 behavior has its RequireSsl requirement disabled.");
 			}
@@ -42,6 +45,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// <summary>
 		/// Gets or sets the provider for generating PPID identifiers.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ppid", Justification = "Acronym")]
 		public static IDirectedIdentityIdentifierProvider PpidIdentifierProvider { get; set; }
 
 		/// <summary>

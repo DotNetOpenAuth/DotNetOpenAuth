@@ -92,6 +92,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets a value indicating whether to pre-discover the identifier so
 		/// the user agent has an immediate redirect.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Precreate", Justification = "Breaking change to public API")]
 		[Bindable(true), Category(OpenIdCategory), DefaultValue(PrecreateRequestDefault)]
 		[Description("Whether to pre-discover the identifier so the user agent has an immediate redirect.")]
 		public bool PrecreateRequest {

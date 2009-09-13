@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// </remarks>
 	[Serializable]
 	[Pure]
-	public sealed class Realm {
+	public class Realm {
 		/// <summary>
 		/// A regex used to detect a wildcard that is being used in the realm.
 		/// </summary>
@@ -381,7 +381,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The details of the endpoints if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
-		public IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+		public virtual IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this.UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {

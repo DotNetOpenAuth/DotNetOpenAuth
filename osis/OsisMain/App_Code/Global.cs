@@ -42,10 +42,10 @@ public class Global : HttpApplication {
 			Logger.DebugFormat("Posted form follows: \n{0}", ToString(Request.Form));
 		}
 
-		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.PpidIdentifierProvider = new PpidProvider();
-		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.DisableSslRequirement = HttpContext.Current.Request.Url.Host == "localhost";
+		DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.PpidIdentifierProvider = new PpidProvider();
+		DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.DisableSslRequirement = HttpContext.Current.Request.Url.Host == "localhost";
 		// Always mark it as allowed, although we'll add the PAPE no-PII URI if we don't want any for this test.
-		DotNetOpenAuth.OpenId.Behaviors.USGovernmentLevel1.AllowPersonallyIdentifiableInformation = true;
+		DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.AllowPersonallyIdentifiableInformation = true;
 	}
 
 	protected void Application_AuthenticateRequest(object sender, EventArgs e) {

@@ -63,6 +63,21 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(1, requests.Count());
 		}
 
+		[TestMethod]
+		public void CreateRequestsWithEndpointFilter() {
+			var rp = this.CreateRelyingParty();
+			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
+			Identifier id = Identifier.Parse(GetMockIdentifier(ProtocolVersion.V20));
+
+			rp.EndpointFilter = opendpoint => true;
+			var requests = rp.CreateRequests(id, RPRealmUri, RPUri);
+			Assert.AreEqual(1, requests.Count());
+
+			rp.EndpointFilter = opendpoint => false;
+			requests = rp.CreateRequests(id, RPRealmUri, RPUri);
+			Assert.AreEqual(0, requests.Count());
+		}
+
 		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void CreateRequestOnNonOpenID() {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");
@@ -78,6 +93,32 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.MockResponder.RegisterMockResponse(nonOpenId, "text/html", "<html/>");
 			var requests = rp.CreateRequests(nonOpenId, RPRealmUri, RPUri);
 			Assert.AreEqual(0, requests.Count());
+		}
+
+		/// <summary>
+		/// Verifies that incoming positive assertions throw errors if they come from
+		/// OPs that are not approved by <see cref="OpenIdRelyingParty.EndpointFilter"/>.
+		/// </summary>
+		[TestMethod]
+		public void AssertionWithEndpointFilter() {
+			var coordinator = new OpenIdCoordinator(
+				rp => {
+					// register with RP so that id discovery passes
+					rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+
+					// Rig it to always deny the incoming OP
+					rp.EndpointFilter = op => false;
+
+					// Receive the unsolicited assertion
+					var response = rp.GetResponse();
+					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
+				},
+				op => {
+					Identifier id = GetMockIdentifier(ProtocolVersion.V20);
+					op.SendUnsolicitedAssertion(OPUri, GetMockRealm(false), id, id);
+					AutoProvider(op);
+				});
+			coordinator.Run();
 		}
 	}
 }

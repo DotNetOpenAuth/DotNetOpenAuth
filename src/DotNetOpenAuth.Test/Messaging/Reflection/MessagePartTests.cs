@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("abc", part.GetValue(message));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
 		public void ConstantFieldMemberInvalidValues() {
 			var message = new MessageWithConstantField();
 			MessagePart part = GetMessagePart(message.GetType(), "ConstantField");

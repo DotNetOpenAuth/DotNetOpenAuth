@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -24,6 +25,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// OAuth 1.0a specification
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "a", Justification = "By design.")]
 		V10a,
 	}
 

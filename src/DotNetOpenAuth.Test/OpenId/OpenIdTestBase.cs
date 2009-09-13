@@ -71,6 +71,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.MockResponder = MockHttpRequest.CreateUntrustedMockHttpHandler();
 			this.RequestHandler = this.MockResponder.MockWebRequestHandler;
 			this.AutoProviderScenario = Scenarios.AutoApproval;
+			Identifier.EqualityOnStrings = true;
+		}
+
+		[TestCleanup]
+		public override void Cleanup() {
+			base.Cleanup();
+
+			Identifier.EqualityOnStrings = false;
 		}
 
 		/// <summary>
@@ -166,6 +174,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 				provider.SendResponse(request);
 			}
+		}
+
+		protected Realm GetMockRealm(bool useSsl) {
+			var rpDescription = new RelyingPartyEndpointDescription(useSsl ? RPUriSsl : RPUri, new string[] { Protocol.V20.RPReturnToTypeURI });
+			return new MockRealm(useSsl ? RPRealmUriSsl : RPRealmUri, rpDescription);
 		}
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion) {

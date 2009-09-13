@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A description of some OpenID Relying Party endpoint.
@@ -25,6 +26,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// The Type URIs of supported services advertised on a relying party's XRDS document.
 		/// </param>
 		internal RelyingPartyEndpointDescription(Uri returnTo, string[] supportedServiceTypeUris) {
+			ErrorUtilities.VerifyArgumentNotNull(returnTo, "returnTo");
+			ErrorUtilities.VerifyArgumentNotNull(supportedServiceTypeUris, "supportedServiceTypeUris");
+
 			this.ReturnToEndpoint = returnTo;
 			this.Protocol = GetProtocolFromServices(supportedServiceTypeUris);
 		}

@@ -20,20 +20,17 @@
 	/// Interaction logic for Authorize.xaml
 	/// </summary>
 	public partial class Authorize : Window {
-		private DesktopConsumer google;
+		private DesktopConsumer consumer;
 		private string requestToken;
 
-		internal Authorize(DesktopConsumer consumer) {
+		internal Authorize(DesktopConsumer consumer, FetchUri fetchUriCallback) {
 			InitializeComponent();
 
-			this.google = consumer;
+			this.consumer = consumer;
 			Cursor original = this.Cursor;
 			this.Cursor = Cursors.Wait;
 			ThreadPool.QueueUserWorkItem(delegate(object state) {
-				Uri browserAuthorizationLocation = GoogleConsumer.RequestAuthorization(
-					this.google,
-					GoogleConsumer.Applications.Contacts | GoogleConsumer.Applications.Blogger,
-					out this.requestToken);
+				Uri browserAuthorizationLocation = fetchUriCallback(this.consumer, out this.requestToken);
 				System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
 				this.Dispatcher.BeginInvoke(new Action(() => {
 					this.Cursor = original;
@@ -42,10 +39,12 @@
 			});
 		}
 
+		internal delegate Uri FetchUri(DesktopConsumer consumer, out string requestToken);
+
 		internal string AccessToken { get; set; }
 
 		private void finishButton_Click(object sender, RoutedEventArgs e) {
-			var grantedAccess = this.google.ProcessUserAuthorization(this.requestToken, verifierBox.Text);
+			var grantedAccess = this.consumer.ProcessUserAuthorization(this.requestToken, verifierBox.Text);
 			this.AccessToken = grantedAccess.AccessToken;
 			DialogResult = true;
 			Close();

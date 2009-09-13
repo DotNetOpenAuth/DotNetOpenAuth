@@ -243,11 +243,14 @@
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderAccessToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthIdentity.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthPrincipal.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
@@ -383,6 +386,7 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\Constants.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\DemandLevel.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Gender.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIConstants.cs" />
     <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
     <Compile Include="OpenId\Extensions\UI\UIModes.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
@@ -492,8 +496,9 @@
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
+    <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
-    <Compile Include="OpenId\Behaviors\USGovernmentLevel1.cs" />
+    <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
     <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
@@ -531,6 +536,7 @@
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Configuration\DotNetOpenAuth.xsd" />
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />

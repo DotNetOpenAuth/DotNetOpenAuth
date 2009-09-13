@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
 
@@ -20,6 +21,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// or its configuration.</para>
 	/// <para>It is an internal exception to assist in making it uncatchable.</para>
 	/// </remarks>
+	[SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic", Justification = "We don't want this exception to be catchable.")]
 	[Serializable]
 	internal class HostErrorException : Exception {
 		/// <summary>
