@@ -23,6 +23,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private IDictionary<string, string> callbackArguments;
 
 		/// <summary>
+		/// The untrusted callback arguments that came with the authentication response.
+		/// </summary>
+		private IDictionary<string, string> untrustedCallbackArguments;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthenticationResponseSnapshot"/> class.
 		/// </summary>
 		/// <param name="copyFrom">The authentication response to copy from.</param>
@@ -34,6 +39,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Status = copyFrom.Status;
 			this.Provider = copyFrom.Provider;
 			this.callbackArguments = copyFrom.GetCallbackArguments();
+			this.untrustedCallbackArguments = copyFrom.GetUntrustedCallbackArguments();
 		}
 
 		#region IAuthenticationResponse Members
@@ -229,6 +235,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets all the callback arguments that were previously added using
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/> or as a natural part
+		/// of the return_to URL.
+		/// </summary>
+		/// <returns>A name-value dictionary.  Never null.</returns>
+		/// <remarks>
+		/// Callback parameters are only available even if the RP is in stateless mode,
+		/// or the callback parameters are otherwise unverifiable as untampered with.
+		/// Therefore, use this method only when the callback argument is not to be
+		/// used to make a security-sensitive decision.
+		/// </remarks>
+		public IDictionary<string, string> GetUntrustedCallbackArguments() {
+			// Return a copy so that the caller cannot change the contents.
+			return new Dictionary<string, string>(this.untrustedCallbackArguments);
+		}
+
+		/// <summary>
 		/// Gets a callback argument's value that was previously added using
 		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
 		/// </summary>
@@ -247,6 +270,28 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			string value;
 			this.callbackArguments.TryGetValue(key, out value);
+			return value;
+		}
+
+		/// <summary>
+		/// Gets a callback argument's value that was previously added using
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
+		/// </summary>
+		/// <param name="key">The name of the parameter whose value is sought.</param>
+		/// <returns>
+		/// The value of the argument, or null if the named parameter could not be found.
+		/// </returns>
+		/// <remarks>
+		/// Callback parameters are only available even if the RP is in stateless mode,
+		/// or the callback parameters are otherwise unverifiable as untampered with.
+		/// Therefore, use this method only when the callback argument is not to be
+		/// used to make a security-sensitive decision.
+		/// </remarks>
+		public string GetUntrustedCallbackArgument(string key) {
+			ErrorUtilities.VerifyArgumentNotNull(key, "key");
+
+			string value;
+			this.untrustedCallbackArguments.TryGetValue(key, out value);
 			return value;
 		}
 
