@@ -33,6 +33,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		bool Immediate { get; }
 
 		/// <summary>
+		/// Gets or sets the provider endpoint claimed in the positive assertion.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// This value MUST match the value for the OP Endpoint in the discovery results for the
+		/// claimed identifier being asserted in a positive response.
+		/// </value>
+		Uri ProviderEndpoint { get; set; }
+
+		/// <summary>
 		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
 		/// </summary>
 		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
@@ -74,6 +84,24 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		bool IHostProcessedRequest.Immediate {
 			get { throw new System.NotImplementedException(); }
+		}
+
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		Uri IHostProcessedRequest.ProviderEndpoint {
+			get {
+				Contract.Ensures(Contract.Result<Uri>() != null);
+				throw new NotImplementedException();
+			}
+
+			set {
+				Contract.Requires(value != null);
+				throw new NotImplementedException();
+			}
 		}
 
 		#endregion

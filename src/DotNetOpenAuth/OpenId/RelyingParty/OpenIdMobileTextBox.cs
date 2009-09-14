@@ -635,7 +635,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
-				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+				string persistentString = response.GetUntrustedCallbackArgument(UsePersistentCookieCallbackKey);
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
 					this.UsePersistentCookie = persistentBool;

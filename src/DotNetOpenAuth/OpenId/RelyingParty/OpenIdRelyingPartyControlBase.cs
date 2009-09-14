@@ -623,7 +623,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (response == null) {
 				return;
 			}
-			string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+			string persistentString = response.GetUntrustedCallbackArgument(UsePersistentCookieCallbackKey);
 			if (persistentString != null) {
 				this.UsePersistentCookie = (LogOnPersistence)Enum.Parse(typeof(LogOnPersistence), persistentString);
 			}
