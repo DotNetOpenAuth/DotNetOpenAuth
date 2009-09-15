@@ -7,9 +7,6 @@
 
 namespace DotNetOpenAuth.SimpleAuth {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 
 	/// <summary>
 	/// Protocol constants for Simple Auth.
@@ -79,5 +76,30 @@ namespace DotNetOpenAuth.SimpleAuth {
 		/// The "expired_delegation_code" string.
 		/// </summary>
 		internal const string expired_delegation_code = "expired_delegation_code";
+
+		/// <summary>
+		/// The "sa_username" string.
+		/// </summary>
+		internal const string sa_username = "sa_username";
+
+		/// <summary>
+		/// The "sa_password" string.
+		/// </summary>
+		internal const string sa_password = "sa_password";
+
+		/// <summary>
+		/// The "sa_name" string.
+		/// </summary>
+		internal const string sa_name = "sa_name";
+
+		/// <summary>
+		/// The "sa_SAML" string.
+		/// </summary>
+		internal const string sa_saml = "sa_SAML";
+
+		/// <summary>
+		/// The "sa_SWT" string.
+		/// </summary>
+		internal const string sa_swt = "sa_SWT";
 	}
 }

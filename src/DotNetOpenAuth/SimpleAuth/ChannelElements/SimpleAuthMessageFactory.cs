@@ -45,6 +45,18 @@ namespace DotNetOpenAuth.SimpleAuth.ChannelElements {
 				return new AccessTokenWithDelegationCodeRequest(recipient.Location, version);
 			}
 
+			if (fields.ContainsKey(Protocol.sa_name)) {
+				return new AccessTokenWithConsumerNamePasswordRequest(version);
+			}
+
+			if (fields.ContainsKey(Protocol.sa_username)) {
+				return new UserAuthorizationViaUsernamePasswordRequest(version);
+			}
+
+			if (fields.ContainsKey(Protocol.sa_saml)) {
+				return new AccessTokenWithSamlRequest(version);
+			}
+
 			if (fields.ContainsKey(Protocol.sa_delegation_code)) {
 				return new UserAuthorizationInUserAgentGrantedResponse(recipient.Location, version);
 			}
@@ -72,9 +84,18 @@ namespace DotNetOpenAuth.SimpleAuth.ChannelElements {
 			var accessTokenRequest = request as AccessTokenWithDelegationCodeRequest;
 			if (accessTokenRequest != null) {
 				if (fields.ContainsKey(Protocol.sa_token)) {
-					return new AccessTokenWithDelegationCodeSuccessResponse(accessTokenRequest);
+					return new AccessTokenSuccessResponse(accessTokenRequest);
 				} else {
-					return new AccessTokenWithDelegationCodeFailedResponse(accessTokenRequest);
+					return new AccessTokenFailedResponse(accessTokenRequest);
+				}
+			}
+
+			var userAuthorization = request as UserAuthorizationViaUsernamePasswordRequest;
+			if (userAuthorization != null) {
+				if (fields.ContainsKey(Protocol.sa_delegation_code)) {
+					return new UserAuthorizationViaUsernamePasswordSuccessResponse(userAuthorization);
+				} else {
+					return new UserAuthorizationViaUsernamePasswordFailedResponse(userAuthorization);
 				}
 			}
 

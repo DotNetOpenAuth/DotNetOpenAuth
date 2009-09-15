@@ -512,13 +512,18 @@
     <Compile Include="SimpleAuth\ChannelElements\SimpleAuthMessageFactory.cs" />
     <Compile Include="SimpleAuth\ChannelElements\UriOrOutOfBandEncoding.cs" />
     <Compile Include="SimpleAuth\ConsumerBase.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenWithDelegationCodeFailedResponse.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenWithDelegationCodeSuccessResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenFailedResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenSuccessResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenWithConsumerNamePasswordRequest.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenWithSamlRequest.cs" />
     <Compile Include="SimpleAuth\Messages\MessageBase.cs" />
     <Compile Include="SimpleAuth\Messages\AccessTokenWithDelegationCodeRequest.cs" />
     <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentDeniedResponse.cs" />
     <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentRequest.cs" />
     <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentGrantedResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\UserAuthorizationViaUsernamePasswordFailedResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\UserAuthorizationViaUsernamePasswordRequest.cs" />
+    <Compile Include="SimpleAuth\Messages\UserAuthorizationViaUsernamePasswordSuccessResponse.cs" />
     <Compile Include="SimpleAuth\Protocol.cs" />
     <Compile Include="SimpleAuth\SimpleAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>

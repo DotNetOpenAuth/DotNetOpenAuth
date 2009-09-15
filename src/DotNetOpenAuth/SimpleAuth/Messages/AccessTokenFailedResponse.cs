@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenWithDelegationCodeFailedResponse.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,12 +15,12 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 	/// The direct response message that may contain the reason the access token 
 	/// was NOT returned from the Token Issuer to the Consumer.
 	/// </summary>
-	internal class AccessTokenWithDelegationCodeFailedResponse : MessageBase {
+	internal class AccessTokenFailedResponse : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenWithDelegationCodeFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenWithDelegationCodeFailedResponse(AccessTokenWithDelegationCodeRequest request)
+		internal AccessTokenFailedResponse(AccessTokenWithDelegationCodeRequest request)
 			: base(request) {
 		}
 
