@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		/// </value>
 		/// <remarks>
 		/// Consumers which are unable to receive callbacks MUST use <c>null</c> to indicate it
-		/// will receive the Verification Code out of band.
+		/// will receive the Delegation Code out of band.
 		/// </remarks>
 		[MessagePart(Protocol.sa_callback, IsRequired = true, AllowEmpty = false, Encoder = typeof(UriOrOutOfBandEncoding))]
 		internal Uri Callback { get; set; }

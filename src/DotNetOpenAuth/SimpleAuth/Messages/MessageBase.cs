@@ -12,11 +12,16 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 	/// <summary>
 	/// A common message base class for Simple Auth messages.
 	/// </summary>
-	public class MessageBase : IDirectedProtocolMessage {
+	public class MessageBase : IDirectedProtocolMessage, IDirectResponseProtocolMessage {
 		/// <summary>
 		/// A dictionary to contain extra message data.
 		/// </summary>
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
+
+		/// <summary>
+		/// The originating request.
+		/// </summary>
+		private IDirectedProtocolMessage originatingRequest;
 
 		/// <summary>
 		/// The backing field for the <see cref="IMessage.Version"/> property.
@@ -37,6 +42,17 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 			ErrorUtilities.VerifyArgumentNotNull(version, "version");
 			this.messageTransport = MessageTransport.Direct;
 			this.version = version;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MessageBase"/> class.
+		/// </summary>
+		/// <param name="request">The originating request.</param>
+		protected MessageBase(IDirectedProtocolMessage request) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			this.originatingRequest = request;
+			this.messageTransport = MessageTransport.Direct;
+			this.version = request.Version;
 		}
 
 		/// <summary>
@@ -120,6 +136,17 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		/// </summary>
 		Uri IDirectedProtocolMessage.Recipient {
 			get { return this.Recipient; }
+		}
+
+		#endregion
+
+		#region IDirectResponseProtocolMessage Members
+
+		/// <summary>
+		/// Gets the originating request message that caused this response to be formed.
+		/// </summary>
+		IDirectedProtocolMessage IDirectResponseProtocolMessage.OriginatingRequest {
+			get { return this.originatingRequest; }
 		}
 
 		#endregion

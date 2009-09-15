@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenResponse.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenWithDelegationCodeSuccessResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,13 +12,13 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 	/// The direct response message that contains the access token from the Token Issuer
 	/// to the Consumer.
 	/// </summary>
-	internal class AccessTokenResponse : MessageBase {
+	internal class AccessTokenWithDelegationCodeSuccessResponse : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenResponse"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenWithDelegationCodeSuccessResponse"/> class.
 		/// </summary>
-		/// <param name="version">The version.</param>
-		internal AccessTokenResponse(Version version)
-			: base(version) {
+		/// <param name="request">The request.</param>
+		internal AccessTokenWithDelegationCodeSuccessResponse(AccessTokenWithDelegationCodeRequest request)
+			: base(request) {
 		}
 
 		/// <summary>

@@ -24,11 +24,14 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the verifier.
+		/// Gets or sets the delegation code.
 		/// </summary>
-		/// <value>The verification code, if the user authorized the Consumer.</value>
-		[MessagePart(Protocol.sa_verifier, IsRequired = true, AllowEmpty = true)]
-		internal string Verifier { get; set; }
+		/// <value>
+		/// The long-lived credential assigned by the Token Issuer to this Consumer for
+		/// use in accessing the authorizing user's protected resources.
+		/// </value>
+		[MessagePart(Protocol.sa_delegation_code, IsRequired = true, AllowEmpty = true)]
+		internal string DelegationCode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the state of the consumer as provided by the consumer in the

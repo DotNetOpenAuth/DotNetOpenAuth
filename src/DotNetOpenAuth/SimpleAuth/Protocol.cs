@@ -51,19 +51,19 @@ namespace DotNetOpenAuth.SimpleAuth {
 		internal const string sa_consumer_secret = "sa_consumer_secret";
 
 		/// <summary>
-		/// The "sa_verifier" string.
+		/// The "sa_delegation_code" string.
 		/// </summary>
-		internal const string sa_verifier = "sa_verifier";
+		internal const string sa_delegation_code = "sa_delegation_code";
 
 		/// <summary>
-		/// The "sa_user_response" string.
+		/// The "sa_error_reason" string.
 		/// </summary>
-		internal const string sa_user_response = "sa_user_response";
+		internal const string sa_error_reason = "sa_error_reason";
 
 		/// <summary>
-		/// The "denied" string.
+		/// The "user_denied" string.
 		/// </summary>
-		internal const string sa_user_response_denied = "denied";
+		internal const string sa_error_reason_denied = "user_denied";
 
 		/// <summary>
 		/// The "sa_token" string.
@@ -74,5 +74,10 @@ namespace DotNetOpenAuth.SimpleAuth {
 		/// The "sa_token_expires_in" string.
 		/// </summary>
 		internal const string sa_token_expires_in = "sa_token_expires_in";
+
+		/// <summary>
+		/// The "expired_delegation_code" string.
+		/// </summary>
+		internal const string expired_delegation_code = "expired_delegation_code";
 	}
 }

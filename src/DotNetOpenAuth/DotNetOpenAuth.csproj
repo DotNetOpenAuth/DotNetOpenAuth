@@ -512,9 +512,10 @@
     <Compile Include="SimpleAuth\ChannelElements\SimpleAuthMessageFactory.cs" />
     <Compile Include="SimpleAuth\ChannelElements\UriOrOutOfBandEncoding.cs" />
     <Compile Include="SimpleAuth\ConsumerBase.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenWithDelegationCodeFailedResponse.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenWithDelegationCodeSuccessResponse.cs" />
     <Compile Include="SimpleAuth\Messages\MessageBase.cs" />
-    <Compile Include="SimpleAuth\Messages\RequestAccessTokenWithVerifier.cs" />
+    <Compile Include="SimpleAuth\Messages\AccessTokenWithDelegationCodeRequest.cs" />
     <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentDeniedResponse.cs" />
     <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentRequest.cs" />
     <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentGrantedResponse.cs" />

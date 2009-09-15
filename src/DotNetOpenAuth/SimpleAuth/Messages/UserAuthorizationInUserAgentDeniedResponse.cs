@@ -17,8 +17,8 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>
-		[MessagePart(Protocol.sa_user_response, IsRequired = true)]
-		private const string UserResponse = Protocol.sa_user_response_denied;
+		[MessagePart(Protocol.sa_error_reason, IsRequired = true)]
+		private const string ErrorReason = Protocol.sa_error_reason_denied;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAuthorizationInUserAgentDeniedResponse"/> class.

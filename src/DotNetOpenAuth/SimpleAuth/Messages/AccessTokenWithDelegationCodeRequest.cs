@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RequestAccessTokenWithVerifier.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenWithDelegationCodeRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,15 +11,15 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 
 	/// <summary>
 	/// A message sent by the Consumer directly to the Token Issuer to exchange
-	/// the verifier code for an Access Token.
+	/// the delegation code for an Access Token.
 	/// </summary>
-	internal class RequestAccessTokenWithVerifier : MessageBase, IDirectedProtocolMessage {
+	internal class AccessTokenWithDelegationCodeRequest : MessageBase, IDirectedProtocolMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RequestAccessTokenWithVerifier"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenWithDelegationCodeRequest"/> class.
 		/// </summary>
 		/// <param name="tokenIssuer">The token issuer.</param>
 		/// <param name="version">The version.</param>
-		internal RequestAccessTokenWithVerifier(Uri tokenIssuer, Version version)
+		internal AccessTokenWithDelegationCodeRequest(Uri tokenIssuer, Version version)
 			: base(version, MessageTransport.Direct, tokenIssuer) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
@@ -39,11 +39,11 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		internal string ConsumerSecret { get; set; }
 
 		/// <summary>
-		/// Gets or sets the verifier.
+		/// Gets or sets the delegation code.
 		/// </summary>
-		/// <value>The verifier.</value>
-		[MessagePart(Protocol.sa_verifier, IsRequired = true, AllowEmpty = false)]
-		internal string Verifier { get; set; }
+		/// <value>The delegation code.</value>
+		[MessagePart(Protocol.sa_delegation_code, IsRequired = true, AllowEmpty = false)]
+		internal string DelegationCode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the callback URL.

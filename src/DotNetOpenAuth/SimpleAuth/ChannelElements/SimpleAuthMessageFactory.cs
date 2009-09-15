@@ -10,7 +10,7 @@ namespace DotNetOpenAuth.SimpleAuth.ChannelElements {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-using DotNetOpenAuth.SimpleAuth.Messages;
+	using DotNetOpenAuth.SimpleAuth.Messages;
 
 	/// <summary>
 	/// The message factory for Simple Auth messages.
@@ -41,12 +41,16 @@ using DotNetOpenAuth.SimpleAuth.Messages;
 				return new UserAuthorizationInUserAgentRequest(recipient.Location, version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_consumer_key) && fields.ContainsKey(Protocol.sa_verifier)) {
-				return new RequestAccessTokenWithVerifier(recipient.Location, version);
+			if (fields.ContainsKey(Protocol.sa_consumer_key) && fields.ContainsKey(Protocol.sa_delegation_code)) {
+				return new AccessTokenWithDelegationCodeRequest(recipient.Location, version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_verifier)) {
+			if (fields.ContainsKey(Protocol.sa_delegation_code)) {
 				return new UserAuthorizationInUserAgentGrantedResponse(recipient.Location, version);
+			}
+
+			if (fields.ContainsKey(Protocol.sa_error_reason)) {
+				return new UserAuthorizationInUserAgentDeniedResponse(recipient.Location, version);
 			}
 
 			return null;
@@ -63,6 +67,17 @@ using DotNetOpenAuth.SimpleAuth.Messages;
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
 		public IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
+			Version version = Protocol.DefaultVersion;
+
+			var accessTokenRequest = request as AccessTokenWithDelegationCodeRequest;
+			if (accessTokenRequest != null) {
+				if (fields.ContainsKey(Protocol.sa_token)) {
+					return new AccessTokenWithDelegationCodeSuccessResponse(accessTokenRequest);
+				} else {
+					return new AccessTokenWithDelegationCodeFailedResponse(accessTokenRequest);
+				}
+			}
+
 			return null;
 		}
 
