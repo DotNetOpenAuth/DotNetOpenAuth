@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 	/// following the user's denial to grant Consumer with authorization of 
 	/// access to requested resources.
 	/// </summary>
-	internal class UserAuthorizationInUserAgentDeniedResponse : MessageBase, IDirectedProtocolMessage {
+	public class UserAuthorizationInUserAgentDeniedResponse : MessageBase, IDirectedProtocolMessage {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>
@@ -39,6 +39,6 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		/// If this value is present, the Token Issuer MUST return it to the Consumer's callback URL.
 		/// </remarks>
 		[MessagePart(Protocol.sa_consumer_state, IsRequired = false, AllowEmpty = true)]
-		internal string ConsumerState { get; set; }
+		public string ConsumerState { get; set; }
 	}
 }

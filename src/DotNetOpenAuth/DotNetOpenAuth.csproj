@@ -530,6 +530,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SimpleAuthStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="SimpleAuth\TokenIssuerDescription.cs" />
+    <Compile Include="SimpleAuth\WebConsumer.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="OAuth\Protocol.cs" />
     <Compile Include="OAuth\ServiceProvider.cs" />

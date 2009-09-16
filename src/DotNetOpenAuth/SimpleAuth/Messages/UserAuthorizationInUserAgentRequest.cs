@@ -14,13 +14,13 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 	/// to get the Token Issuer to obtain authorization from the user and prepare
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
-	internal class UserAuthorizationInUserAgentRequest : MessageBase, IDirectedProtocolMessage {
+	public class UserAuthorizationInUserAgentRequest : MessageBase, IDirectedProtocolMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAuthorizationInUserAgentRequest"/> class.
 		/// </summary>
 		/// <param name="tokenIssuer">The token issuer URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		internal UserAuthorizationInUserAgentRequest(Uri tokenIssuer, Version version)
+		public UserAuthorizationInUserAgentRequest(Uri tokenIssuer, Version version)
 			: base(version, MessageTransport.Indirect, tokenIssuer) {
 		}
 
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		/// </summary>
 		/// <value>The consumer key.</value>
 		[MessagePart(Protocol.sa_consumer_key, IsRequired = true, AllowEmpty = false)]
-		internal string ConsumerKey { get; set; }
+		public string ConsumerKey { get; set; }
 
 		/// <summary>
 		/// Gets or sets the callback URL.
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		/// will receive the Delegation Code out of band.
 		/// </remarks>
 		[MessagePart(Protocol.sa_callback, IsRequired = true, AllowEmpty = false, Encoder = typeof(UriOrOutOfBandEncoding))]
-		internal Uri Callback { get; set; }
+		public Uri Callback { get; set; }
 
 		/// <summary>
 		/// Gets or sets the state of the consumer.
@@ -55,6 +55,6 @@ namespace DotNetOpenAuth.SimpleAuth.Messages {
 		/// If this value is present, the Token Issuer MUST return it to the Consumer's callback URL.
 		/// </remarks>
 		[MessagePart(Protocol.sa_consumer_state, IsRequired = false, AllowEmpty = true)]
-		internal string ConsumerState { get; set; }
+		public string ConsumerState { get; set; }
 	}
 }
