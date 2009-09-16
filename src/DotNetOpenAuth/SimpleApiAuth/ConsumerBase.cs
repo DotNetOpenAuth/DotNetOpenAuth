@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.SimpleApiAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
 		/// </summary>
+		/// <param name="tokenIssuer">The token issuer.</param>
 		protected ConsumerBase(TokenIssuerDescription tokenIssuer) {
 			ErrorUtilities.VerifyArgumentNotNull(tokenIssuer, "tokenIssuer");
 			this.TokenIssuer = tokenIssuer;
@@ -41,13 +42,13 @@ namespace DotNetOpenAuth.SimpleApiAuth {
 		}
 
 		/// <summary>
-		/// Gets or sets the token issuer.
+		/// Gets the token issuer.
 		/// </summary>
 		/// <value>The token issuer.</value>
 		public TokenIssuerDescription TokenIssuer { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the channel.
+		/// Gets the channel.
 		/// </summary>
 		/// <value>The channel.</value>
 		public Channel Channel { get; private set; }

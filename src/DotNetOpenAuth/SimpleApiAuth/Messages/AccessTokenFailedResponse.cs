@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.SimpleApiAuth.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
@@ -15,7 +16,7 @@ namespace DotNetOpenAuth.SimpleApiAuth.Messages {
 	/// The direct response message that may contain the reason the access token 
 	/// was NOT returned from the Token Issuer to the Consumer.
 	/// </summary>
-	internal class AccessTokenFailedResponse : MessageBase {
+	internal class AccessTokenFailedResponse : MessageBase, IHttpDirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
 		/// </summary>
@@ -23,6 +24,18 @@ namespace DotNetOpenAuth.SimpleApiAuth.Messages {
 		internal AccessTokenFailedResponse(AccessTokenWithDelegationCodeRequest request)
 			: base(request) {
 		}
+
+		#region IHttpDirectResponse Members
+
+		/// <summary>
+		/// Gets the HTTP status code that the direct respones should be sent with.
+		/// </summary>
+		/// <value><see cref="HttpStatusCode.Unauthorized"/></value>
+		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
+			get { return HttpStatusCode.Unauthorized; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets or sets the error reason.

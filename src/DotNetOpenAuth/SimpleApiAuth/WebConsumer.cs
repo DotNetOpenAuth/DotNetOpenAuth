@@ -9,8 +9,8 @@ namespace DotNetOpenAuth.SimpleApiAuth {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.SimpleApiAuth.Messages;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.SimpleApiAuth.Messages;
 
 	public class WebConsumer : ConsumerBase {
 		public WebConsumer(TokenIssuerDescription tokenIssuer)

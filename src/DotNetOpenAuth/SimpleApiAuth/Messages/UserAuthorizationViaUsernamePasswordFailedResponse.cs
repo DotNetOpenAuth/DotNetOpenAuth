@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.SimpleApiAuth.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
@@ -16,7 +17,7 @@ namespace DotNetOpenAuth.SimpleApiAuth.Messages {
 	/// request for a delegation code failed, probably due to an invalid
 	/// username and password.
 	/// </summary>
-	internal class UserAuthorizationViaUsernamePasswordFailedResponse : MessageBase {
+	internal class UserAuthorizationViaUsernamePasswordFailedResponse : MessageBase, IHttpDirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAuthorizationViaUsernamePasswordFailedResponse"/> class.
 		/// </summary>
@@ -24,6 +25,18 @@ namespace DotNetOpenAuth.SimpleApiAuth.Messages {
 		internal UserAuthorizationViaUsernamePasswordFailedResponse(UserAuthorizationViaUsernamePasswordRequest request)
 			: base(request) {
 		}
+
+		#region IHttpDirectResponse Members
+
+		/// <summary>
+		/// Gets the HTTP status code that the direct respones should be sent with.
+		/// </summary>
+		/// <value><see cref="HttpStatusCode.Unauthorized"/></value>
+		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
+			get { return HttpStatusCode.Unauthorized; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets or sets the error reason.
