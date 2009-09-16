@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleAuth.Messages {
+namespace DotNetOpenAuth.SimpleApiAuth.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
 

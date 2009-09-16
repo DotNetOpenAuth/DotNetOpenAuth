@@ -5,20 +5,20 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleAuth {
+namespace DotNetOpenAuth.SimpleApiAuth {
 	using System;
 
 	/// <summary>
-	/// Protocol constants for Simple Auth.
+	/// Protocol constants for Simple API Auth.
 	/// </summary>
 	internal class Protocol {
 		/// <summary>
-		/// The default (latest) version of the Simple Auth protocol.
+		/// The default (latest) version of the Simple API Auth protocol.
 		/// </summary>
 		internal static readonly Version DefaultVersion = V10;
 
 		/// <summary>
-		/// The initial (1.0) version of Simple Auth.
+		/// The initial (1.0) version of Simple API Auth.
 		/// </summary>
 		internal static readonly Version V10 = new Version(1, 0);
 

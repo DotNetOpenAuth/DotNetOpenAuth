@@ -508,30 +508,30 @@
     <Compile Include="OAuth\ChannelElements\RsaSha1SigningBindingElement.cs" />
     <Compile Include="Messaging\StandardWebRequestHandler.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
-    <Compile Include="SimpleAuth\ChannelElements\SimpleAuthChannel.cs" />
-    <Compile Include="SimpleAuth\ChannelElements\SimpleAuthMessageFactory.cs" />
-    <Compile Include="SimpleAuth\ChannelElements\UriOrOutOfBandEncoding.cs" />
-    <Compile Include="SimpleAuth\ConsumerBase.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenFailedResponse.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenSuccessResponse.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenWithConsumerNamePasswordRequest.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenWithSamlRequest.cs" />
-    <Compile Include="SimpleAuth\Messages\MessageBase.cs" />
-    <Compile Include="SimpleAuth\Messages\AccessTokenWithDelegationCodeRequest.cs" />
-    <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentDeniedResponse.cs" />
-    <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentRequest.cs" />
-    <Compile Include="SimpleAuth\Messages\UserAuthorizationInUserAgentGrantedResponse.cs" />
-    <Compile Include="SimpleAuth\Messages\UserAuthorizationViaUsernamePasswordFailedResponse.cs" />
-    <Compile Include="SimpleAuth\Messages\UserAuthorizationViaUsernamePasswordRequest.cs" />
-    <Compile Include="SimpleAuth\Messages\UserAuthorizationViaUsernamePasswordSuccessResponse.cs" />
-    <Compile Include="SimpleAuth\Protocol.cs" />
-    <Compile Include="SimpleAuth\SimpleAuthStrings.Designer.cs">
+    <Compile Include="SimpleApiAuth\ChannelElements\SimpleAuthChannel.cs" />
+    <Compile Include="SimpleApiAuth\ChannelElements\SimpleAuthMessageFactory.cs" />
+    <Compile Include="SimpleApiAuth\ChannelElements\UriOrOutOfBandEncoding.cs" />
+    <Compile Include="SimpleApiAuth\ConsumerBase.cs" />
+    <Compile Include="SimpleApiAuth\Messages\AccessTokenFailedResponse.cs" />
+    <Compile Include="SimpleApiAuth\Messages\AccessTokenSuccessResponse.cs" />
+    <Compile Include="SimpleApiAuth\Messages\AccessTokenWithConsumerNamePasswordRequest.cs" />
+    <Compile Include="SimpleApiAuth\Messages\AccessTokenWithSamlRequest.cs" />
+    <Compile Include="SimpleApiAuth\Messages\MessageBase.cs" />
+    <Compile Include="SimpleApiAuth\Messages\AccessTokenWithDelegationCodeRequest.cs" />
+    <Compile Include="SimpleApiAuth\Messages\UserAuthorizationInUserAgentDeniedResponse.cs" />
+    <Compile Include="SimpleApiAuth\Messages\UserAuthorizationInUserAgentRequest.cs" />
+    <Compile Include="SimpleApiAuth\Messages\UserAuthorizationInUserAgentGrantedResponse.cs" />
+    <Compile Include="SimpleApiAuth\Messages\UserAuthorizationViaUsernamePasswordFailedResponse.cs" />
+    <Compile Include="SimpleApiAuth\Messages\UserAuthorizationViaUsernamePasswordRequest.cs" />
+    <Compile Include="SimpleApiAuth\Messages\UserAuthorizationViaUsernamePasswordSuccessResponse.cs" />
+    <Compile Include="SimpleApiAuth\Protocol.cs" />
+    <Compile Include="SimpleApiAuth\SimpleAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SimpleAuthStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="SimpleAuth\TokenIssuerDescription.cs" />
-    <Compile Include="SimpleAuth\WebConsumer.cs" />
+    <Compile Include="SimpleApiAuth\TokenIssuerDescription.cs" />
+    <Compile Include="SimpleApiAuth\WebConsumer.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="OAuth\Protocol.cs" />
     <Compile Include="OAuth\ServiceProvider.cs" />
@@ -628,7 +628,7 @@
       <LastGenOutput>BehaviorStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
-    <EmbeddedResource Include="SimpleAuth\SimpleAuthStrings.resx">
+    <EmbeddedResource Include="SimpleApiAuth\SimpleAuthStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SimpleAuthStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>

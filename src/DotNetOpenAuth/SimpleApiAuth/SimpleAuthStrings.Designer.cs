@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleAuth {
+namespace DotNetOpenAuth.SimpleApiAuth {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.SimpleAuth {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOpenAuth.SimpleAuth.SimpleAuthStrings", typeof(SimpleAuthStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOpenAuth.SimpleApiAuth.SimpleAuthStrings", typeof(SimpleAuthStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -4,16 +4,16 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleAuth.ChannelElements {
+namespace DotNetOpenAuth.SimpleApiAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.SimpleAuth.Messages;
+	using DotNetOpenAuth.SimpleApiAuth.Messages;
 
 	/// <summary>
-	/// The message factory for Simple Auth messages.
+	/// The message factory for Simple API Auth messages.
 	/// </summary>
 	internal class SimpleAuthMessageFactory : IMessageFactory {
 		/// <summary>

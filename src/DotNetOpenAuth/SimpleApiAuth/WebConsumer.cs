@@ -4,12 +4,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleAuth {
+namespace DotNetOpenAuth.SimpleApiAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.SimpleAuth.Messages;
+	using DotNetOpenAuth.SimpleApiAuth.Messages;
 	using DotNetOpenAuth.Messaging;
 
 	public class WebConsumer : ConsumerBase {

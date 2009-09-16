@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleAuth.ChannelElements {
+namespace DotNetOpenAuth.SimpleApiAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.SimpleAuth.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The channel for the Simple Auth protocol.
+	/// The channel for the Simple API Auth protocol.
 	/// </summary>
 	internal class SimpleAuthChannel : Channel {
 		/// <summary>
