@@ -44,7 +44,7 @@ public partial class OP_GSALevel1 : System.Web.UI.Page {
 		testResultDisplay.LoadResponse(e.Response);
 		if (!wasPiiAllowed) {
 			var pape = e.Response.GetExtension<PolicyResponse>();
-			if (!pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation)) {
+			if (pape == null || !pape.ActualPolicies.Contains(AuthenticationPolicies.NoPersonallyIdentifiableInformation)) {
 				testResultDisplay.Pass = false;
 				testResultDisplay.Details = "The PAPE authentication policy " + AuthenticationPolicies.NoPersonallyIdentifiableInformation + " is missing from the response.";
 			}
