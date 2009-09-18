@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Represents a single part in a HTTP multipart POST request.
 	/// </summary>
-	internal class MultiPartPostPart {
+	public class MultiPartPostPart {
 		/// <summary>
 		/// The "Content-Disposition" string.
 		/// </summary>
@@ -138,6 +138,9 @@ namespace DotNetOpenAuth.Messaging {
 			part.ContentAttributes["name"] = name;
 			part.ContentAttributes["filename"] = fileName;
 			part.PartHeaders[HttpRequestHeader.ContentType] = contentType;
+			if (!contentType.StartsWith("text/", StringComparison.Ordinal)) {
+				part.PartHeaders["Content-Transfer-Encoding"] = "binary";
+			}
 			part.Content = content;
 			return part;
 		}

@@ -28,15 +28,15 @@ namespace DotNetOpenAuth.Messaging {
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
 		/// <summary>
+		/// The encoding to use when writing out POST entity strings.
+		/// </summary>
+		internal static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
+
+		/// <summary>
 		/// The content-type used on HTTP POST requests where the POST entity is a
 		/// URL-encoded series of key=value pairs.
 		/// </summary>
 		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
-
-		/// <summary>
-		/// The encoding to use when writing out POST entity strings.
-		/// </summary>
-		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
 
 		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
