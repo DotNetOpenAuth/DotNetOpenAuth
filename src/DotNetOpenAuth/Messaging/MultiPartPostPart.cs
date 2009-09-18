@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Represents a single part in a HTTP multipart POST request.
 	/// </summary>
-	public class MultiPartPostPart {
+	public class MultiPartPostPart : IDisposable {
 		/// <summary>
 		/// The "Content-Disposition" string.
 		/// </summary>
@@ -146,6 +146,14 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
 		/// Serializes the part to a stream.
 		/// </summary>
 		/// <param name="streamWriter">The stream writer.</param>
@@ -166,6 +174,16 @@ namespace DotNetOpenAuth.Messaging {
 			streamWriter.WriteLine();
 			streamWriter.Flush();
 			this.Content.CopyTo(streamWriter.BaseStream);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				this.Content.Dispose();
+			}
 		}
 
 #if CONTRACTS_FULL

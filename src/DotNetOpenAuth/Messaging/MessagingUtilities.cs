@@ -158,7 +158,7 @@ namespace DotNetOpenAuth.Messaging {
 			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
 
 			request.Method = "POST";
-			request.ContentType = "multipart/form-data;boundary=" + boundary;
+			request.ContentType = "multipart/form-data; boundary=" + boundary;
 			request.ContentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
 
 			// Setting the content-encoding to "utf-8" causes Google to reply
@@ -172,6 +172,7 @@ namespace DotNetOpenAuth.Messaging {
 				foreach (var part in parts) {
 					writer.Write(partLeadingBoundary);
 					part.Serialize(writer);
+					part.Dispose();
 				}
 
 				writer.Write(finalTrailingBoundary);
