@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// The default handler for transmitting <see cref="HttpWebRequest"/> instances
 	/// and returning the responses.
 	/// </summary>
-	internal class StandardWebRequestHandler : IDirectWebRequestHandler {
+	public class StandardWebRequestHandler : IDirectWebRequestHandler {
 		/// <summary>
 		/// The set of options this web request handler supports.
 		/// </summary>
