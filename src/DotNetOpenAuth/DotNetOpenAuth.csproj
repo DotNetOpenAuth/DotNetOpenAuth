@@ -26,8 +26,10 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>DotNetOpenAuth</CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>DotNetOpenAuth.ContractRuntimeFailureMethods</CodeContractsCustomRewriterClass>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
@@ -48,6 +50,8 @@
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -61,8 +65,10 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>DotNetOpenAuth</CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>DotNetOpenAuth.ContractRuntimeFailureMethods</CodeContractsCustomRewriterClass>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
@@ -83,6 +89,8 @@
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -102,11 +110,13 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>DotNetOpenAuth</CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>DotNetOpenAuth.ContractRuntimeFailureMethods</CodeContractsCustomRewriterClass>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
-    <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
+    <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
     <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
     <CodeContractsLibPaths>
@@ -125,6 +135,8 @@
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
@@ -211,7 +223,6 @@
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
-    <Compile Include="ContractRuntimeFailureMethods.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
     <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
