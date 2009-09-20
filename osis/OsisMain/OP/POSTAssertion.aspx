@@ -27,6 +27,8 @@
 					SetFocusOnError="True" Type="Integer" />
 				<asp:RequiredFieldValidator ID="RequiredFieldValidator2" ControlToValidate="callbackArgumentSize"
 					runat="server" ErrorMessage="(required)" Display="Dynamic" />
+					<br />
+				<asp:CheckBox runat="server" ID="includeMultibyteCharacters" Text="Include multi-byte UTF-8 characters in callback." />
 			</div>
 		</asp:View>
 		<asp:View ID="View2" runat="server">

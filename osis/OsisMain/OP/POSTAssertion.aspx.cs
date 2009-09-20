@@ -18,6 +18,10 @@ public partial class OP_POSTAssertion : System.Web.UI.Page {
 		if (request != null) {
 			request.AddCallbackArguments("op_endpoint", request.Provider.Uri.AbsoluteUri);
 			request.AddCallbackArguments("version", request.Provider.Version.ToString());
+			if (includeMultibyteCharacters.Checked) {
+				request.AddCallbackArguments("utf8", "true");
+				request.AddCallbackArguments("ç", "á");
+			}
 
 			int argsize = Convert.ToInt32(callbackArgumentSize.Text);
 			request.AddCallbackArguments("inflate", new string('a', argsize));
@@ -48,6 +52,16 @@ public partial class OP_POSTAssertion : System.Web.UI.Page {
 		testResultDisplay.ProtocolVersion = new Version(e.Response.GetCallbackArgument("version"));
 		if (e.Response.Exception != null) {
 			testResultDisplay.Details = e.Response.Exception.Message;
+		}
+
+		if (e.Response.Status == AuthenticationStatus.Authenticated && e.Response.GetCallbackArgument("utf8") == "true") {
+			// Note that if an OP private association was used for signing and direct verification,
+			// this test for proper signing of UTF-8 characters is not so meaningful, since we don't
+			// get a chance to verify the signature ourselves.
+			if (e.Response.GetCallbackArgument("ç") != "á") {
+				testResultDisplay.Pass = false;
+				testResultDisplay.Details = "Multi-byte UTF-8 characters in assertion are missing.";
+			}
 		}
 	}
 }
