@@ -1,0 +1,20 @@
+CCI = ..\CCI\System.Compiler.dll
+COMMANDS = ..\CommandLine\Microsoft.Ddue.Tools.CommandLine.dll
+REFLECTION = ..\Reflection\Microsoft.Ddue.Tools.Reflection.dll
+
+SOURCES = MRefWriter.cs MRefBuilder.cs MemberDictionary.cs
+
+#CC = C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\csc.exe
+CC = csc.exe
+
+all: MRefBuilder.exe
+
+TextStrings.resources: TextStrings.txt
+	ResGen.exe TextStrings.txt
+
+MRefBuilder.exe: $(CCI) $(COMMANDS) $(REFLECTION) $(SOURCES) TextStrings.resources
+	$(CC) /out:MRefBuilder.exe $(SOURCES) /r:$(CCI) /r:$(COMMANDS) /r:$(REFLECTION) /res:TextStrings.resources
+	copy MRefBuilder.exe ..\..\ProductionTools
+	copy $(CCI) .
+	copy $(COMMANDS) .
+	copy $(REFLECTION) .

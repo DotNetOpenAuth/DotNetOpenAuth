@@ -1,0 +1,379 @@
+.assembly extern System.Xml
+{
+  .publickeytoken = (B7 7A 5C 56 19 34 E0 89)
+}
+.assembly extern mscorlib
+{
+  .publickeytoken = (B7 7A 5C 56 19 34 E0 89)
+}
+.assembly Microsoft.Ddue.Tools.CommandLine
+{
+  .custom instance void [mscorlib]System.Runtime.InteropServices.ComVisibleAttribute::.ctor(bool) = { bool(false) }
+  .publickey = (00 24 00 00 04 80 00 00 94 00 00 00 06 02 00 00 00 24 00 00 52 53 41 31 00 04 00 00 01 00 01 00 EF 09 EE D7 93 0B 34 BA 88 83 E7 DB 9F 08 F5 DF A0 D9 F1 7A 97 8E 98 F3 99 03 36 B2 2A 75 D6 BB 2C 25 90 6C 4F 4E 5D 42 60 00 A9 22 00 A9 CE FE 3F 5E C4 22 BA 1E FF 47 7D C4 14 E7 52 C3 30 07 1C 66 1C 58 3F 28 48 0C 03 35 94 CE 5F A5 FC 44 94 D2 A4 42 95 E5 A3 3E AD B2 FD FF 45 13 77 FD BE 62 48 38 EF 02 BF 22 54 00 56 5D DB DA 10 D8 7E 77 F9 7F 9F 20 60 11 4B 49 3A 4D 62 FE C3 C3)
+  .hash algorithm 0x00008004
+}
+.namespace Microsoft.Ddue.Tools.CommandLine
+{
+  .class public sealed BooleanOption
+    extends Microsoft.Ddue.Tools.CommandLine.Option
+  {
+    .method public hidebysig specialname 
+      instance void .ctor(string name)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor(string name, string description)
+    {
+      ret
+    }
+  }
+  .class public abstract sealed ConsoleApplication
+    extends [mscorlib]System.Object
+  {
+    .method public static hidebysig 
+      void WriteBanner()
+    {
+      ret
+    }
+    .method public static hidebysig 
+      void WriteMessage(valuetype Microsoft.Ddue.Tools.CommandLine.LogLevel level, string message)
+    {
+      ret
+    }
+    .method public static hidebysig 
+      class [System.Xml]System.Xml.XPath.XPathDocument GetConfigurationFile()
+    {
+      ret
+    }
+    .method public static hidebysig 
+      class [System.Xml]System.Xml.XPath.XPathDocument GetConfigurationFile(string file)
+    {
+      ret
+    }
+    .method public static hidebysig 
+      string[] GetFiles(string filePattern)
+    {
+      ret
+    }
+  }
+  .class public ListOption
+    extends Microsoft.Ddue.Tools.CommandLine.Option
+  {
+    .method public hidebysig specialname 
+      instance void .ctor(string name)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor(string name, string description)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor(string name, string description, string template)
+    {
+      ret
+    }
+    .method public virtual hidebysig specialname 
+      instance object get_Value()
+    {
+      ret
+    }
+    .property instance object Value()
+    {
+      .get instance object Microsoft.Ddue.Tools.CommandLine.ListOption::get_Value()
+    }
+  }
+  .class public sealed LogLevel
+    extends [mscorlib]System.Enum
+  {
+    .field public rtspecialname specialname int32 value__
+    .field static public literal valuetype Microsoft.Ddue.Tools.CommandLine.LogLevel Error = int32(0x00000002)
+    .field static public literal valuetype Microsoft.Ddue.Tools.CommandLine.LogLevel Info = int32(0x00000000)
+    .field static public literal valuetype Microsoft.Ddue.Tools.CommandLine.LogLevel Warn = int32(0x00000001)
+  }
+  .class public abstract Option
+    extends [mscorlib]System.Object
+  {
+    .method family hidebysig specialname 
+      instance void .ctor(string name)
+    {
+      ret
+    }
+    .method family hidebysig specialname 
+      instance void .ctor(string name, string description)
+    {
+      ret
+    }
+    .method family hidebysig specialname 
+      instance void .ctor(string name, string description, bool required)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance string get_Name()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void set_Name(string 'value')
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance string get_Description()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void set_Description(string 'value')
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance bool get_IsRequired()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void set_IsRequired(bool 'value')
+    {
+      ret
+    }
+    .method public virtual hidebysig newslot specialname 
+      instance bool get_IsPresent()
+    {
+      ret
+    }
+    .method public virtual hidebysig newslot specialname 
+      instance object get_Value()
+    {
+      ret
+    }
+    .field family bool present
+    .field family object 'value'
+    .property instance string Description()
+    {
+      .get instance string Microsoft.Ddue.Tools.CommandLine.Option::get_Description()
+      .set instance void Microsoft.Ddue.Tools.CommandLine.Option::set_Description(string)
+    }
+    .property instance bool IsPresent()
+    {
+      .get instance bool Microsoft.Ddue.Tools.CommandLine.Option::get_IsPresent()
+    }
+    .property instance bool IsRequired()
+    {
+      .get instance bool Microsoft.Ddue.Tools.CommandLine.Option::get_IsRequired()
+      .set instance void Microsoft.Ddue.Tools.CommandLine.Option::set_IsRequired(bool)
+    }
+    .property instance string Name()
+    {
+      .get instance string Microsoft.Ddue.Tools.CommandLine.Option::get_Name()
+      .set instance void Microsoft.Ddue.Tools.CommandLine.Option::set_Name(string)
+    }
+    .property instance object Value()
+    {
+      .get instance object Microsoft.Ddue.Tools.CommandLine.Option::get_Value()
+    }
+  }
+  .class public sealed OptionCollection
+    extends [mscorlib]System.Object
+    implements class [mscorlib]'System.Collections.Generic.ICollection`1'<class Microsoft.Ddue.Tools.CommandLine.Option>, [mscorlib]System.Collections.ICollection, class [mscorlib]'System.Collections.Generic.IEnumerable`1'<class Microsoft.Ddue.Tools.CommandLine.Option>, [mscorlib]System.Collections.IEnumerable
+  {
+    .custom instance void [mscorlib]System.Reflection.DefaultMemberAttribute::.ctor(string) = { string('Item') }
+    .method public hidebysig specialname 
+      instance class Microsoft.Ddue.Tools.CommandLine.Option get_Item(string name)
+    {
+      ret
+    }
+    .method public final virtual hidebysig newslot specialname 
+      instance int32 get_Count()
+    {
+      ret
+    }
+    .method public final virtual hidebysig newslot 
+      instance void Add(class Microsoft.Ddue.Tools.CommandLine.Option option)
+    {
+      ret
+    }
+    .method public final virtual hidebysig newslot 
+      instance bool Remove(class Microsoft.Ddue.Tools.CommandLine.Option option)
+    {
+      ret
+    }
+    .method public final virtual hidebysig newslot 
+      instance void Clear()
+    {
+      ret
+    }
+    .method private final virtual hidebysig newslot specialname 
+      instance bool 'System.Collections.Generic.ICollection<Microsoft.Ddue.Tools.CommandLine.Option>.get_IsReadOnly'()
+    {
+      .override method instance bool class [mscorlib]'System.Collections.Generic.ICollection`1'<class Microsoft.Ddue.Tools.CommandLine.Option>::get_IsReadOnly()
+      ret
+    }
+    .method private final virtual hidebysig newslot 
+      instance bool 'System.Collections.Generic.ICollection<Microsoft.Ddue.Tools.CommandLine.Option>.Contains'(class Microsoft.Ddue.Tools.CommandLine.Option option)
+    {
+      .override method instance bool class [mscorlib]'System.Collections.Generic.ICollection`1'<class Microsoft.Ddue.Tools.CommandLine.Option>::Contains(!0)
+      ret
+    }
+    .method private final virtual hidebysig newslot 
+      instance void 'System.Collections.Generic.ICollection<Microsoft.Ddue.Tools.CommandLine.Option>.CopyTo'(class Microsoft.Ddue.Tools.CommandLine.Option[] 'array', int32 startIndex)
+    {
+      .override method instance void class [mscorlib]'System.Collections.Generic.ICollection`1'<class Microsoft.Ddue.Tools.CommandLine.Option>::CopyTo(!0[], int32)
+      ret
+    }
+    .method private final virtual hidebysig newslot specialname 
+      instance bool System.Collections.ICollection.get_IsSynchronized()
+    {
+      .override [mscorlib]System.Collections.ICollection::get_IsSynchronized
+      ret
+    }
+    .method private final virtual hidebysig newslot specialname 
+      instance object System.Collections.ICollection.get_SyncRoot()
+    {
+      .override [mscorlib]System.Collections.ICollection::get_SyncRoot
+      ret
+    }
+    .method private final virtual hidebysig newslot 
+      instance void System.Collections.ICollection.CopyTo(class [mscorlib]System.Array 'array', int32 startIndex)
+    {
+      .override [mscorlib]System.Collections.ICollection::CopyTo
+      ret
+    }
+    .method private final virtual hidebysig newslot 
+      instance class [mscorlib]'System.Collections.Generic.IEnumerator`1'<class Microsoft.Ddue.Tools.CommandLine.Option> 'System.Collections.Generic.IEnumerable<Microsoft.Ddue.Tools.CommandLine.Option>.GetEnumerator'()
+    {
+      .override method instance class [mscorlib]'System.Collections.Generic.IEnumerator`1'<!0> class [mscorlib]'System.Collections.Generic.IEnumerable`1'<class Microsoft.Ddue.Tools.CommandLine.Option>::GetEnumerator()
+      ret
+    }
+    .method private final virtual hidebysig newslot 
+      instance class [mscorlib]System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    {
+      .override [mscorlib]System.Collections.IEnumerable::GetEnumerator
+      ret
+    }
+    .method public hidebysig 
+      instance void WriteOptionSummary(class [mscorlib]'System.IO.TextWriter' writer)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance class Microsoft.Ddue.Tools.CommandLine.ParseArgumentsResult ParseArguments(string[] args)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .property instance int32 Count()
+    {
+      .get instance int32 Microsoft.Ddue.Tools.CommandLine.OptionCollection::get_Count()
+    }
+    .property instance class Microsoft.Ddue.Tools.CommandLine.Option Item(string)
+    {
+      .get instance class Microsoft.Ddue.Tools.CommandLine.Option Microsoft.Ddue.Tools.CommandLine.OptionCollection::get_Item(string)
+    }
+    .property instance bool 'System.Collections.Generic.ICollection<Microsoft.Ddue.Tools.CommandLine.Option>.IsReadOnly'()
+    {
+      .get instance bool Microsoft.Ddue.Tools.CommandLine.OptionCollection::'System.Collections.Generic.ICollection<Microsoft.Ddue.Tools.CommandLine.Option>.get_IsReadOnly'()
+    }
+    .property instance bool System.Collections.ICollection.IsSynchronized()
+    {
+      .get instance bool Microsoft.Ddue.Tools.CommandLine.OptionCollection::System.Collections.ICollection.get_IsSynchronized()
+    }
+    .property instance object System.Collections.ICollection.SyncRoot()
+    {
+      .get instance object Microsoft.Ddue.Tools.CommandLine.OptionCollection::System.Collections.ICollection.get_SyncRoot()
+    }
+  }
+  .class public sealed ParseArgumentsResult
+    extends [mscorlib]System.Object
+  {
+    .method public hidebysig specialname 
+      instance class Microsoft.Ddue.Tools.CommandLine.OptionCollection get_Options()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance class [mscorlib]'System.Collections.ObjectModel.ReadOnlyCollection`1'<string> get_UnusedArguments()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance bool get_Success()
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance void WriteParseErrors(class [mscorlib]'System.IO.TextWriter' writer)
+    {
+      ret
+    }
+    .property instance class Microsoft.Ddue.Tools.CommandLine.OptionCollection Options()
+    {
+      .get instance class Microsoft.Ddue.Tools.CommandLine.OptionCollection Microsoft.Ddue.Tools.CommandLine.ParseArgumentsResult::get_Options()
+    }
+    .property instance bool Success()
+    {
+      .get instance bool Microsoft.Ddue.Tools.CommandLine.ParseArgumentsResult::get_Success()
+    }
+    .property instance class [mscorlib]'System.Collections.ObjectModel.ReadOnlyCollection`1'<string> UnusedArguments()
+    {
+      .get instance class [mscorlib]'System.Collections.ObjectModel.ReadOnlyCollection`1'<string> Microsoft.Ddue.Tools.CommandLine.ParseArgumentsResult::get_UnusedArguments()
+    }
+  }
+  .class public sealed StringOption
+    extends Microsoft.Ddue.Tools.CommandLine.Option
+  {
+    .method public hidebysig specialname 
+      instance void .ctor(string name)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor(string name, string description)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor(string name, string description, string template)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance string get_Template()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void set_Template(string 'value')
+    {
+      ret
+    }
+    .property instance string Template()
+    {
+      .get instance string Microsoft.Ddue.Tools.CommandLine.StringOption::get_Template()
+      .set instance void Microsoft.Ddue.Tools.CommandLine.StringOption::set_Template(string)
+    }
+  }
+  .class public sealed SwitchOption
+    extends Microsoft.Ddue.Tools.CommandLine.Option
+  {
+    .method public hidebysig specialname 
+      instance void .ctor(string name)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor(string name, string description)
+    {
+      ret
+    }
+  }
+}
+

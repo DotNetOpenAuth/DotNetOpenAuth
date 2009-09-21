@@ -1,0 +1,421 @@
+.assembly extern Microsoft.Ddue.Tools.BuildComponents
+{
+  .publickeytoken = (4D DC 2B E8 53 17 C2 74)
+}
+.assembly extern System.Xml
+{
+  .publickeytoken = (B7 7A 5C 56 19 34 E0 89)
+}
+.assembly Microsoft.Ddue.Tools.BuildComponents.SyntaxGenerators
+{
+  .publickey = (00 24 00 00 04 80 00 00 94 00 00 00 06 02 00 00 00 24 00 00 52 53 41 31 00 04 00 00 01 00 01 00 EF 09 EE D7 93 0B 34 BA 88 83 E7 DB 9F 08 F5 DF A0 D9 F1 7A 97 8E 98 F3 99 03 36 B2 2A 75 D6 BB 2C 25 90 6C 4F 4E 5D 42 60 00 A9 22 00 A9 CE FE 3F 5E C4 22 BA 1E FF 47 7D C4 14 E7 52 C3 30 07 1C 66 1C 58 3F 28 48 0C 03 35 94 CE 5F A5 FC 44 94 D2 A4 42 95 E5 A3 3E AD B2 FD FF 45 13 77 FD BE 62 48 38 EF 02 BF 22 54 00 56 5D DB DA 10 D8 7E 77 F9 7F 9F 20 60 11 4B 49 3A 4D 62 FE C3 C3)
+  .hash algorithm 0x00008004
+}
+.namespace Microsoft.Ddue.Tools
+{
+  .class public CPlusPlusDeclarationSyntaxGenerator
+    extends Microsoft.Ddue.Tools.DeclarationSyntaxGeneratorTemplate
+  {
+    .method public virtual hidebysig specialname 
+      instance string get_Language()
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteNamespaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteClassSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteStructureSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteInterfaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteDelegateSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteEnumerationSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteConstructorSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteMethodSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WritePropertySyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteEventSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteFieldSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method family virtual hidebysig 
+      instance void WriteVisibility(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method family virtual hidebysig 
+      instance void WriteGenericTemplates(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .property instance string Language()
+    {
+      .get instance string Microsoft.Ddue.Tools.CPlusPlusDeclarationSyntaxGenerator::get_Language()
+    }
+  }
+  .class public CSharpDeclarationSyntaxGenerator
+    extends Microsoft.Ddue.Tools.DeclarationSyntaxGeneratorTemplate
+  {
+    .method public virtual hidebysig specialname 
+      instance string get_Language()
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteNamespaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteClassSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteStructureSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteInterfaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteDelegateSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteEnumerationSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteConstructorSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteMethodSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WritePropertySyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteEventSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteFieldSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method family virtual hidebysig 
+      instance void WriteVisibility(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method family virtual hidebysig 
+      instance void WriteGenericTemplates(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .property instance string Language()
+    {
+      .get instance string Microsoft.Ddue.Tools.CSharpDeclarationSyntaxGenerator::get_Language()
+    }
+  }
+  .class public abstract DeclarationSyntaxGeneratorTemplate
+    extends Microsoft.Ddue.Tools.SyntaxGeneratorTemplate
+  {
+    .method family virtual hidebysig newslot abstract 
+      instance void WriteVisibility(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method family virtual hidebysig newslot abstract 
+      instance void WriteGenericTemplates(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method family static hidebysig 
+      string[] SeperateTypes(string typelist)
+    {
+      ret
+    }
+    .method family static hidebysig 
+      string GetTemplateParameterName(string reference, class [System.Xml]System.Xml.XPath.XPathNavigator reflection)
+    {
+      ret
+    }
+    .method family hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+  }
+  .class public abstract SyntaxGeneratorTemplate
+    extends [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxGenerator
+  {
+    .method public virtual hidebysig newslot abstract specialname 
+      instance string get_Language()
+    {
+    }
+    .method public virtual hidebysig 
+      instance void WriteSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig newslot 
+      instance void WriteTypeSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig newslot 
+      instance void WriteMemberSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteNamespaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteClassSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteStructureSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteInterfaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteDelegateSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteEnumerationSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteConstructorSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteMethodSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WritePropertySyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteFieldSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void WriteEventSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+    }
+    .method family hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression abstract_procedure_expression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiAttributesExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiBaseClassExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiContainingTypeNameExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiContainingTypeSubgroupExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiGroupExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiHandlerOfEventExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiImplementedInterfacesExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiImplementedMembersExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsAbstractTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsExplicitImplementationExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsInitOnlyFieldExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsLiteralFieldExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsOverrideExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsReadPropertyExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsSealedTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsSerializableTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsSerializedFieldExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsSpecialExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsStaticExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsVolatileFieldExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiIsWritePropertyExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiNameExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiOverridesMemberExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiParametersExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiReturnTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiSubgroupExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiTemplatesExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiVisibilityExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiVisibilityOfMemberExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression apiVisibilityOfTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression assignmentNameExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression attributeArgumentsExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression attributeAssignmentsExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression attributeTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression final_expression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression memberDeclaringTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression nameExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression parameterIsInExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression parameterIsOutExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression parameterIsParamArrayExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression parameterIsRefExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression parameterNameExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression parameterTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression templateNameExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression typeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression typeIdExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression typeIsObjectExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression typeModifiersExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression typeOuterTypeExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression valueExpression
+    .field static family class [System.Xml]System.Xml.XPath.XPathExpression virtual_expression
+    .property instance string Language()
+    {
+      .get instance string Microsoft.Ddue.Tools.SyntaxGeneratorTemplate::get_Language()
+    }
+  }
+  .class public VisualBasicDeclarationSyntaxGenerator
+    extends Microsoft.Ddue.Tools.DeclarationSyntaxGeneratorTemplate
+  {
+    .method public virtual hidebysig specialname 
+      instance string get_Language()
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteNamespaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteClassSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteStructureSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteInterfaceSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteDelegateSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteEnumerationSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteConstructorSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteMethodSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WritePropertySyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteEventSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance void WriteFieldSyntax(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method family virtual hidebysig 
+      instance void WriteVisibility(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method family virtual hidebysig 
+      instance void WriteGenericTemplates(class [System.Xml]System.Xml.XPath.XPathNavigator reflection, class [Microsoft.Ddue.Tools.BuildComponents]Microsoft.Ddue.Tools.SyntaxWriter writer)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .property instance string Language()
+    {
+      .get instance string Microsoft.Ddue.Tools.VisualBasicDeclarationSyntaxGenerator::get_Language()
+    }
+  }
+}
+

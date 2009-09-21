@@ -1,0 +1,10 @@
+COMMANDLINE = ..\CommandLine\Microsoft.Ddue.Tools.CommandLine.dll
+
+CC = csc.exe
+
+all: XslTransform.exe
+
+XslTransform.exe: XslTransform.cs $(COMMANDLINE)
+	$(CC) XslTransform.cs /r:$(COMMANDLINE)
+	copy XslTransform.exe ..\..\ProductionTools
+	copy $(COMMANDLINE) .

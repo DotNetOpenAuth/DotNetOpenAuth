@@ -1,0 +1,281 @@
+.assembly extern System.Xml
+{
+  .publickeytoken = (B7 7A 5C 56 19 34 E0 89)
+}
+.assembly extern mscorlib
+{
+  .publickeytoken = (B7 7A 5C 56 19 34 E0 89)
+}
+.assembly Microsoft.Ddue.Tools.BuildAssembler
+{
+  .custom instance void [mscorlib]System.CLSCompliantAttribute::.ctor(bool) = { bool(false) }
+  .custom instance void [mscorlib]System.Runtime.InteropServices.ComVisibleAttribute::.ctor(bool) = { bool(false) }
+  .publickey = (00 24 00 00 04 80 00 00 94 00 00 00 06 02 00 00 00 24 00 00 52 53 41 31 00 04 00 00 01 00 01 00 EF 09 EE D7 93 0B 34 BA 88 83 E7 DB 9F 08 F5 DF A0 D9 F1 7A 97 8E 98 F3 99 03 36 B2 2A 75 D6 BB 2C 25 90 6C 4F 4E 5D 42 60 00 A9 22 00 A9 CE FE 3F 5E C4 22 BA 1E FF 47 7D C4 14 E7 52 C3 30 07 1C 66 1C 58 3F 28 48 0C 03 35 94 CE 5F A5 FC 44 94 D2 A4 42 95 E5 A3 3E AD B2 FD FF 45 13 77 FD BE 62 48 38 EF 02 BF 22 54 00 56 5D DB DA 10 D8 7E 77 F9 7F 9F 20 60 11 4B 49 3A 4D 62 FE C3 C3)
+  .hash algorithm 0x00008004
+}
+.namespace Microsoft.Ddue.Tools
+{
+  .class public BuildAssembler
+    extends [mscorlib]System.Object
+  {
+    .method public hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor(class Microsoft.Ddue.Tools.MessageHandler messageHandler)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance int32 Apply(class [mscorlib]'System.Collections.Generic.IEnumerable`1'<class Microsoft.Ddue.Tools.BuildContext> manifest)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance class [mscorlib]'System.Collections.Generic.IEnumerable`1'<class Microsoft.Ddue.Tools.BuildContext> GetFileManifestBuildContextEnumerator(string manifestFilename)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance bool LoadComponentsFromConfiguration(class [System.Xml]System.Xml.XPath.XPathDocument configuration)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance void WriteMessage(valuetype Microsoft.Ddue.Tools.MessageLevel level, string message)
+    {
+      ret
+    }
+    .method public static hidebysig 
+      void WriteComponentMessageToConsole(class [mscorlib]System.Type 'type', valuetype Microsoft.Ddue.Tools.MessageLevel level, string message)
+    {
+      ret
+    }
+    .field public class [mscorlib]'System.Collections.Generic.List`1'<class Microsoft.Ddue.Tools.BuildComponent> components
+  }
+  .class public abstract BuildComponent
+    extends [mscorlib]System.Object
+  {
+    .method family hidebysig specialname 
+      instance void .ctor(class [System.Xml]System.Xml.XPath.XPathNavigator configuration)
+    {
+      ret
+    }
+    .method public virtual hidebysig newslot abstract 
+      instance void Apply(class [System.Xml]System.Xml.XmlDocument document, string key)
+    {
+    }
+    .method public virtual hidebysig newslot 
+      instance void Apply(class [System.Xml]System.Xml.XmlDocument document)
+    {
+      ret
+    }
+    .method family static hidebysig specialname 
+      class [mscorlib]'System.Collections.Generic.Dictionary`2'<string,object> get_Data()
+    {
+      ret
+    }
+    .method public static hidebysig specialname 
+      class Microsoft.Ddue.Tools.MessageHandler get_MessageHandler()
+    {
+      ret
+    }
+    .method public static hidebysig specialname 
+      void set_MessageHandler(class Microsoft.Ddue.Tools.MessageHandler 'value')
+    {
+      ret
+    }
+    .method family hidebysig 
+      instance void WriteMessage(valuetype Microsoft.Ddue.Tools.MessageLevel level, string message)
+    {
+      ret
+    }
+    .method public static hidebysig 
+      class [mscorlib]'System.Collections.Generic.List`1'<class Microsoft.Ddue.Tools.BuildComponent> LoadComponents(class [System.Xml]System.Xml.XPath.XPathNavigator configuration)
+    {
+      ret
+    }
+    .property class [mscorlib]'System.Collections.Generic.Dictionary`2'<string,object> Data()
+    {
+      .get class [mscorlib]'System.Collections.Generic.Dictionary`2'<string,object> Microsoft.Ddue.Tools.BuildComponent::get_Data()
+    }
+    .property class Microsoft.Ddue.Tools.MessageHandler MessageHandler()
+    {
+      .get class Microsoft.Ddue.Tools.MessageHandler Microsoft.Ddue.Tools.BuildComponent::get_MessageHandler()
+      .set void Microsoft.Ddue.Tools.BuildComponent::set_MessageHandler(class Microsoft.Ddue.Tools.MessageHandler)
+    }
+  }
+  .class public BuildContext
+    extends [mscorlib]System.Object
+  {
+    .custom instance void [mscorlib]System.Reflection.DefaultMemberAttribute::.ctor(string) = { string('Item') }
+    .method public hidebysig 
+      instance void AddNamespace(string prefix, string uri)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance string LookupNamespace(string prefix)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance bool RemoveNamespace(string prefix)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance void ClearNamespaces()
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance void AddVariable(string name, string 'value')
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance string LookupVariable(string name)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance bool RemoveVariable(string name)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance void ClearVariables()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance string get_Item(string name)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void set_Item(string name, string 'value')
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance class [System.Xml]System.Xml.Xsl.XsltContext get_QueryContext()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .property instance string Item(string)
+    {
+      .get instance string Microsoft.Ddue.Tools.BuildContext::get_Item(string)
+      .set instance void Microsoft.Ddue.Tools.BuildContext::set_Item(string, string)
+    }
+    .property instance class [System.Xml]System.Xml.Xsl.XsltContext QueryContext()
+    {
+      .get instance class [System.Xml]System.Xml.Xsl.XsltContext Microsoft.Ddue.Tools.BuildContext::get_QueryContext()
+    }
+  }
+  .class public CustomContext
+    extends [System.Xml]System.Xml.Xsl.XsltContext
+  {
+    .custom instance void [mscorlib]System.Reflection.DefaultMemberAttribute::.ctor(string) = { string('Item') }
+    .method public hidebysig specialname 
+      instance void .ctor()
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance string get_Item(string variable)
+    {
+      ret
+    }
+    .method public hidebysig specialname 
+      instance void set_Item(string variable, string 'value')
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance bool ClearVariable(string name)
+    {
+      ret
+    }
+    .method public hidebysig 
+      instance void ClearVariables()
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance class [System.Xml]System.Xml.Xsl.IXsltContextVariable ResolveVariable(string prefix, string name)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance class [System.Xml]System.Xml.Xsl.IXsltContextFunction ResolveFunction(string prefix, string name, valuetype [System.Xml]System.Xml.XPath.XPathResultType[] argumentTypes)
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance int32 CompareDocument(string baseUri, string nextBaseUri)
+    {
+      ret
+    }
+    .method public virtual hidebysig specialname 
+      instance bool get_Whitespace()
+    {
+      ret
+    }
+    .method public virtual hidebysig 
+      instance bool PreserveWhitespace(class [System.Xml]System.Xml.XPath.XPathNavigator node)
+    {
+      ret
+    }
+    .property instance string Item(string)
+    {
+      .get instance string Microsoft.Ddue.Tools.CustomContext::get_Item(string)
+      .set instance void Microsoft.Ddue.Tools.CustomContext::set_Item(string, string)
+    }
+    .property instance bool Whitespace()
+    {
+      .get instance bool Microsoft.Ddue.Tools.CustomContext::get_Whitespace()
+    }
+  }
+  .class public sealed MessageHandler
+    extends [mscorlib]System.MulticastDelegate
+  {
+    .method public hidebysig specialname 
+      instance void .ctor(object 'object', native int 'method')
+      runtime 
+    {
+    }
+    .method public virtual hidebysig newslot 
+      instance void Invoke(class [mscorlib]System.Type component, valuetype Microsoft.Ddue.Tools.MessageLevel level, string message)
+      runtime 
+    {
+    }
+    .method public virtual hidebysig newslot 
+      instance class [mscorlib]System.IAsyncResult BeginInvoke(class [mscorlib]System.Type component, valuetype Microsoft.Ddue.Tools.MessageLevel level, string message, class [mscorlib]System.AsyncCallback callback, object 'object')
+      runtime 
+    {
+    }
+    .method public virtual hidebysig newslot 
+      instance void EndInvoke(class [mscorlib]System.IAsyncResult result)
+      runtime 
+    {
+    }
+  }
+  .class public sealed MessageLevel
+    extends [mscorlib]System.Enum
+  {
+    .field public rtspecialname specialname int32 value__
+    .field static public literal valuetype Microsoft.Ddue.Tools.MessageLevel Error = int32(0x00000002)
+    .field static public literal valuetype Microsoft.Ddue.Tools.MessageLevel Info = int32(0x00000000)
+    .field static public literal valuetype Microsoft.Ddue.Tools.MessageLevel Warn = int32(0x00000001)
+  }
+}
+

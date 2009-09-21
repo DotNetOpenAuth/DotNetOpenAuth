@@ -1,0 +1,11 @@
+
+LIBRARY = ..\BuildComponents\BuildComponents.dll
+
+COMPONENT_FILES = SyntaxGenerators.cs CSharpDeclarationSyntax.cs VisualBasicDeclarationSyntax.cs CPlusPlusDeclarationSyntax.cs JSharpDeclarationSyntax.cs
+COMPONENT_FILES_OLD = SyntaxGenerators.cs CSharpDeclarationSyntax.cs VisualBasicDeclarationSyntax.cs
+
+all: SyntaxGenerators.dll
+
+SyntaxGenerators.dll: $(COMPONENT_FILES) $(LIBRARY)
+	csc /t:library /out:SyntaxGenerators.dll $(COMPONENT_FILES) /r:$(LIBRARY)
+	copy SyntaxGenerators.dll ..\..\ProductionTools\BuildComponents

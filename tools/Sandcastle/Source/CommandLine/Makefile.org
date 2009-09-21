@@ -1,0 +1,12 @@
+FILES = Assembly.cs OptionCollection.cs Options.cs ParseArgumentsResult.cs ParseResult.cs ConsoleApplication.cs
+
+CC = csc.exe
+
+all: TestOptions.exe Microsoft.Ddue.Tools.CommandLine.dll
+
+Microsoft.Ddue.Tools.CommandLine.dll: $(FILES)
+	$(CC) /t:library /out:Microsoft.Ddue.Tools.CommandLine.dll /keyfile:..\key.snk $(FILES)
+	copy Microsoft.Ddue.Tools.CommandLine.dll ..\..\ProductionTools
+
+TestOptions.exe: TestOptions.cs $(FILES)
+	$(CC) TestOptions.cs $(FILES)
