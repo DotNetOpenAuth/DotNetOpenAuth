@@ -44,7 +44,12 @@
         </xsl:when>
       </xsl:choose>
 
-      <xsl:call-template name="mshelpCodelangAttributes" />
+      <!-- Assembly Version-->
+      <xsl:if test="$api-group != 'namespace'">
+        <MSHelp:Attr Name="AssemblyVersion" Value="{/document/reference/containers/library/assemblydata/@version}" />
+      </xsl:if>
+      
+      <xsl:call-template name="codelangAttributes" />
 			<xsl:call-template name="versionMetadata" />
       <xsl:call-template name="authoredMetadata" />
 		</xml>
@@ -502,11 +507,6 @@
 		</xsl:choose>
 	</xsl:template>
 
-  <xsl:template name="codeLang">
-    <xsl:param name="codeLang" />
-    <MSHelp:Attr Name="codelang" Value="{$codeLang}" />
-  </xsl:template>
-
   <!-- make a semicolon-separated list of the $languages-->
   <xsl:template name="languagesList">
     <xsl:for-each select="$languages/language">
@@ -531,6 +531,11 @@
       </xsl:variable>
       <xsl:choose>
         <xsl:when test="normalize-space($devlang)=''"/>
+        <xsl:when test="$devlang = 'VJ#'">
+          <xsl:if test="boolean(/document/reference/versions/versions[@name='netfw']//version[not(@name='netfw35')])">
+            <MSHelp:Attr Name="DevLang" Value="{$devlang}" />
+          </xsl:if>
+        </xsl:when>
         <xsl:otherwise>
           <MSHelp:Attr Name="DevLang" Value="{$devlang}" />
         </xsl:otherwise>
@@ -784,6 +789,7 @@
       </xsl:when>
       <!-- constructor (or constructor overload) topics get unqualified sub-entries using the type names -->
       <xsl:when test="($topic-group='api' and $api-subgroup='constructor' and not(/document/reference/memberdata/@overload)) or ($topic-subgroup='overload' and $api-subgroup = 'constructor')">
+        <xsl:variable name="typeSubgroup" select="/document/reference/containers/type/apidata/@subgroup" />
         <xsl:variable name="names">
           <xsl:for-each select="/document/reference/containers/type">
             <xsl:call-template name="textNames" />
@@ -793,7 +799,7 @@
           <MSHelp:Keyword Index="K">
             <includeAttribute name="Term" item="constructorIndexEntry">
               <parameter>
-                <include item="{$api-subgroup}IndexEntry">
+                <include item="{$typeSubgroup}IndexEntry">
                   <parameter>
                     <xsl:value-of select="." />
                   </parameter>

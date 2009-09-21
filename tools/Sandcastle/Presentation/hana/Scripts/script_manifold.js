@@ -4,6 +4,12 @@ window.onunload=Window_Unload;
 window.onbeforeprint = set_to_print;
 window.onafterprint = reset_form;
 
+var languageFilter;
+var data;
+var tf;
+var mf;
+var lang = 'CSharp';
+
 var vbDeclaration;
 var vbUsage;
 var csLang;
@@ -228,6 +234,15 @@ function LoadPage()
 	
     if (!sectionStatesInitialized) 
 	    InitSectionStates(); 
+	var imgElements = document.getElementsByName("toggleSwitch");
+	
+	for (i = 0; i < imgElements.length; i++)
+	{
+		if ((sectionStates[imgElements[i].id] == "e"))
+			ExpandSection(imgElements[i]);
+		else
+			CollapseSection(imgElements[i]);
+	}
 	
 	SetCollapseAll();
 
@@ -238,11 +253,28 @@ function LoadPage()
 	// filtering dropdowns
 	if (document.getElementById('languageSpan') != null) {
 		var languageMenu = new Dropdown('languageFilterToolTip', 'languageSpan');
+		languageFilter = new Selector('languageSpan');
+        languageFilter.register(codeBlockHandler); 
+        languageFilter.register(styleSheetHandler); 
+        languageFilter.register(persistenceHandler);
+        languageFilter.register(languageHandler);
+        toggleLanguage('languageSpan', 'x-lang', 'CSharp');
+        toggleInlineStyle('cs');
 	}
 	if (document.getElementById('membersOptionsFilterToolTip') != null) {
 		var languageMenu = new Dropdown('membersOptionsFilterToolTip', 'membersOptionsSpan');
 	}
 
+	data = new DataStore('docs');
+    registerEventHandler(window, 'load', function() {if (languageFilter != null) languageFilter.select(data)});
+    
+    // process tab behavior for syntax, snippets, type and member sections
+    tf = new TypeFilter();
+    mf = new MemberFilter();
+    setUpSyntax();
+    setUpSnippets();
+    setUpType();
+    setUpAllMembers();
     var mainSection = document.getElementById("mainSection");
 	
 	// vs70.js did this to allow up/down arrow scrolling, I think
@@ -1592,3 +1624,67 @@ function sendfeedback(subject, id,alias){
 	else title = document.getElementsByTagName("TITLE")[0].textContent.replace(rExp, "''");
 	location.href = "mailto:" + alias + "?subject=" + subject + title + "&body=Topic%20ID:%20" + id + "%0d%0aURL:%20" + url + "%0d%0a%0d%0aComments:%20";
 }
+
+function setUpSyntax() {
+    var syntaxSection = document.getElementById('syntaxCodeBlocks');
+    if (syntaxSection == null) return;
+    
+    processSection(syntaxSection, 'x-lang', lang, true, true, true, true);
+}
+
+function setUpSnippets() {
+    var divs = document.getElementsByTagName("DIV");
+   
+    for (var i = 0; i < divs.length; i++)
+    {
+        var name =  divs[i].getAttribute("name");
+        if (name == null || name != "snippetGroup") continue;
+        processSection(divs[i], 'x-lang', lang, true, true, true, true);
+    }
+}
+
+function setUpType() {
+    var typeSection = document.getElementById("typeSection");
+    if (typeSection == null) return;
+    
+    processSection(typeSection, 'value', 'all', true, false, true, false);
+}
+
+function setUpAllMembers() {
+    var allMembersSection = document.getElementById("allMembersSection");
+    if (allMembersSection == null) return;
+    
+    processSection(allMembersSection, 'value', 'all', true, false, true, false);
+}
+
+function processSection(section, attribute, value, toggleClassValue, toggleStyleValue, curvedToggleClassValue, registerValue) {
+    var nodes = section.childNodes;
+        
+    var curvedTabId;
+    var tabId;
+    var blockId;
+       
+    if (nodes.length != 2) return;
+    
+    if (nodes[0].tagName == 'TABLE') {
+        var rows = nodes[0].getElementsByTagName('tr');
+           
+        if (rows.length != 2) return;
+        
+        curvedTabId = rows[0].getAttribute('id');
+        tabId = rows[1].getAttribute('id');
+    }
+  
+    if(nodes[1].tagName == 'DIV') {
+        blockId = nodes[1].getAttribute('id');
+    }
+       
+    if (toggleClassValue) toggleClass(tabId,attribute,value,'activeTab','tab');
+	if (toggleStyleValue) toggleStyle(blockId,attribute,value,'display','block','none');
+    if (curvedToggleClassValue) curvedToggleClass(curvedTabId, attribute, value);
+    
+    if (languageFilter == null) return;
+    
+    if (registerValue) languageFilter.registerTabbedArea(curvedTabId, tabId, blockId);
+}
+

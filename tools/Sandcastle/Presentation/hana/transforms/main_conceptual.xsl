@@ -40,10 +40,6 @@
       <body>
         <xsl:call-template name="upperBodyStuff"/>
         <xsl:call-template name="main"/>
-        <script type="text/javascript">
-          var data = new DataStore('docs');
-          registerEventHandler(window, 'load', function() {languageFilter.select(data)});
-        </script>
       </body>
     </html>
   </xsl:template>

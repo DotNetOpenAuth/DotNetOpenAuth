@@ -60,7 +60,7 @@
     </xsl:if>
     
     <!-- summary -->
-    <span data="authoredSummary">
+    <span sdata="authoredSummary">
     <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:summary[1]" />
     </span>
     <xsl:if test="$group='namespace'">
@@ -169,7 +169,7 @@
 	
 	<xsl:template name="getParameterDescription">
 		<xsl:param name="name" />
-    <span data="authoredParameterSummary">
+    <span sdata="authoredParameterSummary">
 		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:parameters/ddue:parameter[string(ddue:parameterReference)=$name]/ddue:content" />
     </span>
 	</xsl:template>
@@ -209,7 +209,7 @@
       </xsl:otherwise>
     </xsl:choose>
     <br/>
-    <span data="authoredValueSummary">
+    <span sdata="authoredValueSummary">
 		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:returnValue" />
     </span>
 	</xsl:template>
@@ -236,7 +236,7 @@
 	</xsl:template>
 
 	<xsl:template name="getElementDescription">
-    <span data="memberAuthoredSummary">
+    <span sdata="memberAuthoredSummary">
     <xsl:apply-templates select="ddue:summary[1]/ddue:para/node()" />
     </span>
 	</xsl:template>
@@ -277,7 +277,9 @@
           <include item="syntaxTitle"/>
         </xsl:with-param>
         <xsl:with-param name="content">
+          <div id="syntaxCodeBlocks" class="code">
             <xsl:call-template name="syntaxBlocks" />
+          </div>
 
           <!-- parameters & return value -->
           <xsl:apply-templates select="/document/reference/templates" />

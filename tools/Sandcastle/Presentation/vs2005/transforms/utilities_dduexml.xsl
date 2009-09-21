@@ -278,79 +278,6 @@
     </div>
 	</xsl:template>
 
-	<xsl:template name="seeAlsoSection">
-
-    <xsl:if test="$hasSeeAlsoSection">
-      <xsl:call-template name="section">
-        <xsl:with-param name="toggleSwitch" select="'seeAlso'"/>
-				<xsl:with-param name="title"><include item="relatedTitle" /></xsl:with-param>
-				<xsl:with-param name="content">
-
-          <!-- Concepts sub-section -->
-          <xsl:if test="normalize-space(/document/comments/ddue:dduexml/ddue:relatedTopics/ddue:link) or normalize-space(/document/comments/ddue:dduexml/ddue:relatedTopics/ddue:dynamicLink[@type='inline'])">
-            <xsl:call-template name="subSection">
-              <xsl:with-param name="title">
-                <include item="SeeAlsoConcepts"/>
-              </xsl:with-param>
-              <xsl:with-param name="content">
-                <xsl:for-each select="/document/comments/ddue:dduexml/ddue:relatedTopics/*">
-                  <xsl:if test="name() = 'link' or (name() = 'dynamicLink' and @type = 'inline') or (name() = 'legacyLink' and not(starts-with(@xlink:href,'frlrf') 
-                    or starts-with(@xlink:href,'N:') or starts-with(@xlink:href,'T:') or starts-with(@xlink:href,'M:') or starts-with(@xlink:href,'P:') 
-                    or starts-with(@xlink:href,'F:') or starts-with(@xlink:href,'E:') or starts-with(@xlink:href,'Overload:')))">
-                    <div class="seeAlsoStyle">
-                      <xsl:apply-templates select="."/>
-                    </div>
-                  </xsl:if>
-                </xsl:for-each>
-              </xsl:with-param>
-            </xsl:call-template>
-          </xsl:if>
-          
-          <!-- Reference sub-section (always one of these in an API topic) -->
-          <xsl:if test="(normalize-space(/document/comments/ddue:dduexml/ddue:relatedTopics/ddue:codeEntityReference) or normalize-space(/document/comments/ddue:dduexml/ddue:relatedTopics/ddue:legacyLink)) or not(/document/reference/apidata/@group = 'namespace')">
-          <xsl:call-template name="subSection">
-            <xsl:with-param name="title">
-              <include item="SeeAlsoReference"/>
-            </xsl:with-param>
-
-            <xsl:with-param name="content">
-              <xsl:call-template name="autogenSeeAlsoLinks"/>
-              <xsl:for-each select="/document/comments/ddue:dduexml/ddue:relatedTopics/*">
-                  <xsl:if test="name() = 'codeEntityReference' or (name() = 'legacyLink' and (starts-with(@xlink:href,'frlrf') 
-                    or starts-with(@xlink:href,'N:') or starts-with(@xlink:href,'T:') or starts-with(@xlink:href,'M:') or starts-with(@xlink:href,'P:') 
-                    or starts-with(@xlink:href,'F:') or starts-with(@xlink:href,'E:') or starts-with(@xlink:href,'Overload:')))">
-                    <div class="seeAlsoStyle">
-                      <xsl:apply-templates select="."/>
-                    </div>
-                  </xsl:if>
-              </xsl:for-each>
-            </xsl:with-param>
-          </xsl:call-template>
-          </xsl:if>
-          
-          <!-- Other Resources sub-section -->
-          <xsl:if test="/document/comments/ddue:dduexml/ddue:relatedTopics/ddue:externalLink">
-            <xsl:call-template name="subSection">
-              <xsl:with-param name="title">
-                <include item="SeeAlsoOtherResources"/>
-              </xsl:with-param>
-              <xsl:with-param name="content">
-                <xsl:for-each select="/document/comments/ddue:dduexml/ddue:relatedTopics/*">
-                  <xsl:if test="name() = 'externalLink'">
-                    <div class="seeAlsoStyle">
-                      <xsl:apply-templates select="."/>
-                    </div>
-                  </xsl:if>
-                </xsl:for-each>
-              </xsl:with-param>
-            </xsl:call-template>
-          </xsl:if>
-
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>
-	</xsl:template>
-
 	<!-- just skip over these -->
 	<xsl:template match="ddue:content | ddue:legacy">
 		<xsl:apply-templates />
@@ -439,6 +366,9 @@
         </xsl:when>
         <xsl:when test="@language = 'xaml' or @language = 'XAML'">
           <xsl:text>XAML</xsl:text>
+        </xsl:when>
+        <xsl:when test="@language = 'javascript' or @language = 'JavaScript'">
+          <xsl:text>JavaScript</xsl:text>
         </xsl:when>
         <xsl:otherwise>
           <xsl:text>other</xsl:text>
@@ -605,6 +535,7 @@
   </xsl:template>
 
   <xsl:template match="ddue:section">
+    <xsl:param name="showChangedHistoryTable" select="false()"/>
     <xsl:if test="descendant::ddue:content[normalize-space(.)]">
       
       <xsl:apply-templates select="@address" />
@@ -630,6 +561,9 @@
       <xsl:variable name="a19" select="count(ancestor::ddue:section)" />
       <xsl:variable name="total" select="$a1+$a2+$a3+$a4+$a5+$a6+$a7+$a8+$a9+$a10+$a11+$a12+$a13+$a14+$a15+$a16+$a17+$a18+$a19" />
       <xsl:choose>
+        <!-- This lets not to display changed table section unless the template is called -->
+        <xsl:when test="ddue:title = 'Change History' and not($showChangedHistoryTable)" />
+
         <xsl:when test="$total = 0">
           <xsl:variable name="sectionCount">
             <xsl:value-of select="count(preceding-sibling::ddue:section)"/>
@@ -791,7 +725,7 @@
 
 	<xsl:template match="ddue:languageKeyword">
     <xsl:variable name="word" select="." />
-    <span data="langKeyword" value="{$word}">
+    <span sdata="langKeyword" value="{$word}">
     <xsl:choose>
       <!-- mref topics get special handling for keywords like null, etc. -->
       <xsl:when test="/document/reference/apidata">
@@ -1359,5 +1293,45 @@
         </table>
       </div>
    </xsl:template>
+
+  <xsl:template name="writeFreshnessDate">
+    <xsl:param name="ChangedHistoryDate" />
+
+    <xsl:choose>
+      <xsl:when test="normalize-space($RTMReleaseDate) = ''" />
+      <xsl:when test="normalize-space($ChangedHistoryDate) = ''">
+        <include item="UpdateTitle">
+          <parameter>
+            <xsl:value-of select="$RTMReleaseDate"/>
+          </parameter>
+        </include>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="date" select="ddue:CompareDate($RTMReleaseDate, $ChangedHistoryDate)"/>
+        <xsl:choose>
+          <xsl:when test="$date = 'notValidDate'" />
+          <xsl:otherwise>
+            <include item="UpdateTitle">
+              <parameter>
+                <xsl:value-of select="$date"/>
+              </parameter>
+            </include>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <!-- Process the markup added by MTMarkup tool -->
+  <xsl:template match="ddue:span">
+    <xsl:choose>
+      <xsl:when test="@class='tgtSentence' or @class='srcSentence'">
+        <span>
+          <xsl:copy-of select="@*" />
+          <xsl:apply-templates />
+        </span>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
 
 </xsl:stylesheet>

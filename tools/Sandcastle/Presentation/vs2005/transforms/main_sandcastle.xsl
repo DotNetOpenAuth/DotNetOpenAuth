@@ -9,7 +9,7 @@
 
 	<xsl:variable name="summary" select="normalize-space(/document/comments/summary)" />
   <xsl:variable name="abstractSummary" select="/document/comments/summary" />
-  <xsl:variable name="hasSeeAlsoSection" select="boolean((count(/document/comments/seealso | /document/comments/summary/seealso) > 0)  or 
+  <xsl:variable name="hasSeeAlsoSection" select="boolean((count(/document/comments//seealso | /document/reference/elements/element/overloads//seealso) > 0)  or 
                            ($group='type' or $group='member' or $group='list'))"/>
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)"/>
   <xsl:variable name="languageFilterSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)" />
@@ -316,9 +316,11 @@
         </xsl:with-param>
         <xsl:with-param name="content">
           <xsl:call-template name="autogenSeeAlsoLinks"/>
-					<xsl:for-each select="/document/comments/seealso | /document/comments/summary/seealso">
+					<xsl:for-each select="/document/comments//seealso | /document/reference/elements/element/overloads//seealso">
             <div class="seeAlsoStyle">
-            <xsl:apply-templates select="." />
+              <xsl:apply-templates select=".">
+                <xsl:with-param name="displaySeeAlso" select="true()" />
+              </xsl:apply-templates>
             </div>
           </xsl:for-each>
         </xsl:with-param>
@@ -380,7 +382,7 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="seealso[@href]">
+  <xsl:template match="see[@href]">
     <xsl:choose>
       <xsl:when test="normalize-space(.)">
         <a>
@@ -395,6 +397,26 @@
         </a>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="seealso[@href]">
+    <xsl:param name="displaySeeAlso" select="false()" />
+    <xsl:if test="$displaySeeAlso">
+    <xsl:choose>
+      <xsl:when test="normalize-space(.)">
+        <a>
+          <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
+          <xsl:value-of select="." />
+        </a>
+      </xsl:when>
+      <xsl:otherwise>
+        <a>
+          <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
+          <xsl:value-of select="@href" />
+        </a>
+      </xsl:otherwise>
+    </xsl:choose>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="see[@langword]">
@@ -471,6 +493,8 @@
   </xsl:template>
 
   <xsl:template match="seealso">
+    <xsl:param name="displaySeeAlso" select="false()" />
+    <xsl:if test="$displaySeeAlso">
     <xsl:choose>
     <xsl:when test="normalize-space(.)">
       <referenceLink target="{@cref}" qualified="true">
@@ -481,12 +505,11 @@
         <referenceLink target="{@cref}" qualified="true" />
       </xsl:otherwise>
     </xsl:choose>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="c">
-    <span class="code">
-      <xsl:value-of select="." />
-    </span>
+    <span class="code"><xsl:apply-templates/></span>
   </xsl:template>
 
   <xsl:template match="paramref">
@@ -529,7 +552,7 @@
 
 	<!-- pass through html tags -->
 
-	<xsl:template match="p|ol|ul|li|dl|dt|dd|table|tr|th|td|a|img|b|i|strong|em|del|sub|sup|br|hr|h1|h2|h3|h4|h5|h6|pre|div|span|blockquote|abbr|acronym|u|font">
+	<xsl:template match="p|ol|ul|li|dl|dt|dd|table|tr|th|td|a|img|b|i|strong|em|del|sub|sup|br|hr|h1|h2|h3|h4|h5|h6|pre|div|span|blockquote|abbr|acronym|u|font|map|area">
 		<xsl:copy>
 			<xsl:copy-of select="@*" />
 			<xsl:apply-templates />
@@ -643,55 +666,10 @@
     <xsl:call-template name="memberIntroBoilerplate"/>
   </xsl:template>
 
-  <xsl:template name="mshelpCodelangAttributes">
-    <xsl:for-each select="/document/comments/example/code">
-
-      <xsl:if test="not(@language=preceding::*/@language)">
-        <xsl:variable name="codeLang">
-          <xsl:choose>
-            <xsl:when test="@language = 'VBScript' or @language = 'vbs'">
-              <xsl:text>VBScript</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'VisualBasic' or @language = 'vb' or @language = 'vb#' or @language = 'VB' or @language = 'kbLangVB'" >
-              <xsl:text>kbLangVB</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'CSharp' or @language = 'c#' or @language = 'cs' or @language = 'C#'" >
-              <xsl:text>CSharp</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'ManagedCPlusPlus' or @language = 'cpp' or @language = 'cpp#' or @language = 'c' or @language = 'c++' or @language = 'C++' or @language = 'kbLangCPP'" >
-              <xsl:text>kbLangCPP</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'JSharp' or @language = 'j#' or @language = 'jsharp' or @language = 'VJ#'">
-              <xsl:text>VJ#</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'JScript' or @language = 'js' or @language = 'jscript#' or @language = 'jscript' or @language = 'JScript' or @language = 'kbJScript'">
-              <xsl:text>kbJScript</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'xml'">
-              <xsl:text>xml</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'html'">
-              <xsl:text>html</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'vb-c#'">
-              <xsl:text>visualbasicANDcsharp</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>other</xsl:text>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
-        <xsl:choose>
-          <xsl:when test="$codeLang='other'" />
-          <xsl:otherwise>
-            <xsl:call-template name="codeLang">
-              <xsl:with-param name="codeLang" select="$codeLang" />
-            </xsl:call-template>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:if>
-
-    </xsl:for-each>
+  <xsl:template name="codelangAttributes">
+    <xsl:call-template name="mshelpCodelangAttributes">
+      <xsl:with-param name="snippets" select="/document/comments/example/code" />
+    </xsl:call-template>
   </xsl:template>
 
   <!-- Footer stuff -->

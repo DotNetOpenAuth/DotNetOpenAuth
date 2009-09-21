@@ -174,7 +174,8 @@
           <tr>
             <th>
               <xsl:variable name="codeLangLC" select="translate($codeLang,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz ')"/>
-              <xsl:if test="$codeLangLC='visualbasic' or $codeLangLC='csharp' or $codeLangLC='managedcplusplus' or $codeLangLC='jsharp' or $codeLangLC='jscript'">
+              <!-- Added JavaScript to look for AJAX snippets as JScript represents javascript snippets-->
+              <xsl:if test="$codeLangLC='visualbasic' or $codeLangLC='csharp' or $codeLangLC='managedcplusplus' or $codeLangLC='jsharp' or $codeLangLC='jscript' or $codeLangLC='javascript' or $codeLangLC='xaml'">
                 <include item="{$codeLang}"/>
               </xsl:if>
               <xsl:text>&#xa0;</xsl:text>
@@ -224,4 +225,69 @@
     </include>
   </xsl:template>
 
+  <xsl:template name="mshelpCodelangAttributes">
+    <xsl:param name="snippets" />
+    <xsl:for-each select="$snippets">
+      
+      <xsl:if test="not(@language=preceding::*/@language)">
+        <xsl:variable name="codeLang">
+          <xsl:choose>
+            <xsl:when test="@language = 'VBScript' or @language = 'vbs'">
+              <xsl:text>VBScript</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'VisualBasic' or @language = 'vb' or @language = 'vb#' or @language = 'VB' or @language = 'kbLangVB'" >
+              <xsl:text>kbLangVB</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'CSharp' or @language = 'c#' or @language = 'cs' or @language = 'C#'" >
+              <xsl:text>CSharp</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'ManagedCPlusPlus' or @language = 'cpp' or @language = 'cpp#' or @language = 'c' or @language = 'c++' or @language = 'C++' or @language = 'kbLangCPP'" >
+              <xsl:text>kbLangCPP</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'JSharp' or @language = 'j#' or @language = 'jsharp' or @language = 'VJ#'">
+              <xsl:text>VJ#</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'JScript' or @language = 'js' or @language = 'jscript#' or @language = 'jscript' or @language = 'JScript' or @language = 'kbJScript'">
+              <xsl:text>kbJScript</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'XAML' or @language = 'xaml'">
+              <xsl:text>XAML</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'JavaScript' or @language = 'javascript'">
+              <xsl:text>JavaScript</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'xml'">
+              <xsl:text>xml</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'html'">
+              <xsl:text>html</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'vb-c#'">
+              <xsl:text>visualbasicANDcsharp</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>other</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="$codeLang='other'" />
+          <!-- If $codeLang is already authored, then do nothing -->
+          <xsl:when test="/document/metadata/attribute[@name='codelang']/text() = $codeLang" />
+          <xsl:otherwise>
+            <xsl:call-template name="codeLang">
+              <xsl:with-param name="codeLang" select="$codeLang" />
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="codeLang">
+    <xsl:param name="codeLang" />
+    <MSHelp:Attr Name="codelang" Value="{$codeLang}" />
+  </xsl:template>
+  
 </xsl:stylesheet>

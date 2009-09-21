@@ -7,11 +7,15 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
     >
 
-	<!-- stuff specific to comments authored in DDUEXML -->
+  <xsl:param name="omitAptcaBoilerplate"/>
+  <xsl:param name="RTMReleaseDate" />
+
+  <!-- stuff specific to comments authored in DDUEXML -->
 
 	<xsl:include href="utilities_reference.xsl" />
 	<xsl:include href="utilities_dduexml.xsl" />
   <xsl:include href="htmlBody.xsl"/>
+  <xsl:include href="seeAlsoSection.xsl"/>
   
   <xsl:variable name="summary" select="normalize-space(/document/comments/ddue:dduexml/ddue:summary)" />
   
@@ -28,16 +32,62 @@
                         )"/>
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/comments/ddue:dduexml/ddue:codeExamples[normalize-space(.)]) > 0)"/>
   <xsl:variable name="languageFilterSection" select="boolean(string-length(/document/comments/ddue:dduexml/ddue:codeExamples[normalize-space(.)]) > 0)" />
+  <xsl:variable name="securityCriticalSection" 
+                select="boolean(
+                          (/document/reference/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and
+ 			                      not(/document/reference/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute'])) or  
+                          (/document/reference/containers/type/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and
+			                      not(/document/reference/containers/type/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute'])) or
+                          ($api-subgroup='property' and 
+                            (((/document/reference/getter and (/document/reference/getter/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and not(/document/reference/getter/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute']))) and 
+		 	                        (/document/reference/setter and (/document/reference/setter/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and not(/document/reference/setter/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute'])))) or
+                             ((/document/reference/getter and (/document/reference/getter/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and not(/document/reference/getter/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute']))) and not(/document/reference/setter)) or
+                             (not(/document/reference/getter) and (/document/reference/setter and (/document/reference/setter/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and not(/document/reference/setter/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute'])))) 
+                            )) or
+                            ($api-subgroup='event' and 
+                            (((/document/reference/adder and (/document/reference/adder/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and not(/document/reference/adder/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute']))) and 							      
+                              (/document/reference/remover and (/document/reference/remover/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and not(/document/reference/remover/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute'])))) or
+                             ((/document/reference/adder and (/document/reference/adder/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and	not(/document/reference/adder/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute']))) and not(/document/reference/remover)) or
+                             (not(/document/reference/adder) and (/document/reference/remover and (/document/reference/remover/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and not(/document/reference/remover/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute']))))
+                            ))
+                        )" />
+  
 	<xsl:template name="body">
+    <!-- freshness date -->
+    <xsl:call-template name="writeFreshnessDate">
+      <xsl:with-param name="ChangedHistoryDate" select="/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]"/>
+    </xsl:call-template>
 
     <!--internalOnly boilerplate -->
+    <xsl:if test="not($securityCriticalSection)">
     <xsl:call-template name="internalOnly"/>
+    </xsl:if>
 
     <!-- obsolete boilerplate -->
     <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.ObsoleteAttribute']">
       <xsl:call-template name="obsoleteSection" />
     </xsl:if>
         
+      <!-- SecurityCritical boilerplate -->
+      <xsl:if test="$securityCriticalSection">
+        <xsl:choose>
+          <xsl:when test="boolean($api-group='type')">
+            <include item="typeSecurityCriticalBoilerplate" />
+          </xsl:when>
+          <xsl:when test="boolean($api-group='member')">
+            <xsl:choose>
+              <xsl:when test="(/document/reference/containers/type/attributes/attribute/type[@api='T:System.Security.SecurityCriticalAttribute'] and
+ 			                      not(/document/reference/containers/type/attributes/attribute/type[@api='T:System.Security.SecurityTreatAsSafeAttribute']))">
+                <include item="typeSecurityCriticalBoilerplate" />
+              </xsl:when>
+              <xsl:otherwise>
+                <include item="memberSecurityCriticalBoilerplate" />
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:if>
+
     <!-- summary -->
     <!-- useBase boilerplate -->
     <xsl:if test="/document/comments/ddue:dduexml/ddue:useBase and /document/reference/overrides/member">
@@ -49,7 +99,10 @@
     </xsl:if>
     <xsl:choose>
       <xsl:when test="normalize-space(/document/comments/ddue:dduexml/ddue:summary[1]) != ''">
-        <span data="authoredSummary">
+        <span sdata="authoredSummary">
+            <xsl:if test="$securityCriticalSection">
+              <p><include item="securityCritical" /></p>
+            </xsl:if>
         <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:summary[1]" />
         </span>
       </xsl:when>
@@ -142,22 +195,21 @@
       </xsl:when>
 		</xsl:choose>
     <!-- exceptions -->
+      <xsl:if test="not($securityCriticalSection)">
     <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:exceptions" />
+      </xsl:if>
 		<!-- remarks -->
-    <xsl:if test="not($group='namespace')">
-      <xsl:choose>
-        <xsl:when test="normalize-space(/document/comments/ddue:dduexml/ddue:remarks[1])">
-          <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:remarks[1]" />
-        </xsl:when>
-        <xsl:when test="/document/reference/attributes/attribute/type[@api='T:System.Security.Permissions.HostProtectionAttribute']">
-          <xsl:call-template name="hostProtectionSection" />
-        </xsl:when>
-      </xsl:choose>
+      <xsl:if test="not($group='namespace') and not($securityCriticalSection)">
+        <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:remarks[1]" />
     </xsl:if>
 		<!-- example -->
+      <xsl:if test="not($securityCriticalSection)">
 		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:codeExamples" />
+      </xsl:if>
     <!-- permissions -->
+      <xsl:if test="not($securityCriticalSection)">
     <xsl:call-template name="permissionsSection"/>
+      </xsl:if>
     <!-- inheritance -->
     <xsl:apply-templates select="/document/reference/family" />
 		<!-- other comment sections -->
@@ -172,6 +224,9 @@
     </xsl:if>
     <!-- see also -->
     <xsl:call-template name="seeAlsoSection"/>
+
+    <!-- changed table section -->
+    <xsl:call-template name="writeChangedTable" />
 
   </xsl:template> 
 
@@ -204,7 +259,7 @@
 		<xsl:param name="name" />
 		<xsl:choose>
       <xsl:when test="normalize-space(/document/comments/ddue:dduexml/ddue:parameters[1]/ddue:parameter) != ''">
-        <span data="authoredParameterSummary">
+        <span sdata="authoredParameterSummary">
         <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:parameters[1]/ddue:parameter[string(ddue:parameterReference)=$name]/ddue:content" />
         </span>
       </xsl:when>
@@ -217,7 +272,7 @@
 	<xsl:template name="getReturnsDescription">
 		<xsl:choose>
       <xsl:when test="normalize-space(/document/comments/ddue:dduexml/ddue:returnValue[1]) != ''">
-        <span data="authoredValueSummary">
+        <span sdata="authoredValueSummary">
         <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:returnValue[1]" />
         </span>
       </xsl:when>
@@ -228,6 +283,9 @@
 	</xsl:template>
 
   <xsl:template match="returns">
+    <xsl:choose>
+      <xsl:when test="$api-subgroup='field' and normalize-space(/document/comments/ddue:dduexml/ddue:returnValue[1]) = '' and normalize-space(/document/comments/ddue:dduexml/ddue:returnValue[2]) = ''"/>
+      <xsl:otherwise>
     <div id="returns">
       <xsl:call-template name="subSection">
         <xsl:with-param name="title">
@@ -252,6 +310,8 @@
         </xsl:with-param>
       </xsl:call-template>
     </div>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 	<xsl:template match="templates">
     <div id="genericParameters">
@@ -277,7 +337,7 @@
 	<xsl:template name="getElementDescription">
     <xsl:choose>
       <xsl:when test="normalize-space(ddue:summary[1]) != ''">
-        <span data="memberAuthoredSummary">
+        <span sdata="memberAuthoredSummary">
         <xsl:apply-templates select="ddue:summary[1]/ddue:para/node()" />
         </span>
       </xsl:when>
@@ -392,7 +452,7 @@
 
   <xsl:template name="permissionsSection">
     <!-- the containers/library/noAptca is added to reflection data by the ApplyVsDocModel transform -->
-    <xsl:variable name="showAptcaBoilerplate" select="boolean(/document/reference/containers/library/noAptca)"/>
+    <xsl:variable name="showAptcaBoilerplate" select="boolean(/document/reference/containers/library/noAptca and $omitAptcaBoilerplate!='true')"/>
     <xsl:if test="/document/comments/ddue:dduexml/ddue:permissions[normalize-space(.)] or $showAptcaBoilerplate">
       <xsl:call-template name="section">
         <xsl:with-param name="toggleSwitch" select="'permissions'" />
@@ -434,76 +494,16 @@
     <xsl:call-template name="memberIntroBoilerplate"/>
   </xsl:template>
 
-  <xsl:template name="mshelpCodelangAttributes">
-   
-    <xsl:for-each select="/document/comments/ddue:dduexml/ddue:codeExamples/ddue:codeExample/ddue:legacy/ddue:content/ddue:snippets/ddue:snippet">
-
-      <xsl:if test="not(@language=preceding::*/@language)">
-        <xsl:variable name="codeLang">
-          <xsl:choose>
-            <xsl:when test="@language = 'VBScript' or @language = 'vbs'">
-              <xsl:text>VBScript</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'VisualBasic' or @language = 'vb' or @language = 'vb#' or @language = 'VB' or @language = 'kbLangVB'" >
-              <xsl:text>kbLangVB</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'CSharp' or @language = 'c#' or @language = 'cs' or @language = 'C#'" >
-              <xsl:text>CSharp</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'ManagedCPlusPlus' or @language = 'cpp' or @language = 'cpp#' or @language = 'c' or @language = 'c++' or @language = 'C++' or @language = 'kbLangCPP'" >
-              <xsl:text>kbLangCPP</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'JSharp' or @language = 'j#' or @language = 'jsharp' or @language = 'VJ#'">
-              <xsl:text>VJ#</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'JScript' or @language = 'js' or @language = 'jscript#' or @language = 'jscript' or @language = 'JScript' or @language = 'kbJScript'">
-              <xsl:text>kbJScript</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'xml'">
-              <xsl:text>xml</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'html'">
-              <xsl:text>html</xsl:text>
-            </xsl:when>
-            <xsl:when test="@language = 'vb-c#'">
-              <xsl:text>visualbasicANDcsharp</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>other</xsl:text>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
-        <xsl:choose>
-          <xsl:when test="$codeLang='other'" />
-          <xsl:otherwise>
-            <xsl:call-template name="codeLang">
-              <xsl:with-param name="codeLang" select="$codeLang" />
-            </xsl:call-template>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:if>
-
-    </xsl:for-each>
+  <xsl:template name="codelangAttributes">
+    <xsl:call-template name="mshelpCodelangAttributes">
+      <xsl:with-param name="snippets" select="/document/comments/ddue:dduexml/ddue:codeExamples/ddue:codeExample/ddue:legacy/ddue:content/ddue:snippets/ddue:snippet" />
+    </xsl:call-template>
   </xsl:template>
 
   <xsl:template match="ddue:codeEntityReference" mode="abstract">
     <xsl:call-template name="subString">
       <xsl:with-param name="name" select="." />
     </xsl:call-template>
-  </xsl:template>
-
-  <xsl:template name="hostProtectionSection">
-    <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.Security.Permissions.HostProtectionAttribute']">
-      <xsl:call-template name="section">
-        <xsl:with-param name="toggleSwitch" select="'remarks'"/>
-        <xsl:with-param name="title">
-          <include item="remarksTitle" />
-        </xsl:with-param>
-        <xsl:with-param name="content">
-          <xsl:call-template name="hostProtectionContent" />
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>
   </xsl:template>
 
   <!-- Footer stuff -->
@@ -535,5 +535,45 @@
       </include>
     </div>
 	</xsl:template>
-  
+
+  <xsl:template name="seeAlsoSection">
+
+    <xsl:if test="$hasSeeAlsoSection">
+      <xsl:call-template name="section">
+        <xsl:with-param name="toggleSwitch" select="'seeAlso'"/>
+        <xsl:with-param name="title">
+          <include item="relatedTitle" />
+        </xsl:with-param>
+        <xsl:with-param name="content">
+          <xsl:choose>
+            <xsl:when test="count(/document/comments/ddue:dduexml/ddue:relatedTopics/*) > 0">
+              <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:relatedTopics" mode="seeAlso">
+                <xsl:with-param name="autoGenerateLinks" select="'true'" />
+              </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:call-template name="subSection">
+                <xsl:with-param name="title">
+                  <include item="SeeAlsoReference"/>
+                </xsl:with-param>
+                <xsl:with-param name="content">
+                  <xsl:call-template name="autogenSeeAlsoLinks"/>
+                </xsl:with-param>
+              </xsl:call-template>
+            </xsl:otherwise>
+          </xsl:choose>
+          
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="writeChangedTable">
+    <xsl:if test="/document/comments/ddue:dduexml//ddue:section/ddue:title = 'Change History' and (/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table and /document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row/ddue:entry[normalize-space(.)])">
+      <xsl:apply-templates select="/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']">
+        <xsl:with-param name="showChangedHistoryTable" select="true()" />
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:template>
+
 </xsl:stylesheet>

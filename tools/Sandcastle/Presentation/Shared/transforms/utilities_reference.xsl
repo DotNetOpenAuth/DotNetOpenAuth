@@ -122,21 +122,20 @@
 
   <xsl:template match="member" mode="link">
     <xsl:param name="qualified" select="true()" />
-    <xsl:if test="$qualified">
-      <xsl:apply-templates select="type" mode="link" />
-      <span class="languageSpecificText">
-      <span class="cs">.</span>
-      <span class="vb">.</span>
-      <span class="cpp">::</span>
-      <span class="nu">.</span>
-      </span>
-    </xsl:if>
     <xsl:choose>
       <xsl:when test="@display-api">
-        <referenceLink target="{@api}" display-target="{@display-api}" />
+        <referenceLink target="{@api}" display-target="{@display-api}">
+          <xsl:if test="$qualified">
+            <xsl:attribute name="show-container">true</xsl:attribute>
+          </xsl:if>
+        </referenceLink>
       </xsl:when>
       <xsl:otherwise>
-        <referenceLink target="{@api}" />
+        <referenceLink target="{@api}">
+          <xsl:if test="$qualified">
+            <xsl:attribute name="show-container">true</xsl:attribute>
+          </xsl:if>
+        </referenceLink>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -198,12 +197,12 @@
   </xsl:template>
 
   <xsl:template match="pointerTo" mode="plain">
-    <xsl:apply-templates mode="plain"/>
+    <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="plain"/>
     <xsl:text>*</xsl:text>
   </xsl:template>
   
   <xsl:template match="referenceTo" mode="plain">
-    <xsl:apply-templates mode="plain"/>
+    <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="plain"/>
   </xsl:template>
 
   <xsl:template match="template" mode="plain">
@@ -305,12 +304,12 @@
   </xsl:template>
 
   <xsl:template match="pointerTo" mode="decorated">
-    <xsl:apply-templates mode="decorated"/>
+    <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="decorated"/>
     <xsl:text>*</xsl:text>
   </xsl:template>
 
   <xsl:template match="referenceTo" mode="decorated">
-    <xsl:apply-templates mode="decorated"/>
+    <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="decorated"/>
     <span class="cpp">%</span>
   </xsl:template>
 

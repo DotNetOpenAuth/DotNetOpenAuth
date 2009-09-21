@@ -148,7 +148,7 @@ span.selflink {
 }
 
 span.nolink {
-	
+	font-weight: bold;
 }
 
 /***********************************************************
@@ -233,7 +233,7 @@ div#header table tr#headerTableRow3 td
 
 /* Applies to the lower table in the non-scrolling header region. Text in this table
    includes Collapse All/Expand All, Language Filter, and Members Options. */
-div#header table#topTable
+div#header table#bottomTable
 {
 	border-top-color: #FFFFFF;
 	border-top-style: solid;

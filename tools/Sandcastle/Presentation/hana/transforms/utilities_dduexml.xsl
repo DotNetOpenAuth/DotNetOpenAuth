@@ -623,7 +623,7 @@
             <xsl:when test="ddue:title">
               <h1 class="heading">
                 <span onclick="ExpandCollapse(sectionToggle{$sectionCount})" style="cursor:default;" onkeypress="ExpandCollapse_CheckKey(sectionToggle{$sectionCount}, event)" tabindex="0">
-                  <img id="sectionToggle{$sectionCount}" onload="OnLoadImage(event)" class="toggle" name="toggleSwitch">
+                  <img id="sectionToggle{$sectionCount}" class="toggle" name="toggleSwitch">
                     <includeAttribute name="src" item="iconPath">
                       <parameter>collapse_all.gif</parameter>
                     </includeAttribute>
@@ -776,7 +776,7 @@
 
 	<xsl:template match="ddue:languageKeyword">
       <xsl:variable name="word" select="." />
-    <span class="keyword" data="langKeyword" value="{$word}">
+    <span class="keyword" sdata="langKeyword" value="{$word}">
 			<xsl:choose>
 				<xsl:when test="$word='null' or $word='Nothing' or $word='nullptr'">
 					<span class="cs">null</span>
@@ -1153,6 +1153,7 @@
 
   <xsl:template match="ddue:snippets">
     <xsl:variable name="codeId" select="generate-id()" />
+    <div name="snippetGroup">
       <table class="filter" cellspacing="0" cellpadding="0">
         <tr id="curvedTabs_{$codeId}">
           <xsl:for-each select="ddue:snippet">
@@ -1173,7 +1174,7 @@
             <xsl:variable name="languageEvent">
               <xsl:choose>
                 <xsl:when test="$style != ''">
-                  <xsl:text>languageFilter.changeLanguage(data, '</xsl:text><xsl:value-of select="@language"/>
+                  <xsl:text>changeLanguage(data, '</xsl:text><xsl:value-of select="@language"/>
                   <xsl:text>', '</xsl:text><xsl:value-of select="$style" />
                   <xsl:text>');</xsl:text>
                 </xsl:when>
@@ -1203,14 +1204,7 @@
           </div>
         </xsl:for-each>
       </div>
-    <script type="text/javascript">
-      <xsl:if test="$languages != 'false'">
-        languageFilter.registerTabbedArea(<xsl:text>'curvedTabs_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>','ct_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>','cb_</xsl:text><xsl:value-of select="$codeId"/><xsl:text>'</xsl:text>);
-      </xsl:if>
-      toggleClass(<xsl:text>'ct_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>'</xsl:text>,'x-lang','CSharp','activeTab','tab');
-      curvedToggleClass(<xsl:text>'curvedTabs_</xsl:text><xsl:value-of select="$codeId"/><xsl:text>'</xsl:text>,'x-lang', 'CSharp');
-      toggleStyle(<xsl:text>'cb_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>'</xsl:text>,'x-lang','CSharp','display','block','none');
-    </script>
+    </div>
   </xsl:template>
 
 	<xsl:template name="section">
@@ -1223,7 +1217,7 @@
 
     <h1 class="heading">
       <span onclick="ExpandCollapse({$toggleTitle})" style="cursor:default;" onkeypress="ExpandCollapse_CheckKey({$toggleTitle}, event)" tabindex="0">
-        <img id="{$toggleTitle}" onload="OnLoadImage(event)" class="toggle" name="toggleSwitch">
+        <img id="{$toggleTitle}" class="toggle" name="toggleSwitch">
           <includeAttribute name="src" item="iconPath">
             <parameter>collapse_all.gif</parameter>
           </includeAttribute>
@@ -1252,7 +1246,7 @@
   <!-- capture authored glossary <link> nodes -->
   <xsl:template match="ddue:link[starts-with(.,'GTMT#')]">
     <!-- not supporting popup definitions; just show the display text -->
-    <span data="link">
+    <span sdata="link">
     <xsl:value-of select="substring-after(.,'GTMT#')"/>
     </span>
   </xsl:template>

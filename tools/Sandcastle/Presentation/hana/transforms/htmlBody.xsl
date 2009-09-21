@@ -319,7 +319,7 @@
   <xsl:template name="languageSpan">
     <div id="languageSpan">
       <xsl:for-each select="$languages/language">
-        <div id="{@name}" onclick="languageFilter.changeLanguage(data, '{@name}', '{@style}');">
+        <div id="{@name}" onclick="changeLanguage(data, '{@name}', '{@style}');">
           <img id="{@name}Image" onmouseover="mouseOverCheck({@name}Image,radioSelectImage,radioUnSelectImage,radioSelectHoverImage,radioUnSelectHoverImage)" onmouseout="mouseOutCheck({@name}Image,radioSelectImage,radioUnSelectImage,radioSelectHoverImage,radioUnSelectHoverImage)">
             <includeAttribute name="src" item="iconPath">
               <parameter>r_unselect.gif</parameter>
@@ -330,7 +330,6 @@
         </div>
         <br />
       </xsl:for-each>
-      <script>var languageFilter = new Selector('languageSpan');languageFilter.register(codeBlockHandler); languageFilter.register(styleSheetHandler); languageFilter.register(persistenceHandler);languageFilter.register(languageHandler);toggleLanguage('languageSpan', 'x-lang', 'CSharp');toggleInlineStyle('cs');</script>
     </div>
   </xsl:template>
       

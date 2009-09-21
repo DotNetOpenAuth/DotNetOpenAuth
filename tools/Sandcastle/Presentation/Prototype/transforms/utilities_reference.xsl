@@ -9,7 +9,7 @@
 	<!-- key parameter is the api identifier string -->
 	<xsl:param name="key" />
 	<xsl:param name="metadata" value="false" />
-	<xsl:param name="languages" />
+  <xsl:param name="languages">false</xsl:param>
 
 	<xsl:include href="utilities_metadata.xsl" />
 
@@ -23,15 +23,6 @@
 				<xsl:call-template name="insertMetadata" />
 			</head>
 			<body>
-				<script type="text/javascript">
-					<xsl:text>var store = new CookieDataStore('docs');</xsl:text>
-          
-					<xsl:text>registerEventHandler(window, 'load', function() { var ss = new SplitScreen('control', 'main'); selectLanguage(store.get('lang')); });</xsl:text>
-          
-          <!--
-          <xsl:text>registerEventHandler(window, 'load', function() { selectLanguage(store.get('lang')); });</xsl:text>
-          -->
-        </script>
 				<xsl:call-template name="control"/>
 				<xsl:call-template name="main"/>
 			</body>
@@ -56,6 +47,10 @@
 	</xsl:template>
 
 	<xsl:template name="insertScripts">
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>script_prototype.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
 		<script type="text/javascript">
 			<includeAttribute name="src" item="scriptPath"><parameter>EventUtilities.js</parameter></includeAttribute>
       <xsl:text> </xsl:text>
@@ -329,7 +324,7 @@
 			<span class="topicTitle"><xsl:call-template name="topicTitleDecorated" /></span><br/>
 			<div id="toolbar">
 				<span id="chickenFeet"><xsl:call-template name="chickenFeet" /></span>
-				<xsl:if test="count($languages/language) &gt; 0">
+        <xsl:if test="boolean(($languages != 'false') and (count($languages/language) &gt; 0))">
 					<span id="languageFilter">
 						<select id="languageSelector" onchange="var names = this.value.split(' '); toggleVisibleLanguage(names[1]); lfc.switchLanguage(names[0]); store.set('lang',this.value); store.save();">
 							<xsl:for-each select="$languages/language">
@@ -337,7 +332,6 @@
 							</xsl:for-each>
 						</select>
 					</span>
-					<script>var sd = getStyleDictionary(); var lfc = new LanguageFilterController();</script>
 				</xsl:if>
 			</div>
 		</div>
@@ -481,10 +475,11 @@
     </xsl:template>
 
       <xsl:template name="syntaxContent">
+        <div id="syntaxSection">
 					<table class="filter">
 						<tr class="tabs" id="syntaxTabs">
 							<xsl:for-each select="div[@codeLanguage]">
-								<td class="tab" x-lang="{@codeLanguage}" onclick="st.toggleClass('x-lang','{@codeLanguage}','activeTab','tab'); sb.toggleStyle('x-lang','{@codeLanguage}','display','block','none');" ><include item="{@codeLanguage}Label" /></td>
+                <td class="tab" x-lang="{@codeLanguage}" onclick="toggleClass('syntaxTabs','x-lang','{@codeLanguage}','activeTab','tab'); toggleStyle('syntaxBlocks','x-lang','{@codeLanguage}','display','block','none');" ><include item="{@codeLanguage}Label" /></td>
 							</xsl:for-each>
 						</tr>
 					</table>
@@ -493,22 +488,15 @@
 								<div class="code" x-lang="{@codeLanguage}"><pre><xsl:copy-of select="./node()" /></pre></div>
 							</xsl:for-each>
 					</div>
-					<script type="text/javascript"><xsl:text>
-						var st = new ElementCollection('syntaxTabs');
-						var sb = new ElementCollection('syntaxBlocks');
-						lfc.registerTabbedArea(st, sb);
-						st.toggleClass('x-lang','</xsl:text><xsl:value-of select="div[1]/@codeLanguage" /><xsl:text>','activeTab','tab');
-						sb.toggleStyle('x-lang','</xsl:text><xsl:value-of select="div[1]/@codeLanguage" /><xsl:text>','display','block','none');
-					</xsl:text></script>
+        </div>
 	</xsl:template>
 
       <xsl:template name="usyntaxContent">
+        <div id="usyntaxSection">
         <table class="filter">
           <tr class="tabs" id="usyntaxTabs">
             <xsl:for-each select="div[@codeLanguage]">
-              <td class="tab" x-lang="{@codeLanguage}" onclick="ust.toggleClass('x-lang','{@codeLanguage}','activeTab','tab'); usb.toggleStyle('x-lang','{@codeLanguage}','display','block','none');" >
-                <include item="{@codeLanguage}Label" />
-              </td>
+                <td class="tab" x-lang="{@codeLanguage}" onclick="toggleClass('usyntaxTabs','x-lang','{@codeLanguage}','activeTab','tab'); toggleStyle('usyntaxBlocks','x-lang','{@codeLanguage}','display','block','none');" ><include item="{@codeLanguage}Label" /></td>
             </xsl:for-each>
           </tr>
         </table>
@@ -521,15 +509,7 @@
             </div>
           </xsl:for-each>
         </div>
-        <script type="text/javascript">
-          <xsl:text>
-						var ust = new ElementCollection('usyntaxTabs');
-						var usb = new ElementCollection('usyntaxBlocks');
-						lfc.registerTabbedArea(ust, usb);
-						ust.toggleClass('x-lang','</xsl:text><xsl:value-of select="div[1]/@codeLanguage" /><xsl:text>','activeTab','tab');
-						usb.toggleStyle('x-lang','</xsl:text><xsl:value-of select="div[1]/@codeLanguage" /><xsl:text>','display','block','none');
-					</xsl:text>
-        </script>
+        </div>
       </xsl:template>
 
   <xsl:template match="elements" mode="root">
@@ -555,23 +535,24 @@
 		<xsl:call-template name="section">
 			<xsl:with-param name="title"><include item="typesTitle" /></xsl:with-param>
 			<xsl:with-param name="content">
+        <div id="typeSection">
 				<table class="filter">
 					<tr class="tabs" id="typeFilter">
-						<td class="tab" value="all" onclick="tt.toggleClass('value','all','activeTab','tab'); tf.subgroup='all'; ts.process(getInstanceDelegate(tf,'filterElement'));"><include item="allTypesFilterLabel" /></td>
+              <td class="tab" value="all" onclick="toggleClass('typeFilter','value','all','activeTab','tab'); processSubgroup('all', 'type'); processList('typeList','filterElement', 'type');"><include item="allTypesFilterLabel" /></td>
             <xsl:if test="element/apidata[@subgroup='class']">
-              <td class="tab" value="class" onclick="tt.toggleClass('value','class','activeTab','tab'); tf.subgroup='class'; ts.process(getInstanceDelegate(tf,'filterElement'));"><include item="classTypesFilterLabel" /></td>
+                <td class="tab" value="class" onclick="toggleClass('typeFilter','value','class','activeTab','tab'); processSubgroup('class', 'type'); processList('typeList','filterElement','type');"><include item="classTypesFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='structure']">
-              <td class="tab" value="structure" onclick="tt.toggleClass('value','structure','activeTab','tab'); tf.subgroup='structure'; ts.process(getInstanceDelegate(tf,'filterElement'));"><include item="structureTypesFilterLabel" /></td>
+                <td class="tab" value="structure" onclick="toggleClass('typeFilter','value','structure','activeTab','tab'); processSubgroup('structure', 'type'); processList('typeList','filterElement','type');"><include item="structureTypesFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='interface']">
-              <td class="tab" value="interface" onclick="tt.toggleClass('value','interface','activeTab','tab'); tf.subgroup='interface'; ts.process(getInstanceDelegate(tf,'filterElement'));"><include item="interfaceTypesFilterLabel" /></td>
+                <td class="tab" value="interface" onclick="toggleClass('typeFilter','value','interface','activeTab','tab'); processSubgroup('interface', 'type'); processList('typeList','filterElement','type');"><include item="interfaceTypesFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='enumeration']">
-              <td class="tab" value="enumeration" onclick="tt.toggleClass('value','enumeration','activeTab','tab'); tf.subgroup='enumeration'; ts.process(getInstanceDelegate(tf,'filterElement'));"><include item="enumerationTypesFilterLabel" /></td>
+                <td class="tab" value="enumeration" onclick="toggleClass('typeFilter','value','enumeration','activeTab','tab'); processSubgroup('enumeration', 'type'); processList('typeList','filterElement','type');"><include item="enumerationTypesFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='delegate']">
-              <td class="tab" value="delegate" onclick="tt.toggleClass('value','delegate','activeTab','tab'); tf.subgroup='delegate'; ts.process(getInstanceDelegate(tf,'filterElement'));"><include item="delegateTypesFilterLabel" /></td>
+                <td class="tab" value="delegate" onclick="toggleClass('typeFilter','value','delegate','activeTab','tab'); processSubgroup('delegate', 'type'); processList('typeList','filterElement','type');"><include item="delegateTypesFilterLabel" /></td>
             </xsl:if>
           </tr>
 				</table>
@@ -585,12 +566,7 @@
 						<xsl:sort select="apidata/@name" />
 					</xsl:apply-templates>
 				</table>
-				<script type="text/javascript"><xsl:text>
-					var tt = new ElementCollection('typeFilter');
-					var ts = new ElementCollection('typeList');
-					var tf = new TypeFilter();
-					tt.toggleClass('value','all','activeTab','tab');
-				</xsl:text></script>
+        </div>
 			</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
@@ -620,37 +596,38 @@
 			<xsl:call-template name="section">
 				<xsl:with-param name="title"><include item="membersTitle" /></xsl:with-param>
 				<xsl:with-param name="content">
+          <div id="allMembersSection">
 				<table class="filter">
 					<tr class="tabs" id="memberTabs">
-						<td class="tab" value="all" onclick="mt.toggleClass('value','all','activeTab','tab'); mf.subgroup='all'; ms.process(getInstanceDelegate(mf,'filterElement'));"><include item="allMembersFilterLabel" /></td>
+                <td class="tab" value="all" onclick="toggleClass('memberTabs','value','all','activeTab','tab'); processSubgroup('all', 'member'); processList('memberList','filterElement','member');"><include item="allMembersFilterLabel" /></td>
             <xsl:if test="element/apidata[@subgroup='constructor']">
-  						<td class="tab" value="constructor" onclick="mt.toggleClass('value','constructor','activeTab','tab'); mf.subgroup='constructor'; ms.process(getInstanceDelegate(mf,'filterElement'));"><include item="constructorMembersFilterLabel" /></td>
+                  <td class="tab" value="constructor" onclick="toggleClass('memberTabs','value','constructor','activeTab','tab'); processSubgroup('constructor','member');processList('memberList','filterElement','member');"><include item="constructorMembersFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='method']">
-              <td class="tab" value="method" onclick="mt.toggleClass('value','method','activeTab','tab'); mf.subgroup='method'; ms.process(getInstanceDelegate(mf,'filterElement'));"><include item="methodMembersFilterLabel" /></td>
+                  <td class="tab" value="method" onclick="toggleClass('memberTabs','value','method','activeTab','tab'); processSubgroup('method','member'); processList('memberList','filterElement','member');"><include item="methodMembersFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='property']">
-              <td class="tab" value="property" onclick="mt.toggleClass('value','property','activeTab','tab'); mf.subgroup='property'; ms.process(getInstanceDelegate(mf,'filterElement'));"><include item="propertyMembersFilterLabel" /></td>
+                  <td class="tab" value="property" onclick="toggleClass('memberTabs','value','property','activeTab','tab'); processSubgroup('property','member'); processList('memberList','filterElement','member');"><include item="propertyMembersFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='field']">
-              <td class="tab" value="field" onclick="mt.toggleClass('value','field','activeTab','tab'); mf.subgroup='field'; ms.process(getInstanceDelegate(mf,'filterElement'));"><include item="fieldMembersFilterLabel" /></td>
+                  <td class="tab" value="field" onclick="toggleClass('memberTabs','value','field','activeTab','tab'); processSubgroup('field','member'); processList('memberList','filterElement','member');"><include item="fieldMembersFilterLabel" /></td>
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='event']">
-              <td class="tab" value="event" onclick="mt.toggleClass('value','event','activeTab','tab'); mf.subgroup='event'; ms.process(getInstanceDelegate(mf,'filterElement'));"><include item="eventMembersFilterLabel" /></td>
+                  <td class="tab" value="event" onclick="toggleClass('memberTabs','value','event','activeTab','tab'); processSubgroup('event','member'); processList('memberList','filterElement','member');"><include item="eventMembersFilterLabel" /></td>
             </xsl:if>
 					</tr>
 					<tr>
 						<td class="line" colspan="2">
-						        <label for="public"><input id="public" type="checkbox" checked="true" onclick="mf['public'] = this.checked; ms.process(getInstanceDelegate(mf,'filterElement'));" /> <include item="publicMembersFilterLabel" /></label><br/>
-        						<label for="protected"><input id="protected" type="checkbox" checked="true" onclick="mf['protected'] = this.checked; ms.process(getInstanceDelegate(mf,'filterElement'));" /> <include item="protectedMembersFilterLabel" /></label>
+                  <label for="public"><input id="public" type="checkbox" checked="true" onclick="toggleCheckState('public',this.checked); processList('memberList','filterElement','member');" /><include item="publicMembersFilterLabel" /></label><br/>
+                  <label for="protected"><input id="protected" type="checkbox" checked="true" onclick="toggleCheckState('protected',this.checked); processList('memberList','filterElement','member');" /><include item="protectedMembersFilterLabel" /></label>
 						</td>
 						<td class="line" colspan="2">
-						        <label for="instance"><input id="instance" type="checkbox" checked="true" onclick="mf['instance'] = this.checked; ms.process(getInstanceDelegate(mf,'filterElement'));" /> <include item="instanceMembersFilterLabel" /></label><br/>
-        						<label for="static"><input id="static" type="checkbox" checked="true" onclick="mf['static'] = this.checked; ms.process(getInstanceDelegate(mf,'filterElement'));" /> <include item="staticMembersFilterLabel" /></label>
+                  <label for="instance"><input id="instance" type="checkbox" checked="true" onclick="toggleCheckState('instance',this.checked); processList('memberList','filterElement','member');" /><include item="instanceMembersFilterLabel" /></label><br/>
+                  <label for="static"><input id="static" type="checkbox" checked="true" onclick="toggleCheckState('static',this.checked); processList('memberList','filterElement','member');" /><include item="staticMembersFilterLabel" /></label>
 						</td>
 						<td class="line" colspan="2">
-						        <label for="declared"><input id="declared" type="checkbox" checked="true" onclick="mf['declared'] = this.checked; ms.process(getInstanceDelegate(mf,'filterElement'));" /> <include item="declaredMembersFilterLabel" /></label><br/>
-        						<label for="inherited"><input id="inherited" type="checkbox" checked="true" onclick="mf['inherited'] = this.checked; ms.process(getInstanceDelegate(mf,'filterElement'));" /> <include item="inheritedMembersFilterLabel" /></label>
+                  <label for="declared"><input id="declared" type="checkbox" checked="true" onclick="toggleCheckState('declared',this.checked); processList('memberList','filterElement','member');" /><include item="declaredMembersFilterLabel" /></label><br/>
+                  <label for="inherited"><input id="inherited" type="checkbox" checked="true" onclick="toggleCheckState('inherited',this.checked); processList('memberList','filterElement','member');" /><include item="inheritedMembersFilterLabel" /></label>
 						</td>
 					</tr>
 				</table>
@@ -664,12 +641,7 @@
 						<xsl:sort select="apidata/@name" />
 					</xsl:apply-templates>
 				</table>
-				<script type="text/javascript"><xsl:text>
-					var mt = new ElementCollection('memberTabs');
-					var ms = new ElementCollection('memberList');
-					var mf = new MemberFilter();
-					mt.toggleClass('value','all','activeTab','tab');
-				</xsl:text></script>
+          </div>
 				</xsl:with-param>
 			</xsl:call-template>
 		</xsl:if>
@@ -895,7 +867,7 @@
 
 	<xsl:template match="library">
 		<p><include item="locationInformation">
-			<parameter><span data="assembly"><xsl:value-of select="@assembly"/></span></parameter>
+			<parameter><span sdata="assembly"><xsl:value-of select="@assembly"/></span></parameter>
 			<parameter><xsl:value-of select="@module" /></parameter>
 		</include></p>
 	</xsl:template>
@@ -978,6 +950,7 @@
 				<table cellspacing="0" cellpadding="0">
 					<xsl:for-each select="ancestors/type">
 						<xsl:sort select="position()" data-type="number" order="descending" />
+						<!-- <xsl:sort select="@api"/> -->
 						<tr>
 							<xsl:call-template name="createTableEntries">
 								<xsl:with-param name="count" select="position() - 2" />
@@ -1023,7 +996,7 @@
 					</tr>
 
 					<xsl:for-each select="descendents/type">
-
+            <xsl:sort select="@api"/>
 						<tr>
 
 						<xsl:call-template name="createTableEntries">

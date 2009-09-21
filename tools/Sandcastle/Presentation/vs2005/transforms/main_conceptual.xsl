@@ -9,8 +9,10 @@
 
 	<xsl:output method="xml" indent="no" encoding="utf-8" />
 
+  <xsl:param name="RTMReleaseDate" />
   <xsl:include href="htmlBody.xsl" />
 	<xsl:include href="utilities_dduexml.xsl" />
+  <xsl:include href="seeAlsoSection.xsl" />
 
   <xsl:variable name="hasSeeAlsoSection" select="boolean(count(/document/topic/*/ddue:relatedTopics/*[local-name()!='sampleRef']) > 0)"/>
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/topic/*/ddue:codeExample[normalize-space(.)]) > 0)"/>
@@ -225,6 +227,11 @@
         </xsl:when>
       </xsl:choose>
 
+      <!-- Autogenerate codeLang attributes based on the snippets -->
+      <xsl:call-template name="mshelpCodelangAttributes">
+        <xsl:with-param name="snippets" select="/document/topic/*//ddue:snippets/ddue:snippet" />
+      </xsl:call-template>
+
       <!-- authored attributes -->
       <xsl:for-each select="/document/metadata/attribute">
         <MSHelp:Attr Name="{@name}" Value="{text()}" />
@@ -286,10 +293,11 @@
     <div id="mainSection">
 
       <div id="mainBody">
-        <div id="allHistory" class="saveHistory" onsave="saveAll()" onload="loadAll()">
-          <include item="header" />
-        </div>
-        <!--<xsl:call-template name="head" />-->
+        <div id="allHistory" class="saveHistory" onsave="saveAll()" onload="loadAll()"/>
+
+        <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
+        <include item="header" />
+
         <xsl:call-template name="body" />
       </div>
       <xsl:call-template name="foot" />
@@ -297,12 +305,16 @@
 
   </xsl:template>
 
-	<!--<xsl:template name="head">
-		<include item="header" />
-	</xsl:template>-->
-
 	<xsl:template name="body">
+    <!-- freshness date -->
+    <xsl:call-template name="writeFreshnessDate">
+      <xsl:with-param name="ChangedHistoryDate" select="/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]"/>
+    </xsl:call-template>
+
 		<xsl:apply-templates select="topic" />
+    
+    <!-- changed table section -->
+    <xsl:call-template name="writeChangedTable" />
 	</xsl:template>
 
 	<!-- sections that behave differently in conceptual and reference -->
@@ -366,76 +378,20 @@
     </xsl:if>
 	</xsl:template>
 
-	<xsl:template match="ddue:relatedTopics">
+  <xsl:template match="ddue:relatedTopics">
     <xsl:if test="$hasSeeAlsoSection">
-		  <xsl:call-template name="section">
+      <xsl:call-template name="section">
         <xsl:with-param name="toggleSwitch" select="'seeAlso'"/>
-        <xsl:with-param name="title"><include item="relatedTopicsTitle" /></xsl:with-param>
+        <xsl:with-param name="title">
+          <include item="relatedTopicsTitle" />
+        </xsl:with-param>
         <xsl:with-param name="content">
-
-          <!-- Concepts sub-section -->
-          <xsl:if test="normalize-space(ddue:link) or normalize-space(ddue:dynamicLink[@type='inline'])">
-            <xsl:call-template name="subSection">
-              <xsl:with-param name="title">
-                <include item="SeeAlsoConcepts"/>
-              </xsl:with-param>
-              <xsl:with-param name="content">
-                <xsl:for-each select="*">
-                  <xsl:if test="name() = 'link' or (name() = 'dynamicLink' and @type = 'inline') or (name() = 'legacyLink' and not(starts-with(@xlink:href,'frlrf') 
-                    or starts-with(@xlink:href,'N:') or starts-with(@xlink:href,'T:') or starts-with(@xlink:href,'M:') or starts-with(@xlink:href,'P:') 
-                    or starts-with(@xlink:href,'F:') or starts-with(@xlink:href,'E:') or starts-with(@xlink:href,'Overload:')))">
-                    <div class="seeAlsoStyle">
-                      <xsl:apply-templates select="."/>
-                    </div>
-                  </xsl:if>
-                </xsl:for-each>
-              </xsl:with-param>
-            </xsl:call-template>
-          </xsl:if>
-
-          <!-- Reference sub-section -->
-          <xsl:if test="normalize-space(ddue:codeEntityReference)">
-            <xsl:call-template name="subSection">
-              <xsl:with-param name="title">
-                <include item="SeeAlsoReference"/>
-              </xsl:with-param>
-              <xsl:with-param name="content">
-                <xsl:for-each select="*">
-                  <xsl:if test="name() = 'codeEntityReference' or (name() = 'legacyLink' and (starts-with(@xlink:href,'frlrf') 
-                    or starts-with(@xlink:href,'N:') or starts-with(@xlink:href,'T:') or starts-with(@xlink:href,'M:') or starts-with(@xlink:href,'P:') 
-                    or starts-with(@xlink:href,'F:') or starts-with(@xlink:href,'E:') or starts-with(@xlink:href,'Overload:')))">
-                    <div class="seeAlsoStyle">
-                      <xsl:apply-templates select="."/>
-                    </div>
-                  </xsl:if>
-                </xsl:for-each>
-              </xsl:with-param>
-            </xsl:call-template>
-          </xsl:if>
-
-          <!-- Other Resources sub-section -->
-          <xsl:if test="ddue:externalLink">
-            <xsl:call-template name="subSection">
-              <xsl:with-param name="title">
-                <include item="SeeAlsoOtherResources"/>
-              </xsl:with-param>
-              <xsl:with-param name="content">
-                <xsl:for-each select="*">
-                  <xsl:if test="name() = 'externalLink'">
-                    <div class="seeAlsoStyle">
-                      <xsl:apply-templates select="."/>
-                    </div>
-                  </xsl:if>
-                </xsl:for-each>
-              </xsl:with-param>
-            </xsl:call-template>
-          </xsl:if>
-      
-         </xsl:with-param>
-		  </xsl:call-template>
+          <xsl:apply-templates select="/document/topic/*/ddue:relatedTopics" mode="seeAlso" />
+        </xsl:with-param>
+      </xsl:call-template>
     </xsl:if>
-	</xsl:template>
-
+  </xsl:template>
+    
   <xsl:template match="ddue:codeExample">
     <!-- create Example section for the first codeExample node -->
     <xsl:if test="not(preceding-sibling::ddue:codeExample) and ../ddue:codeExample[normalize-space(.)!='']">
@@ -565,6 +521,14 @@
         <xsl:value-of select="ddue:title" />
       </A>
     </li>
+  </xsl:template>
+
+  <xsl:template name="writeChangedTable">
+    <xsl:if test="/document/topic/*//ddue:section/ddue:title = 'Change History' and (/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table and /document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row/ddue:entry[normalize-space(.)])">
+      <xsl:apply-templates select="/document/topic/*//ddue:section[ddue:title = 'Change History']">
+        <xsl:with-param name="showChangedHistoryTable" select="true()" />
+      </xsl:apply-templates>
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>

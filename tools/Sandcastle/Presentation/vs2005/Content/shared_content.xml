@@ -19,6 +19,9 @@
   	<!-- header -->
 	<item id="header"><font color="DarkGray"></font><p/> </item>
   
+  <!-- freshness date -->
+  <item id="UpdateTitle"><font color="DarkGray">Updated: {0}</font></item>
+  
   <!-- topic title -->
   <item id="nsrTitle">{0}</item>
 
@@ -50,6 +53,8 @@
 	<item id="ManagedCPlusPlusLabel">Visual C++</item>
 	<item id="JSharpLabel">J#</item>
 	<item id="JScriptLabel">JScript</item>
+  <item id="JavaScriptLabel">JavaScript</item>
+  <item id="XAMLLabel">XAML</item>
 
   <!-- section titles -->
   <item id="exceptionsTitle">Exceptions</item>
@@ -181,7 +186,7 @@
       </includeAttribute>
       feedback
 		</a>
-			on this topic to the DotNetOpenAuth group.
+			on this topic to Microsoft.
 		</span>
 </item>
   
@@ -196,7 +201,7 @@
       </a>
 	</span>
 </item> 
-<item id="MailToLink">javascript:SubmitFeedback('<include item="fb_alias" />','<include item="fb_product" />','<include item="fb_deliverable" />','{0}','{1}','<include item="fb_body" />');</item>  
+<item id="MailToLink">javascript:SubmitFeedback('<include item="fb_alias" />','<include item="fb_product" />','<include item="fb_deliverable" />','{0}','{1}','<include item="fb_body" />','<include item="fb_subject" />');</item>  
  
 <!-- 5 star rating feedback control in sandcastle scenario--> 
 <!--
@@ -235,7 +240,7 @@
 	</span>
 </item>
 
-<item id="MailToLink">javascript:SubmitFeedback('<include item="feedback_alias" />','<include item="feedback_product" />','<include item="feedback_deliverable" />','<include item="feedback_fileVersion" />','<include item="feedback_topicVersion" />','<include item="feedback_body" />');</item> 
+<item id="MailToLink">javascript:SubmitFeedback('<include item="feedback_alias" />','<include item="feedback_product" />','<include item="feedback_deliverable" />','<include item="feedback_fileVersion" />','<include item="feedback_topicVersion" />','<include item="feedback_body" />','<include item="feedback_subject" />');</item> 
 -->
   
 <item id="copyrightStatement"><include item="copyrightText"/></item>

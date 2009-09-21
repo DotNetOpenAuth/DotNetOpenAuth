@@ -349,6 +349,7 @@
   <item id="SeeAlsoNamespaceLinkText">{0} Namespace</item>
   <item id="SeeAlsoTypeLinkText">{0} <include item="{1}SubGroup"/></item>
   <item id="SeeAlsoMembersLinkText">{0} Members</item>
+  <item id="SeeAlsoOverloadLinkText">{0} Overload</item>
   
   <item id="SubGroup"></item>
   <item id="classSubGroup">Class</item>

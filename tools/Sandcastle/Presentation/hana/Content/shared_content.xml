@@ -50,6 +50,7 @@
 	<item id="XAMLLabel">XAML</item>
 	<item id="declarationLabel">Declaration</item>
 	<item id="usageLabel">Usage</item>
+  <item id="JavaScriptLabel">JavaScript</item>
 
 	<item id="SeeAlso">See Also</item>
   	<item id="SeeAlsoTasks">Tasks</item>

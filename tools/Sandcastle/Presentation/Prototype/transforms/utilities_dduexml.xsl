@@ -335,7 +335,7 @@
 
 	<xsl:template match="ddue:languageKeyword">
 			<xsl:variable name="word" select="." />
-    <span class="keyword" data="langKeyword" value="{$word}">
+    <span class="keyword" sdata="langKeyword" value="{$word}">
 			<xsl:choose>
 				<xsl:when test="$word='null' or $word='Nothing' or $word='nullptr'">
 					<span class="cs">null</span>
@@ -575,9 +575,10 @@
 	<!-- this is temporary -->
         <xsl:template match="ddue:snippets">
 		<xsl:variable name="codeId" select="generate-id()" />
+          <div name="snippetGroup">
 		<table class="filter"><tr class="tabs" id="ct_{$codeId}">
 			<xsl:for-each select="ddue:snippet">
-				<td class="tab" x-lang="{@language}" onclick="ct{$codeId}.toggleClass('x-lang','{@language}','activeTab','tab'); cb{$codeId}.toggleStyle('x-lang','{@language}','display','block','none');"><include item="{@language}Label" /></td>
+                  <td class="tab" x-lang="{@language}" onclick="toggleClass('ct_{$codeId}','x-lang','{@language}','activeTab','tab'); toggleStyle('cb_{$codeId}','x-lang','{@language}','display','block','none');"><include item="{@language}Label" /></td>
 			</xsl:for-each>
 		</tr></table>
 		<div id="cb_{$codeId}">
@@ -585,13 +586,7 @@
 				<div class="code" x-lang="{@language}"><pre><xsl:copy-of select="node()" /></pre></div>
 			</xsl:for-each>
 		</div>
-		<script type="text/javascript"><xsl:text>
-			var ct</xsl:text><xsl:value-of select="$codeId" /><xsl:text> = new ElementCollection('ct_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>');
-			var cb</xsl:text><xsl:value-of select="$codeId" /><xsl:text> = new ElementCollection('cb_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>');
-			lfc.registerTabbedArea(ct</xsl:text><xsl:value-of select="$codeId" /><xsl:text>, cb</xsl:text><xsl:value-of select="$codeId" /><xsl:text>);
-			ct</xsl:text><xsl:value-of select="$codeId" /><xsl:text>.toggleClass('x-lang','CSharp','activeTab','tab');
-			cb</xsl:text><xsl:value-of select="$codeId" /><xsl:text>.toggleStyle('x-lang','CSharp','display','block','none');
-		</xsl:text></script>
+          </div>
 	</xsl:template>
 
 	<xsl:template name="section">

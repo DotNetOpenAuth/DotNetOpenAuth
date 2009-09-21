@@ -17,6 +17,7 @@
 
   <xsl:key name="index" match="/reflection/apis/api" use="@id" />
 
+  <xsl:variable name="root" select="/" />
   <xsl:template match="/">
     <reflection>
       <xsl:apply-templates select="/reflection/assemblies" />
@@ -53,12 +54,18 @@
     <xsl:variable name="subsubgroup" select="apidata/@subsubgroup"/>
     <xsl:variable name="typeId" select="containers/type/@api"/>
     <xsl:variable name="isEII" select="proceduredata/@eii"/>
+    <xsl:variable name="eiiTypeId" select="implements/member/type/@api" />
     <api>
       <xsl:copy-of select="@*"/>
       <topicdata group="api">
         <xsl:if test="key('index',containers/type/@api)[apidata/@subgroup='enumeration']">
           <!-- enum members do not get separate topics; mark them so they are excluded from the manifest -->
           <xsl:attribute name="notopic"/>
+        </xsl:if>
+        <xsl:if test="proceduredata[@eii='true']">
+          <xsl:attribute name="eiiName">
+            <xsl:value-of select="concat(key('index', $eiiTypeId)/apidata/@name, '.', $name)"/>
+          </xsl:attribute>
         </xsl:if>
       </topicdata>
       <xsl:for-each select="*">
@@ -70,6 +77,7 @@
                 <containers>
                   <library>
                     <xsl:copy-of select="library/@*"/>
+                    <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
                     <noAptca/>
                   </library>
                   <xsl:copy-of select="namespace"/>
@@ -77,16 +85,18 @@
                 </containers>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:copy-of select="."/>
+                <containers>
+                  <library>
+                    <xsl:copy-of select="library/@*"/>
+                    <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
+                  </library>
+                  <xsl:copy-of select="namespace"/>
+                  <xsl:copy-of select="type"/>
+                </containers>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
           <xsl:when test="local-name(.)='memberdata'">
-            <xsl:choose>
-              <xsl:when test="$isEII='true'">
-                <xsl:copy-of select="."/>
-              </xsl:when>
-              <xsl:otherwise>
                 <memberdata>
                   <xsl:copy-of select="@*"/>
                   <!-- if the member is overloaded, add @overload = id of overload topic, if any -->
@@ -96,11 +106,21 @@
                     <xsl:otherwise>
                       <xsl:variable name="siblingElements" select="key('index',$typeId)/elements"/>
                       <xsl:variable name="siblingApiInfo" select="key('index',$siblingElements/element[not(apidata)]/@api) | $siblingElements/element[apidata]" />
-                      <xsl:variable name="overloadSet" select="$siblingApiInfo[not(proceduredata/@eii='true') and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+                     
+                      <xsl:variable name="overloadSet" >
+                        <xsl:choose>
+                          <xsl:when test="$isEII='true'">
+                            <xsl:copy-of select="$siblingApiInfo[proceduredata/@eii='true' and implements/member/type/@api=$eiiTypeId and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+                          </xsl:when>
+                          <xsl:otherwise>
+                            <xsl:copy-of select="$siblingApiInfo[not(proceduredata/@eii='true') and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+                          </xsl:otherwise>
+                        </xsl:choose>
+                      </xsl:variable>
                       <xsl:variable name="signatureSet">
                         <xsl:call-template name="GetSignatureSet">
                           <xsl:with-param name="name" select="$name" />
-                          <xsl:with-param name="overloadSet" select="$overloadSet"/>
+                      <xsl:with-param name="overloadSet" select="msxsl:node-set($overloadSet)"/>
                           <xsl:with-param name="typeId" select="$typeId"/>
                         </xsl:call-template>
                       </xsl:variable>
@@ -108,21 +128,32 @@
                         <!-- the api is overloaded, so add @overload = idOfOverloadTopic -->
                         <xsl:attribute name="overload">
                           <xsl:call-template name="overloadId">
-                            <xsl:with-param name="typeId" select="$typeId"/>
+                            <xsl:with-param name="typeId" select="$typeId" />
                             <xsl:with-param name="name" select="$name"/>
+                            <xsl:with-param name="isEII" select="$isEII"/>
+                            <xsl:with-param name="eiiFullName">
+                              <!-- for EII members, apidata/@name is just the member's base name, e.g. "OnDragDrop" 
+                                   but we need the full name of the implemented member, e.g. "System#Windows#Forms#IDropTarget#OnDragDrop" -->
+                              <xsl:if test="$isEII='true'">
+                                <!-- strip off any parameters from the end of the id -->
+                                <xsl:variable name="idWithoutParams">
+                                  <xsl:call-template name="RemoveParametersFromId"/>
+                                </xsl:variable>
+                                <xsl:variable name="containingTypeName" select="substring(containers/type/@api,3)"/>
+                                <!-- remove the containing type name from the beginning of the member's name -->
+                                <xsl:value-of select="substring-after($idWithoutParams,$containingTypeName)"/>
+                              </xsl:if>
+                            </xsl:with-param>
                             <xsl:with-param name="subgroup" select="$subgroup"/>
-			                      <xsl:with-param name="subsubgroup" select="$subsubgroup"/>
+                            <xsl:with-param name="subsubgroup" select="$subsubgroup"/>
                           </xsl:call-template>
                         </xsl:attribute>
                       </xsl:if>
-                      
                     </xsl:otherwise>
                   </xsl:choose>
                   <!-- memberdata shouldn't have any children, but copy just in case -->
                   <xsl:copy-of select="*"/>
                 </memberdata>
-              </xsl:otherwise>
-            </xsl:choose>
           </xsl:when>
           <xsl:otherwise>
             <xsl:copy-of select="."/>
@@ -185,6 +216,17 @@
               </descendents>
             </family>
           </xsl:when>
+          <xsl:when test="local-name(.)='containers'">
+            <containers>
+              <xsl:variable name="assembly" select="library/@assembly"/>
+              <library>
+                <xsl:copy-of select="library/@*"/>
+                <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
+              </library>
+              <xsl:copy-of select="namespace"/>
+              <xsl:copy-of select="type"/>
+            </containers>
+          </xsl:when>
           <xsl:otherwise>
             <xsl:copy-of select="."/>
           </xsl:otherwise>
@@ -236,7 +278,15 @@
               <element api="{@api}" />
             </xsl:for-each>
           </elements>
-          <xsl:copy-of select="containers" />
+          <containers>
+            <xsl:variable name="assembly" select="containers/library/@assembly"/>
+            <library>
+              <xsl:copy-of select="containers/library/@*"/>
+              <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
+            </library>
+            <xsl:copy-of select="containers/namespace"/>
+            <xsl:copy-of select="containers/type"/>
+          </containers>
         </api>
       </xsl:if>
 
@@ -257,7 +307,15 @@
               <xsl:with-param name="typeId" select="$typeId"/>
             </xsl:call-template>
           </xsl:for-each>
-          <xsl:copy-of select="containers" />
+          <containers>
+            <xsl:variable name="assembly" select="containers/library/@assembly"/>
+            <library>
+              <xsl:copy-of select="containers/library/@*"/>
+              <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
+            </library>
+            <xsl:copy-of select="containers/namespace"/>
+            <xsl:copy-of select="containers/type"/>
+          </containers>
         </api>
       </xsl:if>
 
@@ -318,6 +376,20 @@
     
   </xsl:template>
 
+  <!--  -->
+  <xsl:template name="RemoveParametersFromId">
+    <xsl:variable name="memberId" select="@id | @api"/>
+    <xsl:variable name="paramString" select="substring-after($memberId,'(')"/>
+    <xsl:choose>
+      <xsl:when test="boolean($paramString)">
+        <xsl:value-of select="substring-before($memberId,'(')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$memberId"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <!-- overload topics -->
   
   <xsl:template name="overloadTopics">
@@ -327,28 +399,36 @@
     <xsl:variable name="declaredPrefix" select="concat(substring($typeId,2), '.')"/>
 
     <xsl:for-each select="$members">
-      <xsl:variable name="name" select="apidata/@name" />
+      <xsl:variable name="name" select="apidata/@name"/>
       <xsl:variable name="memberId" select="@id | @api"/>
       <xsl:variable name="subgroup" select="apidata/@subgroup" />
       <xsl:variable name="subsubgroup" select="apidata/@subsubgroup" />
+      <xsl:variable name="eiiTypeId" select="implements/member/type/@api" />
+      <xsl:variable name="isEII" select="proceduredata/@eii"/>
 
-      <!-- EII members are not treated as overloads -->
-      <xsl:if test="not(proceduredata/@eii='true')">
-        <!-- get the set of non-EII members with same name and subgroup -->
-        <xsl:variable name="overloadSet" select="$members[not(proceduredata/@eii='true') and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+      <xsl:variable name="overloadSet" >
+        <xsl:choose>
+          <xsl:when test="$isEII='true'">
+            <xsl:copy-of select="$members[proceduredata/@eii='true' and implements/member/type/@api=$eiiTypeId and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="$members[not(proceduredata/@eii='true') and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
 
-        <!-- are there any declared members in the overload set? -->
-        <xsl:variable name="declaredMembers" select="$overloadSet[starts-with(substring(@id,2),$declaredPrefix)]" />
+      <!-- are there any declared members in the overload set? -->
+      <xsl:variable name="declaredMembers" select="msxsl:node-set($overloadSet)/*[starts-with(substring(@id,2),$declaredPrefix)]" />
         
         <!-- if more than one member in overloadSet, add an overload topic if necessary -->
-        <xsl:if test="(count($overloadSet) &gt; 1) and $overloadSet[1][@id=$memberId or @api=$memberId]">
+      <xsl:if test="(count(msxsl:node-set($overloadSet)/*) &gt; 1) and msxsl:node-set($overloadSet)/*[1][@id=$memberId or @api=$memberId]">
           <!-- When merging multiple versions, an overload set may have multiple members with the same signature, 
                e.g. when one version inherits a member and another version overrides it. 
                We want an overload topic only when there are multiple signatures. -->
           <!-- get the set of unique signatures for this overload set -->
           <xsl:variable name="signatureSet">
             <xsl:call-template name="GetSignatureSet">
-              <xsl:with-param name="overloadSet" select="$overloadSet"/>
+            <xsl:with-param name="overloadSet" select="msxsl:node-set($overloadSet)"/>
               <xsl:with-param name="typeId" select="$typeId"/>
             </xsl:call-template>
           </xsl:variable>
@@ -358,18 +438,55 @@
             <!-- don't need an overload topic if all overloads are inherited and config'd to omit overload topics when all are inherited -->
             <xsl:when test="(not(boolean($declaredMembers)) and $IncludeInheritedOverloadTopics='false')"/>
             <xsl:otherwise>
+            
               <api>
                 <xsl:attribute name="id">
                   <xsl:call-template name="overloadId">
-                    <xsl:with-param name="typeId" select="$typeId"/>
+                    <xsl:with-param name="typeId" select="$typeId" />
                     <xsl:with-param name="name" select="$name"/>
+                    <xsl:with-param name="isEII" select="$isEII"/>
+                    <xsl:with-param name="eiiFullName">
+                      <!-- for EII members, apidata/@name is just the member's base name, e.g. "OnDragDrop" 
+                                   but we need the full name of the implemented member, e.g. "System#Windows#Forms#IDropTarget#OnDragDrop" -->
+                      <xsl:if test="$isEII='true'">
+                        <!-- strip off any parameters from the end of the id -->
+                        <xsl:variable name="idWithoutParams">
+                          <xsl:call-template name="RemoveParametersFromId"/>
+                        </xsl:variable>
+                        <xsl:variable name="containingTypeName" select="substring(containers/type/@api,3)"/>
+                        <!-- remove the containing type name from the beginning of the member's name -->
+                        <xsl:value-of select="substring-after($idWithoutParams,$containingTypeName)"/>
+                      </xsl:if>
+                    </xsl:with-param>
                     <xsl:with-param name="subgroup" select="$subgroup"/>
-		                <xsl:with-param name="subsubgroup" select="$subsubgroup"/>	
+                    <xsl:with-param name="subsubgroup" select="$subsubgroup"/>
                   </xsl:call-template>
                 </xsl:attribute>
                 <topicdata name="{apidata/@name}" group="list" subgroup="overload" memberSubgroup="{$subgroup}"  pseudo="true" allMembersTopicId="{$allMembersTopicId}">
                   <xsl:if test="not(boolean($declaredMembers))">
                     <xsl:attribute name="allInherited">true</xsl:attribute>
+                    <xsl:attribute name="parentTopicId">
+                      <xsl:call-template name="overloadId">
+                        <xsl:with-param name="typeId" select="$typeId" />
+                        <xsl:with-param name="name" select="$name"/>
+                        <xsl:with-param name="isEII" select="$isEII"/>
+                        <xsl:with-param name="eiiFullName">
+                          <!-- for EII members, apidata/@name is just the member's base name, e.g. "OnDragDrop" 
+                                   but we need the full name of the implemented member, e.g. "System#Windows#Forms#IDropTarget#OnDragDrop" -->
+                          <xsl:if test="$isEII='true'">
+                            <!-- strip off any parameters from the end of the id -->
+                            <xsl:variable name="idWithoutParams">
+                              <xsl:call-template name="RemoveParametersFromId"/>
+                            </xsl:variable>
+                            <xsl:variable name="containingTypeName" select="substring(containers/type/@api,3)"/>
+                            <!-- remove the containing type name from the beginning of the member's name -->
+                            <xsl:value-of select="substring-after($idWithoutParams,$containingTypeName)"/>
+                          </xsl:if>
+                        </xsl:with-param>
+                        <xsl:with-param name="subgroup" select="$subgroup"/>
+                        <xsl:with-param name="subsubgroup" select="$subsubgroup"/>
+                      </xsl:call-template>
+                    </xsl:attribute>
                   </xsl:if>
                 </topicdata>
                 <xsl:copy-of select="apidata" />
@@ -382,11 +499,23 @@
                 <!-- containers -->
                 <xsl:choose>
                   <xsl:when test="boolean($declaredMembers)">
-                    <xsl:copy-of select="$declaredMembers[1]/containers"/>
+                    <containers>
+                      <xsl:variable name="assembly" select="$declaredMembers[1]/containers/library/@assembly"/>
+                      <library>
+                        <xsl:copy-of select="$declaredMembers[1]/containers/library/@*"/>
+                        <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
+                      </library>
+                      <xsl:copy-of select="$declaredMembers[1]/containers/namespace"/>
+                      <xsl:copy-of select="$declaredMembers[1]/containers/type"/>
+                    </containers>
                   </xsl:when>
                   <xsl:otherwise>
                     <containers>
-                      <xsl:copy-of select="key('index',$typeId)/containers/library"/>
+                      <xsl:variable name="assembly" select="key('index',$typeId)/containers/library/@assembly"/>
+                      <library>
+                        <xsl:copy-of select="key('index',$typeId)/containers/library/@*"/>
+                        <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
+                      </library>
                       <xsl:copy-of select="key('index',$typeId)/containers/namespace"/>
                       <type api="{$typeId}"/>
                     </containers>
@@ -396,7 +525,6 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>
-      </xsl:if>
     </xsl:for-each>
   </xsl:template>
 
@@ -408,7 +536,9 @@
       </xsl:when>
       <xsl:otherwise>
         <xsl:variable name="elementId" select="@id"/>
+        <xsl:for-each select="$root">
         <xsl:copy-of select="key('index', $typeId)/elements/element[@api=$elementId]"/>
+        </xsl:for-each>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -419,17 +549,19 @@
     <xsl:param name="typeId"/>
 
     <xsl:choose>
-      <xsl:when test="count($overloadSet) = 1">
-        <xsl:for-each select="$overloadSet">
+      <xsl:when test="count($overloadSet/*) = 1">
+        <xsl:for-each select="$overloadSet/*">
           <xsl:call-template name="WriteElementNode">
             <xsl:with-param name="typeId" select="$typeId"/>
           </xsl:call-template>
         </xsl:for-each>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:for-each select="$overloadSet">
+        <xsl:for-each select="$overloadSet/*">
           <xsl:sort select="count(parameters/parameter)"/>
+          <xsl:for-each select="$root">
           <xsl:sort select="key('index', parameters/parameter[1]//type[1]/@api)/apidata/@name"/>
+          </xsl:for-each>
           <xsl:variable name="memberId" select="@id | @api"/>
           <xsl:variable name="signature">
             <xsl:call-template name="GetSignature">
@@ -479,7 +611,9 @@
                         <xsl:copy-of select="*"/>
                       </xsl:when>
                       <xsl:otherwise>
+                        <xsl:for-each select="$root">
                         <xsl:copy-of select="key('index', $typeId)/elements/element[@api=$primaryMemberId]/@*"/>
+                        </xsl:for-each>
                       </xsl:otherwise>
                     </xsl:choose>
                     <!-- for the secondary version groups, copy in the signatureset's latest member (if different from primary member) -->
@@ -627,7 +761,10 @@
                   | elements/element[apidata[($subgroup='' and @subsubgroup=$subsubgroup) or ($subsubgroup='' and not(@subsubgroup) and @subgroup=$subgroup)]]"/>
 
     <!-- add a member list topic only if the type has declared members -->
-    <xsl:if test="count($declaredMembers) &gt; 0">
+    <!--<xsl:if test="count($declaredMembers) &gt; 0">-->
+
+    <!-- Fix for bug:365255, add a member list topic for all the type's members-->
+    <xsl:if test="count($members) &gt; 0">
       <api>
         <xsl:attribute name="id">
           <xsl:value-of select="concat($topicSubgroup, '.', $typeId)"/> 	
@@ -650,7 +787,15 @@
           <xsl:with-param name="members" select="$members"/>
           <xsl:with-param name="typeId" select="$typeId"/>
         </xsl:call-template>
-        <xsl:copy-of select="containers" />
+        <containers>
+          <xsl:variable name="assembly" select="containers/library/@assembly"/>
+          <library>
+            <xsl:copy-of select="containers/library/@*"/>
+            <xsl:copy-of select="/*/assemblies/assembly[@name=$assembly]/assemblydata"/>
+          </library>
+          <xsl:copy-of select="containers/namespace"/>
+          <xsl:copy-of select="containers/type"/>
+        </containers>
      </api>
     </xsl:if>
   </xsl:template>
@@ -662,43 +807,48 @@
 
     <elements>
       <xsl:for-each select="$members">
-        <xsl:variable name="name" select="apidata/@name" />
+        <xsl:variable name="name" select="apidata/@name"/>
         <xsl:variable name="subgroup" select="apidata/@subgroup" />
         <xsl:variable name="subsubgroup" select="apidata/@subsubgroup" />
         <xsl:variable name="memberId" select="@id | @api"/>
+        <xsl:variable name="isEII" select="proceduredata/@eii"/>
+        <xsl:variable name="eiiTypeId" select="implements/member/type/@api"/>
 
         <xsl:choose>
-          <!-- EII members are not treated as overloads -->
-          <xsl:when test="proceduredata/@eii='true'">
-            <xsl:call-template name="WriteElementNode">
-              <xsl:with-param name="typeId" select="$typeId"/>
-            </xsl:call-template>
-          </xsl:when>
-          
+
           <!-- field members cannot be overloaded, so skip the overload logic and just write the element node -->
           <xsl:when test="$subgroup='field'">
             <xsl:call-template name="WriteElementNode">
               <xsl:with-param name="typeId" select="$typeId"/>
             </xsl:call-template>
           </xsl:when>
-          
-          <!-- for non-EII members, handle overloads and signature sets -->
+
+          <!-- for members, handle overloads and signature sets -->
           <xsl:otherwise>
-            <!-- get the set of overloads: non-EII members with same name and subgroup -->
-            <xsl:variable name="overloadSet" select="$members[not(proceduredata/@eii='true') and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]"/>
+            <!-- get the set of overloads -->
+            <xsl:variable name="overloadSet" >
+              <xsl:choose>
+                <xsl:when test="$isEII='true'">
+                  <xsl:copy-of select="$members[proceduredata/@eii='true' and implements/member/type/@api=$eiiTypeId and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:copy-of select="$members[not(proceduredata/@eii='true') and apidata[@name=$name and @subgroup=$subgroup and (@subsubgroup=$subsubgroup or (not(boolean($subsubgroup)) and not(@subsubgroup)))]]" />
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
 
             <!-- are there any declared members in the overload set? -->
-            <xsl:variable name="declaredMembers" select="$overloadSet[starts-with(substring(@id,2),$declaredPrefix)]" />
+            <xsl:variable name="declaredMembers" select="msxsl:node-set($overloadSet)/*[starts-with(substring(@id,2),$declaredPrefix)]" />
 
             <xsl:variable name="signatureSet">
               <xsl:call-template name="GetSignatureSet">
-                <xsl:with-param name="overloadSet" select="$overloadSet"/>
+                <xsl:with-param name="overloadSet" select="msxsl:node-set($overloadSet)"/>
                 <xsl:with-param name="typeId" select="$typeId"/>
               </xsl:call-template>
             </xsl:variable>
 
             <!-- make sure we add to the list only once -->
-            <xsl:if test="$overloadSet[1][@id=$memberId or @api=$memberId]">
+            <xsl:if test="msxsl:node-set($overloadSet)/*[1][@id=$memberId or @api=$memberId]">
               <!-- When merging multiple versions, an overload set may have multiple members with the same signature, 
                          e.g. when one version inherits a member and another version overrides it. 
                          We want an overload topic only when there are multiple signatures. -->
@@ -718,10 +868,24 @@
                   <element>
                     <xsl:attribute name="api">
                       <xsl:call-template name="overloadId">
-                        <xsl:with-param name="typeId" select="$typeId"/>
+                        <xsl:with-param name="typeId" select="$typeId" />
                         <xsl:with-param name="name" select="$name"/>
+                        <xsl:with-param name="isEII" select="$isEII"/>
+                        <xsl:with-param name="eiiFullName">
+                          <!-- for EII members, apidata/@name is just the member's base name, e.g. "OnDragDrop" 
+                                   but we need the full name of the implemented member, e.g. "System#Windows#Forms#IDropTarget#OnDragDrop" -->
+                          <xsl:if test="$isEII='true'">
+                            <!-- strip off any parameters from the end of the id -->
+                            <xsl:variable name="idWithoutParams">
+                              <xsl:call-template name="RemoveParametersFromId"/>
+                            </xsl:variable>
+                            <xsl:variable name="containingTypeName" select="substring(containers/type/@api,3)"/>
+                            <!-- remove the containing type name from the beginning of the member's name -->
+                            <xsl:value-of select="substring-after($idWithoutParams,$containingTypeName)"/>
+                          </xsl:if>
+                        </xsl:with-param>
                         <xsl:with-param name="subgroup" select="$subgroup"/>
-			                  <xsl:with-param name="subsubgroup" select="$subsubgroup"/>
+                        <xsl:with-param name="subsubgroup" select="$subsubgroup"/>
                       </xsl:call-template>
                     </xsl:attribute>
                     <xsl:copy-of select="msxsl:node-set($signatureSet)/*"/>
@@ -740,7 +904,12 @@
     <xsl:param name="name"/>
     <xsl:param name="subgroup"/>
     <xsl:param name="subsubgroup"/>
+    <xsl:param name="eiiFullName"/>
+    <xsl:param name="isEII"/>
     <xsl:choose>
+      <xsl:when test="$isEII='true'">
+        <xsl:value-of select="concat('Overload:',substring($typeId,3),$eiiFullName)"/>
+      </xsl:when>
       <xsl:when test="$subgroup='constructor'">
         <xsl:value-of select="concat('Overload:',substring($typeId,3),'.#ctor')"/>
       </xsl:when>

@@ -210,14 +210,15 @@ getChildNodes = function(node)
 	}
 }
 
-process = function(list, processFunction) 
-{
+process = function(list, methodName, typeName) {
     var listNodes = getChildNodes(list);
      
     for(var i=0; i < listNodes.length; i++) 
     {
 	    var listElement = listNodes[i];
-		processFunction(listElement);
+	    
+	    if (typeName == 'type' && tf != null) getInstanceDelegate(tf,methodName)(listElement);
+        else if (typeName == 'member' && mf != null) getInstanceDelegate(mf, methodName)(listElement);
     }
 }
 		
@@ -307,8 +308,21 @@ function toggleSelect(imageElement, section)
 	}
 }
 
+function changeLanguage(data, name, style) {
+    if (languageFilter == null) return;
+    
+    languageFilter.changeLanguage(data, name, style);
+}
 
+function processSubgroup(subgroup, typeName) {
+    if (typeName == 'type' && tf != null) tf.subgroup = subgroup;
+    else if (typeName == 'member' && mf != null) mf.subgroup = subgroup;
+}
 
+function toggleCheckState(visibility, value) {
+    if (mf == null) return;
+    mf[visibility] = value;
+}
 
 	
 	

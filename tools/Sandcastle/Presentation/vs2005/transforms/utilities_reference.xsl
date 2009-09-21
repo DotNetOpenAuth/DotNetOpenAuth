@@ -16,6 +16,7 @@
 	<xsl:param name="key" />
 	<xsl:param name="metadata" value="false" />
   <xsl:param name="languages">false</xsl:param>
+  <xsl:param name="componentizeBy">namespace</xsl:param>
     
 	<xsl:include href="utilities_metadata.xsl" />
   <xsl:include href="xamlSyntax.xsl"/>
@@ -421,11 +422,33 @@
     <meta name="container">
       <xsl:attribute name="content">
         <xsl:choose>
-          <xsl:when test="normalize-space(/document/reference/containers/library/@assembly)">
-            <xsl:value-of select="normalize-space(/document/reference/containers/library/@assembly)"/>
+          <xsl:when test="$componentizeBy='assembly'">
+            <xsl:choose>
+              <xsl:when test="normalize-space(/document/reference/containers/library/@assembly)">
+                <xsl:value-of select="normalize-space(/document/reference/containers/library/@assembly)"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>Namespaces</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
+          <!-- the default is to componentize by namespace. For non-componentized builds, the <meta name="container"> value is ignored. -->
           <xsl:otherwise>
-            <xsl:text>Namespaces</xsl:text>
+            <xsl:choose>
+              <!-- get the namespace name from containers/namespace/@api for most members -->
+              <xsl:when test="normalize-space(substring-after(/document/reference/containers/namespace/@api,':'))">
+                <xsl:value-of select="normalize-space(substring-after(/document/reference/containers/namespace/@api,':'))"/>
+              </xsl:when>
+              <!-- use 'default_namespace' for members in the default namespace (where namespace/@api == 'N:') -->
+              <xsl:when test="normalize-space(/document/reference/containers/namespace/@api)"><xsl:text>default_namespace</xsl:text></xsl:when>
+              <!-- for the default namespace topic, use 'default_namespace' -->
+              <xsl:when test="/document/reference/apidata[@group='namespace' and @name='']"><xsl:text>default_namespace</xsl:text></xsl:when>
+              <!-- for other namespace topics, get the name from apidata/@name -->
+              <xsl:when test="/document/reference/apidata/@group='namespace'">
+                <xsl:value-of select="normalize-space(/document/reference/apidata/@name)"/>
+              </xsl:when>
+              <xsl:otherwise><xsl:text>unknown</xsl:text></xsl:otherwise>
+            </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
@@ -538,6 +561,10 @@
             <!-- the topic subgroup (e.g. "methods") determines the title -->
             <xsl:value-of select="$topic-subgroup" />
           </xsl:when>
+		  <!-- overload root titles  -->
+		  <xsl:when test="$topic-group='root'">
+			  <xsl:value-of select="$topic-group" />
+		  </xsl:when>
         </xsl:choose>
         <xsl:text>TopicTitle</xsl:text>
       </xsl:attribute>
@@ -600,6 +627,10 @@
                 <!-- the topic subgroup (e.g. "methods") determines the title -->
                 <xsl:value-of select="$topic-subgroup" />
               </xsl:when>
+			  <!-- overload root titles  -->
+			  <xsl:when test="$topic-group='root'">
+			    <xsl:value-of select="$topic-group" />
+			  </xsl:when>
             </xsl:choose>
             <xsl:text>TopicTitle</xsl:text>
           <!--</xsl:otherwise>
@@ -630,21 +661,17 @@
     <div id="mainSection">
 
       <div id="mainBody">
-        <div id="allHistory" class="saveHistory" onsave="saveAll()" onload="loadAll()">
-          <include item="header" />
-        </div>
-      
-        <!--<xsl:call-template name="head" />-->
+        <div id="allHistory" class="saveHistory" onsave="saveAll()" onload="loadAll()"/>
+
+        <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
+        <include item="header" />
+        
         <xsl:call-template name="body" />
       </div>
       <xsl:call-template name="foot" />
     </div>
     
   </xsl:template>
-
-	<!--<xsl:template name="head">
-		<include item="header" />
-	</xsl:template>-->
 
   <xsl:template name="syntaxBlocks">
 
@@ -927,7 +954,7 @@
     <xsl:if test="element[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]">
       <xsl:call-template name="memberlistSection">
         <xsl:with-param name="headerGroup">ExplicitInterfaceImplementation</xsl:with-param>
-        <xsl:with-param name="members" select="element[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]" />
+        <xsl:with-param name="members" select="element[.//memberdata[@visibility='private'] and .//proceduredata[@virtual = 'true']]" />
       </xsl:call-template>
     </xsl:if>
 
@@ -1111,6 +1138,21 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="IsMemberExplicit">
+    <xsl:choose>
+      <xsl:when test="element">
+        <xsl:for-each select="element">
+          <xsl:call-template name="IsMemberExplicit"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="memberdata[@visibility='private'] and proceduredata[@virtual = 'true']">
+          <xsl:text>yes</xsl:text>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="element" mode="memberlistRow">
     <xsl:param name="showParameters" select="'false'" />
     <xsl:variable name="notsupportedOnNetfw">
@@ -1140,6 +1182,9 @@
     <xsl:variable name="privateMember">
       <xsl:call-template name="IsMemberPrivate"/>
     </xsl:variable>
+    <xsl:variable name="explicitMember">
+      <xsl:call-template name="IsMemberExplicit" />
+    </xsl:variable>
     <!-- do not show non-static members of static types -->
     <xsl:if test=".//memberdata/@static='true' or not(/document/reference/typedata[@abstract='true' and @sealed='true'])">
       <tr>
@@ -1154,7 +1199,7 @@
           <xsl:if test="normalize-space($privateMember)!=''">
             <xsl:text>private;</xsl:text>
           </xsl:if>
-          <xsl:if test="memberdata[@visibility='private'] and proceduredata[@virtual = 'true']">
+          <xsl:if test="normalize-space($explicitMember) != ''">
             <xsl:text>explicit;</xsl:text>
           </xsl:if>
           <xsl:if test="normalize-space($staticMember)!=''">
@@ -1504,7 +1549,7 @@
     <xsl:param name="library" select="/document/reference/containers/library"/>
     <include item="assemblyNameAndModule">
       <parameter>
-        <span data="assembly">
+        <span sdata="assembly">
         <xsl:value-of select="$library/@assembly"/>
         </span>
       </parameter>
@@ -1664,6 +1709,7 @@
         
         <xsl:for-each select="ancestors/type">
           <xsl:sort select="position()" data-type="number" order="descending" />
+          <!-- <xsl:sort select="@api"/> -->
 
           <xsl:call-template name="indent">
             <xsl:with-param name="count" select="position()" />
@@ -1696,6 +1742,7 @@
           <xsl:otherwise>
             
             <xsl:for-each select="descendents/type">
+              <xsl:sort select="@api" />
               <xsl:call-template name="indent">
                 <xsl:with-param name="count" select="$ancestorCount + 2" />
               </xsl:call-template>

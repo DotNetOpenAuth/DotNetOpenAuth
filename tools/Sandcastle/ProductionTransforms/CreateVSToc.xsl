@@ -169,7 +169,7 @@
       <!-- recurse to get declared child element topics, if any -->
       <xsl:for-each select="key('index', elements/*[starts-with(substring-after(@api,':'), $declaredPrefix)]/@api)">
         <!-- sort the elements in a member list topic by name -->
-        <xsl:sort select="apidata/@name" />
+        <xsl:sort select="topicdata/@eiiName | apidata/@name" />
         <xsl:call-template name="AddMember">
           <xsl:with-param name="declaredPrefix" select="$declaredPrefix"/>
         </xsl:call-template>

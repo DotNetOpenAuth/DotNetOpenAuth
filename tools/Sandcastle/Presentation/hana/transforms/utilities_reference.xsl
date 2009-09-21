@@ -37,13 +37,7 @@
        <xsl:call-template name="upperBodyStuff"/>
 				<!--<xsl:call-template name="control"/>-->
 				<xsl:call-template name="main"/>
-        <xsl:if test="$languages != 'false'">
-          <script type="text/javascript">
-            var data = new DataStore('docs');
-            registerEventHandler(window, 'load', function() {languageFilter.select(data)});
-          </script>
-        </xsl:if>
-			</body>
+      </body>
 		</html>
 	</xsl:template>
 
@@ -765,7 +759,7 @@
           <xsl:variable name="languageEvent">
             <xsl:choose>
             <xsl:when test="$style != ''">
-              <xsl:text>languageFilter.changeLanguage(data, '</xsl:text><xsl:value-of select="@codeLanguage"/>
+              <xsl:text>changeLanguage(data, '</xsl:text><xsl:value-of select="@codeLanguage"/>
               <xsl:text>', '</xsl:text><xsl:value-of select="$style" />
               <xsl:text>');</xsl:text>
             </xsl:when>
@@ -822,22 +816,6 @@
         </div>
       </xsl:for-each>
     </div>
-    <script type="text/javascript">
-      <xsl:text>
-						toggleClass('syntaxTabs','x-lang','</xsl:text>
-      <xsl:value-of select="div[1]/@codeLanguage" />
-      <xsl:text>','activeTab','tab');
-						toggleStyle('syntaxBlocks','x-lang','</xsl:text>
-      <xsl:value-of select="div[1]/@codeLanguage" />
-      <xsl:text>','display','block','none');
-            curvedToggleClass('curvedSyntaxTabs', 'x-lang', '</xsl:text>
-      <xsl:value-of select="div[1]/@codeLanguage" />
-      <xsl:text>');
-			</xsl:text>
-      <xsl:if test="$languages != 'false'">
-        languageFilter.registerTabbedArea('curvedSyntaxTabs', 'syntaxTabs', 'syntaxBlocks');
-      </xsl:if>
-    </script>
   </xsl:template>
 
   <xsl:template name="languageSyntaxBlock">
@@ -908,6 +886,7 @@
         <include item="typesTitle" />
       </xsl:with-param>
       <xsl:with-param name="content">
+        <div id="typeSection">
         <table class="filter" cellspacing="0" cellpadding="0">
           <tr id="curvedTypeTabs">
             <td class="leftTab" value="all">&#xa0;</td>
@@ -941,13 +920,13 @@
           </tr>
           <tr class="tabs" id="typeFilter">
             <td class="leftGrad" value="all">&#xa0;</td>
-            <td class="tab" value="all" onclick="toggleClass('typeFilter','value','all','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','all');tf.subgroup='all'; process('typeList',getInstanceDelegate(tf,'filterElement'));">
+              <td class="tab" value="all" onclick="toggleClass('typeFilter','value','all','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','all');processSubgroup('all', 'type'); process('typeList','filterElement','type');">
               <include item="allTypesFilterLabel" />
             </td>
             <td class="rightGrad" value="all">&#xa0;</td>
             <xsl:if test="element/apidata[@subgroup='class']">
               <td class="leftGrad" value="class">&#xa0;</td>
-              <td class="tab" value="class" onclick="toggleClass('typeFilter','value','class','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','class'); tf.subgroup='class'; process('typeList',getInstanceDelegate(tf,'filterElement'));">
+                <td class="tab" value="class" onclick="toggleClass('typeFilter','value','class','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','class'); processSubgroup('class', 'type'); process('typeList','filterElement','type');">
                 <include item="classTypesFilterLabel" />
                 <xsl:text>&#xa0;</xsl:text>
                 <img>
@@ -961,7 +940,7 @@
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='structure']">
               <td class="leftGrad" value="structure">&#xa0;</td>
-              <td class="tab" value="structure" onclick="toggleClass('typeFilter','value','structure','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','structure'); tf.subgroup='structure'; process('typeList',getInstanceDelegate(tf,'filterElement'));">
+                <td class="tab" value="structure" onclick="toggleClass('typeFilter','value','structure','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','structure'); processSubgroup('structure', 'type'); process('typeList','filterElement','type');">
                 <include item="structureTypesFilterLabel" />
                 <img>
                   <includeAttribute name="src" item="iconPath">
@@ -974,7 +953,7 @@
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='interface']">
               <td class="leftGrad" value="interface">&#xa0;</td>
-              <td class="tab" value="interface" onclick="toggleClass('typeFilter','value','interface','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','interface'); tf.subgroup='interface'; process('typeList',getInstanceDelegate(tf,'filterElement'));">
+                <td class="tab" value="interface" onclick="toggleClass('typeFilter','value','interface','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','interface'); processSubgroup('interface','type'); process('typeList','filterElement','type');">
                 <include item="interfaceTypesFilterLabel" />
                 <img>
                   <includeAttribute name="src" item="iconPath">
@@ -987,7 +966,7 @@
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='enumeration']">
               <td class="leftGrad" value="enumeration">&#xa0;</td>
-              <td class="tab" value="enumeration" onclick="toggleClass('typeFilter','value','enumeration','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','enumeration'); tf.subgroup='enumeration'; process('typeList',getInstanceDelegate(tf,'filterElement'));">
+                <td class="tab" value="enumeration" onclick="toggleClass('typeFilter','value','enumeration','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','enumeration'); processSubgroup('enumeration','type'); process('typeList','filterElement','type');">
                 <include item="enumerationTypesFilterLabel" />
                 <img>
                   <includeAttribute name="src" item="iconPath">
@@ -1000,7 +979,7 @@
             </xsl:if>
             <xsl:if test="element/apidata[@subgroup='delegate']">
               <td class="leftGrad" value="delegate">&#xa0;</td>
-              <td class="tab" value="delegate" onclick="toggleClass('typeFilter','value','delegate','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','delegate'); tf.subgroup='delegate'; process('typeList',getInstanceDelegate(tf,'filterElement'));">
+                <td class="tab" value="delegate" onclick="toggleClass('typeFilter','value','delegate','activeTab','tab'); curvedToggleClass('curvedTypeTabs','value','delegate'); processSubgroup('delegate','type'); process('typeList','filterElement','type');">
                 <include item="delegateTypesFilterLabel" />
                 <img>
                   <includeAttribute name="src" item="iconPath">
@@ -1031,13 +1010,7 @@
           </xsl:apply-templates>
         </table>
         </div>
-        <script type="text/javascript">
-          <xsl:text>
-					var tf = new TypeFilter();
-					toggleClass('typeFilter','value','all','activeTab','tab');
-          curvedToggleClass('curvedTypeTabs','value','all');
-				</xsl:text>
-        </script>
+        </div>
       </xsl:with-param>
     </xsl:call-template>
    
@@ -1135,7 +1108,7 @@
             <table class="memberOptions">
               <tr>
                 <td class="line">
-                  <div id="public" onclick="var checked=toggleCheck(publicImage); mf['public']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="public" onclick="var checked=toggleCheck(publicImage); toggleCheckState('public',checked); process('memberList','filterElement','member');">
                     <img id="publicImage" onmouseover="mouseOverCheck(publicImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(publicImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1145,7 +1118,7 @@
                     <include item="publicMembersFilterLabel" />
                   </div>
                   <br />
-                  <div id="protected" onclick="var checked=toggleCheck(protectedImage); mf['protected']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="protected" onclick="var checked=toggleCheck(protectedImage); toggleCheckState('protected',checked); process('memberList','filterElement','member');">
                     <img id="protectedImage" onmouseover="mouseOverCheck(protectedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(protectedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1156,7 +1129,7 @@
                   </div>
                 </td>
                 <td class="line">
-                  <div id="instance" onclick="var checked=toggleCheck(instanceImage); mf['instance']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="instance" onclick="var checked=toggleCheck(instanceImage); toggleCheckState('instance',checked); process('memberList','filterElement','member');">
                     <img id="instanceImage" onmouseover="mouseOverCheck(instanceImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(instanceImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1166,7 +1139,7 @@
                     <include item="instanceMembersFilterLabel" />
                   </div>
                   <br />
-                  <div id="static" onclick="var checked=toggleCheck(staticImage); mf['static']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="static" onclick="var checked=toggleCheck(staticImage); toggleCheckState('static',checked); process('memberList','filterElement','member');">
                     <img id="staticImage" onmouseover="mouseOverCheck(staticImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(staticImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1177,7 +1150,7 @@
                   </div>
                 </td>
                 <td class="line">
-                  <div id="declared" onclick="var checked=toggleCheck(declaredImage); mf['declared']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="declared" onclick="var checked=toggleCheck(declaredImage); toggleCheckState('declared',checked); process('memberList','filterElement','member');">
                     <img id="declaredImage" onmouseover="mouseOverCheck(declaredImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(declaredImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1187,7 +1160,7 @@
                     <include item="declaredMembersFilterLabel" />
                   </div>
                   <br />
-                  <div id="inherited" onclick="var checked=toggleCheck(inheritedImage); mf['inherited']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="inherited" onclick="var checked=toggleCheck(inheritedImage); toggleCheckState('inherited',checked); process('memberList','filterElement','member');">
                     <img id="inheritedImage" onmouseover="mouseOverCheck(inheritedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(inheritedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1198,7 +1171,7 @@
                   </div>
                 </td>
                 <td class="line">
-                  <div id="xna" onclick="var checked=toggleCheck(xnaImage); mf['xna']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="xna" onclick="var checked=toggleCheck(xnaImage); toggleCheckState('xna',checked); process('memberList','filterElement','member');">
                     <img id="xnaImage" onmouseover="mouseOverCheck(xnaImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(xnaImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1208,7 +1181,7 @@
                     <include item="XNAFilterLabel" />
                   </div>
                   <br/>
-                  <div id="compact" onclick="var checked=toggleCheck(compactImage); mf['compact']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <div id="compact" onclick="var checked=toggleCheck(compactImage); toggleCheckState('compact',checked); process('memberList','filterElement','member');">
                     <img id="compactImage" onmouseover="mouseOverCheck(compactImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(compactImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1240,11 +1213,6 @@
               </xsl:apply-templates>
             </table>
           </div>
-          <script type="text/javascript">
-            <xsl:text>
-					  var mf = new MemberFilter();
-					  </xsl:text>
-          </script>
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>
@@ -1351,6 +1319,7 @@
           <include item="allMembersTitle" />
         </xsl:with-param>
         <xsl:with-param name="content">
+          <div id="allMemberSection">
           <table class="filter" cellspacing="0" cellpadding="0">
             <tr id="curvedMemberTabs">
               <td class="leftTab" value="all">&#xa0;</td>
@@ -1399,13 +1368,13 @@
             </tr>
             <tr class="tabs" id="memberTabs">
               <td class="leftGrad" value="all">&#xa0;</td>
-              <td class="tab" value="all" onclick="toggleClass('memberTabs','value','all','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'all'); mf.subgroup='all'; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                <td class="tab" value="all" onclick="toggleClass('memberTabs','value','all','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'all'); processSubgroup('all','member'); process('memberList','filterElement','member');">
                 <include item="allMembersFilterLabel" />
               </td>
               <td class="rightGrad" value="all">&#xa0;</td>
               <xsl:if test="element/apidata[@subgroup='constructor']">
                 <td class="leftGrad" value="constructor">&#xa0;</td>
-                <td class="tab" value="constructor" onclick="toggleClass('memberTabs','value','constructor','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'constructor'); mf.subgroup='constructor'; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="constructor" onclick="toggleClass('memberTabs','value','constructor','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'constructor'); processSubgroup('constructor','member'); process('memberList','filterElement','member');">
                   <include item="constructorMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1419,7 +1388,7 @@
               </xsl:if>
               <xsl:if test="element/apidata[@subgroup='field']">
                 <td class="leftGrad" value="field">&#xa0;</td>
-                <td class="tab" value="field" onclick="toggleClass('memberTabs','value','field','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'field'); mf.subgroup='field'; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="field" onclick="toggleClass('memberTabs','value','field','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'field'); processSubgroup('field','member'); process('memberList','filterElement','member');">
                   <include item="fieldMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1433,7 +1402,7 @@
               </xsl:if>
               <xsl:if test="element/apidata[@subgroup='property' and not(@subsubgroup)]">
                 <td class="leftGrad" value="property">&#xa0;</td>
-                <td class="tab" value="property" onclick="toggleClass('memberTabs','value','property','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'property'); mf.subgroup='property'; process('memberList', getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="property" onclick="toggleClass('memberTabs','value','property','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'property'); processSubgroup('property','member'); process('memberList','filterElement','member');">
                   <include item="propertyMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1447,7 +1416,7 @@
               </xsl:if>
               <xsl:if test="element/apidata[@subgroup='method']">
                 <td class="leftGrad" value="method">&#xa0;</td>
-                <td class="tab" value="method" onclick="toggleClass('memberTabs','value','method','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'method'); mf.subgroup='method'; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="method" onclick="toggleClass('memberTabs','value','method','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'method'); processSubgroup('method','member'); process('memberList','filterElement','member');">
                   <include item="methodMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1461,7 +1430,7 @@
               </xsl:if>
               <xsl:if test="element/apidata[@subgroup='event' and not(@subsubgroup)]">
                 <td class="leftGrad" value="event">&#xa0;</td>
-                <td class="tab" value="event" onclick="toggleClass('memberTabs','value','event','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'event'); mf.subgroup='event'; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="event" onclick="toggleClass('memberTabs','value','event','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'event'); processSubgroup('event','member'); process('memberList','filterElement','member');">
                   <include item="eventMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1475,7 +1444,7 @@
               </xsl:if>
               <xsl:if test="element/apidata[@subsubgroup='attachedProperty']">
                 <td class="leftGrad" value="attachedProperty">&#xa0;</td>
-                <td class="tab" value="attachedProperty" onclick="toggleClass('memberTabs','value','attachedProperty','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'attachedProperty'); mf.subgroup='attachedProperty'; process('memberList', getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="attachedProperty" onclick="toggleClass('memberTabs','value','attachedProperty','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'attachedProperty'); processSubgroup('attachedProperty','member'); process('memberList','filterElement','member');">
                   <include item="attachedPropertyMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1489,7 +1458,7 @@
               </xsl:if>
               <xsl:if test="element/apidata[@subsubgroup='attachedEvent']">
                 <td class="leftGrad" value="attachedEvent">&#xa0;</td>
-                <td class="tab" value="attachedEvent" onclick="toggleClass('memberTabs','value','attachedEvent','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'attachedEvent'); mf.subgroup='attachedEvent'; process('memberList', getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="attachedEvent" onclick="toggleClass('memberTabs','value','attachedEvent','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'attachedEvent'); processSubgroup('attachedEvent','member'); process('memberList', 'filterElement', 'member');">
                   <include item="attachedEventMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1503,7 +1472,7 @@
               </xsl:if>
               <xsl:if test="element[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]">
                 <td class="leftGrad" value="explicit">&#xa0;</td>
-                <td class="tab" value="explicit" onclick="toggleClass('memberTabs','value','explicit','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'explicit'); mf.subgroup='explicit'; process('memberList', getInstanceDelegate(mf,'filterElement'));">
+                  <td class="tab" value="explicit" onclick="toggleClass('memberTabs','value','explicit','activeTab','tab'); curvedToggleClass('curvedMemberTabs', 'value', 'explicit'); processSubgroup('explicit','member'); process('memberList', 'filterElement', 'member');">
                   <include item="explicitInterfaceMembersFilterLabel" />
                   <xsl:text>&#xa0;</xsl:text>
                   <img>
@@ -1521,7 +1490,7 @@
             <table class="memberOptions">
               <tr>
                 <td class="line">
-                  <div id="public" onclick="var checked=toggleCheck(publicImage); mf['public']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="public" onclick="var checked=toggleCheck(publicImage); toggleCheckState('public',checked); process('memberList','filterElement','member');">
                     <img id="publicImage" onmouseover="mouseOverCheck(publicImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(publicImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1531,7 +1500,7 @@
                     <include item="publicMembersFilterLabel" />
                   </div>
                 <br />
-                <div id="protected" onclick="var checked=toggleCheck(protectedImage); mf['protected']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="protected" onclick="var checked=toggleCheck(protectedImage); toggleCheckState('protected',checked); process('memberList','filterElement','member');">
                   <img id="protectedImage" onmouseover="mouseOverCheck(protectedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(protectedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                     <includeAttribute name="src" item="iconPath">
                       <parameter>ch_selected.gif</parameter>
@@ -1542,7 +1511,7 @@
                   </div>
                 </td>
                 <td class="line">
-                  <div id="instance" onclick="var checked=toggleCheck(instanceImage); mf['instance']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="instance" onclick="var checked=toggleCheck(instanceImage); toggleCheckState('instance',checked); process('memberList','filterElement','member');">
                     <img id="instanceImage" onmouseover="mouseOverCheck(instanceImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(instanceImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1552,7 +1521,7 @@
                     <include item="instanceMembersFilterLabel" />
                   </div>
                   <br />
-                  <div id="static" onclick="var checked=toggleCheck(staticImage); mf['static']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="static" onclick="var checked=toggleCheck(staticImage); toggleCheckState('static',checked); process('memberList','filterElement','member');">
                     <img id="staticImage" onmouseover="mouseOverCheck(staticImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(staticImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1570,7 +1539,7 @@
                   </div>
                 </td>
                 <td class="line"> 
-                  <div id="declared" onclick="var checked=toggleCheck(declaredImage); mf['declared']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="declared" onclick="var checked=toggleCheck(declaredImage); toggleCheckState('declared',checked); process('memberList','filterElement','member');">
                     <img id="declaredImage" onmouseover="mouseOverCheck(declaredImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(declaredImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1580,7 +1549,7 @@
                     <include item="declaredMembersFilterLabel" />
                   </div>
                   <br />
-                  <div id="inherited" onclick="var checked=toggleCheck(inheritedImage); mf['inherited']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="inherited" onclick="var checked=toggleCheck(inheritedImage); toggleCheckState('inherited',checked); process('memberList','filterElement','member');">
                     <img id="inheritedImage" onmouseover="mouseOverCheck(inheritedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(inheritedImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1591,7 +1560,7 @@
                   </div>
                 </td>
                 <td class="line">
-                  <div id="xna" onclick="var checked=toggleCheck(xnaImage); mf['xna']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="xna" onclick="var checked=toggleCheck(xnaImage); toggleCheckState('xna',checked); process('memberList','filterElement','member');">
                     <img id="xnaImage" onmouseover="mouseOverCheck(xnaImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(xnaImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1608,7 +1577,7 @@
                     </img>
                   </div>
                   <br/>
-                  <div id="compact" onclick="var checked=toggleCheck(compactImage); mf['compact']=checked; process('memberList',getInstanceDelegate(mf,'filterElement'));">
+                    <div id="compact" onclick="var checked=toggleCheck(compactImage); toggleCheckState('compact',checked); process('memberList','filterElement','member');">
                     <img id="compactImage" onmouseover="mouseOverCheck(compactImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)" onmouseout="mouseOutCheck(compactImage,checkBoxSelectImage,checkBoxUnSelectImage,checkBoxSelectHoverImage,checkBoxUnSelectHoverImage)">
                       <includeAttribute name="src" item="iconPath">
                         <parameter>ch_selected.gif</parameter>
@@ -1648,13 +1617,7 @@
               </xsl:apply-templates>
             </table>
           </div>
-          <script type="text/javascript">
-            <xsl:text>
-					  var mf = new MemberFilter();
-					  toggleClass('memberTabs','value','all','activeTab','tab');
-            curvedToggleClass('curvedMemberTabs', 'value', 'all');
-				    </xsl:text>
-          </script>
+          </div>
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>
@@ -2056,7 +2019,7 @@
     <xsl:param name="library" select="/document/reference/containers/library"/>
     <include item="assemblyNameAndModule">
       <parameter>
-        <span data="assembly">
+        <span sdata="assembly">
         <xsl:value-of select="$library/@assembly"/>
         </span>
       </parameter>
@@ -2196,7 +2159,8 @@
         <xsl:variable name="childCount" select="count(descendents/*)" />
         
         <xsl:for-each select="ancestors/type">
-          <xsl:sort select="position()" data-type="number" order="descending" />
+			<xsl:sort select="position()" data-type="number" order="descending" />
+			<!--<xsl:sort select="@api"/> -->
 
           <xsl:call-template name="indent">
             <xsl:with-param name="count" select="position()" />
@@ -2237,6 +2201,7 @@
           <xsl:otherwise>
             
             <xsl:for-each select="descendents/type">
+              <xsl:sort select="@api"/>
               <xsl:call-template name="indent">
                 <xsl:with-param name="count" select="$ancestorCount + 2" />
               </xsl:call-template>
