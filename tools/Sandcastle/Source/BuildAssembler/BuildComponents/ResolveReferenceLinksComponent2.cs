@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -185,15 +188,31 @@ namespace Microsoft.Ddue.Tools {
                     } else {
                         // if overload is prefered and found, change targetId and make link options hide parameters
                         if (link.PreferOverload) {
+
+                             bool isConversionOperator = false;
+
+                            MethodTarget method = target as MethodTarget;
+                            if (method != null) {
+                                isConversionOperator = method.conversionOperator;
+                            }
+
                             MemberTarget member = target as MemberTarget;
-                            if ((member != null) && (!String.IsNullOrEmpty(member.OverloadId))) {
+
+                            // if conversion operator is found, always link to individual topic.
+                            if ((member != null) && (!String.IsNullOrEmpty(member.OverloadId)) && !isConversionOperator) {
                                 Target overloadTarget = targets[member.OverloadId];
                                 if (overloadTarget != null) {
                                     target = overloadTarget;
                                     targetId = overloadTarget.Id;
                                 }
                             }
-                            options = options & ~DisplayOptions.ShowParameters;
+
+                            // if individual conversion operator is found, always display parameters.
+                            if (isConversionOperator && member != null && (!string.IsNullOrEmpty(member.OverloadId))) {
+                                options = options | DisplayOptions.ShowParameters;
+                            } else {
+                                options = options & ~DisplayOptions.ShowParameters;
+                            }
                         }
 
                         // get stored link type
@@ -326,6 +345,11 @@ namespace Microsoft.Ddue.Tools {
                             fragment.WriteTo(writer);
 
                             //writer.WriteRaw(output);
+                        }
+                        else if ((String.Compare(link.DisplayTarget, "extension", true) == 0) && (link.Contents != null))
+                        {
+                            Reference extMethodReference = XmlTargetCollectionUtilities.CreateExtensionMethodReference(link.Contents);
+                            resolver.WriteReference(extMethodReference, options, writer);
                         } else {
                             // Use the display target value as a CER for the display target
 

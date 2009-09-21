@@ -163,7 +163,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
             Method eiiMethod = null;
             if (method.IsPrivate && method.IsVirtual) {
                 MethodList eiiMethods = method.ImplementedInterfaceMethods;
-                if (eiiMethods.Length > 0) eiiMethod = eiiMethods[0];
+                if (eiiMethods.Count > 0) eiiMethod = eiiMethods[0];
             }
             if (eiiMethod != null) { //explicitly implemented interface
                 TypeNode eiiType = eiiMethod.DeclaringType;
@@ -192,7 +192,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
             if (method.IsGeneric) {
                 TypeNodeList genericParameters = method.TemplateParameters;
                 if (genericParameters != null) {
-                    writer.Write("``{0}", genericParameters.Length);
+                    writer.Write("``{0}", genericParameters.Count);
                 }
             }
             WriteParameters(method.Parameters, writer);
@@ -211,9 +211,9 @@ namespace Microsoft.Ddue.Tools.Reflection {
         }
 
         private static void WriteParameters(ParameterList parameters, TextWriter writer) {
-            if ((parameters == null) || (parameters.Length == 0)) return;
+            if ((parameters == null) || (parameters.Count == 0)) return;
             writer.Write("(");
-            for (int i = 0; i < parameters.Length; i++) {
+            for (int i = 0; i < parameters.Count; i++) {
                 if (i > 0) writer.Write(",");
                 WriteType(parameters[i].Type, writer);
             }
@@ -352,13 +352,13 @@ namespace Microsoft.Ddue.Tools.Reflection {
                             // number of parameters
                             TypeNodeList parameters = type.TemplateParameters;
                             if (parameters != null) {
-                                writer.Write("`{0}", parameters.Length);
+                                writer.Write("`{0}", parameters.Count);
                             }
                             // arguments
                             TypeNodeList arguments = type.TemplateArguments;
-                            if ((arguments != null) && (arguments.Length > 0)) {
+                            if ((arguments != null) && (arguments.Count > 0)) {
                                 writer.Write("{");
-                                for (int i = 0; i < arguments.Length; i++) {
+                                for (int i = 0; i < arguments.Count; i++) {
                                     TypeNode argument = arguments[i];
                                     if (i > 0) writer.Write(",");
                                     WriteType(arguments[i], writer);

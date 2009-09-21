@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,91 +32,91 @@ namespace Microsoft.Ddue.Tools {
                 string root = expression_node.GetAttribute("root", string.Empty);
                 try {
                     rootExpression = XPathExpression.Compile(root);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", root));
                 }
 
                 string assembly = expression_node.GetAttribute("assembly", string.Empty);
                 try {
                     assemblyExpression = XPathExpression.Compile(assembly);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", assembly));
                 }
 
                 string summary = expression_node.GetAttribute("summary", string.Empty);
                 try {
                     summaryExpression = XPathExpression.Compile(summary);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", summary));
                 }
 
                 string parameters = expression_node.GetAttribute("parameters", string.Empty);
                 try {
                     parametersExpression = XPathExpression.Compile(parameters);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", parameters));
                 }
 
                 string parameterContent = expression_node.GetAttribute("parameterContent", string.Empty);
                 try {
                     parameterContentExpression = XPathExpression.Compile(parameterContent);
-                } catch (XPathException e) {
+                } catch (XPathException ) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", parameterContent));
                 }
 
                 string templates = expression_node.GetAttribute("templates", string.Empty);
                 try {
                     templatesExpression = XPathExpression.Compile(templates);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", templates));
                 }
 
                 string templateContent = expression_node.GetAttribute("templateContent", string.Empty);
                 try {
                     templateContentExpression = XPathExpression.Compile(templateContent);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", templateContent));
                 }
 
                 string returns = expression_node.GetAttribute("returns", string.Empty);
                 try {
                     returnsExpression = XPathExpression.Compile(returns);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", returns));
                 }
 
                 string exception = expression_node.GetAttribute("exception", string.Empty);
                 try {
                     exceptionExpression = XPathExpression.Compile(exception);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", exception));
                 }
 
                 string exceptionCref = expression_node.GetAttribute("exceptionCref", string.Empty);
                 try {
                     exceptionCrefExpression = XPathExpression.Compile(exceptionCref);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", exceptionCref));
                 }
 
                 string enumeration = expression_node.GetAttribute("enumeration", string.Empty);
                 try {
                     enumerationExpression = XPathExpression.Compile(enumeration);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", enumeration));
                 }
 
                 string enumerationApi = expression_node.GetAttribute("enumerationApi", string.Empty);
                 try {
                     enumerationApiExpression = XPathExpression.Compile(enumerationApi);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", enumerationApi));
                 }
 
                 string memberSummary = expression_node.GetAttribute("memberSummary", string.Empty);
                 try {
                     memberSummaryExpression = XPathExpression.Compile(memberSummary);
-                } catch (XPathException e) {
+                } catch (XPathException) {
                     WriteMessage(MessageLevel.Error, String.Format("The expression '{0}' is not a valid XPath expression.", memberSummary));
                 }
 
@@ -321,13 +324,15 @@ namespace Microsoft.Ddue.Tools {
 
 		}
 
-		public override void Dispose () {
-			//Console.WriteLine("disposing intellisense writer...");
-			foreach (XmlWriter writer in writers.Values) {
-				writer.WriteEndDocument();
-				writer.Close();
-			}
-		}
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+			    foreach (XmlWriter writer in writers.Values) {
+				    writer.WriteEndDocument();
+				    writer.Close();
+			    }
+            }
+            base.Dispose(disposing);
+        }
         
         private void WriteSummary(XPathNavigator node, XPathExpression expression, XmlWriter writer) {
             

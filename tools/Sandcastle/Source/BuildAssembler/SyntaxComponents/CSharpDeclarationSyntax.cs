@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
@@ -10,7 +13,7 @@ namespace Microsoft.Ddue.Tools {
 	public class CSharpDeclarationSyntaxGenerator : SyntaxGeneratorTemplate {
 
         public CSharpDeclarationSyntaxGenerator (XPathNavigator configuration) : base(configuration) {
-            if (String.IsNullOrEmpty(language)) language = "CSharp";
+            if (String.IsNullOrEmpty(Language)) Language = "CSharp";
         }
 
         // namespace: done
@@ -88,7 +91,7 @@ namespace Microsoft.Ddue.Tools {
 			writer.WriteKeyword("interface");
 			writer.WriteString(" ");
 			writer.WriteIdentifier(name);
-			WriteGenericTemplates(reflection, writer);
+			WriteGenericTemplates(reflection, writer, true); // interfaces need co/contravariance info
 			WriteImplementedInterfaces(reflection, writer);
 			WriteGenericTemplateConstraints(reflection, writer);
 
@@ -109,7 +112,7 @@ namespace Microsoft.Ddue.Tools {
 			WriteReturnValue(reflection, writer);
 			writer.WriteString(" ");
 			writer.WriteIdentifier(name);
-			WriteGenericTemplates(reflection, writer);
+			WriteGenericTemplates(reflection, writer, true); // delegates need co/contravariance info
 			WriteMethodParameters(reflection, writer);
 			WriteGenericTemplateConstraints(reflection, writer);
 			
@@ -291,7 +294,7 @@ namespace Microsoft.Ddue.Tools {
 			} else if (name == "Explicit") {
 				writer.WriteKeyword("explicit operator");
 			} else {
-				throw new Exception();
+				throw new InvalidCastException("Invalid cast.");
 			}
             writer.WriteString(" ");
 			WriteReturnValue(reflection, writer);
@@ -300,61 +303,77 @@ namespace Microsoft.Ddue.Tools {
 
 		}
 
-		public override void WritePropertySyntax (XPathNavigator reflection, SyntaxWriter writer) {
-
-			string name = (string) reflection.Evaluate(apiNameExpression);
+        public override void WritePropertySyntax(XPathNavigator reflection, SyntaxWriter writer)
+        {
+            string name = (string)reflection.Evaluate(apiNameExpression);
             bool isDefault = (bool)reflection.Evaluate(apiIsDefaultMemberExpression);
-			bool isGettable = (bool) reflection.Evaluate(apiIsReadPropertyExpression);
-			bool isSettable = (bool) reflection.Evaluate(apiIsWritePropertyExpression);
-			bool isExplicit = (bool) reflection.Evaluate(apiIsExplicitImplementationExpression);
+            bool isGettable = (bool)reflection.Evaluate(apiIsReadPropertyExpression);
+            bool isSettable = (bool)reflection.Evaluate(apiIsWritePropertyExpression);
+            bool isExplicit = (bool)reflection.Evaluate(apiIsExplicitImplementationExpression);
+            XPathNodeIterator parameters = reflection.Select(apiParametersExpression);
 
-			WriteAttributes(reflection, writer);
-			if (!isExplicit) WriteProcedureModifiers(reflection, writer);
-			WriteReturnValue(reflection, writer);
-			writer.WriteString(" ");
+            WriteAttributes(reflection, writer);
+            if (!isExplicit) WriteProcedureModifiers(reflection, writer);
+            WriteReturnValue(reflection, writer);
+            writer.WriteString(" ");
 
-			if (isExplicit) {
-				XPathNavigator member = reflection.SelectSingleNode(apiImplementedMembersExpression);
-				//string id = (string) member.GetAttribute("api", String.Empty);
-				XPathNavigator contract = member.SelectSingleNode(memberDeclaringTypeExpression);
-				WriteTypeReference(contract, writer);
-				writer.WriteString(".");
-                WriteMemberReference(member, writer);
-				//writer.WriteReferenceLink(id);
-				// writer.WriteIdentifier(memberName);
-			} else {
-                if (isDefault) {
+            if (isExplicit)
+            {
+                XPathNavigator member = reflection.SelectSingleNode(apiImplementedMembersExpression);
+                XPathNavigator contract = member.SelectSingleNode(memberDeclaringTypeExpression);
+                WriteTypeReference(contract, writer);
+                writer.WriteString(".");
+                if (parameters.Count > 0)
+                {
+                    // In C#, EII property with parameters is an indexer; use 'this' instead of the property's name
                     writer.WriteKeyword("this");
-                } else {
+                }
+                else
+                {
+                    WriteMemberReference(member, writer);
+                }
+            }
+            else
+            {
+                // In C#, any property with parameters is an indexer, which is declared using 'this' instead of the property's name
+                if (isDefault || parameters.Count > 0)
+                {
+                    writer.WriteKeyword("this");
+                }
+                else
+                {
                     writer.WriteIdentifier(name);
                 }
-			}
+            }
 
-			WritePropertyParameters(reflection, writer);
-			writer.WriteString(" {");
-            if (isGettable) {
+            WritePropertyParameters(reflection, writer);
+            writer.WriteString(" {");
+            if (isGettable)
+            {
                 writer.WriteString(" ");
                 string getVisibility = (string)reflection.Evaluate(apiGetVisibilityExpression);
-                if (!String.IsNullOrEmpty(getVisibility)) {
+                if (!String.IsNullOrEmpty(getVisibility))
+                {
                     WriteVisibility(getVisibility, writer);
                     writer.WriteString(" ");
                 }
                 writer.WriteKeyword("get");
                 writer.WriteString(";");
             }
-            if (isSettable) {
+            if (isSettable)
+            {
                 writer.WriteString(" ");
                 string setVisibility = (string)reflection.Evaluate(apiSetVisibilityExpression);
-                if (!String.IsNullOrEmpty(setVisibility)) {
+                if (!String.IsNullOrEmpty(setVisibility))
+                {
                     WriteVisibility(setVisibility, writer);
                     writer.WriteString(" ");
                 }
                 writer.WriteKeyword("set");
                 writer.WriteString(";");
             }
-			writer.WriteString(" }");				
-
-		}
+            writer.WriteString(" }");
+        }
 
 		public override void WriteEventSyntax (XPathNavigator reflection, SyntaxWriter writer) {
 			string name = (string) reflection.Evaluate(apiNameExpression);
@@ -667,20 +686,43 @@ namespace Microsoft.Ddue.Tools {
 
 		// Generics
 
-		private void WriteGenericTemplates (XPathNavigator reflection, SyntaxWriter writer) {
+        private void WriteGenericTemplates (XPathNavigator reflection, SyntaxWriter writer) {
 
-			XPathNodeIterator templates = (XPathNodeIterator) reflection.Evaluate(apiTemplatesExpression);
-
-			if (templates.Count == 0) return;
-			writer.WriteString("<");
-			while (templates.MoveNext()) {
-				XPathNavigator template = templates.Current;
-				string name = template.GetAttribute("name", String.Empty);
-				writer.WriteString(name);
-				if (templates.CurrentPosition < templates.Count) writer.WriteString(", ");
-			}
-			writer.WriteString(">");
+            WriteGenericTemplates(reflection, writer, false);
 		}
+
+        private void WriteGenericTemplates(XPathNavigator reflection, SyntaxWriter writer, bool writeVariance)
+        {
+            XPathNodeIterator templates = (XPathNodeIterator)reflection.Evaluate(apiTemplatesExpression);
+
+            if (templates.Count == 0) return;
+            writer.WriteString("<");
+            while (templates.MoveNext())
+            {
+                XPathNavigator template = templates.Current;
+                if (writeVariance)
+                {
+                    bool contravariant = (bool)template.Evaluate(templateIsContravariantExpression);
+                    bool covariant = (bool)template.Evaluate(templateIsCovariantExpression);
+
+                    if (contravariant)
+                    {
+                        writer.WriteKeyword("in");
+                        writer.WriteString(" ");
+                    }
+                    if (covariant)
+                    {
+                        writer.WriteKeyword("out");
+                        writer.WriteString(" ");
+                    }
+                }
+                string name = template.GetAttribute("name", String.Empty);
+                writer.WriteString(name);
+                if (templates.CurrentPosition < templates.Count) writer.WriteString(", ");
+            }
+            writer.WriteString(">");
+
+        }
 
 		private void WriteGenericTemplateConstraints (XPathNavigator reflection, SyntaxWriter writer) {
 

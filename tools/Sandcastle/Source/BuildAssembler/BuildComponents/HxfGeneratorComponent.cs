@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.IO;
 using System.Text;
@@ -59,7 +62,7 @@ namespace Microsoft.Ddue.Tools {
             FileCreatedEventArgs fe = e as FileCreatedEventArgs;
             if (fe == null) return;
             
-            string path = Path.Combine(fe.HxfPath, outputValue);
+            string path = Path.Combine(fe.HxfPath, outputValue).ToLower();
            
             XmlWriter tempWriter;
             if (!writers.TryGetValue(path, out tempWriter)) {
@@ -80,10 +83,12 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteEndElement();
         }
 
-        public override void  Dispose() {
-            writer.WriteEndDocument();
-            writer.Close();
-            base.Dispose();
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                writer.WriteEndDocument();
+                writer.Close();
+            }
+            base.Dispose(disposing);
         }
 
         public void WriteFile(string path) {

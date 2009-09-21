@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
@@ -22,11 +25,14 @@ namespace Microsoft.Ddue.Tools {
 		// The language itentifier
 
 
-        protected string language;
+        private string language;
 
-        public virtual string Language {
+        public string Language {
             get {
                 return (language);
+            }
+            protected set {
+                language = value;
             }
         }
 
@@ -95,6 +101,7 @@ namespace Microsoft.Ddue.Tools {
 
 		// event data
 		protected static XPathExpression apiHandlerOfEventExpression = XPathExpression.Compile("eventhandler/*[1]");
+        protected static XPathExpression apiEventArgsExpression = XPathExpression.Compile("eventargs/*[1]");
 
 		// parameter data
 		//protected static XPathExpression params_expression = XPathExpression.Compile("boolean(@params='true')");
@@ -139,7 +146,9 @@ namespace Microsoft.Ddue.Tools {
 		protected static XPathExpression templateIsValueTypeExpression = XPathExpression.Compile("boolean(constrained/@value='true')");
 		protected static XPathExpression templateIsReferenceTypeExpression = XPathExpression.Compile("boolean(constrained/@ref='true')");
 		protected static XPathExpression templateIsConstructableExpression = XPathExpression.Compile("boolean(constrained/@ctor='true')");
-		protected static XPathExpression templateConstraintsExpression = XPathExpression.Compile("constrained/type | constrained/implements/type");
+		protected static XPathExpression templateConstraintsExpression = XPathExpression.Compile("constrained/type | constrained/implements/type | constrained/implements/template");
+        protected static XPathExpression templateIsCovariantExpression = XPathExpression.Compile("boolean(variance/@covariant='true')");
+        protected static XPathExpression templateIsContravariantExpression = XPathExpression.Compile("boolean(variance/@contravariant='true')");
 
         protected static XPathExpression attachedEventAdderExpression = XPathExpression.Compile("string(attachedeventdata/adder/member/@api)");
         protected static XPathExpression attachedEventRemoverExpression = XPathExpression.Compile("string(attachedeventdata/remover/member/@api)");

@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
 
 using System;
 using System.Collections;
@@ -295,7 +297,7 @@ namespace Microsoft.Ddue.Tools
             }
             else
             {
-                throw new Exception(String.Format("language {0} is not found in config file.", lcid));
+                throw new ArgumentException(String.Format("language {0} is not found in config file.", lcid));
             }
         }
 
@@ -438,21 +440,30 @@ namespace Microsoft.Ddue.Tools
         private void WriteHhp()
         {
             string hhpFile = String.Format("{0}\\{1}.hhp", _args.outputDirectory, _args.projectName);
+            Encoding ei = Encoding.GetEncoding(_lang.CodePage);
 
-            StreamWriter sw = new StreamWriter(hhpFile, false, Encoding.GetEncoding(_lang.CodePage));
-            string var0 = _args.projectName;
-            string var1 = _defaultTopic;
-            string var2 = _lang.Name;
-            string var3 = GetChmTitle();
-
-            XPathNodeIterator iter = _config.CreateNavigator().Select("/configuration/hhpTemplate/line");
-
-            while (iter.MoveNext())
+            using (FileStream writer = File.OpenWrite(hhpFile))
             {
-                String line = iter.Current.Value;
-                sw.WriteLine(line, var0, var1, var2, var3);
+                string var0 = _args.projectName;
+                string var1 = _defaultTopic;
+                string var2 = _lang.Name;
+                string var3 = GetChmTitle();
+
+                XPathNodeIterator iter = _config.CreateNavigator().Select("/configuration/hhpTemplate/line");
+
+                while (iter.MoveNext())
+                {
+                    String line = iter.Current.Value;
+                    AddText(writer, String.Format(line, var0, var1, var2, var3), ei);
+                    AddText(writer, "\r\n", ei);
+                }
             }
-            sw.Close();
+        }
+
+        private void AddText(FileStream fs, string value, Encoding ei)
+        {
+            byte[] info = ei.GetBytes(value);
+            fs.Write(info, 0, info.Length);
         }
 
         private void WriteHtmls()
@@ -527,10 +538,10 @@ namespace Microsoft.Ddue.Tools
                         return;
                     }
                      */
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         ConsoleApplication.WriteMessage(LogLevel.Error, String.Format("failed to process file {0}", fileName));
-                        throw ex;
+                        throw;
                     }
                 }
                 else

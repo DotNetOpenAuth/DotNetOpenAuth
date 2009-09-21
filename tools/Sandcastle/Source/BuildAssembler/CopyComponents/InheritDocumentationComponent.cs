@@ -1,6 +1,9 @@
 // ------------------------------------------------------------------------------------------------
 // <copyright file="InheritDocumentationComponent.cs" company="Microsoft">
-//      Copyright (c) Microsoft Corporation. All rights reserved.
+//      Copyright © Microsoft Corporation.
+//      This source file is subject to the Microsoft Permissive License.
+//      See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+//      All other rights reserved.
 // </copyright>
 // <summary>Contains code that indexes XML comments files for <inheritdoc /> tags, reflection files
 // for API information and produces a new XML comments file containing the inherited documentation

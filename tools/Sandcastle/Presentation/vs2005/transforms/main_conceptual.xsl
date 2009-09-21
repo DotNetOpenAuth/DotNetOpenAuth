@@ -9,10 +9,12 @@
 
 	<xsl:output method="xml" indent="no" encoding="utf-8" />
 
-  <xsl:param name="RTMReleaseDate" />
+  <xsl:param name="changeHistoryOptions" />
   <xsl:include href="htmlBody.xsl" />
 	<xsl:include href="utilities_dduexml.xsl" />
   <xsl:include href="seeAlsoSection.xsl" />
+  <xsl:include href="conceptualMetadataHelp30.xsl"/>
+  <xsl:include href="conceptualMetadataHelp20.xsl"/>
 
   <xsl:variable name="hasSeeAlsoSection" select="boolean(count(/document/topic/*/ddue:relatedTopics/*[local-name()!='sampleRef']) > 0)"/>
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/topic/*/ddue:codeExample[normalize-space(.)]) > 0)"/>
@@ -33,9 +35,11 @@
       <head>
         <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
         <META NAME="save" CONTENT="history"/>
+        <xsl:call-template name="insertNoIndexNoFollow" />
         <title>
           <xsl:call-template name="topicTitlePlain"/>
         </title>
+        <xsl:call-template name="insert30Metadata" />
         <xsl:call-template name="insertStylesheets" />
         <xsl:call-template name="insertScripts" />
         <xsl:call-template name="insertMetadata" />
@@ -49,6 +53,12 @@
 	
 	<!-- document head -->
 
+  <xsl:template name="insertNoIndexNoFollow">
+    <xsl:if test="/document/metadata/attribute[@name='NoSearch']">
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW" />
+    </xsl:if>
+  </xsl:template>
+  
   <xsl:template name="insertStylesheets">
     <link rel="stylesheet" type="text/css" href="../styles/presentation.css" />
     <!-- make mshelp links work -->
@@ -102,156 +112,6 @@
 
   </xsl:template>
 
-	<xsl:template name="insertMetadata">
-    <xsl:if test="$metadata='true'">
-		<xml>
-		<!-- mshelp metadata -->
-
-      <!-- insert toctitle -->
-      <xsl:if test="normalize-space(/document/metadata/tableOfContentsTitle) and (/document/metadata/tableOfContentsTitle != /document/metadata/title)">
-        <MSHelp:TOCTitle Title="{/document/metadata/tableOfContentsTitle}" />
-      </xsl:if>
-
-      <!-- link index -->
-  		<MSHelp:Keyword Index="A" Term="{$key}" />
-
-      <!-- authored K -->
-      <xsl:variable name="docset" select="translate(/document/metadata/attribute[@name='DocSet'][1]/text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz ')"/>
-      <xsl:for-each select="/document/metadata/keyword[@index='K']">
-        <xsl:variable name="nestedKeywordText">
-          <xsl:call-template name="nestedKeywordText"/>
-        </xsl:variable>
-        <xsl:choose>
-          <xsl:when test="not(contains(text(),'[')) and ($docset='avalon' or $docset='wpf' or $docset='wcf' or $docset='windowsforms')">
-            <MSHelp:Keyword Index="K">
-              <includeAttribute name="Term" item="kIndexTermWithTechQualifier">
-                <parameter>
-                  <xsl:value-of select="text()"/>
-                </parameter>
-                <parameter>
-                  <xsl:value-of select="$docset"/>
-                </parameter>
-                <parameter>
-                  <xsl:value-of select="$nestedKeywordText"/>
-                </parameter>
-              </includeAttribute>
-            </MSHelp:Keyword>
-          </xsl:when>
-          <xsl:otherwise>
-            <MSHelp:Keyword Index="K" Term="{concat(text(),$nestedKeywordText)}" />
-          </xsl:otherwise>
-        </xsl:choose>
-        <!--
-        <MSHelp:Keyword Index="K">
-          <xsl:choose>
-            <xsl:when test="normalize-space($docset)='' or contains(text(),'[')">
-              <xsl:attribute name="Term">
-                <xsl:value-of select="concat(text(),$nestedKeywordText)"/>
-              </xsl:attribute>
-            </xsl:when>
-            <xsl:otherwise>
-              <includeAttribute name="Term" item="kIndexTermWithTechQualifier">
-                <parameter><xsl:value-of select="text()"/></parameter>
-                <parameter><xsl:value-of select="$docset"/></parameter>
-                <parameter><xsl:value-of select="$nestedKeywordText"/></parameter>
-              </includeAttribute>
-            </xsl:otherwise>
-          </xsl:choose>
-        </MSHelp:Keyword>
-        -->
-      </xsl:for-each>
-
-      <!-- authored S -->
-      <xsl:for-each select="/document/metadata/keyword[@index='S']">
-        <MSHelp:Keyword Index="S">
-          <xsl:attribute name="Term">
-            <xsl:value-of select="text()" />
-            <xsl:for-each select="keyword[@index='S']">
-              <xsl:text>, </xsl:text>
-              <xsl:value-of select="text()"/>
-            </xsl:for-each>
-          </xsl:attribute>
-        </MSHelp:Keyword>
-        <!-- S index keywords need to be converted to F index keywords -->
-        <MSHelp:Keyword Index="F">
-          <xsl:attribute name="Term">
-            <xsl:value-of select="text()" />
-            <xsl:for-each select="keyword[@index='S']">
-              <xsl:text>, </xsl:text>
-              <xsl:value-of select="text()"/>
-            </xsl:for-each>
-          </xsl:attribute>
-        </MSHelp:Keyword>
-      </xsl:for-each>
-
-      <!-- authored F -->
-      <xsl:for-each select="/document/metadata/keyword[@index='F']">
-        <MSHelp:Keyword Index="F">
-          <xsl:attribute name="Term">
-            <xsl:value-of select="text()" />
-            <xsl:for-each select="keyword[@index='F']">
-              <xsl:text>, </xsl:text>
-              <xsl:value-of select="text()"/>
-            </xsl:for-each>
-          </xsl:attribute>
-        </MSHelp:Keyword>
-      </xsl:for-each>
-
-      <!-- authored B -->
-      <xsl:for-each select="/document/metadata/keyword[@index='B']">
-        <MSHelp:Keyword Index="B">
-          <xsl:attribute name="Term">
-            <xsl:value-of select="text()" />
-            <xsl:for-each select="keyword[@index='B']">
-              <xsl:text>, </xsl:text>
-              <xsl:value-of select="text()"/>
-            </xsl:for-each>
-          </xsl:attribute>
-        </MSHelp:Keyword>
-      </xsl:for-each>
-
-      <!-- Topic version -->
-      <MSHelp:Attr Name="RevisionNumber" Value="{/document/topic/@revisionNumber}" />
-
-      <!-- Asset ID -->
-      <MSHelp:Attr Name="AssetID" Value="{/document/topic/@id}" />
-
-      <!-- Abstract -->
-      <xsl:variable name="abstract" select="string(/document/topic//ddue:para[1])" />
-      <xsl:choose>
-        <xsl:when test="string-length($abstract) &gt; 254">
-          <MSHelp:Attr Name="Abstract" Value="{concat(substring($abstract,1,250), ' ...')}" />
-        </xsl:when>
-        <xsl:when test="string-length($abstract) &gt; 0">
-          <MSHelp:Attr Name="Abstract" Value="{$abstract}" />
-        </xsl:when>
-      </xsl:choose>
-
-      <!-- Autogenerate codeLang attributes based on the snippets -->
-      <xsl:call-template name="mshelpCodelangAttributes">
-        <xsl:with-param name="snippets" select="/document/topic/*//ddue:snippets/ddue:snippet" />
-      </xsl:call-template>
-
-      <!-- authored attributes -->
-      <xsl:for-each select="/document/metadata/attribute">
-        <MSHelp:Attr Name="{@name}" Value="{text()}" />
-      </xsl:for-each>
-      
-      <!-- TopicType attribute -->
-      <xsl:for-each select="/document/topic/*[1]">
-        <MSHelp:Attr Name="TopicType">
-          <includeAttribute name="Value" item="TT_{local-name()}"/>
-        </MSHelp:Attr>
-      </xsl:for-each>
-      
-      <!-- Locale attribute -->
-      <MSHelp:Attr Name="Locale">
-        <includeAttribute name="Value" item="locale"/>
-      </MSHelp:Attr>
-      
-    </xml>
-    </xsl:if>
-	</xsl:template>
 
   <xsl:template name="nestedKeywordText">
     <xsl:for-each select="keyword[@index='K']">
@@ -308,13 +168,14 @@
 	<xsl:template name="body">
     <!-- freshness date -->
     <xsl:call-template name="writeFreshnessDate">
-      <xsl:with-param name="ChangedHistoryDate" select="/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]"/>
+      <xsl:with-param name="ChangedHistoryDate" select="/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1] |
+                      /document/topic/*/ddue:changeHistory/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]" />
     </xsl:call-template>
 
 		<xsl:apply-templates select="topic" />
     
     <!-- changed table section -->
-    <xsl:call-template name="writeChangedTable" />
+    <xsl:call-template name="writeChangeHistorySection" />
 	</xsl:template>
 
 	<!-- sections that behave differently in conceptual and reference -->
@@ -344,13 +205,30 @@
 
 	<xsl:template match="ddue:returnValue">
     <xsl:if test="normalize-space(.)">
-		<xsl:call-template name="section">
-      <xsl:with-param name="toggleSwitch" select="'returnValue'"/>
-			<xsl:with-param name="title"><include item="returnValueTitle" /></xsl:with-param>
-			<xsl:with-param name="content">
-				<xsl:apply-templates />
-			</xsl:with-param>
-		</xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="(normalize-space(ddue:content)='') and ddue:sections/ddue:section[ddue:title='Property Value']">
+          <xsl:call-template name="section">
+            <xsl:with-param name="toggleSwitch" select="'returnValue'"/>
+            <xsl:with-param name="title">
+              <include item="propertyValueTitle" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+              <xsl:apply-templates select="ddue:sections/ddue:section[ddue:title='Property Value']/*" />
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="section">
+            <xsl:with-param name="toggleSwitch" select="'returnValue'"/>
+            <xsl:with-param name="title">
+              <include item="returnValueTitle" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+              <xsl:apply-templates />
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 	</xsl:template>
 
@@ -431,6 +309,7 @@
           <includeAttribute name="src" item="iconPath">
             <parameter>footer.gif</parameter>
           </includeAttribute>
+          <includeAttribute name="alt" item="footerImage" />
           <includeAttribute name="title" item="footerImage" />
         </img>
       </div>
@@ -500,7 +379,7 @@
         <xsl:if test="starts-with($outlineType,'toplevel') and //ddue:relatedTopics[normalize-space(.)!='']">
           <li>
             <A>
-              <xsl:attribute name="HREF">#seeAlsoSection</xsl:attribute>
+              <xsl:attribute name="HREF">#seeAlsoToggle</xsl:attribute>
               <include item="RelatedTopicsLinkText"/>
             </A>
           </li>
@@ -521,14 +400,6 @@
         <xsl:value-of select="ddue:title" />
       </A>
     </li>
-  </xsl:template>
-
-  <xsl:template name="writeChangedTable">
-    <xsl:if test="/document/topic/*//ddue:section/ddue:title = 'Change History' and (/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table and /document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row/ddue:entry[normalize-space(.)])">
-      <xsl:apply-templates select="/document/topic/*//ddue:section[ddue:title = 'Change History']">
-        <xsl:with-param name="showChangedHistoryTable" select="true()" />
-      </xsl:apply-templates>
-    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>

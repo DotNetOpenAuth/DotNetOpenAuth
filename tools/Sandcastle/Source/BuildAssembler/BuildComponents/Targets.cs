@@ -1,5 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+﻿// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,28 +16,11 @@ namespace BuildComponents {
 
         internal string id;
 
-        internal string container;
-
-        internal string file;
-
         public string Id {
             get {
                 return (id);
             }
         }
-
-        public string Container {
-            get {
-                return (container);
-            }
-        }
-
-        public string File {
-            get {
-                return (file);
-            }
-        }
-
     }
 
     // Namespace
@@ -57,8 +43,6 @@ namespace BuildComponents {
 
         // apidata
 
-        protected string name;
-
         protected string subgroup;
 
         // containers
@@ -69,31 +53,7 @@ namespace BuildComponents {
 
         protected string containingAssembly;
 
-        // templates
-
-        protected string[] templates;
-
-        // typedata
-
-        private object visibility;
-
-        private bool isAbstract;
-
-        private bool isSealed;
-
-        private bool isSerializable;
-
-        // family
-
-        private SimpleTypeReference parentType;
-
         // other
-
-        public string Name {
-            get {
-                return (name);
-            }
-        }
 
         public NamespaceReference Namespace {
             get {
@@ -104,12 +64,6 @@ namespace BuildComponents {
         public SimpleTypeReference OuterType {
             get {
                 return (containingType);
-            }
-        }
-
-        public string[] Templates {
-            get {
-                return (templates);
             }
         }
 
@@ -144,7 +98,7 @@ namespace BuildComponents {
 
     public partial class NamespaceTarget {
 
-        public static NamespaceTarget Create (XmlReader apidata) {
+        public static new NamespaceTarget Create (XmlReader apidata) {
             NamespaceTarget target = new NamespaceTarget();
             string name = apidata.GetAttribute("name");
 
@@ -172,16 +126,16 @@ namespace BuildComponents {
 
     public partial class TypeTarget {
 
-        public static TypeTarget Create (XmlReader api) {
+        public static new TypeTarget Create (XmlReader api) {
 
             api.ReadToFollowing("apidata");
-            string subgroup = api.GetAttribute("subgroup");
+            //string subgroup = api.GetAttribute("subgroup");
 
             api.ReadToFollowing("typedata");
-            string visibilityValue = api.GetAttribute("visibility");
-            string abstractValue = api.GetAttribute("abstract");
-            string sealedValue = api.GetAttribute("sealed");
-            string serializableValue = api.GetAttribute("serealizable");
+            //string visibilityValue = api.GetAttribute("visibility");
+            //string abstractValue = api.GetAttribute("abstract");
+            //string sealedValue = api.GetAttribute("sealed");
+            //string serializableValue = api.GetAttribute("serealizable");
 
             api.ReadToFollowing("library");
             string containingAssemblyValue = api.GetAttribute("assembly");

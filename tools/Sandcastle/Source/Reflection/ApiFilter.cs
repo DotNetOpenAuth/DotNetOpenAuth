@@ -91,7 +91,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
             // check whether expressions used to instantiate attribute are exposed
             ExpressionList expressions = attribute.Expressions;
-            for (int i = 0; i < expressions.Length; i++) {
+            for (int i = 0; i < expressions.Count; i++) {
                 if (!IsExposedExpression(expressions[i])) return (false);
             }
 
@@ -192,7 +192,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
         private bool NamespaceContainsExposedMembers(Namespace space)
         {
             TypeNodeList types = space.Types;
-            for (int i = 0; i < types.Length; i++)
+            for (int i = 0; i < types.Count; i++)
             {
                 TypeNode type = types[i];
 

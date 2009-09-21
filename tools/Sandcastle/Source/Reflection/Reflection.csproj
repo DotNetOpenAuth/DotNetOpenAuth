@@ -78,6 +78,7 @@
     <Compile Include="ExternalDocumentedFilter.cs" />
     <Compile Include="ExternalFilter.cs" />
     <Compile Include="ExternalTopicFilter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MemberFilter.cs" />
     <Compile Include="NamespaceFilter.cs" />
     <Compile Include="NoFilter.cs" />

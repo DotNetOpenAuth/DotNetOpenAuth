@@ -103,6 +103,8 @@ function GetDevlangCheckboxId(devlang)
             return devlangsMenu.GetCheckboxId("JSharp");
         case "JavaScript":
             return devlangsMenu.GetCheckboxId("JavaScript");
+        case "FSharp":
+            return devlangsMenu.GetCheckboxId("FSharp");
         default:
             return "";
     }
@@ -116,26 +118,36 @@ function styleSheetHandler(oneDevlang)
     var sd = getStyleDictionary();
 
     if (devlang == 'cs') {
-		sd['span.cs'].display = 'inline';
-		sd['span.vb'].display = 'none';
-		sd['span.cpp'].display = 'none';
-		sd['span.nu'].display = 'none';
+        sd['span.cs'].display = 'inline';
+        sd['span.vb'].display = 'none';
+        sd['span.cpp'].display = 'none';
+        sd['span.nu'].display = 'none';
+        sd['span.fs'].display = 'none';
     } else if (devlang == 'vb') {
-		sd['span.cs'].display = 'none';
-		sd['span.vb'].display = 'inline';
-		sd['span.cpp'].display = 'none';
-		sd['span.nu'].display = 'none';
-	} else if (devlang == 'cpp') {
-		sd['span.cs'].display = 'none';
-		sd['span.vb'].display = 'none';
-		sd['span.cpp'].display = 'inline';
-		sd['span.nu'].display = 'none';
-	} else if (devlang == 'nu') {
-		sd['span.cs'].display = 'none';
-		sd['span.vb'].display = 'none';
-		sd['span.cpp'].display = 'none';
-		sd['span.nu'].display = 'inline';
-	} 
+        sd['span.cs'].display = 'none';
+        sd['span.vb'].display = 'inline';
+        sd['span.cpp'].display = 'none';
+        sd['span.nu'].display = 'none';
+        sd['span.fs'].display = 'none';
+    } else if (devlang == 'cpp') {
+        sd['span.cs'].display = 'none';
+        sd['span.vb'].display = 'none';
+        sd['span.cpp'].display = 'inline';
+        sd['span.nu'].display = 'none';
+        sd['span.fs'].display = 'none';
+    } else if (devlang == 'nu') {
+        sd['span.cs'].display = 'none';
+        sd['span.vb'].display = 'none';
+        sd['span.cpp'].display = 'none';
+        sd['span.nu'].display = 'inline';
+        sd['span.fs'].display = 'none';
+    } else if (devlang == 'fs') {
+        sd['span.cs'].display = 'none';
+        sd['span.vb'].display = 'none';
+        sd['span.cpp'].display = 'none';
+        sd['span.nu'].display = 'none';
+        sd['span.fs'].display = 'inline';
+    }
 }
 
 function getStyleDictionary() {

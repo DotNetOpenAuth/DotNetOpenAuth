@@ -891,6 +891,11 @@ span.nu {
 	display: inline;
 }
 
+span.fs 
+{
+	display: none;
+}
+
 span.code {
 	font-family:	Monospace, Courier New, Courier;
 	font-size: 105%;

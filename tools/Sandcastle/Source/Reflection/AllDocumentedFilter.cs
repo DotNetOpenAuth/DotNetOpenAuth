@@ -75,7 +75,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
         }
 
         private static bool ListContainsAttribute(AttributeList attributes, string name) {
-            for (int i = 0; i < attributes.Length; i++) {
+            for (int i = 0; i < attributes.Count; i++) {
                 if (attributes[i].Type.FullName == name) return (true);
             }
             return (false);

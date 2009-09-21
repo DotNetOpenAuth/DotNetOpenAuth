@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -59,15 +62,16 @@ namespace Microsoft.Ddue.Tools {
 
 		}
 
-        public override void Dispose () {
-            foreach (IEnumerable<BuildComponent> components in cases.Values) {
-                foreach (BuildComponent component in components) {
-                    component.Dispose();
+        protected override void  Dispose(bool disposing) {
+            if (disposing) {
+                foreach (IEnumerable<BuildComponent> components in cases.Values) {
+                    foreach (BuildComponent component in components) {
+                        component.Dispose();
+                    }
                 }
             }
-            base.Dispose();
+            base.Dispose(disposing);
         }
-
 	}
 
 }

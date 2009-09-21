@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Xml.XPath;
 using System.Globalization;
@@ -18,7 +21,7 @@ namespace Microsoft.Ddue.Tools {
         /// </summary>
         /// <param name="configuration"></param>
         public ScriptSharpDeclarationSyntaxGenerator(XPathNavigator configuration) : base(configuration) {
-		    if (String.IsNullOrEmpty(language)) language = "JavaScript";
+		    if (String.IsNullOrEmpty(Language)) Language = "JavaScript";
         }
         
         /// <summary>

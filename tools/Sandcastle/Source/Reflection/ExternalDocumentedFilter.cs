@@ -53,7 +53,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
             if (member.IsPrivate && member.NodeType == NodeType.Method) {
                 Method method = (Method)member;
                 MethodList implements = method.ImplementedInterfaceMethods;
-                if ((implements.Length > 0) && (!IsExposedMember(implements[0]))) return (false);
+                if ((implements.Count > 0) && (!IsExposedMember(implements[0]))) return (false);
             }
 
             // okay, passed all tests, the member is exposed as long as the filters allow it

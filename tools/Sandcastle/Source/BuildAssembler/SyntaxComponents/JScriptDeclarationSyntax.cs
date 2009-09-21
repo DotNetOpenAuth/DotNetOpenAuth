@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Xml.XPath;
 
@@ -9,7 +12,7 @@ namespace Microsoft.Ddue.Tools {
     public class JScriptDeclarationSyntaxGenerator : SyntaxGeneratorTemplate {
 
         public JScriptDeclarationSyntaxGenerator (XPathNavigator configuration) : base(configuration) {
-            if (String.IsNullOrEmpty(language)) language = "JScript";
+            if (String.IsNullOrEmpty(Language)) Language = "JScript";
         }
 
         public override void WriteNamespaceSyntax (XPathNavigator reflection, SyntaxWriter writer) {
@@ -130,6 +133,14 @@ namespace Microsoft.Ddue.Tools {
 
             if (isGettable) {
                 WriteAttributeList(reflection, writer);
+
+                string getVisibility = (string)reflection.Evaluate(apiGetVisibilityExpression);
+                if (!String.IsNullOrEmpty(getVisibility))
+                {
+                    WriteVisibility(getVisibility, writer);
+                    writer.WriteString(" ");
+                }
+
                 WriteProcedureModifiers(reflection, writer);
                 writer.WriteKeyword("function get");
                 writer.WriteString(" ");
@@ -141,6 +152,14 @@ namespace Microsoft.Ddue.Tools {
 
             if (isSettable) {
                 WriteAttributeList(reflection, writer);
+
+                string setVisibility = (string)reflection.Evaluate(apiSetVisibilityExpression);
+                if (!String.IsNullOrEmpty(setVisibility))
+                {
+                    WriteVisibility(setVisibility, writer);
+                    writer.WriteString(" ");
+                }
+
                 WriteProcedureModifiers(reflection, writer);
                 writer.WriteKeyword("function set");
                 writer.WriteString(" ");
@@ -232,7 +251,10 @@ namespace Microsoft.Ddue.Tools {
             string typeSubgroup = (string)reflection.Evaluate(apiContainingTypeSubgroupExpression);
             if (typeSubgroup == "interface") return;
 
-            WriteAccessModifier(reflection, writer);
+            string subgroup = (string)reflection.Evaluate(apiSubgroupExpression);
+            if (subgroup != "property") {
+                WriteAccessModifier(reflection, writer);
+            }
  
             // instance or virtual, static or abstract, etc.
             bool isStatic = (bool)reflection.Evaluate(apiIsStaticExpression);
@@ -309,7 +331,7 @@ namespace Microsoft.Ddue.Tools {
                     writer.WriteKeyword("protected");
                     break;
                 case "family or assembly":
-                    writer.WriteKeyword("protected internal");
+                    // this isn't handled in JScript
                     break;
                 case "assembly":
                     writer.WriteKeyword("internal");
@@ -422,6 +444,31 @@ namespace Microsoft.Ddue.Tools {
 
         private void WriteAttributeList (XPathNavigator reflection, SyntaxWriter writer) {
             // fill in this logic
+        }
+
+        private void WriteVisibility(string visibility, SyntaxWriter writer) {
+
+            switch (visibility) {
+                case "public":
+                    writer.WriteKeyword("public");
+                    break;
+                case "family":
+                    writer.WriteKeyword("protected");
+                    break;
+                case "family or assembly":
+                    // this isn't handled in JScript
+                    break;
+                case "assembly":
+                    writer.WriteKeyword("internal");
+                    break;
+                case "private":
+                    writer.WriteKeyword("private");
+                    break;
+                case "family and assembly":
+                    // this isn't handled in JScript
+                    break;
+            }
+
         }
 
     }

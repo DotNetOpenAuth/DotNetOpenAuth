@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -331,7 +334,7 @@ namespace Microsoft.Ddue.Tools
         public NamespaceFilter(XmlReader namespaceReader, string file)
             : base(file)
         {
-            name = namespaceReader.GetAttribute("name");
+            //name = namespaceReader.GetAttribute("name");
             string includeAttr = namespaceReader.GetAttribute("include");
             included = Convert.ToBoolean(string.IsNullOrEmpty(includeAttr) ? "true" : includeAttr);
             AddNamespaceNode(namespaceReader, file);
@@ -375,7 +378,7 @@ namespace Microsoft.Ddue.Tools
             subtree.Close();
         }
 
-        private string name;
+        //private string name;
         
         private bool included;
         public bool Included
@@ -427,7 +430,7 @@ namespace Microsoft.Ddue.Tools
         public TypeFilter(XmlReader typeReader, string file)
             : base(file)
         {
-            name = typeReader.GetAttribute("name");
+            //name = typeReader.GetAttribute("name");
             string includeAttr = typeReader.GetAttribute("include");
             included = Convert.ToBoolean(string.IsNullOrEmpty(includeAttr) ? "true" : includeAttr);
             AddTypeNode(typeReader, file);
@@ -471,7 +474,7 @@ namespace Microsoft.Ddue.Tools
             subtree.Close();
         }
 
-        private string name;
+        //private string name;
         
         private bool included;
         public bool Included
@@ -513,7 +516,7 @@ namespace Microsoft.Ddue.Tools
         public MemberFilter(XmlReader memberReader, string file)
             : base(file)
         {
-            name = memberReader.GetAttribute("name");
+            //name = memberReader.GetAttribute("name");
 
             string includeAttr = memberReader.GetAttribute("include");
             included = Convert.ToBoolean(string.IsNullOrEmpty(includeAttr) ? "true" : includeAttr);
@@ -536,11 +539,7 @@ namespace Microsoft.Ddue.Tools
                     bool alreadyFiltered = false;
                     foreach (OverloadFilter overloadFilter in overloadFilters)
                     {
-                        if (!string.IsNullOrEmpty(overloadId) && overloadId == overloadFilter.OverloadId)
-                            alreadyFiltered = true;
                         if (!string.IsNullOrEmpty(paramTypes) && paramTypes == overloadFilter.ParamTypes)
-                            alreadyFiltered = true;
-                        if (!string.IsNullOrEmpty(paramNames) && paramNames == overloadFilter.ParamNames)
                             alreadyFiltered = true;
                         if (alreadyFiltered && (overloadIncluded != overloadFilter.Included))
                         {
@@ -559,7 +558,7 @@ namespace Microsoft.Ddue.Tools
             subtree.Close();
         }
 
-        private string name;
+        //private string name;
 
         private bool included;
         public bool Included
@@ -599,7 +598,7 @@ namespace Microsoft.Ddue.Tools
                 if (string.IsNullOrEmpty(typeName))
                     typeName = (string)parameterNode.Evaluate(apiParameterTemplateNameExpression);
 
-                int basenameStart = typeName.LastIndexOf('.') + 1;
+                int basenameStart = typeName.LastIndexOf(':') + 1;
                 if (basenameStart > 0 && basenameStart < typeName.Length)
                     typeName = typeName.Substring(basenameStart);
 
@@ -610,10 +609,6 @@ namespace Microsoft.Ddue.Tools
 
             foreach (OverloadFilter overloadFilter in overloadFilters)
             {
-                if (key == overloadFilter.OverloadId)
-                    return overloadFilter.Included;
-                if (paramNames.ToString() == overloadFilter.ParamNames)
-                    return overloadFilter.Included;
                 if (paramTypes.ToString() == overloadFilter.ParamTypes)
                     return overloadFilter.Included;
             }
@@ -629,7 +624,7 @@ namespace Microsoft.Ddue.Tools
         public OverloadFilter(XmlReader overloadReader, string file)
             : base(file)
         {
-            name = overloadReader.GetAttribute("name");
+            //name = overloadReader.GetAttribute("name");
             string includeAttr = overloadReader.GetAttribute("include");
             included = Convert.ToBoolean(string.IsNullOrEmpty(includeAttr) ? "true" : includeAttr);
             overloadId = overloadReader.GetAttribute("api");
@@ -637,7 +632,7 @@ namespace Microsoft.Ddue.Tools
             paramNames = overloadReader.GetAttribute("names");
         }
 
-        private string name;
+        //private string name;
 
         private bool included;
         public bool Included

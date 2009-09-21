@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -114,11 +116,12 @@ namespace Microsoft.Ddue.Tools {
 
         // disposal
 
-        public override void Dispose() {
-            writer.Close();
-            base.Dispose();
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                writer.Close();
+            }
+            base.Dispose(disposing);
         }
-
 
         public void RegisterEndTagCallback(string name, MRefBuilderCallback callback) {
             List < MRefBuilderCallback > current;
@@ -189,9 +192,9 @@ namespace Microsoft.Ddue.Tools {
             }
 
             // catalog type hierarchy and interface implementors
-            for (int i = 0; i < spaces.Length; i++) {
+            for (int i = 0; i < spaces.Count; i++) {
                 TypeNodeList types = spaces[i].Types;
-                for (int j = 0; j < types.Length; j++) {
+                for (int j = 0; j < types.Count; j++) {
                     TypeNode type = types[j];
                     if (ApiFilter.IsExposedType(type)) {
                         if (type.NodeType == NodeType.Class) PopulateDescendentIndex(type);
@@ -251,7 +254,7 @@ namespace Microsoft.Ddue.Tools {
                 // WriteStringAttribute("type", namer.GetApiName(attribute.Type));
 
                 ExpressionList expressions = attribute.Expressions;
-                for (int j = 0; j < expressions.Length; j++) {
+                for (int j = 0; j < expressions.Count; j++) {
                     WriteExpression(expressions[j]);
                 }
 
@@ -281,7 +284,7 @@ namespace Microsoft.Ddue.Tools {
             // otherwise return all fields that are in value
             FieldList list = new FieldList();
             MemberList members = enumeration.Members;
-            for (int i = 0; i < members.Length; i++) {
+            for (int i = 0; i < members.Count; i++) {
                 if (members[i].NodeType != NodeType.Field) continue;
                 Field field = (Field)members[i];
                 if (field.DefaultValue == null) continue;
@@ -350,18 +353,18 @@ namespace Microsoft.Ddue.Tools {
             if (attributes == null) Console.WriteLine("null attribute list");
             if (securityAttributes == null) Console.WriteLine("null security attribute list");
             List < AttributeNode > exposedAttributes = new List < AttributeNode >();
-            for (int i = 0; i < attributes.Length; i++) {
+            for (int i = 0; i < attributes.Count; i++) {
                 AttributeNode attribute = attributes[i];
                 if (attribute == null) Console.WriteLine("null attribute");
                 if (this.ApiFilter.IsExposedAttribute(attribute)) exposedAttributes.Add(attribute);
             }
-            for (int i = 0; i < securityAttributes.Length; i++) {
+            for (int i = 0; i < securityAttributes.Count; i++) {
                 SecurityAttribute securityAttribute = securityAttributes[i];
                 if (securityAttribute == null) Console.WriteLine("null security attribute");
                 AttributeList permissionAttributes = securityAttribute.PermissionAttributes;
                 //if (permissionAttributes == null) Console.WriteLine("null permission attribute list");
                 if (permissionAttributes == null) continue;
-                for (int j = 0; j < permissionAttributes.Length; j++) {
+                for (int j = 0; j < permissionAttributes.Count; j++) {
                     AttributeNode permissionAttribute = permissionAttributes[j];
                     //if (permissionAttribute == null) Console.WriteLine("null permission attribute");
                     // saw an example where this was null; ildasm shows no permission attribute, so skip it
@@ -384,7 +387,7 @@ namespace Microsoft.Ddue.Tools {
 
         private Interface[] GetExposedInterfaces(InterfaceList contracts) {
             List < Interface > exposedContracts = new List < Interface >();
-            for (int i = 0; i < contracts.Length; i++) {
+            for (int i = 0; i < contracts.Count; i++) {
                 Interface contract = contracts[i];
                 if (this.ApiFilter.IsExposedType(contract)) {
                     // if generic, check whether specialization types are exposed
@@ -644,7 +647,7 @@ namespace Microsoft.Ddue.Tools {
             if (handler != null) {
                 ParameterList parameters = handler.Parameters;
 
-                if ((parameters != null) && (parameters.Length == 2) && (parameters[0].Type.FullName == "System.Object")) {
+                if ((parameters != null) && (parameters.Count == 2) && (parameters[0].Type.FullName == "System.Object")) {
                     writer.WriteStartElement("eventargs");
                     WriteTypeReference(parameters[1].Type);
                     writer.WriteEndElement();
@@ -663,7 +666,8 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteEndElement();
         }
 
-        private void WriteGenericParameter(TypeNode templateParameter) {
+        private void WriteGenericParameter(TypeNode templateParameter)
+        {
 
             ITypeParameter itp = (ITypeParameter)templateParameter;
 
@@ -674,13 +678,16 @@ namespace Microsoft.Ddue.Tools {
             bool reference = ((itp.TypeParameterFlags & TypeParameterFlags.ReferenceTypeConstraint) > 0);
             bool value = ((itp.TypeParameterFlags & TypeParameterFlags.ValueTypeConstraint) > 0);
             bool constructor = ((itp.TypeParameterFlags & TypeParameterFlags.DefaultConstructorConstraint) > 0);
+            bool contravariant = ((itp.TypeParameterFlags & TypeParameterFlags.Contravariant) > 0);
+            bool covariant = ((itp.TypeParameterFlags & TypeParameterFlags.Covariant) > 0);
             InterfaceList interfaces = templateParameter.Interfaces;
             TypeNode parent = templateParameter.BaseType;
 
             // no need to show inheritance from ValueType if value flag is set
             if (value && (parent != null) && (parent.FullName == "System.ValueType")) parent = null;
 
-            if ((parent != null) || (interfaces.Length > 0) || reference || value || constructor) {
+            if ((parent != null) || (interfaces.Count > 0) || reference || value || constructor)
+            {
                 writer.WriteStartElement("constrained");
                 if (reference) WriteBooleanAttribute("ref", true);
                 if (value) WriteBooleanAttribute("value", true);
@@ -689,17 +696,38 @@ namespace Microsoft.Ddue.Tools {
                 WriteInterfaces(interfaces);
                 writer.WriteEndElement();
             }
+            if (covariant || contravariant)
+            {
+                writer.WriteStartElement("variance");
+                if (contravariant) WriteBooleanAttribute("contravariant", true);
+                if (covariant) WriteBooleanAttribute("covariant", true);
+                writer.WriteEndElement();
+            }
 
+            writer.WriteEndElement();
+        }
+
+        private void WriteSpecializedTemplateArguments(TypeNodeList templateArguments)
+        {
+            if (templateArguments == null) return;
+            if (templateArguments.Count == 0) return;
+            writer.WriteStartElement("templates");
+            for (int i = 0; i < templateArguments.Count; i++)
+            {
+                WriteTypeReference(templateArguments[i]);
+            }
             writer.WriteEndElement();
         }
 
         // Generic Parameters
 
-        private void WriteGenericParameters(TypeNodeList templateParameters) {
+        private void WriteGenericParameters(TypeNodeList templateParameters)
+        {
             if (templateParameters == null) return;
-            if (templateParameters.Length == 0) return;
+            if (templateParameters.Count == 0) return;
             writer.WriteStartElement("templates");
-            for (int i = 0; i < templateParameters.Length; i++) {
+            for (int i = 0; i < templateParameters.Count; i++)
+            {
                 WriteGenericParameter(templateParameters[i]);
             }
             writer.WriteEndElement();
@@ -801,7 +829,7 @@ namespace Microsoft.Ddue.Tools {
                     EnumNode enumeration = (EnumNode)type;
                     FieldList fields = GetAppliedFields(enumeration, Convert.ToInt64(value));
                     writer.WriteStartElement("enumValue");
-                    for (int i = 0; i < fields.Length; i++) {
+                    for (int i = 0; i < fields.Count; i++) {
                         writer.WriteStartElement("field");
                         writer.WriteAttributeString("name", fields[i].Name.Name);
                         writer.WriteEndElement();
@@ -842,7 +870,13 @@ namespace Microsoft.Ddue.Tools {
                 case NodeType.Method:
                     Method method = (Method)member;
                     WriteMethodData(method);
-                    WriteGenericParameters(method.TemplateParameters);
+
+                    // write the templates node with either the generic template params or the specialized template arguments
+                    if (method.TemplateArguments != null)
+                        WriteSpecializedTemplateArguments(method.TemplateArguments);
+                    else
+                        WriteGenericParameters(method.TemplateParameters);
+
                     WriteParameters(method.Parameters);
                     WriteValue(method.ReturnType);
                     WriteImplementedMembers(ReflectionUtilities.GetImplementedMethods(method));
@@ -967,9 +1001,9 @@ namespace Microsoft.Ddue.Tools {
         // Parameters
 
         private void WriteParameters(ParameterList parameters) {
-            if (parameters.Length == 0) return;
+            if (parameters.Count == 0) return;
             writer.WriteStartElement("parameters");
-            for (int i = 0; i < parameters.Length; i++) {
+            for (int i = 0; i < parameters.Count; i++) {
                 WriteParameter(parameters[i]);
             }
             writer.WriteEndElement();
@@ -1094,10 +1128,10 @@ namespace Microsoft.Ddue.Tools {
 
                             // record specialization							
                             TypeNodeList arguments = type.TemplateArguments;
-                            if ((arguments != null) && (arguments.Length > 0)) {
+                            if ((arguments != null) && (arguments.Count > 0)) {
                                 writer.WriteStartElement("specialization");
                                 // writer.WriteAttributeString("of", namer.GetTypeName(currentTemplate));
-                                for (int i = 0; i < arguments.Length; i++) {
+                                for (int i = 0; i < arguments.Count; i++) {
                                     WriteTypeReference(arguments[i]);
                                 }
                                 writer.WriteEndElement();

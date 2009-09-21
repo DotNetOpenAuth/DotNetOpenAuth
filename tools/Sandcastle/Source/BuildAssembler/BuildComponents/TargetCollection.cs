@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -279,7 +282,15 @@ namespace Microsoft.Ddue.Tools {
 
     public class ProcedureTarget : MemberTarget {
 
+        internal bool conversionOperator;
+                
         internal MemberReference explicitlyImplements = null;
+
+        public bool ConversionOperator {
+            get {
+                return (conversionOperator);
+            }
+        }
 
         public MemberReference ExplicitlyImplements {
             get {
@@ -323,6 +334,16 @@ namespace Microsoft.Ddue.Tools {
         public string[] Templates {
             get {
                 return (templates);
+            }
+        }
+
+        // property to hold specialized template arguments (used with extension methods)
+        internal TypeReference[] templateArgs;
+        public TypeReference[] TemplateArgs
+        {
+            get
+            {
+                return (templateArgs);
             }
         }
 
@@ -440,6 +461,7 @@ namespace Microsoft.Ddue.Tools {
             }
         }
 
+        [CLSCompliant(false)]
         public TypeReference[] Arguments {
             get {
                 return (arguments);
@@ -627,6 +649,49 @@ namespace Microsoft.Ddue.Tools {
 
     public abstract class MemberReference : Reference { }
 
+    /// <summary>
+    /// Contains the information to generate the display string for an extension method link
+    /// </summary>
+    public class ExtensionMethodReference : Reference
+    {
+        private string methodName;
+        public string Name
+        {
+            get
+            {
+                return (methodName);
+            }
+        }
+
+        private Parameter[] parameters;
+        public Parameter[] Parameters
+        {
+            get
+            {
+                return (parameters);
+            }
+        }
+
+        private TypeReference[] templateArgs;
+        public TypeReference[] TemplateArgs
+        {
+            get
+            {
+                return (templateArgs);
+            }
+        }
+
+        internal ExtensionMethodReference(string methodName, Parameter[] parameters, TypeReference[] templateArgs)
+        {
+            if (methodName == null)
+                throw new ArgumentNullException("methodName");
+            this.methodName = methodName;
+            this.parameters = parameters;
+            this.templateArgs = templateArgs;
+        }
+    }
+
+
     public class SimpleMemberReference : MemberReference {
 
         private string memberId;
@@ -763,6 +828,9 @@ namespace Microsoft.Ddue.Tools {
         private static XPathExpression apiIsExplicitImplementationExpression = XPathExpression.Compile("boolean(memberdata/@visibility='private' and proceduredata/@virtual='true' and boolean(implements/member))");
         private static XPathExpression apiImplementedMembersExpression = XPathExpression.Compile("implements/member");
 
+        // op_explicit and op_implicit data
+        private static XPathExpression apiIsConversionOperatorExpression = XPathExpression.Compile("boolean((apidata/@subsubgroup='operator') and (apidata/@name='Explicit' or apidata/@name='Implicit'))");
+
         // container data
         private static XPathExpression apiContainingNamespaceExpression = XPathExpression.Compile("(containers/namespace)[1]");
         private static XPathExpression apiContainingTypeExpression = XPathExpression.Compile("(containers/type)[1]");
@@ -773,6 +841,9 @@ namespace Microsoft.Ddue.Tools {
         // template data
         private static XPathExpression apiTemplatesExpression = XPathExpression.Compile("templates/template");
         private static XPathExpression templateNameExpression = XPathExpression.Compile("string(@name)");
+
+        // extension method template data
+        private static XPathExpression methodTemplateArgsExpression = XPathExpression.Compile("templates/*");
 
         // Change the container
 
@@ -955,10 +1026,28 @@ namespace Microsoft.Ddue.Tools {
             target.parameters = CreateParameterList(api);
             target.returnType = CreateReturnType(api);
 
+            target.conversionOperator = (bool)api.Evaluate(apiIsConversionOperatorExpression);
+            
             if ((bool)api.Evaluate(apiIsExplicitImplementationExpression)) {
                 target.explicitlyImplements = CreateMemberReference(api.SelectSingleNode(apiImplementedMembersExpression));
             }
 
+            // this selects templates/template or templates/type, because extension methods can have a mix of generic and specialization
+            XPathNodeIterator templateArgNodes = api.Select(methodTemplateArgsExpression);
+            TypeReference[] templateArgumentReferences = null;
+            if (templateArgNodes != null && templateArgNodes.Count > 0)
+            {
+                templateArgumentReferences = new TypeReference[templateArgNodes.Count];
+                int i = 0;
+                foreach (XPathNavigator templateArgNode in templateArgNodes)
+                {
+                    templateArgumentReferences[i] = CreateTypeReference(templateArgNode);
+                    i++;
+                }
+            }
+            target.templateArgs = templateArgumentReferences;
+
+            // get the short name of each template param
             target.templates = GetTemplateNames(api);
 
             return (target);
@@ -1114,7 +1203,36 @@ namespace Microsoft.Ddue.Tools {
             }
 
         }
- 
+
+        /// <summary>
+        /// Create an object to store the information to generate the display string for an extension method
+        /// </summary>
+        /// <param name="node">xml node containing the extension method data</param>
+        /// <returns></returns>
+        public static ExtensionMethodReference CreateExtensionMethodReference(XPathNavigator node)
+        {
+            string methodName = (string)node.Evaluate(apiNameExpression);
+            Parameter[] parameters = CreateParameterList(node);
+            TypeReference[] templateArgumentReferences = null;
+            // List<TemplateName> templateNames = new List<TemplateName>();
+
+            // this selects templates/template or templates/type, because extension methods can have a mix of generic and specialization
+            // get the short name of each template param or template arg
+            XPathNodeIterator templateNodes = node.Select(methodTemplateArgsExpression);
+            if (templateNodes != null && templateNodes.Count > 0)
+            {
+                templateArgumentReferences = new TypeReference[templateNodes.Count];
+                int i = 0;
+                foreach (XPathNavigator templateNode in templateNodes)
+                {
+                    templateArgumentReferences[i] = CreateTypeReference(templateNode);
+                    i++;
+                }
+            }
+            ExtensionMethodReference extMethod = new ExtensionMethodReference(methodName, parameters, templateArgumentReferences);
+            return extMethod;
+        }
+        
     }
 
     // ***** Logic for constructing references from code entity reference strings *****
@@ -1186,7 +1304,11 @@ namespace Microsoft.Ddue.Tools {
                 // process templates
                 if (api.StartsWith("T:``")) {
                     int position = Convert.ToInt32(api.Substring(4));
-                    return (new NamedTemplateTypeReference("UMP"));
+                    if (genericTypeContext == null) {
+                        return (new NamedTemplateTypeReference("UMP"));
+                    } else {
+                        return (new IndexedTemplateTypeReference(genericTypeContext.Id, position));
+                    }
                 } else if (api.StartsWith("T:`")) {
                     int position = Convert.ToInt32(api.Substring(3));
                     if (genericTypeContext == null) {
@@ -1237,6 +1359,8 @@ namespace Microsoft.Ddue.Tools {
             return (new SpecializedTypeReference(specializations.ToArray()));
         }
 
+        //private static Regex tr = new Regex(@"^(M:([_a-zA-Z0-9]+\.)*([_a-zA-Z0-9]+(\{.+\})?\.)*[_a-zA-Z0-9]+(\{.+\})?\.([_a-zA-Z0-9]+(\{[^\.]+\})?#)*[_a-zA-Z0-9]+(``\d+)?(\((((([_a-zA-Z0-9]+\.)*([_a-zA-Z0-9]+(\{.+\})?\.)*[_a-zA-Z0-9]+(\{.+\})?)|(`\d+)|(``\d+))(@|\*|(\[\]))*,)*((([_a-zA-Z0-9]+\.)*([_a-zA-Z0-9]+(\{.+\})?\.)*[_a-zA-Z0-9]+(\{.+\})?)|(`\d+)|(``\d+))(@|\*|(\[\]))*\))?(~((([_a-zA-Z0-9]+\.)*([_a-zA-Z0-9]+(\{.+\})?\.)*[_a-zA-Z0-9]+(\{.+\})?)|(`\d+)|(``\d+))(@|\*|(\[\]))*)?)$", RegexOptions.Compiled);
+        //private static Regex tr = new Regex(@"^(M:([_a-zA-Z0-9]+\.)*([_a-zA-Z0-9]+(\{[^:\(\)\s]+\})?\.)*[_a-zA-Z0-9]+(\{[^:\(\)\s]+\})?\.[_a-zA-Z0-9]+(``\d+)?(\((((([_a-zA-Z0-9]+\.)*([_a-zA-Z0-9]+(\{[^:\(\)\s]+\})?\.)*[_a-zA-Z0-9]+(\{[^:\(\)\s]+\})?)|(`\d+)|(``\d+))(@|\*|(\[\]))*,)*((([_a-zA-Z0-9]+\.)*([_a-zA-Z0-9]+(\{[^:\(\)\s]+\})?\.)*[_a-zA-Z0-9]+(\{[^:\(\)\s]+\})?)|(`\d+)|(``\d+))(@|\*|(\[\]))*\))?)$", RegexOptions.Compiled);
         private static Regex tr = new Regex(@"^(M:([_a-zA-Z0-9]+\.)*[_a-zA-Z0-9]+\.[_a-zA-Z0-9]+(``\d+)?(\((((([_a-zA-Z0-9]+\.)*[_a-zA-Z0-9]+)|(`\d+)|(``\d+))(@|\*|(\[\]))*,)*((([_a-zA-Z0-9]+\.)*[_a-zA-Z0-9]+)|(`\d+)|(``\d+))(@|\*|(\[\]))*\))?)$", RegexOptions.Compiled);
 
         public static MemberReference CreateMemberReference (string api) {
@@ -1378,6 +1502,7 @@ namespace Microsoft.Ddue.Tools {
 
             string simpleTypePattern = String.Format(@"{0}({1}(`\d+)?\.)*{1}(`\d+)?", optionalNamespacePattern, namePattern);
 
+            //string specializedTypePattern = String.Format(@"{0}({1}(\{{.+\}})?\.)*{1}(\{{.+\}})?", optionalNamespacePattern, namePattern);
             string specializedTypePattern = String.Format(@"({0}(\{{.+\}})?\.)*{0}(\{{.+\}})?", namePattern);
 
             string baseTypePattern = String.Format(@"({0})|({1})", simpleTypePattern, specializedTypePattern);
@@ -1467,13 +1592,13 @@ namespace Microsoft.Ddue.Tools {
                         break;
                     case ',':
                         if (specializationCount == 0) {
-                            types.Add("T:" + typelist.Substring(start, index - start));
+                            types.Add("T:" + typelist.Substring(start, index - start).Trim());
                             start = index + 1;
                         }
                         break;
                 }
             }
-            types.Add("T:" + typelist.Substring(start));
+            types.Add("T:" + typelist.Substring(start).Trim());
             return (types.ToArray());
         }
 
@@ -1688,7 +1813,16 @@ namespace Microsoft.Ddue.Tools {
             if ((options & DisplayOptions.ShowContainer) > 0) {
                 TypeReference type = target.Type;
                 WriteType(type, options & ~DisplayOptions.ShowContainer, writer);
-                WriteSeperator(writer);
+                MethodTarget methodTarget = target as MethodTarget;
+                if (methodTarget != null) {
+                    if (methodTarget.conversionOperator) { 
+                        writer.WriteString(" ");
+                    } else { 
+                        WriteSeperator(writer); 
+                    }
+                } else {
+                    WriteSeperator(writer);
+                }
             }
 
             // special logic for writing methods
@@ -1742,6 +1876,13 @@ namespace Microsoft.Ddue.Tools {
             MemberReference member = reference as MemberReference;
             if (member != null) {
                 WriteMember(member, options, writer);
+                return;
+            }
+
+            ExtensionMethodReference extMethod = reference as ExtensionMethodReference;
+            if (extMethod != null)
+            {
+                WriteExtensionMethod(extMethod, options, writer);
                 return;
             }
 
@@ -1855,6 +1996,12 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteAttributeString("class", "nu");
             writer.WriteString("(");
             writer.WriteEndElement();
+
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "fs");
+            writer.WriteString("<'");
+            writer.WriteEndElement();
+
             writer.WriteEndElement();
 
             for (int i = 0; i < templates.Length; i++) {
@@ -1883,6 +2030,12 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteAttributeString("class", "nu");
             writer.WriteString(")");
             writer.WriteEndElement();
+
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "fs");
+            writer.WriteString(">");
+            writer.WriteEndElement();
+
             writer.WriteEndElement();
         }
 
@@ -1931,9 +2084,15 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteEndElement();
 
             writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "fs");
+            writer.WriteString("<'");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("span");
             writer.WriteAttributeString("class", "nu");
             writer.WriteString("(");
             writer.WriteEndElement();
+
             writer.WriteEndElement();
 
             for (int i = 0; i < specialization.Length; i++) {
@@ -1955,6 +2114,11 @@ namespace Microsoft.Ddue.Tools {
 
             writer.WriteStartElement("span");
             writer.WriteAttributeString("class", "cpp");
+            writer.WriteString(">");
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "fs");
             writer.WriteString(">");
             writer.WriteEndElement();
 
@@ -2013,6 +2177,16 @@ namespace Microsoft.Ddue.Tools {
             for (int i = 1; i < reference.Rank; i++) { writer.WriteString(","); }
             writer.WriteString("]");
             writer.WriteEndElement();
+
+            // F# array notation
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "fs");
+            writer.WriteString("[");
+            for (int i = 1; i < reference.Rank; i++) { writer.WriteString(","); }
+            writer.WriteString("]");
+            writer.WriteEndElement();
+
+
             writer.WriteEndElement(); // end of <span class="languageSpecificText"> element
         }
 
@@ -2042,6 +2216,13 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteAttributeString("class", "nu");
             writer.WriteString(".");
             writer.WriteEndElement();
+
+            // F# seperator
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "fs");
+            writer.WriteString(".");
+            writer.WriteEndElement();
+
             writer.WriteEndElement();
         }
 
@@ -2168,6 +2349,28 @@ namespace Microsoft.Ddue.Tools {
             }
         }
 
+        public void WriteExtensionMethod(ExtensionMethodReference extMethod, DisplayOptions options, XmlWriter writer)
+        {
+            if (extMethod == null) throw new ArgumentNullException("extMethod");
+            if (writer == null) throw new ArgumentNullException("writer");
+
+            // write the unqualified method name
+            writer.WriteString(extMethod.Name);
+
+            // if this is a generic method, write any template params or args
+            if (extMethod.TemplateArgs != null && extMethod.TemplateArgs.Length > 0)
+            {
+                WriteTemplateArguments(extMethod.TemplateArgs, writer);
+            }
+
+            // write parameters
+            if ((options & DisplayOptions.ShowParameters) > 0)
+            {
+                Parameter[] parameters = extMethod.Parameters;
+                WriteMethodParameters(extMethod.Parameters, writer);
+            }
+        }
+
         public void WriteMember (MemberReference member, DisplayOptions options, XmlWriter writer) {
 
             if (member == null) throw new ArgumentNullException("member");
@@ -2217,6 +2420,7 @@ namespace Microsoft.Ddue.Tools {
                 WriteMemberTarget(target, options, writer, dictionary);
             } else {
                 TextReferenceUtilities.WriteSimpleMemberReference(member, options, writer, this);
+                //throw new InvalidOperationException(String.Format("Unknown member target '{0}'", member.Id));
             }
             
         }
@@ -2224,7 +2428,11 @@ namespace Microsoft.Ddue.Tools {
         private void WriteProcedureName (ProcedureTarget target, DisplayOptions options, XmlWriter writer) {
             MemberReference implements = target.ExplicitlyImplements;
             if (implements == null) {
-                writer.WriteString(target.Name);
+                if (target.conversionOperator) {
+                    WriteConversionOperator(target, writer);
+                } else {
+                    writer.WriteString(target.Name);
+                }
             } else {
                 WriteMember(implements, DisplayOptions.ShowContainer, writer);
             }
@@ -2235,14 +2443,61 @@ namespace Microsoft.Ddue.Tools {
             WriteProcedureName(target, options, writer);
 
             if ((options & DisplayOptions.ShowTemplates) > 0) {
-                WriteTemplateParameters(target.Templates, writer);
+                // if this is a generic method, write any template params or args
+                if (target.TemplateArgs != null && target.TemplateArgs.Length > 0)
+                {
+                    WriteTemplateArguments(target.TemplateArgs, writer);
+                }
             }
 
             if ((options & DisplayOptions.ShowParameters) > 0) {
                 Parameter[] parameters = target.Parameters;
-                WriteMethodParameters(parameters, writer, dictionary);
+
+                if (target.ConversionOperator) {
+                    TypeReference returns = target.returnType;
+                    WriteConversionOperatorParameters(parameters, returns, writer, dictionary);
+                } else {
+                    WriteMethodParameters(parameters, writer, dictionary);
+                }
             }
 
+        }
+
+                private void WriteConversionOperator(ProcedureTarget target, XmlWriter writer)
+        {
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "languageSpecificText");
+
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "cs");
+            writer.WriteString(target.Name);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "vb");
+            if (target.name == "Explicit") {
+                writer.WriteString("Narrowing");
+            } else if (target.name == "Implicit") {
+                writer.WriteString("Widening");
+            }
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "cpp");
+            writer.WriteString(target.name);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "nu");
+            writer.WriteString(target.name);
+            writer.WriteEndElement();
+            
+            writer.WriteStartElement("span");
+            writer.WriteAttributeString("class", "fs");
+            writer.WriteString(target.name);
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();
         }
 
         internal void WriteMethodParameters (Parameter[] parameters, XmlWriter writer) {
@@ -2266,21 +2521,73 @@ namespace Microsoft.Ddue.Tools {
                 writer.WriteStartElement("span");
                 writer.WriteAttributeString("class", "languageSpecificText");
                 // when there are no parameters, VB shows no parenthesis
+
                 writer.WriteStartElement("span");
                 writer.WriteAttributeString("class", "cs");
                 writer.WriteString("()");
                 writer.WriteEndElement();
+
                 writer.WriteStartElement("span");
                 writer.WriteAttributeString("class", "cpp");
                 writer.WriteString("()");
                 writer.WriteEndElement();
+
                 writer.WriteStartElement("span");
                 writer.WriteAttributeString("class", "nu");
                 writer.WriteString("()");
                 writer.WriteEndElement();
+
+                writer.WriteStartElement("span");
+                writer.WriteAttributeString("class", "fs");
+                writer.WriteString("()");
                 writer.WriteEndElement();
+
+                writer.WriteEndElement();
+
             }
        }
+
+        private void WriteConversionOperatorParameters(Parameter[] parameters, TypeReference returns, XmlWriter writer, Dictionary<IndexedTemplateTypeReference, TypeReference> dictionary)
+        {
+            if (parameters.Length > 0 || returns != null) writer.WriteString("(");
+
+            if (parameters.Length > 0) WriteType(parameters[0].Type, DisplayOptions.Default, writer, dictionary);
+
+            if (parameters.Length > 0 && returns != null) writer.WriteString(" to ");
+
+            if (returns != null) WriteType(returns, DisplayOptions.Default, writer, dictionary);
+
+            if (parameters.Length > 0 || returns != null) writer.WriteString(")");
+
+            if (parameters.Length == 0 && returns == null)
+            {
+                writer.WriteStartElement("span");
+                writer.WriteAttributeString("class", "languageSpecificText");
+                // when there are no parameters, VB shows no parenthesis
+
+                writer.WriteStartElement("span");
+                writer.WriteAttributeString("class", "cs");
+                writer.WriteString("()");
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("span");
+                writer.WriteAttributeString("class", "cpp");
+                writer.WriteString("()");
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("span");
+                writer.WriteAttributeString("class", "nu");
+                writer.WriteString("()");
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("span");
+                writer.WriteAttributeString("class", "fs");
+                writer.WriteString("()");
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+            }
+        }
 
         private void WriteProperty (PropertyTarget target, DisplayOptions options, XmlWriter writer) {
 
@@ -2313,6 +2620,12 @@ namespace Microsoft.Ddue.Tools {
                     writer.WriteAttributeString("class", "nu");
                     writer.WriteString("(");
                     writer.WriteEndElement();
+
+                    writer.WriteStartElement("span");
+                    writer.WriteAttributeString("class", "fs");
+                    writer.WriteString(" ");
+                    writer.WriteEndElement();
+
                     writer.WriteEndElement();
 
                     // show parameters
@@ -2343,6 +2656,12 @@ namespace Microsoft.Ddue.Tools {
                     writer.WriteAttributeString("class", "nu");
                     writer.WriteString(")");
                     writer.WriteEndElement();
+
+                    writer.WriteStartElement("span");
+                    writer.WriteAttributeString("class", "fs");
+                    writer.WriteString(" ");
+                    writer.WriteEndElement();
+
                     writer.WriteEndElement();
                 }
 

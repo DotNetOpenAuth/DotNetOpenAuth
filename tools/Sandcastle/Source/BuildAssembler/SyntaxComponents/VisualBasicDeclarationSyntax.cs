@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
@@ -9,7 +12,7 @@ namespace Microsoft.Ddue.Tools {
 	public class VisualBasicDeclarationSyntaxGenerator : SyntaxGeneratorTemplate {
 
         public VisualBasicDeclarationSyntaxGenerator (XPathNavigator configuration) : base(configuration) {
-            if (String.IsNullOrEmpty(language)) language = "VisualBasic";
+            if (String.IsNullOrEmpty(Language)) Language = "VisualBasic";
         }
 
         // namespace: done
@@ -83,7 +86,7 @@ namespace Microsoft.Ddue.Tools {
 			writer.WriteKeyword("Interface");
 			writer.WriteString(" ");
 			writer.WriteIdentifier(name);
-			WriteGenericTemplates(reflection, writer);
+            WriteGenericTemplates(reflection, writer, true); // Need to write variance info for interfaces and delegates
 			WriteImplementedInterfaces(reflection, writer);
 		}
 
@@ -109,7 +112,7 @@ namespace Microsoft.Ddue.Tools {
 			}
 			writer.WriteString(" ");
 			writer.WriteIdentifier(name);
-			WriteGenericTemplates(reflection, writer);
+            WriteGenericTemplates(reflection, writer, true); // Need to write variance info for interfaces and delegates
 			WriteParameters(reflection, writer);
 			if (type != null) {
 				writer.WriteString(" ");
@@ -388,6 +391,31 @@ namespace Microsoft.Ddue.Tools {
 					//writer.WriteReferenceLink(id);	
 				}
 			}
+
+            if (getter)
+            {
+                writer.WriteLine();
+                writer.WriteString("\t");
+                string getVisibility = (string)reflection.Evaluate(apiGetVisibilityExpression);
+                if (!String.IsNullOrEmpty(getVisibility))
+                {
+                    WriteVisibility(getVisibility, writer);
+                    writer.WriteString(" ");
+                }
+                writer.WriteKeyword("Get");
+            }
+            if (setter)
+            {
+                writer.WriteLine();
+                writer.WriteString("\t");
+                string setVisibility = (string)reflection.Evaluate(apiSetVisibilityExpression);
+                if (!String.IsNullOrEmpty(setVisibility))
+                {
+                    WriteVisibility(setVisibility, writer);
+                    writer.WriteString(" ");
+                }
+                writer.WriteKeyword("Set");
+            }
 		}
 
 
@@ -508,11 +536,14 @@ namespace Microsoft.Ddue.Tools {
 		}
 
 		// Visibility
+        private void WriteVisibility(XPathNavigator reflection, SyntaxWriter writer) {
 
-		private void WriteVisibility (XPathNavigator reflection, SyntaxWriter writer) {
+            string visibility = (string)reflection.Evaluate(apiVisibilityExpression);
+            WriteVisibility(visibility, writer);
+        }
 
-			string visibility = (string) reflection.Evaluate(apiVisibilityExpression);
-
+		private void WriteVisibility (string visibility, SyntaxWriter writer) {
+            			
 			switch (visibility) {
 				case "public":
 					writer.WriteKeyword("Public");
@@ -689,8 +720,12 @@ namespace Microsoft.Ddue.Tools {
 			writer.WriteString(" _");
 			writer.WriteLine();
 			writer.WriteString("\t");
-			writer.WriteKeyword("Implements");
-			writer.WriteString(" ");
+            string subgroup = (string)reflection.Evaluate(apiSubgroupExpression);
+            if (subgroup == "interface")
+                writer.WriteKeyword("Inherits");
+            else
+                writer.WriteKeyword("Implements");
+            writer.WriteString(" ");
 			while (implements.MoveNext()) {
 				XPathNavigator implement = implements.Current;
                 if (implements.CurrentPosition > 1) {
@@ -708,7 +743,12 @@ namespace Microsoft.Ddue.Tools {
 
 		// Generics
 
-		private void WriteGenericTemplates (XPathNavigator reflection, SyntaxWriter writer) {
+        private void WriteGenericTemplates(XPathNavigator reflection, SyntaxWriter writer)
+        {
+            WriteGenericTemplates(reflection, writer, false);
+        }
+
+		private void WriteGenericTemplates (XPathNavigator reflection, SyntaxWriter writer, bool writeVariance) {
 
 			XPathNodeIterator templates = reflection.Select(apiTemplatesExpression);
 
@@ -719,6 +759,24 @@ namespace Microsoft.Ddue.Tools {
 			while (templates.MoveNext()) {
 				XPathNavigator template = templates.Current;
 				if (templates.CurrentPosition > 1) writer.WriteString(", ");
+
+                if (writeVariance)
+                {
+                    bool contravariant = (bool)template.Evaluate(templateIsContravariantExpression);
+                    bool covariant = (bool)template.Evaluate(templateIsCovariantExpression);
+
+                    if (contravariant)
+                    {
+                        writer.WriteKeyword("In");
+                        writer.WriteString(" ");
+                    }
+                    if (covariant)
+                    {
+                        writer.WriteKeyword("Out");
+                        writer.WriteString(" ");
+                    }
+                }
+
 				string name = template.GetAttribute("name", String.Empty);
 				writer.WriteString(name);
 

@@ -47,13 +47,19 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InheritDocumentationComponent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BuildAssemblerLibrary\BuildAssemblerLibrary.csproj">
+      <Project>{399E78F8-4954-409E-991A-37DA9D0579CC}</Project>
+      <Name>BuildAssemblerLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BuildComponents\BuildComponents.csproj">
       <Project>{30773718-BC7C-4FCC-A9C2-7EE61DF4EC41}</Project>
       <Name>BuildComponents</Name>

@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -296,7 +299,7 @@ namespace Microsoft.Ddue.Tools {
 			{
 				Console.WriteLine("Exception adding to dictionary {0}", key);
 				Console.WriteLine(e);
-				throw e;
+				throw;
 			}
 		}
 

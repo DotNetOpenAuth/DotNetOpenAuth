@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +30,7 @@ namespace Microsoft.Ddue.Tools {
         XmlNamespaceManager context;
 
         bool omitBadExamples;
-        bool runBadExamples;
+        //bool runBadExamples;
 
         Dictionary<string, SampleInfo> sampleInfoTable;
 
@@ -44,9 +46,9 @@ namespace Microsoft.Ddue.Tools {
                 if (!string.IsNullOrEmpty(omitBadExamplesValue))
                     omitBadExamples = Boolean.Parse(omitBadExamplesValue);
 
-                string runBadExamplesValue = parsnip_node.GetAttribute("run-bad-examples", String.Empty);
-                if (!string.IsNullOrEmpty(runBadExamplesValue))
-                    runBadExamples = Boolean.Parse(runBadExamplesValue);
+                //string runBadExamplesValue = parsnip_node.GetAttribute("run-bad-examples", String.Empty);
+                //if (!string.IsNullOrEmpty(runBadExamplesValue))
+                //    runBadExamples = Boolean.Parse(runBadExamplesValue);
             }
 
             if (string.IsNullOrEmpty(approvedFile))

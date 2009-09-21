@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Configuration;
 using System.Collections.Generic;
@@ -453,8 +456,6 @@ namespace Microsoft.Ddue.Tools {
 
 		private string text;
 
-		private Region[] regions;
-
 		private string language;
 
 		public string Text {
@@ -468,13 +469,6 @@ namespace Microsoft.Ddue.Tools {
 				return(language);
 			}
 		}
-
-		public Region[] Regions {
-			get {
-				return(regions);
-			}
-		}
-
 	}
 
 	internal class ColorizationRule {

@@ -355,6 +355,9 @@
           <xsl:when test="boolean($tsubgroup)">
             <xsl:value-of select="$tsubgroup" />
           </xsl:when>
+          <xsl:when test="$tgroup='root'">
+            <xsl:value-of select="$tgroup" />
+          </xsl:when>
 				</xsl:choose>
 				<xsl:text>TopicTitle</xsl:text>
 			</xsl:attribute>
@@ -397,6 +400,9 @@
 					</xsl:when>
           <xsl:when test="boolean($tsubgroup)">
             <xsl:value-of select="$tsubgroup" />
+          </xsl:when>
+          <xsl:when test="$tgroup='root'">
+            <xsl:value-of select="$tgroup" />
           </xsl:when>
         </xsl:choose>
 				<xsl:text>TopicTitle</xsl:text>

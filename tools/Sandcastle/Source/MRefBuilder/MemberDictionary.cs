@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
 
 using System;
 using System.Collections;
@@ -27,7 +29,7 @@ namespace Microsoft.Ddue.Tools {
 
             // add all member of the type that the filter allows
             MemberList members = type.Members;
-            for (int i = 0; i < members.Length; i++) {
+            for (int i = 0; i < members.Count; i++) {
                 Member member = members[i];
 
                 // don't add nested types
@@ -50,7 +52,7 @@ namespace Microsoft.Ddue.Tools {
             if (type is Interface) {
 
                 InterfaceList contracts = type.Interfaces;
-                for (int i = 0; i < contracts.Length; i++) {
+                for (int i = 0; i < contracts.Count; i++) {
 
                     Interface contract = contracts[i];
 
@@ -59,7 +61,7 @@ namespace Microsoft.Ddue.Tools {
 
                     // otherwise, add inherited interface members
                     MemberList contractMembers = contract.Members;
-                    for (int j = 0; j < contractMembers.Length; j++) {
+                    for (int j = 0; j < contractMembers.Count; j++) {
                         Member contractMember = contractMembers[j];
 
                         // check for exposure; this is necessary to remove accessor methods
@@ -82,7 +84,7 @@ namespace Microsoft.Ddue.Tools {
 
                 // iterate through the members of each type
                 MemberList parentMembers = parentType.Members;
-                for (int i = 0; i < parentMembers.Length; i++) {
+                for (int i = 0; i < parentMembers.Count; i++) {
                     Member parentMember = parentMembers[i];
 
                     // don't add constructors
@@ -184,11 +186,11 @@ namespace Microsoft.Ddue.Tools {
                 ParameterList candidateParameters = GetParameters(candidate);
 
                 // number of parameters must match
-                if (parameters.Length != candidateParameters.Length) continue;
+                if (parameters.Count != candidateParameters.Count) continue;
 
                 // each parameter type must match
                 bool parameterMismatch = false;
-                for (int i = 0; i < parameters.Length; i++) {
+                for (int i = 0; i < parameters.Count; i++) {
                     if (parameters[i].Type != candidateParameters[i].Type) parameterMismatch = true;
                 }
                 // if the parameters match, we have the member

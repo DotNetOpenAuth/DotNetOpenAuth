@@ -21,20 +21,27 @@
   
   <!-- freshness date -->
   <item id="UpdateTitle"><font color="DarkGray">Updated: {0}</font></item>
+  <!-- if the TransformComponent of the BuildAssembler config file has the argument: 
+             argument key="changeHistoryOptions" value="showDefaultFreshnessDate"
+       the "defaultFreshnessDate" item is used as the default freshness date for topics that don't have a Change History table. -->
+  <item id="defaultFreshnessDate"/>
+  
+  <!-- change history table section-->
+  <item id="changeHistory">Change History</item>
   
   <!-- topic title -->
   <item id="nsrTitle">{0}</item>
 
 	<!-- alert titles -->
-	<item id="tipTitle"><b>Tip:</b></item>
-	<item id="cautionTitle"><b>Caution:</b></item>
-	<item id="securityTitle"><b>Security Note:</b></item>
-	<item id="noteTitle"><b>Note:</b></item>
-	<item id="importantTitle"><b>Important Note:</b></item>
-	<item id="visualBasicTitle"><b>Visual Basic Note:</b></item>
-	<item id="visualC#Title"><b>C# Note:</b></item>
-	<item id="visualC++Title"><b>C++ Note:</b></item>
-	<item id="visualJ#Title"><b>J# Note:</b></item>
+	<item id="tipTitle"><b>Tip</b></item>
+	<item id="cautionTitle"><b>Caution</b></item>
+	<item id="securityTitle"><b>Security Note</b></item>
+	<item id="noteTitle"><b>Note</b></item>
+	<item id="importantTitle"><b>Important</b></item>
+	<item id="visualBasicTitle"><b>Visual Basic Note</b></item>
+	<item id="visualC#Title"><b>C# Note</b></item>
+	<item id="visualC++Title"><b>C++ Note</b></item>
+	<item id="visualJ#Title"><b>J# Note</b></item>
 
 	<!-- alert alt text -->
 	<item id="tipAltText">Tip</item>
@@ -105,6 +112,7 @@
   <item id="JScript">JScript</item>
   <item id="xmlLang">Xml</item>
   <item id="JavaScript">JavaScript</item>
+  <item id="FSharp">F#</item>
   <item id="html">Html</item>
   <item id="visualbasicANDcsharp"><include item="VisualBasic"/> and <include item="CSharp"/></item>
   <item id="other"></item>

@@ -83,16 +83,22 @@ namespace Microsoft.Ddue.Tools.Reflection {
             }
         }
 
-        public virtual void Dispose() {
-            foreach (AssemblyNode assembly in assemblies) {
-                //				Console.WriteLine(loadedModule.Name);
-                assembly.Dispose();
-            }
-            foreach (AssemblyNode accessoryAssembly in accessoryAssemblies) {
-                accessoryAssembly.Dispose();
-            }
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
+                foreach (AssemblyNode assembly in assemblies) {
+                    //				Console.WriteLine(loadedModule.Name);
+                    assembly.Dispose();
+                }
+                foreach (AssemblyNode accessoryAssembly in accessoryAssemblies) {
+                    accessoryAssembly.Dispose();
+                }
+            }
+        }
 
         public void LoadAccessoryAssemblies(string filePattern) {
 
@@ -202,8 +208,8 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
         protected virtual void VisitMembers(MemberList members) {
             // sort members by name
-            Member[] sorted_members = new Member[members.Length];
-            for (int i = 0; i < members.Length; i++) sorted_members[i] = members[i];
+            Member[] sorted_members = new Member[members.Count];
+            for (int i = 0; i < members.Count; i++) sorted_members[i] = members[i];
             Array.Sort < Member >(sorted_members, memberComparison);
             // visit them
             foreach (Member member in sorted_members) {
@@ -225,8 +231,8 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
         protected virtual void VisitNamespaces(NamespaceList spaces) {
             // sort namespaces by name
-            Namespace[] sorted_spaces = new Namespace[spaces.Length];
-            for (int i = 0; i < spaces.Length; i++) sorted_spaces[i] = spaces[i];
+            Namespace[] sorted_spaces = new Namespace[spaces.Count];
+            for (int i = 0; i < spaces.Count; i++) sorted_spaces[i] = spaces[i];
             Array.Sort < Namespace >(sorted_spaces, namespaceComparison);
             // visit them
             foreach (Namespace space in sorted_spaces) {
@@ -244,8 +250,8 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
         protected virtual void VisitTypes(TypeNodeList types) {
             // sort types by name
-            TypeNode[] sorted_types = new TypeNode[types.Length];
-            for (int i = 0; i < types.Length; i++) sorted_types[i] = types[i];
+            TypeNode[] sorted_types = new TypeNode[types.Count];
+            for (int i = 0; i < types.Count; i++) sorted_types[i] = types[i];
             Array.Sort < TypeNode >(sorted_types, typeComparison);
             // visit them
             foreach (TypeNode type in sorted_types) {
@@ -310,7 +316,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
             //Console.WriteLine("getting members");
             MemberList members = type.Members;
             //Console.WriteLine("got {0} members", members.Count);
-            for (int i = 0; i < members.Length; i++) {
+            for (int i = 0; i < members.Count; i++) {
                 TypeNode nestedType = members[i] as TypeNode;
                 if (nestedType != null) {
                     //Console.WriteLine("nested type {0}", type.FullName);
@@ -322,7 +328,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
         private void StoreTypes(TypeNodeList types) {
             //Console.WriteLine("{0} types", types.Length);
-            for (int i = 0; i < types.Length; i++) {
+            for (int i = 0; i < types.Count; i++) {
                 StoreType(types[i]);
             }
         }

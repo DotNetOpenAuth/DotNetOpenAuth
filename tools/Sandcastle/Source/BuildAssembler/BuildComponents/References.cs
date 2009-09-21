@@ -1,5 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+﻿// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -169,15 +172,11 @@ namespace BuildComponents {
             switch (element.LocalName) {
                 case "namespace":
                     return (NamespaceReference.Create(element));
-                break;
                 case "member":
                 return (MemberReference.Create(element));
-                break;
                 default:
                     return (TypeReference.Create(element));
-                break;
             }
-            return (null);
         }
 
         public static Reference Create (XPathNavigator node) {
@@ -192,7 +191,7 @@ namespace BuildComponents {
             }
         }
 
-        protected static XPathExpression referenceApiExpression = XPathExpression.Compile("string(@api)");
+        protected static  XPathExpression referenceApiExpression = XPathExpression.Compile("string(@api)");
 
 
     }
@@ -224,23 +223,19 @@ namespace BuildComponents {
                 case "type":
                     // also handle specialization!
                     return(SimpleTypeReference.Create(element));
-                break;
                 case "referenceTo":
                     return(ReferenceTypeReference.Create(element));
-                break;
                 case "pointerTo":
                     return(PointerTypeReference.Create(element));
-                break;
                 case "arrayOf":
                     return(ArrayTypeReference.Create(element));
-                break;
 
             }
             return (null);
         }
 
         public static new TypeReference Create (XPathNavigator element) {
-            if (element == null) throw new ArgumentNullException("reference");
+            if (element == null) throw new ArgumentNullException("element");
             string tag = element.LocalName;
             if (tag == "type") {
                 bool isSpecialized = (bool)element.Evaluate("boolean(.//specialization)");
@@ -262,7 +257,7 @@ namespace BuildComponents {
                 XPathNavigator pointedToNode = element.SelectSingleNode("*[1]");
                 return (new PointerTypeReference(TypeReference.Create(pointedToNode)));
             } else if (tag == "template") {
-                string nameValue = element.GetAttribute("name", String.Empty);
+                //string nameValue = element.GetAttribute("name", String.Empty);
                 string indexValue = element.GetAttribute("index", String.Empty);
                 string apiValue = element.GetAttribute("api", String.Empty);
                 if ((!String.IsNullOrEmpty(apiValue)) && (!String.IsNullOrEmpty(indexValue))) {
@@ -314,7 +309,7 @@ namespace BuildComponents {
     public partial class PointerTypeReference {
 
         public static new PointerTypeReference Create (XmlReader pointerTo) {
-            if (pointerTo == null) throw new ArgumentException("pointerTo");
+            if (pointerTo == null) throw new ArgumentNullException("pointerTo");
             pointerTo.Read();
             TypeReference pointedToType = TypeReference.Create(pointerTo);
             return (new PointerTypeReference(pointedToType));

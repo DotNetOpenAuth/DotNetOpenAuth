@@ -42,6 +42,7 @@
     </span>
     <span class="cpp">&lt;</span>
     <span class="nu">(</span>
+    <span class="fs">&lt;'</span>
     </span>
     <xsl:for-each select="*">
       <xsl:apply-templates select="." mode="link" />
@@ -54,6 +55,7 @@
     <span class="vb">)</span>
     <span class="cpp">&gt;</span>
     <span class="nu">)</span>
+    <span class="fs">&gt;</span>
     </span>
   </xsl:template>
 
@@ -84,6 +86,11 @@
         <xsl:text>)</xsl:text>
       </span>
       <span class="nu">
+        <xsl:text>[</xsl:text>
+        <xsl:if test="number(@rank) &gt; 1">,</xsl:if>
+        <xsl:text>]</xsl:text>
+      </span>
+      <span class="fs">
         <xsl:text>[</xsl:text>
         <xsl:if test="number(@rank) &gt; 1">,</xsl:if>
         <xsl:text>]</xsl:text>
@@ -156,6 +163,27 @@
     </xsl:if>
   </xsl:template>
 
+  <!-- Produces parameter and return types in (plain) format:(Int32 to Decimal) for operator members -->
+  <xsl:template name="operatorTypesPlain">
+    <xsl:if test="count(parameters/parameter/*) = 1 or count(returns/*) = 1">
+      <xsl:text>(</xsl:text>
+    </xsl:if>
+    <xsl:if test="count(parameters/parameter/*) = 1">
+      <xsl:apply-templates select="parameters/parameter[1]/type|parameters/parameter[1]/arrayOf|parameters/parameter[1]/pointerTo|
+                               parameters/parameter[1]/referenceTo|parameters/parameter[1]/template" mode="plain" />
+    </xsl:if>
+    <xsl:if test="count(parameters/parameter/*) = 1 and count(returns/*) = 1">
+      <xsl:text> to </xsl:text>
+    </xsl:if>
+    <xsl:if test="count(returns/*) = 1">
+      <xsl:apply-templates select="returns[1]/type|returns[1]/arrayOf|returns[1]/pointerTo|returns[1]/referenceTo|
+                               returns[1]/template" mode="plain" />
+    </xsl:if>
+    <xsl:if test="count(parameters/parameter/*) = 1 or count(returns/*) = 1">
+      <xsl:text>)</xsl:text>
+    </xsl:if>
+  </xsl:template>
+
   <!-- when position on a type api, produces a (plain) name; outer types are indicated by dot-seperators; -->
   <!-- generic types are indicated by a keyword, because we can't show templates in a language-independent way -->
   <xsl:template name="typeNamePlain">
@@ -223,6 +251,27 @@
     </xsl:if>
   </xsl:template>
 
+  <!-- Produces parameter and return types in (decorated) format:(Int32 to Decimal) for operator members -->
+  <xsl:template name="operatorTypesDecorated">
+    <xsl:if test="count(parameters/parameter/*) = 1 or count(returns/*) = 1">
+      <xsl:text>(</xsl:text>
+    </xsl:if>
+    <xsl:if test="count(parameters/parameter/*) = 1">
+      <xsl:apply-templates select="parameters/parameter[1]/type|parameters/parameter[1]/arrayOf|parameters/parameter[1]/pointerTo|
+                               parameters/parameter[1]/referenceTo|parameters/parameter[1]/template" mode="decorated" />
+    </xsl:if>
+    <xsl:if test="count(parameters/parameter/*) = 1 and count(returns/*) = 1">
+      <xsl:text> to </xsl:text>
+    </xsl:if>
+    <xsl:if test="count(returns/*) = 1">
+      <xsl:apply-templates select="returns[1]/type|returns[1]/arrayOf|returns[1]/pointerTo|returns[1]/referenceTo|
+                               returns[1]/template" mode="decorated" />
+    </xsl:if>
+    <xsl:if test="count(parameters/parameter/*) = 1 or count(returns/*) = 1">
+      <xsl:text>)</xsl:text>
+    </xsl:if>
+  </xsl:template>
+
   <!-- when position on a type api, produces a (decorated) name, including outer types and templates -->
   <xsl:template name="typeNameDecorated">
     <xsl:if test="type|(containers/type)">
@@ -232,6 +281,7 @@
       <span class="vb">.</span>
       <span class="cpp">::</span>
       <span class="nu">.</span>
+      <span class="fs">.</span>
       </span>
     </xsl:if>
     <xsl:value-of select="apidata/@name" />
@@ -257,6 +307,7 @@
     </span>
     <span class="cpp">&lt;</span>
     <span class="nu">(</span>
+    <span class="fs">&lt;'</span>
     </span>
     <xsl:for-each select="*">
       <xsl:apply-templates select="." mode="decorated" />
@@ -269,6 +320,7 @@
     <span class="vb">)</span>
     <span class="cpp">&gt;</span>
     <span class="nu">)</span>
+    <span class="fs">&gt;</span>
     </span>
   </xsl:template>
 
@@ -296,6 +348,11 @@
         <xsl:text>)</xsl:text>
       </span>
       <span class="nu">
+        <xsl:text>[</xsl:text>
+        <xsl:if test="number(@rank) &gt; 1">,</xsl:if>
+        <xsl:text>]</xsl:text>
+      </span>
+      <span class="fs">
         <xsl:text>[</xsl:text>
         <xsl:if test="number(@rank) &gt; 1">,</xsl:if>
         <xsl:text>]</xsl:text>

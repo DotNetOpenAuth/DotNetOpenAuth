@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
@@ -10,7 +13,7 @@ namespace Microsoft.Ddue.Tools {
 	public class CPlusPlusDeclarationSyntaxGenerator : SyntaxGeneratorTemplate {
 
         public CPlusPlusDeclarationSyntaxGenerator (XPathNavigator configuration) : base(configuration) {
-            if (String.IsNullOrEmpty(language)) language = "ManagedCPlusPlus";
+            if (String.IsNullOrEmpty(Language)) Language = "ManagedCPlusPlus";
         }
 
         // namespace: done
@@ -326,7 +329,7 @@ namespace Microsoft.Ddue.Tools {
             } else if (name == "Explicit") {
                 writer.WriteKeyword("explicit operator");
             } else {
-                throw new Exception();
+                throw new InvalidOperationException("invalid cast type: " + name);
             }
             writer.WriteString(" ");
             WriteReturnValue(reflection, writer);
@@ -370,6 +373,16 @@ namespace Microsoft.Ddue.Tools {
 
 			if (hasGetter) {
 				writer.WriteString("\t");
+
+                //write the get visibility
+                string getVisibility = (string)reflection.Evaluate(apiGetVisibilityExpression);
+                if (!String.IsNullOrEmpty(getVisibility))
+                {
+                    WriteVisibility(getVisibility, writer);
+                    writer.WriteString(":");
+                    writer.WriteString(" ");
+                }
+
 				WriteReturnValue(reflection, writer);
 				writer.WriteString(" ");
 				writer.WriteKeyword("get");
@@ -399,6 +412,16 @@ namespace Microsoft.Ddue.Tools {
 
 			if (hasSetter) {
 				writer.WriteString("\t");
+
+                // write the set visibility
+                string setVisibility = (string)reflection.Evaluate(apiSetVisibilityExpression);
+                if (!String.IsNullOrEmpty(setVisibility))
+                {
+                    WriteVisibility(setVisibility, writer);
+                    writer.WriteString(":");
+                    writer.WriteString(" ");
+                }
+
 				writer.WriteKeyword("void");
 				writer.WriteString(" ");
 				writer.WriteKeyword("set");
@@ -571,9 +594,13 @@ namespace Microsoft.Ddue.Tools {
 
 		}
 
-		private void WriteVisibility (XPathNavigator reflection, SyntaxWriter writer) {
+        private void WriteVisibility(XPathNavigator reflection, SyntaxWriter writer) {
 
-			string visibility = reflection.Evaluate(apiVisibilityExpression).ToString();
+            string visibility = reflection.Evaluate(apiVisibilityExpression).ToString();
+            WriteVisibility(visibility, writer);
+        }
+
+		private void WriteVisibility (string visibility, SyntaxWriter writer) {
 
 			switch (visibility) {
 				case "public":

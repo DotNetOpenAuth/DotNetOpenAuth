@@ -17,6 +17,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
+[assembly: System.CLSCompliant(false)]
+
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
@@ -34,5 +36,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.4.10522.00")]
-[assembly: AssemblyFileVersion("2.4.10522.00")]
+[assembly: AssemblyVersion("2.5.10626.00")]
+[assembly: AssemblyFileVersion("2.5.10626.00")]

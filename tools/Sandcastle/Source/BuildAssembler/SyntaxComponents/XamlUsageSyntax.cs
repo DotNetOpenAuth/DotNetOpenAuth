@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
@@ -15,7 +18,7 @@ namespace Microsoft.Ddue.Tools
             : base(configuration)
         {
             LoadConfigNode(configuration);
-            if (String.IsNullOrEmpty(language)) language = "XAML";
+            if (String.IsNullOrEmpty(Language)) Language = "XAML";
         }
 
         public override void WriteSyntax(XPathNavigator reflection, SyntaxWriter writer)

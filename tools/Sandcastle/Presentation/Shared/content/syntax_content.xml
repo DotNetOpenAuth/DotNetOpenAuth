@@ -6,6 +6,10 @@
   <!-- C++ messages -->
   <item id="UnsupportedOperator_ManagedCPlusPlus">Visual C++ does not support this operator.</item>
   
+  <!-- F# messages -->
+  <item id="UnsupportedOperator_FSharp">F# does not support this operator.</item>
+  <item id="UnsupportedCast_FSharp">F# does not support the declaration of new casting operators.</item>"
+  
   <!-- VB messages -->
 	<item id="UnsupportedUnsafe_VisualBasic">Visual Basic does not support APIs that consume or return unsafe types.</item>
   <item id="UnsupportedOperator_VisualBasic">Visual Basic does not support this operator.</item>
@@ -70,7 +74,7 @@
 	<item id="propertyXamlSyntax_nonXaml">You cannot set this property in XAML.</item>
 
 	<!-- syntax used with all enums in xaml assemblies -->
-	<item id="enumerationOverviewXamlSyntax"><span>&lt;<i>object property</i>="<i>enumerationValue</i>" .../&gt;</span></item>
+	<item id="enumerationOverviewXamlSyntax"><span>&lt;<i>object property</i>="<i>enumerationMemberName</i>" .../&gt;</span></item>
 
 	<!-- boilerplate used with all method, field, etc. in xaml assemblies -->
 	<item id="constructorOverviewXamlSyntax">You cannot use constructors in XAML.</item>

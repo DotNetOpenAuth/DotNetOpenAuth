@@ -77,7 +77,7 @@
     <xsl:param name="initialName" />
     <xsl:variable name="componentNameLength" select="string-length($initialName)" />
     <xsl:choose>
-      <xsl:when test="$componentNameLength > $maxProjectNameLength">
+      <xsl:when test="$componentNameLength >= $maxProjectNameLength">
         <xsl:variable name="left" select="substring($initialName, 1, $leftLength)" />
         <xsl:variable name="right" select="substring($initialName, $componentNameLength - $rightLength)" />
         <xsl:value-of select="concat($left,'_',$right)" />

@@ -1,6 +1,0 @@
-
-all: System.Compiler.dll
-
-System.Compiler.dll:
-	csc /t:library /out:System.Compiler.dll /unsafe *.cs /keyfile:..\key.snk
-	copy System.Compiler.dll ..\..\ProductionTools

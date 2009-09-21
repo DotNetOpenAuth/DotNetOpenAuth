@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
@@ -9,7 +12,7 @@ namespace Microsoft.Ddue.Tools {
     public class VisualBasicUsageSyntaxGenerator : SyntaxGeneratorTemplate {
 
         public VisualBasicUsageSyntaxGenerator (XPathNavigator configuration) : base(configuration) {
-            if (String.IsNullOrEmpty(language)) language = "VisualBasicUsage";
+            if (String.IsNullOrEmpty(Language)) Language = "VisualBasicUsage";
         }
 
         public override void WriteNamespaceSyntax (XPathNavigator reflection, SyntaxWriter writer) {
@@ -21,7 +24,12 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteIdentifier(name);
         }
 
-        private void TypeDeclaration (XPathNavigator reflection, SyntaxWriter writer) {
+        private void TypeDeclaration(XPathNavigator reflection, SyntaxWriter writer)
+        {
+            TypeDeclaration(reflection, writer, false);
+        }
+
+        private void TypeDeclaration (XPathNavigator reflection, SyntaxWriter writer, bool writeVariance) {
             string name = (string)reflection.Evaluate(apiNameExpression);
             XPathNavigator declaringType = reflection.SelectSingleNode(apiContainingTypeExpression);
 
@@ -42,23 +50,47 @@ namespace Microsoft.Ddue.Tools {
             } else {
                 writer.WriteIdentifier(name);
             }
-            WriteGenericTemplates(reflection, writer);
+            WriteGenericTemplates(reflection, writer, writeVariance);
         }
 
-        private void WriteGenericTemplates (XPathNavigator type, SyntaxWriter writer) {
+        private void WriteGenericTemplates(XPathNavigator type, SyntaxWriter writer, bool writeVariance)
+        {
             XPathNodeIterator templates = type.Select(apiTemplatesExpression);
 
             if (templates.Count == 0) return;
             writer.WriteString("(");
             writer.WriteKeyword("Of");
             writer.WriteString(" ");
-            while (templates.MoveNext()) {
+            while (templates.MoveNext())
+            {
                 XPathNavigator template = templates.Current;
                 if (templates.CurrentPosition > 1) writer.WriteString(", ");
+                if (writeVariance)
+                {
+                    bool contravariant = (bool)template.Evaluate(templateIsContravariantExpression);
+                    bool covariant = (bool)template.Evaluate(templateIsCovariantExpression);
+
+                    if (contravariant)
+                    {
+                        writer.WriteKeyword("In");
+                        writer.WriteString(" ");
+                    }
+                    if (covariant)
+                    {
+                        writer.WriteKeyword("Out");
+                        writer.WriteString(" ");
+                    }
+                }
+
                 string name = template.GetAttribute("name", String.Empty);
                 writer.WriteString(name);
             }
             writer.WriteString(")");
+
+        }
+
+        private void WriteGenericTemplates (XPathNavigator type, SyntaxWriter writer) {
+            WriteGenericTemplates(type, writer, false);
         }
 
         private void ParameterDeclaration (string name, XPathNavigator type, SyntaxWriter writer) {
@@ -100,7 +132,7 @@ namespace Microsoft.Ddue.Tools {
         }
 
         public override void WriteInterfaceSyntax (XPathNavigator reflection, SyntaxWriter writer) {
-            TypeDeclaration(reflection, writer);
+            TypeDeclaration(reflection, writer, true);  // Need to write variance info for interfaces and delegates
         }
 
         public override void WriteDelegateSyntax (XPathNavigator reflection, SyntaxWriter writer) {
@@ -125,7 +157,7 @@ namespace Microsoft.Ddue.Tools {
                 writer.WriteIdentifier(name);
             }
            
-            WriteGenericTemplates(reflection, writer);
+            WriteGenericTemplates(reflection, writer, true); // Need to write variance info for interfaces and delegates
             writer.WriteString("(");
             writer.WriteKeyword("AddressOf");
             writer.WriteString(" HandlerMethod)");
@@ -531,21 +563,31 @@ namespace Microsoft.Ddue.Tools {
 
             // get value
             if (getter) {
-                writer.WriteLine();
-                writer.WriteParameter("value");
-                writer.WriteString(" = ");
-                WriteMemberName(reflection, writer);
-                WritePropertyParameters(reflection, writer);
-                writer.WriteLine();
+                string getVisibility = (string)reflection.Evaluate(apiGetVisibilityExpression);
+                if (string.IsNullOrEmpty(getVisibility) || (getVisibility != "assembly" && 
+                    getVisibility != "private" && getVisibility != "family and assembly"))
+                {
+                    writer.WriteLine();
+                    writer.WriteParameter("value");
+                    writer.WriteString(" = ");
+                    WriteMemberName(reflection, writer);
+                    WritePropertyParameters(reflection, writer);
+                    writer.WriteLine();
+                }
             }
 
             // set value
             if (setter) {
-                writer.WriteLine();
-                WriteMemberName(reflection, writer);
-                WritePropertyParameters(reflection, writer);
-                writer.WriteString(" = ");
-                writer.WriteParameter("value");
+                string setVisibility = (string)reflection.Evaluate(apiSetVisibilityExpression);
+                if (string.IsNullOrEmpty(setVisibility) || (setVisibility != "assembly" &&
+                    setVisibility != "private" && setVisibility != "family and assembly"))
+                {
+                    writer.WriteLine();
+                    WriteMemberName(reflection, writer);
+                    WritePropertyParameters(reflection, writer);
+                    writer.WriteString(" = ");
+                    writer.WriteParameter("value");
+                }
             }
 
         }

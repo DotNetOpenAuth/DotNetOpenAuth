@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -33,7 +36,7 @@ namespace Microsoft.Ddue.Tools {
 
         private BuildContext context = new BuildContext();
         
-        public List<BuildComponent> components = new List<BuildComponent>();
+        private List<BuildComponent> components = new List<BuildComponent>();
 
         private MessageHandler handler;
 
@@ -98,9 +101,16 @@ namespace Microsoft.Ddue.Tools {
             return (Apply(new TopicManifest(manifestFile)));
         }
 
-        public virtual void Dispose () {
-            foreach (BuildComponent component in components) {
-                ((IDisposable) component).Dispose();
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
+                foreach (BuildComponent component in components) {
+                    ((IDisposable) component).Dispose();
+                }
             }
         }
 
@@ -155,8 +165,15 @@ namespace Microsoft.Ddue.Tools {
                 throw new InvalidOperationException();
             }
 
-            public virtual void Dispose () {
-                reader.Close();
+            public void Dispose () {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing) {
+                if (disposing) {
+                    reader.Close();
+                }
             }
 
         }
@@ -298,19 +315,6 @@ namespace Microsoft.Ddue.Tools {
                 break;
             }
         }
-        
-        private void SetupContextFromConfiguration(XPathDocument configuration)
-        {
-            // Load namespaces into context
-            XPathNodeIterator namespace_nodes = configuration.CreateNavigator().Select("/configuration/dduetools/builder/context/namespace");
-            foreach (XPathNavigator namespace_node in namespace_nodes)
-            {
-                string prefix = namespace_node.GetAttribute("prefix", String.Empty);
-                string uri = namespace_node.GetAttribute("uri", String.Empty);
-                context.AddNamespace(prefix, uri);
-            }
-        }
-
 	}
 
 }

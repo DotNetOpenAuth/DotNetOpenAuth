@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -60,14 +62,14 @@ namespace Microsoft.Ddue.Tools {
 
                         Method getter = null;
                         MemberList candidateGetters = type.GetMembersNamed(new Identifier("Get" + name));
-                        for (int i = 0; i < candidateGetters.Length; i++) {
+                        for (int i = 0; i < candidateGetters.Count; i++) {
                             Member candidateGetter = candidateGetters[i];
                             if ((candidateGetter.NodeType == NodeType.Method) && candidateGetter.IsStatic && candidateGetter.IsVisibleOutsideAssembly) getter = (Method)candidateGetter;
                         }
 
                         Method setter = null;
                         MemberList candidateSetters = type.GetMembersNamed(new Identifier("Set" + name));
-                        for (int i = 0; i < candidateSetters.Length; i++) {
+                        for (int i = 0; i < candidateSetters.Count; i++) {
                             Member candidateSetter = candidateSetters[i];
                             if ((candidateSetter.NodeType == NodeType.Method) && candidateSetter.IsStatic && candidateSetter.IsVisibleOutsideAssembly) setter = (Method)candidateSetter;
                         }
@@ -107,14 +109,14 @@ namespace Microsoft.Ddue.Tools {
 
                         Method adder = null;
                         MemberList candidateAdders = type.GetMembersNamed(new Identifier("Add" + name + "Handler"));
-                        for (int i = 0; i < candidateAdders.Length; i++) {
+                        for (int i = 0; i < candidateAdders.Count; i++) {
                             Member candidateAdder = candidateAdders[i];
                             if ((candidateAdder.NodeType == NodeType.Method) && candidateAdder.IsStatic) adder = (Method)candidateAdder;
                         }
 
                         Method remover = null;
                         MemberList candidateRemovers = type.GetMembersNamed(new Identifier("Remove" + name + "Handler"));
-                        for (int i = 0; i < candidateRemovers.Length; i++) {
+                        for (int i = 0; i < candidateRemovers.Count; i++) {
                             Member candidateRemover = candidateRemovers[i];
                             if ((candidateRemover.NodeType == NodeType.Method) && candidateRemover.IsStatic) remover = (Method)candidateRemover;
                         }

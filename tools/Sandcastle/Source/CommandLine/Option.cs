@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
 
 using System;
 using System.IO;
@@ -12,6 +14,7 @@ namespace Microsoft.Ddue.Tools.CommandLine {
         internal bool processed;
 
         protected bool present;
+        [CLSCompliant(false)]
         protected object value;
         private string description;
 

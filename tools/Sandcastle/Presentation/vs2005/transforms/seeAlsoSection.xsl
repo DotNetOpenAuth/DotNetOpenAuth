@@ -47,6 +47,22 @@
         else return RTMReleaseDate;
       }
 
+      public static string IsValidDate(string dateString) {
+       
+        CultureInfo culture = CultureInfo.InvariantCulture;
+        DateTime dt = DateTime.MinValue;
+        
+        try {
+          dt = DateTime.Parse(dateString, culture);
+        }
+        catch (FormatException) {
+          Console.WriteLine(string.Format("Error: IsValidDate: Unable to convert '{0}' for culture {1}.", dateString, culture.Name));
+          return "false";
+        }
+        
+        return "true";
+      }
+
     ]]>
   </msxsl:script>
 
@@ -80,6 +96,7 @@
   <xsl:template match="ddue:relatedTopics" mode="seeAlso">
     <xsl:param name="autoGenerateLinks" select="'false'" />
 
+    <!-- Tasks -->
     <xsl:if test="(ddue:link | ddue:legacyLink)[(ddue:ToUpper(@topicType_id) = $HowTo or ddue:ToUpper(@topicType_id) = $Walkthrough or ddue:ToUpper(@topicType_id) = $Sample or ddue:ToUpper(@topicType_id) = $Troubleshooting) and ddue:GuidChecker(@xlink:href) = 'True']" >
       <xsl:call-template name="seeAlsoSubSection">
         <xsl:with-param name="headerGroup" select="'SeeAlsoTasks'" />
@@ -87,15 +104,8 @@
         <xsl:with-param name="autoGenerateLinks" select="'false'" />
       </xsl:call-template>
     </xsl:if>
-
-    <xsl:if test="(ddue:link | ddue:legacyLink)[(ddue:ToUpper(@topicType_id) = $Conceptual or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewArchitecture or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewCodeDirectory or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewScenarios or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewTechnologySummary) and ddue:GuidChecker(@xlink:href) = 'True']">
-      <xsl:call-template name="seeAlsoSubSection">
-        <xsl:with-param name="headerGroup" select="'SeeAlsoConcepts'" />
-        <xsl:with-param name="members" select="(ddue:link | ddue:legacyLink)[(ddue:ToUpper(@topicType_id) = $Conceptual or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewArchitecture or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewCodeDirectory or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewScenarios or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewTechnologySummary) and ddue:GuidChecker(@xlink:href) = 'True']" /> 
-        <xsl:with-param name="autoGenerateLinks" select="'false'" />
-      </xsl:call-template>
-    </xsl:if>
-
+  
+    <!-- Reference -->
     <xsl:if test="(ddue:link | ddue:legacyLink)[((ddue:ToUpper(@topicType_id) = $ReferenceWithoutSyntax or ddue:ToUpper(@topicType_id) = $ReferenceWithSyntax or ddue:ToUpper(@topicType_id) = $XMLReference or ddue:ToUpper(@topicType_id) = $ErrorMessage or ddue:ToUpper(@topicType_id) = $UIReference) and ddue:GuidChecker(@xlink:href) = 'True') or ddue:GuidChecker(@xlink:href) = 'False'] |
                   ddue:codeEntityReference or
                   $autoGenerateLinks = 'true'">
@@ -107,6 +117,16 @@
       </xsl:call-template>
     </xsl:if>
 
+    <!-- Concepts -->
+    <xsl:if test="(ddue:link | ddue:legacyLink)[(ddue:ToUpper(@topicType_id) = $Conceptual or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewArchitecture or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewCodeDirectory or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewScenarios or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewTechnologySummary) and ddue:GuidChecker(@xlink:href) = 'True']">
+      <xsl:call-template name="seeAlsoSubSection">
+        <xsl:with-param name="headerGroup" select="'SeeAlsoConcepts'" />
+        <xsl:with-param name="members" select="(ddue:link | ddue:legacyLink)[(ddue:ToUpper(@topicType_id) = $Conceptual or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewArchitecture or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewCodeDirectory or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewScenarios or ddue:ToUpper(@topicType_id) = $SDKTechnologyOverviewTechnologySummary) and ddue:GuidChecker(@xlink:href) = 'True']" />
+        <xsl:with-param name="autoGenerateLinks" select="'false'" />
+      </xsl:call-template>
+    </xsl:if>
+
+    <!-- Other Resources -->
     <xsl:if test="(ddue:link | ddue:legacyLink)[(ddue:ToUpper(@topicType_id) != $HowTo and ddue:ToUpper(@topicType_id) != $Walkthrough and ddue:ToUpper(@topicType_id) != $Sample and ddue:ToUpper(@topicType_id) != $Troubleshooting and ddue:ToUpper(@topicType_id) != $Conceptual and ddue:ToUpper(@topicType_id) != $SDKTechnologyOverviewArchitecture and ddue:ToUpper(@topicType_id) != $SDKTechnologyOverviewCodeDirectory and 
                   ddue:ToUpper(@topicType_id) != $SDKTechnologyOverviewScenarios and ddue:ToUpper(@topicType_id) != $SDKTechnologyOverviewTechnologySummary and ddue:ToUpper(@topicType_id) != $ReferenceWithoutSyntax and ddue:ToUpper(@topicType_id) != $ReferenceWithSyntax and ddue:ToUpper(@topicType_id) != $XMLReference and ddue:ToUpper(@topicType_id) != $ErrorMessage and ddue:ToUpper(@topicType_id) != $UIReference and 
                   ddue:GuidChecker(@xlink:href) = 'True') or (not(@topicType_id) and ddue:GuidChecker(@xlink:href) = 'True')] or

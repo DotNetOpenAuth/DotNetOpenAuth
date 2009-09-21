@@ -175,7 +175,7 @@
             <th>
               <xsl:variable name="codeLangLC" select="translate($codeLang,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz ')"/>
               <!-- Added JavaScript to look for AJAX snippets as JScript represents javascript snippets-->
-              <xsl:if test="$codeLangLC='visualbasic' or $codeLangLC='csharp' or $codeLangLC='managedcplusplus' or $codeLangLC='jsharp' or $codeLangLC='jscript' or $codeLangLC='javascript' or $codeLangLC='xaml'">
+              <xsl:if test="$codeLangLC='visualbasic' or $codeLangLC='csharp' or $codeLangLC='managedcplusplus' or $codeLangLC='jsharp' or $codeLangLC='jscript' or $codeLangLC='javascript' or $codeLangLC='fsharp' ">
                 <include item="{$codeLang}"/>
               </xsl:if>
               <xsl:text>&#xa0;</xsl:text>
@@ -183,6 +183,7 @@
             <th>
               <span class="copyCode" onclick="CopyCode(this)" onkeypress="CopyCode_CheckKey(this, event)" onmouseover="ChangeCopyCodeIcon(this)" onmouseout="ChangeCopyCodeIcon(this)" tabindex="0">
                 <img class="copyCodeImage" name="ccImage" align="absmiddle">
+                  <includeAttribute name="alt" item="copyImage" />
                   <includeAttribute name="title" item="copyImage" />
                   <includeAttribute name="src" item="iconPath">
                     <parameter>copycode.gif</parameter>
@@ -202,11 +203,6 @@
       </span>
     </div>
 
-  </xsl:template>
-
-  <!-- sireeshm: fix bug 361746 - use copy-of, so that span class="keyword", "literal" and "comment" nodes are copied to preserve code colorization in snippets -->
-  <xsl:template match="ddue:span[@class='keyword' or @class='literal' or @class='comment']">
-    <xsl:copy-of select="."/>
   </xsl:template>
   
   <xsl:template name="nonScrollingRegionTypeLinks">
@@ -289,5 +285,43 @@
     <xsl:param name="codeLang" />
     <MSHelp:Attr Name="codelang" Value="{$codeLang}" />
   </xsl:template>
-  
+
+  <xsl:template name="trimAtPeriod">
+    <xsl:param name="string" />
+
+    <xsl:variable name="trimmedString" select="substring(normalize-space($string), 1, 256)" />
+    <xsl:choose>
+      <xsl:when test="normalize-space($string) != $trimmedString">
+        <xsl:choose>
+          <xsl:when test="not(contains($trimmedString, '.'))">
+            <xsl:value-of select="$trimmedString"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="substringAndLastPeriod">
+              <xsl:with-param name="string" select="$trimmedString" />
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space($string)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="substringAndLastPeriod">
+    <xsl:param name="string" />
+
+    <xsl:if test="contains($string, '.')">
+      <xsl:variable name="after" select="substring-after($string, '.')" />
+      <xsl:value-of select="concat(substring-before($string, '.'),'.')" />
+      <xsl:if test="contains($after, '.')">
+        <xsl:call-template name="substringAndLastPeriod">
+          <xsl:with-param name="string" select="$after" />
+        </xsl:call-template>
+      </xsl:if>
+    </xsl:if>
+  </xsl:template>
+
+
 </xsl:stylesheet>

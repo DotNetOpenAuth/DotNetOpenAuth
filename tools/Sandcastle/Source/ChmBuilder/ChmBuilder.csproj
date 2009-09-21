@@ -49,6 +49,7 @@
     <Compile Include="ChmBuilder.cs">
     </Compile>
     <Compile Include="ChmBuilderArgs.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

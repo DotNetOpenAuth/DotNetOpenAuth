@@ -21,8 +21,15 @@
 	<item id="constructorTopicTitle">{0} Constructor {1}</item>
 	<item id="propertyTopicTitle">{0} Property {1}</item>
 	<item id="eventTopicTitle">{0} Event</item>
-	<item id="operatorTopicTitle">{0} Operator</item>
   
+  <!-- title for operator members -->
+	<item id="operatorTopicTitle">{0} Operator {1}</item>
+
+  <!-- title for op_explicit and op_implicit members -->
+  <item id="typeConversionTopicTitle">{0} Conversion {1}</item>
+  <!-- title for overload op_explicit and op_implicit topics -->
+  <item id="conversionOperatorTopicTitle">{0} Conversion Operators</item>
+      
 	<item id="attachedPropertyTopicTitle">{0} Attached Property</item>
 	<item id="attachedEventTopicTitle">{0} Attached Event</item>
 
@@ -35,9 +42,17 @@
   
 	<!-- list topic titles -->
 	<item id="FieldsTopicTitle">{0} Fields</item>
-	<item id="MethodsTopicTitle">{0} Methods {1}</item>
-	<item id="ConstructorsTopicTitle">{0} Constructors {1}</item>
-	<item id="PropertiesTopicTitle">{0} Properties {1}</item>
+	<item id="MethodsTopicTitle">{0} Methods</item>
+  
+  <!-- title for operator list topic that has [operators + no type conversions] -->
+  <item id="OperatorsTopicTitle">{0} Operators</item>
+  <!-- title for operator list topic that has [operators + type conversions] -->
+  <item id="OperatorsAndTypeConversionsTopicTitle">{0} Operators and Type Conversions</item>
+  <!-- title for operator list topic that has [no operators + type conversions] -->
+  <item id="TypeConversionsTopicTitle">{0} Type Conversions</item>
+  
+	<item id="ConstructorsTopicTitle">{0} Constructors</item>
+	<item id="PropertiesTopicTitle">{0} Properties</item>
 	<item id="EventsTopicTitle">{0} Events</item>
 	<item id="AttachedPropertiesTopicTitle">{0} Attached Properties</item>
   	<item id="AttachedEventsTopicTitle">{0} Attached Events</item>
@@ -59,6 +74,14 @@
   <item id="derivedTypesIndexEntry">{0}, derived types</item>
   <item id="membersIndexEntry">{0}, all members</item>
   <item id="methodsIndexEntry">{0}, methods</item>
+  <!-- index entry for operator list topic that has [operators + no type conversions] -->
+  <item id="operatorsIndexEntry">{0}, operators</item>
+  <!-- index entry for operator list topic that has [operators + type conversions] -->
+  <item id="operatorsAndTypeConversionsIndexEntry">{0}, operators and type conversions</item>
+  <!-- index entry for operator list topic that has [no operators + type conversions] -->
+  <item id="typeConversionsIndexEntry">{0}, type conversions</item>
+  <!-- index entries for op_explicit and op_implicit members -->
+  <item id="conversionOperatorIndexEntry">{0} conversion</item>
   <item id="propertiesIndexEntry">{0}, properties</item>
   <item id="fieldsIndexEntry">{0}, fields</item>
   <item id="eventsIndexEntry">{0}, events</item>
@@ -111,7 +134,7 @@
   <item id="implementsTitle">Implements</item>
 	<item id="examplesTitle">Examples</item>
 	<item id="threadSafetyTitle">Thread Safety</item>
-	<item id="permissionsTitle">Permissions</item>
+	<item id="permissionsTitle">.NET Framework Security</item> 
 	<item id="namespacesTitle">Namespaces</item>
 	<item id="typesTitle">Types</item>
   <item id="allMembersTitle">Members</item>
@@ -180,9 +203,9 @@
   <item id="ThreadSafety">Thread Safety</item>
   <item id="ThreadSafetyBP">Any public <include item="staticKeyword"/>  members of this type are thread safe. Any instance members are not guaranteed to be thread safe.</item>
   
-  <item id="NotesForImplementers">Notes to Implementers: </item>
-  <item id="NotesForCallers">Notes to Callers: </item>
-  <item id="NotesForInheritors">Notes to Inheritors: </item>
+  <item id="NotesForImplementers">Notes to Implementers</item>
+  <item id="NotesForCallers">Notes to Callers</item>
+  <item id="NotesForInheritors">Notes to Inheritors</item>
 
   <!-- Used for Platform Notes -->
   <item id="PlatformNote">
@@ -245,7 +268,7 @@
 	<item id="nonobsoleteAlternative">The non-obsolete alternative is {0}.</item>
   <item id="obsoleteRed"><font color="red"><b>Obsolete. </b></font></item>
   <item id="ObsoleteBoilerPlate">
-    <font color="red"><b>NOTE: This API is now obsolete.</b></font>
+    <font color="red"><b>Note: This API is now obsolete.</b></font>
   </item>
   <item id="definedBy">(Defined by {0}.)</item>
 	<item id="inheritedFrom">(Inherited from {0}.)</item>
@@ -429,6 +452,15 @@
   <item id="internalOnly">This API supports the .NET Framework infrastructure and is not intended to be used directly from your code.</item>
   <item id="infraStructure">Infrastructure. </item>
   
+  
+  <!-- Variance boilerplate text -->
+  <item id="inKeyword"><span class="languageSpecificText"><span class="cs"><span class="keyword">in</span> </span><span class="vb"><span class="keyword">In</span> </span><span class="cpp"><span class="keyword">in</span> </span><span class="nu"><span class="keyword">in</span> </span><span class="fs"></span></span></item>
+  <item id="outKeyword"><span class="languageSpecificText"><span class="cs"><span class="keyword">out</span> </span><span class="vb"><span class="keyword">Out</span> </span><span class="cpp"><span class="keyword">out</span> </span><span class="nu"><span class="keyword">out</span> </span><span class="fs"></span></span></item>
+  
+  <item id="covariant">This type parameter is covariant. That is, you can use either the type you specified or any type that is more derived. </item>
+  <item id="contravariant">This type parameter is contavariant. That is, you can use either the type you specified or any type that is less derived. </item>
+  <item id="variance">For more information about covariance and contravariance, see <conceptualLink target="2678dc63-c7f9-4590-9ddc-0a4df684d42e" />.</item>
+  
   <!-- Non Cls Compliant boilerplate text-->
   <item id="NotClsCompliant">This API is not CLS-compliant.</item>
   <item id="AltClsCompliant">The CLS-compliant alternative is {0}.</item>
@@ -451,10 +483,19 @@
   <item id="PocketPC">Windows Mobile for Pocket PC</item>
   <item id="SmartPhone">Windows Mobile for Smartphone</item>
   <item id="WinSvr2003">Windows Server 2003</item>
+  <item id="WinSvr2008">Windows Server 2008</item>
+  <item id="WinSvr2008R2">Windows Server 2008 R2</item>
   <item id="WinXpMediaCenter">Windows XP Media Center Edition</item>
   <item id="WinXPSE">Windows XP Starter Edition</item>
   <item id="WinVista">Windows Vista</item>
+  <item id="Win7">Windows 7</item>
   <item id="Xbox360">Xbox 360</item>
+  <item id="Zune">Zune</item>
+  
+  <!-- Platforms boilerplate for Silverlight mref builds --> 
+  <item id="silverlightplatforms">
+    For information on the operating systems and browsers supported by <include item="silverlight"/>, see "Supported Operating Systems and Browsers" in <conceptualLink target="d1c41046-1eef-4a73-8049-5c9f0487f7fc"/>.
+  </item>
 
   <!-- framework ids:  
        These shared content item strings are used for the headings in the Version Information section 
@@ -463,12 +504,15 @@
   <item id="netfw">.NET Framework</item>
   <item id="netcfw">.NET Compact Framework</item>
   <item id="xnafw">XNA Framework</item>
+  <item id="silverlight">Silverlight</item>
   
   <!-- framework version ids
        These shared content item strings are used in the Version Information section.
        These ids must be in sync with the ids used in the config file for VersionBuilder.
        The ids are also used in the platformFilters.xml filter files to indicate the framework version supported by each platform
   -->
+  <item id="netfw40">4.0</item>
+  <item id="netfw35_1">3.5 SP1</item>
   <item id="netfw35">3.5</item>
   <item id="netfw30_1">3.0 SP1</item>
   <item id="netfw30">3.0</item>
@@ -477,18 +521,23 @@
   <item id="netfw11">1.1</item>
   <item id="netfw10">1.0</item>
 
+  <item id="netcfw37">3.7</item>
   <item id="netcfw35">3.5</item>
   <item id="netcfw20">2.0</item>
   <item id="netcfw10">1.0</item>
 
   <item id="xnafw10">1.0</item>
 
+  <!-- silverlight version ids used in Version Information section. -->
+  <item id="silverlight20">2.0</item>
+  <item id="silverlight10">1.0</item>
+
   <!-- Used in the Requirements section to display an xmlns URI for apis that can be used in XAML -->
   <item id="xamlXmlnsRequirementsLayout"><b>XMLNS for XAML:</b> {0}</item>
   <item id="unmappedXamlXmlns">Not mapped to an xmlns.</item>
 
   <item id="secondaryFrameworkOverride"><br/><br/>In <include item="{0}"/>, this member is overridden by {1}.</item>
-  <item id="secondaryFrameworkInherited"><br/><br/>In <include item="{0}"/>&#160;<include item="{1}"/>, this member is inherited from {2}<span class="languageSpecificText"><span class="cs">.</span><span class="vb">.</span><span class="cpp">::</span><span class="nu">.</span></span>{3}.</item>
+  <item id="secondaryFrameworkInherited"><br/><br/>In <include item="{0}"/>&#160;<include item="{1}"/>, this member is inherited from {2}<span class="languageSpecificText"><span class="cs">.</span><span class="vb">.</span><span class="cpp">::</span><span class="nu">.</span><span class="fs">.</span></span>{3}.</item>
   <item id="secondaryFrameworkMember"><br/><br/>In <include item="{0}"/>&#160;<include item="{1}"/>, this member is {2}.</item>
   
   <item id="useBaseSummary">This member overrides {0}.</item>

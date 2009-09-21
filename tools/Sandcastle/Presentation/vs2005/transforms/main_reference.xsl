@@ -8,7 +8,9 @@
     >
 
   <xsl:param name="omitAptcaBoilerplate"/>
-  <xsl:param name="RTMReleaseDate" />
+  <xsl:param name="changeHistoryOptions" />
+  <xsl:param name="omitXmlnsBoilerplate" select="'false'" />
+  <xsl:param name="omitVersionInformation" select="'false'" />
 
   <!-- stuff specific to comments authored in DDUEXML -->
 
@@ -30,7 +32,7 @@
                            (count(/document/comments/ddue:dduexml/ddue:relatedTopics/*) > 0)  or 
                            ($group='type' or $group='member' or $group='list')
                         )"/>
-  <xsl:variable name="examplesSection" select="boolean(string-length(/document/comments/ddue:dduexml/ddue:codeExamples[normalize-space(.)]) > 0)"/>
+  <xsl:variable name="examplesSection" select="boolean(string-length(/document/comments/ddue:dduexml/ddue:codeExamples[normalize-space(.)]) > 0) and not($securityCriticalSection)"/>
   <xsl:variable name="languageFilterSection" select="boolean(string-length(/document/comments/ddue:dduexml/ddue:codeExamples[normalize-space(.)]) > 0)" />
   <xsl:variable name="securityCriticalSection" 
                 select="boolean(
@@ -55,7 +57,8 @@
 	<xsl:template name="body">
     <!-- freshness date -->
     <xsl:call-template name="writeFreshnessDate">
-      <xsl:with-param name="ChangedHistoryDate" select="/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]"/>
+      <xsl:with-param name="ChangedHistoryDate" select="/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1] | 
+                      /document/comments/ddue:dduexml/ddue:changeHistory/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]"/>
     </xsl:call-template>
 
     <!--internalOnly boilerplate -->
@@ -123,7 +126,7 @@
     <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.FlagsAttribute']">
       <p>
         <include item="flagsSummary">
-          <parameter><referenceLink target="{/document/reference/attributes/attribute/type/@api}" /></parameter>
+          <parameter><referenceLink target="T:System.FlagsAttribute" /></parameter>
         </include>
       </p>
     </xsl:if>
@@ -200,7 +203,16 @@
       </xsl:if>
 		<!-- remarks -->
       <xsl:if test="not($group='namespace') and not($securityCriticalSection)">
-        <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:remarks[1]" />
+      <xsl:choose>
+        <xsl:when test="/document/comments/ddue:dduexml/ddue:remarks">
+          <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:remarks" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="WriteRemarksSection">
+            <xsl:with-param name="node" select="document/comments/ddue:dduexml" />
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 		<!-- example -->
       <xsl:if test="not($securityCriticalSection)">
@@ -226,7 +238,7 @@
     <xsl:call-template name="seeAlsoSection"/>
 
     <!-- changed table section -->
-    <xsl:call-template name="writeChangedTable" />
+    <xsl:call-template name="writeChangeHistorySection" />
 
   </xsl:template> 
 
@@ -320,12 +332,19 @@
 			<xsl:with-param name="content">
 					<xsl:for-each select="template">
 						<xsl:variable name="parameterName" select="@name" />
+            <xsl:variable name="contravariant">
+              <xsl:if test="variance/@contravariant='true'"><include item="inKeyword"/></xsl:if>
+            </xsl:variable>
+            <xsl:variable name="covariant">
+              <xsl:if test="variance/@covariant='true'"><include item="outKeyword" /></xsl:if>
+            </xsl:variable>
               <dl paramName="{$parameterName}">
 						<dt>
-							<span class="parameter"><xsl:value-of select="$parameterName"/></span>
+              <xsl:copy-of select="$contravariant"/><xsl:copy-of select="$covariant" /><span class="parameter"><xsl:value-of select="$parameterName"/></span>
 						</dt>
 						<dd>
               		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:genericParameters/ddue:genericParameter[string(ddue:parameterReference)=$parameterName]/ddue:content" />
+              <xsl:if test="variance"><p><xsl:if test="variance/@contravariant='true'"><include item="contravariant" /></xsl:if><xsl:if test="variance/@covariant='true'"><include item="covariant" /></xsl:if><include item="variance" /></p></xsl:if>
             </dd>
 				</dl>
             </xsl:for-each>
@@ -386,6 +405,11 @@
           <div id="syntaxCodeBlocks" class="code">
             <xsl:call-template name="syntaxBlocks" />
           </div>
+          <xsl:apply-templates select="/document/syntax/div[@codeLanguage=XAML]"/>
+          
+          <!-- Show the authored XAML Values section, if any. -->
+          <xsl:call-template name="showXamlValuesSection"/>
+
           <!-- parameters & return value -->
           <xsl:apply-templates select="/document/reference/templates" />
           <xsl:apply-templates select="/document/reference/parameters" />
@@ -515,6 +539,7 @@
           <includeAttribute name="src" item="iconPath">
             <parameter>footer.gif</parameter>
           </includeAttribute>
+          <includeAttribute name="alt" item="footerImage" />
           <includeAttribute name="title" item="footerImage" />
         </img>
       </div>
@@ -565,14 +590,6 @@
           
         </xsl:with-param>
       </xsl:call-template>
-    </xsl:if>
-  </xsl:template>
-
-  <xsl:template name="writeChangedTable">
-    <xsl:if test="/document/comments/ddue:dduexml//ddue:section/ddue:title = 'Change History' and (/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table and /document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row/ddue:entry[normalize-space(.)])">
-      <xsl:apply-templates select="/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']">
-        <xsl:with-param name="showChangedHistoryTable" select="true()" />
-      </xsl:apply-templates>
     </xsl:if>
   </xsl:template>
 

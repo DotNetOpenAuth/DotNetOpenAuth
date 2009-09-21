@@ -35,7 +35,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
             // Explicit implementations
             MethodList explicitImplementations = method.ImplementedInterfaceMethods;
             if (explicitImplementations != null) {
-                for (int i = 0; i < explicitImplementations.Length; i++) {
+                for (int i = 0; i < explicitImplementations.Count; i++) {
                     Method explicitImplementation = explicitImplementations[i];
                     list.Add(explicitImplementation);
                 }
@@ -44,7 +44,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
             // Implicit implementations
             MethodList implicitImplementations = method.ImplicitlyImplementedInterfaceMethods;
             if (implicitImplementations != null) {
-                for (int i = 0; i < implicitImplementations.Length; i++) {
+                for (int i = 0; i < implicitImplementations.Count; i++) {
                     Method implicitImplementation = implicitImplementations[i];
                     list.Add(implicitImplementation);
                 }
@@ -99,15 +99,15 @@ namespace Microsoft.Ddue.Tools.Reflection {
             MemberList candidates = template.GetMembersNamed(name);
 
             // if no candidates, say so (this shouldn't happen)
-            if (candidates.Length == 0) throw new InvalidOperationException("No members in the template had the name found in the specialization. This is not possible, but apparently it happened.");
+            if (candidates.Count == 0) throw new InvalidOperationException("No members in the template had the name found in the specialization. This is not possible, but apparently it happened.");
 
             // if only one candidate, return it
-            if (candidates.Length == 1) return (candidates[0]);
+            if (candidates.Count == 1) return (candidates[0]);
 
             // multiple candidates, so now we need to compare parameters
             ParameterList parameters = GetParameters(member);
 
-            for (int i = 0; i < candidates.Length; i++) {
+            for (int i = 0; i < candidates.Count; i++) {
                 Member candidate = candidates[i];
 
                 // candidate must be same kind of node
@@ -139,7 +139,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
                 // otherwise, construct the template type identifier and use it to fetch the template type
                 Module templateModule = type.DeclaringModule;
-                Identifier name = new Identifier(String.Format("{0}`{1}", type.GetUnmangledNameWithoutTypeParameters(), type.TemplateArguments.Length));
+                Identifier name = new Identifier(String.Format("{0}`{1}", type.GetUnmangledNameWithoutTypeParameters(), type.TemplateArguments.Count));
                 Identifier space = type.Namespace;
                 TypeNode template = templateModule.GetType(space, name);
                 return (template);
@@ -155,8 +155,8 @@ namespace Microsoft.Ddue.Tools.Reflection {
                 TypeNode current = type;
                 while (true) {
                     int count = 0;
-                    if ((current.TemplateArguments != null) && (current.TemplateArguments.Length > count)) count = current.TemplateArguments.Length;
-                    if ((current.TemplateParameters != null) && (current.TemplateParameters.Length > count)) count = current.TemplateParameters.Length;
+                    if ((current.TemplateArguments != null) && (current.TemplateArguments.Count > count)) count = current.TemplateArguments.Count;
+                    if ((current.TemplateParameters != null) && (current.TemplateParameters.Count > count)) count = current.TemplateParameters.Count;
                     TypeNodeList arguments = current.TemplateParameters;
                     if (count == 0) {
                         identifiers.Push(new Identifier(current.GetUnmangledNameWithoutTypeParameters()));
@@ -191,7 +191,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
             TypeNode type = member.DeclaringType;
 
             MemberList defaultMembers = type.DefaultMembers;
-            for (int i = 0; i < defaultMembers.Length; i++) {
+            for (int i = 0; i < defaultMembers.Count; i++) {
                 Member defaultMember = defaultMembers[i];
                 if (member == defaultMember) return (true);
             }
@@ -237,7 +237,7 @@ namespace Microsoft.Ddue.Tools.Reflection {
         private static bool IsSpecialized(TypeNode type) {
             for (TypeNode t = type; t != null; t = t.DeclaringType) {
                 TypeNodeList templates = t.TemplateArguments;
-                if ((templates != null) && (templates.Length > 0)) return (true);
+                if ((templates != null) && (templates.Count > 0)) return (true);
             }
             return (false);
         }
@@ -246,9 +246,9 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
         private static bool ParametersMatch(ParameterList parameters1, ParameterList parameters2) {
 
-            if (parameters1.Length != parameters2.Length) return (false);
+            if (parameters1.Count != parameters2.Count) return (false);
 
-            for (int i = 0; i < parameters1.Length; i++) {
+            for (int i = 0; i < parameters1.Count; i++) {
                 TypeNode type1 = parameters1[i].Type;
                 TypeNode type2 = parameters2[i].Type;
 

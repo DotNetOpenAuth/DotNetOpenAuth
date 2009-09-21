@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
@@ -10,7 +13,7 @@ namespace Microsoft.Ddue.Tools {
 	public class JSharpDeclarationSyntaxGenerator : DeclarationSyntaxGeneratorTemplate {
 
         public JSharpDeclarationSyntaxGenerator (XPathNavigator configuration) : base(configuration) {
-            if (String.IsNullOrEmpty(language)) language = "JSharp";
+            if (String.IsNullOrEmpty(Language)) Language = "JSharp";
         }
 
 		// private static string unsupportedGeneric = "UnsupportedGeneric_JSharp";
@@ -171,7 +174,7 @@ namespace Microsoft.Ddue.Tools {
 			}
 		}
 
-		private void WriteNormalMethodSyntax (XPathNavigator reflection, SyntaxWriter writer) {
+		public override void WriteNormalMethodSyntax (XPathNavigator reflection, SyntaxWriter writer) {
 
 			if (IsUnsupportedUnsafe(reflection, writer)) return;
 			if (IsUnsupportedGeneric(reflection, writer)) return;

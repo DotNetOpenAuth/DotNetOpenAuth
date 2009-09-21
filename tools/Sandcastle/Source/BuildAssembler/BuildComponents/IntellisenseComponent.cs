@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -234,13 +237,15 @@ namespace Microsoft.Ddue.Tools {
 
 		}
 
-		public override void Dispose () {
-			//Console.WriteLine("disposing intellisense writer...");
-			foreach (XmlWriter writer in writers.Values) {
-				writer.WriteEndDocument();
-				writer.Close();
-			}
-		}
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+			    foreach (XmlWriter writer in writers.Values) {
+				    writer.WriteEndDocument();
+				    writer.Close();
+			    }
+            }
+            base.Dispose(disposing);
+        }
         
         private void WriteSummary(XPathNavigator node, XPathExpression expression, XmlWriter writer) {
             XPathNavigator summary = node.SelectSingleNode(expression);

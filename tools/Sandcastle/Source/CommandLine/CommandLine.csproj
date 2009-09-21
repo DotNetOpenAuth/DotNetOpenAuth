@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="BooleanOption.cs" />
     <Compile Include="ConsoleApplication.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ListOption.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="Option.cs" />

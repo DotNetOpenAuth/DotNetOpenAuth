@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.1">
 
 	<!-- stuff specified to comments authored in DDUEXML -->
-
+  <xsl:param name="omitXmlnsBoilerplate" select="'false'" />
 	
  <xsl:include href="htmlBody.xsl"/>
   <xsl:include href="utilities_reference.xsl" />
@@ -597,6 +597,7 @@
         <includeAttribute item="iconPath" name="src">
           <parameter>alert_note.gif</parameter>
         </includeAttribute>
+        <includeAttribute name="alt" item="noteAltText" />
         <includeAttribute name="title" item="noteAltText" />
       </img>
       <xsl:text> </xsl:text>
@@ -682,6 +683,7 @@
           <includeAttribute name="src" item="iconPath">
             <parameter>footer.gif</parameter>
           </includeAttribute>
+          <includeAttribute name="alt" item="footerImage" />
           <includeAttribute name="title" item="footerImage" />
         </img>
       </div>

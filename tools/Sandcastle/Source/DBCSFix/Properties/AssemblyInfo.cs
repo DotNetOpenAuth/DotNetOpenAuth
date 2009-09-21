@@ -1,5 +1,7 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
 
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -31,5 +33,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("2.4.10522.00")]
-[assembly: AssemblyFileVersion("2.4.10522.00")]
+[assembly: AssemblyVersion("2.5.10626.00")]
+[assembly: AssemblyFileVersion("2.5.10626.00")]

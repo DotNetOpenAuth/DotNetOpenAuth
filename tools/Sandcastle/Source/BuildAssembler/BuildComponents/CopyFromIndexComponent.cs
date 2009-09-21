@@ -1,5 +1,8 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -186,7 +189,7 @@ namespace Microsoft.Ddue.Tools {
                 {
                     WriteMessage(MessageLevel.Error, String.Format("An error occured while attempting to instantiate the type '{0}' in the assembly '{1}'. The error message is: {2}", type_name, assembly_path, e.InnerException.Message));
                 }
-                catch (InvalidCastException e)
+                catch (InvalidCastException)
                 {
                     WriteMessage(MessageLevel.Error, String.Format("The type '{0}' in the assembly '{1}' is not a SyntaxGenerator.", type_name, assembly_path));
                 }
@@ -484,8 +487,8 @@ namespace Microsoft.Ddue.Tools {
 
             // load the document
             try {
-                XPathDocument document = new XPathDocument(file, XmlSpace.Preserve);
-                //XPathDocument document = new XPathDocument(file);
+                //XPathDocument document = new XPathDocument(file, XmlSpace.Preserve);
+                XPathDocument document = new XPathDocument(file);
 
                 // search for value nodes
                 XPathNodeIterator valueNodes = document.CreateNavigator().Select(cache.ValueExpression);

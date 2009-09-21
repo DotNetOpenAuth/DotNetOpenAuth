@@ -86,6 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HxfGeneratorComponent.cs" />
     <Compile Include="IntellisenseComponent2.cs" />
     <Compile Include="MsdnResolver.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="ResolveConceptualLinksComponent.cs" />
     <Compile Include="SaveComponent.cs" />
     <Compile Include="SharedContentComponent.cs" />
+    <Compile Include="SnippetComponent.cs" />
     <Compile Include="SwitchComponent.cs" />
     <Compile Include="SyntaxComponent.cs" />
     <Compile Include="TargetCollection.cs" />
