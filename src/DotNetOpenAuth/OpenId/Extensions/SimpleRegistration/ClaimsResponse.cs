@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClaimsResponse"/> class.
 		/// </summary>
-		internal ClaimsResponse()
+		public ClaimsResponse()
 			: this(Constants.sreg_ns) {
 		}
 

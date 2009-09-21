@@ -10,7 +10,7 @@
 		<siteMapNode url="~/OP/DelegatedIdentifierSelect.aspx" title="OP Asserts new claimed_id if doing identifier Select and is delegated to from a 3rd party" />
 		<siteMapNode url="~/OP/Sreg.aspx" title="OP Simple Registration" />
 		<siteMapNode url="~/OP/HmacSha256.aspx" title="OP supports HMAC-SHA256 associations" />
-		<siteMapNode url="~/OP/POSTAssertion.aspx" title="OP sends large assertions as POST" />
+		<siteMapNode url="~/OP/POSTAssertion.aspx" title="OP sends large assertions as POST (opt. with UTF-8 multi-byte characters)" />
 		<siteMapNode url="~/OP/POSTRequests.aspx" title="OP accepts POSTed authentication requests" />
 		<siteMapNode url="~/OP/DirectMessageErrors.aspx" title="OP sends properly formatted error responses to invalid direct request messages" />
 		<siteMapNode url="~/OP/IndirectMessageErrors.aspx" title="OP sends properly formatted error responses via redirect to the RP to invalid indirect request messages" />
@@ -36,6 +36,7 @@
 		<siteMapNode url="~/RP/AssociationPoisoning.aspx" title="RP protects against association poisoning" />
 		<siteMapNode url="~/RP/DiscoverableReturnTo.aspx" title="RP has discoverable return_to" />
 		<siteMapNode url="~/RP/POSTAssertion.aspx" title="RP accepts POST assertion" />
+		<siteMapNode url="~/RP/POSTAssertionWithUtf8.aspx" title="RP accepts POST assertion with UTF-8 multi-byte characters" />
 		<siteMapNode url="~/RP/GSALevel1.aspx" title="RP complies with GSA level 1 profile" />
 		<siteMapNode url="~/RP/InfoCardPpid.aspx" title="InfoCard RP receives Ppid" />
 	</siteMapNode>
