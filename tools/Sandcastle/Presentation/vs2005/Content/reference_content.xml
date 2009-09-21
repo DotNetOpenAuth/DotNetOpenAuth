@@ -238,7 +238,7 @@
   </item>
 
 	<!-- inserted boilerplate -->
-	<item id="runningHeaderText">.NET Framework Class Library</item>
+	<item id="runningHeaderText">DotNetOpenAuth Class Library</item>
 	<item id="rootLink"><referenceLink target="R:Project">Namespaces</referenceLink></item>
 	<item id="obsoleteShort"><span class="obsolete">Obsolete.</span></item>
 	<item id="obsoleteLong"><span class="obsolete">This API is obsolete.</span></item>
