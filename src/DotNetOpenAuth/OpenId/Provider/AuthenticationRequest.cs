@@ -132,9 +132,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				Contract.Requires<InvalidOperationException>(!this.IsDelegatedIdentifier, OpenIdStrings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
-				Contract.Requires<InvalidOperationException>(!this.IsDirectedIdentity || !(this.LocalIdentifier != null && this.LocalIdentifier != value), OpenIdStrings.IdentifierSelectRequiresMatchingIdentifiers);
-
 				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (this.IsDirectedIdentity) {
 					this.positiveResponse.LocalIdentifier = value;

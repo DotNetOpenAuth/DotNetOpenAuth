@@ -175,7 +175,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				throw new NotImplementedException();
+				IAuthenticationRequest req = this;
+				Contract.Requires<InvalidOperationException>(!req.IsDelegatedIdentifier, OpenIdStrings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
+				Contract.Requires<InvalidOperationException>(!req.IsDirectedIdentity || !(req.LocalIdentifier != null && req.LocalIdentifier != value), OpenIdStrings.IdentifierSelectRequiresMatchingIdentifiers);
 			}
 		}
 

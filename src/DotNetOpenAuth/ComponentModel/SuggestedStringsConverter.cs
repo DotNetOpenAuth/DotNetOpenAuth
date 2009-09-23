@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.ComponentModel {
 	/// A type that generates suggested strings for Intellisense,
 	/// but doesn't actually convert between strings and other types.
 	/// </summary>
+	[ContractClass(typeof(SuggestedStringsConverterContract))]
 	public abstract class SuggestedStringsConverter : ConverterBase<string> {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SuggestedStringsConverter"/> class.

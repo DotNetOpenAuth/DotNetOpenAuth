@@ -199,6 +199,7 @@
   <ItemGroup>
     <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
     <Compile Include="ComponentModel\ConverterBase.cs" />
+    <Compile Include="ComponentModel\SuggestedStringsConverterContract.cs" />
     <Compile Include="ComponentModel\IssuersSuggestions.cs" />
     <Compile Include="ComponentModel\IdentifierConverter.cs" />
     <Compile Include="ComponentModel\SuggestedStringsConverter.cs" />
