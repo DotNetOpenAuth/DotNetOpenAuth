@@ -65,6 +65,9 @@
 
   <!-- section titles -->
   <item id="exceptionsTitle">Exceptions</item>
+  <item id="contractsTitle">Contracts</item>
+  <item id="setterTitle">Set</item>
+  <item id="getterTitle">Get</item>
   <item id="SeeAlso">See&#160;Also</item>
   <item id="SeeAlsoTasks">Tasks</item>
   <item id="SeeAlsoReference">Reference</item>

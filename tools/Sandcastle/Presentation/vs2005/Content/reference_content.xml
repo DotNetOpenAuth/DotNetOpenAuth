@@ -165,6 +165,10 @@
 	<item id="exceptionConditionHeader">Condition</item>
 	<item id="permissionNameHeader">Permission</item>
 	<item id="permissionDescriptionHeader">Description</item>
+  <item id="requiresNameHeader">Requires</item>
+  <item id="ensuresNameHeader">Ensures</item>
+  <item id="ensuresOnThrowNameHeader">EnsuresOnThrow</item>
+  <item id="invariantsNameHeader">Invariants</item>
 
 	<!-- filter control text -->
 	<item id="allTypesFilterLabel">All Types</item>
