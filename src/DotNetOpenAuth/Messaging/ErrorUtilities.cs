@@ -309,38 +309,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Verifies something about the argument supplied to a method.
 		/// </summary>
-		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
-		/// <param name="parameterName">Name of the parameter.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
-		[Pure]
-		internal static void VerifyArgumentInRange(bool condition, string parameterName) {
-			Contract.Requires(condition);
-			if (!condition) {
-				throw new ArgumentOutOfRangeException(parameterName);
-			}
-		}
-
-		/// <summary>
-		/// Verifies something about the argument supplied to a method.
-		/// </summary>
-		/// <param name="condition">The condition that must evaluate to true to avoid an exception.</param>
-		/// <param name="parameterName">Name of the parameter.</param>
-		/// <param name="message">The unformatted message.</param>
-		/// <param name="args">The string formatting arguments.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
-		[Pure]
-		internal static void VerifyArgumentInRange(bool condition, string parameterName, string message, params object[] args) {
-			Contract.Requires(condition);
-			Contract.Requires<ArgumentNullException>(args != null);
-			Contract.Assume(message != null);
-			if (!condition) {
-				throw new ArgumentOutOfRangeException(parameterName, string.Format(CultureInfo.CurrentCulture, message, args));
-			}
-		}
-
-		/// <summary>
-		/// Verifies something about the argument supplied to a method.
-		/// </summary>
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="message">The message to use in the exception if the condition is false.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>

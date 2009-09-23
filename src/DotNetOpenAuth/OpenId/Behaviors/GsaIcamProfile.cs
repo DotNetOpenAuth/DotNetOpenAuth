@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// incompatible with each other.
 		/// </remarks>
 		void IRelyingPartyBehavior.ApplySecuritySettings(RelyingPartySecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			if (securitySettings.MaximumHashBitLength < 256) {
 				securitySettings.MaximumHashBitLength = 256;
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		void IRelyingPartyBehavior.OnOutgoingAuthenticationRequest(RelyingParty.IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			RelyingParty.AuthenticationRequest requestInternal = (RelyingParty.AuthenticationRequest)request;
 			ErrorUtilities.VerifyProtocol(string.Equals(request.Realm.Scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || DisableSslRequirement, BehaviorStrings.RealmMustBeHttps);
@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// </summary>
 		/// <param name="assertion">The positive assertion.</param>
 		void IRelyingPartyBehavior.OnIncomingPositiveAssertion(IAuthenticationResponse assertion) {
-			ErrorUtilities.VerifyArgumentNotNull(assertion, "assertion");
+			Contract.Requires<ArgumentNullException>(assertion != null);
 
 			PolicyResponse pape = assertion.GetExtension<PolicyResponse>();
 			ErrorUtilities.VerifyProtocol(
@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
 		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			var hostProcessedRequest = request as IHostProcessedRequest;
 			if (hostProcessedRequest != null) {
@@ -206,7 +206,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		bool IProviderBehavior.OnOutgoingResponse(Provider.IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			bool result = false;
 

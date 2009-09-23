@@ -93,8 +93,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static IProviderApplicationStore HttpApplicationStore {
 			get {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<IProviderApplicationStore>() != null);
-				ErrorUtilities.VerifyHttpContext();
 				HttpContext context = HttpContext.Current;
 				var store = (IProviderApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {

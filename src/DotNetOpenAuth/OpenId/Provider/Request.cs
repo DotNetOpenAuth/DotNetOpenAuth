@@ -99,10 +99,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
 		internal IProtocolMessage Response {
 			get {
-				Contract.Requires<InvalidOperationException>(this.IsResponseReady);
+				Contract.Requires<InvalidOperationException>(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
 
-				ErrorUtilities.VerifyOperation(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 				if (this.responseExtensions.Count > 0) {
 					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
 					ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);

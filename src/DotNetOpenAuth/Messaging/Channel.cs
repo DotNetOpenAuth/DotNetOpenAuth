@@ -445,12 +445,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
 		protected internal virtual HttpRequestInfo GetRequestFromContext() {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Contract.Ensures(Contract.Result<HttpRequestInfo>() != null);
 			Contract.Ensures(Contract.Result<HttpRequestInfo>().Url != null);
 			Contract.Ensures(Contract.Result<HttpRequestInfo>().RawUrl != null);
 			Contract.Ensures(Contract.Result<HttpRequestInfo>().UrlBeforeRewriting != null);
-
-			ErrorUtilities.VerifyHttpContext();
 
 			Contract.Assume(HttpContext.Current.Request.Url != null);
 			Contract.Assume(HttpContext.Current.Request.RawUrl != null);
