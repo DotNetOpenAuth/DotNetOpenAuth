@@ -279,7 +279,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	/// <param name="opUri">The OP Endpoint, if known.</param>
 	box.dnoi_internal.deriveOPFavIcon = function(opUri) {
 		if (!opUri) {
-			var response = box.dnoi_internal.getUserSuppliedIdentifierResults().successAuthData;
+			var idresults = box.dnoi_internal.getUserSuppliedIdentifierResults();
+			var response = idresults ? idresults.successAuthData : null;
 			if (!response || response.length == 0) {
 				trace('No favicon because no successAuthData.');
 				return;
@@ -373,19 +374,103 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.onAuthFailed = function() {
 		box.dnoi_internal.submitPending = null;
 	};
-	
+
 	box.onblur = function(event) {
-		if (box.value.length > 0) {
-			box.dnoi_internal.performDiscovery(box.value);
-		} else {
-			box.dnoi_internal.setVisualCue();
+		if (box.lastDiscoveredIdentifier != box.value || !box.dnoi_internal.state) {
+			if (box.value.length > 0) {
+				box.dnoi_internal.performDiscovery(box.value);
+			} else {
+				box.dnoi_internal.setVisualCue();
+			}
 		}
+
 		return true;
 	};
-	box.onkeyup = function(event) {
-		box.dnoi_internal.setVisualCue();
-		return true;
-	};
+
+	// Closure and encapsulation of typist detection and auto-discovery functionality.
+	{
+		var rate = NaN;
+		var lastValue = box.value;
+		var keyPresses = 0;
+		var startTime = null;
+		var lastKeyPress = null;
+		var discoveryTimer;
+
+		function cancelTimer() {
+			if (discoveryTimer) {
+				trace('canceling timer');
+				clearTimeout(discoveryTimer);
+				discoveryTimer = null;
+			}
+		}
+
+		function identifierSanityCheck(id) {
+			return id.match("^[=@+$!(].+|.*?\\.[^\.]+");
+		}
+
+		function discover() {
+			cancelTimer();
+			if (identifierSanityCheck(box.value)) {
+				box.dnoi_internal.performDiscovery(box.value);
+			}
+		}
+
+		function reset() {
+			keyPresses = 0;
+			startTime = null;
+			rate = NaN;
+			trace('resetting state');
+		}
+
+		box.onkeyup = function(e) {
+			box.dnoi_internal.setVisualCue();
+
+			if (new Date() - lastKeyPress > 3000) {
+				// the user seems to have altogether stopped typing,
+				// so reset our typist speed detector.
+				reset();
+			}
+			lastKeyPress = new Date();
+
+			if (e.keyCode == 13) {
+				discover();
+			} else {
+				var newValue = box.value;
+				if (lastValue != newValue) {
+					if (newValue.length == 0) {
+						reset();
+					} else if (Math.abs(lastValue.length - newValue.length) > 1) {
+						// One key press is responsible for multiple character changes.
+						// The user may have pasted in his identifier in which case
+						// we want to begin discovery immediately.
+						trace(newValue + ': paste detected (old value ' + lastValue + ')');
+						discover();
+					} else {
+						keyPresses++;
+						var timeout = 3000; // timeout to use if we don't have enough keying to figure out type rate
+						if (startTime === null) {
+							startTime = new Date();
+						} else if (keyPresses > 1) {
+							cancelTimer();
+							rate = (new Date() - startTime) / keyPresses;
+							var minTimeout = 300;
+							var maxTimeout = 3000;
+							var typistFactor = 5;
+							timeout = Math.max(minTimeout, Math.min(rate * typistFactor, maxTimeout));
+						}
+
+						trace(newValue + ': setting timer for ' + timeout);
+						discoveryTimer = setTimeout(discover, timeout);
+					}
+				}
+			}
+
+			trace(newValue + ': updating lastValue');
+			lastValue = newValue;
+
+			return true;
+		};
+	}
 
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
 
