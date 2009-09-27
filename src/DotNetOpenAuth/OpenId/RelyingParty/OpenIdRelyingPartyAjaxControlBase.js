@@ -342,7 +342,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			if (thisServiceEndpoint.completeAttempt(true)) {
 				trace(thisServiceEndpoint.host + " authenticated!");
 				thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
-				thisServiceEndpoint.claimedIdentifier = authUri//////////////////////////////////
+				thisServiceEndpoint.claimedIdentifier = authUri.getQueryArgValue('openid.claimed_id');
 				thisServiceEndpoint.response = authUri;
 				thisDiscoveryResult.abortAll();
 				if (thisDiscoveryResult.onAuthSuccess) {

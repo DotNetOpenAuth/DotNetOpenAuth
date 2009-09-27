@@ -77,7 +77,7 @@ window.dnoa_internal.Uri = function(url) {
 
 	var queryBeginsAt = this.originalUri.indexOf('?');
 	if (queryBeginsAt >= 0) {
-		this.queryString = url.substr(queryBeginsAt + 1);
+		this.queryString = this.originalUri.substr(queryBeginsAt + 1);
 		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
