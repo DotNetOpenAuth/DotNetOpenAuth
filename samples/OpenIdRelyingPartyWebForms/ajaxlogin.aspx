@@ -25,14 +25,14 @@ td
 
 <asp:Content runat="server" ContentPlaceHolderID="Main">
 <script type="text/javascript">
-	function onauthenticated(sender) {
+	function onauthenticated(sender, e) {
 		var emailBox = document.getElementById('<%= emailAddressBox.ClientID %>');
 		emailBox.disabled = false;
 		emailBox.title = null; // remove tooltip describing why the box was disabled.
 		// the sreg response may not always be included.
-		if (sender.sreg) {
+		if (e && e.sreg) {
 			// and the email field may not always be included in the sreg response.
-			if (sender.sreg.email) { emailBox.value = sender.sreg.email; }
+			if (e.sreg.email) { emailBox.value = e.sreg.email; }
 		}
 	}
 </script>
@@ -48,7 +48,7 @@ td
 						<openid:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" CssClass="openidtextbox"
 							OnLoggingIn="OpenIdAjaxTextBox1_LoggingIn" 
 							OnLoggedIn="OpenIdAjaxTextBox1_LoggedIn"
-							OnClientAssertionReceived="onauthenticated(sender)"
+							OnClientAssertionReceived="onauthenticated(sender, e)"
 							OnUnconfirmedPositiveAssertion="OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion" />
 						<asp:RequiredFieldValidator ID="openidRequiredValidator" runat="server" 
 							ControlToValidate="OpenIdAjaxTextBox1" ValidationGroup="openidVG"

@@ -385,11 +385,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		protected override void ScriptClosingPopupOrIFrame() {
 			Logger.OpenId.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
-			List<string> assignments = new List<string>();
+			string extensionsJson = null;
 
 			var authResponse = RelyingPartyNonVerifying.GetResponse();
 			if (authResponse.Status == AuthenticationStatus.Authenticated) {
 				this.OnUnconfirmedPositiveAssertion(); // event handler will fill the clientScriptExtensions collection.
+				var extensionsDictionary = new Dictionary<string, string>();
 				foreach (var pair in this.clientScriptExtensions) {
 					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
 					if (extension == null) {
@@ -397,11 +398,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
 					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
-					if (string.IsNullOrEmpty(js)) {
-						js = "null";
+					if (!string.IsNullOrEmpty(js)) {
+						extensionsDictionary[pair.Value] = js;
 					}
-					assignments.Add(pair.Value + " = " + js);
 				}
+
+				extensionsJson = MessagingUtilities.CreateJsonObject(extensionsDictionary, true);
 			}
 
 			string payload = "document.URL";
@@ -414,7 +416,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				payloadUri.AppendQueryArgs(Page.Request.Form.ToDictionary());
 				payload = MessagingUtilities.GetSafeJavascriptValue(payloadUri.Uri.AbsoluteUri);
 			}
-			this.CallbackUserAgentMethod("dnoa_internal.processAuthorizationResult(" + payload + ")", assignments.ToArray());
+
+			if (!string.IsNullOrEmpty(extensionsJson)) {
+				payload += ", " + extensionsJson;
+			}
+
+			this.CallbackUserAgentMethod("dnoa_internal.processAuthorizationResult(" + payload + ")");
 		}
 
 		/// <summary>
@@ -490,27 +497,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		private void CallbackUserAgentMethod(string methodCall) {
-			this.CallbackUserAgentMethod(methodCall, null);
-		}
-
-		/// <summary>
-		/// Invokes a method on a parent frame/window's OpenIdAjaxTextBox,
-		/// and closes the calling popup window if applicable.
-		/// </summary>
-		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
-		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
-		/// <param name="preAssignments">An optional list of assignments to make to the input box object before placing the method call.</param>
-		private void CallbackUserAgentMethod(string methodCall, string[] preAssignments) {
 			Logger.OpenId.InfoFormat("Sending Javascript callback: {0}", methodCall);
 			Page.Response.Write(@"<html><body><script language='javascript'>
 	var inPopup = !window.frameElement;
 	var objSrc = inPopup ? window.opener : window.frameElement;
 ");
-			if (preAssignments != null) {
-				foreach (string assignment in preAssignments) {
-					Page.Response.Write(string.Format(CultureInfo.InvariantCulture, "	objSrc.{0};\n", assignment));
-				}
-			}
 
 			// Something about calling objSrc.{0} can somehow cause FireFox to forget about the inPopup variable,
 			// so we have to actually put the test for it ABOVE the call to objSrc.{0} so that it already 

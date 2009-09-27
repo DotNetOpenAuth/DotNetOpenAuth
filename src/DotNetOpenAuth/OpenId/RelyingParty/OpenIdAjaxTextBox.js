@@ -349,13 +349,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.setVisualCue('setup');
 	};
 
-	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint) {
+	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint, extensionResponses) {
 		// visual cue that auth was successful
 		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
 		box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
 		box.dnoi_internal.setVisualCue('authenticated', parsedPositiveAssertion.endpoint, parsedPositiveAssertion.claimedIdentifier);
 		if (box.dnoi_internal.onauthenticated) {
-			box.dnoi_internal.onauthenticated(box);
+			box.dnoi_internal.onauthenticated(box, extensionResponses);
 		}
 
 		if (box.dnoi_internal.submitPending) {

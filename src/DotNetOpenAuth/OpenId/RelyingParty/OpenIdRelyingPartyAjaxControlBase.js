@@ -181,9 +181,13 @@ window.OpenIdIdentifier = function(identifier) {
 
 /// <summary>Invoked by RP web server when an authentication has completed.</summary>
 /// <remarks>The duty of this method is to distribute the notification to the appropriate tracking object.</remarks>
-window.dnoa_internal.processAuthorizationResult = function(resultUrl) {
+window.dnoa_internal.processAuthorizationResult = function(resultUrl, extensionResponses) {
 	//trace('processAuthorizationResult ' + resultUrl);
 	var resultUri = new window.dnoa_internal.Uri(resultUrl);
+	trace('processing auth result with extensionResponses: ' + extensionResponses);
+	if (extensionResponses) {
+		extensionResponses = eval(extensionResponses);
+	}
 
 	// Find the tracking object responsible for this request.
 	var userSuppliedIdentifier = resultUri.getQueryArgValue('dnoa.userSuppliedIdentifier');
@@ -203,7 +207,7 @@ window.dnoa_internal.processAuthorizationResult = function(resultUrl) {
 
 	if (window.dnoa_internal.isAuthSuccessful(resultUri)) {
 		discoveryResult.successAuthData = resultUrl;
-		respondingEndpoint.onAuthSuccess(resultUri);
+		respondingEndpoint.onAuthSuccess(resultUri, extensionResponses);
 
 		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(resultUri);
 		if (parsedPositiveAssertion.claimedIdentifier && parsedPositiveAssertion.claimedIdentifier != discoveryResult.claimedIdentifier) {
@@ -334,7 +338,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			}
 		};
 
-		this.onAuthSuccess = function(authUri) {
+		this.onAuthSuccess = function(authUri, extensionResponses) {
 			if (thisServiceEndpoint.completeAttempt(true)) {
 				trace(thisServiceEndpoint.host + " authenticated!");
 				thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
@@ -342,7 +346,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 				thisServiceEndpoint.response = authUri;
 				thisDiscoveryResult.abortAll();
 				if (thisDiscoveryResult.onAuthSuccess) {
-					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint);
+					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint, extensionResponses);
 				}
 			}
 		};

@@ -796,15 +796,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// on the user agent when assigned to a variable.
 		/// </summary>
 		/// <param name="namesAndValues">The untrusted names and untrusted values to inject into the JSON object.</param>
+		/// <param name="valuesPreEncoded">if set to <c>true</c> the values will NOT be escaped as if it were a pure string.</param>
 		/// <returns>The Javascript JSON object as a string.</returns>
-		internal static string CreateJsonObject(IEnumerable<KeyValuePair<string, string>> namesAndValues) {
+		internal static string CreateJsonObject(IEnumerable<KeyValuePair<string, string>> namesAndValues, bool valuesPreEncoded) {
 			StringBuilder builder = new StringBuilder();
 			builder.Append("{ ");
 
 			foreach (var pair in namesAndValues) {
 				builder.Append(MessagingUtilities.GetSafeJavascriptValue(pair.Key));
 				builder.Append(": ");
-				builder.Append(MessagingUtilities.GetSafeJavascriptValue(pair.Value));
+				builder.Append(valuesPreEncoded ? pair.Value : MessagingUtilities.GetSafeJavascriptValue(pair.Value));
 				builder.Append(",");
 			}
 
