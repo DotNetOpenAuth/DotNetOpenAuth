@@ -55,6 +55,14 @@ namespace DotNetOpenAuth.BuildTasks {
 						Directory.CreateDirectory(Path.GetDirectoryName(this.Outputs[i].ItemSpec));
 					}
 
+					// Minification removes all comments, including copyright notices
+					// that must remain.  So if there's metadata on this item with
+					// a copyright notice on it, stick it on the front of the file.
+					string copyright = this.Inputs[i].GetMetadata("Copyright");
+					if (!string.IsNullOrEmpty(copyright)) {
+						output = "/*" + copyright + "*/" + output;
+					}
+
 					File.WriteAllText(this.Outputs[i].ItemSpec, output, Encoding.UTF8);
 				} else {
 					Log.LogMessage(MessageImportance.Low, TaskStrings.SkipPackingJsFile, this.Inputs[i].ItemSpec);
