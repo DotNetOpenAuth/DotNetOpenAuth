@@ -127,10 +127,10 @@
     <value>No web site with the name '{0}' found.</value>
   </data>
   <data name="PackingJsFile" xml:space="preserve">
-    <value>Packing {0}...</value>
+    <value>Packing javascript resource "{0}" into "{1}".</value>
   </data>
   <data name="SkipPackingJsFile" xml:space="preserve">
-    <value>Skip packing {0} because its packed version is up to date.</value>
+    <value>Skip packing "{0}" because its packed version is up to date.</value>
   </data>
   <data name="WebApplicationNotFoundSoNotDeleted" xml:space="preserve">
     <value>Web application '{0}' was not found, so it was not deleted.</value>

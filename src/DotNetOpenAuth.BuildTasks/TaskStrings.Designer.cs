@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.BuildTasks {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Packing {0}....
+        ///   Looks up a localized string similar to Packing javascript resource &quot;{0}&quot; into &quot;{1}&quot;..
         /// </summary>
         internal static string PackingJsFile {
             get {
@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.BuildTasks {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skip packing {0} because its packed version is up to date..
+        ///   Looks up a localized string similar to Skip packing &quot;{0}&quot; because its packed version is up to date..
         /// </summary>
         internal static string SkipPackingJsFile {
             get {

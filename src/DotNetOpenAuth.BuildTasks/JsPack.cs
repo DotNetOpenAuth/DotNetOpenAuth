@@ -48,9 +48,13 @@ namespace DotNetOpenAuth.BuildTasks {
 
 			for (int i = 0; i < this.Inputs.Length; i++) {
 				if (!File.Exists(this.Outputs[i].ItemSpec) || File.GetLastWriteTime(this.Outputs[i].ItemSpec) < File.GetLastWriteTime(this.Inputs[i].ItemSpec)) {
-					Log.LogMessage(MessageImportance.Normal, TaskStrings.PackingJsFile, this.Inputs[i].ItemSpec);
+					Log.LogMessage(MessageImportance.Normal, TaskStrings.PackingJsFile, this.Inputs[i].ItemSpec, this.Outputs[i].ItemSpec);
 					string input = File.ReadAllText(this.Inputs[i].ItemSpec);
 					string output = this.packer.Pack(input);
+					if (!Directory.Exists(Path.GetDirectoryName(this.Outputs[i].ItemSpec))) {
+						Directory.CreateDirectory(Path.GetDirectoryName(this.Outputs[i].ItemSpec));
+					}
+
 					File.WriteAllText(this.Outputs[i].ItemSpec, output, Encoding.UTF8);
 				} else {
 					Log.LogMessage(MessageImportance.Low, TaskStrings.SkipPackingJsFile, this.Inputs[i].ItemSpec);
