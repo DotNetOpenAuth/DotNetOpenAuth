@@ -38,7 +38,7 @@ window.dnoa_internal.Uri = function(url) {
 	this.getAuthority = function() {
 		var authority = this.getScheme() + "://" + this.getHost();
 		return authority;
-	}
+	};
 
 	this.getHost = function() {
 		var hostStartIdx = this.originalUri.indexOf("://") + 3;
@@ -46,12 +46,12 @@ window.dnoa_internal.Uri = function(url) {
 		if (hostEndIndex < 0) hostEndIndex = this.originalUri.length;
 		var host = this.originalUri.substr(hostStartIdx, hostEndIndex - hostStartIdx);
 		return host;
-	}
+	};
 
 	this.getScheme = function() {
 		var schemeStartIdx = this.indexOf("://");
 		return this.originalUri.substr(this.originalUri, schemeStartIdx);
-	}
+	};
 
 	this.trimFragment = function() {
 		var hashmark = this.originalUri.indexOf('#');
@@ -100,7 +100,7 @@ window.dnoa_internal.Uri = function(url) {
 
 	this.getPairs = function() {
 		return this.pairs;
-	}
+	};
 
 	this.containsQueryArg = function(key) {
 		return this.getQueryArgValue(key);
@@ -138,7 +138,7 @@ window.dnoa_internal.createHiddenIFrame = function() {
 	}
 
 	return iframe;
-}
+};
 
 /// <summary>Redirects the current window/frame to the given URI, 
 /// either using a GET or a POST as required by the length of the URL.</summary>

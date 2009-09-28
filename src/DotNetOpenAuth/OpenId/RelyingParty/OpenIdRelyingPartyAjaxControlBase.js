@@ -70,7 +70,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 		if (jobDesc = this.queuedWork.pop()) {
 			this.createIFrame(jobDesc.job, jobDesc.p1);
 		}
-	}
+	};
 
 	this.createIFrame = function(job, p1) {
 		var iframe = document.createElement("iframe");
@@ -140,7 +140,7 @@ window.OpenIdIdentifier = function(identifier) {
 				onDiscoverSuccess(window.dnoa_internal.discoveryResults[identifier]);
 			}
 			return;
-		}
+		};
 
 		trace('starting discovery on ' + identifier);
 		window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);

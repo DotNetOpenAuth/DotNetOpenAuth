@@ -38,7 +38,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		button.style.right = "2px";
 		box.parentNode.appendChild(button);
 		return button;
-	}
+	};
 
 	box.dnoi_internal.constructIcon = function(imageUrl, tooltip, rightSide, visible, height) {
 		var icon = document.createElement('img');
@@ -61,7 +61,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 		box.parentNode.appendChild(icon);
 		return icon;
-	}
+	};
 
 	box.dnoi_internal.prefetchImage = function(imageUrl) {
 		var img = document.createElement('img');
@@ -69,7 +69,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		img.style.display = 'none';
 		box.parentNode.appendChild(img);
 		return img;
-	}
+	};
 
 	function findParentForm(element) {
 		if (element == null || element.nodeName == "FORM") {
@@ -186,7 +186,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.claimedIdentifier = null;
 			trace('unrecognized state ' + state);
 		}
-	}
+	};
 
 	box.dnoi_internal.isBusy = function() {
 		var lastDiscovery = window.dnoa_internal.discoveryResults[box.lastDiscoveredIdentifier];
@@ -203,12 +203,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.getUserSuppliedIdentifierResults = function() {
 		return window.dnoa_internal.discoveryResults[box.value];
-	}
+	};
 
 	box.dnoi_internal.isAuthenticated = function() {
 		var results = box.dnoi_internal.getUserSuppliedIdentifierResults();
 		return results != null && results.findSuccessfulRequest() != null;
-	}
+	};
 
 	box.dnoi_internal.onSubmit = function() {
 		var hiddenField = findOrCreateHiddenField();
@@ -318,7 +318,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.discoveryFailed = function(message, identifier) {
 		box.dnoi_internal.setVisualCue('failed');
 		if (message) { box.title = message; }
-	}
+	};
 
 	/// <summary>Callback that is invoked when discovery results are available.</summary>
 	/// <param name="discoveryResult">The JSON object containing the OpenID auth requests.</param>
@@ -343,7 +343,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.lastAuthenticationFailed,
 				box.timeout);
 		}
-	}
+	};
 
 	box.dnoi_internal.lastAuthenticationFailed = function() {
 		trace('No asynchronous authentication attempt is in progress.  Display setup view.');
