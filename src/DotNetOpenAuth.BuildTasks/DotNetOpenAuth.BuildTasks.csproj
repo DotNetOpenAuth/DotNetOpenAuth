@@ -53,9 +53,12 @@
     <Compile Include="ChangeAssemblyReference.cs" />
     <Compile Include="CreateWebApplication.cs" />
     <Compile Include="DeleteWebApplication.cs" />
+    <Compile Include="ECMAScriptPacker.cs" />
     <Compile Include="FilterItems.cs" />
     <Compile Include="GetBuildVersion.cs" />
     <Compile Include="CheckAdminRights.cs" />
+    <Compile Include="JsPack.cs" />
+    <Compile Include="ParseMaster.cs" />
     <Compile Include="ReSignDelaySignedAssemblies.cs" />
     <Compile Include="SetEnvironmentVariable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
