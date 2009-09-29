@@ -425,6 +425,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 
 		box.onkeyup = function(e) {
+			e = e || window.event; // for IE
 			box.dnoi_internal.setVisualCue();
 
 			if (new Date() - lastKeyPress > 3000) {
