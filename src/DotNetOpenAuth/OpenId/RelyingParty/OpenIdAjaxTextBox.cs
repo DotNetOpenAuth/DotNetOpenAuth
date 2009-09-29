@@ -149,6 +149,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string RetryTextViewStateKey = "RetryText";
 
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="EnableSplitButtonLogin"/> property.
+		/// </summary>
+		private const string EnableSplitButtonLoginViewStateKey = "EnableSplitButtonLogin";
+
 		#endregion
 
 		#region Property defaults
@@ -228,7 +233,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string RetryTextDefault = "RETRY";
 
+		/// <summary>
+		/// The default vlaue for the <see cref="EnableSplitButtonLogin"/> property.
+		/// </summary>
+		private const bool EnableSplitButtonLoginDefault = true;
+
 		#endregion
+
+		/// <summary>
+		/// The path where the YUI control library should be downloaded from for HTTP pages.
+		/// </summary>
+		private const string YuiLoaderHttp = "http://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js";
+
+		/// <summary>
+		/// The path where the YUI control library should be downloaded from for HTTPS pages.
+		/// </summary>
+		private const string YuiLoaderHttps = "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js";
 
 		#region Events
 
@@ -484,6 +504,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set { this.ViewState[LogOnInProgressMessageViewStateKey] = value ?? string.Empty; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether a split button will be used for the "log in"
+		/// when the user provides an identifier that delegates to more than one Provider.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> to use a split button; otherwise, <c>false</c> to use a standard HTML button.
+		/// </value>
+		/// <remarks>
+		/// The split button brings in about 180KB of javascript dependencies.
+		/// </remarks>
+		[Bindable(true), DefaultValue(EnableSplitButtonLoginDefault), Category(BehaviorCategory)]
+		[Description("Whether a split button will be used for the \"log in\" when the user provides an identifier that delegates to more than one Provider.")]
+		public bool EnableSplitButtonLogin {
+			get { return (bool)(this.ViewState[EnableSplitButtonLoginViewStateKey] ?? EnableSplitButtonLoginDefault); }
+			set { this.ViewState[EnableSplitButtonLoginViewStateKey] = value; }
+		}
+
 		#endregion
 
 		/// <summary>
@@ -550,6 +587,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
+
+			if (this.EnableSplitButtonLogin) {
+				string yuiLoadScript = @"var loader = new YAHOO.util.YUILoader({
+	require: ['button', 'menu'],
+	loadOptional: false,
+	combine: true,
+	onSuccess: function() { }
+});
+
+loader.insert();";
+				this.Page.ClientScript.RegisterClientScriptInclude("yuiloader", this.Page.Request.Url.IsTransportSecure() ? YuiLoaderHttps : YuiLoaderHttp);
+				this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "requiredYuiComponents", yuiLoadScript, true);
+			}
 
 			this.PrepareClientJavascript();
 		}

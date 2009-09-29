@@ -40,6 +40,46 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return button;
 	};
 
+	box.dnoi_internal.constructSplitButton = function(text, tooltip, onclick, menu) {
+		var htmlButton = box.dnoi_internal.constructButton(text, tooltip, onclick);
+
+		if (!box.parentNode.className || box.parentNode.className.indexOf(' yui-skin-sam') < 0) {
+			box.parentNode.className = (box.parentNode.className || '') + ' yui-skin-sam';
+		}
+
+		var splitButton = new YAHOO.widget.Button(htmlButton, {
+			type: 'split',
+			menu: menu
+		});
+
+		splitButton.on('click', onclick);
+
+		return splitButton;
+	};
+
+	box.dnoi_internal.createLoginButton = function(providers) {
+		var onMenuItemClick = function(p_sType, p_aArgs, p_oItem) {
+			var selectedProvider = (p_oItem && p_oItem.value) ? p_oItem.value : providers[0].value;
+			selectedProvider.loginPopup(box.dnoi_internal.onAuthSuccess, box.dnoi_internal.onAuthFailed);
+			return false;
+		};
+
+		for (var i = 0; i < providers.length; i++) {
+			providers[i].onclick = { fn: onMenuItemClick };
+		}
+
+		if (providers.length > 1 && YAHOO && YAHOO.widget && YAHOO.widget.Button) {
+			return box.dnoi_internal.constructSplitButton(loginButtonText, loginButtonToolTip, onMenuItemClick, providers);
+		} else {
+			var button = box.dnoi_internal.constructButton(loginButtonText, loginButtonToolTip, onMenuItemClick);
+			button.style.visibility = 'visible';
+			button.destroy = function() {
+				button.parentNode.removeChild(button);
+			}
+			return button;
+		}
+	};
+
 	box.dnoi_internal.constructIcon = function(imageUrl, tooltip, rightSide, visible, height) {
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
@@ -95,17 +135,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return hiddenField;
 	};
 
-	box.dnoi_internal.loginButton = box.dnoi_internal.constructButton(loginButtonText, loginButtonToolTip, function() {
-		var discoveryInfo = window.dnoa_internal.discoveryResults[box.lastDiscoveredIdentifier];
-		if (discoveryInfo == null) {
-			trace('Ooops!  Somehow the login button click event was invoked, but no openid discovery information for ' + box.lastDiscoveredIdentifier + ' is available.');
-			return;
-		}
-		// The login button always sends a setup message to the first OP.
-		var selectedProvider = discoveryInfo[0];
-		selectedProvider.loginPopup(box.dnoi_internal.onAuthSuccess, box.dnoi_internal.onAuthFailed);
-		return false;
-	});
 	box.dnoi_internal.retryButton = box.dnoi_internal.constructButton(retryButtonText, retryButtonToolTip, function() {
 		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
 		box.dnoi_internal.performDiscovery(box.value);
@@ -122,7 +151,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	//box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
 	box.dnoi_internal.dnoi_logo = box.dnoi_internal.openid_logo;
 
-	box.dnoi_internal.setVisualCue = function(state, authenticatedBy, authenticatedAs) {
+	box.dnoi_internal.setVisualCue = function(state, authenticatedBy, authenticatedAs, providers) {
 		box.dnoi_internal.openid_logo.style.visibility = 'hidden';
 		box.dnoi_internal.dnoi_logo.style.visibility = 'hidden';
 		box.dnoi_internal.op_logo.style.visibility = 'hidden';
@@ -130,8 +159,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.spinner.style.visibility = 'hidden';
 		box.dnoi_internal.success_icon.style.visibility = 'hidden';
 		//		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
-		box.dnoi_internal.loginButton.style.visibility = 'hidden';
 		box.dnoi_internal.retryButton.style.visibility = 'hidden';
+		if (box.dnoi_internal.loginButton) {
+			box.dnoi_internal.loginButton.destroy();
+			box.dnoi_internal.loginButton = null;
+		}
 		box.title = '';
 		box.dnoi_internal.state = state;
 		if (state == "discovering") {
@@ -167,7 +199,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			} else {
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			}
-			box.dnoi_internal.loginButton.style.visibility = 'visible';
+
+			box.dnoi_internal.loginButton = box.dnoi_internal.createLoginButton(providers);
+
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = "Authentication requires setup.";
 		} else if (state == "failed") {
@@ -345,10 +379,15 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 	};
 
-	box.dnoi_internal.lastAuthenticationFailed = function() {
+	box.dnoi_internal.lastAuthenticationFailed = function(discoveryResult) {
 		trace('No asynchronous authentication attempt is in progress.  Display setup view.');
+		var providers = new Array();
+		for (var i = 0; i < discoveryResult.length; i++) {
+			providers.push({ text: discoveryResult[i].host, value: discoveryResult[i] });
+		}
+
 		// visual cue that auth failed
-		box.dnoi_internal.setVisualCue('setup');
+		box.dnoi_internal.setVisualCue('setup', null, null, providers);
 	};
 
 	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint, extensionResponses) {

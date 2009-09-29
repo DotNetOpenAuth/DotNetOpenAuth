@@ -326,7 +326,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 
 			if (!successful && !thisDiscoveryResult.busy() && thisDiscoveryResult.findSuccessfulRequest() == null) {
 				if (thisDiscoveryResult.onLastAttemptFailed) {
-					thisDiscoveryResult.onLastAttemptFailed();
+					thisDiscoveryResult.onLastAttemptFailed(thisDiscoveryResult);
 				}
 			}
 
