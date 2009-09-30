@@ -68,6 +68,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			providers[i].onclick = { fn: onMenuItemClick };
 		}
 
+		// We'll use the split button if we have more than one Provider, and the YUI library is available.
 		if (providers.length > 1 && YAHOO && YAHOO.widget && YAHOO.widget.Button) {
 			return box.dnoi_internal.constructSplitButton(loginButtonText, loginButtonToolTip, onMenuItemClick, providers);
 		} else {
@@ -446,13 +447,17 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 
 		function identifierSanityCheck(id) {
-			return id.match("^[=@+$!(].+|.*?\\.[^\.]+");
+			return id.match("^[=@+$!(].+|.*?\\..*[^\\.]|\\w+://.+");
 		}
 
 		function discover() {
 			cancelTimer();
+			trace('typist discovery candidate');
 			if (identifierSanityCheck(box.value)) {
+				trace('typist discovery begun');
 				box.dnoi_internal.performDiscovery(box.value);
+			} else {
+				trace('typist discovery canceled due to incomplete identifier.');
 			}
 		}
 

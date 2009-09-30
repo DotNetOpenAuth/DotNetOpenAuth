@@ -150,9 +150,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RetryTextViewStateKey = "RetryText";
 
 		/// <summary>
-		/// The viewstate key to use for storing the value of the <see cref="EnableSplitButtonLogin"/> property.
+		/// The viewstate key to use for storing the value of the <see cref="DownloadYui"/> property.
 		/// </summary>
-		private const string EnableSplitButtonLoginViewStateKey = "EnableSplitButtonLogin";
+		private const string DownloadYuiViewStateKey = "DownloadYui";
 
 		#endregion
 
@@ -234,9 +234,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RetryTextDefault = "RETRY";
 
 		/// <summary>
-		/// The default vlaue for the <see cref="EnableSplitButtonLogin"/> property.
+		/// The default vlaue for the <see cref="DownloadYui"/> property.
 		/// </summary>
-		private const bool EnableSplitButtonLoginDefault = true;
+		private const bool DownloadYuiDefault = true;
 
 		#endregion
 
@@ -505,20 +505,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether a split button will be used for the "log in"
-		/// when the user provides an identifier that delegates to more than one Provider.
+		/// Gets or sets a value indicating whether the Yahoo! User Interface Library (YUI)
+		/// will be downloaded in order to provide a login split button.
 		/// </summary>
 		/// <value>
-		/// 	<c>true</c> to use a split button; otherwise, <c>false</c> to use a standard HTML button.
+		/// 	<c>true</c> to use a split button; otherwise, <c>false</c> to use a standard HTML button
+		/// 	or a split button by downloading the YUI library yourself on the hosting web page.
 		/// </value>
 		/// <remarks>
-		/// The split button brings in about 180KB of javascript dependencies.
+		/// The split button brings in about 180KB of YUI javascript dependencies.
 		/// </remarks>
-		[Bindable(true), DefaultValue(EnableSplitButtonLoginDefault), Category(BehaviorCategory)]
+		[Bindable(true), DefaultValue(DownloadYuiDefault), Category(BehaviorCategory)]
 		[Description("Whether a split button will be used for the \"log in\" when the user provides an identifier that delegates to more than one Provider.")]
-		public bool EnableSplitButtonLogin {
-			get { return (bool)(this.ViewState[EnableSplitButtonLoginViewStateKey] ?? EnableSplitButtonLoginDefault); }
-			set { this.ViewState[EnableSplitButtonLoginViewStateKey] = value; }
+		public bool DownloadYui {
+			get { return (bool)(this.ViewState[DownloadYuiViewStateKey] ?? DownloadYuiDefault); }
+			set { this.ViewState[DownloadYuiViewStateKey] = value; }
 		}
 
 		#endregion
@@ -588,12 +589,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
-			if (this.EnableSplitButtonLogin) {
+			if (this.DownloadYui) {
 				string yuiLoadScript = @"var loader = new YAHOO.util.YUILoader({
 	require: ['button', 'menu'],
 	loadOptional: false,
-	combine: true,
-	onSuccess: function() { }
+	combine: true
 });
 
 loader.insert();";
