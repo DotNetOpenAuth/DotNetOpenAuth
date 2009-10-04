@@ -29,13 +29,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		button.type = 'button';
 		button.title = tooltip != null ? tooltip : '';
 		button.onclick = onclick;
-		button.style.visibility = 'hidden';
-		button.style.position = 'absolute';
-		button.style.padding = "0px";
-		button.style.fontSize = '8px';
-		button.style.top = "1px";
-		button.style.bottom = "1px";
-		button.style.right = "2px";
 		box.parentNode.appendChild(button);
 		return button;
 	};
@@ -51,20 +44,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			type: 'split',
 			menu: menu
 		});
-
-		htmlButton = splitButton._button;
-		var parentSpan = htmlButton.parentNode.parentNode;
-		htmlButton.style.fontSize = '8px';
-		htmlButton.style.lineHeight = 'normal';
-		htmlButton.style.height = null;
-		htmlButton.parentNode.style.height = null;
-		htmlButton.parentNode.style.marginTop = '-1px';
-		htmlButton.style.marginTop = '-1px';
-		parentSpan.style.height = null;
-		parentSpan.style.position = 'absolute';
-		parentSpan.style.top = "4px";
-		parentSpan.style.bottom = "4px";
-		parentSpan.style.right = "0px";
 
 		splitButton.on('click', onclick);
 

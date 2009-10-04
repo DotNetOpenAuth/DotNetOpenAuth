@@ -1,0 +1,28 @@
+﻿.OpenIdAjaxTextBox > span
+{
+	position: absolute;
+	right: -1px;
+	top: 2px;
+}
+
+.OpenIdAjaxTextBox input[type=button]
+{
+	visibility: hidden;
+	position: absolute;
+	padding: 0px;
+	font-size: 8px;
+	top: 1px;
+	bottom: 1px;
+	right: 2px;
+}
+
+.OpenIdAjaxTextBox .yui-split-button span button
+{
+	font-size: 60%;
+	line-height: 1;
+	min-height: 1em;
+	padding-top: 3px;
+	padding-bottom: 1px;
+	padding-left: 5px;
+	height: auto;
+}

@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedStylesheetResourceName, "text/css")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedDotNetOpenIdLogoResourceName, "image/gif")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName, "image/gif")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName, "image/png")]
@@ -23,6 +24,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Globalization;
 	using System.Text;
 	using System.Web.UI;
+	using System.Web.UI.HtmlControls;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -36,6 +38,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
 		internal const string EmbeddedScriptResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdAjaxTextBox.js";
+
+		/// <summary>
+		/// The name of the manifest stream containing the OpenIdAjaxTextBox.css file.
+		/// </summary>
+		internal const string EmbeddedStylesheetResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdAjaxTextBox.css";
 
 		/// <summary>
 		/// The name of the manifest stream containing the dotnetopenid_16x16.gif file.
@@ -601,6 +608,12 @@ loader.insert();";
 				this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "requiredYuiComponents", yuiLoadScript, true);
 			}
 
+			var css = new HtmlLink();
+			css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
+			css.Attributes["rel"] = "stylesheet";
+			css.Attributes["type"] = "text/css";
+			this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
+
 			this.PrepareClientJavascript();
 		}
 
@@ -613,9 +626,9 @@ loader.insert();";
 
 			// We surround the textbox with a span so that the .js file can inject a
 			// login button within the text box with easy placement.
-			if (!string.IsNullOrEmpty(this.CssClass)) {
-				writer.AddAttribute(HtmlTextWriterAttribute.Class, this.CssClass);
-			}
+			string css = this.CssClass ?? string.Empty;
+			css += " OpenIdAjaxTextBox";
+			writer.AddAttribute(HtmlTextWriterAttribute.Class, css);
 
 			writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "inline-block");
 			writer.AddStyleAttribute(HtmlTextWriterStyle.Position, "relative");
