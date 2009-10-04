@@ -465,7 +465,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 		box.onkeyup = function(e) {
 			e = e || window.event; // for IE
-			box.dnoi_internal.setVisualCue();
 
 			if (new Date() - lastKeyPress > 3000) {
 				// the user seems to have altogether stopped typing,
@@ -479,6 +478,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			} else {
 				var newValue = box.value;
 				if (lastValue != newValue) {
+					box.dnoi_internal.setVisualCue();
 					if (newValue.length == 0) {
 						reset();
 					} else if (Math.abs(lastValue.length - newValue.length) > 1) {
