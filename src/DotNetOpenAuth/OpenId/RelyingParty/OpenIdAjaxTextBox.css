@@ -25,7 +25,7 @@
 .OpenIdAjaxTextBox .yui-split-button span button
 {
 	font-size: 50%;
-	font-size: 60%\9;
+	font-size: 60%\9; /* the \9 is a hack that causes only IE7/8 to use this value. */
 	line-height: 1;
 	min-height: 1em;
 	padding-top: 2px;
