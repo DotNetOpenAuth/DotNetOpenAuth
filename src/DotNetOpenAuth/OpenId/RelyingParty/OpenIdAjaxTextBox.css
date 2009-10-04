@@ -34,3 +34,17 @@
 	padding-left: 5px;
 	height: auto;
 }
+
+.OpenIdAjaxTextBox .yuimenuitem .yuimenuitemlabel
+{
+	padding-left: 5px;
+}
+
+.OpenIdAjaxTextBox .yuimenuitem .yuimenuitemlabel img
+{
+	border: 0;
+	margin-right: 4px;
+	vertical-align: middle;
+	width: 16px;
+	height: 16px;
+}
