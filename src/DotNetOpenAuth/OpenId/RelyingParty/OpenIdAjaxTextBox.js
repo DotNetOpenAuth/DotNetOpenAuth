@@ -184,7 +184,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.success_icon.style.visibility = 'visible';
 			box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
 			box.title = box.dnoi_internal.claimedIdentifier;
-			window.status = "Authenticated as " + box.value;
+			window.status = "Authenticated as " + authenticatedAs;
 		} else if (state == "setup") {
 			var opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
