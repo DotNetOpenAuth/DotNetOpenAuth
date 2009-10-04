@@ -377,7 +377,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		trace('No asynchronous authentication attempt is in progress.  Display setup view.');
 		var providers = new Array();
 		for (var i = 0; i < discoveryResult.length; i++) {
-			providers.push({ text: discoveryResult[i].host, value: discoveryResult[i] });
+			var favicon = box.dnoi_internal.deriveOPFavIcon(discoveryResult[i].endpoint);
+			var img = '<img src="' + favicon + '" width="16" height="16" style="border: 0; margin-right: 4px; vertical-align: middle" />'
+			providers.push({ text: img + discoveryResult[i].host, value: discoveryResult[i] });
 		}
 
 		// visual cue that auth failed
