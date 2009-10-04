@@ -52,6 +52,20 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			menu: menu
 		});
 
+		htmlButton = splitButton._button;
+		var parentSpan = htmlButton.parentNode.parentNode;
+		htmlButton.style.fontSize = '8px';
+		htmlButton.style.lineHeight = 'normal';
+		htmlButton.style.height = null;
+		htmlButton.parentNode.style.height = null;
+		htmlButton.parentNode.style.marginTop = '-1px';
+		htmlButton.style.marginTop = '-1px';
+		parentSpan.style.height = null;
+		parentSpan.style.position = 'absolute';
+		parentSpan.style.top = "4px";
+		parentSpan.style.bottom = "4px";
+		parentSpan.style.right = "0px";
+
 		splitButton.on('click', onclick);
 
 		return splitButton;
