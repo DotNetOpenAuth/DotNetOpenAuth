@@ -69,7 +69,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			button.style.visibility = 'visible';
 			button.destroy = function() {
 				button.parentNode.removeChild(button);
-			}
+			};
 			return button;
 		}
 	};
@@ -378,7 +378,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		var providers = new Array();
 		for (var i = 0; i < discoveryResult.length; i++) {
 			var favicon = box.dnoi_internal.deriveOPFavIcon(discoveryResult[i].endpoint);
-			var img = '<img src="' + favicon + '" />'
+			var img = '<img src="' + favicon + '" />';
 			providers.push({ text: img + discoveryResult[i].host, value: discoveryResult[i] });
 		}
 
