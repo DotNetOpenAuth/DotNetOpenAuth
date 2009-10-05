@@ -12,8 +12,7 @@ public partial class RP_IgnoresContentLocationHeader : System.Web.UI.Page {
 	protected void Page_Load(object sender, EventArgs e) {
 		// For the exploited victim in this scenario, we choose a valid OpenID, but one for which
 		// this page's built-in OP is not authoritative to assert for.
-		Uri victim = new Uri(Request.Url, Request.ApplicationPath + "/RP/AffirmativeIdentity.aspx");
-		Response.AddHeader("Content-Location", victim.AbsoluteUri);
+		Response.AddHeader("Content-Location", "/RP/AffirmativeIdentity.aspx");
 	}
 
 	protected void ProviderEndpoint1_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
