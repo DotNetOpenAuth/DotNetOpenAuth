@@ -372,6 +372,25 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 
 	};
 
+	this.cloneWithOneServiceEndpoint = function(serviceEndpoint) {
+		var clone = window.dnoa_internal.clone(this);
+		clone.userSuppliedIdentifier = serviceEndpoint.claimedIdentifier;
+
+		// Erase all SEPs except the given one, and put it into first position.
+		clone.length = 1;
+		for (var i = 0; i < this.length; i++) {
+			if (clone[i].endpoint.toString() == serviceEndpoint.endpoint.toString()) {
+				var tmp = clone[i];
+				clone[i] = null;
+				clone[0] = tmp;
+			} else {
+				clone[i] = null;
+			}
+		}
+
+		return clone;
+	};
+
 	this.userSuppliedIdentifier = identifier;
 
 	if (discoveryInfo) {
@@ -495,4 +514,17 @@ window.dnoa_internal.PositiveAssertion = function(uri) {
 		this.claimedIdentifier = uri.getQueryArgValue('dnoa.claimed_id');
 	}
 	this.toString = function() { return uri.toString(); };
+};
+
+window.dnoa_internal.clone = function(obj) {
+	if (obj == null || typeof (obj) != 'object') {
+		return obj;
+	}
+
+	var temp = new Object();
+	for (var key in obj) {
+		temp[key] = window.dnoa_internal.clone(obj[key]);
+	}
+
+	return temp;
 };

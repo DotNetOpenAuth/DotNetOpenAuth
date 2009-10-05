@@ -390,6 +390,21 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		// visual cue that auth was successful
 		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
 		box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
+		if (discoveryResult.claimedIdentifier != parsedPositiveAssertion.claimedIdentifier) {
+			// The OP doesn't support delegation.  So "correct" the identifier the user entered
+			// so he realizes his identity didn't stick.
+			box.value = parsedPositiveAssertion.claimedIdentifier;
+			box.lastDiscoveredIdentifier = box.value;
+
+			// Also inject a fake discovery result for this new identifier to keep the UI from performing
+			// discovery on the new identifier (the RP will perform the necessary verification server-side).
+			if (!window.dnoa_internal.discoveryResults[box.value]) {
+				// We must make sure that the only service endpoint from the earlier discovery that
+				// is copied over is the one that sent the assertion just now. Deep clone, then strip
+				// out the other SEPs.
+				window.dnoa_internal.discoveryResults[box.value] = discoveryResult.cloneWithOneServiceEndpoint(respondingEndpoint);
+			}
+		}
 		box.dnoi_internal.setVisualCue('authenticated', parsedPositiveAssertion.endpoint, parsedPositiveAssertion.claimedIdentifier);
 		if (box.dnoi_internal.onauthenticated) {
 			box.dnoi_internal.onauthenticated(box, extensionResponses);
@@ -477,7 +492,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				discover();
 			} else {
 				var newValue = box.value;
-				if (lastValue != newValue) {
+				if (lastValue != newValue && newValue != box.lastDiscoveredIdentifier) {
 					box.dnoi_internal.setVisualCue();
 					if (newValue.length == 0) {
 						reset();
