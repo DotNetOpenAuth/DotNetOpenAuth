@@ -23,6 +23,7 @@ namespace DotNetOpenId {
 
 		public UntrustedWebResponse(Uri requestUri, Uri finalRequestUri, HttpWebResponse response, Stream responseStream) {
 			if (requestUri == null) throw new ArgumentNullException("requestUri");
+			if (finalRequestUri == null) throw new ArgumentNullException("finalRequestUri");
 			if (response == null) throw new ArgumentNullException("response");
 			if (responseStream == null) throw new ArgumentNullException("responseStream");
 			this.RequestUri = requestUri;
