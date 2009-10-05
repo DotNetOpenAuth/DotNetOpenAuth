@@ -270,24 +270,29 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			// for a negative assertion.  We must be able to recover from that scenario.
 			var thisServiceEndpointLocal = thisServiceEndpoint;
 			thisServiceEndpoint.popupCloseChecker = window.setInterval(function() {
-				if (thisServiceEndpointLocal.popup && thisServiceEndpointLocal.popup.closed) {
-					// The window closed, either because the user closed it, canceled at the OP,
-					// or approved at the OP and the popup window closed itself due to our script.
-					// If we were graying out the entire page while the child window was up,
-					// we would probably revert that here.
-					window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
-					thisServiceEndpointLocal.popup = null;
+				if (thisServiceEndpointLocal.popup) {
+					if (thisServiceEndpointLocal.popup.closed) {
+						// The window closed, either because the user closed it, canceled at the OP,
+						// or approved at the OP and the popup window closed itself due to our script.
+						// If we were graying out the entire page while the child window was up,
+						// we would probably revert that here.
+						window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
+						thisServiceEndpointLocal.popup = null;
 
-					// The popup may have managed to inform us of the result already,
-					// so check whether the callback method was cleared already, which
-					// would indicate we've already processed this.
-					if (window.dnoa_internal.processAuthorizationResult) {
-						trace('User or OP canceled by closing the window.');
-						if (thisDiscoveryResult.onAuthFailed) {
-							thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+						// The popup may have managed to inform us of the result already,
+						// so check whether the callback method was cleared already, which
+						// would indicate we've already processed this.
+						if (window.dnoa_internal.processAuthorizationResult) {
+							trace('User or OP canceled by closing the window.');
+							if (thisDiscoveryResult.onAuthFailed) {
+								thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+							}
+							window.dnoa_internal.processAuthorizationResult = null;
 						}
-						window.dnoa_internal.processAuthorizationResult = null;
 					}
+				} else {
+					// if there's no popup, there's no reason to keep this timer up.
+					window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
 				}
 			}, 250);
 		};
