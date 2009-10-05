@@ -271,24 +271,29 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			var thisServiceEndpointLocal = thisServiceEndpoint;
 			thisServiceEndpoint.popupCloseChecker = window.setInterval(function() {
 				if (thisServiceEndpointLocal.popup) {
-					if (thisServiceEndpointLocal.popup.closed) {
-						// The window closed, either because the user closed it, canceled at the OP,
-						// or approved at the OP and the popup window closed itself due to our script.
-						// If we were graying out the entire page while the child window was up,
-						// we would probably revert that here.
-						window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
-						thisServiceEndpointLocal.popup = null;
+					try {
+						if (thisServiceEndpointLocal.popup.closed) {
+							// The window closed, either because the user closed it, canceled at the OP,
+							// or approved at the OP and the popup window closed itself due to our script.
+							// If we were graying out the entire page while the child window was up,
+							// we would probably revert that here.
+							window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
+							thisServiceEndpointLocal.popup = null;
 
-						// The popup may have managed to inform us of the result already,
-						// so check whether the callback method was cleared already, which
-						// would indicate we've already processed this.
-						if (window.dnoa_internal.processAuthorizationResult) {
-							trace('User or OP canceled by closing the window.');
-							if (thisDiscoveryResult.onAuthFailed) {
-								thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+							// The popup may have managed to inform us of the result already,
+							// so check whether the callback method was cleared already, which
+							// would indicate we've already processed this.
+							if (window.dnoa_internal.processAuthorizationResult) {
+								trace('User or OP canceled by closing the window.');
+								if (thisDiscoveryResult.onAuthFailed) {
+									thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+								}
 							}
-							window.dnoa_internal.processAuthorizationResult = null;
 						}
+					} catch (e) {
+						// This usually happens because the popup is currently displaying the OP's
+						// page from another domain, which makes the popup temporarily off limits to us.
+						// Just skip this interval and wait for the next callback.
 					}
 				} else {
 					// if there's no popup, there's no reason to keep this timer up.
