@@ -390,9 +390,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		// visual cue that auth was successful
 		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
 		box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
-		if (discoveryResult.claimedIdentifier != parsedPositiveAssertion.claimedIdentifier) {
-			// The OP doesn't support delegation.  So "correct" the identifier the user entered
-			// so he realizes his identity didn't stick.
+
+
+		// If the OP doesn't support delegation, "correct" the identifier the user entered
+		// so he realizes his identity didn't stick.  But don't change out OP Identifiers.
+		if (discoveryResult.claimedIdentifier && discoveryResult.claimedIdentifier != parsedPositiveAssertion.claimedIdentifier) {
 			box.value = parsedPositiveAssertion.claimedIdentifier;
 			box.lastDiscoveredIdentifier = box.value;
 
