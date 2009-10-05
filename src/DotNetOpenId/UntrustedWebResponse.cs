@@ -21,7 +21,7 @@ namespace DotNetOpenId {
 		public Uri RequestUri { get; private set; }
 		public Uri FinalUri { get; private set; }
 
-		public UntrustedWebResponse(Uri requestUri, HttpWebResponse response, Stream responseStream) {
+		public UntrustedWebResponse(Uri requestUri, Uri finalRequestUri, HttpWebResponse response, Stream responseStream) {
 			if (requestUri == null) throw new ArgumentNullException("requestUri");
 			if (response == null) throw new ArgumentNullException("response");
 			if (responseStream == null) throw new ArgumentNullException("responseStream");
@@ -37,7 +37,7 @@ namespace DotNetOpenId {
 			}
 			ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
 			Headers = response.Headers;
-			FinalUri = response.ResponseUri;
+			FinalUri = finalRequestUri;
 		}
 
 		/// <summary>
