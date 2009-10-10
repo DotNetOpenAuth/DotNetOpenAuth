@@ -9,7 +9,7 @@
 		<IntermediatePath>$(ProjectRoot)\obj\$(Configuration)\</IntermediatePath>
 		<ToolsDir>$(ProjectRoot)\tools\</ToolsDir>
 		<PublicKeyFile>$(ProjectRoot)\src\official-build-key.pub</PublicKeyFile>
-		<KeyPairContainer>DotNetOpenAuth</KeyPairContainer>
+		<KeyPairContainer Condition="'$(KeyPairContainer)' == ''">DotNetOpenAuth</KeyPairContainer>
 		<PublicKeyToken>2780CCD10D57B246</PublicKeyToken>
 	</PropertyGroup>
 
