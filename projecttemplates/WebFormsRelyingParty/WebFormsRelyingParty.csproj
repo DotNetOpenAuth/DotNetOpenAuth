@@ -34,8 +34,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.SqlServer.Smo, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo" />
+    <Reference Include="Microsoft.SqlServer.Smo" />
+    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core">
