@@ -13,6 +13,8 @@
 	using Microsoft.SqlServer.Management.Smo;
 
 	public partial class Setup : System.Web.UI.Page {
+		private bool databaseCreated;
+
 		protected void Page_Load(object sender, EventArgs e) {
 			if (!Page.IsPostBack) {
 				openidLogin.Focus();
@@ -24,9 +26,14 @@
 			e.Cancel = true;
 			if (e.IsDirectedIdentity) {
 				noOPIdentifierLabel.Visible = true;
-			} else {
+			} else if (!databaseCreated) {
 				this.CreateDatabase(e.ClaimedIdentifier, openidLogin.Text);
 				this.MultiView1.ActiveViewIndex = 1;
+
+				// indicate we have already created the database so that if the
+				// identifier the user gave has multiple service endpoints,
+				// we won't try to recreate the database as the next one is considered.
+				databaseCreated = true;
 			}
 		}
 
