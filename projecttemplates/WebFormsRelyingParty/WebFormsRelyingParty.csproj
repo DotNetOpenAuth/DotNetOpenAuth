@@ -179,6 +179,12 @@
     <Content Include="Standard.css" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\DotNetOpenAuth.dll" />
+    <Content Include="bin\DotNetOpenAuth.pdb" />
+    <Content Include="bin\DotNetOpenAuth.xml" />
+    <Content Include="bin\log4net.dll" />
+    <Content Include="bin\log4net.xml" />
+    <Content Include="GettingStarted.htm" />
     <Content Include="images\infocard_23x16.png" />
     <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo_login.png" />

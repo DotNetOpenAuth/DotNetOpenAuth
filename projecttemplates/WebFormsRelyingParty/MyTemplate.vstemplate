@@ -77,6 +77,7 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="Site.Master.cs">Site.Master.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Site.Master.designer.cs">Site.Master.designer.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Standard.css">Standard.css</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="GettingStarted.htm" OpenInWebBrowser="true">GettingStarted.htm</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Web.config">Web.config</ProjectItem>
     </Project>
   </TemplateContent>

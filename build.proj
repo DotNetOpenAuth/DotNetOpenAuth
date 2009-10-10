@@ -155,20 +155,21 @@
 			                   $(ProjectRoot)\projecttemplates\**\*.ldf;
 			                   $(ProjectRoot)\projecttemplates\**\*.mdf;
 			                   "/>
-			<ProjectTemplatesTransformSource Include="@(ProjectTemplatesSource)" Condition="
-																			 '%(Extension)' == 'cs' or
-																			 or '%(Extension)' == 'csproj'
-																			 or '%(Extension)' == 'config'
-																			 or '%(Extension)' == 'Master'
-																			 or '%(Extension)' == 'aspx'
+			<_ProjectTemplatesTransformSource Include="@(ProjectTemplatesSource)" Condition="
+																			 '%(Extension)' == '.cs'
+																			 or '%(Extension)' == '.csproj'
+																			 or '%(Extension)' == '.config'
+																			 or '%(Extension)' == '.Master'
+																			 or '%(Extension)' == '.aspx'
+																			 or '%(Extension)' == '.asax'
 																			 ">
 				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
 				<AfterTokens>$safeprojectname$</AfterTokens>
-			</ProjectTemplatesTransformSource>
-			<ProjectTemplatesSource Remove="@(ProjectTemplatesTransformSource)" />
+			</_ProjectTemplatesTransformSource>
+			<ProjectTemplatesSource Remove="@(_ProjectTemplatesTransformSource)" />
 
 			<ProjectTemplatesLayout Include="@(ProjectTemplatesSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<ProjectTemplatesTransformLayout Include="@(ProjectTemplatesTransformSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<ProjectTemplatesTransformLayout Include="@(_ProjectTemplatesTransformSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<!-- Include the template icon -->
 			<ProjectTemplatesSource Include="@(ProjectTemplates->'$(ProjectRoot)\doc\logo\dotnetopenid.ico')" />
@@ -182,10 +183,20 @@
 			<ProjectTemplatesLayout Include="@(ProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)bin\$(ProductName).pdb')" />
 			<ProjectTemplatesLayout Include="@(ProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)bin\$(ProductName).Contracts.dll')" />
 		</ItemGroup>
+		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
+			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
+		</Trim>
 		<MSBuild Projects="@(ProjectTemplates)" />
 		<RemoveDir Directories="$(ProjectTemplatesLayoutPath)" Condition="'$(NoClean)' != 'true'" />
 		<Copy SourceFiles="@(ProjectTemplatesSource)" DestinationFiles="@(ProjectTemplatesLayout)" SkipUnchangedFiles="true" />
-		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)" SkipUnchangedFiles="true" />
+		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)" SkipUnchangedFiles="true">
+			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
+		</CopyWithTokenSubstitution>
+		<ChangeProjectReferenceToAssemblyReference
+			Projects="@(CopiedProjectTemplateFiles)"
+			Condition="'%(Extension)' == '.csproj'"
+		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj"
+			Reference="Bin\$(ProductName).dll" />
 	</Target>
 
 	<Target Name="BuildProjectTemplates" DependsOnTargets="BuildProjectTemplatesLayout">

@@ -41,6 +41,16 @@ namespace DotNetOpenAuth.BuildTasks {
 		public ITaskItem[] DestinationFiles { get; set; }
 
 		/// <summary>
+		/// Gets or sets the destination files actually copied to.
+		/// </summary>
+		/// <remarks>
+		/// In the case of error partway through, or files not copied due to already being up to date,
+		/// this can be a subset of the <see cref="DestinationFiles"/> array.
+		/// </remarks>
+		[Output]
+		public ITaskItem[] CopiedFiles { get; set; }
+
+		/// <summary>
 		/// Executes this instance.
 		/// </summary>
 		/// <returns><c>true</c> if the operation was successful.</returns>
@@ -49,6 +59,8 @@ namespace DotNetOpenAuth.BuildTasks {
 				Log.LogError("{0} inputs and {1} outputs given.", this.SourceFiles.Length, this.DestinationFiles.Length);
 				return false;
 			}
+
+			var copiedFiles = new List<ITaskItem>(this.DestinationFiles.Length);
 
 			for (int i = 0; i < this.SourceFiles.Length; i++) {
 				string sourcePath = this.SourceFiles[i].ItemSpec;
@@ -69,22 +81,27 @@ namespace DotNetOpenAuth.BuildTasks {
 				}
 
 				using (StreamReader sr = File.OpenText(sourcePath)) {
+					if (!Directory.Exists(Path.GetDirectoryName(destPath))) {
+						Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+					}
 					using (StreamWriter sw = File.CreateText(destPath)) {
 						StringBuilder line = new StringBuilder();
-						while (line.Append(sr.ReadLine()) != null) {
+						while (!sr.EndOfStream) {
+							line.Length = 0;
+							line.Append(sr.ReadLine());
 							for (int j = 0; j < beforeTokens.Length; j++) {
 								line.Replace(beforeTokens[j], afterTokens[j]);
 							}
 
 							sw.WriteLine(line);
-
-							// Clear out the line buffer for the next input.
-							line.Length = 0;
 						}
 					}
 				}
+
+				copiedFiles.Add(this.DestinationFiles[i]);
 			}
 
+			this.CopiedFiles = copiedFiles.ToArray();
 			return true;
 		}
 	}
