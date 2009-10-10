@@ -136,7 +136,11 @@
 				 WorkingDirectory="$(ToolsDirectory)" />
 	</Target>
 
-	<Target Name="BuildProjectTemplatesLayout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
+	<Target Name="BuildProjectTemplates">
+		<MSBuild Projects="@(ProjectTemplates)" />
+	</Target>
+
+	<Target Name="ProjectTemplatesLayout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates">
 		<ItemGroup>
 			<ProjectTemplatesSource Include="$(ProjectRoot)\projecttemplates\**\*"
 			                   Exclude="
@@ -199,7 +203,7 @@
 			Reference="Bin\$(ProductName).dll" />
 	</Target>
 
-	<Target Name="BuildProjectTemplates" DependsOnTargets="BuildProjectTemplatesLayout">
+	<Target Name="ProjectTemplates" DependsOnTargets="ProjectTemplatesLayout">
 		<PropertyGroup>
 			<WebFormsRelyingPartyZipFile>$(ProjectTemplatesLayoutPath)\WebFormsRelyingParty.zip</WebFormsRelyingPartyZipFile>
 		</PropertyGroup>
@@ -233,7 +237,7 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;BuildProjectTemplates;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;ProjectTemplates;Documentation">
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)\Lib</DropLibDirectory>
