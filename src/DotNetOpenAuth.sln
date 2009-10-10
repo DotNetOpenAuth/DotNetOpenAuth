@@ -165,7 +165,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{E9ED920D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Templates", "Project Templates", "{B9EB8729-4B54-4453-B089-FE6761BA3057}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsRelyingParty", "..\starterkits\WebFormsRelyingParty\WebFormsRelyingParty.csproj", "{A78F8FC6-7B03-4230-BE41-761E400D6810}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsRelyingParty", "..\projecttemplates\WebFormsRelyingParty\WebFormsRelyingParty.csproj", "{A78F8FC6-7B03-4230-BE41-761E400D6810}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
