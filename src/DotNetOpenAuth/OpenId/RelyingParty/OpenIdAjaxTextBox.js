@@ -11,7 +11,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
 		authenticatedByToolTip, authenticatedAsToolTip, authenticationFailedToolTip,
-		discoverCallback/*removeme*/, discoveryFailedCallback) {
+		postback) {
 	box.dnoi_internal = new Object();
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
@@ -386,11 +386,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.setVisualCue('setup', null, null, providers);
 	};
 
-	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint, extensionResponses) {
+	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint, extensionResponses, deserialized) {
 		// visual cue that auth was successful
 		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
 		box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
-
 
 		// If the OP doesn't support delegation, "correct" the identifier the user entered
 		// so he realizes his identity didn't stick.  But don't change out OP Identifiers.
@@ -422,6 +421,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			}
 
 			box.dnoi_internal.submitPending = null;
+		} else {
+			// as long as this is a fresh auth response, postback to the server if configured to do so.
+			if (!deserialized) {
+				// this function is a no-op if the control's AutoPostback property is set to false.
+				postback();
+			}
 		}
 	};
 
@@ -534,5 +539,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
 
 	// Restore a previously achieved state (from pre-postback) if it is given.
-	window.dnoa_internal.deserializePreviousAuthentication(findOrCreateHiddenField().value, box.dnoi_internal.onAuthSuccess);
+	window.dnoa_internal.deserializePreviousAuthentication(
+		findOrCreateHiddenField().value,
+		function(discoveryResult, respondingEndpoint, extensionResponses) { box.dnoi_internal.onAuthSuccess(discoveryResult, respondingEndpoint, extensionResponses, true); });
 }

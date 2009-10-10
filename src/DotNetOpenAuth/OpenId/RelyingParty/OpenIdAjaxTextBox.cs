@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdAjaxTextBox runat=\"server\" />")]
-	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, ICallbackEventHandler, IEditableTextControl, ITextControl, IPostBackDataHandler {
+	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, ICallbackEventHandler, IEditableTextControl, ITextControl, IPostBackDataHandler, IPostBackEventHandler {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
@@ -65,6 +65,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal const string EmbeddedLoginFailureResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.login_failure.png";
 
 		#region Property viewstate keys
+
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="AutoPostback"/> property.
+		/// </summary>
+		private const string AutoPostbackViewStateKey = "AutoPostback";
 
 		/// <summary>
 		/// The viewstate key to use for storing the value of the <see cref="Columns"/> property.
@@ -164,6 +169,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		#region Property defaults
+
+		/// <summary>
+		/// The default value for the <see cref="AutoPostback"/> property.
+		/// </summary>
+		private const bool AutoPostbackDefault = false;
 
 		/// <summary>
 		/// The default value for the <see cref="Columns"/> property.
@@ -300,6 +310,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public string Text {
 			get { return this.Identifier != null ? this.Identifier.OriginalString : string.Empty; }
 			set { this.Identifier = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether a postback is made to fire the
+		/// <see cref="LoggedIn"/> event as soon as authentication has completed
+		/// successfully.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if a postback should be made automatically upon authentication;
+		/// otherwise, <c>false</c> to delay the <see cref="LoggedIn"/> event from firing
+		/// at the server until a postback is made by some other control.
+		/// </value>
+		[Bindable(true), Category(BehaviorCategory), DefaultValue(AutoPostbackDefault)]
+		[Description("Whether the LoggedIn event fires on the server as soon as authentication completes successfully.")]
+		public bool AutoPostback {
+			get { return (bool)(this.ViewState[AutoPostbackViewStateKey] ?? AutoPostbackDefault); }
+			set { this.ViewState[AutoPostbackViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -579,6 +606,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
+		#region IPostBackEventHandler Members
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
+			this.RaisePostBackEvent(eventArgument);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Raises the <see cref="E:Load"/> event.
 		/// </summary>
@@ -691,6 +730,13 @@ loader.insert();";
 		}
 
 		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		protected virtual void RaisePostBackEvent(string eventArgument) {
+		}
+
+		/// <summary>
 		/// Called on a postback when the Text property has changed.
 		/// </summary>
 		protected virtual void OnTextChanged() {
@@ -704,17 +750,6 @@ loader.insert();";
 		/// Assembles the javascript to send to the client and registers it with ASP.NET for transmission.
 		/// </summary>
 		private void PrepareClientJavascript() {
-			string identifierParameterName = "identifier";
-			string discoveryCallbackResultParameterName = "resultFunction";
-			string discoveryErrorCallbackParameterName = "errorCallback";
-			string discoveryCallback = Page.ClientScript.GetCallbackEventReference(
-				this,
-				identifierParameterName,
-				discoveryCallbackResultParameterName,
-				identifierParameterName,
-				discoveryErrorCallbackParameterName,
-				true);
-
 			// Import the .js file where most of the code is.
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdAjaxTextBox), EmbeddedScriptResourceName);
 
@@ -724,7 +759,7 @@ loader.insert();";
 			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", this.Name, Environment.NewLine);
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
-				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function({18}, {19}, {20}) {{{21}}});{22}",
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function() {{{18};}});{19}",
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
@@ -743,10 +778,7 @@ loader.insert();";
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationSucceededToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticatedAsToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationFailedToolTip),
-				identifierParameterName,
-				discoveryCallbackResultParameterName,
-				discoveryErrorCallbackParameterName,
-				discoveryCallback,
+				this.AutoPostback ? Page.ClientScript.GetPostBackEventReference(this, null) : null,
 				Environment.NewLine);
 
 			startupScript.AppendLine("</script>");
