@@ -51,6 +51,7 @@
     <Compile Include="ChangeProjectReferenceToAssemblyReference.cs" />
     <Compile Include="CompareFiles.cs" />
     <Compile Include="ChangeAssemblyReference.cs" />
+    <Compile Include="CopyWithTokenSubstitution.cs" />
     <Compile Include="CreateWebApplication.cs" />
     <Compile Include="DeleteWebApplication.cs" />
     <Compile Include="ECMAScriptPacker.cs" />

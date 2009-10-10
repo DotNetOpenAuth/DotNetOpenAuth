@@ -155,7 +155,20 @@
 			                   $(ProjectRoot)\projecttemplates\**\*.ldf;
 			                   $(ProjectRoot)\projecttemplates\**\*.mdf;
 			                   "/>
+			<ProjectTemplatesTransformSource Include="@(ProjectTemplatesSource)" Condition="
+																			 '%(Extension)' == 'cs' or
+																			 or '%(Extension)' == 'csproj'
+																			 or '%(Extension)' == 'config'
+																			 or '%(Extension)' == 'Master'
+																			 or '%(Extension)' == 'aspx'
+																			 ">
+				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
+				<AfterTokens>$safeprojectname$</AfterTokens>
+			</ProjectTemplatesTransformSource>
+			<ProjectTemplatesSource Remove="@(ProjectTemplatesTransformSource)" />
+
 			<ProjectTemplatesLayout Include="@(ProjectTemplatesSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<ProjectTemplatesTransformLayout Include="@(ProjectTemplatesTransformSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<!-- Include the template icon -->
 			<ProjectTemplatesSource Include="@(ProjectTemplates->'$(ProjectRoot)\doc\logo\dotnetopenid.ico')" />
@@ -172,6 +185,7 @@
 		<MSBuild Projects="@(ProjectTemplates)" />
 		<RemoveDir Directories="$(ProjectTemplatesLayoutPath)" Condition="'$(NoClean)' != 'true'" />
 		<Copy SourceFiles="@(ProjectTemplatesSource)" DestinationFiles="@(ProjectTemplatesLayout)" SkipUnchangedFiles="true" />
+		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)" SkipUnchangedFiles="true" />
 	</Target>
 
 	<Target Name="BuildProjectTemplates" DependsOnTargets="BuildProjectTemplatesLayout">
