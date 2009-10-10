@@ -5,6 +5,7 @@
 		<SolutionPath>$(ProjectRoot)\src\$(ProductName).sln</SolutionPath>
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)\unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)\$(ProductName).dll</ILMergeOutputAssembly>
+		<StarterKitsLayoutPath>$(ProjectRoot)\obj\$(Configuration)\starterkits\</StarterKitsLayoutPath>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
@@ -16,6 +17,7 @@
 	<ItemGroup>
 		<SampleProjects Include="$(ProjectRoot)\samples\**\*.csproj" />
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
+		<StarterKits Include="$(ProjectRoot)\starterkits\**\*.csproj" />
 		<ILMergeInputAssemblies Include="$(OutputPath)\$(ProductName).dll;
 		                                 $(ProjectRoot)\lib\Microsoft.Contracts.dll; "/>
 		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
@@ -34,6 +36,7 @@
 			                           $(ProjectRoot)\doc\api;
 			                           $(DropsRoot);
 			                           $(ProjectRoot)\src\PrecompiledWeb;
+			                           $(StarterKitsLayoutPath);
 			                           " />
 			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
 			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
@@ -133,6 +136,57 @@
 				 WorkingDirectory="$(ToolsDirectory)" />
 	</Target>
 
+	<Target Name="BuildStarterKitsLayout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
+		<ItemGroup>
+			<StarterKitsSource Include="$(ProjectRoot)\starterkits\**\*"
+			                   Exclude="
+			                   $(ProjectRoot)\starterkits\**\*.sln.cache;
+			                   $(ProjectRoot)\starterkits\**\*.suo;
+			                   $(ProjectRoot)\starterkits\**\*.gitignore;
+			                   $(ProjectRoot)\starterkits\**\*.log*;
+			                   $(ProjectRoot)\starterkits\**\*~;
+			                   $(ProjectRoot)\starterkits\**\Settings.StyleCop;
+			                   $(ProjectRoot)\starterkits\**\*.user;
+			                   $(ProjectRoot)\starterkits\**\obj\**;
+			                   $(ProjectRoot)\starterkits\**\bin\DotNetOpenAuth.dll;
+			                   $(ProjectRoot)\starterkits\**\bin\DotNetOpenAuth.pdb;
+			                   $(ProjectRoot)\starterkits\**\bin\Microsoft.Contracts.dll;
+			                   $(ProjectRoot)\starterkits\**\*.ldf;
+			                   $(ProjectRoot)\starterkits\**\*.mdf;
+			                   "/>
+			<StarterKitsLayout Include="@(StarterKitsSource->'$(StarterKitsLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
+
+			<!-- Include the template icon -->
+			<StarterKitsSource Include="@(StarterKits->'$(ProjectRoot)\doc\logo\dotnetopenid.ico')" />
+			<StarterKitsLayout Include="@(StarterKits->'$(StarterKitsLayoutPath)%(RecursiveDir)__TemplateIcon.ico')" />
+
+			<!-- Include the unified, signed version of the library -->
+			<StarterKitsSource Include="@(StarterKits->'$(ILMergeOutputAssembly)')" />
+			<StarterKitsSource Include="@(StarterKits->'$(ILMergeOutputAssemblyDirectory)\$(ProductName).pdb')" />
+			<StarterKitsSource Include="@(StarterKits->'$(OutputPath)\$(ProductName).Contracts.dll')" />
+			<StarterKitsLayout Include="@(StarterKits->'$(StarterKitsLayoutPath)%(RecursiveDir)bin\$(ProductName).dll')" />
+			<StarterKitsLayout Include="@(StarterKits->'$(StarterKitsLayoutPath)%(RecursiveDir)bin\$(ProductName).pdb')" />
+			<StarterKitsLayout Include="@(StarterKits->'$(StarterKitsLayoutPath)%(RecursiveDir)bin\$(ProductName).Contracts.dll')" />
+		</ItemGroup>
+		<MSBuild Projects="@(StarterKits)" />
+		<RemoveDir Directories="$(StarterKitsLayoutPath)" Condition="'$(NoClean)' != 'true'" />
+		<Copy SourceFiles="@(StarterKitsSource)" DestinationFiles="@(StarterKitsLayout)" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="BuildStarterKits" DependsOnTargets="BuildStarterKitsLayout">
+		<PropertyGroup>
+			<WebFormsRelyingPartyZipFile>$(StarterKitsLayoutPath)\WebFormsRelyingParty.zip</WebFormsRelyingPartyZipFile>
+		</PropertyGroup>
+		<ItemGroup>
+			<WebFormsRelyingPartyStarterKitLayout Include="$(StarterKitsLayoutPath)\WebFormsRelyingParty\**\*" />
+		</ItemGroup>
+		<Delete Files="$(WebFormsRelyingPartyZipFile)" />
+		<Zip
+			Files="@(WebFormsRelyingPartyStarterKitLayout)"
+			ZipFileName="$(WebFormsRelyingPartyZipFile)"
+			WorkingDirectory="$(StarterKitsLayoutPath)\WebFormsRelyingParty" />
+	</Target>
+
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
 	</Target>
 
@@ -153,10 +207,11 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;BuildStarterKits;Documentation">
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)\Lib</DropLibDirectory>
+			<DropProjectTemplatesDirectory>$(DropDirectory)\Project Templates</DropProjectTemplatesDirectory>
 			<DropSamplesDirectory>$(DropDirectory)\Samples</DropSamplesDirectory>
 			<DropSpecsDirectory>$(DropDirectory)\Specs</DropSpecsDirectory>
 		</PropertyGroup>
@@ -165,6 +220,7 @@
 						 $(DropDirectory);
 						 $(DropBinDirectory);
 						 $(DropLibDirectory);
+						 $(DropProjectTemplatesDirectory);
 						 $(DropSamplesDirectory);
 						 $(DropSpecsDirectory);
 										 " />
@@ -187,9 +243,9 @@
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)\Lib\log4net.*;
 																" />
+			<DropProjectTemplatesSourceFiles Include="$(StarterKitsLayoutPath)\*.zip" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
 															$(ProjectRoot)\**\obj\**;
-															$(ProjectRoot)\**\*.user;
 															$(ProjectRoot)\**\*.sln.cache;
 															$(ProjectRoot)\**\*.suo;
 															$(ProjectRoot)\**\*.user;
@@ -212,6 +268,7 @@
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)\%(RecurisveDir)%(FileName)%(Extension)')"/>
+			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)\%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName).refresh')"/>
 			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
@@ -220,6 +277,7 @@
 										@(DropSourceFiles);
 										@(DropBinSourceFiles);
 										@(DropLibSourceFiles);
+										@(DropProjectTemplatesSourceFiles);
 										@(DropSamplesSourceFiles);
 										@(DropSamplesRefreshSourceFiles);
 										@(DropDocSourceFiles);
@@ -230,6 +288,7 @@
 										@(DropFiles);
 										@(DropBinFiles);
 										@(DropLibFiles);
+										@(DropProjectTemplatesFiles);
 										@(DropSamplesFiles);
 										@(DropSamplesRefreshFiles);
 										@(DropDocFiles);
