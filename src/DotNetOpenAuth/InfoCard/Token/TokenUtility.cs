@@ -218,8 +218,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>A string containing the XXX-XXXX-XXX cosmetic value.</returns>
 		internal static string CalculateSiteSpecificID(string ppid) {
 			Contract.Requires(ppid != null);
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 			ErrorUtilities.VerifyArgumentNotNull(ppid, "ppid");
-			Contract.Ensures(Contract.Result<string>() != null && Contract.Result<string>().Length > 0);
 
 			int callSignChars = 10;
 			char[] charMap = "QL23456789ABCDEFGHJKMNPRSTUVWXYZ".ToCharArray();
