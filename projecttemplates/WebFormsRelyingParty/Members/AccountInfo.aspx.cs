@@ -48,6 +48,7 @@ namespace WebFormsRelyingParty.Members {
 		protected void addOpenId_Click(object sender, EventArgs e) {
 			// We don't need to do anything here.  The postback itself
 			// is enough to fire the event that gets the new openid added.
+			openIdBox.Focus();
 		}
 
 		protected void deleteOpenId_Command(object sender, CommandEventArgs e) {
