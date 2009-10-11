@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Property viewstate keys
 
 		/// <summary>
-		/// The viewstate key to use for storing the value of the a successful authentication.
+		/// The viewstate key to use for storing the value of a successful authentication.
 		/// </summary>
 		private const string AuthDataViewStateKey = "AuthData";
 
@@ -162,7 +162,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the name of the open id auth data form key.
+		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
 		/// </summary>
 		/// <value>Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.</value>
 		protected abstract string OpenIdAuthDataFormKey { get; }
@@ -329,6 +329,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Called when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected override void OnIdentifierChanged() {
+			base.OnIdentifierChanged();
+
+			// Since the identifier changed, make sure we reset any cached authentication on the user agent.
+			this.ViewState.Remove(AuthDataViewStateKey);
 		}
 
 		/// <summary>
