@@ -17,7 +17,7 @@
 
 		protected void Page_Load(object sender, EventArgs e) {
 			if (!Page.IsPostBack) {
-				openidLogin.Focus();
+				this.openidLogin.Focus();
 			}
 		}
 
@@ -25,15 +25,15 @@
 			// We don't actually want to log in... we just want the claimed identifier.
 			e.Cancel = true;
 			if (e.IsDirectedIdentity) {
-				noOPIdentifierLabel.Visible = true;
-			} else if (!databaseCreated) {
-				this.CreateDatabase(e.ClaimedIdentifier, openidLogin.Text);
+				this.noOPIdentifierLabel.Visible = true;
+			} else if (!this.databaseCreated) {
+				this.CreateDatabase(e.ClaimedIdentifier, this.openidLogin.Text);
 				this.MultiView1.ActiveViewIndex = 1;
 
 				// indicate we have already created the database so that if the
 				// identifier the user gave has multiple service endpoints,
 				// we won't try to recreate the database as the next one is considered.
-				databaseCreated = true;
+				this.databaseCreated = true;
 			}
 		}
 

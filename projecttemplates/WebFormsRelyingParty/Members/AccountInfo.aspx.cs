@@ -17,15 +17,15 @@ namespace WebFormsRelyingParty.Members {
 	public partial class AccountInfo : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
 			Global.LoggedInUser.AuthenticationTokens.Load();
-			Repeater1.DataSource = Global.LoggedInUser.AuthenticationTokens;
+			this.Repeater1.DataSource = Global.LoggedInUser.AuthenticationTokens;
 			if (!IsPostBack) {
-				Repeater1.DataBind();
-				emailBox.Text = Global.LoggedInUser.EmailAddress;
-				firstNameBox.Text = Global.LoggedInUser.FirstName;
-				lastNameBox.Text = Global.LoggedInUser.LastName;
+				this.Repeater1.DataBind();
+				this.emailBox.Text = Global.LoggedInUser.EmailAddress;
+				this.firstNameBox.Text = Global.LoggedInUser.FirstName;
+				this.lastNameBox.Text = Global.LoggedInUser.LastName;
 			}
 
-			firstNameBox.Focus();
+			this.firstNameBox.Focus();
 		}
 
 		protected void openIdBox_LoggingIn(object sender, OpenIdEventArgs e) {
