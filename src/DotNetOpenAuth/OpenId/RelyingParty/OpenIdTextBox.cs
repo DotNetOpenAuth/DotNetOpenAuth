@@ -298,6 +298,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (Identifier.TryParse(value, out id)) {
 					this.Identifier = id;
 				} else {
+					// Be sure to set the viewstate AFTER setting the Identifier,
+					// since setting the Identifier clears the viewstate in OnIdentifierChanged.
 					this.Identifier = null;
 					this.ViewState[TextViewStateKey] = value;
 				}

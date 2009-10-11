@@ -72,6 +72,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string AutoPostbackViewStateKey = "AutoPostback";
 
 		/// <summary>
+		/// The viewstate key to use for the <see cref="Text"/> property.
+		/// </summary>
+		private const string TextViewStateKey = "Text";
+
+		/// <summary>
 		/// The viewstate key to use for storing the value of the <see cref="Columns"/> property.
 		/// </summary>
 		private const string ColumnsViewStateKey = "Columns";
@@ -308,8 +313,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(""), Category(AppearanceCategory)]
 		[Description("The content of the text box.")]
 		public string Text {
-			get { return this.Identifier != null ? this.Identifier.OriginalString : string.Empty; }
-			set { this.Identifier = value; }
+			get {
+				return this.Identifier != null ? this.Identifier.OriginalString : (this.ViewState[TextViewStateKey] as string ?? string.Empty);
+			}
+
+			set {
+				// Try to store it as a validated identifier,
+				// but failing that at least store the text.
+				Identifier id;
+				if (Identifier.TryParse(value, out id)) {
+					this.Identifier = id;
+				} else {
+					// Be sure to set the viewstate AFTER setting the Identifier,
+					// since setting the Identifier clears the viewstate in OnIdentifierChanged.
+					this.Identifier = null;
+					this.ViewState[TextViewStateKey] = value;
+				}
+			}
 		}
 
 		/// <summary>
@@ -626,6 +646,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			base.OnLoad(e);
 
 			this.Page.RegisterRequiresPostBack(this);
+		}
+
+		/// <summary>
+		/// Called when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected override void OnIdentifierChanged() {
+			this.ViewState.Remove(TextViewStateKey);
+			base.OnIdentifierChanged();
 		}
 
 		/// <summary>
