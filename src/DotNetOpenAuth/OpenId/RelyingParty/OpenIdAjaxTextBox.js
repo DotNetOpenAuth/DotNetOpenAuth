@@ -139,20 +139,20 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.op_logo.style.maxWidth = '16px';
 	box.dnoi_internal.spinner = box.dnoi_internal.constructIcon(spinner_url, busyToolTip, true);
 	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticatedAsToolTip, true);
-	//box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
+	box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
 
 	// Disable the display of the DotNetOpenId logo
 	//box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
 	box.dnoi_internal.dnoi_logo = box.dnoi_internal.openid_logo;
 
-	box.dnoi_internal.setVisualCue = function(state, authenticatedBy, authenticatedAs, providers) {
+	box.dnoi_internal.setVisualCue = function(state, authenticatedBy, authenticatedAs, providers, errorMessage) {
 		box.dnoi_internal.openid_logo.style.visibility = 'hidden';
 		box.dnoi_internal.dnoi_logo.style.visibility = 'hidden';
 		box.dnoi_internal.op_logo.style.visibility = 'hidden';
 		box.dnoi_internal.openid_logo.title = box.dnoi_internal.openid_logo.originalTitle;
 		box.dnoi_internal.spinner.style.visibility = 'hidden';
 		box.dnoi_internal.success_icon.style.visibility = 'hidden';
-		//		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
+		box.dnoi_internal.failure_icon.style.visibility = 'hidden';
 		box.dnoi_internal.retryButton.style.visibility = 'hidden';
 		if (box.dnoi_internal.loginButton) {
 			box.dnoi_internal.loginButton.destroy();
@@ -200,11 +200,17 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			window.status = "Authentication requires setup.";
 		} else if (state == "failed") {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
-			//box.dnoi_internal.failure_icon.style.visibility = 'visible';
 			box.dnoi_internal.retryButton.style.visibility = 'visible';
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = authenticationFailedToolTip;
 			box.title = authenticationFailedToolTip;
+		} else if (state == "failednoretry") {
+			box.dnoi_internal.failure_icon.title = errorMessage;
+			box.dnoi_internal.failure_icon.style.visibility = 'visible';
+			box.dnoi_internal.openid_logo.style.visibility = 'visible';
+			box.dnoi_internal.claimedIdentifier = null;
+			window.status = errorMessage;
+			box.title = errorMessage;
 		} else if (state == '' || state == null) {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.title = '';
@@ -364,12 +370,18 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 					box.dnoi_internal.prefetchImage(favicon);
 				}
 			}
-			discoveryResult.loginBackground(
+			if (discoveryResult.length > 0) {
+				discoveryResult.loginBackground(
 				box.dnoi_internal.authenticationIFrames,
 				box.dnoi_internal.onAuthSuccess,
 				box.dnoi_internal.onAuthFailed,
 				box.dnoi_internal.lastAuthenticationFailed,
 				box.timeout);
+			} else {
+				// discovery completed successfully -- it just didn't yield any service endpoints.
+				box.dnoi_internal.setVisualCue('failednoretry', null, null, null, discoveryResult.error);
+				if (discoveryResult.error) { box.title = discoveryResult.error; }
+			}
 		}
 	};
 

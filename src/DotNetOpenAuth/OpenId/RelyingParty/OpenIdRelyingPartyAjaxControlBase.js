@@ -402,6 +402,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 	};
 
 	this.userSuppliedIdentifier = identifier;
+	this.error = discoveryInfo.error;
 
 	if (discoveryInfo) {
 		this.claimedIdentifier = discoveryInfo.claimedIdentifier; // The claimed identifier may be null if the user provided an OP Identifier.
@@ -413,7 +414,11 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		this.length = 0;
 	}
 
-	trace('Discovered claimed identifier: ' + (this.claimedIdentifier ? this.claimedIdentifier : "(directed identity)"));
+	if (this.length == 0) {
+		trace('Discovery completed, but yielded no service endpoints.');
+	} else {
+		trace('Discovered claimed identifier: ' + (this.claimedIdentifier ? this.claimedIdentifier : "(directed identity)"));
+	}
 
 	// Add extra tracking bits and behaviors.
 	this.findByEndpoint = function(opEndpoint) {
