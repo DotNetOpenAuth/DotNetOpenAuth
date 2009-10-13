@@ -28,19 +28,6 @@ namespace WebFormsRelyingParty.Members {
 			this.firstNameBox.Focus();
 		}
 
-		protected void openIdBox_LoggingIn(object sender, OpenIdEventArgs e) {
-			// Find out if this is an OpenID that is already bound to any account,
-			// but we can only check this for non-directed identity cases at this stage.
-			if (!e.IsDirectedIdentity) {
-				string claimedId = e.ClaimedIdentifier;
-				var existingToken = Global.DataContext.AuthenticationToken.FirstOrDefault(token => token.ClaimedIdentifier == claimedId);
-				if (existingToken != null) {
-					// Report the error to the user and cancel the login.
-					e.Cancel = true;
-				}
-			}
-		}
-
 		protected void openIdBox_LoggedIn(object sender, OpenIdEventArgs e) {
 			this.AddIdentifier(e.ClaimedIdentifier, e.Response.FriendlyIdentifierForDisplay);
 		}

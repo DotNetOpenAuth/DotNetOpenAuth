@@ -82,8 +82,7 @@
 		</FooterTemplate>
 	</asp:Repeater>
 	<asp:Panel ID="Panel1" runat="server" DefaultButton="addOpenId">
-		<rp:OpenIdAjaxTextBox runat="server" ID="openIdBox" OnLoggedIn="openIdBox_LoggedIn"
-			OnLoggingIn="openIdBox_LoggingIn" />
+		<rp:OpenIdAjaxTextBox runat="server" ID="openIdBox" OnLoggedIn="openIdBox_LoggedIn" />
 		<asp:Button ID="addOpenId" runat="server" Text="Add Identifier" OnClick="addOpenId_Click" />
 		<asp:Label ID="differentAccountLabel" runat="server" EnableViewState="False" ForeColor="Red"
 			Text="This identifier already belongs to a different user account." Visible="False" />
