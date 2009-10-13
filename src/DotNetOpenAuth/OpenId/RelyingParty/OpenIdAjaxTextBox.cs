@@ -679,6 +679,7 @@ loader.insert();";
 			css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
 			css.Attributes["rel"] = "stylesheet";
 			css.Attributes["type"] = "text/css";
+			ErrorUtilities.VerifyHost(this.Page.Header != null, OpenIdStrings.HeadTagMustIncludeRunatServer);
 			this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
 
 			this.PrepareClientJavascript();
