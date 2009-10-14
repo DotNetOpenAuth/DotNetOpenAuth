@@ -1,12 +1,13 @@
 ﻿$(function() {
-	$('#openid_identifier')[0].value = $.cookie('openid_identifier') || '';
+	var ajaxbox = $('#openid_identifier')[0];
+	ajaxbox.value = $.cookie('openid_identifier') || '';
 
-	if ($('#openid_identifier')[0].value.length > 0) {
+	if (ajaxbox.value.length > 0) {
 		var ops = $('ul.OpenIdProviders li');
 		ops.addClass('grayedOut');
 		var matchFound = false;
 		ops.each(function(i, li) {
-			if (li.id == $('#openid_identifier')[0].value) {
+			if (li.id == ajaxbox.value) {
 				$(li)
 					.removeClass('grayedOut')
 					.addClass('focused');
@@ -54,7 +55,7 @@
 		});
 	});
 	$('#OpenIdLoginButton').click(function() {
-		doLogin($('#openid_identifier')[0].value);
+		doLogin(ajaxbox.value);
 	});
 
 	// Make popup window close on escape (the dialog style is already taken care of)
@@ -70,7 +71,7 @@
 		}
 
 		var rate = NaN;
-		var lastValue = $('#openid_identifier')[0].value;
+		var lastValue = ajaxbox.value;
 		var keyPresses = 0;
 		var startTime = null;
 		var lastKeyPress = null;
@@ -90,7 +91,7 @@
 
 		function discover() {
 			cancelTimer();
-			var id = $('#openid_identifier')[0].value;
+			var id = ajaxbox.value;
 			log(id + ": discover() invoked");
 			if (identifierSanityCheck(id)) {
 				log(id + ": discovering");
@@ -136,7 +137,7 @@
 			if (e.keyCode == $.ui.keyCode.ENTER) {
 				discover();
 			} else {
-				var newValue = $('#openid_identifier')[0].value;
+				var newValue = ajaxbox.value;
 				if (lastValue != newValue) {
 					if (newValue.length == 0) {
 						reset();
