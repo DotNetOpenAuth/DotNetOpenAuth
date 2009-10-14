@@ -179,6 +179,10 @@ window.OpenIdIdentifier = function(identifier) {
 			}
 		});
 	};
+
+	this.toString = function() {
+		return identifier;
+	};
 };
 
 /// <summary>Invoked by RP web server when an authentication has completed.</summary>
