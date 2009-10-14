@@ -49,7 +49,7 @@
 		<form runat="server" method="get" style="display: none" id="OpenIDForm">
 		<rp:OpenIdAjaxTextBox runat="server" ID="openid_identifier" />
 		<div id="NotMyComputerDiv">
-			<span title="Checking this box prevents the identifier you type here from being remembered next time someone comes to this web site from this browser." />
+			<span title="Checking this box prevents the identifier you type here from being remembered next time someone comes to this web site from this browser."></span>
 			<input type="checkbox" name="NotMyComputer" id="NotMyComputer" value="1" />
 			<label for="NotMyComputer">
 				This is <i>not</i> my computer</label>
@@ -57,7 +57,6 @@
 		<!--<div id="state"></div>-->
 		</form>
 		<div class="helpDoc">
-			</p>
 			<p>
 				If you have logged in previously, click the same button you did last time.
 			</p>
