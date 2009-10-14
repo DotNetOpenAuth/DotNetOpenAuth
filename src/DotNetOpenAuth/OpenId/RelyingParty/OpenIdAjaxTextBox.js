@@ -340,12 +340,19 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	*****************************************/
 
 	/// <summary>Called to initiate discovery on some identifier.</summary>
-	box.dnoi_internal.performDiscovery = function(identifier) {
+	box.dnoi_internal.performDiscovery = function(identifier, onSuccess, onFailure) {
 		box.dnoi_internal.authenticationIFrames.closeFrames();
 		box.dnoi_internal.setVisualCue('discovering');
 		box.lastDiscoveredIdentifier = identifier;
 		var openid = new window.OpenIdIdentifier(identifier);
-		openid.discover(box.dnoi_internal.discoverySuccess, box.dnoi_internal.discoveryFailed);
+		openid.discover(
+			function(discoveryResult) {
+				box.dnoi_internal.discoverySuccess(discoveryResult, onSuccess, onFailure);
+			},
+			function(a, b, c, d, e, f, g) {
+				box.dnoi_internal.discoveryFailed(a, b, c, d, e, f, g);
+				if (onFailure) { onFailure(); }
+			});
 	};
 
 	/// <summary>Callback that is invoked when discovery fails.</summary>
@@ -356,8 +363,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	/// <summary>Callback that is invoked when discovery results are available.</summary>
 	/// <param name="discoveryResult">The JSON object containing the OpenID auth requests.</param>
-	/// <param name="identifier">The identifier that discovery was performed on.</param>
-	box.dnoi_internal.discoverySuccess = function(discoveryResult) {
+	/// <param name="onSuccess">A special callback to fire when login has completed successfully.</param>
+	/// <param name="onFailure">A special callback to fire when login fails.</param>
+	box.dnoi_internal.discoverySuccess = function(discoveryResult, onSuccess, onFailure) {
 		// Only act on the discovery event if we're still interested in the result.
 		// If the user already changed the identifier since discovery was initiated,
 		// we aren't interested in it any more.
@@ -372,11 +380,17 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			}
 			if (discoveryResult.length > 0) {
 				discoveryResult.loginBackground(
-				box.dnoi_internal.authenticationIFrames,
-				box.dnoi_internal.onAuthSuccess,
-				box.dnoi_internal.onAuthFailed,
-				box.dnoi_internal.lastAuthenticationFailed,
-				box.timeout);
+					box.dnoi_internal.authenticationIFrames,
+					function(a, b, c, d, e, f, g) {
+						box.dnoi_internal.onAuthSuccess(a, b, c, d, e, f, g);
+						if (onSuccess) { onSuccess(); }
+					},
+					box.dnoi_internal.onAuthFailed,
+					function(a, b, c, d, e, f, g) {
+						box.dnoi_internal.lastAuthenticationFailed(a, b, c, d, e, f, g);
+						if (onFailure) { onFailure(); }
+					},
+					box.timeout);
 			} else {
 				// discovery completed successfully -- it just didn't yield any service endpoints.
 				box.dnoi_internal.setVisualCue('failednoretry', null, null, null, discoveryResult.error);
@@ -554,4 +568,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	window.dnoa_internal.deserializePreviousAuthentication(
 		findOrCreateHiddenField().value,
 		function(discoveryResult, respondingEndpoint, extensionResponses) { box.dnoi_internal.onAuthSuccess(discoveryResult, respondingEndpoint, extensionResponses, true); });
+
+	// public methods
+	box.login = function(onSuccess, onFailure) {
+		box.dnoi_internal.performDiscovery(box.value, onSuccess, onFailure);
+	};
 }

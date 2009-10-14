@@ -164,12 +164,12 @@ window.OpenIdIdentifier = function(identifier) {
 	};
 
 	/// <summary>Performs discovery and immediately begins checkid_immediate on all discovered endpoints.</summary>
-	this.loginBackground = function(frameManager, onLoginSuccess, onLoginFailure, timeout) {
+	this.loginBackground = function(frameManager, onLoginSuccess, onLoginFailure, timeout, onLoginLastFailure) {
 		this.discover(function(discoveryResult) {
 			if (discoveryResult) {
 				trace('Discovery succeeded and found ' + discoveryResult.length + ' OpenID service endpoints.');
 				if (discoveryResult.length > 0) {
-					discoveryResult.loginBackground(frameManager, onLoginSuccess, onLoginFailure, onLoginFailure, timeout);
+					discoveryResult.loginBackground(frameManager, onLoginSuccess, onLoginFailure, onLoginLastFailure || onLoginFailure, timeout);
 				} else {
 					trace("This doesn't look like an OpenID Identifier.  Aborting login.");
 					if (onLoginFailure) {
