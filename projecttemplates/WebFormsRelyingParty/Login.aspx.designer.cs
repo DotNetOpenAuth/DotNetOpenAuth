@@ -12,23 +12,5 @@ namespace WebFormsRelyingParty {
     
     
     public partial class Login {
-        
-        /// <summary>
-        /// InfoCardSelector1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetOpenAuth.InfoCard.InfoCardSelector InfoCardSelector1;
-        
-        /// <summary>
-        /// openIdLogin1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdLogin openIdLogin1;
     }
 }
