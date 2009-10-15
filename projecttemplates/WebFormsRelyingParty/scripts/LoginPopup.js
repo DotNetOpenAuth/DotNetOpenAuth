@@ -28,9 +28,9 @@
 		var retain = !$('#NotMyComputer')[0].selected;
 		$.cookie('openid_identifier', retain ? identifier : null, { path: '/' });
 		var openid = new window.OpenIdIdentifier(identifier);
-		if (!timerBased) {
-			openid.login(function() { alert('success!'); });
-		}
+		openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
+			window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
+		});
 	}
 
 	// This FrameManager will be used for background logins for the OP buttons
@@ -71,7 +71,7 @@
 			}
 		}
 
-		tryLastIdentifier();
+//		tryLastIdentifier();
 	});
 
 	$('li').click(function() {

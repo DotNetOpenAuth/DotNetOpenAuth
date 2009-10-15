@@ -46,7 +46,9 @@
 				</div>
 			</a></li>
 		</ul>
-		<form runat="server" method="get" style="display: none" id="OpenIDForm">
+		<form runat="server" style="display: none" id="OpenIDForm">
+		<asp:HiddenField ID="openidPositiveAssertion" runat="server" />
+		<asp:HiddenField ID="originPage" runat="server" />
 		<rp:OpenIdAjaxTextBox runat="server" ID="openid_identifier" />
 		<div id="NotMyComputerDiv">
 			<span title="Checking this box prevents the identifier you type here from being remembered next time someone comes to this web site from this browser."></span>
