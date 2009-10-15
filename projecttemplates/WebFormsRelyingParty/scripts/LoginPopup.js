@@ -44,10 +44,10 @@
 			var ops = $('ul.OpenIdProviders li');
 			ops.each(function(i, li) {
 				// don't try an OP button that matches the last used identifier, since we just finished trying that.
-				if (li.id != ajaxbox.value) {
+				if (li.id != ajaxbox.value && li.id != 'OpenIDButton') {
 					var openid = new window.OpenIdIdentifier(li.id);
-					openid.loginBackground(authenticationIFrames, function() {
-						alert('OP button background login as ' + openid + ' was successful!');
+					openid.loginBackground(authenticationIFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
+						alert('OP button background login as ' + respondingEndpoint.claimedIdentifier + ' was successful!');
 					}, null, backgroundTimeout);
 				}
 			});
@@ -59,8 +59,8 @@
 //			alert('tryLastIdentifier starting...');
 			if (ajaxbox.value.length > 0) {
 				ajaxbox.login(
-					function() {
-						alert('background login as ' + ajaxbox.value + ' was successful!');
+					function(discoveryResult, respondingEndpoint, extensionResponses) {
+						alert('background login as ' + respondingEndpoint.claimedIdentifier + ' was successful!');
 					},
 					function() {
 						alert('last identifier auto-login failed.  Trying OP buttons...');
