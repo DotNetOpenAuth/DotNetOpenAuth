@@ -381,9 +381,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			if (discoveryResult.length > 0) {
 				discoveryResult.loginBackground(
 					box.dnoi_internal.authenticationIFrames,
-					function(a, b, c, d, e, f, g) {
-						box.dnoi_internal.onAuthSuccess(a, b, c, d, e, f, g);
-						if (onSuccess) { onSuccess(); }
+					function(discoveryResult, respondingEndpoint, extensionResponses) {
+						box.dnoi_internal.onAuthSuccess(discoveryResult, respondingEndpoint, extensionResponses);
+						if (onSuccess) { onSuccess(discoveryResult, respondingEndpoint, extensionResponses); }
 					},
 					box.dnoi_internal.onAuthFailed,
 					function(a, b, c, d, e, f, g) {
