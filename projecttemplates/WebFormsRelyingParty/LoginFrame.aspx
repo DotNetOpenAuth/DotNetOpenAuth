@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginFrame.aspx.cs" Inherits="WebFormsRelyingParty.LoginFrame" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginFrame.aspx.cs" Inherits="WebFormsRelyingParty.LoginFrame" EnableViewState="false" %>
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
@@ -17,35 +17,25 @@
 		<p>
 			Login with an account you already use!
 		</p>
-		<ul class="OpenIdProviders">
-			<li id="https://me.yahoo.com/"><a href="#">
-				<div>
+		<asp:Repeater runat="server" ID="providerRepeater">
+			<HeaderTemplate>
+				<ul class="OpenIdProviders">
+			</HeaderTemplate>
+			<ItemTemplate>
+				<li id='<%# HttpUtility.HtmlAttributeEncode((string)Eval("OPIdentifier") ?? "OpenIDButton") %>'><a href="#">
 					<div>
-						<img src="images/yahoo.gif" />
+						<div>
+							<img src='<%# HttpUtility.HtmlAttributeEncode((string)Eval("Image")) %>' />
+						</div>
+						<div class="ui-widget-overlay">
+						</div>
 					</div>
-					<div class="ui-widget-overlay">
-					</div>
-				</div>
-			</a></li>
-			<li id="https://www.google.com/accounts/o8/id"><a href="#">
-				<div>
-					<div>
-						<img src="images/google.gif" />
-					</div>
-					<div class="ui-widget-overlay">
-					</div>
-				</div>
-			</a></li>
-			<li id="OpenIDButton"><a href="#">
-				<div>
-					<div>
-						<img src="images/openid.gif" />
-					</div>
-					<div class="ui-widget-overlay">
-					</div>
-				</div>
-			</a></li>
-		</ul>
+				</a></li>
+			</ItemTemplate>
+			<FooterTemplate>
+				</ul>
+			</FooterTemplate>
+		</asp:Repeater>
 		<form runat="server" style="display: none" id="OpenIDForm">
 		<asp:HiddenField ID="openidPositiveAssertion" runat="server" />
 		<asp:HiddenField ID="originPage" runat="server" />
