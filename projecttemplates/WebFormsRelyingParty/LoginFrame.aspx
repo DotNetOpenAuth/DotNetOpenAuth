@@ -25,7 +25,6 @@
 			</Providers>
 		</rp:OpenIdButtonPanel>
 		<form runat="server" style="display: none" id="OpenIDForm">
-		<asp:HiddenField ID="openidPositiveAssertion" runat="server" />
 		<asp:HiddenField ID="originPage" runat="server" />
 		<rp:OpenIdAjaxTextBox runat="server" ID="openid_identifier" />
 		<div id="NotMyComputerDiv">

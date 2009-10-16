@@ -50,6 +50,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
+		/// </summary>
+		/// <value>
+		/// Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.
+		/// </value>
+		protected override string OpenIdAuthDataFormKey {
+			get { return this.ClientID + "_openidAuthData"; }
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
@@ -102,25 +112,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			writer.RenderEndTag(); // </ul>
 		}
-
-		/// <summary>
-		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
-		/// </summary>
-		/// <value>
-		/// Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.
-		/// </value>
-		protected override string OpenIdAuthDataFormKey {
-			get { return this.ClientID + "_openidAuthData"; }
-		}
 	}
 
 	public class ProviderInfo {
 		public ProviderInfo() {
-		}
-
-		public ProviderInfo(Identifier identifier, string image) {
-			this.OPIdentifier = identifier;
-			this.Image = image;
 		}
 
 		[TypeConverter(typeof(IdentifierConverter))]
