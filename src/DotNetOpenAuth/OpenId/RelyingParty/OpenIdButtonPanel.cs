@@ -10,15 +10,16 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.ComponentModel;
 	using System.Linq;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
-	using System.Web.UI.WebControls;
 	using System.Web.UI.HtmlControls;
+	using System.Web.UI.WebControls;
+	using DotNetOpenAuth.ComponentModel;
 	using DotNetOpenAuth.Messaging;
-	using System.Collections.ObjectModel;
 
 	[ToolboxData("<{0}:OpenIdButtonPanel runat=\"server\"></{0}:OpenIdButtonPanel>")]
 	[ParseChildren(true), PersistChildren(false)]
@@ -75,7 +76,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 
 			foreach (var op in this.Providers) {
-				writer.AddAttribute(HtmlTextWriterAttribute.Id, op.OPIdentifier ?? "OpenIDButton");
+				writer.AddAttribute(HtmlTextWriterAttribute.Id, (string)op.OPIdentifier ?? "OpenIDButton");
 				writer.RenderBeginTag(HtmlTextWriterTag.Li);
 
 				writer.AddAttribute(HtmlTextWriterAttribute.Href, "#");
@@ -117,12 +118,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public ProviderInfo() {
 		}
 
-		public ProviderInfo(string identifier, string image) {
+		public ProviderInfo(Identifier identifier, string image) {
 			this.OPIdentifier = identifier;
 			this.Image = image;
 		}
 
-		public string OPIdentifier { get; set; }
+		[TypeConverter(typeof(IdentifierConverter))]
+		public Identifier OPIdentifier { get; set; }
+		
 		public string Image { get; set; }
 	}
 }
