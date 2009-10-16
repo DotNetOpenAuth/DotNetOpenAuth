@@ -13,12 +13,6 @@ namespace WebFormsRelyingParty {
 	public partial class LoginFrame : System.Web.UI.Page, IPostBackEventHandler {
 		private const string postLoginAssertionMethodName = "postLoginAssertion";
 
-		private static readonly ProviderInfo[] providers = new ProviderInfo[] {
-			new ProviderInfo("https://me.yahoo.com/", "images/yahoo.gif"),
-			new ProviderInfo("https://www.google.com/accounts/o8/id", "images/google.gif"),
-			new ProviderInfo(null, "images/openid.gif"),
-		};
-
 		protected void Page_Load(object sender, EventArgs e) {
 			const string positiveAssertionParameterName = "positiveAssertion";
 			const string originPageParameterName = "originPage";
@@ -35,14 +29,6 @@ namespace WebFormsRelyingParty {
 				postLoginAssertionMethodName,
 				originPageParameterName);
 			this.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
-
-			providerRepeater.DataSource = providers;
-			providerRepeater.DataBind();
-
-			if (!this.IsPostBack) {
-				// Perform early discovery on the OPs
-
-			}
 		}
 
 		#region IPostBackEventHandler Members
@@ -60,15 +46,5 @@ namespace WebFormsRelyingParty {
 		}
 
 		#endregion
-
-		private class ProviderInfo {
-			internal ProviderInfo(string identifier, string image) {
-				this.OPIdentifier = identifier;
-				this.Image = image;
-			}
-
-			public string OPIdentifier { get; set; }
-			public string Image { get; set; }
-		}
 	}
 }

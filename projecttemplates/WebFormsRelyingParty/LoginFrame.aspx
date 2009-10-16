@@ -17,25 +17,13 @@
 		<p>
 			Login with an account you already use!
 		</p>
-		<asp:Repeater runat="server" ID="providerRepeater">
-			<HeaderTemplate>
-				<ul class="OpenIdProviders">
-			</HeaderTemplate>
-			<ItemTemplate>
-				<li id='<%# HttpUtility.HtmlAttributeEncode((string)Eval("OPIdentifier") ?? "OpenIDButton") %>'><a href="#">
-					<div>
-						<div>
-							<img src='<%# HttpUtility.HtmlAttributeEncode((string)Eval("Image")) %>' />
-						</div>
-						<div class="ui-widget-overlay">
-						</div>
-					</div>
-				</a></li>
-			</ItemTemplate>
-			<FooterTemplate>
-				</ul>
-			</FooterTemplate>
-		</asp:Repeater>
+		<rp:OpenIdButtonPanel runat="server">
+			<Providers>
+				<rp:ProviderInfo OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
+				<rp:ProviderInfo OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
+				<rp:ProviderInfo Image="images/openid.gif" />
+			</Providers>
+		</rp:OpenIdButtonPanel>
 		<form runat="server" style="display: none" id="OpenIDForm">
 		<asp:HiddenField ID="openidPositiveAssertion" runat="server" />
 		<asp:HiddenField ID="originPage" runat="server" />
