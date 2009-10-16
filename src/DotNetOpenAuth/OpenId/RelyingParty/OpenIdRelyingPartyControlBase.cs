@@ -424,8 +424,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets the URL to your privacy policy page that describes how 
-		/// claims will be used and/or shared.
+		/// Gets or sets the Identifier that will be used to initiate login.
 		/// </summary>
 		[Bindable(true), Category(OpenIdCategory)]
 		[Description("The OpenID Identifier that this button will use to initiate login.")]
