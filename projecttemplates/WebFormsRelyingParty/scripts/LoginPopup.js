@@ -49,17 +49,15 @@
 	// This FrameManager will be used for background logins for the OP buttons
 	// and the last used identifier.  It is NOT the frame manager used by the
 	// OpenIdAjaxTextBox, as it has its own.
-	var authenticationIFrames = new window.dnoa_internal.FrameManager(5/*throttle*/);
 	var backgroundTimeout = 3000;
 
 	$(document).ready(function() {
 		var ops = $('ul.OpenIdProviders li');
 		ops.each(function(i, li) {
-			// don't try an OP button that matches the last used identifier,
-			// since the OpenIdAjaxTextBox will be trying that automatically already.
-			if (li.id != ajaxbox.value && li.id != 'OpenIDButton') {
+			if (li.id != 'OpenIDButton') {
+				li.authenticationIFrames = new window.dnoa_internal.FrameManager(1/*throttle*/);
 				var openid = new window.OpenIdIdentifier(li.id);
-				openid.loginBackground(authenticationIFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
+				openid.loginBackground(li.authenticationIFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
 					showLoginSuccess(li.id);
 					//alert('OP button background login as ' + respondingEndpoint.claimedIdentifier + ' was successful!');
 				}, null, backgroundTimeout);

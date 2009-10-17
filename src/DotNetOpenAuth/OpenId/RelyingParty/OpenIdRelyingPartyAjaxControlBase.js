@@ -492,7 +492,8 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 
 	this.abortAll = function() {
 		if (thisDiscoveryResult.frameManager) {
-			// Abort all other asynchronous authentication attempts that may be in progress.
+			// Abort all other asynchronous authentication attempts that may be in progress
+			// for this particular claimed identifier.
 			thisDiscoveryResult.frameManager.cancelAllWork();
 			for (var i = 0; i < thisDiscoveryResult.length; i++) {
 				thisDiscoveryResult[i].abort();
