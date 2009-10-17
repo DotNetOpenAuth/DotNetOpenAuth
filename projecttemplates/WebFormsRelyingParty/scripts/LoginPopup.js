@@ -34,7 +34,8 @@
 		var openid = new window.OpenIdIdentifier(identifier);
 		if (openid) {
 			openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
-				window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
+				alert("Woot!  We've logged you in as " + respondingEndpoint.claimedIdentifier);
+				//window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
 			});
 		} else {
 			trace('doLogin called without an identifier.');
