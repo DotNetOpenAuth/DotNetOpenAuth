@@ -28,6 +28,7 @@ Array.prototype.remove = function(element) {
 };
 
 window.dnoa_internal.discoveryResults = new Array(); // user supplied identifiers and discovery results
+window.dnoa_internal.discoveryInProgress = new Array(); // identifiers currently being discovered and their callbacks
 
 // The possible authentication results
 window.dnoa_internal.authSuccess = new Object();
@@ -125,8 +126,16 @@ window.OpenIdIdentifier = function(identifier) {
 			discoveryResult = new window.dnoa_internal.DiscoveryResult(identifier, discoveryResult);
 			window.dnoa_internal.discoveryResults[identifier] = discoveryResult;
 
-			if (onDiscoverSuccess) {
-				onDiscoverSuccess(discoveryResult);
+			// Clear our "in discovery" state and fire callbacks
+			var callbacks = window.dnoa_internal.discoveryInProgress[identifier];
+			window.dnoa_internal.discoveryInProgress[identifier] = null;
+
+			if (callbacks) {
+				for (var i = 0; i < callbacks.onSuccess.length; i++) {
+					if (callbacks.onSuccess[i]) {
+						callbacks.onSuccess[i](discoveryResult);
+					}
+				}
 			}
 		};
 
@@ -134,8 +143,16 @@ window.OpenIdIdentifier = function(identifier) {
 		function discoverFailureCallback(message, userSuppliedIdentifier) {
 			trace('Discovery failed for: ' + identifier);
 
-			if (onDiscoverFailure) {
-				onDiscoverFailure();
+			// Clear our "in discovery" state and fire callbacks
+			var callbacks = window.dnoa_internal.discoveryInProgress[identifier];
+			window.dnoa_internal.discoveryInProgress[identifier] = null;
+
+			if (callbacks) {
+				for (var i = 0; i < callbacks.onSuccess.length; i++) {
+					if (callbacks.onFailure[i]) {
+						callbacks.onFailure[i]();
+					}
+				}
 			}
 		};
 
@@ -147,8 +164,18 @@ window.OpenIdIdentifier = function(identifier) {
 			return;
 		};
 
-		trace('starting discovery on ' + identifier);
-		window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);
+		if (!window.dnoa_internal.discoveryInProgress[identifier]) {
+			trace('starting discovery on ' + identifier);
+			window.dnoa_internal.discoveryInProgress[identifier] = {
+				onSuccess: [onDiscoverSuccess],
+				onFailure: [onDiscoverFailure]
+			};
+			window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);
+		} else {
+			trace('Discovery on ' + identifier + ' already started. Registering an additional callback.');
+			window.dnoa_internal.discoveryInProgress[identifier].onSuccess.push(onDiscoverSuccess);
+			window.dnoa_internal.discoveryInProgress[identifier].onFailure.push(onDiscoverFailure);
+		}
 	};
 
 	/// <summary>Performs discovery and immediately begins checkid_setup to authenticate the user using a given identifier.</summary>
