@@ -44,7 +44,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 
 	/// <summary>Called to queue up some work that will use an iframe as soon as it is available.</summary>
 	/// <param name="job">
-	/// A delegate that must return the url to point the iframe to.  
+	/// A delegate that must return { url: /*to point the iframe to*/, onCanceled: /* callback */ }
 	/// Its first parameter is the iframe created to service the request.
 	/// It will only be called when the work actually begins.
 	/// </param>
@@ -80,7 +80,9 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 			iframe.setAttribute("height", 0);
 			iframe.setAttribute("style", "display: none");
 		}
-		iframe.setAttribute("src", job(iframe, p1));
+		var jobDescription = job(iframe, p1);
+		iframe.setAttribute("src", jobDescription.url);
+		iframe.onCanceled = jobDescription.onCanceled;
 		iframe.dnoa_internal = window.dnoa_internal;
 		document.body.insertBefore(iframe, document.body.firstChild);
 		this.frames.push(iframe);
@@ -92,7 +94,10 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 		for (var i = 0; i < this.frames.length; i++) {
 			if (this.frames[i].parentNode) { this.frames[i].parentNode.removeChild(this.frames[i]); }
 		}
-		while (this.frames.length > 0) { this.frames.pop(); }
+		while (this.frames.length > 0) {
+			var frame = this.frames.pop();
+			if (frame.onCanceled) { frame.onCanceled(); }
+		}
 		return true;
 	};
 
@@ -346,7 +351,10 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now OPENING (timeout ' + timeout + ').');
 			//trace('initiating auth attempt with: ' + thisServiceEndpoint.immediate);
 			thisServiceEndpoint.iframe = iframe;
-			return thisServiceEndpoint.immediate.toString();
+			return {
+				url: thisServiceEndpoint.immediate.toString(),
+				onCanceled: function() { thisServiceEndpoint.abort(); }
+			};
 		};
 
 		this.busy = function() {
