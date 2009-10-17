@@ -195,6 +195,7 @@
     <Content Include="bin\Microsoft.Contracts.dll" />
     <Content Include="GettingStarted.htm" />
     <Content Include="images\infocard_23x16.png" />
+    <Content Include="images\myopenid.png" />
     <Content Include="images\openid.gif" />
     <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo_login.png" />
