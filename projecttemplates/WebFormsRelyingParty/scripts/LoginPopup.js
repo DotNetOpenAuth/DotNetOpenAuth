@@ -1,10 +1,6 @@
 ﻿$(function() {
 	var ajaxbox = $('#openid_identifier')[0];
 	ajaxbox.value = $.cookie('openid_identifier') || '';
-	if (ajaxbox.value.length > 0) {
-		trace('jumpstarting discovery on ' + box.value + ' because it was in the last used identifier cookie.');
-		ajaxbox.login();
-	}
 
 	if (ajaxbox.value.length > 0) {
 		var ops = $('ul.OpenIdProviders li');
