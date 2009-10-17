@@ -26,7 +26,7 @@ ul.OpenIdProviders li div
 	width: 100px;
 	text-align: center;
 	display: table;
-	position: static;
+	position: relative;
 	overflow: hidden;
 }
 
@@ -37,7 +37,7 @@ ul.OpenIdProviders li div div
 	top: 50%;
 	display: table-cell;
 	vertical-align: middle;
-	position: relative;
+	position: static;
 }
 
 ul.OpenIdProviders li img
