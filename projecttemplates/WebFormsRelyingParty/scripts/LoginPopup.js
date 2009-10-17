@@ -71,7 +71,7 @@
 		});
 	});
 
-	$('li').click(function() {
+	$('ul.OpenIdProviders li').click(function() {
 		var lastFocus = $('.focused')[0];
 		if (lastFocus != $(this)[0]) {
 			$('li').removeClass('focused');

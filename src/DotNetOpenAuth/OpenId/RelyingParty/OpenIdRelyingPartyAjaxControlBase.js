@@ -106,7 +106,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 /// <summary>Instantiates an object that represents an OpenID Identifier.</summary>
 window.OpenIdIdentifier = function(identifier) {
 	if (!identifier || identifier.length == 0) {
-		trace('Error: trying to create OpenIdIdentifier for null or empty string.');
+		throw 'Error: trying to create OpenIdIdentifier for null or empty string.';
 		return null;
 	}
 
