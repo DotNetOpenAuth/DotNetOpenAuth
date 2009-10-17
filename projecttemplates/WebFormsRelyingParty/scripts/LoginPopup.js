@@ -28,13 +28,21 @@
 		}
 	}
 
+	function showLoginSuccess(userSuppliedIdentifier) {
+		var li = document.getElementById(userSuppliedIdentifier);
+		if (li) {
+			$(li).addClass('loginSuccess');
+		}
+	}
+
 	function doLogin(identifier, timerBased) {
 		var retain = !$('#NotMyComputer')[0].selected;
 		$.cookie('openid_identifier', retain ? identifier : null, { path: '/' });
 		var openid = new window.OpenIdIdentifier(identifier);
 		if (openid) {
 			openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
-				alert("Woot!  We've logged you in as " + respondingEndpoint.claimedIdentifier);
+				showLoginSuccess(discoveryResult.userSuppliedIdentifier);
+				//alert("Woot!  We've logged you in as " + respondingEndpoint.claimedIdentifier);
 				//window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
 			});
 		} else {
@@ -49,38 +57,18 @@
 	var backgroundTimeout = 3000;
 
 	$(document).ready(function() {
-		function tryOPButtonLogin() {
-			var ops = $('ul.OpenIdProviders li');
-			ops.each(function(i, li) {
-				// don't try an OP button that matches the last used identifier, since we just finished trying that.
-				if (li.id != ajaxbox.value && li.id != 'OpenIDButton') {
-					var openid = new window.OpenIdIdentifier(li.id);
-					openid.loginBackground(authenticationIFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
-						alert('OP button background login as ' + respondingEndpoint.claimedIdentifier + ' was successful!');
-					}, null, backgroundTimeout);
-				}
-			});
-		};
-
-		function tryLastIdentifier() {
-			// Start by immediately trying to background login using a previously used identifier.
-			// And if that fails, try the rest of the OP buttons.
-//			alert('tryLastIdentifier starting...');
-			if (ajaxbox.value.length > 0) {
-				ajaxbox.login(
-					function(discoveryResult, respondingEndpoint, extensionResponses) {
-						alert('background login as ' + respondingEndpoint.claimedIdentifier + ' was successful!');
-					},
-					function() {
-						alert('last identifier auto-login failed.  Trying OP buttons...');
-						tryOPButtonLogin();
-					});
-			} else {
-				tryOPButtonLogin();
+		var ops = $('ul.OpenIdProviders li');
+		ops.each(function(i, li) {
+			// don't try an OP button that matches the last used identifier,
+			// since the OpenIdAjaxTextBox will be trying that automatically already.
+			if (li.id != ajaxbox.value && li.id != 'OpenIDButton') {
+				var openid = new window.OpenIdIdentifier(li.id);
+				openid.loginBackground(authenticationIFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
+					showLoginSuccess(li.id);
+					//alert('OP button background login as ' + respondingEndpoint.claimedIdentifier + ' was successful!');
+				}, null, backgroundTimeout);
 			}
-		}
-
-//		tryLastIdentifier();
+		});
 	});
 
 	$('li').click(function() {

@@ -37,7 +37,7 @@ ul.OpenIdProviders li div div
 	top: 50%;
 	display: table-cell;
 	vertical-align: middle;
-	position: static;
+	position: relative;
 }
 
 ul.OpenIdProviders li img
@@ -47,6 +47,19 @@ ul.OpenIdProviders li img
 ul.OpenIdProviders li a img
 {
 	border-width: 0;
+}
+
+ul.OpenIdProviders li img.loginSuccess
+{
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	display: none;
+}
+
+ul.OpenIdProviders li.loginSuccess img.loginSuccess
+{
+	display: inline;
 }
 
 ul.OpenIdProviders li a

@@ -34,7 +34,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string EmbeddedStylesheetResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdButtonPanel.css";
 
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="Providers"/> property.
+		/// </summary>
 		private const string ProvidersViewStateKey = "Providers";
+
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="AuthenticatedAsToolTip"/> property.
+		/// </summary>
+		private const string AuthenticatedAsToolTipViewStateKey = "AuthenticatedAsToolTip";
+
+		/// <summary>
+		/// The default value for the <see cref="AuthenticatedAsToolTip"/> property.
+		/// </summary>
+		private const string AuthenticatedAsToolTipDefault = "We recognize you!";
+
+		/// <summary>
+		/// Gets or sets the tool tip text that appears on the green checkmark when authentication succeeds.
+		/// </summary>
+		[Bindable(true), DefaultValue(AuthenticatedAsToolTipDefault), Localizable(true), Category(AppearanceCategory)]
+		[Description("The tool tip text that appears on the green checkmark when authentication succeeds.")]
+		public string AuthenticatedAsToolTip {
+			get { return (string)(this.ViewState[AuthenticatedAsToolTipViewStateKey] ?? AuthenticatedAsToolTipDefault); }
+			set { this.ViewState[AuthenticatedAsToolTipViewStateKey] = value ?? string.Empty; }
+		}
 
 		[PersistenceMode(PersistenceMode.InnerProperty)]
 		public Collection<ProviderInfo> Providers {
@@ -98,6 +121,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
 				writer.AddAttribute(HtmlTextWriterAttribute.Src, op.Image);
+				writer.RenderBeginTag(HtmlTextWriterTag.Img);
+				writer.RenderEndTag();
+
+				writer.AddAttribute(HtmlTextWriterAttribute.Src, this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
+				writer.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
+				writer.AddAttribute(HtmlTextWriterAttribute.Title, this.AuthenticatedAsToolTip);
 				writer.RenderBeginTag(HtmlTextWriterTag.Img);
 				writer.RenderEndTag();
 
