@@ -32,9 +32,13 @@
 		var retain = !$('#NotMyComputer')[0].selected;
 		$.cookie('openid_identifier', retain ? identifier : null, { path: '/' });
 		var openid = new window.OpenIdIdentifier(identifier);
-		openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
-			window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
-		});
+		if (openid) {
+			openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
+				window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
+			});
+		} else {
+			trace('doLogin called without an identifier.');
+		}
 	}
 
 	// This FrameManager will be used for background logins for the OP buttons
@@ -98,9 +102,6 @@
 		$('#OpenIDForm').show('slow', function() {
 			$('#openid_identifier').focus();
 		});
-	});
-	$('#OpenIdLoginButton').click(function() {
-		doLogin(ajaxbox.value);
 	});
 
 	// Make popup window close on escape (the dialog style is already taken care of)
