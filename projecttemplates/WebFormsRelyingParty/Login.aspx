@@ -6,5 +6,5 @@
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <asp:Content runat="server" ContentPlaceHolderID="Body">
 	<h2>Login</h2>
-	<iframe src="LoginFrame.aspx" frameborder="0" width="355" height="235" />
+	<iframe src="LoginFrame.aspx" frameborder="0" width="355" height="235"></iframe>
 </asp:Content>
