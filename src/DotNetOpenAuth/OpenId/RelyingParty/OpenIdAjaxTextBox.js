@@ -463,7 +463,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.onblur = function(event) {
 		if (box.lastDiscoveredIdentifier != box.value || !box.dnoi_internal.state) {
 			if (box.value.length > 0) {
-				box.dnoi_internal.performDiscovery(box.value);
+				box.dnoi_internal.resetAndDiscover();
 			} else {
 				box.dnoi_internal.setVisualCue();
 			}
@@ -510,6 +510,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			rate = NaN;
 			trace('resetting state');
 		}
+
+		box.dnoi_internal.resetAndDiscover = function() {
+			reset();
+			discover();
+		};
 
 		box.onkeyup = function(e) {
 			e = e || window.event; // for IE
