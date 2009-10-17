@@ -81,7 +81,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 		}
 		iframe.setAttribute("src", job(iframe, p1));
 		iframe.dnoa_internal = window.dnoa_internal;
-		box.parentNode.insertBefore(iframe, box);
+		document.body.insertBefore(iframe, document.body.firstChild);
 		this.frames.push(iframe);
 		return iframe;
 	};
@@ -519,7 +519,8 @@ window.dnoa_internal.deserializePreviousAuthentication = function(positiveAssert
 		requests: [{ endpoint: parsedPositiveAssertion.endpoint }]
 	};
 
-	window.dnoa_internal.discoveryResults[box.value] = discoveryResult = new window.dnoa_internal.DiscoveryResult(parsedPositiveAssertion.userSuppliedIdentifier, discoveryInfo);
+	discoveryResult = new window.dnoa_internal.DiscoveryResult(parsedPositiveAssertion.userSuppliedIdentifier, discoveryInfo);
+	window.dnoa_internal.discoveryResults[parsedPositiveAssertion.userSuppliedIdentifier] = discoveryResult;
 	discoveryResult[0].result = window.dnoa_internal.authSuccess;
 	discoveryResult.successAuthData = positiveAssertion;
 
