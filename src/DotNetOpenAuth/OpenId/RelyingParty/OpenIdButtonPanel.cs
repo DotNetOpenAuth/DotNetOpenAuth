@@ -75,6 +75,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Import the .js file where most of the code is.
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdButtonPanel), EmbeddedScriptResourceName);
+
+			this.PreloadDiscovery(this.Providers.Select(op => op.OPIdentifier).Where(id => id != null));
 		}
 
 		/// <summary>

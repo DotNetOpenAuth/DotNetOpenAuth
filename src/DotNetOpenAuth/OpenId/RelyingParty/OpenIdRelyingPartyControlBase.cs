@@ -502,13 +502,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// Creates the authentication requests for the value set in the <see cref="Identifier"/> property.
 		/// </summary>
-		/// <returns>A sequence of authentication requests, any one of which may be 
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.</returns>
-		protected virtual IEnumerable<IAuthenticationRequest> CreateRequests() {
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected IEnumerable<IAuthenticationRequest> CreateRequests() {
 			Contract.Requires(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			ErrorUtilities.VerifyOperation(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
+			return this.CreateRequests(this.Identifier);
+		}
+
+		/// <summary>
+		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// </summary>
+		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+			Contract.Requires(identifier != null);
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 			IEnumerable<IAuthenticationRequest> requests;
 
 			// Approximate the returnTo (either based on the customize property or the page URL)
@@ -527,11 +543,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// might slip through our validator control if it is disabled.
 			Realm typedRealm = new Realm(realm);
 			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-				requests = this.RelyingParty.CreateRequests(this.Identifier, typedRealm);
+				requests = this.RelyingParty.CreateRequests(identifier, typedRealm);
 			} else {
 				// Since the user actually gave us a return_to value,
 				// the "approximation" is exactly what we want.
-				requests = this.RelyingParty.CreateRequests(this.Identifier, typedRealm, returnToApproximation);
+				requests = this.RelyingParty.CreateRequests(identifier, typedRealm, returnToApproximation);
 			}
 
 			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).

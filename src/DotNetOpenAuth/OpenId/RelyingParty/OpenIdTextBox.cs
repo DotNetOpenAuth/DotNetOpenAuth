@@ -549,10 +549,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A sequence of authentication requests, any one of which may be
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
-		protected override IEnumerable<IAuthenticationRequest> CreateRequests() {
+		protected override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
+
 			// We delegate all our logic to another method, since invoking base. methods
 			// within an iterator method results in unverifiable code.
-			return this.CreateRequestsCore(base.CreateRequests());
+			return this.CreateRequestsCore(base.CreateRequests(identifier));
 		}
 
 		/// <summary>

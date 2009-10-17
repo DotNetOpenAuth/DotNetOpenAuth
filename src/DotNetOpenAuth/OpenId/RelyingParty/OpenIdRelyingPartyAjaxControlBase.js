@@ -547,3 +547,22 @@ window.dnoa_internal.clone = function(obj) {
 
 	return temp;
 };
+
+// Deserialized the preloaded discovery results
+window.dnoa_internal.loadPreloadedDiscoveryResults = function(preloadedDiscoveryResults) {
+	trace('found ' + preloadedDiscoveryResults.length + ' preloaded discovery results.');
+	for (var i = 0; i < preloadedDiscoveryResults.length; i++) {
+		var result = preloadedDiscoveryResults[i];
+		if (!window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier]) {
+			window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier] = new window.dnoa_internal.DiscoveryResult(result.userSuppliedIdentifier, result.discoveryResult);
+			trace('Preloaded discovery on: ' + window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier].userSuppliedIdentifier);
+		} else {
+			trace('Skipped preloaded discovery on: ' + window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier].userSuppliedIdentifier + ' because we have a cached discovery result on it.');
+		}
+	}
+};
+
+if (window.dnoa_internal.preloadedDiscoveryResults) {
+	window.dnoa_internal.loadPreloadedDiscoveryResults(window.dnoa_internal.preloadedDiscoveryResults);
+	window.dnoa_internal.preloadedDiscoveryResults = null;
+}

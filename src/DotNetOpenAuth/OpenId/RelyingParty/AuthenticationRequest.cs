@@ -182,6 +182,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get { return this.extensions; }
 		}
 
+		/// <summary>
+		/// Gets the service endpoint.
+		/// </summary>
+		internal ServiceEndpoint Endpoint {
+			get { return this.endpoint; }
+		}
+
 		#region IAuthenticationRequest methods
 
 		/// <summary>

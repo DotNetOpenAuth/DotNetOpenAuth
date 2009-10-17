@@ -564,6 +564,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
 
+	// If an identifier is preset on the box, perform discovery on it, but only
+	// if there isn't a prior authentication that we're about to deserialize.
+	if (box.value.length > 0 && findOrCreateHiddenField().value.length == 0) {
+		trace('jumpstarting discovery on ' + box.value + ' because it was preset.');
+		box.dnoi_internal.performDiscovery(box.value);
+	}
+	
 	// Restore a previously achieved state (from pre-postback) if it is given.
 	window.dnoa_internal.deserializePreviousAuthentication(
 		findOrCreateHiddenField().value,

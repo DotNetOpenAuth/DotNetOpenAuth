@@ -683,6 +683,13 @@ loader.insert();";
 			this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
 
 			this.PrepareClientJavascript();
+
+			// If an Identifier is preset on this control, preload discovery on that identifier,
+			// but only if we're not already persisting an authentication result since that would
+			// be redundant.
+			if (this.Identifier != null && this.AuthenticationResponse == null) {
+				this.PreloadDiscovery(this.Identifier);
+			}
 		}
 
 		/// <summary>
