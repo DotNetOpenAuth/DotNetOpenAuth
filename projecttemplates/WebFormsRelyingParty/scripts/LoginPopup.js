@@ -79,20 +79,21 @@
 			$('ul.OpenIdProviders li').removeClass('grayedOut');
 		}
 
+		if ($(this)[0] != $('#OpenIDButton')[0]) {
+			$('#OpenIDForm').hide('slide', { direction: 'up' }, 1000);
+		}
+
 		// If the user clicked on a button that has the "we're ready to log you in immediately",
 		// then log them in!
 		if ($(this).hasClass('loginSuccess')) {
 			doLogin($(this)[0].id);
-		} else {
+		} else if ($(this)[0] != $('#OpenIDButton')[0]) {
 			// Be sure to hide the openid_identifier text box unless the OpenID button is selected.
-			if ($(this)[0] != $('#OpenIDButton')[0]) {
-				$('#OpenIDForm').hide('slow');
-				checkidSetup($(this)[0].id);
-			} 
+			checkidSetup($(this)[0].id);
 		}
 	});
 	$('#OpenIDButton').click(function() {
-		$('#OpenIDForm').show('slow', function() {
+		$('#OpenIDForm').show('slide', { direction: 'up' }, 1000, function() {
 			$('#openid_identifier').focus();
 		});
 	});
