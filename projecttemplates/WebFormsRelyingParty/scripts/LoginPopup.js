@@ -68,13 +68,15 @@
 	$('ul.OpenIdProviders li').click(function() {
 		var lastFocus = $('.focused')[0];
 		if (lastFocus != $(this)[0]) {
-			$('li').removeClass('focused');
+			$('ul.OpenIdProviders li').removeClass('focused');
 			$(this).addClass('focused');
 		}
 
-		// Make sure we're not graying out any OPs at this point.
-		$('ul.OpenIdProviders li').removeClass('grayedOut');
-
+		// Make sure we're not graying out any OPs if the user clicked on a gray button.
+		if ($(this).hasClass('grayedOut')) {
+			$('ul.OpenIdProviders li').removeClass('grayedOut');
+		}
+		
 		// Be sure to hide the openid_identifier text box unless the OpenID button is selected.
 		if ($(this)[0] != $('#OpenIDButton')[0]) {
 			$('#OpenIDForm').hide('slow');
