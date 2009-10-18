@@ -93,9 +93,13 @@
 		}
 	});
 	$('#OpenIDButton').click(function() {
-		$('#OpenIDForm').show('slide', { direction: 'up' }, 1000, function() {
+		if ($('#OpenIDForm').is(':hidden')) {
+			$('#OpenIDForm').show('slide', { direction: 'up' }, 1000, function() {
+				$('#openid_identifier').focus();
+			});
+		} else {
 			$('#openid_identifier').focus();
-		});
+		}
 	});
 
 	// Make popup window close on escape (the dialog style is already taken care of)
