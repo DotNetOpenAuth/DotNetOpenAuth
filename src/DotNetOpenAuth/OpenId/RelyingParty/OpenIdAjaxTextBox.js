@@ -220,6 +220,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.claimedIdentifier = null;
 			trace('unrecognized state ' + state);
 		}
+
+		if (box.onStateChanged) {
+			box.onStateChanged(state);
+		}
 	};
 
 	box.dnoi_internal.isBusy = function() {
@@ -585,4 +589,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.login = function(onSuccess, onFailure) {
 		box.dnoi_internal.performDiscovery(box.value, onSuccess, onFailure);
 	};
+
+	// public events
+	// box.onStateChanged(state)
 }

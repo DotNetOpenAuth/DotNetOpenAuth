@@ -24,12 +24,24 @@
 		}
 	}
 
-	function showLoginSuccess(userSuppliedIdentifier) {
+	function showLoginSuccess(userSuppliedIdentifier, hide) {
 		var li = document.getElementById(userSuppliedIdentifier);
 		if (li) {
-			$(li).addClass('loginSuccess');
+			if (hide) {
+				$(li).removeClass('loginSuccess');
+			} else {
+				$(li).addClass('loginSuccess');
+			}
 		}
 	}
+
+	ajaxbox.onStateChanged = function(state) {
+		if (state == "authenticated") {
+			showLoginSuccess('OpenIDButton');
+		} else {
+			showLoginSuccess('OpenIDButton', true); // hide checkmark
+		}
+	};
 
 	function checkidSetup(identifier, timerBased) {
 		var retain = !$('#NotMyComputer')[0].selected;
@@ -86,7 +98,10 @@
 		// If the user clicked on a button that has the "we're ready to log you in immediately",
 		// then log them in!
 		if ($(this).hasClass('loginSuccess')) {
-			doLogin($(this)[0].id);
+			// Don't immediately login if the user clicked OpenID and he can't see the identifier box.
+			if ($(this)[0] != $('#OpenIDButton')[0] || $('#OpenIDForm').is(':visible')) {
+				doLogin($(this)[0].id);
+			}
 		} else if ($(this)[0] != $('#OpenIDButton')[0]) {
 			// Be sure to hide the openid_identifier text box unless the OpenID button is selected.
 			checkidSetup($(this)[0].id);
