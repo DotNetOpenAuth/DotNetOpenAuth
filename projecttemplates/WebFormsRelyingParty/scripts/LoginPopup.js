@@ -50,13 +50,13 @@
 		if (!openid) { throw 'checkidSetup called without an identifier.'; }
 		openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
 			showLoginSuccess(discoveryResult.userSuppliedIdentifier);
-			doLogin(respondingEndpoint.claimedIdentifier);
+			doLogin(respondingEndpoint);
 		});
 	}
 
 	// Sends the positive assertion we've collected to the server and actually logs the user into the RP.
-	function doLogin(identifier) {
-		alert('at this point, the whole page would refresh and you would be logged in as ' + identifier);
+	function doLogin(respondingEndpoint) {
+		alert('at this point, the whole page would refresh and you would be logged in as ' + respondingEndpoint.claimedIdentifier);
 		//window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
 	}
 
@@ -91,19 +91,27 @@
 			$('ul.OpenIdProviders li').removeClass('grayedOut');
 		}
 
-		if ($(this)[0] != $('#OpenIDButton')[0]) {
+		// Be sure to hide the openid_identifier text box unless the OpenID button is selected.
+		if ($(this)[0] != $('#OpenIDButton')[0] && $('#OpenIDForm').is(':visible')) {
 			$('#OpenIDForm').hide('slide', { direction: 'up' }, 1000);
 		}
 
 		// If the user clicked on a button that has the "we're ready to log you in immediately",
 		// then log them in!
 		if ($(this).hasClass('loginSuccess')) {
+			var relevantUserSuppliedIdentifier = null;
 			// Don't immediately login if the user clicked OpenID and he can't see the identifier box.
-			if ($(this)[0] != $('#OpenIDButton')[0] || $('#OpenIDForm').is(':visible')) {
-				doLogin($(this)[0].id);
+			if ($(this)[0].id != 'OpenIDButton') {
+				relevantUserSuppliedIdentifier = $(this)[0].id;
+			} else if ($('#OpenIDForm').is(':visible')) {
+				relevantUserSuppliedIdentifier = ajaxbox.value;
+			}
+
+			if (relevantUserSuppliedIdentifier) {
+				var respondingEndpoint = window.dnoa_internal.discoveryResults[relevantUserSuppliedIdentifier].findSuccessfulRequest();
+				doLogin(respondingEndpoint);
 			}
 		} else if ($(this)[0] != $('#OpenIDButton')[0]) {
-			// Be sure to hide the openid_identifier text box unless the OpenID button is selected.
 			checkidSetup($(this)[0].id);
 		}
 	});
