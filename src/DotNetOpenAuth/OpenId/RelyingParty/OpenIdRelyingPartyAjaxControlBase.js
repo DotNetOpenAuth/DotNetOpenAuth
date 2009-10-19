@@ -603,8 +603,3 @@ window.dnoa_internal.loadPreloadedDiscoveryResults = function(preloadedDiscovery
 		}
 	}
 };
-
-if (window.dnoa_internal.preloadedDiscoveryResults) {
-	window.dnoa_internal.loadPreloadedDiscoveryResults(window.dnoa_internal.preloadedDiscoveryResults);
-	window.dnoa_internal.preloadedDiscoveryResults = null;
-}
