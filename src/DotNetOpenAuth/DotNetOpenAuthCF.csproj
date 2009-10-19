@@ -1,0 +1,181 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3E0CA612-FC83-462A-905C-A22990E9ECE9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuthCF</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>4118C335-430C-497f-BE48-11C3316B135E</PlatformID>
+    <OSVersion>5.1</OSVersion>
+    <DeployDirSuffix>DotNetOpenAuthCF</DeployDirSuffix>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <NativePlatformName>Windows Mobile 5.0 Pocket PC SDK</NativePlatformName>
+    <FormFactorID>
+    </FormFactorID>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PocketPC;NetCF</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Logger.cs" />
+    <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
+    <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\INonceStore.cs" />
+    <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
+    <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
+    <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
+    <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
+    <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
+    <Compile Include="Messaging\Channel.cs" />
+    <Compile Include="Messaging\ChannelEventArgs.cs" />
+    <Compile Include="Messaging\ErrorUtilities.cs" />
+    <Compile Include="Messaging\HttpDeliveryMethods.cs" />
+    <Compile Include="Messaging\IChannelBindingElement.cs" />
+    <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
+    <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
+    <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
+    <Compile Include="Messaging\IExtensionMessage.cs" />
+    <Compile Include="Messaging\IHttpDirectResponse.cs" />
+    <Compile Include="Messaging\IMessage.cs" />
+    <Compile Include="Messaging\IMessageFactory.cs" />
+    <Compile Include="Messaging\IMessageWithEvents.cs" />
+    <Compile Include="Messaging\IncomingWebResponse.cs" />
+    <Compile Include="Messaging\InternalErrorException.cs" />
+    <Compile Include="Messaging\IProtocolMessage.cs" />
+    <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
+    <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
+    <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
+    <Compile Include="Messaging\MessagePartAttribute.cs" />
+    <Compile Include="Messaging\MessageProtections.cs" />
+    <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
+    <Compile Include="Messaging\MessageSerializer.cs" />
+    <Compile Include="Messaging\MessageTransport.cs" />
+    <Compile Include="Messaging\MessagingStrings.Designer.cs" />
+    <Compile Include="Messaging\MessagingUtilities.cs" />
+    <Compile Include="Messaging\OutgoingWebResponse.cs" />
+    <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescription.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
+    <Compile Include="Messaging\Reflection\MessagePart.cs" />
+    <Compile Include="Messaging\Reflection\ValueMapping.cs" />
+    <Compile Include="Messaging\UnprotectedMessageException.cs" />
+    <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
+    <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderAccessToken.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
+    <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />
+    <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
+    <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthChannel.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
+    <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
+    <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseContract.cs" />
+    <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
+    <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
+    <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
+    <Compile Include="OAuth\ChannelElements\TokenType.cs" />
+    <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
+    <Compile Include="OAuth\ConsumerBase.cs" />
+    <Compile Include="OAuth\ConsumerSecuritySettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OAuth\DesktopConsumer.cs" />
+    <Compile Include="OAuth\Messages\AccessProtectedResourceRequest.cs" />
+    <Compile Include="OAuth\Messages\AuthorizedTokenRequest.cs" />
+    <Compile Include="OAuth\Messages\AuthorizedTokenResponse.cs" />
+    <Compile Include="OAuth\Messages\ITokenContainingMessage.cs" />
+    <Compile Include="OAuth\Messages\ITokenSecretContainingMessage.cs" />
+    <Compile Include="OAuth\Messages\MessageBase.cs" />
+    <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
+    <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />
+    <Compile Include="OAuth\Messages\UnauthorizedTokenResponse.cs" />
+    <Compile Include="OAuth\Messages\UserAuthorizationRequest.cs" />
+    <Compile Include="OAuth\Messages\UserAuthorizationResponse.cs" />
+    <Compile Include="OAuth\OAuthStrings.Designer.cs" />
+    <Compile Include="OAuth\Protocol.cs" />
+    <Compile Include="OAuth\SecuritySettings.cs" />
+    <Compile Include="OAuth\ServiceProviderDescription.cs" />
+    <Compile Include="Properties\AssemblyInfoCF.cs" />
+    <Compile Include="Stubs\CompactFramework\Contract.cs" />
+    <Compile Include="Stubs\CompactFramework\ContractClassAttribute.cs" />
+    <Compile Include="Stubs\CompactFramework\ContractVerificationAttribute.cs" />
+    <Compile Include="Stubs\CompactFramework\ContractClassForAttribute.cs" />
+    <Compile Include="Stubs\CompactFramework\DebuggerBrowsableAttribute.cs" />
+    <Compile Include="Stubs\CompactFramework\PureAttribute.cs" />
+    <Compile Include="Stubs\CompactFramework\DebuggerDisplayAttribute.cs" />
+    <Compile Include="Util.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Messaging\Bindings\Bindings.cd" />
+    <None Include="OAuth\Messages\OAuth Messages.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messaging\MessagingStrings.resx" />
+    <EmbeddedResource Include="OAuth\OAuthStrings.resx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -215,6 +215,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !NetCF
 		/// <summary>
 		/// Sends an indirect message (either a request or response) 
 		/// or direct message response for transmission to a remote party
@@ -230,6 +231,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(message != null);
 			this.PrepareResponse(message).Send();
 		}
+#endif
 
 		/// <summary>
 		/// Prepares an indirect message (either a request or response) 

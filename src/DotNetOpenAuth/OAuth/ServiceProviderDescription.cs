@@ -19,7 +19,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
 		/// </summary>
+#if !NetCF
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif
 		private MessageReceivingEndpoint requestTokenEndpoint;
 
 		/// <summary>

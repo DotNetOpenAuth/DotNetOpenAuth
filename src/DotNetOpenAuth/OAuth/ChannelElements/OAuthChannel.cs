@@ -107,6 +107,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			return this.CreateHttpRequest(request);
 		}
 
+#if !NetCF
 		/// <summary>
 		/// Searches an incoming HTTP request for data that could be used to assemble
 		/// a protocol request message.
@@ -169,6 +170,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			return message;
 		}
+#endif
 
 		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
@@ -213,6 +215,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			return httpRequest;
 		}
 
+#if !NetCF
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
@@ -243,6 +246,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			return encodedResponse;
 		}
+#endif
 
 		/// <summary>
 		/// Initializes the binding elements for the OAuth channel.

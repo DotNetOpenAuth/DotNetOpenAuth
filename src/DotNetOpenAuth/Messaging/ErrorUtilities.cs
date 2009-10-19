@@ -150,6 +150,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !NetCF
 		/// <summary>
 		/// Checks a condition and throws an <see cref="InfoCard.InformationCardException"/> 
 		/// if it evaluates to false.
@@ -187,6 +188,7 @@ namespace DotNetOpenAuth.Messaging {
 				throw new HostErrorException(string.Format(CultureInfo.CurrentCulture, errorMessage, args));
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Throws a <see cref="ProtocolException"/> if some <paramref name="condition"/> evaluates to false.
@@ -401,6 +403,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !NetCF
 		/// <summary>
 		/// Verifies that <see cref="HttpContext.Current"/> != <c>null</c>.
 		/// </summary>
@@ -413,5 +416,6 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyOperation(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 			ErrorUtilities.VerifyOperation(HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 		}
+#endif
 	}
 }

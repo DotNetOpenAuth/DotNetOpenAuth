@@ -66,6 +66,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal IProtocolMessage FaultedMessage { get; private set; }
 
+#if !NetCF
 		/// <summary>
 		/// When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
 		/// </summary>
@@ -83,5 +84,6 @@ namespace DotNetOpenAuth.Messaging {
 			base.GetObjectData(info, context);
 			throw new NotImplementedException();
 		}
+#endif
 	}
 }
