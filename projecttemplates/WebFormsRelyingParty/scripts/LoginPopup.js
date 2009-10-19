@@ -93,7 +93,7 @@
 
 		// Be sure to hide the openid_identifier text box unless the OpenID button is selected.
 		if ($(this)[0] != $('#OpenIDButton')[0] && $('#OpenIDForm').is(':visible')) {
-			$('#OpenIDForm').hide('slide', { direction: 'up' }, 1000);
+			$('#OpenIDForm').hide('slow');
 		}
 
 		// If the user clicked on a button that has the "we're ready to log you in immediately",
@@ -117,7 +117,7 @@
 	});
 	$('#OpenIDButton').click(function() {
 		if ($('#OpenIDForm').is(':hidden')) {
-			$('#OpenIDForm').show('slide', { direction: 'up' }, 1000, function() {
+			$('#OpenIDForm').show('slow', function() {
 				$('#openid_identifier').focus();
 			});
 		} else {
