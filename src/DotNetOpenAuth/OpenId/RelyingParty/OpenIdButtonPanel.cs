@@ -50,6 +50,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string AuthenticatedAsToolTipDefault = "We recognize you!";
 
 		/// <summary>
+		/// The OpenIdAjaxTextBox that remains hidden until the user clicks the OpenID button.
+		/// </summary>
+		private OpenIdAjaxTextBox textBox;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdButtonPanel"/> class.
+		/// </summary>
+		public OpenIdButtonPanel() {
+		}
+
+		/// <summary>
 		/// Gets or sets the tool tip text that appears on the green checkmark when authentication succeeds.
 		/// </summary>
 		[Bindable(true), DefaultValue(AuthenticatedAsToolTipDefault), Localizable(true), Category(AppearanceCategory)]
@@ -80,6 +91,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </value>
 		protected override string OpenIdAuthDataFormKey {
 			get { return this.ClientID + "_openidAuthData"; }
+		}
+
+		/// <summary>
+		/// Called by the ASP.NET page framework to notify server controls that use composition-based implementation to create any child controls they contain in preparation for posting back or rendering.
+		/// </summary>
+		protected override void CreateChildControls() {
+			base.CreateChildControls();
+
+			this.textBox = new OpenIdAjaxTextBox();
+			this.textBox.ID = "openid_identifier";
+			this.Controls.Add(this.textBox);
 		}
 
 		/// <summary>
@@ -142,6 +164,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			writer.RenderEndTag(); // </ul>
+
+			writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "none");
+			writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDForm");
+			writer.RenderBeginTag(HtmlTextWriterTag.Div);
+
+			this.RenderChildren(writer);
+
+			writer.RenderEndTag(); // </div>
 		}
 	}
 

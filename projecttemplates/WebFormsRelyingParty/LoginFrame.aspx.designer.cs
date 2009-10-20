@@ -23,15 +23,6 @@ namespace WebFormsRelyingParty {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// OpenIDForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl OpenIDForm;
-        
-        /// <summary>
         /// originPage control.
         /// </summary>
         /// <remarks>
@@ -39,14 +30,5 @@ namespace WebFormsRelyingParty {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField originPage;
-        
-        /// <summary>
-        /// openid_identifier control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox openid_identifier;
     }
 }

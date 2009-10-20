@@ -41,18 +41,6 @@
 				<rp:ProviderInfo Image="images/openid.gif" />
 			</Providers>
 		</rp:OpenIdButtonPanel>
-		<div runat="server" style="display: none" id="OpenIDForm">
-			<asp:HiddenField ID="originPage" runat="server" />
-			<rp:OpenIdAjaxTextBox runat="server" ID="openid_identifier" />
-			<div id="NotMyComputerDiv">
-				<span title="Checking this box prevents the identifier you type here from being remembered next time someone comes to this web site from this browser.">
-				</span>
-				<input type="checkbox" name="NotMyComputer" id="NotMyComputer" value="1" />
-				<label for="NotMyComputer">
-					This is <i>not</i> my computer</label>
-			</div>
-			<!--<div id="state"></div>-->
-		</div>
 		<div class="helpDoc">
 			<p>
 				If you have logged in previously, click the same button you did last time.
@@ -63,6 +51,7 @@
 			</p>
 		</div>
 	</div>
+	<asp:HiddenField ID="originPage" runat="server" />
 	</form>
 </body>
 </html>
