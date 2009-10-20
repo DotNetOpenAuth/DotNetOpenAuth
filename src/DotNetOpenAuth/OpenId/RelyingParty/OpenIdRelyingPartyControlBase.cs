@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
 	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
-	public abstract class OpenIdRelyingPartyControlBase : Control, IDisposable {
+	public abstract class OpenIdRelyingPartyControlBase : Control, IPostBackEventHandler, IDisposable {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
 		/// </summary>
@@ -478,6 +478,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
+		#region IPostBackEventHandler Members
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
+			this.RaisePostBackEvent(eventArgument);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Enables a server control to perform final clean up before it is released from memory.
 		/// </summary>
@@ -499,6 +511,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					this.relyingParty = null;
 				}
 			}
+		}
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		protected virtual void RaisePostBackEvent(string eventArgument) {
 		}
 
 		/// <summary>
