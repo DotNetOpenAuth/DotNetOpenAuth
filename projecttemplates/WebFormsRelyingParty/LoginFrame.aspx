@@ -33,7 +33,7 @@
 		<p>
 			Login with an account you already use!
 		</p>
-		<rp:OpenIdButtonPanel runat="server">
+		<rp:OpenIdButtonPanel runat="server" OnLoggedIn="openIdButtonPanel_LoggedIn">
 			<Providers>
 				<rp:ProviderInfo OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
 				<rp:ProviderInfo OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
@@ -51,7 +51,6 @@
 			</p>
 		</div>
 	</div>
-	<asp:HiddenField ID="originPage" runat="server" />
 	</form>
 </body>
 </html>

@@ -64,8 +64,8 @@ $(function() {
 
 	// Sends the positive assertion we've collected to the server and actually logs the user into the RP.
 	function doLogin(respondingEndpoint) {
-		alert('at this point, the whole page would refresh and you would be logged in as ' + respondingEndpoint.claimedIdentifier);
-		//window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
+//		alert('at this point, the whole page would refresh and you would be logged in as ' + respondingEndpoint.claimedIdentifier);
+		window.postLoginAssertion(respondingEndpoint.response, window.parent.location.href);
 	}
 
 	// This FrameManager will be used for background logins for the OP buttons

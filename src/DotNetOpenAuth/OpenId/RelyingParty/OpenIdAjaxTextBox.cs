@@ -272,6 +272,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string YuiLoaderHttps = "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js";
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdAjaxTextBox"/> class.
+		/// </summary>
+		public OpenIdAjaxTextBox() {
+			this.HookFormSubmit = true;
+		}
+
 		#region Events
 
 		/// <summary>
@@ -579,6 +586,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the ajax text box should hook the form's submit event for special behavior.
+		/// </summary>
+		internal bool HookFormSubmit { get; set; }
+
+		/// <summary>
 		/// Gets the name of the open id auth data form key.
 		/// </summary>
 		/// <value>
@@ -820,14 +832,17 @@ loader.insert();";
 			startupScript.AppendLine("</script>");
 
 			Page.ClientScript.RegisterStartupScript(this.GetType(), "ajaxstartup", startupScript.ToString());
-			string htmlFormat = @"
+
+			if (this.HookFormSubmit) {
+				string htmlFormat = @"
 var openidbox = document.getElementsByName('{0}')[0];
 if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 ";
-			Page.ClientScript.RegisterOnSubmitStatement(
-				this.GetType(),
-				"loginvalidation",
-				string.Format(CultureInfo.InvariantCulture, htmlFormat, this.Name));
+				Page.ClientScript.RegisterOnSubmitStatement(
+					this.GetType(),
+					"loginvalidation",
+					string.Format(CultureInfo.InvariantCulture, htmlFormat, this.Name));
+			}
 		}
 	}
 }

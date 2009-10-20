@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using System.Web;
@@ -53,6 +54,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The OpenIdAjaxTextBox that remains hidden until the user clicks the OpenID button.
 		/// </summary>
 		private OpenIdAjaxTextBox textBox;
+
+		/// <summary>
+		/// The hidden field that will transmit the positive assertion to the RP.
+		/// </summary>
+		private HiddenField positiveAssertionField;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdButtonPanel"/> class.
@@ -101,7 +107,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.textBox = new OpenIdAjaxTextBox();
 			this.textBox.ID = "openid_identifier";
+			this.textBox.HookFormSubmit = false;
 			this.Controls.Add(this.textBox);
+
+			this.positiveAssertionField = new HiddenField();
+			this.positiveAssertionField.ID = this.OpenIdAuthDataFormKey;
+			this.Controls.Add(this.positiveAssertionField);
 		}
 
 		/// <summary>
@@ -120,6 +131,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Import the .js file where most of the code is.
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdButtonPanel), EmbeddedScriptResourceName);
+
+			// Provide javascript with a way to post the login assertion.
+			const string postLoginAssertionMethodName = "postLoginAssertion";
+			const string positiveAssertionParameterName = "positiveAssertion";
+			string script = string.Format(
+				CultureInfo.InvariantCulture,
+@"window.{2} = function({0}) {{
+	$('form')[0].target = '_top';
+	$('#{3}')[0].setAttribute('value', {0});
+	{1};
+}};",
+				positiveAssertionParameterName,
+				this.Page.ClientScript.GetPostBackEventReference(this, null, false),
+				postLoginAssertionMethodName,
+				this.positiveAssertionField.ClientID);
+			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
 
 			this.PreloadDiscovery(this.Providers.Select(op => op.OPIdentifier).Where(id => id != null));
 		}
