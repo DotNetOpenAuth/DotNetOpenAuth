@@ -11,6 +11,17 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<link type="text/css" href="theme/ui.all.css" rel="Stylesheet" />
 	<link href="styles/loginpopup.css" rel="stylesheet" type="text/css" />
+
+	<script type="text/javascript" src="scripts/jquery-1.3.1.js"></script>
+	<script type="text/javascript" src="scripts/jquery-ui-personalized-1.6rc6.js"></script>
+	<script type="text/javascript" src="scripts/jquery.cookie.js"></script>
+	<!--	<script src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript" language="javascript">
+		google.load("jquery", "1.3.2");
+		google.load("jqueryui", "1.7.2");
+	</script>
+-->
+	<script src="scripts/LoginPopup.js" type="text/javascript"></script>
 <script>
 	//window.openid_visible_iframe = true; // causes the hidden iframe to show up
 	//window.openid_trace = true; // causes lots of messages
@@ -50,16 +61,5 @@
 			</p>
 		</div>
 	</div>
-
-	<script type="text/javascript" src="scripts/jquery-1.3.1.js"></script>
-	<script type="text/javascript" src="scripts/jquery-ui-personalized-1.6rc6.js"></script>
-	<script type="text/javascript" src="scripts/jquery.cookie.js"></script>
-	<!--	<script src="http://www.google.com/jsapi"></script>
-	<script type="text/javascript" language="javascript">
-		google.load("jquery", "1.3.2");
-		google.load("jqueryui", "1.7.2");
-	</script>
--->
-	<script src="scripts/LoginPopup.js" type="text/javascript"></script>
 </body>
 </html>
