@@ -52,7 +52,7 @@ $(function() {
 	};
 
 	function checkidSetup(identifier, timerBased) {
-		var retain = !$('#NotMyComputer')[0].selected;
+		var retain = true; //!$('#NotMyComputer')[0].selected;
 		$.cookie('openid_identifier', retain ? identifier : null, { path: '/' });
 		var openid = new window.OpenIdIdentifier(identifier);
 		if (!openid) { throw 'checkidSetup called without an identifier.'; }
