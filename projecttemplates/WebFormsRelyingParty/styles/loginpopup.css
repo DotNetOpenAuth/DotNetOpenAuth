@@ -12,20 +12,6 @@ body > div.wrapper
 	height: 235px;
 }
 */
-#openid_identifier
-{
-	width: 298px;
-}
-
-#OpenIDForm
-{
-	text-align: center;
-}
-
-#openid_login_button
-{
-}
-
 Div#NotMyComputerDiv
 {
 	display: none;

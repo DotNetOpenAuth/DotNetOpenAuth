@@ -88,3 +88,16 @@ ul.OpenIdProviders li.focused
 	border: solid 2px yellow;
 }
 
+#openid_identifier
+{
+	width: 298px;
+}
+
+#OpenIDForm
+{
+	text-align: center;
+}
+
+#openid_login_button
+{
+}
