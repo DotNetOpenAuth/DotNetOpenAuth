@@ -13,6 +13,14 @@ using DotNetOpenAuth.OpenId.RelyingParty;
 namespace WebFormsRelyingParty {
 	public partial class LoginFrame : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
+			if (!IsPostBack) {
+				// Because this page can appear as an iframe in a popup of another page,
+				// we need to record which page the hosting page is in order to redirect back
+				// to it after login is complete.
+				this.ClientScript.RegisterOnSubmitStatement(this.GetType(), "getTopWindowUrl", @"
+document.getElementById('topWindowUrl').value = window.parent.location.href;
+");
+			}
 		}
 
 		protected void openIdButtonPanel_LoggedIn(object sender, OpenIdEventArgs e) {
@@ -53,7 +61,19 @@ namespace WebFormsRelyingParty {
 				Global.DataContext.AddToUser(user);
 			}
 
-			FormsAuthentication.RedirectFromLoginPage(openidToken.ClaimedIdentifier, false);
+			bool persistentCookie = false;
+			if (string.IsNullOrEmpty(this.Request.QueryString["ReturnUrl"])) {
+				FormsAuthentication.SetAuthCookie(openidToken.ClaimedIdentifier, persistentCookie);
+				Uri topWindowUri = new Uri(topWindowUrl.Value);
+				string returnUrl = HttpUtility.ParseQueryString(topWindowUri.Query)["ReturnUrl"];
+				if (string.IsNullOrEmpty(returnUrl)) {
+					Response.Redirect(topWindowUrl.Value);
+				} else {
+					Response.Redirect(returnUrl);
+				}
+			} else {
+				FormsAuthentication.RedirectFromLoginPage(openidToken.ClaimedIdentifier, persistentCookie);
+			}
 		}
 	}
 }

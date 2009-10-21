@@ -41,6 +41,7 @@
 				<rp:ProviderInfo Image="images/openid.gif" />
 			</Providers>
 		</rp:OpenIdButtonPanel>
+		<asp:HiddenField runat="server" ID="topWindowUrl" />
 		<div class="helpDoc">
 			<p>
 				If you have logged in previously, click the same button you did last time.
