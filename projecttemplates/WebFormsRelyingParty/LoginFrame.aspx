@@ -38,6 +38,7 @@
 			<Providers>
 				<rp:ProviderInfo OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
 				<rp:ProviderInfo OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
+				<%--<rp:ProviderInfo OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />--%>
 				<%--<rp:ProviderInfo OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />--%>
 				<rp:ProviderInfo Image="images/openid.gif" />
 			</Providers>

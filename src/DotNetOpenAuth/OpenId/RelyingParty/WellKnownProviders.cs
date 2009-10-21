@@ -30,6 +30,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public static readonly Identifier MyOpenId = "https://www.myopenid.com/";
 
 		/// <summary>
+		/// The Verisign OP Identifier.
+		/// </summary>
+		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Immutable type")]
+		public static readonly Identifier Verisign = "https://pip.verisignlabs.com/";
+
+		/// <summary>
 		/// Prevents a default instance of the <see cref="WellKnownProviders"/> class from being created.
 		/// </summary>
 		private WellKnownProviders() {
