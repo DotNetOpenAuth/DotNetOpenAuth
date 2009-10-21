@@ -29,7 +29,7 @@
 </script>
 </head>
 <body>
-	<form runat="server" id="form1">
+	<form runat="server" id="form1" target="_top">
 	<div class="wrapper">
 		<p>
 			Login with an account you already use!

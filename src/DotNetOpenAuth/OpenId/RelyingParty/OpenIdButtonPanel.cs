@@ -138,7 +138,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			string script = string.Format(
 				CultureInfo.InvariantCulture,
 @"window.{2} = function({0}) {{
-	$('form')[0].target = '_top';
 	$('#{3}')[0].setAttribute('value', {0});
 	{1};
 }};",
