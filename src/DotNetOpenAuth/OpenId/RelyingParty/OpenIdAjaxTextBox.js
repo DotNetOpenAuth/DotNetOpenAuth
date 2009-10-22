@@ -538,7 +538,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 					box.dnoi_internal.setVisualCue();
 					if (newValue.length == 0) {
 						reset();
-					} else if (Math.abs(lastValue.length - newValue.length) > 1) {
+					} else if (Math.abs((lastValue || '').length - newValue.length) > 1) {
 						// One key press is responsible for multiple character changes.
 						// The user may have pasted in his identifier in which case
 						// we want to begin discovery immediately.
