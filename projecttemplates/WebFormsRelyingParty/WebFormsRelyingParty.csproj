@@ -208,7 +208,6 @@
     <Content Include="scripts\jquery-ui-personalized-1.6rc6.min.js" />
     <Content Include="scripts\jquery.cookie.js" />
     <Content Include="scripts\LoginLink.js" />
-    <Content Include="scripts\LoginPopup.js" />
     <Content Include="Setup.aspx" />
     <Content Include="styles\loginpopup.css" />
     <Content Include="theme\images\ui-bg_flat_55_999999_40x100.png" />
