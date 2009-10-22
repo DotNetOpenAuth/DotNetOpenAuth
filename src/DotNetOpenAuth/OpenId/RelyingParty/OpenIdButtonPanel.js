@@ -151,6 +151,9 @@ $(function() {
 	$(document).keydown(function(e) {
 		if (e.keyCode == $.ui.keyCode.ESCAPE) {
 			window.close();
+		} else if (e.keyCode == $.ui.keyCode.ENTER) {
+			// we do NOT want to submit the form on ENTER.
+			e.preventDefault();
 		}
 	});
 });
