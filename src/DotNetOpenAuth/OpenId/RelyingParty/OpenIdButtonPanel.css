@@ -88,6 +88,11 @@ ul.OpenIdProviders li.focused
 	border: solid 2px yellow;
 }
 
+ul.OpenIdProviders li.infocard
+{
+	display: none; /* default to hiding InfoCard until the user agent determines it's supported */
+}
+
 #openid_identifier
 {
 	width: 298px;

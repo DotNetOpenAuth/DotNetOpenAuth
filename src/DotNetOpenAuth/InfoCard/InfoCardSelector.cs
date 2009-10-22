@@ -565,16 +565,7 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			supportedPanel.Controls.Add(this.CreateInfoCardSelectorObject());
-
-			// add clickable image
-			Image image = new Image();
-			image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
-			image.AlternateText = InfoCardStrings.SelectorClickPrompt;
-			image.ToolTip = this.ToolTip;
-			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
-
-			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
-			supportedPanel.Controls.Add(image);
+			supportedPanel.Controls.Add(this.CreateInfoCardImage());
 
 			// trigger the selector at page load?
 			if (this.AutoPopup && !this.Page.IsPostBack) {
@@ -637,6 +628,7 @@ namespace DotNetOpenAuth.InfoCard {
 			HtmlGenericControl cardSpaceControl = new HtmlGenericControl(HtmlTextWriterTag.Object.ToString());
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Type.ToString(), "application/x-informationcard");
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
+			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Style.ToString(), "display: none");
 
 			if (!string.IsNullOrEmpty(this.Issuer)) {
 				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer));
@@ -670,6 +662,23 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			return cardSpaceControl;
+		}
+
+		/// <summary>
+		/// Creates the info card clickable image.
+		/// </summary>
+		/// <returns>An Image object.</returns>
+		[Pure]
+		private Image CreateInfoCardImage() {
+			// add clickable image
+			Image image = new Image();
+			image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
+			image.AlternateText = InfoCardStrings.SelectorClickPrompt;
+			image.ToolTip = this.ToolTip;
+			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
+
+			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
+			return image;
 		}
 
 		/// <summary>

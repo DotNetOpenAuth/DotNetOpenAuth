@@ -10,6 +10,10 @@ $(function() {
 	var ajaxbox = $('#openid_identifier')[0];
 	ajaxbox.value = $.cookie('openid_identifier') || '';
 
+	if (document.infoCard.isSupported()) {
+		$('ul.OpenIdProviders li.infocard')[0].style.display = 'inline-block';
+	}
+
 	if (ajaxbox.value.length > 0) {
 		var ops = $('ul.OpenIdProviders li');
 		ops.addClass('grayedOut');
@@ -76,7 +80,7 @@ $(function() {
 	$(document).ready(function() {
 		var ops = $('ul.OpenIdProviders li');
 		ops.each(function(i, li) {
-			if (li.id != 'OpenIDButton') {
+			if ($(li).hasClass('OPButton')) {
 				li.authenticationIFrames = new window.dnoa_internal.FrameManager(1/*throttle*/);
 				var openid = new window.OpenIdIdentifier(li.id);
 				openid.loginBackground(li.authenticationIFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
@@ -119,7 +123,7 @@ $(function() {
 				var respondingEndpoint = window.dnoa_internal.discoveryResults[relevantUserSuppliedIdentifier].findSuccessfulRequest();
 				doLogin(respondingEndpoint);
 			}
-		} else if ($(this)[0] != $('#OpenIDButton')[0]) {
+		} else if ($(this).hasClass('OPButton')) {
 			checkidSetup($(this)[0].id);
 		}
 	});

@@ -34,12 +34,12 @@
 		<p>
 			Login with an account you already use!
 		</p>
-		<rp:OpenIdButtonPanel runat="server" OnLoggedIn="openIdButtonPanel_LoggedIn">
+		<rp:OpenIdButtonPanel runat="server" OnLoggedIn="openIdButtonPanel_LoggedIn" OnReceivedToken="openIdButtonPanel_ReceivedToken">
 			<Providers>
 				<rp:ProviderInfo OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
 				<rp:ProviderInfo OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
-				<%--<rp:ProviderInfo OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />--%>
-				<%--<rp:ProviderInfo OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />--%>
+				<rp:ProviderInfo OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />
+				<rp:ProviderInfo OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />
 				<rp:ProviderInfo Image="images/openid.gif" />
 			</Providers>
 		</rp:OpenIdButtonPanel>

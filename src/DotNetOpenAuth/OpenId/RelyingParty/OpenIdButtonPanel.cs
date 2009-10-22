@@ -12,7 +12,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.IdentityModel.Claims;
 	using System.Linq;
 	using System.Text;
 	using System.Web;
@@ -20,6 +22,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.ComponentModel;
+	using DotNetOpenAuth.InfoCard;
 	using DotNetOpenAuth.Messaging;
 
 	[ToolboxData("<{0}:OpenIdButtonPanel runat=\"server\"></{0}:OpenIdButtonPanel>")]
@@ -35,6 +38,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string EmbeddedStylesheetResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdButtonPanel.css";
 
+		#region ViewState keys
+
 		/// <summary>
 		/// The viewstate key to use for storing the value of the <see cref="Providers"/> property.
 		/// </summary>
@@ -46,9 +51,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string AuthenticatedAsToolTipViewStateKey = "AuthenticatedAsToolTip";
 
 		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="ShowInfoCard"/> property.
+		/// </summary>
+		private const string ShowInfoCardViewStateKey = "ShowInfoCard";
+
+		#endregion
+
+		#region Property defaults
+
+		/// <summary>
+		/// The default value for the <see cref="ShowInfoCard"/> property.
+		/// </summary>
+		private const bool ShowInfoCardDefault = true;
+
+		/// <summary>
 		/// The default value for the <see cref="AuthenticatedAsToolTip"/> property.
 		/// </summary>
 		private const string AuthenticatedAsToolTipDefault = "We recognize you!";
+
+		#endregion
 
 		/// <summary>
 		/// The OpenIdAjaxTextBox that remains hidden until the user clicks the OpenID button.
@@ -61,10 +82,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private HiddenField positiveAssertionField;
 
 		/// <summary>
+		/// The InfoCard selector which may be displayed alongside the OP buttons.
+		/// </summary>
+		private InfoCardSelector infoCardSelector;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdButtonPanel"/> class.
 		/// </summary>
 		public OpenIdButtonPanel() {
 		}
+
+		/// <summary>
+		/// Occurs when an InfoCard has been submitted and decoded.
+		/// </summary>
+		public event EventHandler<ReceivedTokenEventArgs> ReceivedToken;
 
 		/// <summary>
 		/// Gets or sets the tool tip text that appears on the green checkmark when authentication succeeds.
@@ -90,6 +121,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the Information Card selector button
+		/// will be displayed on browsers that support it.
+		/// </summary>
+		[Bindable(true), DefaultValue(ShowInfoCardDefault), Category(AppearanceCategory)]
+		[Description("Sets visibility of the Information Card selector button.")]
+		public bool ShowInfoCard {
+			get { return (bool)(this.ViewState[ShowInfoCardViewStateKey] ?? ShowInfoCardDefault); }
+			set { this.ViewState[ShowInfoCardViewStateKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets a <see cref="T:System.Web.UI.ControlCollection"/> object that represents the child controls for a specified server control in the UI hierarchy.
+		/// </summary>
+		/// <returns>
+		/// The collection of child controls for the specified server control.
+		/// </returns>
+		public override ControlCollection Controls {
+			get {
+				this.EnsureChildControls();
+				return base.Controls;
+			}
+		}
+
+		/// <summary>
 		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
 		/// </summary>
 		/// <value>
@@ -105,6 +160,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void CreateChildControls() {
 			base.CreateChildControls();
 
+			this.infoCardSelector = new InfoCardSelector();
+			infoCardSelector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
+			infoCardSelector.ImageSize = InfoCardImageSize.Size60x42;
+			infoCardSelector.ReceivedToken += new EventHandler<ReceivedTokenEventArgs>(infoCardSelector_ReceivedToken);
+			this.Controls.Add(this.infoCardSelector);
+
 			this.textBox = new OpenIdAjaxTextBox();
 			this.textBox.ID = "openid_identifier";
 			this.textBox.HookFormSubmit = false;
@@ -113,6 +174,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.positiveAssertionField = new HiddenField();
 			this.positiveAssertionField.ID = this.OpenIdAuthDataFormKey;
 			this.Controls.Add(this.positiveAssertionField);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.Init"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnInit(EventArgs e) {
+			base.OnInit(e);
+
+			// We force child control creation here so that they can get postback events.
+			EnsureChildControls();
 		}
 
 		/// <summary>
@@ -160,6 +232,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			foreach (var op in this.Providers) {
 				writer.AddAttribute(HtmlTextWriterAttribute.Id, (string)op.OPIdentifier ?? "OpenIDButton");
+				writer.AddAttribute(HtmlTextWriterAttribute.Class, op.OPIdentifier != null ? "OPButton" : "OpenIDButton");
 				writer.RenderBeginTag(HtmlTextWriterTag.Li);
 
 				writer.AddAttribute(HtmlTextWriterAttribute.Href, "#");
@@ -189,15 +262,60 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.RenderEndTag(); // </li>
 			}
 
+			if (this.ShowInfoCard) {
+				writer.AddAttribute(HtmlTextWriterAttribute.Class, "infocard");
+				writer.RenderBeginTag(HtmlTextWriterTag.Li);
+				writer.RenderBeginTag(HtmlTextWriterTag.A);
+				writer.RenderBeginTag(HtmlTextWriterTag.Div);
+				writer.RenderBeginTag(HtmlTextWriterTag.Div);
+
+				infoCardSelector.RenderControl(writer);
+
+				writer.RenderEndTag(); // </div>
+
+				writer.AddAttribute(HtmlTextWriterAttribute.Class, "ui-widget-overlay");
+				writer.RenderBeginTag(HtmlTextWriterTag.Div);
+				writer.RenderEndTag();
+
+				writer.RenderEndTag(); // </div>
+				writer.RenderEndTag(); // </a>
+				writer.RenderEndTag(); // </li>
+			}
+
 			writer.RenderEndTag(); // </ul>
 
 			writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "none");
 			writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDForm");
 			writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-			this.RenderChildren(writer);
+			this.textBox.RenderControl(writer);
 
 			writer.RenderEndTag(); // </div>
+
+			this.positiveAssertionField.RenderControl(writer);
+		}
+
+		/// <summary>
+		/// Fires the <see cref="ReceivedToken"/> event.
+		/// </summary>
+		/// <param name="token">The token, if it was decrypted.</param>
+		protected virtual void OnReceivedToken(ReceivedTokenEventArgs e) {
+			Contract.Requires(e != null);
+			ErrorUtilities.VerifyArgumentNotNull(e, "e");
+
+			var receivedInfoCard = this.ReceivedToken;
+			if (receivedInfoCard != null) {
+				receivedInfoCard(this, e);
+			}
+		}
+
+		/// <summary>
+		/// Handles the ReceivedToken event of the infoCardSelector control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs"/> instance containing the event data.</param>
+		private void infoCardSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
+			this.OnReceivedToken(e);
 		}
 	}
 

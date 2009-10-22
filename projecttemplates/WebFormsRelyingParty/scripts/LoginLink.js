@@ -2,7 +2,7 @@
 	var loginContent = 'loginframe.aspx';
 	var popupWindowName = 'openidlogin';
 	var popupWidth = 355;
-	var popupHeight = 235;
+	var popupHeight = 270;
 
 	{
 		var div = window.document.createElement('div');
