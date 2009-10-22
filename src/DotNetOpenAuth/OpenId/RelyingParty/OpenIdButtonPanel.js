@@ -56,19 +56,18 @@ $(function() {
 	};
 
 	function checkidSetup(identifier, timerBased) {
-		var retain = true; //!$('#NotMyComputer')[0].selected;
-		$.cookie('openid_identifier', retain ? identifier : null, { path: '/' });
 		var openid = new window.OpenIdIdentifier(identifier);
 		if (!openid) { throw 'checkidSetup called without an identifier.'; }
 		openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
 			showLoginSuccess(discoveryResult.userSuppliedIdentifier);
-			doLogin(respondingEndpoint);
+			doLogin(respondingEndpoint, discoveryResult);
 		});
 	}
 
 	// Sends the positive assertion we've collected to the server and actually logs the user into the RP.
-	function doLogin(respondingEndpoint) {
-//		alert('at this point, the whole page would refresh and you would be logged in as ' + respondingEndpoint.claimedIdentifier);
+	function doLogin(respondingEndpoint, discoveryResult) {
+		var retain = true; //!$('#NotMyComputer')[0].selected;
+		$.cookie('openid_identifier', retain ? discoveryResult.userSuppliedIdentifier : null, { path: '/' });
 		window.postLoginAssertion(respondingEndpoint.response.toString(), window.parent.location.href);
 	}
 
@@ -120,8 +119,9 @@ $(function() {
 			}
 
 			if (relevantUserSuppliedIdentifier) {
-				var respondingEndpoint = window.dnoa_internal.discoveryResults[relevantUserSuppliedIdentifier].findSuccessfulRequest();
-				doLogin(respondingEndpoint);
+				var discoveryResult = window.dnoa_internal.discoveryResults[relevantUserSuppliedIdentifier];
+				var respondingEndpoint = discoveryResult.findSuccessfulRequest();
+				doLogin(respondingEndpoint, discoveryResult);
 			}
 		} else if ($(this).hasClass('OPButton')) {
 			checkidSetup($(this)[0].id);
