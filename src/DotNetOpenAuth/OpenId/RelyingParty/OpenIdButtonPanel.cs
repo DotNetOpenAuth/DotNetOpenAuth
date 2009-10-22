@@ -315,6 +315,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs"/> instance containing the event data.</param>
 		private void infoCardSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
+			this.Page.Response.SetCookie(new HttpCookie("openid_identifier", "infocard") {
+				Path = this.Page.Request.ApplicationPath,
+			});
 			this.OnReceivedToken(e);
 		}
 	}

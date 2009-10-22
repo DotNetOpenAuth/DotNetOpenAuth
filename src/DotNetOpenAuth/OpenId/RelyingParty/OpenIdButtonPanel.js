@@ -7,19 +7,23 @@
 //-----------------------------------------------------------------------
 
 $(function() {
+	var hint = $.cookie('openid_identifier') || '';
+
 	var ajaxbox = $('#openid_identifier')[0];
-	ajaxbox.value = $.cookie('openid_identifier') || '';
+	if (hint != 'infocard') {
+		ajaxbox.value = hint;
+	}
 
 	if (document.infoCard.isSupported()) {
 		$('ul.OpenIdProviders li.infocard')[0].style.display = 'inline-block';
 	}
 
-	if (ajaxbox.value.length > 0) {
+	if (hint.length > 0) {
 		var ops = $('ul.OpenIdProviders li');
 		ops.addClass('grayedOut');
 		var matchFound = false;
 		ops.each(function(i, li) {
-			if (li.id == ajaxbox.value) {
+			if (li.id == hint || (hint == 'infocard' && $(li).hasClass('infocard'))) {
 				$(li)
 					.removeClass('grayedOut')
 					.addClass('focused');
@@ -67,7 +71,7 @@ $(function() {
 	// Sends the positive assertion we've collected to the server and actually logs the user into the RP.
 	function doLogin(respondingEndpoint, discoveryResult) {
 		var retain = true; //!$('#NotMyComputer')[0].selected;
-		$.cookie('openid_identifier', retain ? discoveryResult.userSuppliedIdentifier : null, { path: '/' });
+		$.cookie('openid_identifier', retain ? discoveryResult.userSuppliedIdentifier : null, { path: window.aspnetapppath });
 		window.postLoginAssertion(respondingEndpoint.response.toString(), window.parent.location.href);
 	}
 
@@ -98,7 +102,9 @@ $(function() {
 		}
 
 		// Make sure we're not graying out any OPs if the user clicked on a gray button.
+		var wasGrayedOut = false;
 		if ($(this).hasClass('grayedOut')) {
+			wasGrayedOut = true;
 			$('ul.OpenIdProviders li').removeClass('grayedOut');
 		}
 
@@ -125,6 +131,10 @@ $(function() {
 			}
 		} else if ($(this).hasClass('OPButton')) {
 			checkidSetup($(this)[0].id);
+		} else if ($(this).hasClass('infocard') && wasGrayedOut) {
+			// we need to forward the click onto the InfoCard image so it is handled, since our
+			// gray overlaying div captured the click event.
+			$('img', this)[0].click();
 		}
 	});
 	$('#OpenIDButton').click(function() {

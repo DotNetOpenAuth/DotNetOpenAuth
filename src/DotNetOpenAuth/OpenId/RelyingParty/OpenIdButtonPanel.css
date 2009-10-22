@@ -91,6 +91,7 @@ ul.OpenIdProviders li.focused
 ul.OpenIdProviders li.infocard
 {
 	display: none; /* default to hiding InfoCard until the user agent determines it's supported */
+	cursor: pointer;
 }
 
 #openid_identifier

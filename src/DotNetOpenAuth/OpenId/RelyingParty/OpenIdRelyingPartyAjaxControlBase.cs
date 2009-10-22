@@ -426,6 +426,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
+			this.SetWebAppPathOnUserAgent();
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyAjaxControlBase), EmbeddedAjaxJavascriptResource);
 
 			StringBuilder initScript = new StringBuilder();
@@ -591,6 +592,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 </script></body></html>";
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture, htmlFormat, methodCall));
 			Page.Response.End();
+		}
+
+		/// <summary>
+		/// Sets the window.aspnetapppath variable on the user agent so that cookies can be set with the proper path.
+		/// </summary>
+		private void SetWebAppPathOnUserAgent() {
+			string script = "window.aspnetapppath = " + MessagingUtilities.GetSafeJavascriptValue(this.Page.Request.ApplicationPath) + ";";
+			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyAjaxControlBase), "webapppath", script, true);
 		}
 	}
 }
