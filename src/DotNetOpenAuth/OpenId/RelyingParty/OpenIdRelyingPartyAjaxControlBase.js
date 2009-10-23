@@ -293,7 +293,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			thisServiceEndpoint.abort(); // ensure no concurrent attempts
 			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
 			thisDiscoveryResult.onAuthFailed = onAuthFailed;
-			var width = 800;
+			var width = 1000;
 			var height = 600;
 			if (thisServiceEndpoint.setup.getQueryArgValue("openid.return_to").indexOf("dnoa.popupUISupported") >= 0) {
 				trace('This OP supports the UI extension.  Using smaller window size.');
