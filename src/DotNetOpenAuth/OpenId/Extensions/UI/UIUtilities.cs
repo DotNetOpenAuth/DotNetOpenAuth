@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// <summary>
 		/// The required width of the popup window the relying party creates for the provider.
 		/// </summary>
-		public const int PopupWidth = 450;
+		public const int PopupWidth = 500; // UI extension calls for 450px, but Yahoo needs 500px
 
 		/// <summary>
 		/// The required height of the popup window the relying party creates for the provider.

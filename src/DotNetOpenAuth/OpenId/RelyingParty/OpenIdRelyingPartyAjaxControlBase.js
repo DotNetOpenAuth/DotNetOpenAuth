@@ -297,7 +297,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			var height = 600;
 			if (thisServiceEndpoint.setup.getQueryArgValue("openid.return_to").indexOf("dnoa.popupUISupported") >= 0) {
 				trace('This OP supports the UI extension.  Using smaller window size.');
-				width = 450;
+				width = 500; // spec calls for 450px, but Yahoo needs 500px
 				height = 500;
 			} else {
 				trace("This OP doesn't appear to support the UI extension.  Using larger window size.");
