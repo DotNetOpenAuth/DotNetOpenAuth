@@ -237,6 +237,7 @@
     <Content Include="theme\ui.slider.css" />
     <Content Include="theme\ui.tabs.css" />
     <Content Include="theme\ui.theme.css" />
+    <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Admin\CreateDatabase.sql" />

@@ -1,5 +1,5 @@
 ﻿$(function() {
-	var loginContent = 'loginframe.aspx';
+	var loginContent = 'LoginFrame.aspx';
 	var popupWindowName = 'openidlogin';
 	var popupWidth = 355;
 	var popupHeight = 270;
