@@ -40,22 +40,37 @@ $(function() {
 		}
 	}
 
-	function showLoginSuccess(userSuppliedIdentifier, hide) {
+	function showLoginSuccess(userSuppliedIdentifier, success, respondingEndpoint) {
 		var li = document.getElementById(userSuppliedIdentifier);
 		if (li) {
-			if (hide) {
-				$(li).removeClass('loginSuccess');
-			} else {
+			if (success) {
 				$(li).addClass('loginSuccess');
+				if (respondingEndpoint && !respondingEndpoint._panelsetoncleared) {
+					var oldOnCleared = respondingEndpoint.onCleared;
+					respondingEndpoint.onCleared = function() {
+						if (oldOnCleared) { oldOnCleared(); }
+						showLoginSuccess(userSuppliedIdentifier, false);
+						// kick off a new loginBackground to renew the expired assertion.
+						trace('Renewing positive assertion previously obtained from ' + respondingEndpoint.host);
+						$('ul.OpenIdProviders li').each(function(i, li) {
+							if (li.id == userSuppliedIdentifier) {
+								li.loginBackground();
+							}
+						});
+					};
+					respondingEndpoint._panelsetoncleared = true;
+				}
+			} else {
+				$(li).removeClass('loginSuccess');
 			}
 		}
 	}
 
 	ajaxbox.onStateChanged = function(state) {
 		if (state == "authenticated") {
-			showLoginSuccess('OpenIDButton');
+			showLoginSuccess('OpenIDButton', true);
 		} else {
-			showLoginSuccess('OpenIDButton', true); // hide checkmark
+			showLoginSuccess('OpenIDButton', false); // hide checkmark
 		}
 	};
 
@@ -63,7 +78,7 @@ $(function() {
 		var openid = new window.OpenIdIdentifier(identifier);
 		if (!openid) { throw 'checkidSetup called without an identifier.'; }
 		openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
-			showLoginSuccess(discoveryResult.userSuppliedIdentifier);
+			showLoginSuccess(discoveryResult.userSuppliedIdentifier, true, respondingEndpoint);
 			doLogin(respondingEndpoint, discoveryResult);
 		});
 	}
@@ -86,10 +101,14 @@ $(function() {
 			if ($(li).hasClass('OPButton')) {
 				li.authenticationIFrames = new window.dnoa_internal.FrameManager(1/*throttle*/);
 				var openid = new window.OpenIdIdentifier(li.id);
-				openid.loginBackground(li.authenticationIFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
-					showLoginSuccess(li.id);
-					//alert('OP button background login as ' + respondingEndpoint.claimedIdentifier + ' was successful!');
-				}, null, backgroundTimeout);
+				var authFrames = li.authenticationIFrames;
+				var liid = li.id;
+				li.loginBackground = function() {
+					openid.loginBackground(authFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
+						showLoginSuccess(liid, true, respondingEndpoint);
+					}, null, backgroundTimeout);
+				};
+				li.loginBackground();
 			}
 		});
 	});
@@ -113,22 +132,21 @@ $(function() {
 			$('#OpenIDForm').hide('slow');
 		}
 
+		var relevantUserSuppliedIdentifier = null;
+		// Don't immediately login if the user clicked OpenID and he can't see the identifier box.
+		if ($(this)[0].id != 'OpenIDButton') {
+			relevantUserSuppliedIdentifier = $(this)[0].id;
+		} else if ($('#OpenIDForm').is(':visible')) {
+			relevantUserSuppliedIdentifier = ajaxbox.value;
+		}
+
+		var discoveryResult = window.dnoa_internal.discoveryResults[relevantUserSuppliedIdentifier];
+		var respondingEndpoint = discoveryResult ? discoveryResult.findSuccessfulRequest() : null;
+
 		// If the user clicked on a button that has the "we're ready to log you in immediately",
 		// then log them in!
-		if ($(this).hasClass('loginSuccess')) {
-			var relevantUserSuppliedIdentifier = null;
-			// Don't immediately login if the user clicked OpenID and he can't see the identifier box.
-			if ($(this)[0].id != 'OpenIDButton') {
-				relevantUserSuppliedIdentifier = $(this)[0].id;
-			} else if ($('#OpenIDForm').is(':visible')) {
-				relevantUserSuppliedIdentifier = ajaxbox.value;
-			}
-
-			if (relevantUserSuppliedIdentifier) {
-				var discoveryResult = window.dnoa_internal.discoveryResults[relevantUserSuppliedIdentifier];
-				var respondingEndpoint = discoveryResult.findSuccessfulRequest();
-				doLogin(respondingEndpoint, discoveryResult);
-			}
+		if (respondingEndpoint) {
+			doLogin(respondingEndpoint, discoveryResult);
 		} else if ($(this).hasClass('OPButton')) {
 			checkidSetup($(this)[0].id);
 		} else if ($(this).hasClass('infocard') && wasGrayedOut) {

@@ -398,6 +398,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			if (thisServiceEndpoint.completeAttempt(true)) {
 				trace(thisServiceEndpoint.host + " authenticated!");
 				thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
+				thisServiceEndpoint.successReceived = new Date();
 				thisServiceEndpoint.claimedIdentifier = authUri.getQueryArgValue('openid.claimed_id');
 				thisServiceEndpoint.response = authUri;
 				thisDiscoveryResult.abortAll();
@@ -424,6 +425,15 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			}
 		};
 
+		this.clear = function() {
+			thisServiceEndpoint.result = null;
+			thisServiceEndpoint.successReceived = null;
+			thisServiceEndpoint.claimedIdentifier = null;
+			thisServiceEndpoint.response = null;
+			if (this.onCleared) {
+				this.onCleared(thisServiceEndpoint, thisDiscoveryResult);
+			}
+		};
 	};
 
 	this.cloneWithOneServiceEndpoint = function(serviceEndpoint) {
@@ -603,3 +613,22 @@ window.dnoa_internal.loadPreloadedDiscoveryResults = function(preloadedDiscovery
 		}
 	}
 };
+
+window.dnoa_internal.clearExpiredPositiveAssertions = function() {
+	for (identifier in window.dnoa_internal.discoveryResults) {
+		var discoveryResult = window.dnoa_internal.discoveryResults[identifier];
+		if (typeof (discoveryResult) != 'object') { continue; } // skip functions
+		for (var i = 0; i < discoveryResult.length; i++) {
+			if (discoveryResult[i].result === window.dnoa_internal.authSuccess) {
+				if (new Date() - discoveryResult[i].successReceived > window.dnoa_internal.maxPositiveAssertionLifetime) {
+					// This positive assertion is too old, and may eventually be rejected by DNOA during verification.
+					// Let's clear out the positive assertion so it can be renewed.
+					trace('Clearing out expired positive assertion from ' + discoveryResult[i].host);
+					discoveryResult[i].clear();
+				}
+			}
+		}
+	}
+};
+
+window.setInterval(window.dnoa_internal.clearExpiredPositiveAssertions, 1000);

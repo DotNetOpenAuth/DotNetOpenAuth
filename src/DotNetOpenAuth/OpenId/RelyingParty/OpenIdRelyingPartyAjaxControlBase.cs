@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
 
@@ -38,6 +39,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the javascript function that will initiate an asynchronous callback.
 		/// </summary>
 		protected const string CallbackJSFunctionAsync = "window.dnoa_internal.callbackAsync";
+
+		/// <summary>
+		/// The name of the javascript field that stores the maximum time a positive assertion is
+		/// good for before it must be refreshed.
+		/// </summary>
+		private const string MaxPositiveAssertionLifetimeJsName = "window.dnoa_internal.maxPositiveAssertionLifetime";
 
 		/// <summary>
 		/// The "dnoa.op_endpoint" string.
@@ -433,6 +440,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			initScript.AppendLine(CallbackJSFunctionAsync + " = " + this.GetJsCallbackConvenienceFunction(true));
 			initScript.AppendLine(CallbackJSFunction + " = " + this.GetJsCallbackConvenienceFunction(false));
+			initScript.AppendLine(MaxPositiveAssertionLifetimeJsName + " = " + Math.Min(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds).ToString() + ";");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
