@@ -32,7 +32,9 @@
 		<p>
 			Login with an account you already use!
 		</p>
-		<rp:OpenIdButtonPanel runat="server" OnLoggedIn="openIdButtonPanel_LoggedIn" OnReceivedToken="openIdButtonPanel_ReceivedToken">
+		<rp:OpenIdButtonPanel runat="server" ID="openIdButtonPanel" OnLoggedIn="openIdButtonPanel_LoggedIn"
+			OnFailed="openIdButtonPanel_Failed" OnCanceled="openIdButtonPanel_Failed" OnReceivedToken="openIdButtonPanel_ReceivedToken"
+			OnTokenProcessingError="openIdButtonPanel_TokenProcessingError">
 			<Providers>
 				<rp:ProviderInfo OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
 				<rp:ProviderInfo OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
@@ -42,6 +44,13 @@
 			</Providers>
 		</rp:OpenIdButtonPanel>
 		<asp:HiddenField runat="server" ID="topWindowUrl" />
+		<asp:Panel ID="errorPanel" runat="server" EnableViewState="false" Visible="false" ForeColor="Red">
+			Oops. Something went wrong while logging you in. Trying again may work. <a href="javascript:$('#errorMessage').show()">
+				What went wrong?</a>
+			<span id="errorMessage" style="display: none">
+				<asp:Label ID="errorMessageLabel" runat="server" Text="Login canceled." />
+			</span>
+		</asp:Panel>
 		<div class="helpDoc">
 			<p>
 				If you have logged in previously, click the same button you did last time.

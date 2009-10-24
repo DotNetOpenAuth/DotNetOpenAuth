@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using DotNetOpenAuth.InfoCard;
 using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 using DotNetOpenAuth.OpenId.RelyingParty;
@@ -74,6 +75,18 @@ document.getElementById('topWindowUrl').value = window.parent.location.href;
 			} else {
 				FormsAuthentication.RedirectFromLoginPage(openidToken.ClaimedIdentifier, persistentCookie);
 			}
+		}
+
+		protected void openIdButtonPanel_Failed(object sender, OpenIdEventArgs e) {
+			if (e.Response.Exception != null) {
+				errorMessageLabel.Text = e.Response.Exception.Message;
+			}
+			errorPanel.Visible = true;
+		}
+
+		protected void openIdButtonPanel_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
+			errorMessageLabel.Text = e.Exception.Message;
+			errorPanel.Visible = true;
 		}
 	}
 }
