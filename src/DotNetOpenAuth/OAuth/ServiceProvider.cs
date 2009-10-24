@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
 		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
-			: this(serviceDescription, tokenManager, new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge), messageTypeProvider) {
+			: this(serviceDescription, tokenManager, new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge), messageTypeProvider) {
 		}
 
 		/// <summary>
