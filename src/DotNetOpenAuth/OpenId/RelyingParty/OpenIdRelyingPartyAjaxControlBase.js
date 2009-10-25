@@ -203,12 +203,14 @@ window.OpenIdIdentifier = function(identifier) {
 
 		if (window.dnoa_internal.discoveryResults[identifier]) {
 			trace("We've already discovered " + identifier + " so we're using the cached version.");
+
+			// In this special case, we never fire the DiscoveryStarted event.
+			window.dnoa_internal.fireDiscoverySuccess(identifier, window.dnoa_internal.discoveryResults[identifier]);
+
 			if (onDiscoverSuccess) {
 				onDiscoverSuccess(window.dnoa_internal.discoveryResults[identifier]);
 			}
 
-			// In this special case, we never fire the DiscoveryStarted event.
-			window.dnoa_internal.fireDiscoverySuccess(identifier, window.dnoa_internal.discoveryResults[identifier]);
 			return;
 		};
 
@@ -599,6 +601,10 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 				onAuthSuccess(thisDiscoveryResult, priorSuccessRespondingEndpoint);
 			}
 		} else {
+			if (thisDiscoveryResult.busy()) {
+				trace('Warning: DiscoveryResult.loginBackground invoked while a login attempt is already in progress. Discarding second login request.', 'red');
+				return;
+			}
 			thisDiscoveryResult.frameManager = frameManager;
 			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
 			thisDiscoveryResult.onAuthFailed = onAuthFailed;

@@ -40,31 +40,30 @@ $(function() {
 		}
 	}
 
-	function showLoginSuccess(userSuppliedIdentifier, success, respondingEndpoint) {
+	function showLoginSuccess(userSuppliedIdentifier, success) {
 		var li = document.getElementById(userSuppliedIdentifier);
 		if (li) {
 			if (success) {
 				$(li).addClass('loginSuccess');
-				if (respondingEndpoint && !respondingEndpoint._panelsetoncleared) {
-					var oldOnCleared = respondingEndpoint.onCleared;
-					respondingEndpoint.onCleared = function() {
-						if (oldOnCleared) { oldOnCleared(); }
-						showLoginSuccess(userSuppliedIdentifier, false);
-						// kick off a new loginBackground to renew the expired assertion.
-						trace('Renewing positive assertion previously obtained from ' + respondingEndpoint.host);
-						$('ul.OpenIdProviders li').each(function(i, li) {
-							if (li.id == userSuppliedIdentifier) {
-								li.loginBackground();
-							}
-						});
-					};
-					respondingEndpoint._panelsetoncleared = true;
-				}
 			} else {
 				$(li).removeClass('loginSuccess');
 			}
 		}
 	}
+
+	window.dnoa_internal.addAuthSuccess(function(discoveryResult, serviceEndpoint, extensionResponses, state) {
+		showLoginSuccess(discoveryResult.userSuppliedIdentifier, true);
+	});
+
+	window.dnoa_internal.addAuthCleared(function(discoveryResult, serviceEndpoint) {
+		showLoginSuccess(discoveryResult.userSuppliedIdentifier, false);
+
+		// If this is an OP button, renew the positive assertion.
+		var li = document.getElementById(discoveryResult.userSuppliedIdentifier);
+		if (li) {
+			li.loginBackground();
+		}
+	});
 
 	ajaxbox.onStateChanged = function(state) {
 		if (state == "authenticated") {
@@ -78,7 +77,6 @@ $(function() {
 		var openid = new window.OpenIdIdentifier(identifier);
 		if (!openid) { throw 'checkidSetup called without an identifier.'; }
 		openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
-			showLoginSuccess(discoveryResult.userSuppliedIdentifier, true, respondingEndpoint);
 			doLogin(respondingEndpoint, discoveryResult);
 		});
 	}
@@ -104,9 +102,7 @@ $(function() {
 				var authFrames = li.authenticationIFrames;
 				var liid = li.id;
 				li.loginBackground = function() {
-					openid.loginBackground(authFrames, function(discoveryResult, respondingEndpoint, extensionResponses) {
-						showLoginSuccess(liid, true, respondingEndpoint);
-					}, null, backgroundTimeout);
+					openid.loginBackground(authFrames, null, null, backgroundTimeout);
 				};
 				li.loginBackground();
 			}
