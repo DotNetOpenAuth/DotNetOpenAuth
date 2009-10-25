@@ -66,9 +66,9 @@ window.dnoa_internal.discoveryResults = new Array(); // user supplied identifier
 window.dnoa_internal.discoveryInProgress = new Array(); // identifiers currently being discovered and their callbacks
 
 // The possible authentication results
-window.dnoa_internal.authSuccess = new Object();
-window.dnoa_internal.authRefused = new Object();
-window.dnoa_internal.timedOut = new Object();
+window.dnoa_internal.authSuccess = 'auth-success';
+window.dnoa_internal.authRefused = 'auth-refused';
+window.dnoa_internal.timedOut = 'timed-out';
 
 /// <summary>Instantiates a new FrameManager.</summary>
 /// <param name="maxFrames">The maximum number of concurrent 'jobs' (authentication attempts).</param>
