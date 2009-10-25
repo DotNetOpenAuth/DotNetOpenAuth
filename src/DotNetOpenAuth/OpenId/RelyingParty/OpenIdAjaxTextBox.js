@@ -487,7 +487,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 		function cancelTimer() {
 			if (discoveryTimer) {
-				trace('canceling timer');
+				trace('canceling timer', 'gray');
 				clearTimeout(discoveryTimer);
 				discoveryTimer = null;
 			}
@@ -499,12 +499,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 		function discover() {
 			cancelTimer();
-			trace('typist discovery candidate');
+			trace('typist discovery candidate', 'gray');
 			if (identifierSanityCheck(box.value)) {
-				trace('typist discovery begun');
+				trace('typist discovery begun', 'gray');
 				box.dnoi_internal.performDiscovery(box.value);
 			} else {
-				trace('typist discovery canceled due to incomplete identifier.');
+				trace('typist discovery canceled due to incomplete identifier.', 'gray');
 			}
 		}
 
@@ -512,7 +512,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			keyPresses = 0;
 			startTime = null;
 			rate = NaN;
-			trace('resetting state');
+			trace('resetting state', 'gray');
 		}
 
 		box.dnoi_internal.resetAndDiscover = function() {
@@ -542,7 +542,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 						// One key press is responsible for multiple character changes.
 						// The user may have pasted in his identifier in which case
 						// we want to begin discovery immediately.
-						trace(newValue + ': paste detected (old value ' + lastValue + ')');
+						trace(newValue + ': paste detected (old value ' + lastValue + ')', 'gray');
 						discover();
 					} else {
 						keyPresses++;
@@ -558,13 +558,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 							timeout = Math.max(minTimeout, Math.min(rate * typistFactor, maxTimeout));
 						}
 
-						trace(newValue + ': setting timer for ' + timeout);
+						trace(newValue + ': setting timer for ' + timeout, 'gray');
 						discoveryTimer = setTimeout(discover, timeout);
 					}
 				}
 			}
 
-			trace(newValue + ': updating lastValue');
+			trace(newValue + ': updating lastValue', 'gray');
 			lastValue = newValue;
 
 			return true;

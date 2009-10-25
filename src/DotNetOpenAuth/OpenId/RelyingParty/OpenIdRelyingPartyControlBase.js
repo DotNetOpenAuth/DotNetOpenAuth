@@ -10,13 +10,14 @@
 //window.openid_visible_iframe = true; // causes the hidden iframe to show up
 //window.openid_trace = true; // causes lots of messages
 
-trace = function(msg) {
+trace = function(msg, color) {
 	if (window.openid_trace) {
 		if (!window.openid_tracediv) {
 			window.openid_tracediv = document.createElement("ol");
 			document.body.appendChild(window.openid_tracediv);
 		}
 		var el = document.createElement("li");
+		if (color) { el.style.color = color; }
 		el.appendChild(document.createTextNode(msg));
 		window.openid_tracediv.appendChild(el);
 		//alert(msg);
