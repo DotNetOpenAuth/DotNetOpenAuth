@@ -381,6 +381,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 	});
 
+	window.dnoa_internal.addAuthStarted(function(discoveryResult, serviceEndpoint, state) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			box.dnoi_internal.setVisualCue('discovering');
+		}
+	});
+
 	window.dnoa_internal.addAuthSuccess(function(discoveryResult, serviceEndpoint, extensionResponses, state) {
 		if (discoveryResult.userSuppliedIdentifier == box.value) {
 			// visual cue that auth was successful
@@ -439,7 +445,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	window.dnoa_internal.addAuthCleared(function(discoveryResult, serviceEndpoint) {
 		if (discoveryResult.userSuppliedIdentifier == box.value) {
 			if (!discoveryResult.findSuccessfulRequest()) {
-				box.dnoi_internal.displayLoginButton(discoveryResult);
+				// attempt to renew the positive assertion.
+				discoveryResult.loginBackground(
+					box.dnoi_internal.authenticationIFrames,
+					null,
+					null,
+					null,
+					box.timeout);
 			}
 		}
 	});
