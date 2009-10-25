@@ -27,6 +27,41 @@ Array.prototype.remove = function(element) {
 	}
 };
 
+// Renders all the parameters in their string form, surrounded by parentheses.
+window.dnoa_internal.argsToString = function() {
+	result = "(";
+	for (var i = 0; i < arguments.length; i++) {
+		if (i > 0) { result += ', '; }
+		var arg = arguments[i];
+		if (typeof (arg) == 'string') { arg = '"' + arg + '"'; }
+		if (arg === null) { arg = '[null]'; }
+		result += arg.toString();
+	}
+	result += ')';
+	return result;
+};
+
+window.dnoa_internal.registerEvent = function(name) {
+	window.dnoa_internal[name + 'Listeners'] = new Array();
+	window.dnoa_internal['add' + name] = function(fn) { window.dnoa_internal[name + 'Listeners'].push(fn); };
+	window.dnoa_internal['remove' + name] = function(fn) { window.dnoa_internal[name + 'Listeners'].remove(fn); };
+	window.dnoa_internal['fire' + name] = function() {
+		var args = Array.prototype.slice.call(arguments);
+		trace('Firing event ' + name + window.dnoa_internal.argsToString.apply(null, args), 'blue');
+		var listeners = window.dnoa_internal[name + 'Listeners'];
+		for (var i = 0; i < listeners.length; i++) {
+			listeners[i].apply(null, args);
+		}
+	};
+};
+
+window.dnoa_internal.registerEvent('DiscoveryStarted'); // (identifier) - fired when a discovery callback is ACTUALLY made to the RP
+window.dnoa_internal.registerEvent('DiscoveryFinished'); // (identifier, discoveryResult) - fired after a discovery callback is returned from the RP
+window.dnoa_internal.registerEvent('AuthStarted'); // (discoveryResult, serviceEndpoint, background)
+window.dnoa_internal.registerEvent('AuthFailed'); // (discoveryResult, serviceEndpoint, background) - fired for each individual ServiceEndpoint, and once at last with serviceEndpoint==null if all failed
+window.dnoa_internal.registerEvent('AuthSuccess'); // (discoveryResult, serviceEndpoint, background, extensionResponses)
+window.dnoa_internal.registerEvent('AuthCleared'); // (discoveryResult, serviceEndpoint)
+
 window.dnoa_internal.discoveryResults = new Array(); // user supplied identifiers and discovery results
 window.dnoa_internal.discoveryInProgress = new Array(); // identifiers currently being discovered and their callbacks
 
@@ -131,6 +166,8 @@ window.OpenIdIdentifier = function(identifier) {
 			discoveryResult = new window.dnoa_internal.DiscoveryResult(identifier, discoveryResult);
 			window.dnoa_internal.discoveryResults[identifier] = discoveryResult;
 
+			window.dnoa_internal.fireDiscoveryFinished(identifier, discoveryResult);
+
 			// Clear our "in discovery" state and fire callbacks
 			var callbacks = window.dnoa_internal.discoveryInProgress[identifier];
 			window.dnoa_internal.discoveryInProgress[identifier] = null;
@@ -159,6 +196,8 @@ window.OpenIdIdentifier = function(identifier) {
 					}
 				}
 			}
+
+			window.dnoa_internal.fireDiscoveryFinished(identifier, null/*failure*/);
 		};
 
 		if (window.dnoa_internal.discoveryResults[identifier]) {
@@ -176,6 +215,7 @@ window.OpenIdIdentifier = function(identifier) {
 				onFailure: [onDiscoverFailure]
 			};
 			window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);
+			window.dnoa_internal.fireDiscoveryStarted(identifier);
 		} else {
 			trace('Discovery on ' + identifier + ' already started. Registering an additional callback.');
 			window.dnoa_internal.discoveryInProgress[identifier].onSuccess.push(onDiscoverSuccess);
@@ -291,6 +331,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		var thisServiceEndpoint = this; // closure so that delegates have the right instance
 		this.loginPopup = function(onAuthSuccess, onAuthFailed) {
 			thisServiceEndpoint.abort(); // ensure no concurrent attempts
+			window.dnoa_internal.fireAuthStarted(thisDiscoveryResult, thisServiceEndpoint, false);
 			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
 			thisDiscoveryResult.onAuthFailed = onAuthFailed;
 			var width = 1000;
@@ -326,6 +367,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 							// would indicate we've already processed this.
 							if (window.dnoa_internal.processAuthorizationResult) {
 								trace('User or OP canceled by closing the window.');
+								window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, false);
 								if (thisDiscoveryResult.onAuthFailed) {
 									thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
 								}
@@ -348,12 +390,16 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			if (timeout) {
 				thisServiceEndpoint.timeout = setTimeout(function() { thisServiceEndpoint.onAuthenticationTimedOut(); }, timeout);
 			}
+			window.dnoa_internal.fireAuthStarted(thisDiscoveryResult, thisServiceEndpoint, true);
 			trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now OPENING (timeout ' + timeout + ').');
 			//trace('initiating auth attempt with: ' + thisServiceEndpoint.immediate);
 			thisServiceEndpoint.iframe = iframe;
 			return {
 				url: thisServiceEndpoint.immediate.toString(),
-				onCanceled: function() { thisServiceEndpoint.abort(); }
+				onCanceled: function() {
+					thisServiceEndpoint.abort();
+					window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, true);
+				}
 			};
 		};
 
@@ -364,6 +410,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		this.completeAttempt = function(successful) {
 			if (!thisServiceEndpoint.busy()) return false;
 			window.clearInterval(thisServiceEndpoint.timeout);
+			var background = thisServiceEndpoint.iframe != null;
 			if (thisServiceEndpoint.iframe) {
 				trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now CLOSING.');
 				thisDiscoveryResult.frameManager.closeFrame(thisServiceEndpoint.iframe);
@@ -379,6 +426,8 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			}
 
 			if (!successful && !thisDiscoveryResult.busy() && thisDiscoveryResult.findSuccessfulRequest() == null) {
+				// fire the failed event with NO service endpoint indicating the entire auth attempt has failed.
+				window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, null, background);
 				if (thisDiscoveryResult.onLastAttemptFailed) {
 					thisDiscoveryResult.onLastAttemptFailed(thisDiscoveryResult);
 				}
@@ -388,13 +437,16 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		};
 
 		this.onAuthenticationTimedOut = function() {
+			var background = thisServiceEndpoint.iframe != null;
 			if (thisServiceEndpoint.completeAttempt()) {
 				trace(thisServiceEndpoint.host + " timed out");
 				thisServiceEndpoint.result = window.dnoa_internal.timedOut;
 			}
+			window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, background);
 		};
 
 		this.onAuthSuccess = function(authUri, extensionResponses) {
+			var background = thisServiceEndpoint.iframe != null;
 			if (thisServiceEndpoint.completeAttempt(true)) {
 				trace(thisServiceEndpoint.host + " authenticated!");
 				thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
@@ -405,13 +457,16 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 				if (thisDiscoveryResult.onAuthSuccess) {
 					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint, extensionResponses);
 				}
+				window.dnoa_internal.fireAuthSuccess(thisDiscoveryResult, thisServiceEndpoint, background, extensionResponses);
 			}
 		};
 
 		this.onAuthFailed = function() {
+			var background = thisServiceEndpoint.iframe != null;
 			if (thisServiceEndpoint.completeAttempt()) {
 				trace(thisServiceEndpoint.host + " failed authentication");
 				thisServiceEndpoint.result = window.dnoa_internal.authRefused;
+				window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, background);
 				if (thisDiscoveryResult.onAuthFailed) {
 					thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
 				}
@@ -433,6 +488,14 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			if (this.onCleared) {
 				this.onCleared(thisServiceEndpoint, thisDiscoveryResult);
 			}
+			if (thisDiscoveryResult.onCleared) {
+				thisDiscoveryResult.onCleared(thisDiscoveryResult, thisServiceEndpoint);
+			}
+			window.dnoa_internal.fireAuthCleared(thisDiscoveryResult, thisServiceEndpoint);
+		};
+
+		this.toString = function() {
+			return "[ServiceEndpoint: " + thisServiceEndpoint.host + "]";
 		};
 	};
 
@@ -536,6 +599,10 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 				}
 			}
 		}
+	};
+
+	this.toString = function() {
+		return "[DiscoveryResult: " + thisDiscoveryResult.userSuppliedIdentifier + "]";
 	};
 };
 
