@@ -275,13 +275,11 @@ window.dnoa_internal.processAuthorizationResult = function(resultUrl, extensionR
 	// Find the tracking object responsible for this request.
 	var userSuppliedIdentifier = resultUri.getQueryArgValue('dnoa.userSuppliedIdentifier');
 	if (!userSuppliedIdentifier) {
-		trace('processAuthorizationResult called but no userSuppliedIdentifier parameter was found.  Exiting function.');
-		return;
+		throw 'processAuthorizationResult called but no userSuppliedIdentifier parameter was found.  Exiting function.';
 	}
 	var discoveryResult = window.dnoa_internal.discoveryResults[userSuppliedIdentifier];
 	if (discoveryResult == null) {
-		trace('processAuthorizationResult called but no discovery result matching user supplied identifier ' + userSuppliedIdentifier + ' was found.  Exiting function.');
-		return;
+		throw 'processAuthorizationResult called but no discovery result matching user supplied identifier ' + userSuppliedIdentifier + ' was found.  Exiting function.';
 	}
 
 	var opEndpoint = resultUri.getQueryArgValue("openid.op_endpoint") ? resultUri.getQueryArgValue("openid.op_endpoint") : resultUri.getQueryArgValue("dnoa.op_endpoint");
