@@ -53,7 +53,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.createLoginButton = function(providers) {
 		var onMenuItemClick = function(p_sType, p_aArgs, p_oItem) {
 			var selectedProvider = (p_oItem && p_oItem.value) ? p_oItem.value : providers[0].value;
-			selectedProvider.loginPopup(box.dnoi_internal.onAuthSuccess, box.dnoi_internal.onAuthFailed);
+			selectedProvider.loginPopup();
 			return false;
 		};
 
@@ -131,7 +131,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.retryButton = box.dnoi_internal.constructButton(retryButtonText, retryButtonToolTip, function() {
 		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
-		box.dnoi_internal.performDiscovery(box.value);
+		box.dnoi_internal.performDiscovery();
 		return false;
 	});
 	box.dnoi_internal.openid_logo = box.dnoi_internal.constructIcon(openid_logo_url, null, false, true);
@@ -340,40 +340,17 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	};
 
 	/*****************************************
-	* Flow
+	* Event Handlers
 	*****************************************/
 
-	/// <summary>Called to initiate discovery on some identifier.</summary>
-	box.dnoi_internal.performDiscovery = function(identifier, onSuccess, onFailure) {
-		box.dnoi_internal.authenticationIFrames.closeFrames();
-		box.dnoi_internal.setVisualCue('discovering');
-		box.lastDiscoveredIdentifier = identifier;
-		var openid = new window.OpenIdIdentifier(identifier);
-		openid.discover(
-			function(discoveryResult) {
-				box.dnoi_internal.discoverySuccess(discoveryResult, onSuccess, onFailure);
-			},
-			function(a, b, c, d, e, f, g) {
-				box.dnoi_internal.discoveryFailed(a, b, c, d, e, f, g);
-				if (onFailure) { onFailure(); }
-			});
-	};
+	window.dnoa_internal.addDiscoveryStarted(function(identifier) {
+		if (identifier == box.value) {
+			box.dnoi_internal.setVisualCue('discovering');
+		}
+	});
 
-	/// <summary>Callback that is invoked when discovery fails.</summary>
-	box.dnoi_internal.discoveryFailed = function(message, identifier) {
-		box.dnoi_internal.setVisualCue('failed');
-		if (message) { box.title = message; }
-	};
-
-	/// <summary>Callback that is invoked when discovery results are available.</summary>
-	/// <param name="discoveryResult">The JSON object containing the OpenID auth requests.</param>
-	/// <param name="onSuccess">A special callback to fire when login has completed successfully.</param>
-	/// <param name="onFailure">A special callback to fire when login fails.</param>
-	box.dnoi_internal.discoverySuccess = function(discoveryResult, onSuccess, onFailure) {
-		// Only act on the discovery event if we're still interested in the result.
-		// If the user already changed the identifier since discovery was initiated,
-		// we aren't interested in it any more.
-		if (discoveryResult.userSuppliedIdentifier === box.lastDiscoveredIdentifier) {
+	window.dnoa_internal.addDiscoverySuccess(function(identifier, discoveryResult) {
+		if (identifier == box.value) {
 			// Start pre-fetching the OP favicons
 			for (var i = 0; i < discoveryResult.length; i++) {
 				var favicon = box.dnoi_internal.deriveOPFavIcon(discoveryResult[i].endpoint);
@@ -384,26 +361,90 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			}
 			if (discoveryResult.length > 0) {
 				discoveryResult.loginBackground(
-					box.dnoi_internal.authenticationIFrames,
-					function(discoveryResult, respondingEndpoint, extensionResponses) {
-						box.dnoi_internal.onAuthSuccess(discoveryResult, respondingEndpoint, extensionResponses);
-						if (onSuccess) { onSuccess(discoveryResult, respondingEndpoint, extensionResponses); }
-					},
-					box.dnoi_internal.onAuthFailed,
-					function(a, b, c, d, e, f, g) {
-						box.dnoi_internal.lastAuthenticationFailed(a, b, c, d, e, f, g);
-						if (onFailure) { onFailure(); }
-					},
-					box.timeout);
+				box.dnoi_internal.authenticationIFrames,
+				null,
+				null,
+				null,
+				box.timeout);
 			} else {
 				// discovery completed successfully -- it just didn't yield any service endpoints.
 				box.dnoi_internal.setVisualCue('failednoretry', null, null, null, discoveryResult.error);
 				if (discoveryResult.error) { box.title = discoveryResult.error; }
 			}
 		}
-	};
+	});
 
-	box.dnoi_internal.lastAuthenticationFailed = function(discoveryResult) {
+	window.dnoa_internal.addDiscoveryFailed(function(identifier, message) {
+		if (identifier == box.value) {
+			box.dnoi_internal.setVisualCue('failed');
+			if (message) { box.title = message; }
+		}
+	});
+
+	window.dnoa_internal.addAuthSuccess(function(discoveryResult, serviceEndpoint, extensionResponses, state) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			// visual cue that auth was successful
+			var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
+			box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
+
+			// If the OP doesn't support delegation, "correct" the identifier the user entered
+			// so he realizes his identity didn't stick.  But don't change out OP Identifiers.
+			if (discoveryResult.claimedIdentifier && discoveryResult.claimedIdentifier != parsedPositiveAssertion.claimedIdentifier) {
+				box.value = parsedPositiveAssertion.claimedIdentifier;
+				box.lastDiscoveredIdentifier = box.value;
+
+				// Also inject a fake discovery result for this new identifier to keep the UI from performing
+				// discovery on the new identifier (the RP will perform the necessary verification server-side).
+				if (!window.dnoa_internal.discoveryResults[box.value]) {
+					// We must make sure that the only service endpoint from the earlier discovery that
+					// is copied over is the one that sent the assertion just now. Deep clone, then strip
+					// out the other SEPs.
+					window.dnoa_internal.discoveryResults[box.value] = discoveryResult.cloneWithOneServiceEndpoint(serviceEndpoint);
+				}
+			}
+			box.dnoi_internal.setVisualCue('authenticated', parsedPositiveAssertion.endpoint, parsedPositiveAssertion.claimedIdentifier);
+			if (box.dnoi_internal.onauthenticated) {
+				box.dnoi_internal.onauthenticated(box, extensionResponses);
+			}
+
+			if (box.dnoi_internal.submitPending) {
+				// We submit the form BEFORE resetting the submitPending so
+				// the submit handler knows we've already tried this route.
+				if (box.dnoi_internal.submitPending == true) {
+					box.parentForm.submit();
+				} else {
+					box.dnoi_internal.submitPending.click();
+				}
+
+				box.dnoi_internal.submitPending = null;
+			} else {
+				// as long as this is a fresh auth response, postback to the server if configured to do so.
+				if (!state.deserialized) {
+					// this function is a no-op if the control's AutoPostback property is set to false.
+					postback();
+				}
+			}
+		}
+	});
+
+	window.dnoa_internal.addAuthFailed(function(discoveryResult, serviceEndpoint, background) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			box.dnoi_internal.submitPending = null;
+			if (!serviceEndpoint) { // if the last service endpoint just turned the user down
+				box.dnoi_internal.displayLoginButton(discoveryResult);
+			}
+		}
+	});
+
+	window.dnoa_internal.addAuthCleared(function(discoveryResult, serviceEndpoint) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			if (!discoveryResult.findSuccessfulRequest()) {
+				box.dnoi_internal.displayLoginButton(discoveryResult);
+			}
+		}
+	});
+
+	box.dnoi_internal.displayLoginButton = function(discoveryResult) {
 		trace('No asynchronous authentication attempt is in progress.  Display setup view.');
 		var providers = new Array();
 		for (var i = 0; i < discoveryResult.length; i++) {
@@ -416,52 +457,16 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.setVisualCue('setup', null, null, providers);
 	};
 
-	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint, extensionResponses, deserialized) {
-		// visual cue that auth was successful
-		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
-		box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
+	/*****************************************
+	* Flow
+	*****************************************/
 
-		// If the OP doesn't support delegation, "correct" the identifier the user entered
-		// so he realizes his identity didn't stick.  But don't change out OP Identifiers.
-		if (discoveryResult.claimedIdentifier && discoveryResult.claimedIdentifier != parsedPositiveAssertion.claimedIdentifier) {
-			box.value = parsedPositiveAssertion.claimedIdentifier;
-			box.lastDiscoveredIdentifier = box.value;
-
-			// Also inject a fake discovery result for this new identifier to keep the UI from performing
-			// discovery on the new identifier (the RP will perform the necessary verification server-side).
-			if (!window.dnoa_internal.discoveryResults[box.value]) {
-				// We must make sure that the only service endpoint from the earlier discovery that
-				// is copied over is the one that sent the assertion just now. Deep clone, then strip
-				// out the other SEPs.
-				window.dnoa_internal.discoveryResults[box.value] = discoveryResult.cloneWithOneServiceEndpoint(respondingEndpoint);
-			}
-		}
-		box.dnoi_internal.setVisualCue('authenticated', parsedPositiveAssertion.endpoint, parsedPositiveAssertion.claimedIdentifier);
-		if (box.dnoi_internal.onauthenticated) {
-			box.dnoi_internal.onauthenticated(box, extensionResponses);
-		}
-
-		if (box.dnoi_internal.submitPending) {
-			// We submit the form BEFORE resetting the submitPending so
-			// the submit handler knows we've already tried this route.
-			if (box.dnoi_internal.submitPending == true) {
-				box.parentForm.submit();
-			} else {
-				box.dnoi_internal.submitPending.click();
-			}
-
-			box.dnoi_internal.submitPending = null;
-		} else {
-			// as long as this is a fresh auth response, postback to the server if configured to do so.
-			if (!deserialized) {
-				// this function is a no-op if the control's AutoPostback property is set to false.
-				postback();
-			}
-		}
-	};
-
-	box.dnoi_internal.onAuthFailed = function() {
-		box.dnoi_internal.submitPending = null;
+	/// <summary>Called to initiate discovery on some identifier.</summary>
+	box.dnoi_internal.performDiscovery = function() {
+		box.dnoi_internal.authenticationIFrames.closeFrames();
+		box.lastDiscoveredIdentifier = box.value;
+		var openid = new window.OpenIdIdentifier(box.value);
+		openid.discover();
 	};
 
 	box.onblur = function(event) {
@@ -502,7 +507,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			trace('typist discovery candidate', 'gray');
 			if (identifierSanityCheck(box.value)) {
 				trace('typist discovery begun', 'gray');
-				box.dnoi_internal.performDiscovery(box.value);
+				box.dnoi_internal.performDiscovery();
 			} else {
 				trace('typist discovery canceled due to incomplete identifier.', 'gray');
 			}
@@ -577,18 +582,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	// if there isn't a prior authentication that we're about to deserialize.
 	if (box.value.length > 0 && findOrCreateHiddenField().value.length == 0) {
 		trace('jumpstarting discovery on ' + box.value + ' because it was preset.');
-		box.dnoi_internal.performDiscovery(box.value);
+		box.dnoi_internal.performDiscovery();
 	}
 	
 	// Restore a previously achieved state (from pre-postback) if it is given.
-	window.dnoa_internal.deserializePreviousAuthentication(
-		findOrCreateHiddenField().value,
-		function(discoveryResult, respondingEndpoint, extensionResponses) { box.dnoi_internal.onAuthSuccess(discoveryResult, respondingEndpoint, extensionResponses, true); });
-
-	// public methods
-	box.login = function(onSuccess, onFailure) {
-		box.dnoi_internal.performDiscovery(box.value, onSuccess, onFailure);
-	};
+	window.dnoa_internal.deserializePreviousAuthentication(findOrCreateHiddenField().value);
 
 	// public events
 	// box.onStateChanged(state)
