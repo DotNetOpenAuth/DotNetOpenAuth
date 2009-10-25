@@ -56,7 +56,7 @@ window.dnoa_internal.registerEvent = function(name) {
 };
 
 window.dnoa_internal.registerEvent('DiscoveryStarted'); // (identifier) - fired when a discovery callback is ACTUALLY made to the RP
-window.dnoa_internal.registerEvent('DiscoverySuccess'); // (identifier, discoveryResult) - fired after a discovery callback is returned from the RP successfully
+window.dnoa_internal.registerEvent('DiscoverySuccess'); // (identifier, discoveryResult) - fired after a discovery callback is returned from the RP successfully or a cached result is retrieved
 window.dnoa_internal.registerEvent('DiscoveryFailed'); // (identifier, message) - fired after a discovery callback fails
 window.dnoa_internal.registerEvent('AuthStarted'); // (discoveryResult, serviceEndpoint, { background: true|false })
 window.dnoa_internal.registerEvent('AuthFailed'); // (discoveryResult, serviceEndpoint, { background: true|false }) - fired for each individual ServiceEndpoint, and once at last with serviceEndpoint==null if all failed
@@ -202,12 +202,17 @@ window.OpenIdIdentifier = function(identifier) {
 		};
 
 		if (window.dnoa_internal.discoveryResults[identifier]) {
-			trace("We've already discovered " + identifier + " so we're skipping it this time.");
+			trace("We've already discovered " + identifier + " so we're using the cached version.");
 			if (onDiscoverSuccess) {
 				onDiscoverSuccess(window.dnoa_internal.discoveryResults[identifier]);
 			}
+
+			// In this special case, we never fire the DiscoveryStarted event.
+			window.dnoa_internal.fireDiscoverySuccess(identifier, window.dnoa_internal.discoveryResults[identifier]);
 			return;
 		};
+
+		window.dnoa_internal.fireDiscoveryStarted(identifier);
 
 		if (!window.dnoa_internal.discoveryInProgress[identifier]) {
 			trace('starting discovery on ' + identifier);
@@ -216,7 +221,6 @@ window.OpenIdIdentifier = function(identifier) {
 				onFailure: [onDiscoverFailure]
 			};
 			window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);
-			window.dnoa_internal.fireDiscoveryStarted(identifier);
 		} else {
 			trace('Discovery on ' + identifier + ' already started. Registering an additional callback.');
 			window.dnoa_internal.discoveryInProgress[identifier].onSuccess.push(onDiscoverSuccess);
@@ -452,6 +456,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 				thisServiceEndpoint.successReceived = new Date();
 				thisServiceEndpoint.claimedIdentifier = authUri.getQueryArgValue('openid.claimed_id');
 				thisServiceEndpoint.response = authUri;
+				thisServiceEndpoint.extensionResponses = extensionResponses;
 				thisDiscoveryResult.abortAll();
 				if (thisDiscoveryResult.onAuthSuccess) {
 					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint, extensionResponses);
@@ -481,6 +486,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 
 		this.clear = function() {
 			thisServiceEndpoint.result = null;
+			thisServiceEndpoint.extensionResponses = null;
 			thisServiceEndpoint.successReceived = null;
 			thisServiceEndpoint.claimedIdentifier = null;
 			thisServiceEndpoint.response = null;
@@ -585,13 +591,21 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		if (!frameManager) {
 			throw "No frameManager specified.";
 		}
-		if (thisDiscoveryResult.findSuccessfulRequest() != null) {
-			onAuthSuccess(thisDiscoveryResult, thisDiscoveryResult.findSuccessfulRequest());
+		var priorSuccessRespondingEndpoint = thisDiscoveryResult.findSuccessfulRequest();
+		if (priorSuccessRespondingEndpoint) {
+			// In this particular case, we do not fire an AuthStarted event.
+			window.dnoa_internal.fireAuthSuccess(thisDiscoveryResult, priorSuccessRespondingEndpoint, priorSuccessRespondingEndpoint.extensionResponses, { background: true });
+			if (onAuthSuccess) {
+				onAuthSuccess(thisDiscoveryResult, priorSuccessRespondingEndpoint);
+			}
 		} else {
 			thisDiscoveryResult.frameManager = frameManager;
 			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
 			thisDiscoveryResult.onAuthFailed = onAuthFailed;
 			thisDiscoveryResult.onLastAttemptFailed = onLastAuthFailed;
+			// Notify listeners that general authentication is beginning.  Individual ServiceEndpoints
+			// will fire their own events as each of them begin their iframe 'job'.
+			window.dnoa_internal.fireAuthStarted(thisDiscoveryResult, null, { background: true });
 			if (thisDiscoveryResult.length > 0) {
 				for (var i = 0; i < thisDiscoveryResult.length; i++) {
 					thisDiscoveryResult.frameManager.enqueueWork(thisDiscoveryResult[i].loginBackgroundJob, timeout);
