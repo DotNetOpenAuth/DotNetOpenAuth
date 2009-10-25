@@ -12,6 +12,10 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<link type="text/css" href="theme/ui.all.css" rel="Stylesheet" />
 	<link href="styles/loginpopup.css" rel="stylesheet" type="text/css" />
+<script>
+	//window.openid_visible_iframe = true; // causes the hidden iframe to show up
+	//window.openid_trace = true; // causes lots of messages
+</script>
 </head>
 <body>
 <% if (Request.Url.IsLoopback) { %>
