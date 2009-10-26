@@ -578,7 +578,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			foreach (var req in requests) {
 				if (this.IsPopupAppropriate(req)) {
 					// Inform ourselves in return_to that we're in a popup.
-					req.SetCallbackArgument(UIPopupCallbackKey, "1");
+					req.SetUntrustedCallbackArgument(UIPopupCallbackKey, "1");
 
 					if (req.Provider.IsExtensionSupported<UIRequest>()) {
 						// Inform the OP that we'll be using a popup window consistent with the UI extension.
@@ -588,14 +588,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						// This is so the window can be made the correct size for the extension.
 						// If the OP doesn't advertise support for the extension, the javascript will use
 						// a bigger popup window.
-						req.SetCallbackArgument(PopupUISupportedJSHint, "1");
+						req.SetUntrustedCallbackArgument(PopupUISupportedJSHint, "1");
 					}
 				}
 
 				// Add state that needs to survive across the redirect.
 				if (!this.Stateless) {
-					req.SetCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
-					req.SetCallbackArgument(ReturnToReceivingControlId, this.ClientID);
+					req.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
+					req.SetUntrustedCallbackArgument(ReturnToReceivingControlId, this.ClientID);
 				}
 
 				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
