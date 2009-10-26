@@ -440,7 +440,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			initScript.AppendLine(CallbackJSFunctionAsync + " = " + this.GetJsCallbackConvenienceFunction(true));
 			initScript.AppendLine(CallbackJSFunction + " = " + this.GetJsCallbackConvenienceFunction(false));
-			initScript.AppendLine(MaxPositiveAssertionLifetimeJsName + " = " + Math.Min(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds).ToString() + ";");
+
+			// Positive assertions can last no longer than this library is willing to consider them valid,
+			// and when they come with OP private associations they last no longer than the OP is willing
+			// to consider them valid.  We assume the OP will hold them valid for at least five minutes.
+			double assertionLifetimeInMilliseconds = Math.Min(TimeSpan.FromMinutes(5).TotalMilliseconds, Math.Min(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds));
+			initScript.AppendLine(MaxPositiveAssertionLifetimeJsName + " = " + assertionLifetimeInMilliseconds.ToString(CultureInfo.InvariantCulture) + ";");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
