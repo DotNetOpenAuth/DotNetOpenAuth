@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="key">The parameter name.</param>
 		/// <param name="value">The value of the argument.  Must not be null.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
 		/// security-sensitive data should be stored using this method.</para>
 		/// 	<para>The value stored here can be retrieved using
 		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
