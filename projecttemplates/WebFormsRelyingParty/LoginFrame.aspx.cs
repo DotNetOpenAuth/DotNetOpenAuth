@@ -65,12 +65,17 @@ document.getElementById('topWindowUrl').value = window.parent.location.href;
 			bool persistentCookie = false;
 			if (string.IsNullOrEmpty(this.Request.QueryString["ReturnUrl"])) {
 				FormsAuthentication.SetAuthCookie(openidToken.ClaimedIdentifier, persistentCookie);
-				Uri topWindowUri = new Uri(topWindowUrl.Value);
-				string returnUrl = HttpUtility.ParseQueryString(topWindowUri.Query)["ReturnUrl"];
-				if (string.IsNullOrEmpty(returnUrl)) {
-					Response.Redirect(topWindowUrl.Value);
+				if (!string.IsNullOrEmpty(topWindowUrl.Value)) {
+					Uri topWindowUri = new Uri(topWindowUrl.Value);
+					string returnUrl = HttpUtility.ParseQueryString(topWindowUri.Query)["ReturnUrl"];
+					if (string.IsNullOrEmpty(returnUrl)) {
+						Response.Redirect(topWindowUrl.Value);
+					} else {
+						Response.Redirect(returnUrl);
+					}
 				} else {
-					Response.Redirect(returnUrl);
+					// This happens for unsolicited assertions.
+					Response.Redirect("~/");
 				}
 			} else {
 				FormsAuthentication.RedirectFromLoginPage(openidToken.ClaimedIdentifier, persistentCookie);
