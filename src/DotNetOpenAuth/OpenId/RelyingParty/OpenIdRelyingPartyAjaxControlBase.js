@@ -339,6 +339,8 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			window.dnoa_internal.fireAuthStarted(thisDiscoveryResult, thisServiceEndpoint, { background: false });
 			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
 			thisDiscoveryResult.onAuthFailed = onAuthFailed;
+			var chromeHeight = 55; // estimated height of browser title bar and location bar
+			var bottomMargin = 45; // estimated bottom space on screen likely to include a task bar
 			var width = 1000;
 			var height = 600;
 			if (thisServiceEndpoint.setup.getQueryArgValue("openid.return_to").indexOf("dnoa.popupUISupported") >= 0) {
@@ -350,7 +352,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			}
 
 			var left = (screen.width - width) / 2;
-			var top = (screen.height - height) / 2;
+			var top = (screen.height - bottomMargin - height - chromeHeight) / 2;
 			thisServiceEndpoint.popup = window.open(thisServiceEndpoint.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
 
 			// If the OP supports the UI extension it MAY close its own window
