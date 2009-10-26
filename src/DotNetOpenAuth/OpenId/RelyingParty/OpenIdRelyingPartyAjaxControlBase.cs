@@ -448,20 +448,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Configure each generated request.
 			int reqIndex = 0;
 			foreach (var req in requests) {
-				req.SetCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
+				req.SetUntrustedCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
 				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
-					req.SetCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, this.Identifier.OriginalString);
+					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, this.Identifier.OriginalString);
 				}
 
 				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
 				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
-				req.SetCallbackArgument(OPEndpointParameterName, req.Provider.Uri.AbsoluteUri);
-				req.SetCallbackArgument(ClaimedIdParameterName, (string)req.ClaimedIdentifier ?? string.Empty);
+				req.SetUntrustedCallbackArgument(OPEndpointParameterName, req.Provider.Uri.AbsoluteUri);
+				req.SetUntrustedCallbackArgument(ClaimedIdParameterName, (string)req.ClaimedIdentifier ?? string.Empty);
 
 				// Inform ourselves in return_to that we're in a popup or iframe.
-				req.SetCallbackArgument(UIPopupCallbackKey, "1");
+				req.SetUntrustedCallbackArgument(UIPopupCallbackKey, "1");
 
 				// We append a # at the end so that if the OP happens to support it,
 				// the OpenID response "query string" is appended after the hash rather than before, resulting in the
