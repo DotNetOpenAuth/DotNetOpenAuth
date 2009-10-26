@@ -100,7 +100,6 @@ $(function() {
 				li.authenticationIFrames = new window.dnoa_internal.FrameManager(1/*throttle*/);
 				var openid = new window.OpenIdIdentifier(li.id);
 				var authFrames = li.authenticationIFrames;
-				var liid = li.id;
 				li.loginBackground = function() {
 					openid.loginBackground(authFrames, null, null, backgroundTimeout);
 				};

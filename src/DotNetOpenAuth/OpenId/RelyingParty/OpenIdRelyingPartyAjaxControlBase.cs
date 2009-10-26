@@ -355,11 +355,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					discoveryResultBuilder.Length -= 1; // trim off last comma
 					discoveryResultBuilder.Append("]");
 				} else {
-					discoveryResultBuilder.Append("requests: new Array(),");
+					discoveryResultBuilder.Append("requests: [],");
 					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
 				}
 			} catch (ProtocolException ex) {
-				discoveryResultBuilder.Append("requests: new Array(),");
+				discoveryResultBuilder.Append("requests: [],");
 				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
 			}
 

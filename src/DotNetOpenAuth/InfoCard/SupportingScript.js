@@ -1,3 +1,4 @@
+/*jslint browser: true */
 document.infoCard = {
 	isSupported: function() {
 		/// <summary>
@@ -10,7 +11,7 @@ document.infoCard = {
 
 		var IEVer = -1;
 		if (navigator.appName == 'Microsoft Internet Explorer') {
-			if (new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null) {
+			if (new RegExp("MSIE ([0-9]{1,}[\\.0-9]{0,})").exec(navigator.userAgent) !== null) {
 				IEVer = parseFloat(RegExp.$1);
 			}
 		}
@@ -19,13 +20,13 @@ document.infoCard = {
 		if (IEVer >= 7) {
 			var embed = document.createElement("object");
 			embed.type = "application/x-informationcard";
-			return !(embed.issuerPolicy === undefined) && embed.isInstalled;
+			return embed.issuerPolicy !== undefined && embed.isInstalled;
 		}
 
 		// not IE (any version)
 		if (IEVer < 0 && navigator.mimeTypes && navigator.mimeTypes.length) {
 			// check to see if there is a mimeType handler. 
-			x = navigator.mimeTypes['application/x-informationcard'];
+			var x = navigator.mimeTypes['application/x-informationcard'];
 			if (x && x.enabledPlugin) {
 				return true;
 			}
@@ -36,7 +37,7 @@ document.infoCard = {
 				event.initEvent("IdentitySelectorAvailable", true, true);
 				top.dispatchEvent(event);
 
-				if (top.IdentitySelectorAvailable == true) {
+				if (top.IdentitySelectorAvailable === true) {
 					return true;
 				}
 			}

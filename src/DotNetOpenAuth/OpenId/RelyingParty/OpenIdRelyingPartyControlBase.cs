@@ -932,7 +932,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Add a callback function that the popup window can call on this, the
 			// parent window, to pass back the authentication result.
-			startupScript.AppendLine("window.dnoa_internal = new Object();");
+			startupScript.AppendLine("window.dnoa_internal = {};");
 			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
 			startupScript.AppendLine("window.dnoa_internal.popupWindow = function() {");
 			startupScript.AppendFormat(
