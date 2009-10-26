@@ -56,7 +56,7 @@ window.dnoa_internal.registerEvent = function(name) {
 };
 
 window.dnoa_internal.registerEvent('DiscoveryStarted'); // (identifier) - fired when a discovery callback is ACTUALLY made to the RP
-window.dnoa_internal.registerEvent('DiscoverySuccess'); // (identifier, discoveryResult) - fired after a discovery callback is returned from the RP successfully or a cached result is retrieved
+window.dnoa_internal.registerEvent('DiscoverySuccess'); // (identifier, discoveryResult, { fresh: true|false }) - fired after a discovery callback is returned from the RP successfully or a cached result is retrieved
 window.dnoa_internal.registerEvent('DiscoveryFailed'); // (identifier, message) - fired after a discovery callback fails
 window.dnoa_internal.registerEvent('AuthStarted'); // (discoveryResult, serviceEndpoint, { background: true|false })
 window.dnoa_internal.registerEvent('AuthFailed'); // (discoveryResult, serviceEndpoint, { background: true|false }) - fired for each individual ServiceEndpoint, and once at last with serviceEndpoint==null if all failed
@@ -128,6 +128,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 	this.closeFrames = function() {
 		if (this.frames.length == 0) { return false; }
 		for (var i = 0; i < this.frames.length; i++) {
+			this.frames[i].src = "about:blank"; // doesn't have to exist.  Just stop its processing.
 			if (this.frames[i].parentNode) { this.frames[i].parentNode.removeChild(this.frames[i]); }
 		}
 		while (this.frames.length > 0) {
@@ -138,6 +139,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 	};
 
 	this.closeFrame = function(frame) {
+		frame.src = "about:blank"; // doesn't have to exist.  Just stop its processing.
 		if (frame.parentNode) { frame.parentNode.removeChild(frame); }
 		var removed = this.frames.remove(frame);
 		this.onJobCompleted();
@@ -167,7 +169,7 @@ window.OpenIdIdentifier = function(identifier) {
 			discoveryResult = new window.dnoa_internal.DiscoveryResult(identifier, discoveryResult);
 			window.dnoa_internal.discoveryResults[identifier] = discoveryResult;
 
-			window.dnoa_internal.fireDiscoverySuccess(identifier, discoveryResult);
+			window.dnoa_internal.fireDiscoverySuccess(identifier, discoveryResult, { fresh: true });
 
 			// Clear our "in discovery" state and fire callbacks
 			var callbacks = window.dnoa_internal.discoveryInProgress[identifier];
@@ -205,7 +207,7 @@ window.OpenIdIdentifier = function(identifier) {
 			trace("We've already discovered " + identifier + " so we're using the cached version.");
 
 			// In this special case, we never fire the DiscoveryStarted event.
-			window.dnoa_internal.fireDiscoverySuccess(identifier, window.dnoa_internal.discoveryResults[identifier]);
+			window.dnoa_internal.fireDiscoverySuccess(identifier, window.dnoa_internal.discoveryResults[identifier], { fresh: false });
 
 			if (onDiscoverSuccess) {
 				onDiscoverSuccess(window.dnoa_internal.discoveryResults[identifier]);

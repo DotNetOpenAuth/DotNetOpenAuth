@@ -197,7 +197,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.loginButton = box.dnoi_internal.createLoginButton(providers);
 
 			box.dnoi_internal.claimedIdentifier = null;
-			window.status = "Authentication requires setup.";
+			window.status = "Authentication requires user interaction.";
 		} else if (state == "failed") {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.dnoi_internal.retryButton.style.visibility = 'visible';
@@ -349,8 +349,8 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 	});
 
-	window.dnoa_internal.addDiscoverySuccess(function(identifier, discoveryResult) {
-		if (identifier == box.value) {
+	window.dnoa_internal.addDiscoverySuccess(function(identifier, discoveryResult, state) {
+		if (identifier == box.value && state.fresh) {
 			// Start pre-fetching the OP favicons
 			for (var i = 0; i < discoveryResult.length; i++) {
 				var favicon = box.dnoi_internal.deriveOPFavIcon(discoveryResult[i].endpoint);
