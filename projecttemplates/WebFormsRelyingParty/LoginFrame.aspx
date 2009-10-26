@@ -49,7 +49,7 @@
 		</rp:OpenIdButtonPanel>
 		<asp:HiddenField runat="server" ID="topWindowUrl" />
 		<asp:Panel ID="errorPanel" runat="server" EnableViewState="false" Visible="false" ForeColor="Red">
-			Oops. Something went wrong while logging you in. Trying again may work. <a href="javascript:$('#errorMessage').show()">
+			Oops. Something went wrong while logging you in. Trying again may work. <a href="#" onclick="$('#errorMessage').show()">
 				What went wrong?</a>
 			<span id="errorMessage" style="display: none">
 				<asp:Label ID="errorMessageLabel" runat="server" Text="Login canceled." />
