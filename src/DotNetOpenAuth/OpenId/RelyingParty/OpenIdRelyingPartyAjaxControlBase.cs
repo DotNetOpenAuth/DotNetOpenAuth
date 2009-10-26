@@ -322,7 +322,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (this.AuthenticationResponse != null && !this.AuthenticationProcessedAlready) {
 					// Only process messages targeted at this control.
 					// Note that Stateless mode causes no receiver to be indicated.
-					string receiver = this.AuthenticationResponse.GetCallbackArgument(ReturnToReceivingControlId);
+					string receiver = this.AuthenticationResponse.GetUntrustedCallbackArgument(ReturnToReceivingControlId);
 					if (receiver == null || receiver == this.ClientID) {
 						this.ProcessResponse(this.AuthenticationResponse);
 						this.AuthenticationProcessedAlready = true;
