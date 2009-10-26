@@ -433,10 +433,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		}
 	});
 
-	window.dnoa_internal.addAuthFailed(function(discoveryResult, serviceEndpoint, background) {
+	window.dnoa_internal.addAuthFailed(function(discoveryResult, serviceEndpoint, state) {
 		if (discoveryResult.userSuppliedIdentifier == box.value) {
 			box.dnoi_internal.submitPending = null;
-			if (!serviceEndpoint) { // if the last service endpoint just turned the user down
+			if (!serviceEndpoint || !state.background) { // if the last service endpoint just turned the user down
 				box.dnoi_internal.displayLoginButton(discoveryResult);
 			}
 		}
