@@ -353,7 +353,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	});
 
 	window.dnoa_internal.addDiscoverySuccess(function(identifier, discoveryResult, state) {
-		if (identifier == box.value && state.fresh) {
+		if (identifier == box.value && (box.dnoi_internal.state == 'discovering' || !box.dnoi_internal.state)) {
 			// Start pre-fetching the OP favicons
 			for (var i = 0; i < discoveryResult.length; i++) {
 				var favicon = box.dnoi_internal.deriveOPFavIcon(discoveryResult[i].endpoint);
