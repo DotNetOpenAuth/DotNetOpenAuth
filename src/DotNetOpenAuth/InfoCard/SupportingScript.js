@@ -1,6 +1,7 @@
-/*jslint browser: true */
+/*jslint white: true, onevar: true, browser: true, undef: true, nomen: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
+"use strict";
 document.infoCard = {
-	isSupported: function() {
+	isSupported: function () {
 		/// <summary>
 		/// Determines if information cards are supported by the 
 		/// browser.
@@ -8,9 +9,10 @@ document.infoCard = {
 		/// <returns>
 		/// true-if the browser supports information cards.
 		///</returns>
+		var IEVer, embed, x, event;
 
-		var IEVer = -1;
-		if (navigator.appName == 'Microsoft Internet Explorer') {
+		IEVer = -1;
+		if (navigator.appName === 'Microsoft Internet Explorer') {
 			if (new RegExp("MSIE ([0-9]{1,}[\\.0-9]{0,})").exec(navigator.userAgent) !== null) {
 				IEVer = parseFloat(RegExp.$1);
 			}
@@ -18,7 +20,7 @@ document.infoCard = {
 
 		// Look for IE 7+. 
 		if (IEVer >= 7) {
-			var embed = document.createElement("object");
+			embed = document.createElement("object");
 			embed.type = "application/x-informationcard";
 			return embed.issuerPolicy !== undefined && embed.isInstalled;
 		}
@@ -26,14 +28,14 @@ document.infoCard = {
 		// not IE (any version)
 		if (IEVer < 0 && navigator.mimeTypes && navigator.mimeTypes.length) {
 			// check to see if there is a mimeType handler. 
-			var x = navigator.mimeTypes['application/x-informationcard'];
+			x = navigator.mimeTypes['application/x-informationcard'];
 			if (x && x.enabledPlugin) {
 				return true;
 			}
 
 			// check for the IdentitySelector event handler is there. 
 			if (document.addEventListener) {
-				var event = document.createEvent("Events");
+				event = document.createEvent("Events");
 				event.initEvent("IdentitySelectorAvailable", true, true);
 				top.dispatchEvent(event);
 
@@ -42,13 +44,14 @@ document.infoCard = {
 				}
 			}
 		}
-		
+
 		return false;
 	},
 
-	activate: function(selectorId, hiddenFieldName) {
-		var selector = document.getElementById(selectorId);
-		var hiddenField = document.getElementsByName(hiddenFieldName)[0];
+	activate: function (selectorId, hiddenFieldName) {
+		var selector, hiddenField;
+		selector = document.getElementById(selectorId);
+		hiddenField = document.getElementsByName(hiddenFieldName)[0];
 		try {
 			hiddenField.value = selector.value;
 		} catch (e) {
@@ -72,7 +75,7 @@ document.infoCard = {
 		}
 	},
 
-	showStatic: function(divName) {
+	showStatic: function (divName) {
 		var div = document.getElementById(divName);
 		if (div) {
 			div.style.visibility = 'visible';
@@ -96,26 +99,26 @@ document.infoCard = {
 	checkDynamic: function (controlDiv, unsupportedDiv) {
 		if (this.isSupported()) {
 			this.showDynamic(controlDiv);
-			if (unsupportedDiv != '') {
+			if (unsupportedDiv) {
 				this.hideDynamic(unsupportedDiv);
 			}
 		} else {
 			this.hideDynamic(controlDiv);
-			if (unsupportedDiv != '') {
+			if (unsupportedDiv) {
 				this.showDynamic(unsupportedDiv);
 			}
 		}
 	},
 
-	checkStatic: function(controlDiv, unsupportedDiv) {
+	checkStatic: function (controlDiv, unsupportedDiv) {
 		if (this.isSupported()) {
 			this.showStatic(controlDiv);
-			if (unsupportedDiv != '') {
+			if (unsupportedDiv) {
 				this.hideStatic(unsupportedDiv);
 			}
 		} else {
 			this.hideStatic(controlDiv);
-			if (unsupportedDiv != '') {
+			if (unsupportedDiv) {
 				this.showDynamic(unsupportedDiv);
 			}
 		}
