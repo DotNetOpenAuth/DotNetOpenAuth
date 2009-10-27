@@ -8,7 +8,7 @@
 <body>
 	<form id="form1" runat="server">
 	<div>
-		This is the specially-priviledged Admin area. You can only reach here if you are
+		This is the specially-privileged Admin area. You can only reach here if you are
 		a member of the Admin role.
 	</div>
 	</form>
