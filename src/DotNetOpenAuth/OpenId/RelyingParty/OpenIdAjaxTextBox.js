@@ -551,7 +551,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 			var newValue = box.value;
 			if (e.keyCode == 13) {
-				discover();
+				if (box.dnoi_internal.state == 'setup') {
+					box.dnoi_internal.loginButton.click();
+				} else {
+					discover();
+				}
 			} else {
 				if (lastValue != newValue && newValue != box.lastDiscoveredIdentifier) {
 					box.dnoi_internal.setVisualCue();
