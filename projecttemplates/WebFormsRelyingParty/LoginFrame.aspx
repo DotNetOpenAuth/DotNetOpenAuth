@@ -36,17 +36,17 @@
 		<p>
 			Login with an account you already use!
 		</p>
-		<rp:OpenIdButtonPanel runat="server" ID="openIdButtonPanel" OnLoggedIn="openIdButtonPanel_LoggedIn"
-			OnFailed="openIdButtonPanel_Failed" OnCanceled="openIdButtonPanel_Failed" OnReceivedToken="openIdButtonPanel_ReceivedToken"
-			OnTokenProcessingError="openIdButtonPanel_TokenProcessingError">
-			<Providers>
-				<rp:ProviderInfo OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
-				<rp:ProviderInfo OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
-				<rp:ProviderInfo OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />
-				<rp:ProviderInfo OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />
-				<rp:ProviderInfo Image="images/openid.gif" />
-			</Providers>
-		</rp:OpenIdButtonPanel>
+		<rp:OpenIdSelector runat="server" ID="openIdSelector" OnLoggedIn="openIdSelector_LoggedIn"
+			OnFailed="openIdSelector_Failed" OnCanceled="openIdSelector_Failed" OnReceivedToken="openIdSelector_ReceivedToken"
+			OnTokenProcessingError="openIdSelector_TokenProcessingError">
+			<Buttons>
+				<rp:SelectorButton OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
+				<rp:SelectorButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
+				<rp:SelectorButton OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />
+				<rp:SelectorButton OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />
+				<rp:SelectorButton Image="images/openid.gif" />
+			</Buttons>
+		</rp:OpenIdSelector>
 		<asp:HiddenField runat="server" ID="topWindowUrl" />
 		<asp:Panel ID="errorPanel" runat="server" EnableViewState="false" Visible="false" ForeColor="Red">
 			Oops. Something went wrong while logging you in. Trying again may work. <a href="#" onclick="$('#errorMessage').show()">

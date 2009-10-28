@@ -346,4 +346,7 @@ Discovered endpoint info:
   <data name="HeadTagMustIncludeRunatServer" xml:space="preserve">
     <value>The HTML head tag must include runat="server".</value>
   </data>
+  <data name="PropertyNotSet" xml:space="preserve">
+    <value>The {0} property must be set first.</value>
+  </data>
 </root>

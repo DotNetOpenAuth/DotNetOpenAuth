@@ -29,7 +29,7 @@ namespace WebFormsRelyingParty {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdButtonPanel openIdButtonPanel;
+        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector openIdButtonPanel;
         
         /// <summary>
         /// topWindowUrl control.

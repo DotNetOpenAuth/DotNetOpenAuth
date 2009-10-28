@@ -1,11 +1,11 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdButtonPanel.cs" company="Andrew Arnott">
+// <copyright file="OpenIdSelector.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdButtonPanel.EmbeddedScriptResourceName, "text/javascript")]
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdButtonPanel.EmbeddedStylesheetResourceName, "text/css")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName, "text/javascript")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName, "text/css")]
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
@@ -25,18 +25,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.InfoCard;
 	using DotNetOpenAuth.Messaging;
 
-	[ToolboxData("<{0}:OpenIdButtonPanel runat=\"server\"></{0}:OpenIdButtonPanel>")]
+	/// <summary>
+	/// An ASP.NET control that provides a user-friendly way of logging into a web site using OpenID.
+	/// </summary>
+	[ToolboxData("<{0}:OpenIdSelector runat=\"server\"></{0}:OpenIdSelector>")]
 	[ParseChildren(true), PersistChildren(false)]
-	public class OpenIdButtonPanel : OpenIdRelyingPartyAjaxControlBase {
+	public class OpenIdSelector : OpenIdRelyingPartyAjaxControlBase {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdButtonPanel.js file.
 		/// </summary>
-		internal const string EmbeddedScriptResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdButtonPanel.js";
+		internal const string EmbeddedScriptResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdSelector.js";
 
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdButtonPanel.css file.
 		/// </summary>
-		internal const string EmbeddedStylesheetResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdButtonPanel.css";
+		internal const string EmbeddedStylesheetResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdSelector.css";
 
 		#region ViewState keys
 
@@ -87,9 +90,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private InfoCardSelector infoCardSelector;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdButtonPanel"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdSelector"/> class.
 		/// </summary>
-		public OpenIdButtonPanel() {
+		public OpenIdSelector() {
 		}
 
 		/// <summary>
@@ -112,15 +115,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set { this.ViewState[AuthenticatedAsToolTipViewStateKey] = value ?? string.Empty; }
 		}
 
+		/// <summary>
+		/// Gets the collection of buttons this selector should render to the browser.
+		/// </summary>
 		[PersistenceMode(PersistenceMode.InnerProperty)]
-		public Collection<ProviderInfo> Providers {
+		public Collection<SelectorButton> Buttons {
 			get {
 				if (this.ViewState[ProvidersViewStateKey] == null) {
-					var providers = new Collection<ProviderInfo>();
+					var providers = new Collection<SelectorButton>();
 					this.ViewState[ProvidersViewStateKey] = providers;
 					return providers;
 				} else {
-					return (Collection<ProviderInfo>)this.ViewState[ProvidersViewStateKey];
+					return (Collection<SelectorButton>)this.ViewState[ProvidersViewStateKey];
 				}
 			}
 		}
@@ -200,6 +206,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
+			foreach (var button in this.Buttons) {
+				button.EnsureValid();
+			}
+
 			var css = new HtmlLink();
 			css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
 			css.Attributes["rel"] = "stylesheet";
@@ -208,7 +218,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
 
 			// Import the .js file where most of the code is.
-			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdButtonPanel), EmbeddedScriptResourceName);
+			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdSelector), EmbeddedScriptResourceName);
 
 			// Provide javascript with a way to post the login assertion.
 			const string PostLoginAssertionMethodName = "postLoginAssertion";
@@ -226,7 +236,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.positiveAssertionField.ClientID);
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
 
-			this.PreloadDiscovery(this.Providers.Select(op => op.OPIdentifier).Where(id => id != null));
+			this.PreloadDiscovery(this.Buttons.Select(op => op.OPIdentifier).Where(id => id != null));
 		}
 
 		/// <summary>
@@ -237,7 +247,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIdProviders");
 			writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 
-			foreach (var op in this.Providers) {
+			foreach (var op in this.Buttons) {
 				writer.AddAttribute(HtmlTextWriterAttribute.Id, (string)op.OPIdentifier ?? "OpenIDButton");
 				writer.AddAttribute(HtmlTextWriterAttribute.Class, op.OPIdentifier != null ? "OPButton" : "OpenIDButton");
 				writer.RenderBeginTag(HtmlTextWriterTag.Li);
@@ -350,15 +360,5 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void InfoCardSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
 			this.OnTokenProcessingError(e);
 		}
-	}
-
-	public class ProviderInfo {
-		public ProviderInfo() {
-		}
-
-		[TypeConverter(typeof(IdentifierConverter))]
-		public Identifier OPIdentifier { get; set; }
-
-		public string Image { get; set; }
 	}
 }

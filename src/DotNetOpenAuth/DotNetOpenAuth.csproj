@@ -481,7 +481,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdButtonPanel.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
@@ -514,6 +514,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
     <Compile Include="OpenId\RelyingParty\PrivateSecretManager.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
     <Compile Include="OpenId\RelyingParty\ServiceEndpoint.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
@@ -647,10 +648,10 @@ http://opensource.org/licenses/ms-pl.html
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdButtonPanel.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdButtonPanel.css" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />

@@ -25,22 +25,22 @@
 			}
 		}
 
-		protected void openIdButtonPanel_LoggedIn(object sender, OpenIdEventArgs e) {
+		protected void openIdSelector_LoggedIn(object sender, OpenIdEventArgs e) {
 			this.LoginUser(e.ClaimedIdentifier, e.Response.FriendlyIdentifierForDisplay, e.Response.GetExtension<ClaimsResponse>());
 		}
 
-		protected void openIdButtonPanel_ReceivedToken(object sender, DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs e) {
+		protected void openIdSelector_ReceivedToken(object sender, DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs e) {
 			this.LoginUser(AuthenticationToken.SynthesizeClaimedIdentifierFromInfoCard(e.Token.UniqueId), e.Token.SiteSpecificId, null);
 		}
 
-		protected void openIdButtonPanel_Failed(object sender, OpenIdEventArgs e) {
+		protected void openIdSelector_Failed(object sender, OpenIdEventArgs e) {
 			if (e.Response.Exception != null) {
-				errorMessageLabel.Text = e.Response.Exception.Message;
+				this.errorMessageLabel.Text = e.Response.Exception.Message;
 			}
 			this.errorPanel.Visible = true;
 		}
 
-		protected void openIdButtonPanel_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
+		protected void openIdSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
 			this.errorMessageLabel.Text = e.Exception.Message;
 			this.errorPanel.Visible = true;
 		}
