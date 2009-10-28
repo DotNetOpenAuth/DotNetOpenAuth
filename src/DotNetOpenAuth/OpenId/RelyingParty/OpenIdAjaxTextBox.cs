@@ -67,9 +67,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Property viewstate keys
 
 		/// <summary>
-		/// The viewstate key to use for storing the value of the <see cref="AutoPostback"/> property.
+		/// The viewstate key to use for storing the value of the <see cref="AutoPostBack"/> property.
 		/// </summary>
-		private const string AutoPostbackViewStateKey = "AutoPostback";
+		private const string AutoPostBackViewStateKey = "AutoPostback";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="Text"/> property.
@@ -167,18 +167,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RetryTextViewStateKey = "RetryText";
 
 		/// <summary>
-		/// The viewstate key to use for storing the value of the <see cref="DownloadYui"/> property.
+		/// The viewstate key to use for storing the value of the <see cref="DownloadYahooUILibrary"/> property.
 		/// </summary>
-		private const string DownloadYuiViewStateKey = "DownloadYui";
+		private const string DownloadYahooUILibraryViewStateKey = "DownloadYahooUILibrary";
 
 		#endregion
 
 		#region Property defaults
 
 		/// <summary>
-		/// The default value for the <see cref="AutoPostback"/> property.
+		/// The default value for the <see cref="AutoPostBack"/> property.
 		/// </summary>
-		private const bool AutoPostbackDefault = false;
+		private const bool AutoPostBackDefault = false;
 
 		/// <summary>
 		/// The default value for the <see cref="Columns"/> property.
@@ -256,9 +256,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RetryTextDefault = "RETRY";
 
 		/// <summary>
-		/// The default vlaue for the <see cref="DownloadYui"/> property.
+		/// The default vlaue for the <see cref="DownloadYahooUILibrary"/> property.
 		/// </summary>
-		private const bool DownloadYuiDefault = true;
+		private const bool DownloadYahooUILibraryDefault = true;
 
 		#endregion
 
@@ -334,19 +334,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		/// <summary>
 		/// Gets or sets a value indicating whether a postback is made to fire the
-		/// <see cref="LoggedIn"/> event as soon as authentication has completed
+		/// <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event as soon as authentication has completed
 		/// successfully.
 		/// </summary>
 		/// <value>
 		/// 	<c>true</c> if a postback should be made automatically upon authentication;
-		/// otherwise, <c>false</c> to delay the <see cref="LoggedIn"/> event from firing
-		/// at the server until a postback is made by some other control.
+		/// otherwise, <c>false</c> to delay the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> 
+		/// event from firing at the server until a postback is made by some other control.
 		/// </value>
-		[Bindable(true), Category(BehaviorCategory), DefaultValue(AutoPostbackDefault)]
+		[Bindable(true), Category(BehaviorCategory), DefaultValue(AutoPostBackDefault)]
 		[Description("Whether the LoggedIn event fires on the server as soon as authentication completes successfully.")]
-		public bool AutoPostback {
-			get { return (bool)(this.ViewState[AutoPostbackViewStateKey] ?? AutoPostbackDefault); }
-			set { this.ViewState[AutoPostbackViewStateKey] = value; }
+		public bool AutoPostBack {
+			get { return (bool)(this.ViewState[AutoPostBackViewStateKey] ?? AutoPostBackDefault); }
+			set { this.ViewState[AutoPostBackViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -569,11 +569,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// The split button brings in about 180KB of YUI javascript dependencies.
 		/// </remarks>
-		[Bindable(true), DefaultValue(DownloadYuiDefault), Category(BehaviorCategory)]
+		[Bindable(true), DefaultValue(DownloadYahooUILibraryDefault), Category(BehaviorCategory)]
 		[Description("Whether a split button will be used for the \"log in\" when the user provides an identifier that delegates to more than one Provider.")]
-		public bool DownloadYui {
-			get { return (bool)(this.ViewState[DownloadYuiViewStateKey] ?? DownloadYuiDefault); }
-			set { this.ViewState[DownloadYuiViewStateKey] = value; }
+		public bool DownloadYahooUILibrary {
+			get { return (bool)(this.ViewState[DownloadYahooUILibraryViewStateKey] ?? DownloadYahooUILibraryDefault); }
+			set { this.ViewState[DownloadYahooUILibraryViewStateKey] = value; }
 		}
 
 		#endregion
@@ -632,6 +632,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
 		/// </summary>
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Signature predefined.")]
 		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
 			this.RaisePostBackEvent(eventArgument);
 		}
@@ -663,7 +664,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
-			if (this.DownloadYui) {
+			if (this.DownloadYahooUILibrary) {
 				string yuiLoadScript = @"var loader = new YAHOO.util.YUILoader({
 	require: ['button', 'menu'],
 	loadOptional: false,
@@ -753,7 +754,7 @@ loader.insert();";
 		/// <summary>
 		/// When implemented by a class, signals the server control to notify the ASP.NET application that the state of the control has changed.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Predefined signature.")]
 		protected virtual void RaisePostDataChangedEvent() {
 			this.OnTextChanged();
 		}
@@ -762,6 +763,7 @@ loader.insert();";
 		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
 		/// </summary>
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
 		protected virtual void RaisePostBackEvent(string eventArgument) {
 		}
 
@@ -807,7 +809,7 @@ loader.insert();";
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationSucceededToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticatedAsToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationFailedToolTip),
-				this.AutoPostback ? Page.ClientScript.GetPostBackEventReference(this, null) : null,
+				this.AutoPostBack ? Page.ClientScript.GetPostBackEventReference(this, null) : null,
 				Environment.NewLine);
 
 			startupScript.AppendLine("</script>");
