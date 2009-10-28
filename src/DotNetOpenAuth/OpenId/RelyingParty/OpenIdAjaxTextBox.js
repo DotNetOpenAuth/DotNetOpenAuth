@@ -246,7 +246,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.isAuthenticated = function() {
 		var results = box.dnoi_internal.getUserSuppliedIdentifierResults();
-		return results !== null && results.findSuccessfulRequest() !== null;
+		return results && results.findSuccessfulRequest();
 	};
 
 	box.dnoi_internal.onSubmit = function() {
