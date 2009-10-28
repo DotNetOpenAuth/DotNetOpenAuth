@@ -166,10 +166,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			base.CreateChildControls();
 
 			this.infoCardSelector = new InfoCardSelector();
-			infoCardSelector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
-			infoCardSelector.ImageSize = InfoCardImageSize.Size60x42;
-			infoCardSelector.ReceivedToken += infoCardSelector_ReceivedToken;
-			infoCardSelector.TokenProcessingError += infoCardSelector_TokenProcessingError;
+			this.infoCardSelector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
+			this.infoCardSelector.ImageSize = InfoCardImageSize.Size60x42;
+			this.infoCardSelector.ReceivedToken += this.InfoCardSelector_ReceivedToken;
+			this.infoCardSelector.TokenProcessingError += this.InfoCardSelector_TokenProcessingError;
 			this.Controls.Add(this.infoCardSelector);
 
 			this.textBox = new OpenIdAjaxTextBox();
@@ -211,17 +211,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdButtonPanel), EmbeddedScriptResourceName);
 
 			// Provide javascript with a way to post the login assertion.
-			const string postLoginAssertionMethodName = "postLoginAssertion";
-			const string positiveAssertionParameterName = "positiveAssertion";
-			string script = string.Format(
-				CultureInfo.InvariantCulture,
-@"window.{2} = function({0}) {{
+			const string PostLoginAssertionMethodName = "postLoginAssertion";
+			const string PositiveAssertionParameterName = "positiveAssertion";
+			const string ScriptFormat = @"window.{2} = function({0}) {{
 	$('#{3}')[0].setAttribute('value', {0});
 	{1};
-}};",
-				positiveAssertionParameterName,
+}};";
+			string script = string.Format(
+				CultureInfo.InvariantCulture,
+				ScriptFormat,
+				PositiveAssertionParameterName,
 				this.Page.ClientScript.GetPostBackEventReference(this, null, false),
-				postLoginAssertionMethodName,
+				PostLoginAssertionMethodName,
 				this.positiveAssertionField.ClientID);
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
 
@@ -275,7 +276,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-				infoCardSelector.RenderControl(writer);
+				this.infoCardSelector.RenderControl(writer);
 
 				writer.RenderEndTag(); // </div>
 
@@ -334,7 +335,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs"/> instance containing the event data.</param>
-		private void infoCardSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
+		private void InfoCardSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
 			this.Page.Response.SetCookie(new HttpCookie("openid_identifier", "infocard") {
 				Path = this.Page.Request.ApplicationPath,
 			});
@@ -346,7 +347,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.TokenProcessingErrorEventArgs"/> instance containing the event data.</param>
-		private void infoCardSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
+		private void InfoCardSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
 			this.OnTokenProcessingError(e);
 		}
 	}
@@ -357,7 +358,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		[TypeConverter(typeof(IdentifierConverter))]
 		public Identifier OPIdentifier { get; set; }
-		
+
 		public string Image { get; set; }
 	}
 }

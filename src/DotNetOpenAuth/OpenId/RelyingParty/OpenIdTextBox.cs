@@ -545,6 +545,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
+		/// <param name="identifier">The identifier to create a request for.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any one of which may be
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.

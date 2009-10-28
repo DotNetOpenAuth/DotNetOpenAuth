@@ -629,9 +629,8 @@ namespace DotNetOpenAuth.InfoCard {
 		}
 
 		/// <summary>
-		/// Creates the info card selector &lt;object&gt; HTML tag.
+		/// Adds the javascript that adds the info card selector &lt;object&gt; HTML tag to the page.
 		/// </summary>
-		/// <returns>A control that renders to the &lt;object&gt; tag.</returns>
 		[Pure]
 		private void RegisterInfoCardSelectorObjectScript() {
 			string scriptFormat = @"{{

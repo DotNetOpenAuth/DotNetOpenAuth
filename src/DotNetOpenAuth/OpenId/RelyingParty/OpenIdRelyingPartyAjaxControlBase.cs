@@ -260,7 +260,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
 
 			this.Identifier = userSuppliedIdentifier;
-			this.discoveryResult = SerializeDiscoveryAsJson(this.Identifier);
+			this.discoveryResult = this.SerializeDiscoveryAsJson(this.Identifier);
 		}
 
 		/// <summary>
@@ -278,93 +278,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="identifiers">The identifiers to perform discovery on.</param>
 		protected void PreloadDiscovery(IEnumerable<Identifier> identifiers) {
-			string discoveryResults = SerializeDiscoveryAsJson(identifiers);
+			string discoveryResults = this.SerializeDiscoveryAsJson(identifiers);
 			string script = "window.dnoa_internal.loadPreloadedDiscoveryResults(" + discoveryResults + ");";
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyAjaxControlBase), this.ClientID, script, true);
-		}
-
-		/// <summary>
-		/// Serializes the discovery of multiple identifiers as a JSON object.
-		/// </summary>
-		/// <param name="identifiers">The identifiers to perform discovery on and create requests for.</param>
-		/// <returns>The serialized JSON object.</returns>
-		private string SerializeDiscoveryAsJson(IEnumerable<Identifier> identifiers) {
-			ErrorUtilities.VerifyArgumentNotNull(identifiers, "identifiers");
-			
-			// We prepare a JSON object with this interface:
-			// Array discoveryWrappers;
-			// Where each element in the above array has this interface:
-			// class discoveryWrapper {
-			//    string userSuppliedIdentifier;
-			//    jsonResponse discoveryResult; // contains result of call to SerializeDiscoveryAsJson(Identifier)
-			// }
-
-			StringBuilder discoveryResultBuilder = new StringBuilder();
-			discoveryResultBuilder.Append("[");
-			foreach(var identifier in identifiers) { // TODO: parallelize discovery on these identifiers
-				discoveryResultBuilder.Append("{");
-				discoveryResultBuilder.AppendFormat("userSuppliedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(identifier));
-				discoveryResultBuilder.AppendFormat("discoveryResult: {0}", SerializeDiscoveryAsJson(identifier));
-				discoveryResultBuilder.Append("},");
-			}
-
-			discoveryResultBuilder.Length -= 1; // trim last comma
-			discoveryResultBuilder.Append("]");
-			return discoveryResultBuilder.ToString();
-		}
-
-		/// <summary>
-		/// Serializes the results of discovery and the created auth requests as a JSON object
-		/// for the user agent to initiate.
-		/// </summary>
-		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <returns>The JSON string.</returns>
-		private string SerializeDiscoveryAsJson(Identifier identifier) {
-			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
-
-			// We prepare a JSON object with this interface:
-			// class jsonResponse {
-			//    string claimedIdentifier;
-			//    Array requests; // never null
-			//    string error; // null if no error
-			// }
-			// Each element in the requests array looks like this:
-			// class jsonAuthRequest {
-			//    string endpoint;  // URL to the OP endpoint
-			//    string immediate; // URL to initiate an immediate request
-			//    string setup;     // URL to initiate a setup request.
-			// }
-			StringBuilder discoveryResultBuilder = new StringBuilder();
-			discoveryResultBuilder.Append("{");
-			try {
-				IEnumerable<IAuthenticationRequest> requests = this.CreateRequests(identifier).CacheGeneratedResults();
-				if (requests.Any()) {
-					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests.First().ClaimedIdentifier));
-					discoveryResultBuilder.Append("requests: [");
-					foreach (IAuthenticationRequest request in requests) {
-						discoveryResultBuilder.Append("{");
-						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Immediate;
-						OutgoingWebResponse response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Setup;
-						response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						discoveryResultBuilder.Append("},");
-					}
-					discoveryResultBuilder.Length -= 1; // trim off last comma
-					discoveryResultBuilder.Append("]");
-				} else {
-					discoveryResultBuilder.Append("requests: [],");
-					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
-				}
-			} catch (ProtocolException ex) {
-				discoveryResultBuilder.Append("requests: [],");
-				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
-			}
-
-			discoveryResultBuilder.Append("}");
-			return discoveryResultBuilder.ToString();
 		}
 
 		/// <summary>
@@ -511,6 +427,89 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			this.CallbackUserAgentMethod("dnoa_internal.processAuthorizationResult(" + payload + ")");
+		}
+
+		/// <summary>
+		/// Serializes the discovery of multiple identifiers as a JSON object.
+		/// </summary>
+		/// <param name="identifiers">The identifiers to perform discovery on and create requests for.</param>
+		/// <returns>The serialized JSON object.</returns>
+		private string SerializeDiscoveryAsJson(IEnumerable<Identifier> identifiers) {
+			ErrorUtilities.VerifyArgumentNotNull(identifiers, "identifiers");
+
+			// We prepare a JSON object with this interface:
+			// Array discoveryWrappers;
+			// Where each element in the above array has this interface:
+			// class discoveryWrapper {
+			//    string userSuppliedIdentifier;
+			//    jsonResponse discoveryResult; // contains result of call to SerializeDiscoveryAsJson(Identifier)
+			// }
+			StringBuilder discoveryResultBuilder = new StringBuilder();
+			discoveryResultBuilder.Append("[");
+			foreach (var identifier in identifiers) { // TODO: parallelize discovery on these identifiers
+				discoveryResultBuilder.Append("{");
+				discoveryResultBuilder.AppendFormat("userSuppliedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(identifier));
+				discoveryResultBuilder.AppendFormat("discoveryResult: {0}", this.SerializeDiscoveryAsJson(identifier));
+				discoveryResultBuilder.Append("},");
+			}
+
+			discoveryResultBuilder.Length -= 1; // trim last comma
+			discoveryResultBuilder.Append("]");
+			return discoveryResultBuilder.ToString();
+		}
+
+		/// <summary>
+		/// Serializes the results of discovery and the created auth requests as a JSON object
+		/// for the user agent to initiate.
+		/// </summary>
+		/// <param name="identifier">The identifier to perform discovery on.</param>
+		/// <returns>The JSON string.</returns>
+		private string SerializeDiscoveryAsJson(Identifier identifier) {
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
+
+			// We prepare a JSON object with this interface:
+			// class jsonResponse {
+			//    string claimedIdentifier;
+			//    Array requests; // never null
+			//    string error; // null if no error
+			// }
+			// Each element in the requests array looks like this:
+			// class jsonAuthRequest {
+			//    string endpoint;  // URL to the OP endpoint
+			//    string immediate; // URL to initiate an immediate request
+			//    string setup;     // URL to initiate a setup request.
+			// }
+			StringBuilder discoveryResultBuilder = new StringBuilder();
+			discoveryResultBuilder.Append("{");
+			try {
+				IEnumerable<IAuthenticationRequest> requests = this.CreateRequests(identifier).CacheGeneratedResults();
+				if (requests.Any()) {
+					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests.First().ClaimedIdentifier));
+					discoveryResultBuilder.Append("requests: [");
+					foreach (IAuthenticationRequest request in requests) {
+						discoveryResultBuilder.Append("{");
+						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
+						request.Mode = AuthenticationRequestMode.Immediate;
+						OutgoingWebResponse response = request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
+						request.Mode = AuthenticationRequestMode.Setup;
+						response = request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
+						discoveryResultBuilder.Append("},");
+					}
+					discoveryResultBuilder.Length -= 1; // trim off last comma
+					discoveryResultBuilder.Append("]");
+				} else {
+					discoveryResultBuilder.Append("requests: [],");
+					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
+				}
+			} catch (ProtocolException ex) {
+				discoveryResultBuilder.Append("requests: [],");
+				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
+			}
+
+			discoveryResultBuilder.Append("}");
+			return discoveryResultBuilder.ToString();
 		}
 
 		/// <summary>
