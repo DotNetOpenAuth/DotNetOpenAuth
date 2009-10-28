@@ -343,4 +343,7 @@ Discovered endpoint info:
   <data name="PositiveAssertionFromNonWhitelistedProvider" xml:space="preserve">
     <value>An positive OpenID assertion was received from OP endpoint {0} that is not on this relying party's whitelist.</value>
   </data>
+  <data name="HeadTagMustIncludeRunatServer" xml:space="preserve">
+    <value>The HTML head tag must include runat="server".</value>
+  </data>
 </root>

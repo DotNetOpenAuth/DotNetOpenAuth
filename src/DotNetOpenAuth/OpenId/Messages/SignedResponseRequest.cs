@@ -108,6 +108,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		internal Realm Realm { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the return_to value should be signed.
+		/// </summary>
+		internal bool SignReturnTo { get; set; }
+
+		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
 		/// and throws an exception if the message is invalid.
 		/// </summary>

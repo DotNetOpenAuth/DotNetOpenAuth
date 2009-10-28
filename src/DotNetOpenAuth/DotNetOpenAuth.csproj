@@ -12,6 +12,11 @@
     <AssemblyName>DotNetOpenAuth</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <StandardCopyright>
+Copyright (c) 2009, Andrew Arnott. All rights reserved.
+Code licensed under the Ms-PL License:
+http://opensource.org/licenses/ms-pl.html
+</StandardCopyright>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -259,6 +264,7 @@
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
+    <Compile Include="Messaging\MultipartPostPart.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
@@ -604,7 +610,9 @@
     <EmbeddedResource Include="OpenId\RelyingParty\login_failure.png" />
     <EmbeddedResource Include="OpenId\RelyingParty\login_success %28lock%29.png" />
     <EmbeddedResource Include="OpenId\RelyingParty\login_success.png" />
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js">
+      <Copyright>$(StandardCopyright)</Copyright>
+    </EmbeddedResource>
     <EmbeddedResource Include="OpenId\RelyingParty\spinner.gif" />
   </ItemGroup>
   <ItemGroup>
@@ -625,10 +633,14 @@
     <EmbeddedResource Include="InfoCard\infocard_71x50.png" />
     <EmbeddedResource Include="InfoCard\infocard_81x57.png" />
     <EmbeddedResource Include="InfoCard\infocard_92x64.png" />
-    <EmbeddedResource Include="InfoCard\SupportingScript.js" />
+    <EmbeddedResource Include="InfoCard\SupportingScript.js">
+      <Copyright>$(StandardCopyright)</Copyright>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js">
+      <Copyright>$(StandardCopyright)</Copyright>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="InfoCard\InfoCardStrings.sr.resx" />
@@ -640,10 +652,16 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.sr.resx" />
     <EmbeddedResource Include="OpenId\OpenIdStrings.sr.resx" />
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js">
+      <Copyright>$(StandardCopyright)</Copyright>
+    </EmbeddedResource>
     <EmbeddedResource Include="Strings.sr.resx" />
     <EmbeddedResource Include="Xrds\XrdsStrings.sr.resx" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
+  <Import Project="..\..\tools\JavascriptPacker.targets" />
 </Project>

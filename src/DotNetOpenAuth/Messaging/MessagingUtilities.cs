@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -137,6 +138,54 @@ namespace DotNetOpenAuth.Messaging {
 			} else {
 				return uri;
 			}
+		}
+
+		/// <summary>
+		/// Sends an multipart HTTP POST request (useful for posting files).
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="parts">The parts to include in the POST entity.</param>
+		/// <returns>The HTTP response.</returns>
+		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
+			ErrorUtilities.VerifyArgumentNotNull(parts, "parts");
+
+			string boundary = Guid.NewGuid().ToString();
+			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
+			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
+
+			request.Method = "POST";
+			request.ContentType = "multipart/form-data; boundary=" + boundary;
+			request.ContentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
+
+			// Setting the content-encoding to "utf-8" causes Google to reply
+			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
+			// anything specific, so we disable it until we know how to get it right.
+			////request.Headers[HttpRequestHeader.ContentEncoding] = Channel.PostEntityEncoding.WebName;
+
+			var requestStream = requestHandler.GetRequestStream(request);
+			try {
+				StreamWriter writer = new StreamWriter(requestStream, Channel.PostEntityEncoding);
+				foreach (var part in parts) {
+					writer.Write(partLeadingBoundary);
+					part.Serialize(writer);
+					part.Dispose();
+				}
+
+				writer.Write(finalTrailingBoundary);
+				writer.Flush();
+			} finally {
+				// We need to be sure to close the request stream...
+				// unless it is a MemoryStream, which is a clue that we're in
+				// a mock stream situation and closing it would preclude reading it later.
+				if (!(requestStream is MemoryStream)) {
+					requestStream.Dispose();
+				}
+			}
+
+			return requestHandler.GetResponse(request);
 		}
 
 		/// <summary>
@@ -747,15 +796,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// on the user agent when assigned to a variable.
 		/// </summary>
 		/// <param name="namesAndValues">The untrusted names and untrusted values to inject into the JSON object.</param>
+		/// <param name="valuesPreEncoded">if set to <c>true</c> the values will NOT be escaped as if it were a pure string.</param>
 		/// <returns>The Javascript JSON object as a string.</returns>
-		internal static string CreateJsonObject(IEnumerable<KeyValuePair<string, string>> namesAndValues) {
+		internal static string CreateJsonObject(IEnumerable<KeyValuePair<string, string>> namesAndValues, bool valuesPreEncoded) {
 			StringBuilder builder = new StringBuilder();
 			builder.Append("{ ");
 
 			foreach (var pair in namesAndValues) {
 				builder.Append(MessagingUtilities.GetSafeJavascriptValue(pair.Key));
 				builder.Append(": ");
-				builder.Append(MessagingUtilities.GetSafeJavascriptValue(pair.Value));
+				builder.Append(valuesPreEncoded ? pair.Value : MessagingUtilities.GetSafeJavascriptValue(pair.Value));
 				builder.Append(",");
 			}
 

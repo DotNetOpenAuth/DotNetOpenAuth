@@ -317,7 +317,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			sreg[Constants.language] = this.Language;
 			sreg[Constants.timezone] = this.TimeZone;
 
-			return MessagingUtilities.CreateJsonObject(sreg);
+			return MessagingUtilities.CreateJsonObject(sreg, false);
 		}
 
 		#endregion

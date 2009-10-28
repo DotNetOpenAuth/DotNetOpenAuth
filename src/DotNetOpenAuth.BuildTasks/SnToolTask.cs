@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// Generates the full path to tool.
 		/// </summary>
 		protected override string GenerateFullPathToTool() {
-			string[] versions = new[] { "v6.0A", "v6.1" };
+			string[] versions = new[] { "v6.0A", "v6.1", "v7.0a" };
 			string fullPath = null;
 			foreach (string version in versions) {
 				fullPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Microsoft SDKs\Windows\" + version + @"\bin\" + this.ToolName);

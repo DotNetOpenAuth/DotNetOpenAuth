@@ -611,7 +611,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 
 					// Add state that needs to survive across the redirect.
-					this.Request.SetCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+					this.Request.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
 				} else {
 					Logger.OpenId.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
 					this.Request = null;
@@ -636,7 +636,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
-				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+				string persistentString = response.GetUntrustedCallbackArgument(UsePersistentCookieCallbackKey);
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
 					this.UsePersistentCookie = persistentBool;

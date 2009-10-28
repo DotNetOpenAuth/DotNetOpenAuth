@@ -142,6 +142,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (this.UseRequestNonce(request)) {
 				request.AddReturnToArguments(NonceParameter, CustomNonce.NewNonce().Serialize());
+				request.SignReturnTo = true; // a nonce without a signature is completely pointless
 
 				return MessageProtections.ReplayProtection;
 			}
@@ -169,9 +170,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (this.UseRequestNonce(response)) {
+				if (!response.ReturnToParametersSignatureValidated) {
+					Logger.OpenId.Error("Incoming message is expected to have a nonce, but the return_to parameter is not signed.");
+				}
+
 				string nonceValue = response.GetReturnToArgument(NonceParameter);
 				ErrorUtilities.VerifyProtocol(
-					nonceValue != null,
+					nonceValue != null && response.ReturnToParametersSignatureValidated,
 					this.securitySettings.RejectUnsolicitedAssertions ? OpenIdStrings.UnsolicitedAssertionsNotAllowed : OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);
 
 				CustomNonce nonce = CustomNonce.Deserialize(nonceValue);

@@ -1,0 +1,32 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="WebFormsRelyingParty.Site" %>
+
+<%@ Import Namespace="WebFormsRelyingParty" %>
+<%@ Import Namespace="System.Linq" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<title><%=Page.Title %></title>
+	<link href="Standard.css" rel="stylesheet" type="text/css" />
+	<asp:ContentPlaceHolder ID="head" runat="server">
+	</asp:ContentPlaceHolder>
+</head>
+<body>
+	<form id="form1" runat="server">
+	<div style="float: right">
+		<asp:LoginView runat="server">
+			<LoggedInTemplate>
+				<%= Global.DataContext.AuthenticationToken.First(token => token.ClaimedIdentifier == Page.User.Identity.Name).FriendlyIdentifier %>
+				| <asp:HyperLink runat="server" NavigateUrl="~/" Text="Home" /> | <asp:HyperLink
+					runat="server" NavigateUrl="~/Members/AccountInfo.aspx" Text="Account" /> |
+			</LoggedInTemplate>
+		</asp:LoginView>
+		<asp:LoginStatus ID="LoginStatus1" runat="server" />
+	</div>
+	<div>
+		<h1><asp:HyperLink runat="server" NavigateUrl="~/" Text="Adventure Works" /></h1>
+		<asp:ContentPlaceHolder ID="Body" runat="server">
+		</asp:ContentPlaceHolder>
+	</div>
+	</form>
+</body>
+</html>

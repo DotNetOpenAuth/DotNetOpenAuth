@@ -294,4 +294,7 @@
   <data name="NonEmptyStringExpected" xml:space="preserve">
     <value>A non-empty string was expected.</value>
   </data>
+  <data name="StreamMustHaveKnownLength" xml:space="preserve">
+    <value>The stream must have a known length.</value>
+  </data>
 </root>

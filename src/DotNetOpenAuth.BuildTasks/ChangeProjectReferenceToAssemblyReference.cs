@@ -31,6 +31,8 @@ namespace DotNetOpenAuth.BuildTasks {
 		const string msbuildNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 		public override bool Execute() {
 			foreach (var project in Projects) {
+				Log.LogMessage(MessageImportance.Normal, "Changing P2P references to assembly references in \"{0}\".", project.ItemSpec);
+
 				Project doc = new Project();
 				doc.Load(project.ItemSpec);
 				

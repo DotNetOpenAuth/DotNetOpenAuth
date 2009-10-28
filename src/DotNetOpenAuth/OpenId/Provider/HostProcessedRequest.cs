@@ -66,6 +66,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			get { return this.RequestMessage.Realm; }
 		}
 
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		public abstract Uri ProviderEndpoint { get; set; }
+
 		#endregion
 
 		/// <summary>

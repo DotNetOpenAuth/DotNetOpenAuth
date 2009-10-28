@@ -101,10 +101,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="arguments">The arguments to add to the request's return_to URI.  Values must not be null.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
-		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
+		/// privacy-sensitive data should be stored using this method.</para>
 		/// 	<para>The values stored here can be retrieved using
-		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>, which will only return the value
+		/// if it can be verified as untampered with in transit.</para>
 		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
@@ -117,10 +118,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="key">The parameter name.</param>
 		/// <param name="value">The value of the argument.  Must not be null.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
-		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
+		/// privacy-sensitive data should be stored using this method.</para>
 		/// 	<para>The value stored here can be retrieved using
-		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>, which will only return the value
+		/// if it can be verified as untampered with in transit.</para>
 		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
@@ -133,7 +135,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="key">The parameter name.</param>
 		/// <param name="value">The value of the argument.  Must not be null.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
 		/// security-sensitive data should be stored using this method.</para>
 		/// 	<para>The value stored here can be retrieved using
 		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
@@ -142,6 +144,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		void SetCallbackArgument(string key, string value);
+
+		/// <summary>
+		/// Makes a key/value pair available when the authentication is completed without
+		/// requiring a return_to signature to protect against tampering of the callback argument.
+		/// </summary>
+		/// <param name="key">The parameter name.</param>
+		/// <param name="value">The value of the argument.  Must not be null.</param>
+		/// <remarks>
+		/// 	<para>Note that these values are NOT protected against eavesdropping or tampering in transit.  No
+		/// security-sensitive data should be stored using this method. </para>
+		/// 	<para>The value stored here can be retrieved using
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
+		/// </remarks>
+		void SetUntrustedCallbackArgument(string key, string value);
 
 		/// <summary>
 		/// Adds an OpenID extension to the request directed at the OpenID provider.

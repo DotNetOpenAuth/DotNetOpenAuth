@@ -55,6 +55,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private Dictionary<string, string> returnToArgs = new Dictionary<string, string>();
 
 		/// <summary>
+		/// A value indicating whether the return_to callback arguments must be signed.
+		/// </summary>
+		/// <remarks>
+		/// This field defaults to false, but is set to true as soon as the first callback argument
+		/// is added that indicates it must be signed.  At which point, all arguments are signed
+		/// even if individual ones did not need to be.
+		/// </remarks>
+		private bool returnToArgsMustBeSigned;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthenticationRequest"/> class.
 		/// </summary>
 		/// <param name="endpoint">The endpoint that describes the OpenID Identifier and Provider that will complete the authentication.</param>
@@ -189,10 +199,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="arguments">The arguments to add to the request's return_to URI.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
-		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
+		/// privacy-sensitive data should be stored using this method.</para>
 		/// 	<para>The values stored here can be retrieved using
-		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
+		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>, which will only return the value
+		/// if it hasn't been tampered with in transit.</para>
 		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
@@ -200,6 +211,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public void AddCallbackArguments(IDictionary<string, string> arguments) {
 			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
+			this.returnToArgsMustBeSigned = true;
 			foreach (var pair in arguments) {
 				ErrorUtilities.VerifyArgument(!string.IsNullOrEmpty(pair.Key), MessagingStrings.UnexpectedNullOrEmptyKey);
 				ErrorUtilities.VerifyArgument(pair.Value != null, MessagingStrings.UnexpectedNullValue, pair.Key);
@@ -214,10 +226,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="key">The parameter name.</param>
 		/// <param name="value">The value of the argument.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
-		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
+		/// privacy-sensitive data should be stored using this method.</para>
 		/// 	<para>The value stored here can be retrieved using
-		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>, which will only return the value
+		/// if it hasn't been tampered with in transit.</para>
 		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
@@ -225,6 +238,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public void AddCallbackArguments(string key, string value) {
 			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
+			this.returnToArgsMustBeSigned = true;
 			this.returnToArgs.Add(key, value);
 		}
 
@@ -244,6 +258,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public void SetCallbackArgument(string key, string value) {
 			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
+
+			this.returnToArgsMustBeSigned = true;
+			this.returnToArgs[key] = value;
+		}
+
+		/// <summary>
+		/// Makes a key/value pair available when the authentication is completed without
+		/// requiring a return_to signature to protect against tampering of the callback argument.
+		/// </summary>
+		/// <param name="key">The parameter name.</param>
+		/// <param name="value">The value of the argument.  Must not be null.</param>
+		/// <remarks>
+		/// 	<para>Note that these values are NOT protected against eavesdropping or tampering in transit.  No
+		/// security-sensitive data should be stored using this method. </para>
+		/// 	<para>The value stored here can be retrieved using
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// 	<para>Since the data set here is sent in the querystring of the request and some
+		/// servers place limits on the size of a request URL, this data should be kept relatively
+		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
+		/// </remarks>
+		public void SetUntrustedCallbackArgument(string key, string value) {
+			ErrorUtilities.VerifyNonZeroLength(key, "key");
+			ErrorUtilities.VerifyArgumentNotNull(value, "value");
 
 			this.returnToArgs[key] = value;
 		}
@@ -487,6 +524,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			request.Realm = this.Realm;
 			request.ReturnTo = this.ReturnToUrl;
 			request.AssociationHandle = association != null ? association.Handle : null;
+			request.SignReturnTo = this.returnToArgsMustBeSigned;
 			request.AddReturnToArguments(this.returnToArgs);
 			if (this.endpoint.UserSuppliedIdentifier != null) {
 				request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.endpoint.UserSuppliedIdentifier.OriginalString);

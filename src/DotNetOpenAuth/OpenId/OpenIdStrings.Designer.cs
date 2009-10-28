@@ -286,6 +286,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The HTML head tag must include runat=&quot;server&quot;..
+        /// </summary>
+        internal static string HeadTagMustIncludeRunatServer {
+            get {
+                return ResourceManager.GetString("HeadTagMustIncludeRunatServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true..
         /// </summary>
         internal static string IdentifierSelectRequiresMatchingIdentifiers {

@@ -1,6 +1,8 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="OpenIdRelyingPartyAjaxControlBase.js" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
+//     This file may be used and redistributed under the terms of the
+//     Microsoft Public License (Ms-PL) http://opensource.org/licenses/ms-pl.html
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -68,7 +70,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 		if (jobDesc = this.queuedWork.pop()) {
 			this.createIFrame(jobDesc.job, jobDesc.p1);
 		}
-	}
+	};
 
 	this.createIFrame = function(job, p1) {
 		var iframe = document.createElement("iframe");
@@ -79,7 +81,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 		}
 		iframe.setAttribute("src", job(iframe, p1));
 		iframe.dnoa_internal = window.dnoa_internal;
-		box.parentNode.insertBefore(iframe, box);
+		document.body.insertBefore(iframe, document.body.firstChild);
 		this.frames.push(iframe);
 		return iframe;
 	};
@@ -138,7 +140,7 @@ window.OpenIdIdentifier = function(identifier) {
 				onDiscoverSuccess(window.dnoa_internal.discoveryResults[identifier]);
 			}
 			return;
-		}
+		};
 
 		trace('starting discovery on ' + identifier);
 		window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);
@@ -177,13 +179,21 @@ window.OpenIdIdentifier = function(identifier) {
 			}
 		});
 	};
+
+	this.toString = function() {
+		return identifier;
+	};
 };
 
 /// <summary>Invoked by RP web server when an authentication has completed.</summary>
 /// <remarks>The duty of this method is to distribute the notification to the appropriate tracking object.</remarks>
-window.dnoa_internal.processAuthorizationResult = function(resultUrl) {
+window.dnoa_internal.processAuthorizationResult = function(resultUrl, extensionResponses) {
 	//trace('processAuthorizationResult ' + resultUrl);
 	var resultUri = new window.dnoa_internal.Uri(resultUrl);
+	trace('processing auth result with extensionResponses: ' + extensionResponses);
+	if (extensionResponses) {
+		extensionResponses = eval(extensionResponses);
+	}
 
 	// Find the tracking object responsible for this request.
 	var userSuppliedIdentifier = resultUri.getQueryArgValue('dnoa.userSuppliedIdentifier');
@@ -203,7 +213,7 @@ window.dnoa_internal.processAuthorizationResult = function(resultUrl) {
 
 	if (window.dnoa_internal.isAuthSuccessful(resultUri)) {
 		discoveryResult.successAuthData = resultUrl;
-		respondingEndpoint.onAuthSuccess(resultUri);
+		respondingEndpoint.onAuthSuccess(resultUri, extensionResponses);
 
 		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(resultUri);
 		if (parsedPositiveAssertion.claimedIdentifier && parsedPositiveAssertion.claimedIdentifier != discoveryResult.claimedIdentifier) {
@@ -264,24 +274,34 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			// for a negative assertion.  We must be able to recover from that scenario.
 			var thisServiceEndpointLocal = thisServiceEndpoint;
 			thisServiceEndpoint.popupCloseChecker = window.setInterval(function() {
-				if (thisServiceEndpointLocal.popup && thisServiceEndpointLocal.popup.closed) {
-					// The window closed, either because the user closed it, canceled at the OP,
-					// or approved at the OP and the popup window closed itself due to our script.
-					// If we were graying out the entire page while the child window was up,
-					// we would probably revert that here.
-					window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
-					thisServiceEndpointLocal.popup = null;
+				if (thisServiceEndpointLocal.popup) {
+					try {
+						if (thisServiceEndpointLocal.popup.closed) {
+							// The window closed, either because the user closed it, canceled at the OP,
+							// or approved at the OP and the popup window closed itself due to our script.
+							// If we were graying out the entire page while the child window was up,
+							// we would probably revert that here.
+							window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
+							thisServiceEndpointLocal.popup = null;
 
-					// The popup may have managed to inform us of the result already,
-					// so check whether the callback method was cleared already, which
-					// would indicate we've already processed this.
-					if (window.dnoa_internal.processAuthorizationResult) {
-						trace('User or OP canceled by closing the window.');
-						if (thisDiscoveryResult.onAuthFailed) {
-							thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+							// The popup may have managed to inform us of the result already,
+							// so check whether the callback method was cleared already, which
+							// would indicate we've already processed this.
+							if (window.dnoa_internal.processAuthorizationResult) {
+								trace('User or OP canceled by closing the window.');
+								if (thisDiscoveryResult.onAuthFailed) {
+									thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
+								}
+							}
 						}
-						window.dnoa_internal.processAuthorizationResult = null;
+					} catch (e) {
+						// This usually happens because the popup is currently displaying the OP's
+						// page from another domain, which makes the popup temporarily off limits to us.
+						// Just skip this interval and wait for the next callback.
 					}
+				} else {
+					// if there's no popup, there's no reason to keep this timer up.
+					window.clearInterval(thisServiceEndpointLocal.popupCloseChecker);
 				}
 			}, 250);
 		};
@@ -320,7 +340,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 
 			if (!successful && !thisDiscoveryResult.busy() && thisDiscoveryResult.findSuccessfulRequest() == null) {
 				if (thisDiscoveryResult.onLastAttemptFailed) {
-					thisDiscoveryResult.onLastAttemptFailed();
+					thisDiscoveryResult.onLastAttemptFailed(thisDiscoveryResult);
 				}
 			}
 
@@ -334,15 +354,15 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			}
 		};
 
-		this.onAuthSuccess = function(authUri) {
+		this.onAuthSuccess = function(authUri, extensionResponses) {
 			if (thisServiceEndpoint.completeAttempt(true)) {
 				trace(thisServiceEndpoint.host + " authenticated!");
 				thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
-				thisServiceEndpoint.claimedIdentifier = authUri//////////////////////////////////
+				thisServiceEndpoint.claimedIdentifier = authUri.getQueryArgValue('openid.claimed_id');
 				thisServiceEndpoint.response = authUri;
 				thisDiscoveryResult.abortAll();
 				if (thisDiscoveryResult.onAuthSuccess) {
-					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint);
+					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint, extensionResponses);
 				}
 			}
 		};
@@ -366,7 +386,27 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 
 	};
 
+	this.cloneWithOneServiceEndpoint = function(serviceEndpoint) {
+		var clone = window.dnoa_internal.clone(this);
+		clone.userSuppliedIdentifier = serviceEndpoint.claimedIdentifier;
+
+		// Erase all SEPs except the given one, and put it into first position.
+		clone.length = 1;
+		for (var i = 0; i < this.length; i++) {
+			if (clone[i].endpoint.toString() == serviceEndpoint.endpoint.toString()) {
+				var tmp = clone[i];
+				clone[i] = null;
+				clone[0] = tmp;
+			} else {
+				clone[i] = null;
+			}
+		}
+
+		return clone;
+	};
+
 	this.userSuppliedIdentifier = identifier;
+	this.error = discoveryInfo.error;
 
 	if (discoveryInfo) {
 		this.claimedIdentifier = discoveryInfo.claimedIdentifier; // The claimed identifier may be null if the user provided an OP Identifier.
@@ -378,7 +418,11 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		this.length = 0;
 	}
 
-	trace('Discovered claimed identifier: ' + (this.claimedIdentifier ? this.claimedIdentifier : "(directed identity)"));
+	if (this.length == 0) {
+		trace('Discovery completed, but yielded no service endpoints.');
+	} else {
+		trace('Discovered claimed identifier: ' + (this.claimedIdentifier ? this.claimedIdentifier : "(directed identity)"));
+	}
 
 	// Add extra tracking bits and behaviors.
 	this.findByEndpoint = function(opEndpoint) {
@@ -470,7 +514,8 @@ window.dnoa_internal.deserializePreviousAuthentication = function(positiveAssert
 		requests: [{ endpoint: parsedPositiveAssertion.endpoint }]
 	};
 
-	window.dnoa_internal.discoveryResults[box.value] = discoveryResult = new window.dnoa_internal.DiscoveryResult(parsedPositiveAssertion.userSuppliedIdentifier, discoveryInfo);
+	discoveryResult = new window.dnoa_internal.DiscoveryResult(parsedPositiveAssertion.userSuppliedIdentifier, discoveryInfo);
+	window.dnoa_internal.discoveryResults[parsedPositiveAssertion.userSuppliedIdentifier] = discoveryResult;
 	discoveryResult[0].result = window.dnoa_internal.authSuccess;
 	discoveryResult.successAuthData = positiveAssertion;
 
@@ -489,4 +534,17 @@ window.dnoa_internal.PositiveAssertion = function(uri) {
 		this.claimedIdentifier = uri.getQueryArgValue('dnoa.claimed_id');
 	}
 	this.toString = function() { return uri.toString(); };
+};
+
+window.dnoa_internal.clone = function(obj) {
+	if (obj == null || typeof (obj) != 'object') {
+		return obj;
+	}
+
+	var temp = new Object();
+	for (var key in obj) {
+		temp[key] = window.dnoa_internal.clone(obj[key]);
+	}
+
+	return temp;
 };

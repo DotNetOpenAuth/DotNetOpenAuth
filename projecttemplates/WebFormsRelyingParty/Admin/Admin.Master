@@ -1,0 +1,7 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Admin.master.cs" Inherits="WebFormsRelyingParty.Admin.Admin"
+	MasterPageFile="~/Site.Master" %>
+
+<asp:Content ContentPlaceHolderID="Body" runat="server">
+	<asp:ContentPlaceHolder ID="Body" runat="server">
+	</asp:ContentPlaceHolder>
+</asp:Content>

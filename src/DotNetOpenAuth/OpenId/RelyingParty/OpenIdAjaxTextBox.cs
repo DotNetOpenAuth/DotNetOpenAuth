@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedStylesheetResourceName, "text/css")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedDotNetOpenIdLogoResourceName, "image/gif")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName, "image/gif")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName, "image/png")]
@@ -24,6 +25,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Globalization;
 	using System.Text;
 	using System.Web.UI;
+	using System.Web.UI.HtmlControls;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -32,11 +34,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdAjaxTextBox runat=\"server\" />")]
-	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, ICallbackEventHandler, IEditableTextControl, ITextControl, IPostBackDataHandler {
+	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, ICallbackEventHandler, IEditableTextControl, ITextControl, IPostBackDataHandler, IPostBackEventHandler {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
 		internal const string EmbeddedScriptResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdAjaxTextBox.js";
+
+		/// <summary>
+		/// The name of the manifest stream containing the OpenIdAjaxTextBox.css file.
+		/// </summary>
+		internal const string EmbeddedStylesheetResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdAjaxTextBox.css";
 
 		/// <summary>
 		/// The name of the manifest stream containing the dotnetopenid_16x16.gif file.
@@ -59,6 +66,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal const string EmbeddedLoginFailureResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.login_failure.png";
 
 		#region Property viewstate keys
+
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="AutoPostBack"/> property.
+		/// </summary>
+		private const string AutoPostBackViewStateKey = "AutoPostback";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Text"/> property.
+		/// </summary>
+		private const string TextViewStateKey = "Text";
 
 		/// <summary>
 		/// The viewstate key to use for storing the value of the <see cref="Columns"/> property.
@@ -150,9 +167,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string RetryTextViewStateKey = "RetryText";
 
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="DownloadYahooUILibrary"/> property.
+		/// </summary>
+		private const string DownloadYahooUILibraryViewStateKey = "DownloadYahooUILibrary";
+
 		#endregion
 
 		#region Property defaults
+
+		/// <summary>
+		/// The default value for the <see cref="AutoPostBack"/> property.
+		/// </summary>
+		private const bool AutoPostBackDefault = false;
 
 		/// <summary>
 		/// The default value for the <see cref="Columns"/> property.
@@ -229,7 +256,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string RetryTextDefault = "RETRY";
 
+		/// <summary>
+		/// The default vlaue for the <see cref="DownloadYahooUILibrary"/> property.
+		/// </summary>
+		private const bool DownloadYahooUILibraryDefault = true;
+
 		#endregion
+
+		/// <summary>
+		/// The path where the YUI control library should be downloaded from for HTTP pages.
+		/// </summary>
+		private const string YuiLoaderHttp = "http://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js";
+
+		/// <summary>
+		/// The path where the YUI control library should be downloaded from for HTTPS pages.
+		/// </summary>
+		private const string YuiLoaderHttps = "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js";
 
 		#region Events
 
@@ -272,8 +314,40 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(""), Category(AppearanceCategory)]
 		[Description("The content of the text box.")]
 		public string Text {
-			get { return this.Identifier != null ? this.Identifier.OriginalString : string.Empty; }
-			set { this.Identifier = value; }
+			get {
+				return this.Identifier != null ? this.Identifier.OriginalString : (this.ViewState[TextViewStateKey] as string ?? string.Empty);
+			}
+
+			set {
+				// Try to store it as a validated identifier,
+				// but failing that at least store the text.
+				Identifier id;
+				if (Identifier.TryParse(value, out id)) {
+					this.Identifier = id;
+				} else {
+					// Be sure to set the viewstate AFTER setting the Identifier,
+					// since setting the Identifier clears the viewstate in OnIdentifierChanged.
+					this.Identifier = null;
+					this.ViewState[TextViewStateKey] = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether a postback is made to fire the
+		/// <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> event as soon as authentication has completed
+		/// successfully.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if a postback should be made automatically upon authentication;
+		/// otherwise, <c>false</c> to delay the <see cref="OpenIdRelyingPartyControlBase.LoggedIn"/> 
+		/// event from firing at the server until a postback is made by some other control.
+		/// </value>
+		[Bindable(true), Category(BehaviorCategory), DefaultValue(AutoPostBackDefault)]
+		[Description("Whether the LoggedIn event fires on the server as soon as authentication completes successfully.")]
+		public bool AutoPostBack {
+			get { return (bool)(this.ViewState[AutoPostBackViewStateKey] ?? AutoPostBackDefault); }
+			set { this.ViewState[AutoPostBackViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -484,6 +558,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set { this.ViewState[LogOnInProgressMessageViewStateKey] = value ?? string.Empty; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the Yahoo! User Interface Library (YUI)
+		/// will be downloaded in order to provide a login split button.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> to use a split button; otherwise, <c>false</c> to use a standard HTML button
+		/// 	or a split button by downloading the YUI library yourself on the hosting web page.
+		/// </value>
+		/// <remarks>
+		/// The split button brings in about 180KB of YUI javascript dependencies.
+		/// </remarks>
+		[Bindable(true), DefaultValue(DownloadYahooUILibraryDefault), Category(BehaviorCategory)]
+		[Description("Whether a split button will be used for the \"log in\" when the user provides an identifier that delegates to more than one Provider.")]
+		public bool DownloadYahooUILibrary {
+			get { return (bool)(this.ViewState[DownloadYahooUILibraryViewStateKey] ?? DownloadYahooUILibraryDefault); }
+			set { this.ViewState[DownloadYahooUILibraryViewStateKey] = value; }
+		}
+
 		#endregion
 
 		/// <summary>
@@ -534,6 +626,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
+		#region IPostBackEventHandler Members
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Signature predefined.")]
+		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
+			this.RaisePostBackEvent(eventArgument);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Raises the <see cref="E:Load"/> event.
 		/// </summary>
@@ -545,11 +650,38 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Called when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected override void OnIdentifierChanged() {
+			this.ViewState.Remove(TextViewStateKey);
+			base.OnIdentifierChanged();
+		}
+
+		/// <summary>
 		/// Prepares to render the control.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
+
+			if (this.DownloadYahooUILibrary) {
+				string yuiLoadScript = @"var loader = new YAHOO.util.YUILoader({
+	require: ['button', 'menu'],
+	loadOptional: false,
+	combine: true
+});
+
+loader.insert();";
+				this.Page.ClientScript.RegisterClientScriptInclude("yuiloader", this.Page.Request.Url.IsTransportSecure() ? YuiLoaderHttps : YuiLoaderHttp);
+				this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "requiredYuiComponents", yuiLoadScript, true);
+			}
+
+			var css = new HtmlLink();
+			css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
+			css.Attributes["rel"] = "stylesheet";
+			css.Attributes["type"] = "text/css";
+			ErrorUtilities.VerifyHost(this.Page.Header != null, OpenIdStrings.HeadTagMustIncludeRunatServer);
+			this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
 
 			this.PrepareClientJavascript();
 		}
@@ -563,9 +695,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// We surround the textbox with a span so that the .js file can inject a
 			// login button within the text box with easy placement.
-			if (!string.IsNullOrEmpty(this.CssClass)) {
-				writer.AddAttribute(HtmlTextWriterAttribute.Class, this.CssClass);
-			}
+			string css = this.CssClass ?? string.Empty;
+			css += " OpenIdAjaxTextBox";
+			writer.AddAttribute(HtmlTextWriterAttribute.Class, css);
 
 			writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "inline-block");
 			writer.AddStyleAttribute(HtmlTextWriterStyle.Position, "relative");
@@ -622,9 +754,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// When implemented by a class, signals the server control to notify the ASP.NET application that the state of the control has changed.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Predefined signature.")]
 		protected virtual void RaisePostDataChangedEvent() {
 			this.OnTextChanged();
+		}
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
+		protected virtual void RaisePostBackEvent(string eventArgument) {
 		}
 
 		/// <summary>
@@ -641,17 +781,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Assembles the javascript to send to the client and registers it with ASP.NET for transmission.
 		/// </summary>
 		private void PrepareClientJavascript() {
-			string identifierParameterName = "identifier";
-			string discoveryCallbackResultParameterName = "resultFunction";
-			string discoveryErrorCallbackParameterName = "errorCallback";
-			string discoveryCallback = Page.ClientScript.GetCallbackEventReference(
-				this,
-				identifierParameterName,
-				discoveryCallbackResultParameterName,
-				identifierParameterName,
-				discoveryErrorCallbackParameterName,
-				true);
-
 			// Import the .js file where most of the code is.
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdAjaxTextBox), EmbeddedScriptResourceName);
 
@@ -661,7 +790,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", this.Name, Environment.NewLine);
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
-				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function({18}, {19}, {20}) {{{21}}});{22}",
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function() {{{18};}});{19}",
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
@@ -680,10 +809,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationSucceededToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticatedAsToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationFailedToolTip),
-				identifierParameterName,
-				discoveryCallbackResultParameterName,
-				discoveryErrorCallbackParameterName,
-				discoveryCallback,
+				this.AutoPostBack ? Page.ClientScript.GetPostBackEventReference(this, null) : null,
 				Environment.NewLine);
 
 			startupScript.AppendLine("</script>");

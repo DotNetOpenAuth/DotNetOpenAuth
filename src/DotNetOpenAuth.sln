@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F-24F4-4136-8741-6063D0D7A031}"
 	ProjectSection(SolutionItems) = preProject
+		..\doc\specs\ICAM_OpenID20Profile.pdf = ..\doc\specs\ICAM_OpenID20Profile.pdf
 		..\doc\specs\OAuth Core 1.0.htm = ..\doc\specs\OAuth Core 1.0.htm
 		..\doc\specs\OAuth Core 1.0a (Draft 3).htm = ..\doc\specs\OAuth Core 1.0a (Draft 3).htm
 		..\doc\specs\OpenID OAuth Extension.htm = ..\doc\specs\OpenID OAuth Extension.htm
@@ -162,6 +163,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdOfflineProvider", "..
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{E9ED920D-1F83-48C0-9A4B-09CCE505FE6D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Templates", "Project Templates", "{B9EB8729-4B54-4453-B089-FE6761BA3057}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsRelyingParty", "..\projecttemplates\WebFormsRelyingParty\WebFormsRelyingParty.csproj", "{A78F8FC6-7B03-4230-BE41-761E400D6810}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DotNetOpenAuth.vsmdi
@@ -256,6 +261,12 @@ Global
 		{5C65603B-235F-47E6-B536-06385C60DE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C65603B-235F-47E6-B536-06385C60DE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C65603B-235F-47E6-B536-06385C60DE7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A78F8FC6-7B03-4230-BE41-761E400D6810}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
+		{A78F8FC6-7B03-4230-BE41-761E400D6810}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
+		{A78F8FC6-7B03-4230-BE41-761E400D6810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A78F8FC6-7B03-4230-BE41-761E400D6810}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A78F8FC6-7B03-4230-BE41-761E400D6810}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A78F8FC6-7B03-4230-BE41-761E400D6810}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -276,5 +287,6 @@ Global
 		{9ADBE36D-9960-48F6-82E9-B4AC559E9AC3} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{7ADCCD5C-AC2B-4340-9410-FE3A31A48191} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{5C65603B-235F-47E6-B536-06385C60DE7F} = {E9ED920D-1F83-48C0-9A4B-09CCE505FE6D}
+		{A78F8FC6-7B03-4230-BE41-761E400D6810} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
 	EndGlobalSection
 EndGlobal

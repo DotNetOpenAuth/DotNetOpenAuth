@@ -1,6 +1,8 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="OpenIdRelyingPartyControlBase.js" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
+//     This file may be used and redistributed under the terms of the
+//     Microsoft Public License (Ms-PL) http://opensource.org/licenses/ms-pl.html
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -36,7 +38,7 @@ window.dnoa_internal.Uri = function(url) {
 	this.getAuthority = function() {
 		var authority = this.getScheme() + "://" + this.getHost();
 		return authority;
-	}
+	};
 
 	this.getHost = function() {
 		var hostStartIdx = this.originalUri.indexOf("://") + 3;
@@ -44,12 +46,12 @@ window.dnoa_internal.Uri = function(url) {
 		if (hostEndIndex < 0) hostEndIndex = this.originalUri.length;
 		var host = this.originalUri.substr(hostStartIdx, hostEndIndex - hostStartIdx);
 		return host;
-	}
+	};
 
 	this.getScheme = function() {
 		var schemeStartIdx = this.indexOf("://");
 		return this.originalUri.substr(this.originalUri, schemeStartIdx);
-	}
+	};
 
 	this.trimFragment = function() {
 		var hashmark = this.originalUri.indexOf('#');
@@ -77,7 +79,7 @@ window.dnoa_internal.Uri = function(url) {
 
 	var queryBeginsAt = this.originalUri.indexOf('?');
 	if (queryBeginsAt >= 0) {
-		this.queryString = url.substr(queryBeginsAt + 1);
+		this.queryString = this.originalUri.substr(queryBeginsAt + 1);
 		var queryStringPairs = this.queryString.split('&');
 
 		for (var i = 0; i < queryStringPairs.length; i++) {
@@ -98,7 +100,7 @@ window.dnoa_internal.Uri = function(url) {
 
 	this.getPairs = function() {
 		return this.pairs;
-	}
+	};
 
 	this.containsQueryArg = function(key) {
 		return this.getQueryArgValue(key);
@@ -136,7 +138,7 @@ window.dnoa_internal.createHiddenIFrame = function() {
 	}
 
 	return iframe;
-}
+};
 
 /// <summary>Redirects the current window/frame to the given URI, 
 /// either using a GET or a POST as required by the length of the URL.</summary>

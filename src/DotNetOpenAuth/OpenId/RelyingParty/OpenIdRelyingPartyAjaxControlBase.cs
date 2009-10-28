@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Property viewstate keys
 
 		/// <summary>
-		/// The viewstate key to use for storing the value of the a successful authentication.
+		/// The viewstate key to use for storing the value of a successful authentication.
 		/// </summary>
 		private const string AuthDataViewStateKey = "AuthData";
 
@@ -162,7 +162,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the name of the open id auth data form key.
+		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
 		/// </summary>
 		/// <value>Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.</value>
 		protected abstract string OpenIdAuthDataFormKey { get; }
@@ -322,13 +322,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (this.AuthenticationResponse != null && !this.AuthenticationProcessedAlready) {
 					// Only process messages targeted at this control.
 					// Note that Stateless mode causes no receiver to be indicated.
-					string receiver = this.AuthenticationResponse.GetCallbackArgument(ReturnToReceivingControlId);
+					string receiver = this.AuthenticationResponse.GetUntrustedCallbackArgument(ReturnToReceivingControlId);
 					if (receiver == null || receiver == this.ClientID) {
 						this.ProcessResponse(this.AuthenticationResponse);
 						this.AuthenticationProcessedAlready = true;
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Called when the <see cref="Identifier"/> property is changed.
+		/// </summary>
+		protected override void OnIdentifierChanged() {
+			base.OnIdentifierChanged();
+
+			// Since the identifier changed, make sure we reset any cached authentication on the user agent.
+			this.ViewState.Remove(AuthDataViewStateKey);
 		}
 
 		/// <summary>
@@ -383,11 +393,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		protected override void ScriptClosingPopupOrIFrame() {
 			Logger.OpenId.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
-			List<string> assignments = new List<string>();
+			string extensionsJson = null;
 
 			var authResponse = RelyingPartyNonVerifying.GetResponse();
 			if (authResponse.Status == AuthenticationStatus.Authenticated) {
 				this.OnUnconfirmedPositiveAssertion(); // event handler will fill the clientScriptExtensions collection.
+				var extensionsDictionary = new Dictionary<string, string>();
 				foreach (var pair in this.clientScriptExtensions) {
 					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
 					if (extension == null) {
@@ -395,11 +406,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
 					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
-					if (string.IsNullOrEmpty(js)) {
-						js = "null";
+					if (!string.IsNullOrEmpty(js)) {
+						extensionsDictionary[pair.Value] = js;
 					}
-					assignments.Add(pair.Value + " = " + js);
 				}
+
+				extensionsJson = MessagingUtilities.CreateJsonObject(extensionsDictionary, true);
 			}
 
 			string payload = "document.URL";
@@ -412,7 +424,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				payloadUri.AppendQueryArgs(Page.Request.Form.ToDictionary());
 				payload = MessagingUtilities.GetSafeJavascriptValue(payloadUri.Uri.AbsoluteUri);
 			}
-			this.CallbackUserAgentMethod("dnoa_internal.processAuthorizationResult(" + payload + ")", assignments.ToArray());
+
+			if (!string.IsNullOrEmpty(extensionsJson)) {
+				payload += ", " + extensionsJson;
+			}
+
+			this.CallbackUserAgentMethod("dnoa_internal.processAuthorizationResult(" + payload + ")");
 		}
 
 		/// <summary>
@@ -429,20 +446,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Configure each generated request.
 			int reqIndex = 0;
 			foreach (var req in requests) {
-				req.SetCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
+				req.SetUntrustedCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
 				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
-					req.SetCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, this.Identifier.OriginalString);
+					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, this.Identifier.OriginalString);
 				}
 
 				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
 				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
-				req.SetCallbackArgument(OPEndpointParameterName, req.Provider.Uri.AbsoluteUri);
-				req.SetCallbackArgument(ClaimedIdParameterName, (string)req.ClaimedIdentifier ?? string.Empty);
+				req.SetUntrustedCallbackArgument(OPEndpointParameterName, req.Provider.Uri.AbsoluteUri);
+				req.SetUntrustedCallbackArgument(ClaimedIdParameterName, (string)req.ClaimedIdentifier ?? string.Empty);
 
 				// Inform ourselves in return_to that we're in a popup or iframe.
-				req.SetCallbackArgument(UIPopupCallbackKey, "1");
+				req.SetUntrustedCallbackArgument(UIPopupCallbackKey, "1");
 
 				// We append a # at the end so that if the OP happens to support it,
 				// the OpenID response "query string" is appended after the hash rather than before, resulting in the
@@ -488,27 +505,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		private void CallbackUserAgentMethod(string methodCall) {
-			this.CallbackUserAgentMethod(methodCall, null);
-		}
-
-		/// <summary>
-		/// Invokes a method on a parent frame/window's OpenIdAjaxTextBox,
-		/// and closes the calling popup window if applicable.
-		/// </summary>
-		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
-		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
-		/// <param name="preAssignments">An optional list of assignments to make to the input box object before placing the method call.</param>
-		private void CallbackUserAgentMethod(string methodCall, string[] preAssignments) {
 			Logger.OpenId.InfoFormat("Sending Javascript callback: {0}", methodCall);
 			Page.Response.Write(@"<html><body><script language='javascript'>
 	var inPopup = !window.frameElement;
 	var objSrc = inPopup ? window.opener : window.frameElement;
 ");
-			if (preAssignments != null) {
-				foreach (string assignment in preAssignments) {
-					Page.Response.Write(string.Format(CultureInfo.InvariantCulture, "	objSrc.{0};\n", assignment));
-				}
-			}
 
 			// Something about calling objSrc.{0} can somehow cause FireFox to forget about the inPopup variable,
 			// so we have to actually put the test for it ABOVE the call to objSrc.{0} so that it already 
