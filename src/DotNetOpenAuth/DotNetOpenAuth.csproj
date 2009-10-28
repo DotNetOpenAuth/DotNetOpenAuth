@@ -252,7 +252,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
-    <Compile Include="Messaging\MultiPartPostPart.cs" />
+    <Compile Include="Messaging\MultipartPostPart.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />

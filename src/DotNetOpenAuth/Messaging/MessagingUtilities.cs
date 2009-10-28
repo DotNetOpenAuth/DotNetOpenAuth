@@ -148,7 +148,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestHandler">The request handler.</param>
 		/// <param name="parts">The parts to include in the POST entity.</param>
 		/// <returns>The HTTP response.</returns>
-		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultiPartPostPart> parts) {
+		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
 			ErrorUtilities.VerifyArgumentNotNull(parts, "parts");
@@ -644,7 +644,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the <see cref="HttpDeliveryMethods"/> enum value for a given HTTP verb.
 		/// </summary>
 		/// <param name="httpVerb">The HTTP verb.</param>
-		/// <returns>A <see cref="HttpDeliveryMethod"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
+		/// <returns>A <see cref="HttpDeliveryMethods"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
 		internal static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
 			if (httpVerb == "GET") {
 				return HttpDeliveryMethods.GetRequest;
