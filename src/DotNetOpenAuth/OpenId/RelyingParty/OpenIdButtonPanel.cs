@@ -304,7 +304,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Fires the <see cref="ReceivedToken"/> event.
 		/// </summary>
-		/// <param name="token">The token, if it was decrypted.</param>
+		/// <param name="e">The token, if it was decrypted.</param>
 		protected virtual void OnReceivedToken(ReceivedTokenEventArgs e) {
 			Contract.Requires(e != null);
 			ErrorUtilities.VerifyArgumentNotNull(e, "e");

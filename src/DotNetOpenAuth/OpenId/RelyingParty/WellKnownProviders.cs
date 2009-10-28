@@ -32,12 +32,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The Verisign OP Identifier.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Verisign", Justification = "The spelling is correct.")]
 		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Immutable type")]
 		public static readonly Identifier Verisign = "https://pip.verisignlabs.com/";
 
 		/// <summary>
 		/// The MyVidoop OP Identifier.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vidoop", Justification = "The spelling is correct.")]
 		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Immutable type")]
 		public static readonly Identifier MyVidoop = "https://myvidoop.com/";
 

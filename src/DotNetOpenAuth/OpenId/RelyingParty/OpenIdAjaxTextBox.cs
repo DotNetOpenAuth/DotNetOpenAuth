@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdAjaxTextBox runat=\"server\" />")]
-	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, ICallbackEventHandler, IEditableTextControl, ITextControl, IPostBackDataHandler, IPostBackEventHandler {
+	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, IEditableTextControl, ITextControl, IPostBackDataHandler {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
@@ -638,19 +638,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		#region IPostBackEventHandler Members
-
-		/// <summary>
-		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
-		/// </summary>
-		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Signature predefined.")]
-		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
-			this.RaisePostBackEvent(eventArgument);
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Raises the <see cref="E:Load"/> event.
 		/// </summary>
@@ -776,14 +763,6 @@ loader.insert();";
 		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Predefined signature.")]
 		protected virtual void RaisePostDataChangedEvent() {
 			this.OnTextChanged();
-		}
-
-		/// <summary>
-		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
-		/// </summary>
-		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
-		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
-		protected virtual void RaisePostBackEvent(string eventArgument) {
 		}
 
 		/// <summary>

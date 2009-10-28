@@ -66,7 +66,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// to the new Access Token.
 		/// </para>
 		/// <para>
-		/// To associate a user account with the new access token, <see cref="HttpContext.Current.User"/> may be
+		/// To associate a user account with the new access token, 
+		/// <see cref="System.Web.HttpContext.User">HttpContext.Current.User</see> may be
 		/// useful in an ASP.NET web application within the implementation of this method.
 		/// Alternatively you may store the access token here without associating with a user account,
 		/// and wait until <see cref="WebConsumer.ProcessUserAuthorization()"/> or

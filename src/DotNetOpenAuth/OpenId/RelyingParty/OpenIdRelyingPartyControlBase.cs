@@ -517,6 +517,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
 		/// </summary>
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Predefined signature.")]
 		protected virtual void RaisePostBackEvent(string eventArgument) {
 		}
 
