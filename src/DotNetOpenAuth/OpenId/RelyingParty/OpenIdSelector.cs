@@ -53,19 +53,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		private const string AuthenticatedAsToolTipViewStateKey = "AuthenticatedAsToolTip";
 
-		/// <summary>
-		/// The viewstate key to use for storing the value of the <see cref="ShowInfoCard"/> property.
-		/// </summary>
-		private const string ShowInfoCardViewStateKey = "ShowInfoCard";
-
 		#endregion
 
 		#region Property defaults
-
-		/// <summary>
-		/// The default value for the <see cref="ShowInfoCard"/> property.
-		/// </summary>
-		private const bool ShowInfoCardDefault = true;
 
 		/// <summary>
 		/// The default value for the <see cref="AuthenticatedAsToolTip"/> property.
@@ -132,17 +122,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the Information Card selector button
-		/// will be displayed on browsers that support it.
-		/// </summary>
-		[Bindable(true), DefaultValue(ShowInfoCardDefault), Category(AppearanceCategory)]
-		[Description("Sets visibility of the Information Card selector button.")]
-		public bool ShowInfoCard {
-			get { return (bool)(this.ViewState[ShowInfoCardViewStateKey] ?? ShowInfoCardDefault); }
-			set { this.ViewState[ShowInfoCardViewStateKey] = value; }
-		}
-
-		/// <summary>
 		/// Gets a <see cref="T:System.Web.UI.ControlCollection"/> object that represents the child controls for a specified server control in the UI hierarchy.
 		/// </summary>
 		/// <returns>
@@ -206,9 +185,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
-			foreach (var button in this.Buttons) {
-				button.EnsureValid();
-			}
+			this.EnsureValidButtons();
 
 			var css = new HtmlLink();
 			css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
@@ -236,7 +213,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.positiveAssertionField.ClientID);
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
 
-			this.PreloadDiscovery(this.Buttons.Select(op => op.OPIdentifier).Where(id => id != null));
+			this.PreloadDiscovery(this.Buttons.OfType<SelectorProviderButton>().Select(op => op.OPIdentifier).Where(id => id != null));
 		}
 
 		/// <summary>
@@ -247,9 +224,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIdProviders");
 			writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 
-			foreach (var op in this.Buttons) {
-				writer.AddAttribute(HtmlTextWriterAttribute.Id, (string)op.OPIdentifier ?? "OpenIDButton");
-				writer.AddAttribute(HtmlTextWriterAttribute.Class, op.OPIdentifier != null ? "OPButton" : "OpenIDButton");
+			foreach (var button in this.Buttons) {
+				SelectorProviderButton op = null;
+				SelectorOpenIdButton openid = null;
+				SelectorInfoCardButton ic = null;
+				if ((op = button as SelectorProviderButton) != null) {
+					writer.AddAttribute(HtmlTextWriterAttribute.Id, op.OPIdentifier);
+					writer.AddAttribute(HtmlTextWriterAttribute.Class, "OPButton");
+				} else if ((openid = button as SelectorOpenIdButton) != null) {
+					writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDButton");
+					writer.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIDButton");
+				} else if ((ic = button as SelectorInfoCardButton) != null) {
+					writer.AddAttribute(HtmlTextWriterAttribute.Class, "infocard");
+				}
+
 				writer.RenderBeginTag(HtmlTextWriterTag.Li);
 
 				writer.AddAttribute(HtmlTextWriterAttribute.Href, "#");
@@ -258,35 +246,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-				writer.AddAttribute(HtmlTextWriterAttribute.Src, op.Image);
-				writer.RenderBeginTag(HtmlTextWriterTag.Img);
-				writer.RenderEndTag();
+				if (op != null || openid != null) {
+					if (op != null) {
+						writer.AddAttribute(HtmlTextWriterAttribute.Src, op.Image);
+					} else {
+						writer.AddAttribute(HtmlTextWriterAttribute.Src, openid.Image);
+					}
+					writer.RenderBeginTag(HtmlTextWriterTag.Img);
+					writer.RenderEndTag();
 
-				writer.AddAttribute(HtmlTextWriterAttribute.Src, this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
-				writer.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
-				writer.AddAttribute(HtmlTextWriterAttribute.Title, this.AuthenticatedAsToolTip);
-				writer.RenderBeginTag(HtmlTextWriterTag.Img);
-				writer.RenderEndTag();
-
-				writer.RenderEndTag(); // </div>
-
-				writer.AddAttribute(HtmlTextWriterAttribute.Class, "ui-widget-overlay");
-				writer.RenderBeginTag(HtmlTextWriterTag.Div);
-				writer.RenderEndTag();
-
-				writer.RenderEndTag(); // </div>
-				writer.RenderEndTag(); // </a>
-				writer.RenderEndTag(); // </li>
-			}
-
-			if (this.ShowInfoCard) {
-				writer.AddAttribute(HtmlTextWriterAttribute.Class, "infocard");
-				writer.RenderBeginTag(HtmlTextWriterTag.Li);
-				writer.RenderBeginTag(HtmlTextWriterTag.A);
-				writer.RenderBeginTag(HtmlTextWriterTag.Div);
-				writer.RenderBeginTag(HtmlTextWriterTag.Div);
-
-				this.infoCardSelector.RenderControl(writer);
+					writer.AddAttribute(HtmlTextWriterAttribute.Src, this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
+					writer.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
+					writer.AddAttribute(HtmlTextWriterAttribute.Title, this.AuthenticatedAsToolTip);
+					writer.RenderBeginTag(HtmlTextWriterTag.Img);
+					writer.RenderEndTag();
+				} else {
+					this.infoCardSelector.RenderControl(writer);
+				}
 
 				writer.RenderEndTag(); // </div>
 
@@ -359,6 +335,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.TokenProcessingErrorEventArgs"/> instance containing the event data.</param>
 		private void InfoCardSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
 			this.OnTokenProcessingError(e);
+		}
+
+		/// <summary>
+		/// Ensures the <see cref="Buttons"/> collection has a valid set of buttons.
+		/// </summary>
+		private void EnsureValidButtons() {
+			foreach (var button in this.Buttons) {
+				button.EnsureValid();
+			}
+
+			// Also make sure that there are appropriate numbers of each type of button.
+			// TODO: code here
 		}
 	}
 }

@@ -23,13 +23,13 @@ namespace WebFormsRelyingParty {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// openIdButtonPanel control.
+        /// openIdSelector control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector openIdButtonPanel;
+        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector openIdSelector;
         
         /// <summary>
         /// topWindowUrl control.

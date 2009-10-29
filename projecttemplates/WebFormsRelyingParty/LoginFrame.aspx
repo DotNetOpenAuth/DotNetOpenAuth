@@ -40,11 +40,12 @@
 			OnFailed="openIdSelector_Failed" OnCanceled="openIdSelector_Failed" OnReceivedToken="openIdSelector_ReceivedToken"
 			OnTokenProcessingError="openIdSelector_TokenProcessingError">
 			<Buttons>
-				<rp:SelectorButton OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
-				<rp:SelectorButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
-				<rp:SelectorButton OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />
-				<rp:SelectorButton OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />
-				<rp:SelectorButton Image="images/openid.gif" />
+				<rp:SelectorProviderButton OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
+				<rp:SelectorProviderButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
+				<rp:SelectorProviderButton OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />
+				<rp:SelectorProviderButton OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />
+				<rp:SelectorOpenIdButton Image="images/openid.gif" />
+				<rp:SelectorInfoCardButton />
 			</Buttons>
 		</rp:OpenIdSelector>
 		<asp:HiddenField runat="server" ID="topWindowUrl" />
