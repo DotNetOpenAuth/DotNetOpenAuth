@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SelectorButton.cs" company="Andrew Arnott">
+// <copyright file="SelectorButtonContract.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,16 +10,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web.UI;
 
 	/// <summary>
-	/// A button that would appear in the <see cref="OpenIdSelector"/> control via its <see cref="OpenIdSelector.Buttons"/> collection.
+	/// The contract class for the <see cref="SelectorButton"/> class.
 	/// </summary>
-	[ContractClass(typeof(SelectorButtonContract))]
-	public abstract class SelectorButton {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SelectorButton"/> class.
-		/// </summary>
-		protected SelectorButton() {
-		}
-
+	[ContractClassFor(typeof(SelectorButton))]
+	internal abstract class SelectorButtonContract : SelectorButton {
 		/// <summary>
 		/// Ensures that this button has been initialized to a valid state.
 		/// </summary>
@@ -28,19 +22,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// to derive from this class outside the assembly, which suits our purposes since the
 		/// <see cref="OpenIdSelector"/> control is not designed for an extensible set of button types.
 		/// </remarks>
-		internal abstract void EnsureValid();
+		internal override void EnsureValid() {
+		}
 
 		/// <summary>
 		/// Renders the leading attributes for the LI tag.
 		/// </summary>
 		/// <param name="writer">The writer.</param>
-		protected internal abstract void RenderLeadingAttributes(HtmlTextWriter writer);
+		protected internal override void RenderLeadingAttributes(HtmlTextWriter writer) {
+			Contract.Requires<ArgumentNullException>(writer != null);
+		}
 
 		/// <summary>
 		/// Renders the content of the button.
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		/// <param name="selector">The containing selector control.</param>
-		protected internal abstract void RenderButtonContent(HtmlTextWriter writer, OpenIdSelector selector);
+		protected internal override void RenderButtonContent(HtmlTextWriter writer, OpenIdSelector selector) {
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Requires<ArgumentNullException>(selector != null);
+		}
 	}
 }

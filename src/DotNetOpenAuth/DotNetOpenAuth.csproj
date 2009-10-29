@@ -480,6 +480,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorInfoCardButton.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />

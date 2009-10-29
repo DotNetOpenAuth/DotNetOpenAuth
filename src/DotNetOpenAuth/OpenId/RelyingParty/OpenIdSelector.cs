@@ -44,9 +44,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region ViewState keys
 
 		/// <summary>
-		/// The viewstate key to use for storing the value of the <see cref="Providers"/> property.
+		/// The viewstate key to use for storing the value of the <see cref="Buttons"/> property.
 		/// </summary>
-		private const string ProvidersViewStateKey = "Providers";
+		private const string ButtonsViewStateKey = "Buttons";
 
 		/// <summary>
 		/// The viewstate key to use for storing the value of the <see cref="AuthenticatedAsToolTip"/> property.
@@ -73,11 +73,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The hidden field that will transmit the positive assertion to the RP.
 		/// </summary>
 		private HiddenField positiveAssertionField;
-
-		/// <summary>
-		/// The InfoCard selector which may be displayed alongside the OP buttons.
-		/// </summary>
-		private InfoCardSelector infoCardSelector;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdSelector"/> class.
@@ -111,12 +106,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[PersistenceMode(PersistenceMode.InnerProperty)]
 		public Collection<SelectorButton> Buttons {
 			get {
-				if (this.ViewState[ProvidersViewStateKey] == null) {
+				if (this.ViewState[ButtonsViewStateKey] == null) {
 					var providers = new Collection<SelectorButton>();
-					this.ViewState[ProvidersViewStateKey] = providers;
+					this.ViewState[ButtonsViewStateKey] = providers;
 					return providers;
 				} else {
-					return (Collection<SelectorButton>)this.ViewState[ProvidersViewStateKey];
+					return (Collection<SelectorButton>)this.ViewState[ButtonsViewStateKey];
 				}
 			}
 		}
@@ -135,6 +130,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets the InfoCard selector which may be displayed alongside the OP buttons.
+		/// </summary>
+		internal InfoCardSelector InfoCardSelector { get; set; }
+
+		/// <summary>
 		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
 		/// </summary>
 		/// <value>
@@ -150,12 +150,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void CreateChildControls() {
 			base.CreateChildControls();
 
-			this.infoCardSelector = new InfoCardSelector();
-			this.infoCardSelector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
-			this.infoCardSelector.ImageSize = InfoCardImageSize.Size60x42;
-			this.infoCardSelector.ReceivedToken += this.InfoCardSelector_ReceivedToken;
-			this.infoCardSelector.TokenProcessingError += this.InfoCardSelector_TokenProcessingError;
-			this.Controls.Add(this.infoCardSelector);
+			this.InfoCardSelector = new InfoCardSelector();
+			this.InfoCardSelector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
+			this.InfoCardSelector.ImageSize = InfoCardImageSize.Size60x42;
+			this.InfoCardSelector.ReceivedToken += this.InfoCardSelector_ReceivedToken;
+			this.InfoCardSelector.TokenProcessingError += this.InfoCardSelector_TokenProcessingError;
+			this.Controls.Add(this.InfoCardSelector);
 
 			this.textBox = new OpenIdAjaxTextBox();
 			this.textBox.ID = "openid_identifier";
@@ -225,18 +225,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 
 			foreach (var button in this.Buttons) {
-				SelectorProviderButton op = null;
-				SelectorOpenIdButton openid = null;
-				SelectorInfoCardButton ic = null;
-				if ((op = button as SelectorProviderButton) != null) {
-					writer.AddAttribute(HtmlTextWriterAttribute.Id, op.OPIdentifier);
-					writer.AddAttribute(HtmlTextWriterAttribute.Class, "OPButton");
-				} else if ((openid = button as SelectorOpenIdButton) != null) {
-					writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDButton");
-					writer.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIDButton");
-				} else if ((ic = button as SelectorInfoCardButton) != null) {
-					writer.AddAttribute(HtmlTextWriterAttribute.Class, "infocard");
-				}
+				button.RenderLeadingAttributes(writer);
 
 				writer.RenderBeginTag(HtmlTextWriterTag.Li);
 
@@ -246,23 +235,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-				if (op != null || openid != null) {
-					if (op != null) {
-						writer.AddAttribute(HtmlTextWriterAttribute.Src, op.Image);
-					} else {
-						writer.AddAttribute(HtmlTextWriterAttribute.Src, openid.Image);
-					}
-					writer.RenderBeginTag(HtmlTextWriterTag.Img);
-					writer.RenderEndTag();
-
-					writer.AddAttribute(HtmlTextWriterAttribute.Src, this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
-					writer.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
-					writer.AddAttribute(HtmlTextWriterAttribute.Title, this.AuthenticatedAsToolTip);
-					writer.RenderBeginTag(HtmlTextWriterTag.Img);
-					writer.RenderEndTag();
-				} else {
-					this.infoCardSelector.RenderControl(writer);
-				}
+				button.RenderButtonContent(writer, this);
 
 				writer.RenderEndTag(); // </div>
 
