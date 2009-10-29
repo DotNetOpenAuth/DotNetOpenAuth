@@ -606,6 +606,14 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	// Restore a previously achieved state (from pre-postback) if it is given.
 	window.dnoa_internal.deserializePreviousAuthentication(findOrCreateHiddenField().value);
 
+	// public methods
+	box.setValue = function(value) {
+		box.value = value;
+		if (box.value) {
+			box.dnoi_internal.performDiscovery();
+		}
+	};
+
 	// public events
 	// box.onStateChanged(state)
 }

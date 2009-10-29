@@ -11,7 +11,7 @@ $(function() {
 
 	var ajaxbox = $('#openid_identifier')[0];
 	if (hint != 'infocard') {
-		ajaxbox.value = hint;
+		ajaxbox.setValue(hint);
 	}
 
 	if (document.infoCard.isSupported()) {
