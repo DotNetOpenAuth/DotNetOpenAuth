@@ -200,7 +200,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
 		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
-			ErrorUtilities.VerifyNonZeroLength(propertyName, "propertyName");
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
 			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
 			foreach (var ext in this.clientScriptExtensions.Keys) {
 				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);

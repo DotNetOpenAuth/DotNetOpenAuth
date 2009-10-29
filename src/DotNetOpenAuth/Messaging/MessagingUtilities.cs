@@ -148,9 +148,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="parts">The parts to include in the POST entity.</param>
 		/// <returns>The HTTP response.</returns>
 		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
-			ErrorUtilities.VerifyArgumentNotNull(parts, "parts");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(parts != null);
 
 			string boundary = Guid.NewGuid().ToString();
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);

@@ -279,9 +279,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void SetUntrustedCallbackArgument(string key, string value) {
-			ErrorUtilities.VerifyNonZeroLength(key, "key");
-			ErrorUtilities.VerifyArgumentNotNull(value, "value");
-
 			this.returnToArgs[key] = value;
 		}
 

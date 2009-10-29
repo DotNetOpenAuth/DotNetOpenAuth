@@ -287,8 +287,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to make a security-sensitive decision.
 		/// </remarks>
 		public string GetUntrustedCallbackArgument(string key) {
-			ErrorUtilities.VerifyArgumentNotNull(key, "key");
-
 			string value;
 			this.untrustedCallbackArguments.TryGetValue(key, out value);
 			return value;

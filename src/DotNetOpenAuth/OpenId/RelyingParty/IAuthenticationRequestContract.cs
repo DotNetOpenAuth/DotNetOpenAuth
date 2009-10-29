@@ -85,6 +85,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			throw new NotImplementedException();
 		}
 
+		void IAuthenticationRequest.SetUntrustedCallbackArgument(string key, string value) {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(key));
+			Contract.Requires<ArgumentNullException>(value != null);
+			throw new NotImplementedException();
+		}
+
 		#endregion
 	}
 }
