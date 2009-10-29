@@ -152,7 +152,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets a list of custom behaviors to apply to OpenID actions.
 		/// </summary>
-		internal ICollection<IProviderBehavior> Behaviors {
+		/// <remarks>
+		/// Adding behaviors can impact the security settings of the <see cref="OpenIdProvider"/>
+		/// in ways that subsequently removing the behaviors will not reverse.
+		/// </remarks>
+		public ICollection<IProviderBehavior> Behaviors {
 			get { return this.behaviors; }
 		}
 
