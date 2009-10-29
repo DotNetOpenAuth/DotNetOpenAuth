@@ -226,7 +226,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Adding behaviors can impact the security settings of this <see cref="OpenIdRelyingParty"/>
 		/// instance in ways that subsequently removing the behaviors will not reverse.
 		/// </remarks>
-		public ICollection<IRelyingPartyBehavior> Behaviors {
+		internal ICollection<IRelyingPartyBehavior> Behaviors {
 			get { return this.behaviors; }
 		}
 
