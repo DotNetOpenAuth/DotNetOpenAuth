@@ -62,7 +62,8 @@
 		</Triggers>
 	</asp:UpdatePanel>
 	<h3>
-		OpenIDs &amp; InfoCards</h3>
+		OpenIDs &amp; InfoCards
+	</h3>
 	<asp:Repeater ID="Repeater1" runat="server">
 		<HeaderTemplate>
 			<ul class="AuthTokens">
@@ -81,9 +82,9 @@
 			</ul>
 		</FooterTemplate>
 	</asp:Repeater>
-	<asp:Panel ID="Panel1" runat="server" DefaultButton="addOpenId">
-		<rp:OpenIdAjaxTextBox runat="server" ID="openIdBox" OnLoggedIn="openIdBox_LoggedIn" />
-		<asp:Button ID="addOpenId" runat="server" Text="Add Identifier" OnClick="addOpenId_Click" />
+	<asp:Panel ID="Panel1" runat="server">
+		<rp:OpenIdAjaxTextBox runat="server" ID="openIdBox" OnLoggedIn="openIdBox_LoggedIn"
+			AutoPostBack="true" />
 		<asp:Label ID="differentAccountLabel" runat="server" EnableViewState="False" ForeColor="Red"
 			Text="This identifier already belongs to a different user account." Visible="False" />
 		<asp:Label ID="alreadyLinkedLabel" runat="server" EnableViewState="False" ForeColor="Red"
