@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
-			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
+			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
 			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 			this.accessor = OAuthChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webRequestHandler;
