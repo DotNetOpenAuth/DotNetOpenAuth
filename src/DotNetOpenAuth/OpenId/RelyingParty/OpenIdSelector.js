@@ -77,16 +77,19 @@ $(function() {
 		var openid = new window.OpenIdIdentifier(identifier);
 		if (!openid) { throw 'checkidSetup called without an identifier.'; }
 		openid.login(function(discoveryResult, respondingEndpoint, extensionResponses) {
-			doLogin(respondingEndpoint, discoveryResult);
+			doLogin(discoveryResult, respondingEndpoint);
 		});
 	}
 
 	// Sends the positive assertion we've collected to the server and actually logs the user into the RP.
-	function doLogin(respondingEndpoint, discoveryResult) {
+	function doLogin(discoveryResult, respondingEndpoint) {
 		var retain = true; //!$('#NotMyComputer')[0].selected;
 		$.cookie('openid_identifier', retain ? discoveryResult.userSuppliedIdentifier : null, { path: window.aspnetapppath });
 		window.postLoginAssertion(respondingEndpoint.response.toString(), window.parent.location.href);
 	}
+
+	// take over how the text box does postbacks.
+	ajaxbox.dnoi_internal.postback = doLogin;
 
 	// This FrameManager will be used for background logins for the OP buttons
 	// and the last used identifier.  It is NOT the frame manager used by the
@@ -141,7 +144,7 @@ $(function() {
 		// If the user clicked on a button that has the "we're ready to log you in immediately",
 		// then log them in!
 		if (respondingEndpoint) {
-			doLogin(respondingEndpoint, discoveryResult);
+			doLogin(discoveryResult, respondingEndpoint);
 		} else if ($(this).hasClass('OPButton')) {
 			checkidSetup($(this)[0].id);
 		} else if ($(this).hasClass('infocard') && wasGrayedOut) {

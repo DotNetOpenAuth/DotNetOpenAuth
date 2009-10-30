@@ -160,6 +160,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.textBox = new OpenIdAjaxTextBox();
 			this.textBox.ID = "openid_identifier";
 			this.textBox.HookFormSubmit = false;
+			this.textBox.ShowLogOnPostBackButton = true;
 			this.Controls.Add(this.textBox);
 
 			this.positiveAssertionField = new HiddenField();

@@ -137,6 +137,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string LogOnToolTipViewStateKey = "LoginToolTip";
 
 		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="LogOnPostBackToolTip"/> property.
+		/// </summary>
+		private const string LogOnPostBackToolTipViewStateKey = "LoginPostBackToolTip";
+
+		/// <summary>
 		/// The viewstate key to use for storing the value of the <see cref="Name"/> property.
 		/// </summary>
 		private const string NameViewStateKey = "Name";
@@ -170,6 +175,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The viewstate key to use for storing the value of the <see cref="DownloadYahooUILibrary"/> property.
 		/// </summary>
 		private const string DownloadYahooUILibraryViewStateKey = "DownloadYahooUILibrary";
+
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="ShowLogOnPostBackButton"/> property.
+		/// </summary>
+		private const string ShowLogOnPostBackButtonViewStateKey = "ShowLogOnPostBackButton";
 
 		#endregion
 
@@ -251,14 +261,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string LogOnToolTipDefault = "Click here to log in using a pop-up window.";
 
 		/// <summary>
+		/// The default value for the <see cref="LogOnPostBackToolTip"/> property.
+		/// </summary>
+		private const string LogOnPostBackToolTipDefault = "Click here to log in immediately.";
+
+		/// <summary>
 		/// The default value for the <see cref="RetryText"/> property.
 		/// </summary>
 		private const string RetryTextDefault = "RETRY";
 
 		/// <summary>
-		/// The default vlaue for the <see cref="DownloadYahooUILibrary"/> property.
+		/// The default value for the <see cref="DownloadYahooUILibrary"/> property.
 		/// </summary>
 		private const bool DownloadYahooUILibraryDefault = true;
+
+		/// <summary>
+		/// The default value for the <see cref="ShowLogOnPostBackButton"/> property.
+		/// </summary>
+		private const bool ShowLogOnPostBackButtonDefault = false;
 
 		#endregion
 
@@ -480,6 +500,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets the rool tip text that appears on the LOG IN button when clicking the button will result in an immediate postback.
+		/// </summary>
+		[Bindable(true), DefaultValue(LogOnPostBackToolTipDefault), Localizable(true), Category(AppearanceCategory)]
+		[Description("The tool tip text that appears on the LOG IN button when clicking the button will result in an immediate postback.")]
+		public string LogOnPostBackToolTip {
+			get { return (string)(this.ViewState[LogOnPostBackToolTipViewStateKey] ?? LogOnPostBackToolTipDefault); }
+			set { this.ViewState[LogOnPostBackToolTipViewStateKey] = value ?? string.Empty; }
+		}
+
+		/// <summary>
 		/// Gets or sets the text that appears on the RETRY button in cases where authentication times out.
 		/// </summary>
 		[Bindable(true), DefaultValue(RetryTextDefault), Localizable(true), Category(AppearanceCategory)]
@@ -581,6 +611,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public bool DownloadYahooUILibrary {
 			get { return (bool)(this.ViewState[DownloadYahooUILibraryViewStateKey] ?? DownloadYahooUILibraryDefault); }
 			set { this.ViewState[DownloadYahooUILibraryViewStateKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the "Log in" button will be shown
+		/// to initiate a postback containing the positive assertion.
+		/// </summary>
+		[Bindable(true), DefaultValue(ShowLogOnPostBackButtonDefault), Category(AppearanceCategory)]
+		[Description("Whether the log in button will be shown to initiate a postback containing the positive assertion.")]
+		public bool ShowLogOnPostBackButton {
+			get { return (bool)(this.ViewState[ShowLogOnPostBackButtonViewStateKey] ?? ShowLogOnPostBackButtonDefault); }
+			set { this.ViewState[ShowLogOnPostBackButtonViewStateKey] = value; }
 		}
 
 		#endregion
@@ -788,7 +829,7 @@ loader.insert();";
 			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", this.Name, Environment.NewLine);
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
-				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function() {{{18};}});{19}",
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19}, {20}, function() {{{21};}});{22}",
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
@@ -799,6 +840,8 @@ loader.insert();";
 				string.IsNullOrEmpty(this.OnClientAssertionReceived) ? "null" : "'" + this.OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
 				MessagingUtilities.GetSafeJavascriptValue(this.LogOnText),
 				MessagingUtilities.GetSafeJavascriptValue(this.LogOnToolTip),
+				this.ShowLogOnPostBackButton ? "true" : "false",
+				MessagingUtilities.GetSafeJavascriptValue(this.LogOnPostBackToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.RetryText),
 				MessagingUtilities.GetSafeJavascriptValue(this.RetryToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.BusyToolTip),
@@ -807,7 +850,8 @@ loader.insert();";
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationSucceededToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticatedAsToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationFailedToolTip),
-				this.AutoPostBack ? Page.ClientScript.GetPostBackEventReference(this, null) : null,
+				this.AutoPostBack ? "true" : "false",
+				Page.ClientScript.GetPostBackEventReference(this, null),
 				Environment.NewLine);
 
 			startupScript.AppendLine("</script>");

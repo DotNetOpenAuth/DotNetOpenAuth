@@ -8,11 +8,14 @@
 
 function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
 		throttle, timeout, assertionReceivedCode,
-		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
+		loginButtonText, loginButtonToolTip, showLoginPostBackButton, loginPostBackToolTip,
+		retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
 		authenticatedByToolTip, authenticatedAsToolTip, authenticationFailedToolTip,
-		postback) {
-	box.dnoi_internal = {};
+		autoPostback, postback) {
+	box.dnoi_internal = {
+		postback: postback
+	};
 	if (assertionReceivedCode) {
 		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); };
 	}
@@ -48,6 +51,21 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		splitButton.on('click', onclick);
 
 		return splitButton;
+	};
+
+	box.dnoi_internal.createLoginPostBackButton = function() {
+		var postback = function() {
+			var discoveryResult = window.dnoa_internal.discoveryResults[box.value];
+			var respondingEndpoint = discoveryResult.findSuccessfulRequest();
+			box.dnoi_internal.postback(discoveryResult, respondingEndpoint, respondingEndpoint.extensionResponses, { background: false });
+		};
+		var button = box.dnoi_internal.constructButton(loginButtonText, loginPostBackToolTip, postback);
+		button.style.visibility = 'visible';
+		button.destroy = function() {
+			button.parentNode.removeChild(button);
+		};
+
+		return button;
 	};
 
 	box.dnoi_internal.createLoginButton = function(providers) {
@@ -158,6 +176,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.loginButton.destroy();
 			box.dnoi_internal.loginButton = null;
 		}
+		if (box.dnoi_internal.postbackLoginButton) {
+			box.dnoi_internal.postbackLoginButton.destroy();
+			box.dnoi_internal.postbackLoginButton = null;
+		}
 		box.title = '';
 		box.dnoi_internal.state = state;
 		var opLogo;
@@ -182,8 +204,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			}
-			box.dnoi_internal.success_icon.style.visibility = 'visible';
-			box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
+			if (showLoginPostBackButton) {
+				box.dnoi_internal.postbackLoginButton = box.dnoi_internal.createLoginPostBackButton();
+			} else {
+				box.dnoi_internal.success_icon.style.visibility = 'visible';
+				box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
+			}
 			box.title = box.dnoi_internal.claimedIdentifier;
 			window.status = "Authenticated as " + authenticatedAs;
 		} else if (state == "setup") {
@@ -416,7 +442,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.onauthenticated(box, extensionResponses);
 			}
 
-			if (box.dnoi_internal.submitPending) {
+			if (showLoginPostBackButton && !state.background) {
+				box.dnoi_internal.postback(discoveryResult, serviceEndpoint, extensionResponses, state);
+			} else if (box.dnoi_internal.submitPending) {
 				// We submit the form BEFORE resetting the submitPending so
 				// the submit handler knows we've already tried this route.
 				if (box.dnoi_internal.submitPending === true) {
@@ -426,12 +454,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				}
 
 				box.dnoi_internal.submitPending = null;
-			} else {
+			} else if (!state.deserialized && autoPostback) {
 				// as long as this is a fresh auth response, postback to the server if configured to do so.
-				if (!state.deserialized) {
-					// this function is a no-op if the control's AutoPostback property is set to false.
-					postback();
-				}
+				box.dnoi_internal.postback(discoveryResult, serviceEndpoint, extensionResponses, state);
 			}
 		}
 	});
