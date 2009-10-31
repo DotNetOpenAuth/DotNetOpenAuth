@@ -71,6 +71,8 @@
   <xsl:template name="combineTextNames">
     <xsl:param name="left" />
     <xsl:param name="right" />
+    <xsl:param name="concatenateOperator" select="'.'" />
+    
     <xsl:choose>
       <xsl:when test="count($left/name) &gt; 1">
         <xsl:choose>
@@ -80,7 +82,7 @@
               <xsl:variable name="language" select="@language" />
               <name language="{$language}">
                 <xsl:apply-templates select="." />
-                <xsl:value-of select="'.'"/>
+                <xsl:copy-of select="$concatenateOperator" />
                 <xsl:apply-templates select="$right/name[@language=$language]" />
               </name>
             </xsl:for-each>
@@ -90,8 +92,11 @@
             <xsl:for-each select="$left/name">
               <xsl:variable name="language" select="@language" />
               <name language="{$language}">
-                  <xsl:apply-templates select="." />
-                  <xsl:value-of select="concat('.', $right/name)"/>
+                <xsl:apply-templates select="." />
+                <xsl:if test="$right/name">
+                <xsl:copy-of select="$concatenateOperator"/>
+                </xsl:if>
+                <xsl:value-of select="$right/name"/>
               </name>
             </xsl:for-each>            
           </xsl:otherwise>
@@ -104,7 +109,10 @@
             <xsl:for-each select="$right/name">
               <xsl:variable name="language" select="@language" />
               <name language="{.}">
-                <xsl:value-of select="concat($left/name, '.')"/>
+                <xsl:value-of select="$left/name"/>
+                <xsl:if test="$left/name">
+                <xsl:copy-of select="$concatenateOperator"/>
+                </xsl:if>
                 <xsl:apply-templates select="." />
               </name>
             </xsl:for-each>
@@ -112,7 +120,11 @@
           <xsl:otherwise>
             <!-- neiter is multi-language -->
             <name>
-              <xsl:value-of select="concat($left/name,'.',$right/name)" />
+              <xsl:value-of select="$left/name"/>
+              <xsl:if test="$left/name and $right/name">
+              <xsl:copy-of select="$concatenateOperator"/>
+              </xsl:if>
+              <xsl:value-of select="$right/name"/>
             </name>
           </xsl:otherwise>
         </xsl:choose>
@@ -125,8 +137,13 @@
   <!-- if there are templates: <name langauge="c">Blah<T></name><name language="v">Blah(Of T)</name> -->
   <xsl:template name="simpleTextNames">
     <xsl:choose>
-      <xsl:when test="specialization | templates">
-        <xsl:apply-templates select="specialization | templates" mode="index">
+      <xsl:when test="specialization">
+        <xsl:apply-templates select="specialization" mode="index">
+          <xsl:with-param name="name" select="apidata/@name" />
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:when test="templates">
+        <xsl:apply-templates select="templates" mode="index">
           <xsl:with-param name="name" select="apidata/@name" />
         </xsl:apply-templates>
       </xsl:when>
@@ -219,6 +236,30 @@
     <xsl:value-of select="@name" />
   </xsl:template>
 
+  <xsl:template match="arrayOf" mode="index">
+    <name language="c">
+      <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="index"/>
+      <xsl:text>[</xsl:text>
+      <xsl:if test="number(@rank) &gt; 1">,</xsl:if>
+      <xsl:text>]</xsl:text>
+    </name>
+    <name language="v">
+      <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="index"/>
+      <xsl:text>(</xsl:text>
+      <xsl:if test="number(@rank) &gt; 1">,</xsl:if>
+      <xsl:text>)</xsl:text>
+    </name>
+  </xsl:template>
+
+  <xsl:template match="pointerTo" mode="index">
+    <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="index"/>
+    <xsl:text>*</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="referenceTo" mode="index">
+    <xsl:apply-templates select="type|arrayOf|pointerTo|referenceTo|template|specialization|templates" mode="index"/>
+  </xsl:template>
+
   <xsl:template match="type" mode="index">
     <xsl:call-template name="textNames" />
   </xsl:template>
@@ -226,7 +267,7 @@
   <xsl:template match="name/name">
     <xsl:variable name="lang" select="ancestor::*/@language"/>
     
-    <xsl:if test="@language = $lang">
+    <xsl:if test="not(@language) or @language = $lang">
       <xsl:value-of select="."/>
     </xsl:if>
   </xsl:template>
@@ -234,5 +275,45 @@
   <xsl:template match="name/text()">
     <xsl:value-of select="."/>
   </xsl:template>
-  
+
+  <xsl:template name="operatorTextNames">
+    <xsl:variable name="left">
+      <xsl:if test="parameters/parameter[1]">
+        <xsl:choose>
+          <xsl:when test="parameters/parameter[1]//specialization | parameters/parameter[1]//templates | parameters/parameter[1]//arrayOf">
+            <xsl:apply-templates select="parameters/parameter[1]" mode="index" />
+          </xsl:when>
+          <xsl:otherwise>
+            <name>
+              <xsl:apply-templates select="parameters/parameter[1]" mode="index" />
+            </name>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+    </xsl:variable>
+
+    <xsl:variable name="right">
+      <xsl:if test="returns[1]">
+        <xsl:choose>
+          <xsl:when test="returns[1]//specialization | returns[1]//templates | returns[1]//arrayOf">
+            <xsl:apply-templates select="returns[1]" mode="index" />
+          </xsl:when>
+          <xsl:otherwise>
+            <name>
+              <xsl:apply-templates select="returns[1]" mode="index" />
+            </name>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+    </xsl:variable>
+
+    <xsl:call-template name="combineTextNames">
+      <xsl:with-param name="left" select="msxsl:node-set($left)" />
+      <xsl:with-param name="right" select="msxsl:node-set($right)" />
+      <xsl:with-param name="concatenateOperator">
+        <xsl:text> to </xsl:text>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+
 </xsl:stylesheet>

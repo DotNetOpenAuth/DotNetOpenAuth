@@ -37,6 +37,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>
 		/// 	<c>true</c> if the given identifier is the valid, unique identifier for some uesr (and NOT a PPID); otherwise, <c>false</c>.
 		/// </returns>
+		[Pure]
 		bool IsUserLocalIdentifier(Identifier identifier);
 	}
 
@@ -58,9 +59,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// openid.claimed_id and openid.local_id parameters.  Must not be null.
 		/// </returns>
 		Uri IDirectedIdentityIdentifierProvider.GetIdentifier(Identifier localIdentifier, Realm relyingPartyRealm) {
-			Contract.Requires(localIdentifier != null);
-			Contract.Requires(relyingPartyRealm != null);
-
+			Contract.Requires<ArgumentNullException>(localIdentifier != null);
+			Contract.Requires<ArgumentNullException>(relyingPartyRealm != null);
+			Contract.Requires<ArgumentException>(((IDirectedIdentityIdentifierProvider)this).IsUserLocalIdentifier(localIdentifier), OpenIdStrings.ArgumentIsPpidIdentifier);
 			throw new NotImplementedException();
 		}
 
@@ -72,7 +73,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// 	<c>true</c> if the given identifier is the valid, unique identifier for some uesr (and NOT a PPID); otherwise, <c>false</c>.
 		/// </returns>
 		bool IDirectedIdentityIdentifierProvider.IsUserLocalIdentifier(Identifier identifier) {
-			Contract.Requires(identifier != null);
+			Contract.Requires<ArgumentNullException>(identifier != null);
+
 			throw new NotImplementedException();
 		}
 

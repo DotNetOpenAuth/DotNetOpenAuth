@@ -367,7 +367,7 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Not a recognized XRI format..
         /// </summary>
         internal static string InvalidXri {
             get {

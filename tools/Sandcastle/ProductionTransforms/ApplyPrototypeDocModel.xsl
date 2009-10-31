@@ -128,7 +128,7 @@
 
   <xsl:template name="projectTopic">
     <api id="R:{$project}">
-      <topicdata group="list" subgroup="namespaces" />
+      <topicdata group="root" />
       <elements>
         <xsl:for-each select="/*/apis/api[apidata/@group='namespace']">
           <element api="{@id}" />

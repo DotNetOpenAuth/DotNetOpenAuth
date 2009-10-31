@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </param>
 		internal IndirectSignedResponse(SignedResponseRequest request)
 			: base(request, Protocol.Lookup(GetVersion(request)).Args.Mode.id_res) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			this.ReturnTo = request.ReturnTo;
 			this.ProviderEndpoint = request.Recipient.StripQueryArgumentsWithPrefix(Protocol.openid.Prefix);
@@ -77,8 +77,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="channel">The channel.  This is used only within the constructor and is not stored in a field.</param>
 		internal IndirectSignedResponse(CheckAuthenticationRequest previouslySignedMessage, Channel channel)
 			: base(GetVersion(previouslySignedMessage), previouslySignedMessage.ReturnTo, Protocol.Lookup(GetVersion(previouslySignedMessage)).Args.Mode.id_res) {
-			Contract.Requires(channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			// Copy all message parts from the check_authentication message into this one,
 			// except for the openid.mode parameter.
@@ -332,7 +331,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// cannot verify the private signature made by the relying party.
 		/// </remarks>
 		internal string GetReturnToArgument(string key) {
-			ErrorUtilities.VerifyNonZeroLength(key, "key");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(key));
 			ErrorUtilities.VerifyInternal(this.ReturnTo != null, "ReturnTo was expected to be required but is null.");
 
 			string value;
@@ -358,8 +357,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// A dictionary of the signed message parts.
 		/// </returns>
 		internal IDictionary<string, string> GetSignedMessageParts(Channel channel) {
-			Contract.Requires(channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			ITamperResistantOpenIdMessage signedSelf = this;
 			if (signedSelf.SignedParameterOrder == null) {

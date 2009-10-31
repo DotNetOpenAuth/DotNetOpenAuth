@@ -42,8 +42,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 		public static void SpreadSregToAX(this RelyingParty.IAuthenticationRequest request, AXAttributeFormats attributeFormats) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			var req = (RelyingParty.AuthenticationRequest)request;
 			var sreg = req.AppliedExtensions.OfType<ClaimsRequest>().SingleOrDefault();
@@ -99,8 +98,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// Never <c>null</c>.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 		public static ClaimsResponse UnifyExtensionsAsSreg(this RelyingParty.IAuthenticationResponse response, bool allowUnsigned) {
-			Contract.Requires(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			var resp = (RelyingParty.IAuthenticationResponse)response;
 			var sreg = allowUnsigned ? resp.GetUntrustedExtension<ClaimsResponse>() : resp.GetExtension<ClaimsResponse>();
@@ -140,8 +138,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// or a fabricated one based on the Attribute Exchange extension if found,
 		/// or <c>null</c> if no attribute extension request is found.</returns>
 		internal static ClaimsRequest UnifyExtensionsAsSreg(this Provider.IHostProcessedRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			var req = (Provider.AuthenticationRequest)request;
 			var sreg = req.GetExtension<ClaimsRequest>();
@@ -258,8 +255,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUri">The type URI of the attribute in axschema.org format.</param>
 		/// <returns>The demand level for the attribute.</returns>
 		private static DemandLevel GetDemandLevelFor(FetchRequest ax, string typeUri) {
-			Contract.Requires(ax != null);
-			Contract.Requires(!String.IsNullOrEmpty(typeUri));
+			Contract.Requires<ArgumentNullException>(ax != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 
 			foreach (AXAttributeFormats format in ForEachFormat(AXAttributeFormats.All)) {
 				string typeUriInFormat = TransformAXFormat(typeUri, format);
@@ -278,7 +275,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="attributeFormat">The attribute formats the RP will try if this discovery fails.</param>
 		/// <returns>The AX format(s) to use based on the Provider's advertised AX support.</returns>
 		private static bool TryDetectOPAttributeFormat(RelyingParty.IAuthenticationRequest request, out AXAttributeFormats attributeFormat) {
-			Contract.Requires(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 			var provider = (RelyingParty.ServiceEndpoint)request.Provider;
 			attributeFormat = DetectAXFormat(provider.ProviderDescription.Capabilities);
 			return attributeFormat != AXAttributeFormats.None;
@@ -290,7 +287,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeURIs">The type URIs to scan for recognized formats.</param>
 		/// <returns>The first AX type URI format recognized in the list.</returns>
 		private static AXAttributeFormats DetectAXFormat(IEnumerable<string> typeURIs) {
-			Contract.Requires(typeURIs != null);
+			Contract.Requires<ArgumentNullException>(typeURIs != null);
 
 			if (typeURIs.Any(uri => uri.StartsWith("http://axschema.org/", StringComparison.Ordinal))) {
 				return AXAttributeFormats.AXSchemaOrg;
@@ -314,7 +311,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="targetFormat">The target format.  Only one flag should be set.</param>
 		/// <returns>The AX attribute type URI in the target format.</returns>
 		private static string TransformAXFormat(string axSchemaOrgFormatTypeUri, AXAttributeFormats targetFormat) {
-			Contract.Requires(!String.IsNullOrEmpty(axSchemaOrgFormatTypeUri));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(axSchemaOrgFormatTypeUri));
 
 			switch (targetFormat) {
 				case AXAttributeFormats.AXSchemaOrg:
@@ -355,8 +352,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="axSchemaOrgFormatAttribute">The attribute in axschema.org format.</param>
 		/// <param name="demandLevel">The demand level.</param>
 		private static void FetchAttribute(FetchRequest ax, AXAttributeFormats format, string axSchemaOrgFormatAttribute, DemandLevel demandLevel) {
-			Contract.Requires(ax != null);
-			Contract.Requires(!String.IsNullOrEmpty(axSchemaOrgFormatAttribute));
+			Contract.Requires<ArgumentNullException>(ax != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(axSchemaOrgFormatAttribute));
 
 			string typeUri = TransformAXFormat(axSchemaOrgFormatAttribute, format);
 			if (!ax.Attributes.Contains(typeUri)) {

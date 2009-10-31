@@ -35,7 +35,7 @@
 			<xsl:choose>
 				<xsl:when test="$group='type'">
 					<xsl:variable name="apiTypeName">
-						<xsl:value-of select="concat(/document/reference/containers/container[@namespace]/apidata/@name,'.',/document/reference/apidata/@name)" />
+						<xsl:value-of select="concat(/document/reference/containers/namespace/apidata/@name,'.',/document/reference/apidata/@name)" />
 						<xsl:if test="count(/document/reference/templates/template) > 0">
 							<xsl:value-of select="concat('`',count(/document/reference/templates/template))" />
 						</xsl:if>
@@ -59,7 +59,7 @@
 				</xsl:when>
 				<xsl:when test="$group='member'">
 					<xsl:variable name="apiTypeName">
-						<xsl:value-of select="concat(/document/reference/containers/container[@namespace]/apidata/@name,'.',/document/reference/containers/container[@type]/apidata/@name)" />
+						<xsl:value-of select="concat(/document/reference/containers/namespace/apidata/@name,'.',/document/reference/containers/container[@type]/apidata/@name)" />
 						<xsl:if test="count(/document/reference/templates/template) > 0">
 							<xsl:value-of select="concat('`',count(/document/reference/templates/template))" />
 						</xsl:if>

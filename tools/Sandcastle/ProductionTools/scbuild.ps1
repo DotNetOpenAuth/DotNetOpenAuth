@@ -25,7 +25,7 @@
 #		-DxRoot {path} -- alternate DxRoot. Default: DxRoot environment variable.
 #
 #		-Framework {version} -- build depends on framework version specified. Currently
-#			supported: 2.0, 3.0. Default: no framework dependencies.
+#			supported: 2.0, 3.0, 3.5. Default: no framework dependencies.
 #
 #		-Lcid {version} -- locale ID for help file. Default: 1033
 #
@@ -35,6 +35,8 @@
 #
 #		-Name {path-name} -- name of output file (or directory for Website builds).
 #			Default: The name and location of the first assembly listed.
+#
+#		-ScriptSharp -- remove topics that do not apply for Script#
 #
 #		-Sources {files} -- comma separated list of files that should be added to the
 #			output, both assemblies and related comment files. To build, you must
@@ -77,7 +79,7 @@ param (
     [Switch]$BuildHxS,
     [Switch]$BuildWebsite,
     [Switch]$Clean,
-    [Switch]$Test,
+    [Switch]$Test,	
 
     # Resources, Folders, Options
     [String]$BuildAssemblerConfig,
@@ -92,7 +94,9 @@ param (
     [String]$Style,                    
     [String]$TempDir,
     [String]$WebBuildConfig,
-    [String]$WebTemplate
+    [String]$WebTemplate,
+    [Switch]$ScriptSharp
+    
 )
 
 #
@@ -169,6 +173,8 @@ function Init {
     InitOption BuildHxS $false
     InitOption BuildWebSite $false
     InitOption Test $false
+    InitOption ScriptSharp $false
+    
     if (-not ($Clean -or $BuildChm -or $BuildHxs -or $BuildWebsite -or $Test)) {
 		FatalError "You must specify a build action: -Clean, -BuildChm, -BuildHxs, -BuildWebsite."
     }
@@ -390,16 +396,22 @@ function BuildWebsite {
 # Generate reflection data if the current style does not match the style the caller is
 # looking for.
 #
+# The list of dependencies is split up and seperated by a comma to be passed to mrefbuilder.
+#
 function GenerateReflectionData {
 	$fdirs = $($FrameworkDirs[$Framework])
 	if ($fdirs -is [String]) {
 		$fdirs = @($fdirs)
+	}	
+		
+	if($fdirs) {	
+	    foreach ($fdir in $fdirs) {
+	        GenerateDependencyReflectionData (get-childitem -r -include "*.dll" $fdir) $TempDir\ReflectionData\Framework "" $false
+	    }
 	}
-	foreach ($fdir in $fdirs) {
-	    GenerateDependencyReflectionData (get-childitem -r -include "*.dll" $fdir) $TempDir\ReflectionData\Framework
-	}
-    GenerateDependencyReflectionData $Dependencies "$TempDir\ReflectionData\Dependencies"
-    GenerateTargetReflectionData $Targets "$TempDir\ReflectionData\targets.xml"
+	
+    GenerateDependencyReflectionData $Dependencies "$TempDir\ReflectionData\Dependencies" $Dependencies $ScriptSharp
+    GenerateTargetReflectionData $Targets "$TempDir\ReflectionData\targets.xml" $Dependencies $ScriptSharp
 }
 
 
@@ -408,7 +420,7 @@ function GenerateReflectionData {
 # dependencies. The data is used as is from MrefBuilder. No post processing occurs. The
 # file is generated only if the output doesn't exist already.
 #
-function GenerateDependencyReflectionData($assemblies, $outputDir) {
+function GenerateDependencyReflectionData($assemblies, $outputDir, $dependencyAssemblies, $applyScriptSharp) {
     if ($assemblies -is [String]) {
         $assemblies = ExpandWildcards $assemblies
     }
@@ -416,7 +428,7 @@ function GenerateDependencyReflectionData($assemblies, $outputDir) {
         foreach ($pn in $assemblies) {
 			$outputFile = "$outputDir\$([IO.Path]::ChangeExtension($pn.Name, '.xml'))"
 			if (-not (test-path $outputFile)) {
-				GenerateTargetReflectionData $pn $outputFile
+				GenerateTargetReflectionData $pn $outputFile $dependencyAssemblies $applyScriptSharp
 				copy-item -ea SilentlyContinue $([IO.Path]::ChangeExtension($pn.FullName, '.xml')) $TempDir\Comments
             }
         }
@@ -429,16 +441,32 @@ function GenerateDependencyReflectionData($assemblies, $outputDir) {
 # assemblies. The data for all target assemblies is combined into a single file and then
 # post processed using different transforms depending on doc style.
 #
-function GenerateTargetReflectionData($assemblies, $outputFile) {
+# Dependencies are passed to mrefbuilder if there are any.
+#
+function GenerateTargetReflectionData($assemblies, $outputFile, $dependencyAssemblies, $applyScriptSharp) {
     if ($assemblies -is [String]) {
         $assemblies = ExpandWildcards $assemblies
     }
     WriteInfo "Generate reflection data for: $assemblies"
     $targetFiles = [String]::Join(" ", ($assemblies | foreach {"`"$_`""}))
     $tmpName = "$TempDir\tmp.xml"
-    &$MrefBuilder $targetFiles /out:$tmpName
+
+	if ($dependencyAssemblies) {
+		$dependencyFiles = [String]::Join(",", ($dependencyAssemblies | foreach {"`"$_`""}))
+		&$MrefBuilder /dep:$dependencyFiles /out:$tmpName $targetFiles
+	} else {
+		&$MrefBuilder /out:$tmpName $targetFiles
+	}
+
+	if ($applyScriptSharp)	{
+		$tmpFixedName = "$TempDir\tmp-Fixed.xml"
+		ApplyFixScriptSharp $tmpName $tmpFixedName		        
+		SafeDelete $tmpName
+		$tmpName = $tmpFixedName
+	}
+		
     PostProcessReflectionData $tmpName $outputFile
-    SafeDelete $tmpName
+	SafeDelete $tmpName
 }
 
 #
@@ -447,6 +475,15 @@ function GenerateTargetReflectionData($assemblies, $outputFile) {
 #
 function PostProcessReflectionData {
 	FatalError "Doc Model must define a PostProcessReflectionData function."
+}
+
+#
+# ScriptSharp requires an additional transform to remove unneeded elements.
+#
+function ApplyFixScriptSharp($tmpName, $tmpFixedName) {
+	&$XslTransform $tmpName `
+        /xsl:$DxRoot\ProductionTransforms\FixScriptSharp.xsl `
+        /out:$tmpFixedName
 }
 
 
@@ -610,6 +647,7 @@ function Test {
     echo "+ Mixin: $Mixin"
     echo "+ Name: $Name"
     echo "+ [OutputDir]: $OutputDir"
+    echo "+ ScriptSharp: $ScriptSharp"
     echo "+ Sources: $Sources"
     echo "+ Style: $Style"
     echo "+ [Targets]: $Targets"

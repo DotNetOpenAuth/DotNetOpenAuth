@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
@@ -29,8 +30,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="claimSsl">Whether this Identifier should claim to be SSL-secure, although no discovery will never generate service endpoints anyway.</param>
 		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier, bool claimSsl)
 			: base(wrappedIdentifier.OriginalString, claimSsl) {
-			Contract.Requires(wrappedIdentifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
+			Contract.Requires<ArgumentNullException>(wrappedIdentifier != null);
 
 			this.wrappedIdentifier = wrappedIdentifier;
 		}

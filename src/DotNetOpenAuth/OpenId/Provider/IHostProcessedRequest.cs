@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Interface exposing incoming messages to the OpenID Provider that
@@ -57,10 +58,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	}
 
 	/// <summary>
-	/// Contract class for the <see cref="IHostProcessedRequest"/> type.
+	/// Code contract for the <see cref="IHostProcessedRequest"/> type.
 	/// </summary>
 	[ContractClassFor(typeof(IHostProcessedRequest))]
 	internal abstract class IHostProcessedRequestContract : IHostProcessedRequest {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IHostProcessedRequestContract"/> class.
+		/// </summary>
+		protected IHostProcessedRequestContract() {
+		}
+
 		#region IHostProcessedRequest Properties
 
 		/// <summary>
@@ -176,7 +183,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
 		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(OpenIdProvider provider) {
-			Contract.Requires(provider != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 			throw new System.NotImplementedException();
 		}
 

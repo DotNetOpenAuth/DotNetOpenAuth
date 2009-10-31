@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -32,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="copyFrom">The authentication response to copy from.</param>
 		internal PositiveAuthenticationResponseSnapshot(IAuthenticationResponse copyFrom) {
-			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
+			Contract.Requires<ArgumentNullException>(copyFrom != null);
 
 			this.ClaimedIdentifier = copyFrom.ClaimedIdentifier;
 			this.FriendlyIdentifierForDisplay = copyFrom.FriendlyIdentifierForDisplay;
@@ -266,8 +267,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
 		public string GetCallbackArgument(string key) {
-			ErrorUtilities.VerifyArgumentNotNull(key, "key");
-
 			string value;
 			this.callbackArguments.TryGetValue(key, out value);
 			return value;
@@ -288,8 +287,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to make a security-sensitive decision.
 		/// </remarks>
 		public string GetUntrustedCallbackArgument(string key) {
-			ErrorUtilities.VerifyArgumentNotNull(key, "key");
-
 			string value;
 			this.untrustedCallbackArguments.TryGetValue(key, out value);
 			return value;

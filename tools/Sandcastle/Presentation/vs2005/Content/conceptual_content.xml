@@ -53,5 +53,9 @@
 		<p>This section contains the following subsections.</p>
 	</item>
 	<item id="RelatedTopicsLinkText">Related Topics</item>
+  <!-- resolve the autoOutline token -->
+  <item id="autoOutline">
+    <autoOutline/>
+  </item>
 
 </content>

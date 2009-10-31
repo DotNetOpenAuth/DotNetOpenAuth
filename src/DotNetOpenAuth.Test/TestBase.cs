@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test {
 	using System.IO;
 	using System.Reflection;
+	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
 	using log4net;
@@ -48,6 +49,7 @@ namespace DotNetOpenAuth.Test {
 			log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
 			MessageBase.LowSecurityMode = true;
 			this.messageDescriptions = new MessageDescriptionCollection();
+			SetMockHttpContext();
 		}
 
 		/// <summary>
@@ -56,6 +58,15 @@ namespace DotNetOpenAuth.Test {
 		[TestCleanup]
 		public virtual void Cleanup() {
 			log4net.LogManager.Shutdown();
+		}
+
+		/// <summary>
+		/// Sets HttpContext.Current to some empty (but non-null!) value.
+		/// </summary>
+		protected internal static void SetMockHttpContext() {
+			HttpContext.Current = new HttpContext(
+				new HttpRequest("mock", "http://mock", "mock"),
+				new HttpResponse(new StringWriter()));
 		}
 
 		protected internal static void SuspendLogging() {

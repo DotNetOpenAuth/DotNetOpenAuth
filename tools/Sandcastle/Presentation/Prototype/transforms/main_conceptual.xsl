@@ -9,6 +9,7 @@
 
 	<!-- key parameter is the api identifier string -->
 	<xsl:param name="key" />
+  <xsl:param name="languages">false</xsl:param>
 
 	<xsl:template match="/document">
 		<html>
@@ -19,9 +20,6 @@
 				<xsl:call-template name="insertMetadata" />
 			</head>
 			<body>
-				<script type="text/javascript">
-					<xsl:text>registerEventHandler(window, 'load', function() { var ss = new SplitScreen('control', 'main'); });</xsl:text>
-				</script>
 				<xsl:call-template name="control"/>
 				<xsl:call-template name="main"/>
 			</body>
@@ -37,21 +35,44 @@
 	</xsl:template>
 
 	<xsl:template name="insertScripts">
-		<script type="text/javascript">
-			<includeAttribute name="src" item="scriptPath"><parameter>EventUtilities.js</parameter></includeAttribute>
-      <xsl:text> </xsl:text>
-		</script>
-		<script type="text/javascript">
-			<includeAttribute name="src" item="scriptPath"><parameter>SplitScreen.js</parameter></includeAttribute>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>script_prototype.js</parameter></includeAttribute>
       <xsl:text> </xsl:text>
     </script>
     <script type="text/javascript">
-      <includeAttribute name="src" item="scriptPath">
-        <parameter>ElementCollection.js</parameter>
-      </includeAttribute>
+      <includeAttribute name="src" item="scriptPath"><parameter>EventUtilities.js</parameter></includeAttribute>
       <xsl:text> </xsl:text>
     </script>
-	</xsl:template>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>StyleUtilities.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>SplitScreen.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>ElementCollection.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>MemberFilter.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>CollapsibleSection.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>LanguageFilter.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
+    <script type="text/javascript">
+      <includeAttribute name="src" item="scriptPath"><parameter>CookieDataStore.js</parameter></includeAttribute>
+      <xsl:text> </xsl:text>
+    </script>
+
+  </xsl:template>
 
 	<xsl:template name="insertMetadata">
 		<xml>
@@ -127,6 +148,21 @@
 		<div id="control">
 			<span class="productTitle"><include item="productTitle" /></span><br/>
 			<span class="topicTitle"><xsl:call-template name="topicTitle" /></span><br/>
+      
+      <xsl:if test="boolean(($languages != 'false') and (count($languages/language) &gt; 0))">
+        <div id="toolbar">
+          <span id="languageFilter">
+            <select id="languageSelector" onchange="var names = this.value.split(' '); toggleVisibleLanguage(names[1]); switchLanguage(names, this.value);">
+              <xsl:for-each select="$languages/language">
+                <option value="{@name} {@style}">
+                  <include item="{@label}Label" />
+                </option>
+              </xsl:for-each>
+            </select>
+          </span>
+        </div>
+      </xsl:if>
+     
 <!--
 			<div id="toolbar">
 				<span class="chickenFeet"><xsl:call-template name="chickenFeet" /></span>

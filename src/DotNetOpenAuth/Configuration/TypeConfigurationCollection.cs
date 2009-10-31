@@ -18,7 +18,8 @@ namespace DotNetOpenAuth.Configuration {
 	/// </summary>
 	/// <typeparam name="T">The type that all types specified in the elements must derive from.</typeparam>
 	[ContractVerification(true)]
-	internal class TypeConfigurationCollection<T> : ConfigurationElementCollection {
+	internal class TypeConfigurationCollection<T> : ConfigurationElementCollection
+		where T : class {
 		/// <summary>
 		/// Initializes a new instance of the TypeConfigurationCollection class.
 		/// </summary>
@@ -30,8 +31,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		/// <param name="elements">The elements that should be added to the collection initially.</param>
 		internal TypeConfigurationCollection(IEnumerable<Type> elements) {
-			Contract.Requires(elements != null);
-			ErrorUtilities.VerifyArgumentNotNull(elements, "elements");
+			Contract.Requires<ArgumentNullException>(elements != null);
 
 			foreach (Type element in elements) {
 				this.BaseAdd(new TypeConfigurationElement<T> { TypeName = element.FullName });
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Configuration {
 		protected override object GetElementKey(ConfigurationElement element) {
 			Contract.Assume(element != null); // this should be Contract.Requires in base class.
 			TypeConfigurationElement<T> typedElement = (TypeConfigurationElement<T>)element;
-			return !string.IsNullOrEmpty(typedElement.TypeName) ? typedElement.TypeName : typedElement.XamlSource;
+			return (!string.IsNullOrEmpty(typedElement.TypeName) ? typedElement.TypeName : typedElement.XamlSource) ?? string.Empty;
 		}
 	}
 }

@@ -6,8 +6,8 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
-	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
@@ -17,6 +17,8 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Details on the incoming response from a direct web request to a remote party.
 	/// </summary>
+	[ContractVerification(true)]
+	[ContractClass(typeof(IncomingWebResponseContract))]
 	public abstract class IncomingWebResponse : IDisposable {
 		/// <summary>
 		/// The encoding to use in reading a response that does not declare its own content encoding.
@@ -37,8 +39,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestUri">The original request URI.</param>
 		/// <param name="response">The response to initialize from.  The network stream is used by this class directly.</param>
 		protected IncomingWebResponse(Uri requestUri, HttpWebResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(requestUri != null);
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.RequestUri = requestUri;
 			if (!string.IsNullOrEmpty(response.ContentType)) {
@@ -64,7 +66,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="contentType">Type of the content.</param>
 		/// <param name="contentEncoding">The content encoding.</param>
 		protected IncomingWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding) {
-			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
+			Contract.Requires<ArgumentNullException>(requestUri != null);
+
 			this.RequestUri = requestUri;
 			this.Status = statusCode;
 			if (!string.IsNullOrEmpty(contentType)) {

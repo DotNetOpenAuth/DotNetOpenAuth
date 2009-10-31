@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Net.Sockets;
@@ -36,6 +37,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// 	<c>true</c> if this instance can support the specified options; otherwise, <c>false</c>.
 		/// </returns>
+		[Pure]
 		public bool CanSupport(DirectWebRequestOptions options) {
 			return (options & ~SupportedOptions) == 0;
 		}
@@ -76,9 +78,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.</para>
 		/// </remarks>
 		public Stream GetRequestStream(HttpWebRequest request, DirectWebRequestOptions options) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifySupported(this.CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported, options, this.GetType().Name);
-
 			return GetRequestStreamCore(request);
 		}
 
@@ -118,9 +117,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// value, if set, shoud be Closed before throwing.</para>
 		/// </remarks>
 		public IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifySupported(this.CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported, options, this.GetType().Name);
-
 			// This request MAY have already been prepared by GetRequestStream, but
 			// we have no guarantee, so do it just to be safe.
 			PrepareRequest(request, false);
@@ -229,7 +225,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request.</param>
 		/// <param name="preparingPost"><c>true</c> if this is a POST request whose headers have not yet been sent out; <c>false</c> otherwise.</param>
 		private static void PrepareRequest(HttpWebRequest request, bool preparingPost) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			// Be careful to not try to change the HTTP headers that have already gone out.
 			if (preparingPost || request.Method == "GET") {

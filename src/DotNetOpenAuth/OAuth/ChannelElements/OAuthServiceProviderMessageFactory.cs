@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
 
@@ -25,7 +26,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="tokenManager">The token manager instance to use.</param>
 		public OAuthServiceProviderMessageFactory(IServiceProviderTokenManager tokenManager) {
-			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
 
 			this.tokenManager = tokenManager;
 		}
@@ -50,9 +51,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// AccessProtectedResourceRequest
 		/// </remarks>
 		public virtual IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
 			MessageBase message = null;
 			Protocol protocol = Protocol.V10; // default to assuming the less-secure 1.0 instead of 1.0a until we prove otherwise.
 			string token;
@@ -119,9 +117,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// None.
 		/// </remarks>
 		public virtual IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
 			Logger.OAuth.Error("Service Providers are not expected to ever receive responses.");
 			return null;
 		}

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using System.Web;
@@ -27,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="exception">The exception that resulted in the failed authentication.</param>
 		internal FailedAuthenticationResponse(Exception exception) {
-			ErrorUtilities.VerifyArgumentNotNull(exception, "exception");
+			Contract.Requires<ArgumentNullException>(exception != null);
 
 			this.Exception = exception;
 		}

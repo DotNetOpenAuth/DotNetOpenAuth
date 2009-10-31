@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
@@ -87,7 +88,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="chainedWebRequestHandler">The chained web request handler.</param>
 		public UntrustedWebRequestHandler(IDirectWebRequestHandler chainedWebRequestHandler) {
-			ErrorUtilities.VerifyArgumentNotNull(chainedWebRequestHandler, "chainedWebRequestHandler");
+			Contract.Requires<ArgumentNullException>(chainedWebRequestHandler != null);
 
 			this.chainedWebRequestHandler = chainedWebRequestHandler;
 			if (Debugger.IsAttached) {
@@ -111,7 +112,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value >= 2048, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value >= 2048);
 				this.maximumBytesToRead = value;
 			}
 		}
@@ -126,7 +127,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value >= 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
 				this.maximumRedirections = value;
 			}
 		}
@@ -185,6 +186,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// 	<c>true</c> if this instance can support the specified options; otherwise, <c>false</c>.
 		/// </returns>
+		[Pure]
 		public bool CanSupport(DirectWebRequestOptions options) {
 			// We support whatever our chained handler supports, plus RequireSsl.
 			return this.chainedWebRequestHandler.CanSupport(options & ~DirectWebRequestOptions.RequireSsl);
@@ -207,7 +209,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.</para>
 		/// </remarks>
 		public Stream GetRequestStream(HttpWebRequest request, DirectWebRequestOptions options) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			this.EnsureAllowableRequestUri(request.RequestUri, (options & DirectWebRequestOptions.RequireSsl) != 0);
 
 			this.PrepareRequest(request, true);
@@ -234,8 +235,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-
 			// This request MAY have already been prepared by GetRequestStream, but
 			// we have no guarantee, so do it just to be safe.
 			this.PrepareRequest(request, false);
@@ -306,7 +305,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<c>true</c> if this is a loopback IP address; <c>false</c> otherwise.
 		/// </returns>
 		private static bool IsIPv6Loopback(IPAddress ip) {
-			ErrorUtilities.VerifyArgumentNotNull(ip, "ip");
+			Contract.Requires<ArgumentNullException>(ip != null);
 			byte[] addressBytes = ip.GetAddressBytes();
 			for (int i = 0; i < addressBytes.Length - 1; i++) {
 				if (addressBytes[i] != 0) {
@@ -329,9 +328,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<c>true</c> if the specified host falls within at least one of the given lists; otherwise, <c>false</c>.
 		/// </returns>
 		private static bool IsHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
-			ErrorUtilities.VerifyNonZeroLength(host, "host");
-			ErrorUtilities.VerifyArgumentNotNull(stringList, "stringList");
-			ErrorUtilities.VerifyArgumentNotNull(regexList, "regexList");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(host));
+			Contract.Requires<ArgumentNullException>(stringList != null);
+			Contract.Requires<ArgumentNullException>(regexList != null);
 			foreach (string testHost in stringList) {
 				if (string.Equals(host, testHost, StringComparison.OrdinalIgnoreCase)) {
 					return true;
@@ -387,7 +386,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<c>true</c> if [is URI allowable] [the specified URI]; otherwise, <c>false</c>.
 		/// </returns>
 		private bool IsUriAllowable(Uri uri) {
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			Contract.Requires<ArgumentNullException>(uri != null);
 			if (!this.allowableSchemes.Contains(uri.Scheme)) {
 				Logger.Http.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
 				return false;
@@ -447,7 +446,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to prepare.</param>
 		/// <param name="preparingPost"><c>true</c> if this is a POST request whose headers have not yet been sent out; <c>false</c> otherwise.</param>
 		private void PrepareRequest(HttpWebRequest request, bool preparingPost) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			// Be careful to not try to change the HTTP headers that have already gone out.
 			if (preparingPost || request.Method == "GET") {

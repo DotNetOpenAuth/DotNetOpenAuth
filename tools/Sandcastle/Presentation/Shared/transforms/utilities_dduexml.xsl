@@ -50,7 +50,7 @@
 
 	<xsl:template match="ddue:parameterReference">
     <xsl:if test="normalize-space(.)">
-      <span class="parameter" data="paramReference">
+      <span class="parameter" sdata="paramReference">
         <xsl:value-of select="." />
       </span>
     </xsl:if>	</xsl:template>
@@ -197,7 +197,7 @@
 	</xsl:template>
 
   <xsl:template match="ddue:link">
-    <span data="link">
+    <span sdata="link">
     <xsl:choose>
       <xsl:when test="starts-with(@xlink:href,'#')">
         <!-- in-page link -->
@@ -233,7 +233,7 @@
   </xsl:template>
 
   <xsl:template match="ddue:codeEntityReference">
-    <span data="cer" target="{string(.)}">
+    <span sdata="cer" target="{string(.)}">
     <referenceLink target="{string(.)}">
       <xsl:if test="@qualifyHint">
         <xsl:attribute name="show-container">
@@ -255,7 +255,7 @@
   <!-- LEAVE THIS TEMPORARILY to support oldstyle GTMT link tagging -->
   <xsl:template match="ddue:link[starts-with(.,'GTMT#')]">
     <!-- not supporting popup definitions; just show the display text -->
-    <span data="link">
+    <span sdata="link">
       <xsl:value-of select="substring-after(.,'GTMT#')"/>
     </span>
   </xsl:template>

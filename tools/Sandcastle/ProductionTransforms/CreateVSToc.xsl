@@ -66,7 +66,7 @@
     <xsl:param name="initialName" select="containers/library/@assembly" />
     <xsl:variable name="componentNameLength" select="string-length($initialName)" />
       <xsl:choose>
-        <xsl:when test="$componentNameLength > $maxProjectNameLength">
+        <xsl:when test="$componentNameLength >= $maxProjectNameLength">
           <xsl:variable name="left" select="substring($initialName, 1, $leftLength)" />
           <xsl:variable name="right" select="substring($initialName, $componentNameLength - $rightLength)" />
           <xsl:value-of select="concat($left,'_',$right)" />
@@ -135,6 +135,11 @@
         <xsl:call-template name="AddMemberListTree"/>
       </xsl:for-each>
 
+      <!-- insert the Operators topic, if present -->
+      <xsl:for-each select="key('index', concat('Operators.', $typeId))">
+        <xsl:call-template name="AddMemberListTree"/>
+      </xsl:for-each>
+
       <!-- insert the Properties topic, if present -->
       <xsl:for-each select="key('index', concat('Properties.', $typeId))">
         <xsl:call-template name="AddMemberListTree"/>
@@ -169,7 +174,7 @@
       <!-- recurse to get declared child element topics, if any -->
       <xsl:for-each select="key('index', elements/*[starts-with(substring-after(@api,':'), $declaredPrefix)]/@api)">
         <!-- sort the elements in a member list topic by name -->
-        <xsl:sort select="apidata/@name" />
+        <xsl:sort select="topicdata/@eiiName | apidata/@name" />
         <xsl:call-template name="AddMember">
           <xsl:with-param name="declaredPrefix" select="$declaredPrefix"/>
         </xsl:call-template>

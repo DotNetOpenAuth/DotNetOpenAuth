@@ -115,7 +115,7 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The given set of options ({0}) is not supported by {1}..
+        ///   Looks up a localized string similar to The given set of options is not supported by this web request handler..
         /// </summary>
         internal static string DirectWebRequestOptionsNotSupported {
             get {
@@ -300,6 +300,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string MessagePartWriteFailure {
             get {
                 return ResourceManager.GetString("MessagePartWriteFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A non-empty string was expected..
+        /// </summary>
+        internal static string NonEmptyStringExpected {
+            get {
+                return ResourceManager.GetString("NonEmptyStringExpected", resourceCulture);
             }
         }
         

@@ -91,8 +91,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response to send to the uesr agent.</param>
 		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
 		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
-			Contract.Requires(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			return new OutgoingWebResponseActionResult(response);
 		}
 
@@ -104,7 +103,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "The Uri merging requires use of a string value.")]
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call should not be a property.")]
 		public static Uri GetRequestUrlFromContext() {
-			ErrorUtilities.VerifyHttpContext();
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			HttpContext context = HttpContext.Current;
 
 			// We use Request.Url for the full path to the server, and modify it
@@ -124,8 +123,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="prefix">The prefix for parameters to remove.  A period is NOT automatically appended.</param>
 		/// <returns>Either a new Uri with the parameters removed if there were any to remove, or the same Uri instance if no parameters needed to be removed.</returns>
 		public static Uri StripQueryArgumentsWithPrefix(this Uri uri, string prefix) {
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
-			ErrorUtilities.VerifyNonZeroLength(prefix, "prefix");
+			Contract.Requires<ArgumentNullException>(uri != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(prefix));
 
 			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
 			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -149,9 +148,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="parts">The parts to include in the POST entity.</param>
 		/// <returns>The HTTP response.</returns>
 		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
-			ErrorUtilities.VerifyArgumentNotNull(parts, "parts");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(parts != null);
 
 			string boundary = Guid.NewGuid().ToString();
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
@@ -255,8 +254,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="allowableCharacters">The allowable characters.</param>
 		/// <returns>A random string.</returns>
 		internal static string GetRandomString(int length, string allowableCharacters) {
-			Contract.Requires(length >= 0);
-			Contract.Requires(allowableCharacters != null && allowableCharacters.Length >= 2);
+			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			Contract.Requires<ArgumentException>(allowableCharacters != null && allowableCharacters.Length >= 2);
 
 			char[] randomString = new char[length];
 			for (int i = 0; i < length; i++) {
@@ -274,8 +273,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">The headers to add.</param>
 		/// <param name="response">The <see cref="HttpResponse"/> instance to set the appropriate values to.</param>
 		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(headers, "headers");
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(headers != null);
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			foreach (string headerName in headers) {
 				switch (headerName) {
@@ -299,8 +298,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">The headers to add.</param>
 		/// <param name="response">The <see cref="HttpListenerResponse"/> instance to set the appropriate values to.</param>
 		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpListenerResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(headers, "headers");
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(headers != null);
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			foreach (string headerName in headers) {
 				switch (headerName) {
@@ -342,10 +341,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
 		internal static int CopyTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
-			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
-			ErrorUtilities.VerifyArgumentNotNull(copyTo, "copyTo");
-			ErrorUtilities.VerifyArgument(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
-			ErrorUtilities.VerifyArgument(copyTo.CanWrite, MessagingStrings.StreamUnwritable, "copyTo");
+			Contract.Requires<ArgumentNullException>(copyFrom != null);
+			Contract.Requires<ArgumentNullException>(copyTo != null);
+			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
+			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
 
 			byte[] buffer = new byte[1024];
 			int readBytes;
@@ -366,7 +365,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="copyFrom">The stream to copy bytes from.</param>
 		/// <returns>A seekable stream with the same contents as the original.</returns>
 		internal static Stream CreateSnapshot(this Stream copyFrom) {
-			ErrorUtilities.VerifyArgumentNotNull(copyFrom, "copyFrom");
+			Contract.Requires<ArgumentNullException>(copyFrom != null);
 
 			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
 			copyFrom.CopyTo(copyTo);
@@ -380,7 +379,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to clone.</param>
 		/// <returns>The newly created instance.</returns>
 		internal static HttpWebRequest Clone(this HttpWebRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 			return Clone(request, request.RequestUri);
 		}
 
@@ -391,8 +390,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="newRequestUri">The new recipient of the request.</param>
 		/// <returns>The newly created instance.</returns>
 		internal static HttpWebRequest Clone(this HttpWebRequest request, Uri newRequestUri) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(newRequestUri, "newRequestUri");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(newRequestUri != null);
 
 			var newRequest = (HttpWebRequest)WebRequest.Create(newRequestUri);
 
@@ -458,8 +457,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="second">The second array in the comparison. May not be null.</param>
 		/// <returns>True if the arrays equal; false otherwise.</returns>
 		internal static bool AreEquivalent<T>(T[] first, T[] second) {
-			ErrorUtilities.VerifyArgumentNotNull(first, "first");
-			ErrorUtilities.VerifyArgumentNotNull(second, "second");
+			Contract.Requires<ArgumentNullException>(first != null);
+			Contract.Requires<ArgumentNullException>(second != null);
 			if (first.Length != second.Length) {
 				return false;
 			}
@@ -559,9 +558,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="args">The dictionary of key/values to read from.</param>
 		/// <returns>The formulated querystring style string.</returns>
 		internal static string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args) {
-			Contract.Requires(args != null);
+			Contract.Requires<ArgumentNullException>(args != null);
 			Contract.Ensures(Contract.Result<string>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(args, "args");
+
 			if (args.Count() == 0) {
 				return string.Empty;
 			}
@@ -595,7 +594,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// in the query string, the existing ones are <i>not</i> replaced.
 		/// </remarks>
 		internal static void AppendQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
+			Contract.Requires<ArgumentNullException>(builder != null);
 
 			if (args != null && args.Count() > 0) {
 				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
@@ -619,7 +618,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// If null, <paramref name="builder"/> is not changed.
 		/// </param>
 		internal static void AppendAndReplaceQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			ErrorUtilities.VerifyArgumentNotNull(builder, "builder");
+			Contract.Requires<ArgumentNullException>(builder != null);
 
 			if (args != null && args.Count() > 0) {
 				NameValueCollection aggregatedArgs = HttpUtility.ParseQueryString(builder.Query);
@@ -686,7 +685,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message to copy the extra data into.</param>
 		/// <param name="extraParameters">The extra data to copy into the message.  May be null to do nothing.</param>
 		internal static void AddExtraParameters(this MessageDictionary messageDictionary, IDictionary<string, string> extraParameters) {
-			ErrorUtilities.VerifyArgumentNotNull(messageDictionary, "messageAccessor");
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
 
 			if (extraParameters != null) {
 				foreach (var pair in extraParameters) {
@@ -753,6 +752,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="comparer">A comparison function to compare keys.</param>
 		/// <returns>An System.Linq.IOrderedEnumerable&lt;TElement&gt; whose elements are sorted according to a key.</returns>
 		internal static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Comparison<TKey> comparer) {
+			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSource>>() != null);
 			return System.Linq.Enumerable.OrderBy<TSource, TKey>(source, keySelector, new ComparisonHelper<TKey>(comparer));
 		}
 
@@ -769,7 +769,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// if their <see cref="IDirectedProtocolMessage.Recipient"/> property is non-null.
 		/// </remarks>
 		internal static bool IsRequest(this IDirectedProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 			return message.Recipient != null;
 		}
 
@@ -787,7 +787,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="IDirectResponseProtocolMessage.OriginatingRequest"/> property is non-null.
 		/// </remarks>
 		internal static bool IsDirectResponse(this IDirectResponseProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 			return message.OriginatingRequest != null;
 		}
 

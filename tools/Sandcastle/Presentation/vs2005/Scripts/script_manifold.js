@@ -99,6 +99,13 @@ function HideSelect()
 							i = n;				
 					}
 					break;
+				case "fsharp":
+					for (m=0; m<spanEles.length; m++)
+					{					
+						if (spanEles[m].getAttribute("codeLanguage") == "FSharp" && spanEles[m].style.display != "none" && n < i)
+							i = n;
+					}
+					break;
 			}							
 		}
 		if (i != 10)		

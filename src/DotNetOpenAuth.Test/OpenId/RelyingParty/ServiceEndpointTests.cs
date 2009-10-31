@@ -180,7 +180,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsFalse(se.IsTypeUriPresent("http://someother"));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void IsTypeUriPresentNull() {
 			ServiceEndpoint se = ServiceEndpoint.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			se.IsTypeUriPresent(null);

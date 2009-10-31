@@ -29,8 +29,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="tokenManager">The token manager.</param>
 		internal TokenHandlingBindingElement(IServiceProviderTokenManager tokenManager) {
-			Contract.Requires(tokenManager != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
 
 			this.tokenManager = tokenManager;
 		}
@@ -68,8 +67,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-
 			var userAuthResponse = message as UserAuthorizationResponse;
 			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
 				var requestToken = this.tokenManager.GetRequestToken(userAuthResponse.RequestToken);
@@ -115,8 +112,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-
 			var authorizedTokenRequest = message as AuthorizedTokenRequest;
 			if (authorizedTokenRequest != null) {
 				if (authorizedTokenRequest.Version >= Protocol.V10a.Version) {
@@ -148,7 +143,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The incoming message carrying the access token.</param>
 		private void VerifyThrowTokenNotExpired(AccessProtectedResourceRequest message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			try {
 				IServiceProviderAccessToken token = this.tokenManager.GetAccessToken(message.AccessToken);

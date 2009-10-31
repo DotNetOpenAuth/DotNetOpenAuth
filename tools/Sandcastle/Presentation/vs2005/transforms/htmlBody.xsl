@@ -110,27 +110,32 @@
 
     <!--all members only -->
     <xsl:if test="$subgroup='members'">
-      <xsl:if test="/document/reference/elements/element/apidata[@subgroup='constructor']">
+      <xsl:if test="/document/reference/elements/element[apidata[@subgroup='constructor']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
         <!-- add a link to the member list section for this subgroup -->
         <xsl:call-template name="memberTableLink">
           <xsl:with-param name="headerGroup">constructor</xsl:with-param>
         </xsl:call-template>
       </xsl:if>
-
-      <!-- method subgroup includes operators -->
-      <xsl:if test="/document/reference/elements/element/apidata[@subgroup='method']">
+      
+      <xsl:if test="/document/reference/elements/element[apidata[@subgroup='method']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
         <xsl:call-template name="memberTableLink">
           <xsl:with-param name="headerGroup">method</xsl:with-param>
         </xsl:call-template>
       </xsl:if>
 
-      <xsl:if test="/document/reference/elements/element/apidata[@subgroup='field']">
+      <xsl:if test="/document/reference/elements/element/apidata[@subsubgroup='operator']">
+        <xsl:call-template name="memberTableLink">
+          <xsl:with-param name="headerGroup">operator</xsl:with-param>
+        </xsl:call-template>
+      </xsl:if>
+
+      <xsl:if test="/document/reference/elements/element[apidata[@subgroup='field']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
         <xsl:call-template name="memberTableLink">
           <xsl:with-param name="headerGroup">field</xsl:with-param>
         </xsl:call-template>
       </xsl:if>
 
-      <xsl:if test="/document/reference/elements/element/apidata[@subgroup='property' and not(@subsubgroup)]">
+      <xsl:if test="/document/reference/elements/element[apidata[@subgroup='property' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
         <xsl:call-template name="memberTableLink">
           <xsl:with-param name="headerGroup">property</xsl:with-param>
         </xsl:call-template>
@@ -142,7 +147,7 @@
         </xsl:call-template>
       </xsl:if>
 
-      <xsl:if test="/document/reference/elements/element/apidata[@subgroup='event' and not(@subsubgroup)]">
+      <xsl:if test="/document/reference/elements/element[apidata[@subgroup='event' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
         <xsl:call-template name="memberTableLink">
           <xsl:with-param name="headerGroup">event</xsl:with-param>
         </xsl:call-template>
@@ -203,7 +208,7 @@
   <xsl:template name="bodyHeaderTopTable">
     <xsl:variable name="showDevlangsFilter" select="boolean(($languages != 'false') and (count($languages/language) &gt; 0))"/>
     <xsl:variable name="showMemberOptionsFilter" select="boolean($group='list' and $subgroup!='DerivedTypeList')"/>
-    <xsl:variable name="showMemberFrameworksFilter" select="boolean($group='list' and $subgroup!='DerivedTypeList' and /document/reference/elements//element/versions/versions)"/>
+    <xsl:variable name="showMemberFrameworksFilter" select="boolean($group='list' and $subgroup!='DerivedTypeList' and /document/reference/elements//element[count(versions/versions) &gt; 1])"/>
     <table id="topTable" cellspacing="0" cellpadding="0">
       <tr>
         <td>
@@ -448,12 +453,14 @@ copyHoverImage - overview (not namespace); list (only overload lists ctor, metho
       <includeAttribute name="src" item="iconPath">
         <parameter>collapse_all.gif</parameter>
       </includeAttribute>
+      <includeAttribute name="alt" item="collapseImage" />
       <includeAttribute name="title" item="collapseImage" />
     </img>
     <img id="expandImage" style="display:none; height:0; width:0;">
       <includeAttribute name="src" item="iconPath">
         <parameter>expand_all.gif</parameter>
       </includeAttribute>
+      <includeAttribute name="alt" item="expandImage" />
       <includeAttribute name="title" item="expandImage" />
     </img>
     <img id="collapseAllImage" style="display:none; height:0; width:0;">
@@ -480,12 +487,14 @@ copyHoverImage - overview (not namespace); list (only overload lists ctor, metho
       <includeAttribute name="src" item="iconPath">
         <parameter>copycode.gif</parameter>
       </includeAttribute>
+      <includeAttribute name="alt" item="copyImage" />
       <includeAttribute name="title" item="copyImage" />
     </img>
     <img id="copyHoverImage" style="display:none; height:0; width:0;">
       <includeAttribute name="src" item="iconPath">
         <parameter>copycodeHighlight.gif</parameter>
       </includeAttribute>
+      <includeAttribute name="alt" item="copyHoverImage" />
       <includeAttribute name="title" item="copyHoverImage" />
     </img>
     

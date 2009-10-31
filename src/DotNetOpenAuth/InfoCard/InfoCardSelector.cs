@@ -272,17 +272,20 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			set {
-				if (this.Page != null && !this.DesignMode) {
-					// Validate new value by trying to construct a Uri based on it.
-					new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
-				} else {
-					// We can't fully test it, but it should start with either ~/ or a protocol.
-					if (Regex.IsMatch(value, @"^https?://")) {
-						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
-					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
-						// this is valid too
+				ErrorUtilities.VerifyOperation(string.IsNullOrEmpty(value) || this.Page == null || this.DesignMode || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
+				if (!string.IsNullOrEmpty(value)) {
+					if (this.Page != null && !this.DesignMode) {
+						// Validate new value by trying to construct a Uri based on it.
+						new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
 					} else {
-						throw new UriFormatException();
+						// We can't fully test it, but it should start with either ~/ or a protocol.
+						if (Regex.IsMatch(value, @"^https?://")) {
+							new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+						} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+							// this is valid too
+						} else {
+							throw new UriFormatException();
+						}
 					}
 				}
 
@@ -439,8 +442,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The event arguments sent to the event handlers.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "decryptor", Justification = "By design")]
 		protected virtual ReceivingTokenEventArgs OnReceivingToken(string tokenXml) {
-			Contract.Requires(tokenXml != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenXml, "tokenXml");
+			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
 			var args = new ReceivingTokenEventArgs(tokenXml);
 			var receivingToken = this.ReceivingToken;
@@ -456,8 +458,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="token">The token, if it was decrypted.</param>
 		protected virtual void OnReceivedToken(Token token) {
-			Contract.Requires(token != null);
-			ErrorUtilities.VerifyArgumentNotNull(token, "token");
+			Contract.Requires<ArgumentNullException>(token != null);
 
 			var receivedInfoCard = this.ReceivedToken;
 			if (receivedInfoCard != null) {
@@ -471,8 +472,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="unprocessedToken">The unprocessed token.</param>
 		/// <param name="ex">The exception generated while processing the token.</param>
 		protected virtual void OnTokenProcessingError(string unprocessedToken, Exception ex) {
-			Contract.Requires(unprocessedToken != null);
-			Contract.Requires(ex != null);
+			Contract.Requires<ArgumentNullException>(unprocessedToken != null);
+			Contract.Requires<ArgumentNullException>(ex != null);
 
 			var tokenProcessingError = this.TokenProcessingError;
 			if (tokenProcessingError != null) {
@@ -626,6 +627,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>A control that renders to the &lt;object&gt; tag.</returns>
 		[Pure]
 		private Control CreateInfoCardSelectorObject() {
+			Contract.Ensures(Contract.Result<Control>() != null);
+
 			HtmlGenericControl cardSpaceControl = new HtmlGenericControl(HtmlTextWriterTag.Object.ToString());
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Type.ToString(), "application/x-informationcard");
 			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
@@ -672,7 +675,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="optional">A space-delimited list of claim type URIs for claims that may optionally be included in a submitted Information Card.</param>
 		[Pure]
 		private void GetRequestedClaims(out string required, out string optional) {
-			Contract.Requires(this.ClaimsRequested != null);
+			Contract.Requires<InvalidOperationException>(this.ClaimsRequested != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out required) != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out optional) != null);
 
@@ -687,10 +690,10 @@ namespace DotNetOpenAuth.InfoCard {
 
 			string[] requiredClaimsArray = requiredClaims.ToArray();
 			string[] optionalClaimsArray = optionalClaims.ToArray();
-			Contract.Assume(requiredClaimsArray != null);
-			Contract.Assume(optionalClaimsArray != null);
 			required = string.Join(" ", requiredClaimsArray);
 			optional = string.Join(" ", optionalClaimsArray);
+			Contract.Assume(required != null);
+			Contract.Assume(optional != null);
 		}
 
 		/// <summary>
@@ -698,7 +701,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// or to downgrade gracefully if the user agent lacks an Information Card selector.
 		/// </summary>
 		private void RenderSupportingScript() {
-			Contract.Requires(this.infoCardSupportedPanel != null);
+			Contract.Requires<InvalidOperationException>(this.infoCardSupportedPanel != null);
 
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(InfoCardSelector), ScriptResourceName);
 

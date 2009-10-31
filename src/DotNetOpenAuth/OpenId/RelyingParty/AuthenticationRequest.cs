@@ -72,10 +72,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="returnToUrl">The base return_to URL that the Provider should return the user to to complete authentication.  This should not include callback parameters as these should be added using the <see cref="AddCallbackArguments(string, string)"/> method.</param>
 		/// <param name="relyingParty">The relying party that created this instance.</param>
 		private AuthenticationRequest(ServiceEndpoint endpoint, Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
-			ErrorUtilities.VerifyArgumentNotNull(endpoint, "endpoint");
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-			ErrorUtilities.VerifyArgumentNotNull(returnToUrl, "returnToUrl");
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+			Contract.Requires<ArgumentNullException>(endpoint != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
+			Contract.Requires<ArgumentNullException>(returnToUrl != null);
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
 			this.endpoint = endpoint;
 			this.RelyingParty = relyingParty;
@@ -209,7 +209,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void AddCallbackArguments(IDictionary<string, string> arguments) {
-			ErrorUtilities.VerifyArgumentNotNull(arguments, "arguments");
 			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgsMustBeSigned = true;
@@ -237,8 +236,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void AddCallbackArguments(string key, string value) {
-			ErrorUtilities.VerifyNonZeroLength(key, "key");
-			ErrorUtilities.VerifyArgumentNotNull(value, "value");
 			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgsMustBeSigned = true;
@@ -260,8 +257,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void SetCallbackArgument(string key, string value) {
-			ErrorUtilities.VerifyNonZeroLength(key, "key");
-			ErrorUtilities.VerifyArgumentNotNull(value, "value");
 			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgsMustBeSigned = true;
@@ -284,9 +279,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void SetUntrustedCallbackArgument(string key, string value) {
-			ErrorUtilities.VerifyNonZeroLength(key, "key");
-			ErrorUtilities.VerifyArgumentNotNull(value, "value");
-
 			this.returnToArgs[key] = value;
 		}
 
@@ -295,7 +287,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="extension">The initialized extension to add to the request.</param>
 		public void AddExtension(IOpenIdMessageExtension extension) {
-			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
 			this.extensions.Add(extension);
 		}
 
@@ -326,15 +317,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Never null, but may be empty.
 		/// </returns>
 		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(realm != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
-
-			// We have a long data validation and preparation process
-			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
 
 			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
 			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
@@ -475,8 +461,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="relyingParty">The relying party.</param>
 		/// <returns>A filtered and sorted list of endpoints; may be empty if the input was empty or the filter removed all endpoints.</returns>
 		private static List<ServiceEndpoint> FilterAndSortEndpoints(IEnumerable<ServiceEndpoint> endpoints, OpenIdRelyingParty relyingParty) {
-			ErrorUtilities.VerifyArgumentNotNull(endpoints, "endpoints");
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+			Contract.Requires<ArgumentNullException>(endpoints != null);
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
 			// Construct the endpoints filters based on criteria given by the host web site.
 			EndpointSelector versionFilter = ep => ((ServiceEndpoint)ep).Protocol.Version >= Protocol.Lookup(relyingParty.SecuritySettings.MinimumRequiredOpenIdVersion).Version;

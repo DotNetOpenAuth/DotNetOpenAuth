@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -134,7 +135,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		private T CloneSerializedParts<T>(T message, HttpRequestInfo requestInfo) where T : class, IProtocolMessage {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			IProtocolMessage clonedMessage;
 			var messageAccessor = this.MessageDescriptions.GetAccessor(message);

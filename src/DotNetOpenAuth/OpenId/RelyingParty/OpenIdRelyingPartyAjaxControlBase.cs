@@ -200,7 +200,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
 		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
-			ErrorUtilities.VerifyNonZeroLength(propertyName, "propertyName");
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
 			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
 			foreach (var ext in this.clientScriptExtensions.Keys) {
 				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);
@@ -347,8 +347,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>A sequence of authentication requests, any one of which may be 
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.</returns>
 		protected override IEnumerable<IAuthenticationRequest> CreateRequests() {
-			ErrorUtilities.VerifyOperation(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
-
 			// We delegate all our logic to another method, since invoking base. methods
 			// within an iterator method results in unverifiable code.
 			return this.CreateRequestsCore(base.CreateRequests());
@@ -443,7 +441,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires(requests != null);
+			Contract.Requires<ArgumentNullException>(requests != null);
 
 			// Configure each generated request.
 			int reqIndex = 0;
