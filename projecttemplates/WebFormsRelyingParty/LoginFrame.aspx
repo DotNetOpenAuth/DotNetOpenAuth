@@ -43,7 +43,7 @@
 				<rp:SelectorProviderButton OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
 				<rp:SelectorProviderButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
 				<rp:SelectorProviderButton OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />
-				<rp:SelectorProviderButton OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" />
+				<rp:SelectorProviderButton OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" SkipBackgroundAuthentication="true" />
 				<rp:SelectorOpenIdButton Image="images/openid.gif" />
 				<rp:SelectorInfoCardButton />
 			</Buttons>

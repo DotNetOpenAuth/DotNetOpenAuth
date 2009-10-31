@@ -103,9 +103,13 @@ $(function() {
 				li.authenticationIFrames = new window.dnoa_internal.FrameManager(1/*throttle*/);
 				var openid = new window.OpenIdIdentifier(li.id);
 				var authFrames = li.authenticationIFrames;
-				li.loginBackground = function() {
-					openid.loginBackground(authFrames, null, null, backgroundTimeout);
-				};
+				if ($(li).hasClass('NoAsyncAuth')) {
+					li.loginBackground = function() { };
+				} else {
+					li.loginBackground = function() {
+						openid.loginBackground(authFrames, null, null, backgroundTimeout);
+					};
+				}
 				li.loginBackground();
 			}
 		});

@@ -40,6 +40,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public Identifier OPIdentifier { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this Provider doesn't handle
+		/// checkid_immediate messages correctly and background authentication
+		/// should not be attempted.
+		/// </summary>
+		public bool SkipBackgroundAuthentication { get; set; }
+
+		/// <summary>
 		/// Ensures that this button has been initialized to a valid state.
 		/// </summary>
 		internal override void EnsureValid() {
@@ -59,7 +66,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="writer">The writer.</param>
 		protected internal override void RenderLeadingAttributes(HtmlTextWriter writer) {
 			writer.AddAttribute(HtmlTextWriterAttribute.Id, this.OPIdentifier);
-			writer.AddAttribute(HtmlTextWriterAttribute.Class, "OPButton");
+
+			string style = "OPButton";
+			if (this.SkipBackgroundAuthentication) {
+				style += " NoAsyncAuth";
+			}
+			writer.AddAttribute(HtmlTextWriterAttribute.Class, style);
 		}
 
 		/// <summary>
