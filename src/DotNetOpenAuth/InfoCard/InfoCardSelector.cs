@@ -272,7 +272,7 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			set {
-				Contract.Requires<InvalidOperationException>(string.IsNullOrEmpty(value) || this.Page == null || this.DesignMode || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
+				ErrorUtilities.VerifyOperation(string.IsNullOrEmpty(value) || this.Page == null || this.DesignMode || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 				if (!string.IsNullOrEmpty(value)) {
 					if (this.Page != null && !this.DesignMode) {
 						// Validate new value by trying to construct a Uri based on it.
