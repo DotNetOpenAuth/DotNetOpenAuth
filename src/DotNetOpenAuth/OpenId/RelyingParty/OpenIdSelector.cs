@@ -101,6 +101,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the Yahoo! User Interface Library (YUI)
+		/// will be downloaded in order to provide a login split button.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> to use a split button; otherwise, <c>false</c> to use a standard HTML button
+		/// 	or a split button by downloading the YUI library yourself on the hosting web page.
+		/// </value>
+		/// <remarks>
+		/// The split button brings in about 180KB of YUI javascript dependencies.
+		/// </remarks>
+		[Bindable(true), DefaultValue(OpenIdAjaxTextBox.DownloadYahooUILibraryDefault), Category(BehaviorCategory)]
+		[Description("Whether a split button will be used for the \"log in\" when the user provides an identifier that delegates to more than one Provider.")]
+		public bool DownloadYahooUILibrary {
+			get {
+				this.EnsureChildControls();
+				return this.textBox.DownloadYahooUILibrary;
+			}
+
+			set {
+				this.EnsureChildControls();
+				this.textBox.DownloadYahooUILibrary = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets the collection of buttons this selector should render to the browser.
 		/// </summary>
 		[PersistenceMode(PersistenceMode.InnerProperty)]

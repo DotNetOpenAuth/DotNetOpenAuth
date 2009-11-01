@@ -64,6 +64,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string EmbeddedLoginFailureResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.login_failure.png";
 
+		/// <summary>
+		/// The default value for the <see cref="DownloadYahooUILibrary"/> property.
+		/// </summary>
+		internal const bool DownloadYahooUILibraryDefault = true;
+
 		#region Property viewstate keys
 
 		/// <summary>
@@ -269,11 +274,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The default value for the <see cref="RetryText"/> property.
 		/// </summary>
 		private const string RetryTextDefault = "RETRY";
-
-		/// <summary>
-		/// The default value for the <see cref="DownloadYahooUILibrary"/> property.
-		/// </summary>
-		private const bool DownloadYahooUILibraryDefault = true;
 
 		/// <summary>
 		/// The default value for the <see cref="ShowLogOnPostBackButton"/> property.
