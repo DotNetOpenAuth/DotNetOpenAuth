@@ -14,6 +14,7 @@ This page should be pointed to by the 'realm' home page, which is default.aspx.
 			<Type>http://specs.openid.net/auth/2.0/return_to</Type>
 			<%-- Every page with an OpenID login should be listed here. --%>
 			<URI priority="1"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/LoginFrame.aspx"))%></URI>
+			<URI priority="2"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/Members/AccountInfo.aspx"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>
