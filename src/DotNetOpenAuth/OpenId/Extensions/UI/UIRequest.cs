@@ -57,18 +57,18 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// Initializes a new instance of the <see cref="UIRequest"/> class.
 		/// </summary>
 		public UIRequest() {
-			this.LanguagePreference = CultureInfo.CurrentUICulture;
+			this.LanguagePreference = new[] { CultureInfo.CurrentUICulture };
 		}
 
 		/// <summary>
-		/// Gets or sets the user's preferred language.
+		/// Gets or sets the list of user's preferred languages, sorted in decreasing preferred order.
 		/// </summary>
 		/// <value>The default is the <see cref="CultureInfo.CurrentUICulture"/> of the thread that created this instance.</value>
 		/// <remarks>
-		/// The user's preferred language, reusing the Language Tag format used by the [Language Preference Attribute] (axschema.org, “Language Preference Attribute,” .)  for [OpenID Attribute Exchange] (Hardt, D., Bufu, J., and J. Hoyt, “OpenID Attribute Exchange 1.0,” .)  and defined in [RFC4646] (Phillips, A. and M. Davis, “Tags for Identifying Languages,” .). For example "en-US" represents the English language as spoken in the United States, and "fr-CA" represents the French language spoken in Canada. 
+		/// The user's preferred languages as a [BCP 47] language priority list, represented as a comma-separated list of BCP 47 basic language ranges in descending priority order. For instance, the value "fr-CA,fr-FR,en-CA" represents the preference for French spoken in Canada, French spoken in France, followed by English spoken in Canada.
 		/// </remarks>
 		[MessagePart("lang", AllowEmpty = false)]
-		public CultureInfo LanguagePreference { get; set; }
+		public CultureInfo[] LanguagePreference { get; set; }
 
 		/// <summary>
 		/// Gets the style of UI that the RP is hosting the OP's authentication page in.
