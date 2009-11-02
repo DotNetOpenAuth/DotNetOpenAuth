@@ -646,7 +646,6 @@ namespace DotNetOpenAuth.InfoCard {
 				scriptFormat,
 				MessagingUtilities.GetSafeJavascriptValue(this.ClientID + "_cs"));
 
-
 			if (!string.IsNullOrEmpty(this.Issuer)) {
 				script.AppendLine(CreateParamJs("issuer", this.Issuer));
 			}

@@ -223,6 +223,24 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			get { throw new NotImplementedException(); }
 		}
 
+		/// <summary>
+		/// Gets or sets the provider endpoint claimed in the positive assertion.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// This value MUST match the value for the OP Endpoint in the discovery results for the
+		/// claimed identifier being asserted in a positive response.
+		/// </value>
+		Uri IHostProcessedRequest.ProviderEndpoint {
+			get {
+				throw new NotImplementedException();
+			}
+
+			set {
+				throw new NotImplementedException();
+			}
+		}
+
 		#endregion
 
 		#region IRequest Properties
@@ -298,23 +316,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(OpenIdProvider provider) {
 			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Gets or sets the provider endpoint claimed in the positive assertion.
-		/// </summary>
-		/// <value>
-		/// The default value is the URL that the request came in on from the relying party.
-		/// This value MUST match the value for the OP Endpoint in the discovery results for the
-		/// claimed identifier being asserted in a positive response.
-		/// </value>
-		Uri IHostProcessedRequest.ProviderEndpoint {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
 		}
 
 		#endregion
