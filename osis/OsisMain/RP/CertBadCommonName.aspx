@@ -7,5 +7,5 @@
 		</li>
 	</ol>
 	<h3>Passing criteria </h3>
-	<p>The RP passes if it COMPLETES a successful login for the given identifier. </p>
+	<p>The RP passes if it REFUSES to login for the given identifier. </p>
 </asp:Content>
