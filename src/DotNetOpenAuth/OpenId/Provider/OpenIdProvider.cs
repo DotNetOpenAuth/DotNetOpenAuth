@@ -387,7 +387,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			RelyingPartyEndpointDescription returnToEndpoint = null;
-			var returnToEndpoints = relyingParty.Discover(this.WebRequestHandler, true);
+			var returnToEndpoints = relyingParty.DiscoverReturnToEndpoints(this.WebRequestHandler, true);
 			if (returnToEndpoints != null) {
 				returnToEndpoint = returnToEndpoints.FirstOrDefault();
 			}
