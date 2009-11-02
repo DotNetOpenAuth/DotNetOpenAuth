@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// <remarks>
 		/// By default, the Provider displays the relying party's favicon.ico.
 		/// </remarks>
-		[MessagePart("popup", AllowEmpty = false, IsRequired = false)]
+		[MessagePart("icon", AllowEmpty = false, IsRequired = false)]
 		public bool? Icon { get; set; }
 
 		#region IOpenIdMessageExtension Members
