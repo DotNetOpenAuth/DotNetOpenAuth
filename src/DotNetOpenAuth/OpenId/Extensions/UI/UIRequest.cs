@@ -8,11 +8,14 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Xrds;
 
 	/// <summary>
 	/// OpenID User Interface extension 1.0 request message.
@@ -25,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// <see cref="UIModes.Popup"/>. </para>
 	/// 	<para>An RP may determine whether an arbitrary OP supports this extension (and thereby determine
 	/// whether to use a standard full window redirect or a popup) via the
-	/// <see cref="IProviderEndpoint.IsExtensionSupported"/> method on the <see cref="IAuthenticationRequest.Provider"/>
+	/// <see cref="IProviderEndpoint.IsExtensionSupported"/> method on the <see cref="DotNetOpenAuth.OpenId.RelyingParty.IAuthenticationRequest.Provider"/>
 	/// object.</para>
 	/// </remarks>
 	public sealed class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
@@ -46,6 +49,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		private static readonly string[] additionalTypeUris = new string[] {
 			UIConstants.LangPrefSupported,
 			UIConstants.PopupSupported,
+			UIConstants.IconSupported,
 		};
 
 		/// <summary>
@@ -126,7 +130,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 
 		#endregion
 
-		#region IMessage Members
+		#region IMessage Properties
 
 		/// <summary>
 		/// Gets the version of the protocol or extension this message is prepared to implement.
@@ -148,6 +152,72 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		public IDictionary<string, string> ExtraData {
 			get { return this.extraData; }
 		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets the URL of the RP icon for the OP to display.
+		/// </summary>
+		/// <param name="realm">The realm of the RP where the authentication request originated.</param>
+		/// <param name="webRequestHandler">The web request handler to use for discovery.
+		/// Usually available via <see cref="Channel.WebRequestHandler">OpenIdProvider.Channel.WebRequestHandler</see>.</param>
+		/// <returns>
+		/// A sequence of the RP's icons it has available for the Provider to display, in decreasing preferred order.
+		/// </returns>
+		/// <value>The icon URL.</value>
+		/// <remarks>
+		/// This property is automatically set for the OP with the result of RP discovery.
+		/// RPs should set this value by including an entry such as this in their XRDS document.
+		/// <example>
+		/// &lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
+		/// &lt;Type&gt;http://specs.openid.net/extensions/ui/icon&lt;/Type&gt;
+		/// &lt;URI&gt;http://consumer.example.com/images/image.jpg&lt;/URI&gt;
+		/// &lt;/Service&gt;
+		/// </example>
+		/// </remarks>
+		public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, IDirectWebRequestHandler webRequestHandler) {
+			Contract.Requires(realm != null);
+			Contract.Requires(webRequestHandler != null);
+			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
+			ErrorUtilities.VerifyArgumentNotNull(webRequestHandler, "webRequestHandler");
+
+			XrdsDocument xrds = realm.Discover(webRequestHandler, false);
+			if (xrds == null) {
+				return Enumerable.Empty<Uri>();
+			} else {
+				return xrds.FindRelyingPartyIcons();
+			}
+		}
+
+		/// <summary>
+		/// Gets the URL of the RP icon for the OP to display.
+		/// </summary>
+		/// <param name="realm">The realm of the RP where the authentication request originated.</param>
+		/// <param name="provider">The Provider instance used to obtain the authentication request.</param>
+		/// <returns>
+		/// A sequence of the RP's icons it has available for the Provider to display, in decreasing preferred order.
+		/// </returns>
+		/// <value>The icon URL.</value>
+		/// <remarks>
+		/// This property is automatically set for the OP with the result of RP discovery.
+		/// RPs should set this value by including an entry such as this in their XRDS document.
+		/// <example>
+		/// &lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
+		/// &lt;Type&gt;http://specs.openid.net/extensions/ui/icon&lt;/Type&gt;
+		/// &lt;URI&gt;http://consumer.example.com/images/image.jpg&lt;/URI&gt;
+		/// &lt;/Service&gt;
+		/// </example>
+		/// </remarks>
+		public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, OpenIdProvider provider) {
+			Contract.Requires(realm != null);
+			Contract.Requires(provider != null);
+			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
+			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+
+			return GetRelyingPartyIconUrls(realm, provider.Channel.WebRequestHandler);
+		}
+
+		#region IMessage methods
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

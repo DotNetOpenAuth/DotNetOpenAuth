@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
@@ -29,6 +30,19 @@ namespace DotNetOpenAuth.OpenId {
 			return from service in xrds.FindReturnToServices()
 				   from uri in service.UriElements
 				   select new RelyingPartyEndpointDescription(uri.Uri, service.TypeElementUris);
+		}
+
+		/// <summary>
+		/// Finds the icons the relying party wants an OP to display as part of authentication,
+		/// per the UI extension spec.
+		/// </summary>
+		/// <param name="xrds">The XrdsDocument to search.</param>
+		/// <returns>A sequence of the icon URLs in preferred order.</returns>
+		internal static IEnumerable<Uri> FindRelyingPartyIcons(this XrdsDocument xrds) {
+			return from xrd in xrds.XrdElements
+				   from service in xrd.OpenIdRelyingPartyIcons
+				   from uri in service.UriElements
+				   select uri.Uri;
 		}
 
 		/// <summary>

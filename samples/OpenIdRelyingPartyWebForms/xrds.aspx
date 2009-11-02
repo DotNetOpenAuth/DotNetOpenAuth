@@ -19,5 +19,9 @@ is default.aspx.
 			<URI priority="3"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/ajaxlogin.aspx"))%></URI>
 			<URI priority="3"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/NoIdentityOpenId.aspx"))%></URI>
 		</Service>
+		<Service>
+			<Type>http://specs.openid.net/extensions/ui/icon</Type>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/images/dotnetopenid_tiny.gif"))%></URI>
+		</Service>
 	</XRD>
 </xrds:XRDS>

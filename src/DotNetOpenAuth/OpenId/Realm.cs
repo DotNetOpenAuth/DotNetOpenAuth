@@ -400,7 +400,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The XRDS document if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
-		private XrdsDocument Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+		internal virtual XrdsDocument Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this.UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {
