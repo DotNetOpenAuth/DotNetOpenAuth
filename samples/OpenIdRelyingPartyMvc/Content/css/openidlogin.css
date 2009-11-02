@@ -52,7 +52,7 @@
 
 #openidlogin .provider
 {
-	cursor: hand;
+	cursor: pointer;
 }
 
 #openidlogin .buttons .provider
