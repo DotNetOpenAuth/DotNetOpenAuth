@@ -545,7 +545,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The control that renders to the Param tag.</returns>
 		private static string CreateParamJs(string name, string value) {
 			Contract.Ensures(Contract.Result<string>() != null);
-			string scriptFormat = @"	objp = document.createElement('Param');
+			string scriptFormat = @"	objp = document.createElement('param');
 	objp.name = {0};
 	objp.value = {1};
 	obj.appendChild(objp);
