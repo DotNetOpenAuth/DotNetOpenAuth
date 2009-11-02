@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
+	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
@@ -25,8 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="relyingParty">The relying party.</param>
 		internal PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
 			: base(response) {
-			Contract.Requires(relyingParty != null);
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
 			this.Endpoint = ServiceEndpoint.CreateForClaimedIdentifier(
 				this.Response.ClaimedIdentifier,

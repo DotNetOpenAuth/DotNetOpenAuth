@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
-			Contract.Requires(response != null);
+			Contract.Requires<ArgumentNullException>(response != null);
 			throw new NotImplementedException();
 		}
 
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			Contract.Requires(response != null);
+			Contract.Requires<ArgumentNullException>(response != null);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 			throw new NotImplementedException();
 		}

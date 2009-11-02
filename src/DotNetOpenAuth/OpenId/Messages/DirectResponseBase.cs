@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -53,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="responseVersion">The OpenID version of the response message.</param>
 		/// <param name="originatingRequest">The originating request.  May be null in case the request is unrecognizable and this is an error response.</param>
 		protected DirectResponseBase(Version responseVersion, IDirectedProtocolMessage originatingRequest) {
-			ErrorUtilities.VerifyArgumentNotNull(responseVersion, "responseVersion");
+			Contract.Requires<ArgumentNullException>(responseVersion != null);
 
 			this.Version = responseVersion;
 			this.originatingRequest = originatingRequest;

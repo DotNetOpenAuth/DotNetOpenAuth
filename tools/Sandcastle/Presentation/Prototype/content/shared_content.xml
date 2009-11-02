@@ -31,6 +31,8 @@
   <item id="CSharpUsageLabel">C#</item>
   <item id="VisualBasicUsageLabel">Visual Basic Usage</item>
   <item id="AspNetUsageLabel">ASP.NET</item>
+  <item id="JavaScriptLabel">JavaScript</item>
+  <item id="XAMLLabel">XAML</item>
   
   <!-- product labels -->
   <item id="framework">.NET Framework</item>
@@ -47,6 +49,6 @@
 
 	<!-- footer -->	
 	<item id="footer"><div id="footer"><include item="copyright"/> </div></item>
-	<item id="copyright">2005 Microsoft Corporation. All rights reserved.</item>
+	<item id="copyright">2008 Microsoft Corporation. All rights reserved.</item>
 		
 </content>

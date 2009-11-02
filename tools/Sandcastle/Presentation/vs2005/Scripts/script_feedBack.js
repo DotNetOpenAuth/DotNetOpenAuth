@@ -82,9 +82,9 @@ function GetRating()
 	return sRating;
 }
 
-function SubmitFeedback(alias, product, deliverable, productVersion, documentationVersion, defaultBody)
+function SubmitFeedback(alias, product, deliverable, productVersion, documentationVersion, defaultBody, defaultSubject)
 {
-	var subject = title
+	var subject = defaultSubject
   		+ " ("
 		+ "/1:"
   		+ product

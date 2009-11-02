@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.se.IsExtensionSupported((Type)null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void IsExtensionSupportedNullString() {
 			this.se.IsExtensionSupported((string)null);
 		}

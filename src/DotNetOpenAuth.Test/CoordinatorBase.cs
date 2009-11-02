@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -17,8 +18,8 @@ namespace DotNetOpenAuth.Test {
 		private Action<T2> party2Action;
 
 		protected CoordinatorBase(Action<T1> party1Action, Action<T2> party2Action) {
-			ErrorUtilities.VerifyArgumentNotNull(party1Action, "party1Action");
-			ErrorUtilities.VerifyArgumentNotNull(party2Action, "party2Action");
+			Contract.Requires<ArgumentNullException>(party1Action != null);
+			Contract.Requires<ArgumentNullException>(party2Action != null);
 
 			this.party1Action = party1Action;
 			this.party2Action = party2Action;
@@ -38,6 +39,7 @@ namespace DotNetOpenAuth.Test {
 			// terminate the other thread and inform the test host that the test failed.
 			Action<Action> safeWrapper = (action) => {
 				try {
+					TestBase.SetMockHttpContext();
 					action();
 				} catch (Exception ex) {
 					// We may be the second thread in an ThreadAbortException, so check the "flag"

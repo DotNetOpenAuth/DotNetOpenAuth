@@ -58,7 +58,7 @@
 		<SetEnvironmentVariable Name="FxReflectionData" Value="$(FxReflectionOutputPath)" />
 	</Target>
 
-	<Target Name="FxReflection" Condition="!Exists('$(FxReflectionOutputPath)')">
+	<Target Name="FxReflection" DependsOnTargets="ProductionTools" Condition="!Exists('$(FxReflectionOutputPath)')">
 		<MakeDir Directories="$(FxReflectionIntermediatePath)" Condition="!Exists('$(FxReflectionIntermediatePath)')" />
 		<MakeDir Directories="$(FxReflectionOutputPath)" Condition="!Exists('$(FxReflectionOutputPath)')" />
 		<CreateItem Include="@(AssemblyFolders->'%(FullPath)')">
@@ -92,7 +92,7 @@
 	</Target>
 
 	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)" 
-					DependsOnTargets="SetEnvironmentVars;CreateIntermediatePath">
+					DependsOnTargets="SetEnvironmentVars;CreateIntermediatePath;ProductionTools">
 		<Exec Command='"$(ProductionTools)\MRefBuilder.exe" "$(OutputAssemblyFile)" /out:"$(ReflectionBaseFile)"' />
 	</Target>
 
@@ -150,5 +150,9 @@
 		<Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateHxc.xsl" "$(TocFile)" /arg:fileNamePrefix="$(OutputAssembly)" /out:"$(HxcFile)"' />
 		<Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\TocToHxSContents.xsl" "$(TocFile)" /out:"$(HxtFile)"' />
 		<Exec Command='hxcomp.exe -p "$(HxcFile)"' IgnoreExitCode="true" />
+	</Target>
+
+	<Target Name="ProductionTools">
+		<MSBuild Projects="$(DxRoot)\Source\build.proj" />
 	</Target>
 </Project>

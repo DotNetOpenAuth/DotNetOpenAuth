@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -26,8 +27,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </remarks>
 		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret)
 			: this(requestMessage, requestMessage.Version) {
-			ErrorUtilities.VerifyArgumentNotNull(requestToken, "requestToken");
-			ErrorUtilities.VerifyArgumentNotNull(tokenSecret, "tokenSecret");
+			Contract.Requires<ArgumentNullException>(requestToken != null);
+			Contract.Requires<ArgumentNullException>(tokenSecret != null);
 
 			this.RequestToken = requestToken;
 			this.TokenSecret = tokenSecret;

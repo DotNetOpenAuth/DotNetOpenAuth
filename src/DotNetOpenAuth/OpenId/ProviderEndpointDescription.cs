@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -27,8 +28,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="providerEndpoint">The OpenID Provider endpoint URL.</param>
 		/// <param name="openIdVersion">The OpenID version supported by this particular endpoint.</param>
 		internal ProviderEndpointDescription(Uri providerEndpoint, Version openIdVersion) {
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(openIdVersion, "version");
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(openIdVersion != null);
 
 			this.Endpoint = providerEndpoint;
 			this.ProtocolVersion = openIdVersion;
@@ -40,8 +41,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="providerEndpoint">The URI the provider listens on for OpenID requests.</param>
 		/// <param name="serviceTypeURIs">The set of services offered by this endpoint.</param>
 		internal ProviderEndpointDescription(Uri providerEndpoint, IEnumerable<string> serviceTypeURIs) {
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(serviceTypeURIs, "serviceTypeURIs");
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(serviceTypeURIs != null);
 
 			this.Endpoint = providerEndpoint;
 			this.Capabilities = new ReadOnlyCollection<string>(serviceTypeURIs.ToList());
@@ -130,8 +131,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
 		public bool IsExtensionSupported(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
-			ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName);
 			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
 			return this.IsExtensionSupported(extension);
 		}
@@ -146,8 +145,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the extension is supported; otherwise, <c>false</c>.
 		/// </returns>
 		protected internal bool IsExtensionSupported(string extensionUri) {
-			ErrorUtilities.VerifyNonZeroLength(extensionUri, "extensionUri");
-			ErrorUtilities.VerifyOperation(this.Capabilities != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(extensionUri));
+			Contract.Requires<InvalidOperationException>(this.Capabilities != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
 			return this.Capabilities.Contains(extensionUri);
 		}
 
@@ -159,7 +158,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
 		/// </returns>
 		protected internal bool IsExtensionSupported(IOpenIdMessageExtension extension) {
-			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
+			Contract.Requires<ArgumentNullException>(extension != null);
 
 			// Consider the primary case.
 			if (this.IsExtensionSupported(extension.TypeUri)) {

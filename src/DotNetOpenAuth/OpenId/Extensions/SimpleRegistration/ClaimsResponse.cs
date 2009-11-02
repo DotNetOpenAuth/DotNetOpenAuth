@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net.Mail;
 	using System.Text;
@@ -69,7 +70,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// </param>
 		internal ClaimsResponse(string typeUriToUse)
 			: base(new Version(1, 0), typeUriToUse, EmptyList<string>.Instance) {
-			ErrorUtilities.VerifyNonZeroLength(typeUriToUse, "typeUriToUse");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUriToUse));
 		}
 
 		/// <summary>

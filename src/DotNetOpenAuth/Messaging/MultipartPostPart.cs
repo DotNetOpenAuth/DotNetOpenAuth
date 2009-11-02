@@ -192,7 +192,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		private void Invariant() {
+		protected void Invariant() {
 			Contract.Invariant(!string.IsNullOrEmpty(this.ContentDisposition));
 			Contract.Invariant(this.PartHeaders != null);
 			Contract.Invariant(this.ContentAttributes != null);

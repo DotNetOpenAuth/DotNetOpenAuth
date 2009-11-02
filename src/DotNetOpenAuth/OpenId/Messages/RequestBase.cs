@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -181,7 +182,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
 		protected static string GetProtocolConstant(Version protocolVersion, Func<Protocol, string> mode) {
-			ErrorUtilities.VerifyArgumentNotNull(protocolVersion, "protocolVersion");
+			Contract.Requires<ArgumentNullException>(protocolVersion != null);
 			return mode(Protocol.Lookup(protocolVersion));
 		}
 	}

@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
@@ -21,6 +23,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// can break if the collection is changed by another thread during enumeration.
 	/// </remarks>
 	[DebuggerDisplay("Count = {assocs.Count}")]
+	[ContractVerification(true)]
 	internal class Associations {
 		/// <summary>
 		/// The lookup table where keys are the association handles and values are the associations themselves.
@@ -44,6 +47,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		public IEnumerable<Association> Best {
 			get {
+				Contract.Ensures(Contract.Result<IEnumerable<Association>>() != null);
+
 				lock (this.associations) {
 					return this.associations.OrderByDescending(assoc => assoc.Issued);
 				}
@@ -55,11 +60,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="association">The association to add to the collection.</param>
 		public void Set(Association association) {
-			ErrorUtilities.VerifyArgumentNotNull(association, "association");
+			Contract.Requires<ArgumentNullException>(association != null);
+			Contract.Ensures(this.Get(association.Handle) == association);
 			lock (this.associations) {
 				this.associations.Remove(association.Handle); // just in case one already exists.
 				this.associations.Add(association);
 			}
+
+			Contract.Assume(this.Get(association.Handle) == association);
 		}
 
 		/// <summary>
@@ -67,7 +75,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="handle">The handle to the required association.</param>
 		/// <returns>The desired association, or null if none with the given handle could be found.</returns>
+		[Pure]
 		public Association Get(string handle) {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(handle));
+
 			lock (this.associations) {
 				if (this.associations.Contains(handle)) {
 					return this.associations[handle];
@@ -83,6 +94,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="handle">The handle to the required association.</param>
 		/// <returns>Whether an <see cref="Association"/> with the given handle was in the collection for removal.</returns>
 		public bool Remove(string handle) {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(handle));
 			lock (this.associations) {
 				return this.associations.Remove(handle);
 			}
@@ -99,5 +111,17 @@ namespace DotNetOpenAuth.OpenId {
 				}
 			}
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		protected void ObjectInvariant() {
+			Contract.Invariant(this.associations != null);
+		}
+#endif
 	}
 }

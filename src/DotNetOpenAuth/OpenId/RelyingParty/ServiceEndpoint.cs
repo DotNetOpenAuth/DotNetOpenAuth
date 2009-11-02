@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -57,8 +58,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="servicePriority">The service priority.</param>
 		/// <param name="uriPriority">The URI priority.</param>
 		private ServiceEndpoint(ProviderEndpointDescription providerEndpoint, Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, int? servicePriority, int? uriPriority) {
-			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
+			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			this.ProviderDescription = providerEndpoint;
 			this.ClaimedIdentifier = claimedIdentifier;
 			this.UserSuppliedIdentifier = userSuppliedIdentifier;
@@ -79,10 +80,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Used for deserializing <see cref="ServiceEndpoint"/> from authentication responses.
 		/// </remarks>
 		private ServiceEndpoint(Uri providerEndpoint, Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, Protocol protocol) {
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(providerLocalIdentifier, "providerLocalIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(providerLocalIdentifier != null);
+			Contract.Requires<ArgumentNullException>(protocol != null);
 
 			this.ClaimedIdentifier = claimedIdentifier;
 			this.UserSuppliedIdentifier = userSuppliedIdentifier;
@@ -433,7 +434,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="uriPriority">The URI priority.</param>
 		/// <returns>The created <see cref="ServiceEndpoint"/> instance</returns>
 		internal static ServiceEndpoint CreateForProviderIdentifier(Identifier providerIdentifier, ProviderEndpointDescription providerEndpoint, int? servicePriority, int? uriPriority) {
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 
 			Protocol protocol = Protocol.Detect(providerEndpoint.Capabilities);
 

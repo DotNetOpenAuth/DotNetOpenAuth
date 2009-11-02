@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -31,7 +32,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="securitySettings">The security settings.</param>
 		internal AutoResponsiveRequest(IDirectedProtocolMessage request, IProtocolMessage response, ProviderSecuritySettings securitySettings)
 			: base(request, securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
 		}
@@ -44,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="securitySettings">The security settings.</param>
 		internal AutoResponsiveRequest(IProtocolMessage response, ProviderSecuritySettings securitySettings)
 			: base(IndirectResponseBase.GetVersion(response), securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
 		}

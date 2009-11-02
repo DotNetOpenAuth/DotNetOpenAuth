@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -27,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The negative assertion response received by the Relying Party.</param>
 		internal NegativeAuthenticationResponse(NegativeAssertionResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			this.response = response;
 		}
 
@@ -128,8 +129,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <value></value>
 		public Identifier UserSuppliedIdentifier {
 			get {
-				ErrorUtilities.VerifyOperation(this.Status == AuthenticationStatus.SetupRequired, OpenIdStrings.OperationOnlyValidForSetupRequiredState);
-
 				string userSuppliedIdentifier;
 				this.response.ExtraData.TryGetValue(AuthenticationRequest.UserSuppliedIdentifierParameterName, out userSuppliedIdentifier);
 				return userSuppliedIdentifier;

@@ -26,7 +26,7 @@
 		<xsl:apply-templates select="/document/comments/returns" />
 		<!-- members -->
 		<xsl:choose>
-			<xsl:when test="$tgroup='list' and $tsubgroup='namespaces'">
+			<xsl:when test="$tgroup='root'">
 				<xsl:apply-templates select="/document/reference/elements" mode="root" />
 			</xsl:when>
 			<xsl:when test="$group='namespace'">
@@ -55,7 +55,7 @@
 		<!-- inheritance -->
 		<xsl:apply-templates select="/document/reference/family" />
     <!--versions-->
-    <xsl:if test="not($group='member' or $group='namespace' or $group='root' )">
+    <xsl:if test="not($group='member' or $group='namespace' or $tgroup='root' )">
       <xsl:apply-templates select="/document/reference/versions" />
     </xsl:if>
 		<!-- see also -->
@@ -152,22 +152,17 @@
 	      <xsl:choose>
 	        <xsl:when test="code/@language">
         <xsl:variable name="codeId" select="generate-id()" />
+            <div name="snippetGroup">
         <table class="filter"><tr class="tabs" id="ct_{$codeId}">
             <xsl:for-each select="code">
-              <td class="tab" x-lang="{@language}" onclick="ct{$codeId}.toggleClass('x-lang','{@language}','activeTab','tab'); cb{$codeId}.toggleStyle('x-lang','{@language}','display','block','none');"><include item="{@language}Label" /></td>
+                    <td class="tab" x-lang="{@language}" onclick="toggleClass('ct_{$codeId}','x-lang','{@language}','activeTab','tab'); toggleStyle('cb_{$codeId}','x-lang','{@language}','display','block','none');"><include item="{@language}Label" /></td>
             </xsl:for-each></tr></table>
         <div id="cb_{$codeId}">
           <xsl:for-each select="code">
             <div class="code" x-lang="{@language}"><pre><xsl:copy-of select="node()" /></pre></div>
           </xsl:for-each>
         </div>
-        <script type="text/javascript"><xsl:text>
-			    var ct</xsl:text><xsl:value-of select="$codeId" /><xsl:text> = new ElementCollection('ct_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>');
-			    var cb</xsl:text><xsl:value-of select="$codeId" /><xsl:text> = new ElementCollection('cb_</xsl:text><xsl:value-of select="$codeId" /><xsl:text>');
-			    lfc.registerTabbedArea(ct</xsl:text><xsl:value-of select="$codeId" /><xsl:text>, cb</xsl:text><xsl:value-of select="$codeId" /><xsl:text>);
-			    ct</xsl:text><xsl:value-of select="$codeId" /><xsl:text>.toggleClass('x-lang','CSharp','activeTab','tab');
-          cb</xsl:text><xsl:value-of select="$codeId" /><xsl:text>.toggleStyle('x-lang','CSharp','display','block','none');</xsl:text>
-        </script>
+           </div>
 	        </xsl:when>
           <xsl:otherwise>
             <xsl:apply-templates />
@@ -230,12 +225,14 @@
 	</xsl:template>
 
 	<xsl:template name="seealso">
-		<xsl:if test="count(/document/comments/seealso | /document/comments/summary/seealso) &gt; 0">
+		<xsl:if test="count(/document/comments//seealso | /document/reference/elements/element/overloads//seealso) &gt; 0">
 			<xsl:call-template name="section">
 				<xsl:with-param name="title"><include item="relatedTitle" /></xsl:with-param>
 				<xsl:with-param name="content">
-					<xsl:for-each select="/document/comments/seealso | /document/comments/summary/seealso">
-						<xsl:apply-templates select="." />
+					<xsl:for-each select="/document/comments//seealso | /document/reference/elements/element/overloads//seealso">
+            <xsl:apply-templates select=".">
+              <xsl:with-param name="displaySeeAlso" select="true()" />
+            </xsl:apply-templates>
 						<br />
 					</xsl:for-each>
 				</xsl:with-param>
@@ -293,7 +290,7 @@
         </xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="seealso[@href]">
+  <xsl:template match="see[@href]">
     <xsl:choose>
       <xsl:when test="normalize-space(.)">
         <a>
@@ -308,6 +305,26 @@
         </a>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:template>
+
+	<xsl:template match="seealso[@href]">
+    <xsl:param name="displaySeeAlso" select="false()" />
+    <xsl:if test="$displaySeeAlso">
+    <xsl:choose>
+      <xsl:when test="normalize-space(.)">
+        <a>
+          <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
+          <xsl:value-of select="." />
+        </a>
+      </xsl:when>
+      <xsl:otherwise>
+        <a>
+          <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
+          <xsl:value-of select="@href" />
+        </a>
+      </xsl:otherwise>
+    </xsl:choose>
+    </xsl:if>
   </xsl:template>
 
 	<xsl:template match="see[@langword]">
@@ -352,6 +369,8 @@
 
 
 	<xsl:template match="seealso">
+    <xsl:param name="displaySeeAlso" select="false()" />
+    <xsl:if test="$displaySeeAlso">
     <xsl:choose>
       <xsl:when test="normalize-space(.)">
         <referenceLink target="{@cref}">
@@ -362,10 +381,11 @@
         <referenceLink target="{@cref}" />
       </xsl:otherwise>
     </xsl:choose>
+    </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="c">
-		<span class="code"><xsl:value-of select="." /></span>
+		<span class="code"><xsl:apply-templates /></span>
 	</xsl:template>
 
 	<xsl:template match="paramref">
@@ -378,7 +398,7 @@
 
 	<!-- pass through html tags -->
 
-	<xsl:template match="p|ol|ul|li|dl|dt|dd|table|tr|th|td|h1|h2|h3|h4|h5|h6|hr|br|pre|blockquote|div|span|a|img|b|i|strong|em|del|sub|sup|abbr|acronym|u|font">
+	<xsl:template match="p|ol|ul|li|dl|dt|dd|table|tr|th|td|h1|h2|h3|h4|h5|h6|hr|br|pre|blockquote|div|span|a|img|b|i|strong|em|del|sub|sup|abbr|acronym|u|font|map|area">
 		<xsl:copy>
 			<xsl:copy-of select="@*" />
 			<xsl:apply-templates />

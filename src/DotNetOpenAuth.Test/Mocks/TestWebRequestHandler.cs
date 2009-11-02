@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		#region IWebRequestHandler Members
 
 		public bool CanSupport(DirectWebRequestOptions options) {
-			return options == DirectWebRequestOptions.None;
+			return true;
 		}
 
 		/// <summary>

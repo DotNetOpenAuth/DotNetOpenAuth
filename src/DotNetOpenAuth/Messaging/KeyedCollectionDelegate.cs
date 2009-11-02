@@ -27,8 +27,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="getKeyForItemDelegate">The delegate that gets the key for a given item.</param>
 		internal KeyedCollectionDelegate(Func<TItem, TKey> getKeyForItemDelegate) {
-			Contract.Requires(getKeyForItemDelegate != null);
-			ErrorUtilities.VerifyArgumentNotNull(getKeyForItemDelegate, "getKeyForItemDelegate");
+			Contract.Requires<ArgumentNullException>(getKeyForItemDelegate != null);
 
 			this.getKeyForItemDelegate = getKeyForItemDelegate;
 		}
@@ -39,7 +38,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="item">The element from which to extract the key.</param>
 		/// <returns>The key for the specified element.</returns>
 		protected override TKey GetKeyForItem(TItem item) {
-			ErrorUtilities.VerifyArgumentNotNull(item, "item");
+			ErrorUtilities.VerifyArgumentNotNull(item, "item"); // null items not supported.
 			return this.getKeyForItemDelegate(item);
 		}
 	}

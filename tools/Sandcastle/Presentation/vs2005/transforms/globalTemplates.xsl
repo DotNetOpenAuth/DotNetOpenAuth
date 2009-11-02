@@ -174,7 +174,8 @@
           <tr>
             <th>
               <xsl:variable name="codeLangLC" select="translate($codeLang,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz ')"/>
-              <xsl:if test="$codeLangLC='visualbasic' or $codeLangLC='csharp' or $codeLangLC='managedcplusplus' or $codeLangLC='jsharp' or $codeLangLC='jscript'">
+              <!-- Added JavaScript to look for AJAX snippets as JScript represents javascript snippets-->
+              <xsl:if test="$codeLangLC='visualbasic' or $codeLangLC='csharp' or $codeLangLC='managedcplusplus' or $codeLangLC='jsharp' or $codeLangLC='jscript' or $codeLangLC='javascript' or $codeLangLC='fsharp' ">
                 <include item="{$codeLang}"/>
               </xsl:if>
               <xsl:text>&#xa0;</xsl:text>
@@ -182,6 +183,7 @@
             <th>
               <span class="copyCode" onclick="CopyCode(this)" onkeypress="CopyCode_CheckKey(this, event)" onmouseover="ChangeCopyCodeIcon(this)" onmouseout="ChangeCopyCodeIcon(this)" tabindex="0">
                 <img class="copyCodeImage" name="ccImage" align="absmiddle">
+                  <includeAttribute name="alt" item="copyImage" />
                   <includeAttribute name="title" item="copyImage" />
                   <includeAttribute name="src" item="iconPath">
                     <parameter>copycode.gif</parameter>
@@ -202,11 +204,6 @@
     </div>
 
   </xsl:template>
-
-  <!-- sireeshm: fix bug 361746 - use copy-of, so that span class="keyword", "literal" and "comment" nodes are copied to preserve code colorization in snippets -->
-  <xsl:template match="ddue:span[@class='keyword' or @class='literal' or @class='comment']">
-    <xsl:copy-of select="."/>
-  </xsl:template>
   
   <xsl:template name="nonScrollingRegionTypeLinks">
     <include item="nonScrollingTypeLinkText">
@@ -223,5 +220,108 @@
       </parameter>
     </include>
   </xsl:template>
+
+  <xsl:template name="mshelpCodelangAttributes">
+    <xsl:param name="snippets" />
+    <xsl:for-each select="$snippets">
+      
+      <xsl:if test="not(@language=preceding::*/@language)">
+        <xsl:variable name="codeLang">
+          <xsl:choose>
+            <xsl:when test="@language = 'VBScript' or @language = 'vbs'">
+              <xsl:text>VBScript</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'VisualBasic' or @language = 'vb' or @language = 'vb#' or @language = 'VB' or @language = 'kbLangVB'" >
+              <xsl:text>kbLangVB</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'CSharp' or @language = 'c#' or @language = 'cs' or @language = 'C#'" >
+              <xsl:text>CSharp</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'ManagedCPlusPlus' or @language = 'cpp' or @language = 'cpp#' or @language = 'c' or @language = 'c++' or @language = 'C++' or @language = 'kbLangCPP'" >
+              <xsl:text>kbLangCPP</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'JSharp' or @language = 'j#' or @language = 'jsharp' or @language = 'VJ#'">
+              <xsl:text>VJ#</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'JScript' or @language = 'js' or @language = 'jscript#' or @language = 'jscript' or @language = 'JScript' or @language = 'kbJScript'">
+              <xsl:text>kbJScript</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'XAML' or @language = 'xaml'">
+              <xsl:text>XAML</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'JavaScript' or @language = 'javascript'">
+              <xsl:text>JavaScript</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'xml'">
+              <xsl:text>xml</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'html'">
+              <xsl:text>html</xsl:text>
+            </xsl:when>
+            <xsl:when test="@language = 'vb-c#'">
+              <xsl:text>visualbasicANDcsharp</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>other</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="$codeLang='other'" />
+          <!-- If $codeLang is already authored, then do nothing -->
+          <xsl:when test="/document/metadata/attribute[@name='codelang']/text() = $codeLang" />
+          <xsl:otherwise>
+            <xsl:call-template name="codeLang">
+              <xsl:with-param name="codeLang" select="$codeLang" />
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="codeLang">
+    <xsl:param name="codeLang" />
+    <MSHelp:Attr Name="codelang" Value="{$codeLang}" />
+  </xsl:template>
+
+  <xsl:template name="trimAtPeriod">
+    <xsl:param name="string" />
+
+    <xsl:variable name="trimmedString" select="substring(normalize-space($string), 1, 256)" />
+    <xsl:choose>
+      <xsl:when test="normalize-space($string) != $trimmedString">
+        <xsl:choose>
+          <xsl:when test="not(contains($trimmedString, '.'))">
+            <xsl:value-of select="$trimmedString"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="substringAndLastPeriod">
+              <xsl:with-param name="string" select="$trimmedString" />
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space($string)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="substringAndLastPeriod">
+    <xsl:param name="string" />
+
+    <xsl:if test="contains($string, '.')">
+      <xsl:variable name="after" select="substring-after($string, '.')" />
+      <xsl:value-of select="concat(substring-before($string, '.'),'.')" />
+      <xsl:if test="contains($after, '.')">
+        <xsl:call-template name="substringAndLastPeriod">
+          <xsl:with-param name="string" select="$after" />
+        </xsl:call-template>
+      </xsl:if>
+    </xsl:if>
+  </xsl:template>
+
 
 </xsl:stylesheet>

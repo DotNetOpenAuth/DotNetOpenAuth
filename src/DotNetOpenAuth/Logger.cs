@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;
@@ -131,7 +132,7 @@ namespace DotNetOpenAuth {
 		/// <param name="name">A name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
 		internal static ILog Create(string name) {
-			ErrorUtilities.VerifyNonZeroLength(name, "name");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(name));
 			return InitializeFacade(name);
 		}
 

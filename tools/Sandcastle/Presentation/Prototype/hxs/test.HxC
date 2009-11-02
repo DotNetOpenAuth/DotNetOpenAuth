@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE HelpCollection SYSTEM "MS-Help://Hx/Resources/HelpCollection.dtd">
+<HelpCollection DTDVersion="1.0" FileVersion="08.00.50720.2102" LangId="1033" Title="Common Scripts" Copyright="© 2005 Microsoft Corporation. All rights reserved.">
+  <CompilerOptions OutputFile="test.HxS" CreateFullTextIndex="Yes" CompileResult="Hxs">
+    <IncludeFile File="test.HxF" />
+  </CompilerOptions>
+  <TOCDef File="test.HxT" />
+  <KeywordIndexDef File="test_A.HxK" />
+  <KeywordIndexDef File="test_K.HxK" />
+  <KeywordIndexDef File="test_F.HxK" />
+  <KeywordIndexDef File="test_N.HxK" />
+  <KeywordIndexDef File="test_S.HxK" />
+  <KeywordIndexDef File="test_B.HxK" />
+  <ItemMoniker Name="!DefaultTOC" ProgId="HxDs.HxHierarchy" InitData="AnyString" />
+  <ItemMoniker Name="!DefaultFullTextSearch" ProgId="HxDs.HxFullTextSearch" InitData="AnyString" />
+  <ItemMoniker Name="!DefaultAssociativeIndex" ProgId="HxDs.HxIndex" InitData="A" />
+  <ItemMoniker Name="!DefaultKeywordIndex" ProgId="HxDs.HxIndex" InitData="K" />
+  <ItemMoniker Name="!DefaultContextWindowIndex" ProgId="HxDs.HxIndex" InitData="F" />
+  <ItemMoniker Name="!DefaultNamedUrlIndex" ProgId="HxDs.HxIndex" InitData="NamedUrl" />
+  <ItemMoniker Name="!DefaultSearchWindowIndex" ProgId="HxDs.HxIndex" InitData="S" />
+  <ItemMoniker Name="!DefaultDynamicLinkIndex" ProgId="HxDs.HxIndex" InitData="B" />
+</HelpCollection>

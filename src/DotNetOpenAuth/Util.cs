@@ -109,10 +109,11 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<T>>(
 				list,
 				l => {
-					////Contract.Requires(l != null); // CC: anonymous method can't handle it
+					// Code contracts not allowed in generator methods.
 					ErrorUtilities.VerifyArgumentNotNull(l, "l");
+
 					string newLine = Environment.NewLine;
-					////Contract.Assume(newLine != null && newLine.Length > 0); // CC: anonymous method can't handle it
+					////Contract.Assume(newLine != null && newLine.Length > 0);
 					StringBuilder sb = new StringBuilder();
 					if (multiLineElements) {
 						sb.AppendLine("[{");
@@ -173,7 +174,7 @@ namespace DotNetOpenAuth {
 			/// <param name="obj">The object that may be serialized to string form.</param>
 			/// <param name="toString">The method that will serialize the object if called upon.</param>
 			public DelayedToString(T obj, Func<T, string> toString) {
-				Contract.Requires(toString != null);
+				Contract.Requires<ArgumentNullException>(toString != null);
 
 				this.obj = obj;
 				this.toString = toString;

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -52,7 +53,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="secretStore">The secret store from which to retrieve the secret used for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal ReturnToSignatureBindingElement(IAssociationStore<Uri> secretStore, RelyingPartySecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(secretStore, "secretStore");
+			Contract.Requires<ArgumentNullException>(secretStore != null);
 
 			this.secretManager = new PrivateSecretManager(securitySettings, secretStore);
 		}
@@ -161,7 +162,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// or other minor changes do not invalidate the signature.
 		/// </remarks>
 		private string GetReturnToSignature(Uri returnTo) {
-			ErrorUtilities.VerifyArgumentNotNull(returnTo, "returnTo");
+			Contract.Requires<ArgumentNullException>(returnTo != null);
 
 			// Assemble the dictionary to sign, taking care to remove the signature itself
 			// in order to accurately reproduce the original signature (which of course didn't include

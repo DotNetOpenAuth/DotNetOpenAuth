@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Text;
 	using System.Web.UI;
@@ -387,8 +388,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires(value >= 0);
-				ErrorUtilities.VerifyArgumentInRange(value >= 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
 				this.ViewState[ColumnsViewStateKey] = value;
 			}
 		}
@@ -436,7 +436,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 				this.ViewState[NameViewStateKey] = value ?? string.Empty;
 			}
 		}
@@ -452,7 +452,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value.TotalMilliseconds > 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value.TotalMilliseconds > 0);
 				this.ViewState[TimeoutViewStateKey] = value;
 			}
 		}
@@ -468,7 +468,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentInRange(value > 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
 				this.ViewState[ThrottleViewStateKey] = value;
 			}
 		}
@@ -484,7 +484,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 				this.ViewState[LogOnTextViewStateKey] = value ?? string.Empty;
 			}
 		}
@@ -520,7 +520,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 				this.ViewState[RetryTextViewStateKey] = value ?? string.Empty;
 			}
 		}

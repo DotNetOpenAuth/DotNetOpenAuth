@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net.Security;
 	using System.Reflection;
@@ -18,6 +19,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
 	/// </summary>
+	[ContractVerification(true)]
 	[DebuggerDisplay("MessagePart {Name}")]
 	internal class MessagePart {
 		/// <summary>
@@ -62,12 +64,37 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "By design.")]
 		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Much more efficient initialization when we can call methods.")]
 		static MessagePart() {
-			Map<Uri>(uri => uri.AbsoluteUri, str => new Uri(str));
+			Func<string, Uri> safeUri = str => {
+				Contract.Assume(str != null);
+				return new Uri(str);
+			};
+			Func<string, bool> safeBool = str => {
+				Contract.Assume(str != null);
+				return bool.Parse(str);
+			};
+			Func<string, Identifier> safeIdentfier = str => {
+				Contract.Assume(str != null);
+				ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
+				return Identifier.Parse(str);
+			};
+			Func<byte[], string> safeFromByteArray = bytes => {
+				Contract.Assume(bytes != null);
+				return Convert.ToBase64String(bytes);
+			};
+			Func<string, byte[]> safeToByteArray = str => {
+				Contract.Assume(str != null);
+				return Convert.FromBase64String(str);
+			};
+			Func<string, Realm> safeRealm = str => {
+				Contract.Assume(str != null);
+				return new Realm(str);
+			};
+			Map<Uri>(uri => uri.AbsoluteUri, safeUri);
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
-			Map<byte[]>(bytes => Convert.ToBase64String(bytes), str => Convert.FromBase64String(str));
-			Map<Realm>(realm => realm.ToString(), str => new Realm(str));
-			Map<Identifier>(id => id.ToString(), str => Identifier.Parse(str));
-			Map<bool>(value => value.ToString().ToLowerInvariant(), str => bool.Parse(str));
+			Map<byte[]>(safeFromByteArray, safeToByteArray);
+			Map<Realm>(realm => realm.ToString(), safeRealm);
+			Map<Identifier>(id => id.ToString(), safeIdentfier);
+			Map<bool>(value => value.ToString().ToLowerInvariant(), safeBool);
 			Map<CultureInfo>(c => c.Name, str => new CultureInfo(str));
 		}
 
@@ -82,27 +109,14 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// The attribute discovered on <paramref name="member"/> that describes the
 		/// serialization requirements of the message part.
 		/// </param>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts requires it.")]
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {
-			if (member == null) {
-				throw new ArgumentNullException("member");
-			}
+			Contract.Requires<ArgumentNullException>(member != null);
+			Contract.Requires<ArgumentException>(member is FieldInfo || member is PropertyInfo);
+			Contract.Requires<ArgumentNullException>(attribute != null);
 
 			this.field = member as FieldInfo;
 			this.property = member as PropertyInfo;
-			if (this.field == null && this.property == null) {
-				throw new ArgumentException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.UnexpectedType,
-						typeof(FieldInfo).Name + ", " + typeof(PropertyInfo).Name,
-						member.GetType().Name),
-					"member");
-			}
-
-			if (attribute == null) {
-				throw new ArgumentNullException("attribute");
-			}
-
 			this.Name = attribute.Name ?? member.Name;
 			this.RequiredProtection = attribute.RequiredProtection;
 			this.IsRequired = attribute.IsRequired;
@@ -110,6 +124,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			this.memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
 			this.defaultMemberValue = DeriveDefaultValue(this.memberDeclaredType);
 
+			Contract.Assume(this.memberDeclaredType != null); // CC missing PropertyInfo.PropertyType ensures result != null
 			if (attribute.Encoder == null) {
 				if (!converters.TryGetValue(this.memberDeclaredType, out this.converter)) {
 					this.converter = new ValueMapping(
@@ -167,9 +182,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="message">The message instance containing the member whose value should be set.</param>
 		/// <param name="value">The string representation of the value to set.</param>
 		internal void SetValue(IMessage message, string value) {
-			if (message == null) {
-				throw new ArgumentNullException("message");
-			}
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			try {
 				if (this.IsConstantValue) {

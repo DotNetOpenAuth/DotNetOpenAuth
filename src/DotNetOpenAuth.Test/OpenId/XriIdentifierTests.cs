@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			base.SetUp();
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void CtorNull() {
 			new XriIdentifier(null);
 		}

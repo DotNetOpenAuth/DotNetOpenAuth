@@ -136,7 +136,7 @@
     <value>The directed message's Recipient property must not be null.</value>
   </data>
   <data name="DirectWebRequestOptionsNotSupported" xml:space="preserve">
-    <value>The given set of options ({0}) is not supported by {1}.</value>
+    <value>The given set of options is not supported by this web request handler.</value>
   </data>
   <data name="ErrorDeserializingMessage" xml:space="preserve">
     <value>Error while deserializing message {0}.</value>
@@ -290,6 +290,9 @@
   </data>
   <data name="UnsupportedHttpVerb" xml:space="preserve">
     <value>The HTTP verb '{0}' is unrecognized and unsupported.</value>
+  </data>
+  <data name="NonEmptyStringExpected" xml:space="preserve">
+    <value>A non-empty string was expected.</value>
   </data>
   <data name="StreamMustHaveKnownLength" xml:space="preserve">
     <value>The stream must have a known length.</value>

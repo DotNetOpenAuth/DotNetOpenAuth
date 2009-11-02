@@ -9,7 +9,7 @@
 		</topics>
 	</xsl:template>
 
-	<xsl:template match="fileAsset[@assetType='Topic']">
+	<xsl:template match="fileAsset[@assetType='Topic' and @assetParentName=@projectName]">
 		<topic>
 			<xsl:attribute name="id">
 				<xsl:value-of select="@fileAssetGuid" />

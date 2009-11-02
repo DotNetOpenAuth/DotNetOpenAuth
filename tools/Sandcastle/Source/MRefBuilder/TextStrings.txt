@@ -1,0 +1,4 @@
+HelpOption = Show this help page.
+OutputOption = Specifies an output file.
+ConfigOption = Specifies a configuration file.
+DependencyOption = Specify assemblies on which the reflected assemblies depend.
