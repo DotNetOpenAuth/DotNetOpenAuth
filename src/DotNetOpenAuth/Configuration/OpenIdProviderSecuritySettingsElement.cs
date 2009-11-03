@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the level of verification a Provider performs on an identifier before
 		/// sending an unsolicited assertion for it.
 		/// </summary>
-		/// <value>The default value is <see cref="UnsolicitedAssertionVerificationLevel.Always"/>.</value>
+		/// <value>The default value is <see cref="ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.RequireSuccess"/>.</value>
 		[ConfigurationProperty(UnsolicitedAssertionVerificationConfigName, DefaultValue = ProviderSecuritySettings.UnsolicitedAssertionVerificationDefault)]
 		public ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel UnsolicitedAssertionVerification {
 			get { return (ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel)this[UnsolicitedAssertionVerificationConfigName]; }
