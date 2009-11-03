@@ -8,10 +8,6 @@
 	using OpenIdProviderMvc.Code;
 
 	internal class User {
-		internal static Uri PpidClaimedIdentifierBaseUri {
-			get { return Util.GetAppPathRootedUri("anon?id="); }
-		}
-
 		internal static Uri ClaimedIdentifierBaseUri {
 			get { return Util.GetAppPathRootedUri("user/"); }
 		}

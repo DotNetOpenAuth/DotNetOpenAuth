@@ -33,6 +33,19 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Finds the icons the relying party wants an OP to display as part of authentication,
+		/// per the UI extension spec.
+		/// </summary>
+		/// <param name="xrds">The XrdsDocument to search.</param>
+		/// <returns>A sequence of the icon URLs in preferred order.</returns>
+		internal static IEnumerable<Uri> FindRelyingPartyIcons(this XrdsDocument xrds) {
+			return from xrd in xrds.XrdElements
+				   from service in xrd.OpenIdRelyingPartyIcons
+				   from uri in service.UriElements
+				   select uri.Uri;
+		}
+
+		/// <summary>
 		/// Creates the service endpoints described in this document, useful for requesting
 		/// authentication of one of the OpenID Providers that result from it.
 		/// </summary>

@@ -137,7 +137,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
 
-				var returnToEndpoints = this.Realm.Discover(provider.Channel.WebRequestHandler, false);
+				var returnToEndpoints = this.Realm.DiscoverReturnToEndpoints(provider.Channel.WebRequestHandler, false);
 				if (returnToEndpoints == null) {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}

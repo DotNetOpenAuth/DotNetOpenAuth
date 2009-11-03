@@ -381,7 +381,26 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The details of the endpoints if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
-		internal virtual IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+		internal virtual IEnumerable<RelyingPartyEndpointDescription> DiscoverReturnToEndpoints(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+			XrdsDocument xrds = this.Discover(requestHandler, allowRedirects);
+			if (xrds != null) {
+				return xrds.FindRelyingPartyReceivingEndpoints();
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Searches for an XRDS document at the realm URL.
+		/// </summary>
+		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
+		/// <param name="allowRedirects">Whether redirects may be followed when discovering the Realm.
+		/// This may be true when creating an unsolicited assertion, but must be
+		/// false when performing return URL verification per 2.0 spec section 9.2.1.</param>
+		/// <returns>
+		/// The XRDS document if found; or <c>null</c> if no service document was discovered.
+		/// </returns>
+		internal virtual XrdsDocument Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this.UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {
@@ -389,8 +408,7 @@ namespace DotNetOpenAuth.OpenId {
 				ErrorUtilities.VerifyProtocol(allowRedirects || yadisResult.NormalizedUri == yadisResult.RequestUri, OpenIdStrings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri);
 				if (yadisResult.IsXrds) {
 					try {
-						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-						return xrds.FindRelyingPartyReceivingEndpoints();
+						return new XrdsDocument(yadisResult.ResponseText);
 					} catch (XmlException ex) {
 						throw ErrorUtilities.Wrap(ex, XrdsStrings.InvalidXRDSDocument);
 					}

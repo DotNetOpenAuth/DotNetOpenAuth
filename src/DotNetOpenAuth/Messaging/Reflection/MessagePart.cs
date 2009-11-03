@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.Linq;
 	using System.Net.Security;
 	using System.Reflection;
 	using System.Xml;
@@ -96,6 +97,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<Identifier>(id => id.ToString(), safeIdentfier);
 			Map<bool>(value => value.ToString().ToLowerInvariant(), safeBool);
 			Map<CultureInfo>(c => c.Name, str => new CultureInfo(str));
+			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
 		}
 
 		/// <summary>

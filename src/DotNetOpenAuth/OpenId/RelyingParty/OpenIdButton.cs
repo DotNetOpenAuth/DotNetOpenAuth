@@ -116,8 +116,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
 		protected override void RaisePostBackEvent(string eventArgument) {
 			if (!this.PrecreateRequest) {
-				IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
-				request.RedirectToProvider();
+				try {
+					IAuthenticationRequest request = this.CreateRequests().First();
+					request.RedirectToProvider();
+				} catch (InvalidOperationException ex) {
+					throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
+				}
 			}
 		}
 

@@ -169,6 +169,7 @@
     <Compile Include="Messaging\ErrorUtilitiesTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
     <Compile Include="Messaging\MultipartPostPartTests.cs" />
+    <Compile Include="Messaging\OutgoingWebResponseTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDictionaryTests.cs" />
     <Compile Include="Messaging\MessagingTestBase.cs" />
