@@ -373,16 +373,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// is authorized to send an assertion for the given claimed identifier,
 			// do due diligence by performing our own discovery on the claimed identifier
 			// and make sure that it is tied to this OP and OP local identifier.
-			var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
-			var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
-			if (!discoveredEndpoints.Contains(serviceEndpoint)) {
-				Logger.OpenId.DebugFormat(
-					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
-					claimedIdentifier,
-					Environment.NewLine,
-					serviceEndpoint,
-					discoveredEndpoints.ToStringDeferred(true));
-				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
+			if (this.SecuritySettings.UnsolicitedAssertionVerification != ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.NeverVerify) {
+				var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
+				var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
+				if (!discoveredEndpoints.Contains(serviceEndpoint)) {
+					Logger.OpenId.WarnFormat(
+						"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
+						claimedIdentifier,
+						Environment.NewLine,
+						serviceEndpoint,
+						discoveredEndpoints.ToStringDeferred(true));
+
+					// Only FAIL if the setting is set for it.
+					if (this.securitySettings.UnsolicitedAssertionVerification == ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.RequireSuccess) {
+						ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
+					}
+				}
 			}
 
 			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
