@@ -120,7 +120,8 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			// Prepare a message to exchange the request token for an access token.
-			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {
+			// We are careful to use a v1.0 message version so that the oauth_verifier is not required.
+			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, Protocol.V10.Version) {
 				RequestToken = positiveAuthorization.RequestToken,
 				ConsumerKey = this.ConsumerKey,
 			};
