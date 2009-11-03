@@ -8,13 +8,16 @@
 
 function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
 		throttle, timeout, assertionReceivedCode,
-		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
+		loginButtonText, loginButtonToolTip, showLoginPostBackButton, loginPostBackToolTip,
+		retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
 		authenticatedByToolTip, authenticatedAsToolTip, authenticationFailedToolTip,
-		postback) {
-	box.dnoi_internal = new Object();
+		autoPostback, postback) {
+	box.dnoi_internal = {
+		postback: postback
+	};
 	if (assertionReceivedCode) {
-		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); }
+		box.dnoi_internal.onauthenticated = function(sender, e) { eval(assertionReceivedCode); };
 	}
 
 	box.dnoi_internal.originalBackground = box.style.background;
@@ -27,7 +30,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		button.textContent = text; // Mozilla
 		button.value = text; // IE
 		button.type = 'button';
-		button.title = tooltip != null ? tooltip : '';
+		button.title = tooltip || '';
 		button.onclick = onclick;
 		box.parentNode.appendChild(button);
 		return button;
@@ -50,10 +53,25 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return splitButton;
 	};
 
+	box.dnoi_internal.createLoginPostBackButton = function() {
+		var postback = function() {
+			var discoveryResult = window.dnoa_internal.discoveryResults[box.value];
+			var respondingEndpoint = discoveryResult.findSuccessfulRequest();
+			box.dnoi_internal.postback(discoveryResult, respondingEndpoint, respondingEndpoint.extensionResponses, { background: false });
+		};
+		var button = box.dnoi_internal.constructButton(loginButtonText, loginPostBackToolTip, postback);
+		button.style.visibility = 'visible';
+		button.destroy = function() {
+			button.parentNode.removeChild(button);
+		};
+
+		return button;
+	};
+
 	box.dnoi_internal.createLoginButton = function(providers) {
 		var onMenuItemClick = function(p_sType, p_aArgs, p_oItem) {
 			var selectedProvider = (p_oItem && p_oItem.value) ? p_oItem.value : providers[0].value;
-			selectedProvider.loginPopup(box.dnoi_internal.onAuthSuccess, box.dnoi_internal.onAuthFailed);
+			selectedProvider.loginPopup();
 			return false;
 		};
 
@@ -77,7 +95,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.constructIcon = function(imageUrl, tooltip, rightSide, visible, height) {
 		var icon = document.createElement('img');
 		icon.src = imageUrl;
-		icon.title = tooltip != null ? tooltip : '';
+		icon.title = tooltip || '';
 		icon.originalTitle = icon.title;
 		if (!visible) {
 			icon.style.visibility = 'hidden';
@@ -106,12 +124,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	};
 
 	function findParentForm(element) {
-		if (element == null || element.nodeName == "FORM") {
+		if (!element || element.nodeName == "FORM") {
 			return element;
 		}
 
 		return findParentForm(element.parentNode);
-	};
+	}
 
 	box.parentForm = findParentForm(box);
 
@@ -127,11 +145,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		hiddenField.setAttribute("type", "hidden");
 		box.parentForm.appendChild(hiddenField);
 		return hiddenField;
-	};
+	}
 
 	box.dnoi_internal.retryButton = box.dnoi_internal.constructButton(retryButtonText, retryButtonToolTip, function() {
 		box.timeout += 5000; // give the retry attempt 5s longer than the last attempt
-		box.dnoi_internal.performDiscovery(box.value);
+		box.dnoi_internal.performDiscovery();
 		return false;
 	});
 	box.dnoi_internal.openid_logo = box.dnoi_internal.constructIcon(openid_logo_url, null, false, true);
@@ -158,8 +176,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.loginButton.destroy();
 			box.dnoi_internal.loginButton = null;
 		}
+		if (box.dnoi_internal.postbackLoginButton) {
+			box.dnoi_internal.postbackLoginButton.destroy();
+			box.dnoi_internal.postbackLoginButton = null;
+		}
 		box.title = '';
 		box.dnoi_internal.state = state;
+		var opLogo;
 		if (state == "discovering") {
 			box.dnoi_internal.dnoi_logo.style.visibility = 'visible';
 			box.dnoi_internal.spinner.style.visibility = 'visible';
@@ -167,7 +190,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.title = '';
 			window.status = "Discovering OpenID Identifier '" + box.value + "'...";
 		} else if (state == "authenticated") {
-			var opLogo = box.dnoi_internal.deriveOPFavIcon();
+			opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
 				box.dnoi_internal.op_logo.src = opLogo;
 				box.dnoi_internal.op_logo.style.visibility = 'visible';
@@ -175,18 +198,22 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			}
 			//trace("OP icon size: " + box.dnoi_internal.op_logo.fileSize);
 			// The filesize check just doesn't seem to work any more.
-			if (opLogo == null) {// || box.dnoi_internal.op_logo.fileSize == -1 /*IE*/ || box.dnoi_internal.op_logo.fileSize === undefined /* FF */) {
+			if (!opLogo) {// || box.dnoi_internal.op_logo.fileSize == -1 /*IE*/ || box.dnoi_internal.op_logo.fileSize === undefined /* FF */) {
 				trace('recovering from missing OP icon');
 				box.dnoi_internal.op_logo.style.visibility = 'hidden';
 				box.dnoi_internal.openid_logo.style.visibility = 'visible';
 				box.dnoi_internal.openid_logo.title = box.dnoi_internal.op_logo.originalTitle.replace('{0}', authenticatedBy.getHost());
 			}
-			box.dnoi_internal.success_icon.style.visibility = 'visible';
-			box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
+			if (showLoginPostBackButton) {
+				box.dnoi_internal.postbackLoginButton = box.dnoi_internal.createLoginPostBackButton();
+			} else {
+				box.dnoi_internal.success_icon.style.visibility = 'visible';
+				box.dnoi_internal.success_icon.title = box.dnoi_internal.success_icon.originalTitle.replace('{0}', authenticatedAs);
+			}
 			box.title = box.dnoi_internal.claimedIdentifier;
 			window.status = "Authenticated as " + authenticatedAs;
 		} else if (state == "setup") {
-			var opLogo = box.dnoi_internal.deriveOPFavIcon();
+			opLogo = box.dnoi_internal.deriveOPFavIcon();
 			if (opLogo) {
 				box.dnoi_internal.op_logo.src = opLogo;
 				box.dnoi_internal.op_logo.style.visibility = 'visible';
@@ -197,7 +224,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.loginButton = box.dnoi_internal.createLoginButton(providers);
 
 			box.dnoi_internal.claimedIdentifier = null;
-			window.status = "Authentication requires setup.";
+			window.status = "Authentication requires user interaction.";
 		} else if (state == "failed") {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.dnoi_internal.retryButton.style.visibility = 'visible';
@@ -211,7 +238,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			box.dnoi_internal.claimedIdentifier = null;
 			window.status = errorMessage;
 			box.title = errorMessage;
-		} else if (state == '' || state == null) {
+		} else if (state == '' || !state) {
 			box.dnoi_internal.openid_logo.style.visibility = 'visible';
 			box.title = '';
 			box.dnoi_internal.claimedIdentifier = null;
@@ -219,6 +246,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		} else {
 			box.dnoi_internal.claimedIdentifier = null;
 			trace('unrecognized state ' + state);
+		}
+
+		if (box.onStateChanged) {
+			box.onStateChanged(state);
 		}
 	};
 
@@ -229,9 +260,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	};
 
 	box.dnoi_internal.canAttemptLogin = function() {
-		if (box.value.length == 0) return false;
-		if (window.dnoa_internal.discoveryResults[box.value] == null) return false;
-		if (box.dnoi_internal.state == 'failed') return false;
+		if (box.value.length === 0) { return false; }
+		if (!window.dnoa_internal.discoveryResults[box.value]) { return false; }
+		if (box.dnoi_internal.state == 'failed') { return false; }
 		return true;
 	};
 
@@ -241,7 +272,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 	box.dnoi_internal.isAuthenticated = function() {
 		var results = box.dnoi_internal.getUserSuppliedIdentifierResults();
-		return results != null && results.findSuccessfulRequest() != null;
+		return results && results.findSuccessfulRequest();
 	};
 
 	box.dnoi_internal.onSubmit = function() {
@@ -264,7 +295,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 						// after leaving a note for ourselves to automatically click submit
 						// when login is complete.
 						box.dnoi_internal.submitPending = box.dnoi_internal.submitButtonJustClicked;
-						if (box.dnoi_internal.submitPending == null) {
+						if (box.dnoi_internal.submitPending === null) {
 							box.dnoi_internal.submitPending = true;
 						}
 						box.dnoi_internal.loginButton.onclick();
@@ -317,7 +348,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		if (!opUri) {
 			var idresults = box.dnoi_internal.getUserSuppliedIdentifierResults();
 			var response = idresults ? idresults.successAuthData : null;
-			if (!response || response.length == 0) {
+			if (!response || response.length === 0) {
 				trace('No favicon because no successAuthData.');
 				return;
 			}
@@ -328,7 +359,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				opUri = new window.dnoa_internal.Uri(authResult.getQueryArgValue("dnoa.op_endpoint"));
 			} else if (authResult.getQueryArgValue("openid.user_setup_url")) {
 				opUri = new window.dnoa_internal.Uri(authResult.getQueryArgValue("openid.user_setup_url"));
-			} else return null;
+			} else {
+				return null;
+			}
 		}
 		var favicon = opUri.getAuthority() + "/favicon.ico";
 		trace('Guessing favicon location of: ' + favicon);
@@ -336,32 +369,17 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	};
 
 	/*****************************************
-	* Flow
+	* Event Handlers
 	*****************************************/
 
-	/// <summary>Called to initiate discovery on some identifier.</summary>
-	box.dnoi_internal.performDiscovery = function(identifier) {
-		box.dnoi_internal.authenticationIFrames.closeFrames();
-		box.dnoi_internal.setVisualCue('discovering');
-		box.lastDiscoveredIdentifier = identifier;
-		var openid = new window.OpenIdIdentifier(identifier);
-		openid.discover(box.dnoi_internal.discoverySuccess, box.dnoi_internal.discoveryFailed);
-	};
+	window.dnoa_internal.addDiscoveryStarted(function(identifier) {
+		if (identifier == box.value) {
+			box.dnoi_internal.setVisualCue('discovering');
+		}
+	});
 
-	/// <summary>Callback that is invoked when discovery fails.</summary>
-	box.dnoi_internal.discoveryFailed = function(message, identifier) {
-		box.dnoi_internal.setVisualCue('failed');
-		if (message) { box.title = message; }
-	};
-
-	/// <summary>Callback that is invoked when discovery results are available.</summary>
-	/// <param name="discoveryResult">The JSON object containing the OpenID auth requests.</param>
-	/// <param name="identifier">The identifier that discovery was performed on.</param>
-	box.dnoi_internal.discoverySuccess = function(discoveryResult) {
-		// Only act on the discovery event if we're still interested in the result.
-		// If the user already changed the identifier since discovery was initiated,
-		// we aren't interested in it any more.
-		if (discoveryResult.userSuppliedIdentifier === box.lastDiscoveredIdentifier) {
+	window.dnoa_internal.addDiscoverySuccess(function(identifier, discoveryResult, state) {
+		if (identifier == box.value && (box.dnoi_internal.state == 'discovering' || !box.dnoi_internal.state)) {
 			// Start pre-fetching the OP favicons
 			for (var i = 0; i < discoveryResult.length; i++) {
 				var favicon = box.dnoi_internal.deriveOPFavIcon(discoveryResult[i].endpoint);
@@ -373,9 +391,9 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			if (discoveryResult.length > 0) {
 				discoveryResult.loginBackground(
 				box.dnoi_internal.authenticationIFrames,
-				box.dnoi_internal.onAuthSuccess,
-				box.dnoi_internal.onAuthFailed,
-				box.dnoi_internal.lastAuthenticationFailed,
+				null,
+				null,
+				null,
 				box.timeout);
 			} else {
 				// discovery completed successfully -- it just didn't yield any service endpoints.
@@ -383,11 +401,92 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				if (discoveryResult.error) { box.title = discoveryResult.error; }
 			}
 		}
-	};
+	});
 
-	box.dnoi_internal.lastAuthenticationFailed = function(discoveryResult) {
+	window.dnoa_internal.addDiscoveryFailed(function(identifier, message) {
+		if (identifier == box.value) {
+			box.dnoi_internal.setVisualCue('failed');
+			if (message) { box.title = message; }
+		}
+	});
+
+	window.dnoa_internal.addAuthStarted(function(discoveryResult, serviceEndpoint, state) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			box.dnoi_internal.setVisualCue('discovering');
+		}
+	});
+
+	window.dnoa_internal.addAuthSuccess(function(discoveryResult, serviceEndpoint, extensionResponses, state) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			// visual cue that auth was successful
+			var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
+			box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
+
+			// If the OP doesn't support delegation, "correct" the identifier the user entered
+			// so he realizes his identity didn't stick.  But don't change out OP Identifiers.
+			if (discoveryResult.claimedIdentifier && discoveryResult.claimedIdentifier != parsedPositiveAssertion.claimedIdentifier) {
+				box.value = parsedPositiveAssertion.claimedIdentifier;
+				box.lastDiscoveredIdentifier = box.value;
+
+				// Also inject a fake discovery result for this new identifier to keep the UI from performing
+				// discovery on the new identifier (the RP will perform the necessary verification server-side).
+				if (!window.dnoa_internal.discoveryResults[box.value]) {
+					// We must make sure that the only service endpoint from the earlier discovery that
+					// is copied over is the one that sent the assertion just now. Deep clone, then strip
+					// out the other SEPs.
+					window.dnoa_internal.discoveryResults[box.value] = discoveryResult.cloneWithOneServiceEndpoint(serviceEndpoint);
+				}
+			}
+			box.dnoi_internal.setVisualCue('authenticated', parsedPositiveAssertion.endpoint, parsedPositiveAssertion.claimedIdentifier);
+			if (box.dnoi_internal.onauthenticated) {
+				box.dnoi_internal.onauthenticated(box, extensionResponses);
+			}
+
+			if (showLoginPostBackButton && !state.background) {
+				box.dnoi_internal.postback(discoveryResult, serviceEndpoint, extensionResponses, state);
+			} else if (box.dnoi_internal.submitPending) {
+				// We submit the form BEFORE resetting the submitPending so
+				// the submit handler knows we've already tried this route.
+				if (box.dnoi_internal.submitPending === true) {
+					box.parentForm.submit();
+				} else {
+					box.dnoi_internal.submitPending.click();
+				}
+
+				box.dnoi_internal.submitPending = null;
+			} else if (!state.deserialized && autoPostback) {
+				// as long as this is a fresh auth response, postback to the server if configured to do so.
+				box.dnoi_internal.postback(discoveryResult, serviceEndpoint, extensionResponses, state);
+			}
+		}
+	});
+
+	window.dnoa_internal.addAuthFailed(function(discoveryResult, serviceEndpoint, state) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			box.dnoi_internal.submitPending = null;
+			if (!serviceEndpoint || !state.background) { // if the last service endpoint just turned the user down
+				box.dnoi_internal.displayLoginButton(discoveryResult);
+			}
+		}
+	});
+
+	window.dnoa_internal.addAuthCleared(function(discoveryResult, serviceEndpoint) {
+		if (discoveryResult.userSuppliedIdentifier == box.value) {
+			if (!discoveryResult.findSuccessfulRequest()) {
+				// attempt to renew the positive assertion.
+				discoveryResult.loginBackground(
+					box.dnoi_internal.authenticationIFrames,
+					null,
+					null,
+					null,
+					box.timeout);
+			}
+		}
+	});
+
+	box.dnoi_internal.displayLoginButton = function(discoveryResult) {
 		trace('No asynchronous authentication attempt is in progress.  Display setup view.');
-		var providers = new Array();
+		var providers = [];
 		for (var i = 0; i < discoveryResult.length; i++) {
 			var favicon = box.dnoi_internal.deriveOPFavIcon(discoveryResult[i].endpoint);
 			var img = '<img src="' + favicon + '" />';
@@ -398,58 +497,22 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		box.dnoi_internal.setVisualCue('setup', null, null, providers);
 	};
 
-	box.dnoi_internal.onAuthSuccess = function(discoveryResult, respondingEndpoint, extensionResponses, deserialized) {
-		// visual cue that auth was successful
-		var parsedPositiveAssertion = new window.dnoa_internal.PositiveAssertion(discoveryResult.successAuthData);
-		box.dnoi_internal.claimedIdentifier = parsedPositiveAssertion.claimedIdentifier;
+	/*****************************************
+	* Flow
+	*****************************************/
 
-		// If the OP doesn't support delegation, "correct" the identifier the user entered
-		// so he realizes his identity didn't stick.  But don't change out OP Identifiers.
-		if (discoveryResult.claimedIdentifier && discoveryResult.claimedIdentifier != parsedPositiveAssertion.claimedIdentifier) {
-			box.value = parsedPositiveAssertion.claimedIdentifier;
-			box.lastDiscoveredIdentifier = box.value;
-
-			// Also inject a fake discovery result for this new identifier to keep the UI from performing
-			// discovery on the new identifier (the RP will perform the necessary verification server-side).
-			if (!window.dnoa_internal.discoveryResults[box.value]) {
-				// We must make sure that the only service endpoint from the earlier discovery that
-				// is copied over is the one that sent the assertion just now. Deep clone, then strip
-				// out the other SEPs.
-				window.dnoa_internal.discoveryResults[box.value] = discoveryResult.cloneWithOneServiceEndpoint(respondingEndpoint);
-			}
-		}
-		box.dnoi_internal.setVisualCue('authenticated', parsedPositiveAssertion.endpoint, parsedPositiveAssertion.claimedIdentifier);
-		if (box.dnoi_internal.onauthenticated) {
-			box.dnoi_internal.onauthenticated(box, extensionResponses);
-		}
-
-		if (box.dnoi_internal.submitPending) {
-			// We submit the form BEFORE resetting the submitPending so
-			// the submit handler knows we've already tried this route.
-			if (box.dnoi_internal.submitPending == true) {
-				box.parentForm.submit();
-			} else {
-				box.dnoi_internal.submitPending.click();
-			}
-
-			box.dnoi_internal.submitPending = null;
-		} else {
-			// as long as this is a fresh auth response, postback to the server if configured to do so.
-			if (!deserialized) {
-				// this function is a no-op if the control's AutoPostback property is set to false.
-				postback();
-			}
-		}
-	};
-
-	box.dnoi_internal.onAuthFailed = function() {
-		box.dnoi_internal.submitPending = null;
+	/// <summary>Called to initiate discovery on some identifier.</summary>
+	box.dnoi_internal.performDiscovery = function() {
+		box.dnoi_internal.authenticationIFrames.closeFrames();
+		box.lastDiscoveredIdentifier = box.value;
+		var openid = new window.OpenIdIdentifier(box.value);
+		openid.discover();
 	};
 
 	box.onblur = function(event) {
 		if (box.lastDiscoveredIdentifier != box.value || !box.dnoi_internal.state) {
 			if (box.value.length > 0) {
-				box.dnoi_internal.performDiscovery(box.value);
+				box.dnoi_internal.resetAndDiscover();
 			} else {
 				box.dnoi_internal.setVisualCue();
 			}
@@ -458,8 +521,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		return true;
 	};
 
-	// Closure and encapsulation of typist detection and auto-discovery functionality.
-	{
+	//{
 		var rate = NaN;
 		var lastValue = box.value;
 		var keyPresses = 0;
@@ -469,7 +531,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 		function cancelTimer() {
 			if (discoveryTimer) {
-				trace('canceling timer');
+				trace('canceling timer', 'gray');
 				clearTimeout(discoveryTimer);
 				discoveryTimer = null;
 			}
@@ -481,12 +543,12 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 		function discover() {
 			cancelTimer();
-			trace('typist discovery candidate');
+			trace('typist discovery candidate', 'gray');
 			if (identifierSanityCheck(box.value)) {
-				trace('typist discovery begun');
-				box.dnoi_internal.performDiscovery(box.value);
+				trace('typist discovery begun', 'gray');
+				box.dnoi_internal.performDiscovery();
 			} else {
-				trace('typist discovery canceled due to incomplete identifier.');
+				trace('typist discovery canceled due to incomplete identifier.', 'gray');
 			}
 		}
 
@@ -494,8 +556,13 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			keyPresses = 0;
 			startTime = null;
 			rate = NaN;
-			trace('resetting state');
+			trace('resetting state', 'gray');
 		}
+
+		box.dnoi_internal.resetAndDiscover = function() {
+			reset();
+			discover();
+		};
 
 		box.onkeyup = function(e) {
 			e = e || window.event; // for IE
@@ -507,19 +574,23 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 			}
 			lastKeyPress = new Date();
 
+			var newValue = box.value;
 			if (e.keyCode == 13) {
-				discover();
+				if (box.dnoi_internal.state == 'setup') {
+					box.dnoi_internal.loginButton.click();
+				} else {
+					discover();
+				}
 			} else {
-				var newValue = box.value;
 				if (lastValue != newValue && newValue != box.lastDiscoveredIdentifier) {
 					box.dnoi_internal.setVisualCue();
-					if (newValue.length == 0) {
+					if (newValue.length === 0) {
 						reset();
-					} else if (Math.abs(lastValue.length - newValue.length) > 1) {
+					} else if (Math.abs((lastValue || '').length - newValue.length) > 1) {
 						// One key press is responsible for multiple character changes.
 						// The user may have pasted in his identifier in which case
 						// we want to begin discovery immediately.
-						trace(newValue + ': paste detected (old value ' + lastValue + ')');
+						trace(newValue + ': paste detected (old value ' + lastValue + ')', 'gray');
 						discover();
 					} else {
 						keyPresses++;
@@ -535,23 +606,39 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 							timeout = Math.max(minTimeout, Math.min(rate * typistFactor, maxTimeout));
 						}
 
-						trace(newValue + ': setting timer for ' + timeout);
+						trace(newValue + ': setting timer for ' + timeout, 'gray');
 						discoveryTimer = setTimeout(discover, timeout);
 					}
 				}
 			}
 
-			trace(newValue + ': updating lastValue');
+			trace(newValue + ': updating lastValue', 'gray');
 			lastValue = newValue;
 
 			return true;
 		};
-	}
+	//}
 
 	box.getClaimedIdentifier = function() { return box.dnoi_internal.claimedIdentifier; };
 
+	// If an identifier is preset on the box, perform discovery on it, but only
+	// if there isn't a prior authentication that we're about to deserialize.
+	if (box.value.length > 0 && findOrCreateHiddenField().value.length === 0) {
+		trace('jumpstarting discovery on ' + box.value + ' because it was preset.');
+		box.dnoi_internal.performDiscovery();
+	}
+	
 	// Restore a previously achieved state (from pre-postback) if it is given.
-	window.dnoa_internal.deserializePreviousAuthentication(
-		findOrCreateHiddenField().value,
-		function(discoveryResult, respondingEndpoint, extensionResponses) { box.dnoi_internal.onAuthSuccess(discoveryResult, respondingEndpoint, extensionResponses, true); });
+	window.dnoa_internal.deserializePreviousAuthentication(findOrCreateHiddenField().value);
+
+	// public methods
+	box.setValue = function(value) {
+		box.value = value;
+		if (box.value) {
+			box.dnoi_internal.performDiscovery();
+		}
+	};
+
+	// public events
+	// box.onStateChanged(state)
 }

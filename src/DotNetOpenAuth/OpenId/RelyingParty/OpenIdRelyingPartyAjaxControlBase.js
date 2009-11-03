@@ -7,8 +7,8 @@
 //-----------------------------------------------------------------------
 
 if (window.dnoa_internal === undefined) {
-	window.dnoa_internal = new Object();
-};
+	window.dnoa_internal = {};
+}
 
 /// <summary>Removes a given element from the array.</summary>
 /// <returns>True if the element was in the array, or false if it was not found.</returns>
@@ -27,23 +27,60 @@ Array.prototype.remove = function(element) {
 	}
 };
 
-window.dnoa_internal.discoveryResults = new Array(); // user supplied identifiers and discovery results
+// Renders all the parameters in their string form, surrounded by parentheses.
+window.dnoa_internal.argsToString = function() {
+	result = "(";
+	for (var i = 0; i < arguments.length; i++) {
+		if (i > 0) { result += ', '; }
+		var arg = arguments[i];
+		if (typeof (arg) == 'string') { arg = '"' + arg + '"'; }
+		if (arg === null) { arg = '[null]'; }
+		result += arg.toString();
+	}
+	result += ')';
+	return result;
+};
+
+window.dnoa_internal.registerEvent = function(name) {
+	window.dnoa_internal[name + 'Listeners'] = [];
+	window.dnoa_internal['add' + name] = function(fn) { window.dnoa_internal[name + 'Listeners'].push(fn); };
+	window.dnoa_internal['remove' + name] = function(fn) { window.dnoa_internal[name + 'Listeners'].remove(fn); };
+	window.dnoa_internal['fire' + name] = function() {
+		var args = Array.prototype.slice.call(arguments);
+		trace('Firing event ' + name + window.dnoa_internal.argsToString.apply(null, args), 'blue');
+		var listeners = window.dnoa_internal[name + 'Listeners'];
+		for (var i = 0; i < listeners.length; i++) {
+			listeners[i].apply(null, args);
+		}
+	};
+};
+
+window.dnoa_internal.registerEvent('DiscoveryStarted'); // (identifier) - fired when a discovery callback is ACTUALLY made to the RP
+window.dnoa_internal.registerEvent('DiscoverySuccess'); // (identifier, discoveryResult, { fresh: true|false }) - fired after a discovery callback is returned from the RP successfully or a cached result is retrieved
+window.dnoa_internal.registerEvent('DiscoveryFailed'); // (identifier, message) - fired after a discovery callback fails
+window.dnoa_internal.registerEvent('AuthStarted'); // (discoveryResult, serviceEndpoint, { background: true|false })
+window.dnoa_internal.registerEvent('AuthFailed'); // (discoveryResult, serviceEndpoint, { background: true|false }) - fired for each individual ServiceEndpoint, and once at last with serviceEndpoint==null if all failed
+window.dnoa_internal.registerEvent('AuthSuccess'); // (discoveryResult, serviceEndpoint, extensionResponses, { background: true|false, deserialized: true|false })
+window.dnoa_internal.registerEvent('AuthCleared'); // (discoveryResult, serviceEndpoint)
+
+window.dnoa_internal.discoveryResults = []; // user supplied identifiers and discovery results
+window.dnoa_internal.discoveryInProgress = []; // identifiers currently being discovered and their callbacks
 
 // The possible authentication results
-window.dnoa_internal.authSuccess = new Object();
-window.dnoa_internal.authRefused = new Object();
-window.dnoa_internal.timedOut = new Object();
+window.dnoa_internal.authSuccess = 'auth-success';
+window.dnoa_internal.authRefused = 'auth-refused';
+window.dnoa_internal.timedOut = 'timed-out';
 
 /// <summary>Instantiates a new FrameManager.</summary>
 /// <param name="maxFrames">The maximum number of concurrent 'jobs' (authentication attempts).</param>
 window.dnoa_internal.FrameManager = function(maxFrames) {
-	this.queuedWork = new Array();
-	this.frames = new Array();
+	this.queuedWork = [];
+	this.frames = [];
 	this.maxFrames = maxFrames;
 
 	/// <summary>Called to queue up some work that will use an iframe as soon as it is available.</summary>
 	/// <param name="job">
-	/// A delegate that must return the url to point the iframe to.  
+	/// A delegate that must return { url: /*to point the iframe to*/, onCanceled: /* callback */ }
 	/// Its first parameter is the iframe created to service the request.
 	/// It will only be called when the work actually begins.
 	/// </param>
@@ -60,7 +97,7 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 	/// <summary>Clears the job queue and immediately closes all iframes.</summary>
 	this.cancelAllWork = function() {
 		trace('Canceling all open and pending iframes.');
-		while (this.queuedWork.pop());
+		while (this.queuedWork.pop()) { }
 		this.closeFrames();
 	};
 
@@ -79,7 +116,9 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 			iframe.setAttribute("height", 0);
 			iframe.setAttribute("style", "display: none");
 		}
-		iframe.setAttribute("src", job(iframe, p1));
+		var jobDescription = job(iframe, p1);
+		iframe.setAttribute("src", jobDescription.url);
+		iframe.onCanceled = jobDescription.onCanceled;
 		iframe.dnoa_internal = window.dnoa_internal;
 		document.body.insertBefore(iframe, document.body.firstChild);
 		this.frames.push(iframe);
@@ -87,15 +126,20 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 	};
 
 	this.closeFrames = function() {
-		if (this.frames.length == 0) { return false; }
+		if (this.frames.length === 0) { return false; }
 		for (var i = 0; i < this.frames.length; i++) {
+			this.frames[i].src = "about:blank"; // doesn't have to exist.  Just stop its processing.
 			if (this.frames[i].parentNode) { this.frames[i].parentNode.removeChild(this.frames[i]); }
 		}
-		while (this.frames.length > 0) { this.frames.pop(); }
+		while (this.frames.length > 0) {
+			var frame = this.frames.pop();
+			if (frame.onCanceled) { frame.onCanceled(); }
+		}
 		return true;
 	};
 
 	this.closeFrame = function(frame) {
+		frame.src = "about:blank"; // doesn't have to exist.  Just stop its processing.
 		if (frame.parentNode) { frame.parentNode.removeChild(frame); }
 		var removed = this.frames.remove(frame);
 		this.onJobCompleted();
@@ -105,6 +149,10 @@ window.dnoa_internal.FrameManager = function(maxFrames) {
 
 /// <summary>Instantiates an object that represents an OpenID Identifier.</summary>
 window.OpenIdIdentifier = function(identifier) {
+	if (!identifier || identifier.length === 0) {
+		throw 'Error: trying to create OpenIdIdentifier for null or empty string.';
+	}
+
 	/// <summary>Performs discovery on the identifier.</summary>
 	/// <param name="onDiscoverSuccess">A function(DiscoveryResult) callback to be called when discovery has completed successfully.</param>
 	/// <param name="onDiscoverFailure">A function callback to be called when discovery has completed in failure.</param>
@@ -120,30 +168,67 @@ window.OpenIdIdentifier = function(identifier) {
 			discoveryResult = new window.dnoa_internal.DiscoveryResult(identifier, discoveryResult);
 			window.dnoa_internal.discoveryResults[identifier] = discoveryResult;
 
-			if (onDiscoverSuccess) {
-				onDiscoverSuccess(discoveryResult);
+			window.dnoa_internal.fireDiscoverySuccess(identifier, discoveryResult, { fresh: true });
+
+			// Clear our "in discovery" state and fire callbacks
+			var callbacks = window.dnoa_internal.discoveryInProgress[identifier];
+			window.dnoa_internal.discoveryInProgress[identifier] = null;
+
+			if (callbacks) {
+				for (var i = 0; i < callbacks.onSuccess.length; i++) {
+					if (callbacks.onSuccess[i]) {
+						callbacks.onSuccess[i](discoveryResult);
+					}
+				}
 			}
-		};
+		}
 
 		/// <summary>Receives the discovery failure notification.</summary>
 		function discoverFailureCallback(message, userSuppliedIdentifier) {
 			trace('Discovery failed for: ' + identifier);
 
-			if (onDiscoverFailure) {
-				onDiscoverFailure();
+			// Clear our "in discovery" state and fire callbacks
+			var callbacks = window.dnoa_internal.discoveryInProgress[identifier];
+			window.dnoa_internal.discoveryInProgress[identifier] = null;
+
+			if (callbacks) {
+				for (var i = 0; i < callbacks.onSuccess.length; i++) {
+					if (callbacks.onFailure[i]) {
+						callbacks.onFailure[i](message);
+					}
+				}
 			}
-		};
+
+			window.dnoa_internal.fireDiscoveryFailed(identifier, message);
+		}
 
 		if (window.dnoa_internal.discoveryResults[identifier]) {
-			trace("We've already discovered " + identifier + " so we're skipping it this time.");
+			trace("We've already discovered " + identifier + " so we're using the cached version.");
+
+			// In this special case, we never fire the DiscoveryStarted event.
+			window.dnoa_internal.fireDiscoverySuccess(identifier, window.dnoa_internal.discoveryResults[identifier], { fresh: false });
+
 			if (onDiscoverSuccess) {
 				onDiscoverSuccess(window.dnoa_internal.discoveryResults[identifier]);
 			}
-			return;
-		};
 
-		trace('starting discovery on ' + identifier);
-		window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);
+			return;
+		}
+
+		window.dnoa_internal.fireDiscoveryStarted(identifier);
+
+		if (!window.dnoa_internal.discoveryInProgress[identifier]) {
+			trace('starting discovery on ' + identifier);
+			window.dnoa_internal.discoveryInProgress[identifier] = {
+				onSuccess: [onDiscoverSuccess],
+				onFailure: [onDiscoverFailure]
+			};
+			window.dnoa_internal.callbackAsync(identifier, discoverSuccessCallback, discoverFailureCallback);
+		} else {
+			trace('Discovery on ' + identifier + ' already started. Registering an additional callback.');
+			window.dnoa_internal.discoveryInProgress[identifier].onSuccess.push(onDiscoverSuccess);
+			window.dnoa_internal.discoveryInProgress[identifier].onFailure.push(onDiscoverFailure);
+		}
 	};
 
 	/// <summary>Performs discovery and immediately begins checkid_setup to authenticate the user using a given identifier.</summary>
@@ -164,12 +249,12 @@ window.OpenIdIdentifier = function(identifier) {
 	};
 
 	/// <summary>Performs discovery and immediately begins checkid_immediate on all discovered endpoints.</summary>
-	this.loginBackground = function(frameManager, onLoginSuccess, onLoginFailure, timeout) {
+	this.loginBackground = function(frameManager, onLoginSuccess, onLoginFailure, timeout, onLoginLastFailure) {
 		this.discover(function(discoveryResult) {
 			if (discoveryResult) {
 				trace('Discovery succeeded and found ' + discoveryResult.length + ' OpenID service endpoints.');
 				if (discoveryResult.length > 0) {
-					discoveryResult.loginBackground(frameManager, onLoginSuccess, onLoginFailure, onLoginFailure, timeout);
+					discoveryResult.loginBackground(frameManager, onLoginSuccess, onLoginFailure, onLoginLastFailure || onLoginFailure, timeout);
 				} else {
 					trace("This doesn't look like an OpenID Identifier.  Aborting login.");
 					if (onLoginFailure) {
@@ -198,13 +283,11 @@ window.dnoa_internal.processAuthorizationResult = function(resultUrl, extensionR
 	// Find the tracking object responsible for this request.
 	var userSuppliedIdentifier = resultUri.getQueryArgValue('dnoa.userSuppliedIdentifier');
 	if (!userSuppliedIdentifier) {
-		trace('processAuthorizationResult called but no userSuppliedIdentifier parameter was found.  Exiting function.');
-		return;
+		throw 'processAuthorizationResult called but no userSuppliedIdentifier parameter was found.  Exiting function.';
 	}
 	var discoveryResult = window.dnoa_internal.discoveryResults[userSuppliedIdentifier];
-	if (discoveryResult == null) {
-		trace('processAuthorizationResult called but no discovery result matching user supplied identifier ' + userSuppliedIdentifier + ' was found.  Exiting function.');
-		return;
+	if (!discoveryResult) {
+		throw 'processAuthorizationResult called but no discovery result matching user supplied identifier ' + userSuppliedIdentifier + ' was found.  Exiting function.';
 	}
 
 	var opEndpoint = resultUri.getQueryArgValue("openid.op_endpoint") ? resultUri.getQueryArgValue("openid.op_endpoint") : resultUri.getQueryArgValue("dnoa.op_endpoint");
@@ -254,20 +337,23 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		var thisServiceEndpoint = this; // closure so that delegates have the right instance
 		this.loginPopup = function(onAuthSuccess, onAuthFailed) {
 			thisServiceEndpoint.abort(); // ensure no concurrent attempts
+			window.dnoa_internal.fireAuthStarted(thisDiscoveryResult, thisServiceEndpoint, { background: false });
 			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
 			thisDiscoveryResult.onAuthFailed = onAuthFailed;
-			var width = 800;
+			var chromeHeight = 55; // estimated height of browser title bar and location bar
+			var bottomMargin = 45; // estimated bottom space on screen likely to include a task bar
+			var width = 1000;
 			var height = 600;
 			if (thisServiceEndpoint.setup.getQueryArgValue("openid.return_to").indexOf("dnoa.popupUISupported") >= 0) {
 				trace('This OP supports the UI extension.  Using smaller window size.');
-				width = 450;
+				width = 500; // spec calls for 450px, but Yahoo needs 500px
 				height = 500;
 			} else {
 				trace("This OP doesn't appear to support the UI extension.  Using larger window size.");
 			}
 
 			var left = (screen.width - width) / 2;
-			var top = (screen.height - height) / 2;
+			var top = (screen.height - bottomMargin - height - chromeHeight) / 2;
 			thisServiceEndpoint.popup = window.open(thisServiceEndpoint.setup, 'opLogin', 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + left + ',top=' + top + ',width=' + width + ',height=' + height);
 
 			// If the OP supports the UI extension it MAY close its own window
@@ -289,6 +375,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 							// would indicate we've already processed this.
 							if (window.dnoa_internal.processAuthorizationResult) {
 								trace('User or OP canceled by closing the window.');
+								window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, { background: false });
 								if (thisDiscoveryResult.onAuthFailed) {
 									thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
 								}
@@ -311,19 +398,27 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			if (timeout) {
 				thisServiceEndpoint.timeout = setTimeout(function() { thisServiceEndpoint.onAuthenticationTimedOut(); }, timeout);
 			}
+			window.dnoa_internal.fireAuthStarted(thisDiscoveryResult, thisServiceEndpoint, { background: true });
 			trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now OPENING (timeout ' + timeout + ').');
 			//trace('initiating auth attempt with: ' + thisServiceEndpoint.immediate);
 			thisServiceEndpoint.iframe = iframe;
-			return thisServiceEndpoint.immediate.toString();
+			return {
+				url: thisServiceEndpoint.immediate.toString(),
+				onCanceled: function() {
+					thisServiceEndpoint.abort();
+					window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, { background: true });
+				}
+			};
 		};
 
 		this.busy = function() {
-			return thisServiceEndpoint.iframe != null || thisServiceEndpoint.popup != null;
+			return thisServiceEndpoint.iframe || thisServiceEndpoint.popup;
 		};
 
 		this.completeAttempt = function(successful) {
-			if (!thisServiceEndpoint.busy()) return false;
+			if (!thisServiceEndpoint.busy()) { return false; }
 			window.clearInterval(thisServiceEndpoint.timeout);
+			var background = thisServiceEndpoint.iframe !== null;
 			if (thisServiceEndpoint.iframe) {
 				trace('iframe hosting ' + thisServiceEndpoint.endpoint + ' now CLOSING.');
 				thisDiscoveryResult.frameManager.closeFrame(thisServiceEndpoint.iframe);
@@ -338,7 +433,9 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 				thisServiceEndpoint.timeout = null;
 			}
 
-			if (!successful && !thisDiscoveryResult.busy() && thisDiscoveryResult.findSuccessfulRequest() == null) {
+			if (!successful && !thisDiscoveryResult.busy() && !thisDiscoveryResult.findSuccessfulRequest()) {
+				// fire the failed event with NO service endpoint indicating the entire auth attempt has failed.
+				window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, null, { background: background });
 				if (thisDiscoveryResult.onLastAttemptFailed) {
 					thisDiscoveryResult.onLastAttemptFailed(thisDiscoveryResult);
 				}
@@ -348,29 +445,37 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		};
 
 		this.onAuthenticationTimedOut = function() {
+			var background = thisServiceEndpoint.iframe !== null;
 			if (thisServiceEndpoint.completeAttempt()) {
 				trace(thisServiceEndpoint.host + " timed out");
 				thisServiceEndpoint.result = window.dnoa_internal.timedOut;
 			}
+			window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, { background: background });
 		};
 
 		this.onAuthSuccess = function(authUri, extensionResponses) {
+			var background = thisServiceEndpoint.iframe !== null;
 			if (thisServiceEndpoint.completeAttempt(true)) {
 				trace(thisServiceEndpoint.host + " authenticated!");
 				thisServiceEndpoint.result = window.dnoa_internal.authSuccess;
+				thisServiceEndpoint.successReceived = new Date();
 				thisServiceEndpoint.claimedIdentifier = authUri.getQueryArgValue('openid.claimed_id');
 				thisServiceEndpoint.response = authUri;
+				thisServiceEndpoint.extensionResponses = extensionResponses;
 				thisDiscoveryResult.abortAll();
 				if (thisDiscoveryResult.onAuthSuccess) {
 					thisDiscoveryResult.onAuthSuccess(thisDiscoveryResult, thisServiceEndpoint, extensionResponses);
 				}
+				window.dnoa_internal.fireAuthSuccess(thisDiscoveryResult, thisServiceEndpoint, extensionResponses, { background: background });
 			}
 		};
 
 		this.onAuthFailed = function() {
+			var background = thisServiceEndpoint.iframe !== null;
 			if (thisServiceEndpoint.completeAttempt()) {
 				trace(thisServiceEndpoint.host + " failed authentication");
 				thisServiceEndpoint.result = window.dnoa_internal.authRefused;
+				window.dnoa_internal.fireAuthFailed(thisDiscoveryResult, thisServiceEndpoint, { background: background });
 				if (thisDiscoveryResult.onAuthFailed) {
 					thisDiscoveryResult.onAuthFailed(thisDiscoveryResult, thisServiceEndpoint);
 				}
@@ -384,7 +489,25 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 			}
 		};
 
-	};
+		this.clear = function() {
+			thisServiceEndpoint.result = null;
+			thisServiceEndpoint.extensionResponses = null;
+			thisServiceEndpoint.successReceived = null;
+			thisServiceEndpoint.claimedIdentifier = null;
+			thisServiceEndpoint.response = null;
+			if (this.onCleared) {
+				this.onCleared(thisServiceEndpoint, thisDiscoveryResult);
+			}
+			if (thisDiscoveryResult.onCleared) {
+				thisDiscoveryResult.onCleared(thisDiscoveryResult, thisServiceEndpoint);
+			}
+			window.dnoa_internal.fireAuthCleared(thisDiscoveryResult, thisServiceEndpoint);
+		};
+
+		this.toString = function() {
+			return "[ServiceEndpoint: " + thisServiceEndpoint.host + "]";
+		};
+	}
 
 	this.cloneWithOneServiceEndpoint = function(serviceEndpoint) {
 		var clone = window.dnoa_internal.clone(this);
@@ -418,7 +541,7 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		this.length = 0;
 	}
 
-	if (this.length == 0) {
+	if (this.length === 0) {
 		trace('Discovery completed, but yielded no service endpoints.');
 	} else {
 		trace('Discovered claimed identifier: ' + (this.claimedIdentifier ? this.claimedIdentifier : "(directed identity)"));
@@ -452,7 +575,8 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 
 	this.abortAll = function() {
 		if (thisDiscoveryResult.frameManager) {
-			// Abort all other asynchronous authentication attempts that may be in progress.
+			// Abort all other asynchronous authentication attempts that may be in progress
+			// for this particular claimed identifier.
 			thisDiscoveryResult.frameManager.cancelAllWork();
 			for (var i = 0; i < thisDiscoveryResult.length; i++) {
 				thisDiscoveryResult[i].abort();
@@ -472,19 +596,35 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 		if (!frameManager) {
 			throw "No frameManager specified.";
 		}
-		if (thisDiscoveryResult.findSuccessfulRequest() != null) {
-			onAuthSuccess(thisDiscoveryResult, thisDiscoveryResult.findSuccessfulRequest());
+		var priorSuccessRespondingEndpoint = thisDiscoveryResult.findSuccessfulRequest();
+		if (priorSuccessRespondingEndpoint) {
+			// In this particular case, we do not fire an AuthStarted event.
+			window.dnoa_internal.fireAuthSuccess(thisDiscoveryResult, priorSuccessRespondingEndpoint, priorSuccessRespondingEndpoint.extensionResponses, { background: true });
+			if (onAuthSuccess) {
+				onAuthSuccess(thisDiscoveryResult, priorSuccessRespondingEndpoint);
+			}
 		} else {
+			if (thisDiscoveryResult.busy()) {
+				trace('Warning: DiscoveryResult.loginBackground invoked while a login attempt is already in progress. Discarding second login request.', 'red');
+				return;
+			}
 			thisDiscoveryResult.frameManager = frameManager;
 			thisDiscoveryResult.onAuthSuccess = onAuthSuccess;
 			thisDiscoveryResult.onAuthFailed = onAuthFailed;
 			thisDiscoveryResult.onLastAttemptFailed = onLastAuthFailed;
+			// Notify listeners that general authentication is beginning.  Individual ServiceEndpoints
+			// will fire their own events as each of them begin their iframe 'job'.
+			window.dnoa_internal.fireAuthStarted(thisDiscoveryResult, null, { background: true });
 			if (thisDiscoveryResult.length > 0) {
 				for (var i = 0; i < thisDiscoveryResult.length; i++) {
 					thisDiscoveryResult.frameManager.enqueueWork(thisDiscoveryResult[i].loginBackgroundJob, timeout);
 				}
 			}
 		}
+	};
+
+	this.toString = function() {
+		return "[DiscoveryResult: " + thisDiscoveryResult.userSuppliedIdentifier + "]";
 	};
 };
 
@@ -493,14 +633,12 @@ window.dnoa_internal.DiscoveryResult = function(identifier, discoveryInfo) {
 /// when a postback occurred, and now that control wants to restore its 'authenticated' state.
 /// </summary>
 /// <param name="positiveAssertion">The string form of the URI that contains the positive assertion.</param>
-/// <param name="onAuthSuccess">Fired if the positive assertion is successfully processed, as if it had just come in.</param>
-window.dnoa_internal.deserializePreviousAuthentication = function(positiveAssertion, onAuthSuccess) {
+window.dnoa_internal.deserializePreviousAuthentication = function(positiveAssertion) {
 	if (!positiveAssertion || positiveAssertion.length === 0) {
 		return;
 	}
 
 	trace('Revitalizing an old positive assertion from a prior postback.');
-	var oldAuthResult = new window.dnoa_internal.Uri(positiveAssertion);
 
 	// The control ensures that we ALWAYS have an OpenID 2.0-style claimed_id attribute, even against
 	// 1.0 Providers via the return_to URL mechanism.
@@ -511,7 +649,7 @@ window.dnoa_internal.deserializePreviousAuthentication = function(positiveAssert
 	trace('Deserialized claimed_id: ' + parsedPositiveAssertion.claimedIdentifier + ' and endpoint: ' + parsedPositiveAssertion.endpoint);
 	var discoveryInfo = {
 		claimedIdentifier: parsedPositiveAssertion.claimedIdentifier,
-		requests: [{ endpoint: parsedPositiveAssertion.endpoint }]
+		requests: [{ endpoint: parsedPositiveAssertion.endpoint}]
 	};
 
 	discoveryResult = new window.dnoa_internal.DiscoveryResult(parsedPositiveAssertion.userSuppliedIdentifier, discoveryInfo);
@@ -520,9 +658,7 @@ window.dnoa_internal.deserializePreviousAuthentication = function(positiveAssert
 	discoveryResult.successAuthData = positiveAssertion;
 
 	// restore old state from before postback
-	if (onAuthSuccess) {
-		onAuthSuccess(discoveryResult, discoveryResult[0]);
-	}
+	window.dnoa_internal.fireAuthSuccess(discoveryResult, discoveryResult[0], null, { background: true, deserialized: true });
 };
 
 window.dnoa_internal.PositiveAssertion = function(uri) {
@@ -537,14 +673,47 @@ window.dnoa_internal.PositiveAssertion = function(uri) {
 };
 
 window.dnoa_internal.clone = function(obj) {
-	if (obj == null || typeof (obj) != 'object') {
+	if (obj === null || typeof (obj) != 'object') {
 		return obj;
 	}
 
-	var temp = new Object();
+	var temp = {};
 	for (var key in obj) {
 		temp[key] = window.dnoa_internal.clone(obj[key]);
 	}
 
 	return temp;
 };
+
+// Deserialized the preloaded discovery results
+window.dnoa_internal.loadPreloadedDiscoveryResults = function(preloadedDiscoveryResults) {
+	trace('found ' + preloadedDiscoveryResults.length + ' preloaded discovery results.');
+	for (var i = 0; i < preloadedDiscoveryResults.length; i++) {
+		var result = preloadedDiscoveryResults[i];
+		if (!window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier]) {
+			window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier] = new window.dnoa_internal.DiscoveryResult(result.userSuppliedIdentifier, result.discoveryResult);
+			trace('Preloaded discovery on: ' + window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier].userSuppliedIdentifier);
+		} else {
+			trace('Skipped preloaded discovery on: ' + window.dnoa_internal.discoveryResults[result.userSuppliedIdentifier].userSuppliedIdentifier + ' because we have a cached discovery result on it.');
+		}
+	}
+};
+
+window.dnoa_internal.clearExpiredPositiveAssertions = function() {
+	for (identifier in window.dnoa_internal.discoveryResults) {
+		var discoveryResult = window.dnoa_internal.discoveryResults[identifier];
+		if (typeof (discoveryResult) != 'object') { continue; } // skip functions
+		for (var i = 0; i < discoveryResult.length; i++) {
+			if (discoveryResult[i].result === window.dnoa_internal.authSuccess) {
+				if (new Date() - discoveryResult[i].successReceived > window.dnoa_internal.maxPositiveAssertionLifetime) {
+					// This positive assertion is too old, and may eventually be rejected by DNOA during verification.
+					// Let's clear out the positive assertion so it can be renewed.
+					trace('Clearing out expired positive assertion from ' + discoveryResult[i].host);
+					discoveryResult[i].clear();
+				}
+			}
+		}
+	}
+};
+
+window.setInterval(window.dnoa_internal.clearExpiredPositiveAssertions, 1000);

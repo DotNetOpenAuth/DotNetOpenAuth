@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IConsumerTokenManager tokenManager)
 			: base(
 			signingBindingElement,
-			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
+			new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge),
 			tokenManager) {
 		}
 
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IServiceProviderTokenManager tokenManager)
 			: base(
 			signingBindingElement,
-			new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge),
+			new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge),
 			tokenManager) {
 		}
 

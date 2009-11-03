@@ -524,6 +524,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} property must be set first..
+        /// </summary>
+        internal static string PropertyNotSet {
+            get {
+                return ResourceManager.GetString("PropertyNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This property value is not supported by this control..
         /// </summary>
         internal static string PropertyValueNotSupported {

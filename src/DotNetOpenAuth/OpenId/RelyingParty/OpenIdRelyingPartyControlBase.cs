@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
 	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
-	public abstract class OpenIdRelyingPartyControlBase : Control, IDisposable {
+	public abstract class OpenIdRelyingPartyControlBase : Control, IPostBackEventHandler, IDisposable {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
 		/// </summary>
@@ -477,6 +477,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
+		#region IPostBackEventHandler Members
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
+			this.RaisePostBackEvent(eventArgument);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Enables a server control to perform final clean up before it is released from memory.
 		/// </summary>
@@ -501,12 +513,35 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Predefined signature.")]
+		protected virtual void RaisePostBackEvent(string eventArgument) {
+		}
+
+		/// <summary>
+		/// Creates the authentication requests for the value set in the <see cref="Identifier"/> property.
+		/// </summary>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected IEnumerable<IAuthenticationRequest> CreateRequests() {
+			Contract.Requires<InvalidOperationException>(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
+			return this.CreateRequests(this.Identifier);
+		}
+
+		/// <summary>
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
-		/// <returns>A sequence of authentication requests, any one of which may be 
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.</returns>
-		protected virtual IEnumerable<IAuthenticationRequest> CreateRequests() {
-			Contract.Requires<InvalidOperationException>(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
+		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+			Contract.Requires<ArgumentNullException>(identifier != null);
 			IEnumerable<IAuthenticationRequest> requests;
 
 			// Approximate the returnTo (either based on the customize property or the page URL)
@@ -525,11 +560,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// might slip through our validator control if it is disabled.
 			Realm typedRealm = new Realm(realm);
 			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-				requests = this.RelyingParty.CreateRequests(this.Identifier, typedRealm);
+				requests = this.RelyingParty.CreateRequests(identifier, typedRealm);
 			} else {
 				// Since the user actually gave us a return_to value,
 				// the "approximation" is exactly what we want.
-				requests = this.RelyingParty.CreateRequests(this.Identifier, typedRealm, returnToApproximation);
+				requests = this.RelyingParty.CreateRequests(identifier, typedRealm, returnToApproximation);
 			}
 
 			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
@@ -884,7 +919,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Add a callback function that the popup window can call on this, the
 			// parent window, to pass back the authentication result.
-			startupScript.AppendLine("window.dnoa_internal = new Object();");
+			startupScript.AppendLine("window.dnoa_internal = {};");
 			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
 			startupScript.AppendLine("window.dnoa_internal.popupWindow = function() {");
 			startupScript.AppendFormat(

@@ -59,6 +59,8 @@ namespace WebFormsRelyingParty {
 								HttpContext.Current.Response.Redirect("~/Setup.aspx");
 							}
 						}
+
+						throw;
 					}
 
 					DataContextTransactionSimple = dataContext.Connection.BeginTransaction();

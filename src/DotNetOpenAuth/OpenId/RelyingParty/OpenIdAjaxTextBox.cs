@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdAjaxTextBox runat=\"server\" />")]
-	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, ICallbackEventHandler, IEditableTextControl, ITextControl, IPostBackDataHandler, IPostBackEventHandler {
+	public class OpenIdAjaxTextBox : OpenIdRelyingPartyAjaxControlBase, IEditableTextControl, ITextControl, IPostBackDataHandler {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
@@ -64,6 +64,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the manifest stream containing the login_failure.png file.
 		/// </summary>
 		internal const string EmbeddedLoginFailureResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.login_failure.png";
+
+		/// <summary>
+		/// The default value for the <see cref="DownloadYahooUILibrary"/> property.
+		/// </summary>
+		internal const bool DownloadYahooUILibraryDefault = true;
 
 		#region Property viewstate keys
 
@@ -138,6 +143,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string LogOnToolTipViewStateKey = "LoginToolTip";
 
 		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="LogOnPostBackToolTip"/> property.
+		/// </summary>
+		private const string LogOnPostBackToolTipViewStateKey = "LoginPostBackToolTip";
+
+		/// <summary>
 		/// The viewstate key to use for storing the value of the <see cref="Name"/> property.
 		/// </summary>
 		private const string NameViewStateKey = "Name";
@@ -171,6 +181,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The viewstate key to use for storing the value of the <see cref="DownloadYahooUILibrary"/> property.
 		/// </summary>
 		private const string DownloadYahooUILibraryViewStateKey = "DownloadYahooUILibrary";
+
+		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="ShowLogOnPostBackButton"/> property.
+		/// </summary>
+		private const string ShowLogOnPostBackButtonViewStateKey = "ShowLogOnPostBackButton";
 
 		#endregion
 
@@ -252,14 +267,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string LogOnToolTipDefault = "Click here to log in using a pop-up window.";
 
 		/// <summary>
+		/// The default value for the <see cref="LogOnPostBackToolTip"/> property.
+		/// </summary>
+		private const string LogOnPostBackToolTipDefault = "Click here to log in immediately.";
+
+		/// <summary>
 		/// The default value for the <see cref="RetryText"/> property.
 		/// </summary>
 		private const string RetryTextDefault = "RETRY";
 
 		/// <summary>
-		/// The default vlaue for the <see cref="DownloadYahooUILibrary"/> property.
+		/// The default value for the <see cref="ShowLogOnPostBackButton"/> property.
 		/// </summary>
-		private const bool DownloadYahooUILibraryDefault = true;
+		private const bool ShowLogOnPostBackButtonDefault = false;
 
 		#endregion
 
@@ -272,6 +292,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The path where the YUI control library should be downloaded from for HTTPS pages.
 		/// </summary>
 		private const string YuiLoaderHttps = "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js";
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdAjaxTextBox"/> class.
+		/// </summary>
+		public OpenIdAjaxTextBox() {
+			this.HookFormSubmit = true;
+		}
 
 		#region Events
 
@@ -473,6 +500,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets the rool tip text that appears on the LOG IN button when clicking the button will result in an immediate postback.
+		/// </summary>
+		[Bindable(true), DefaultValue(LogOnPostBackToolTipDefault), Localizable(true), Category(AppearanceCategory)]
+		[Description("The tool tip text that appears on the LOG IN button when clicking the button will result in an immediate postback.")]
+		public string LogOnPostBackToolTip {
+			get { return (string)(this.ViewState[LogOnPostBackToolTipViewStateKey] ?? LogOnPostBackToolTipDefault); }
+			set { this.ViewState[LogOnPostBackToolTipViewStateKey] = value ?? string.Empty; }
+		}
+
+		/// <summary>
 		/// Gets or sets the text that appears on the RETRY button in cases where authentication times out.
 		/// </summary>
 		[Bindable(true), DefaultValue(RetryTextDefault), Localizable(true), Category(AppearanceCategory)]
@@ -576,7 +613,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set { this.ViewState[DownloadYahooUILibraryViewStateKey] = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the "Log in" button will be shown
+		/// to initiate a postback containing the positive assertion.
+		/// </summary>
+		[Bindable(true), DefaultValue(ShowLogOnPostBackButtonDefault), Category(AppearanceCategory)]
+		[Description("Whether the log in button will be shown to initiate a postback containing the positive assertion.")]
+		public bool ShowLogOnPostBackButton {
+			get { return (bool)(this.ViewState[ShowLogOnPostBackButtonViewStateKey] ?? ShowLogOnPostBackButtonDefault); }
+			set { this.ViewState[ShowLogOnPostBackButtonViewStateKey] = value; }
+		}
+
 		#endregion
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the ajax text box should hook the form's submit event for special behavior.
+		/// </summary>
+		internal bool HookFormSubmit { get; set; }
 
 		/// <summary>
 		/// Gets the name of the open id auth data form key.
@@ -626,19 +679,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		#region IPostBackEventHandler Members
-
-		/// <summary>
-		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
-		/// </summary>
-		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Signature predefined.")]
-		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
-			this.RaisePostBackEvent(eventArgument);
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Raises the <see cref="E:Load"/> event.
 		/// </summary>
@@ -684,6 +724,13 @@ loader.insert();";
 			this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
 
 			this.PrepareClientJavascript();
+
+			// If an Identifier is preset on this control, preload discovery on that identifier,
+			// but only if we're not already persisting an authentication result since that would
+			// be redundant.
+			if (this.Identifier != null && this.AuthenticationResponse == null) {
+				this.PreloadDiscovery(this.Identifier);
+			}
 		}
 
 		/// <summary>
@@ -760,14 +807,6 @@ loader.insert();";
 		}
 
 		/// <summary>
-		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
-		/// </summary>
-		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
-		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
-		protected virtual void RaisePostBackEvent(string eventArgument) {
-		}
-
-		/// <summary>
 		/// Called on a postback when the Text property has changed.
 		/// </summary>
 		protected virtual void OnTextChanged() {
@@ -790,7 +829,7 @@ loader.insert();";
 			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", this.Name, Environment.NewLine);
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
-				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function() {{{18};}});{19}",
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19}, {20}, function() {{{21};}});{22}",
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
@@ -801,6 +840,8 @@ loader.insert();";
 				string.IsNullOrEmpty(this.OnClientAssertionReceived) ? "null" : "'" + this.OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
 				MessagingUtilities.GetSafeJavascriptValue(this.LogOnText),
 				MessagingUtilities.GetSafeJavascriptValue(this.LogOnToolTip),
+				this.ShowLogOnPostBackButton ? "true" : "false",
+				MessagingUtilities.GetSafeJavascriptValue(this.LogOnPostBackToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.RetryText),
 				MessagingUtilities.GetSafeJavascriptValue(this.RetryToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.BusyToolTip),
@@ -809,20 +850,24 @@ loader.insert();";
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationSucceededToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticatedAsToolTip),
 				MessagingUtilities.GetSafeJavascriptValue(this.AuthenticationFailedToolTip),
-				this.AutoPostBack ? Page.ClientScript.GetPostBackEventReference(this, null) : null,
+				this.AutoPostBack ? "true" : "false",
+				Page.ClientScript.GetPostBackEventReference(this, null),
 				Environment.NewLine);
 
 			startupScript.AppendLine("</script>");
 
 			Page.ClientScript.RegisterStartupScript(this.GetType(), "ajaxstartup", startupScript.ToString());
-			string htmlFormat = @"
+
+			if (this.HookFormSubmit) {
+				string htmlFormat = @"
 var openidbox = document.getElementsByName('{0}')[0];
 if (!openidbox.dnoi_internal.onSubmit()) {{ return false; }}
 ";
-			Page.ClientScript.RegisterOnSubmitStatement(
-				this.GetType(),
-				"loginvalidation",
-				string.Format(CultureInfo.InvariantCulture, htmlFormat, this.Name));
+				Page.ClientScript.RegisterOnSubmitStatement(
+					this.GetType(),
+					"loginvalidation",
+					string.Format(CultureInfo.InvariantCulture, htmlFormat, this.Name));
+			}
 		}
 	}
 }

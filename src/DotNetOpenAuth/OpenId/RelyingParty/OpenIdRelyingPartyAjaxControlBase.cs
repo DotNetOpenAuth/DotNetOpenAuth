@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
 
@@ -38,6 +39,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the javascript function that will initiate an asynchronous callback.
 		/// </summary>
 		protected const string CallbackJSFunctionAsync = "window.dnoa_internal.callbackAsync";
+
+		/// <summary>
+		/// The name of the javascript field that stores the maximum time a positive assertion is
+		/// good for before it must be refreshed.
+		/// </summary>
+		private const string MaxPositiveAssertionLifetimeJsName = "window.dnoa_internal.maxPositiveAssertionLifetime";
 
 		/// <summary>
 		/// The "dnoa.op_endpoint" string.
@@ -252,50 +259,28 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyNonZeroLength(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
 
-			// We prepare a JSON object with this interface:
-			// class jsonResponse {
-			//    string claimedIdentifier;
-			//    Array requests; // never null
-			//    string error; // null if no error
-			// }
-			// Each element in the requests array looks like this:
-			// class jsonAuthRequest {
-			//    string endpoint;  // URL to the OP endpoint
-			//    string immediate; // URL to initiate an immediate request
-			//    string setup;     // URL to initiate a setup request.
-			// }
-			StringBuilder discoveryResultBuilder = new StringBuilder();
-			discoveryResultBuilder.Append("{");
-			try {
-				this.Identifier = userSuppliedIdentifier;
-				IEnumerable<IAuthenticationRequest> requests = this.CreateRequests().CacheGeneratedResults();
-				if (requests.Any()) {
-					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests.First().ClaimedIdentifier));
-					discoveryResultBuilder.Append("requests: [");
-					foreach (IAuthenticationRequest request in requests) {
-						discoveryResultBuilder.Append("{");
-						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Immediate;
-						OutgoingWebResponse response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Setup;
-						response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						discoveryResultBuilder.Append("},");
-					}
-					discoveryResultBuilder.Length -= 1; // trim off last comma
-					discoveryResultBuilder.Append("]");
-				} else {
-					discoveryResultBuilder.Append("requests: new Array(),");
-					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
-				}
-			} catch (ProtocolException ex) {
-				discoveryResultBuilder.Append("requests: new Array(),");
-				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
-			}
+			this.Identifier = userSuppliedIdentifier;
+			this.discoveryResult = this.SerializeDiscoveryAsJson(this.Identifier);
+		}
 
-			discoveryResultBuilder.Append("}");
-			this.discoveryResult = discoveryResultBuilder.ToString();
+		/// <summary>
+		/// Pre-discovers an identifier and makes the results available to the
+		/// user agent for javascript as soon as the page loads.
+		/// </summary>
+		/// <param name="identifier">The identifier.</param>
+		protected void PreloadDiscovery(Identifier identifier) {
+			this.PreloadDiscovery(new[] { identifier });
+		}
+
+		/// <summary>
+		/// Pre-discovers a given set of identifiers and makes the results available to the
+		/// user agent for javascript as soon as the page loads.
+		/// </summary>
+		/// <param name="identifiers">The identifiers to perform discovery on.</param>
+		protected void PreloadDiscovery(IEnumerable<Identifier> identifiers) {
+			string discoveryResults = this.SerializeDiscoveryAsJson(identifiers);
+			string script = "window.dnoa_internal.loadPreloadedDiscoveryResults(" + discoveryResults + ");";
+			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyAjaxControlBase), this.ClientID, script, true);
 		}
 
 		/// <summary>
@@ -344,12 +329,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
-		/// <returns>A sequence of authentication requests, any one of which may be 
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.</returns>
-		protected override IEnumerable<IAuthenticationRequest> CreateRequests() {
+		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+			Contract.Requires<ArgumentNullException>(identifier != null);
+
 			// We delegate all our logic to another method, since invoking base. methods
 			// within an iterator method results in unverifiable code.
-			return this.CreateRequestsCore(base.CreateRequests());
+			return this.CreateRequestsCore(base.CreateRequests(identifier));
 		}
 
 		/// <summary>
@@ -359,12 +349,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
+			this.SetWebAppPathOnUserAgent();
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdRelyingPartyAjaxControlBase), EmbeddedAjaxJavascriptResource);
 
 			StringBuilder initScript = new StringBuilder();
 
 			initScript.AppendLine(CallbackJSFunctionAsync + " = " + this.GetJsCallbackConvenienceFunction(true));
 			initScript.AppendLine(CallbackJSFunction + " = " + this.GetJsCallbackConvenienceFunction(false));
+
+			// Positive assertions can last no longer than this library is willing to consider them valid,
+			// and when they come with OP private associations they last no longer than the OP is willing
+			// to consider them valid.  We assume the OP will hold them valid for at least five minutes.
+			double assertionLifetimeInMilliseconds = Math.Min(TimeSpan.FromMinutes(5).TotalMilliseconds, Math.Min(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds));
+			initScript.AppendLine(MaxPositiveAssertionLifetimeJsName + " = " + assertionLifetimeInMilliseconds.ToString(CultureInfo.InvariantCulture) + ";");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
@@ -433,6 +430,89 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Serializes the discovery of multiple identifiers as a JSON object.
+		/// </summary>
+		/// <param name="identifiers">The identifiers to perform discovery on and create requests for.</param>
+		/// <returns>The serialized JSON object.</returns>
+		private string SerializeDiscoveryAsJson(IEnumerable<Identifier> identifiers) {
+			ErrorUtilities.VerifyArgumentNotNull(identifiers, "identifiers");
+
+			// We prepare a JSON object with this interface:
+			// Array discoveryWrappers;
+			// Where each element in the above array has this interface:
+			// class discoveryWrapper {
+			//    string userSuppliedIdentifier;
+			//    jsonResponse discoveryResult; // contains result of call to SerializeDiscoveryAsJson(Identifier)
+			// }
+			StringBuilder discoveryResultBuilder = new StringBuilder();
+			discoveryResultBuilder.Append("[");
+			foreach (var identifier in identifiers) { // TODO: parallelize discovery on these identifiers
+				discoveryResultBuilder.Append("{");
+				discoveryResultBuilder.AppendFormat("userSuppliedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(identifier));
+				discoveryResultBuilder.AppendFormat("discoveryResult: {0}", this.SerializeDiscoveryAsJson(identifier));
+				discoveryResultBuilder.Append("},");
+			}
+
+			discoveryResultBuilder.Length -= 1; // trim last comma
+			discoveryResultBuilder.Append("]");
+			return discoveryResultBuilder.ToString();
+		}
+
+		/// <summary>
+		/// Serializes the results of discovery and the created auth requests as a JSON object
+		/// for the user agent to initiate.
+		/// </summary>
+		/// <param name="identifier">The identifier to perform discovery on.</param>
+		/// <returns>The JSON string.</returns>
+		private string SerializeDiscoveryAsJson(Identifier identifier) {
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
+
+			// We prepare a JSON object with this interface:
+			// class jsonResponse {
+			//    string claimedIdentifier;
+			//    Array requests; // never null
+			//    string error; // null if no error
+			// }
+			// Each element in the requests array looks like this:
+			// class jsonAuthRequest {
+			//    string endpoint;  // URL to the OP endpoint
+			//    string immediate; // URL to initiate an immediate request
+			//    string setup;     // URL to initiate a setup request.
+			// }
+			StringBuilder discoveryResultBuilder = new StringBuilder();
+			discoveryResultBuilder.Append("{");
+			try {
+				IEnumerable<IAuthenticationRequest> requests = this.CreateRequests(identifier).CacheGeneratedResults();
+				if (requests.Any()) {
+					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests.First().ClaimedIdentifier));
+					discoveryResultBuilder.Append("requests: [");
+					foreach (IAuthenticationRequest request in requests) {
+						discoveryResultBuilder.Append("{");
+						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
+						request.Mode = AuthenticationRequestMode.Immediate;
+						OutgoingWebResponse response = request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
+						request.Mode = AuthenticationRequestMode.Setup;
+						response = request.RedirectingResponse;
+						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
+						discoveryResultBuilder.Append("},");
+					}
+					discoveryResultBuilder.Length -= 1; // trim off last comma
+					discoveryResultBuilder.Append("]");
+				} else {
+					discoveryResultBuilder.Append("requests: [],");
+					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
+				}
+			} catch (ProtocolException ex) {
+				discoveryResultBuilder.Append("requests: [],");
+				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
+			}
+
+			discoveryResultBuilder.Append("}");
+			return discoveryResultBuilder.ToString();
+		}
+
+		/// <summary>
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
 		/// <param name="requests">The authentication requests to prepare.</param>
@@ -450,7 +530,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
 				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
-					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, this.Identifier.OriginalString);
+					Identifier userSuppliedIdentifier = ((AuthenticationRequest)req).Endpoint.UserSuppliedIdentifier;
+					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
 				}
 
 				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
@@ -523,6 +604,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 </script></body></html>";
 			Page.Response.Write(string.Format(CultureInfo.InvariantCulture, htmlFormat, methodCall));
 			Page.Response.End();
+		}
+
+		/// <summary>
+		/// Sets the window.aspnetapppath variable on the user agent so that cookies can be set with the proper path.
+		/// </summary>
+		private void SetWebAppPathOnUserAgent() {
+			string script = "window.aspnetapppath = " + MessagingUtilities.GetSafeJavascriptValue(this.Page.Request.ApplicationPath) + ";";
+			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyAjaxControlBase), "webapppath", script, true);
 		}
 	}
 }

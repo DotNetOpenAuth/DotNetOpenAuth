@@ -49,7 +49,7 @@ GO
 ";
 			string databasePath = HttpContext.Current.Server.MapPath("~/App_Data/Database.mdf");
 			string schemaSql = File.ReadAllText(HttpContext.Current.Server.MapPath("~/Admin/CreateDatabase.sql"));
-			string sql = string.Format(CultureInfo.InvariantCulture, SqlFormat, databasePath, schemaSql, claimedId, friendlyId);
+			string sql = string.Format(CultureInfo.InvariantCulture, SqlFormat, databasePath, schemaSql, claimedId, "Admin");
 
 			var serverConnection = new ServerConnection(".\\sqlexpress");
 			try {
