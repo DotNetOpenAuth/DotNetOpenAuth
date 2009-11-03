@@ -5,7 +5,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource("DotNetOpenAuth.InfoCard.SupportingScript.js", "text/javascript")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.InfoCard.InfoCardSelector.ScriptResourceName, "text/javascript")]
 
 namespace DotNetOpenAuth.InfoCard {
 	using System;
@@ -48,6 +48,11 @@ namespace DotNetOpenAuth.InfoCard {
 	[ToolboxData("<{0}:InfoCardSelector runat=\"server\"><ClaimsRequested><{0}:ClaimType Name=\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier\" /></ClaimsRequested><UnsupportedTemplate><p>Your browser does not support Information Cards.</p></UnsupportedTemplate></{0}:InfoCardSelector>")]
 	[ContractVerification(true)]
 	public class InfoCardSelector : CompositeControl, IPostBackEventHandler {
+		/// <summary>
+		/// The resource name for getting at the SupportingScript.js embedded manifest stream.
+		/// </summary>
+		internal const string ScriptResourceName = "DotNetOpenAuth.InfoCard.SupportingScript.js";
+
 		#region Property constants
 
 		/// <summary>
@@ -170,11 +175,6 @@ namespace DotNetOpenAuth.InfoCard {
 		private const string InfoCardCategory = "InfoCard";
 
 		#endregion
-
-		/// <summary>
-		/// The resource name for getting at the SupportingScript.js embedded manifest stream.
-		/// </summary>
-		private const string ScriptResourceName = "DotNetOpenAuth.InfoCard.SupportingScript.js";
 
 		/// <summary>
 		/// The panel containing the controls to display if InfoCard is supported in the user agent.
@@ -413,7 +413,16 @@ namespace DotNetOpenAuth.InfoCard {
 		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
 		/// </summary>
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
-		public void RaisePostBackEvent(string eventArgument) {
+		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
+			this.RaisePostBackEvent(eventArgument);
+		}
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Predefined signature.")]
+		protected virtual void RaisePostBackEvent(string eventArgument) {
 			if (!string.IsNullOrEmpty(this.TokenXml)) {
 				try {
 					ReceivingTokenEventArgs receivingArgs = this.OnReceivingToken(this.TokenXml);

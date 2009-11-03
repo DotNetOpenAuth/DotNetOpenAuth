@@ -259,6 +259,15 @@ namespace DotNetOpenAuth.Messaging {
 					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
 					request = request.Clone(redirectUri);
 				} else {
+					if (response.FinalUri != request.RequestUri) {
+						// Since we don't automatically follow redirects, there's only one scenario where this
+						// can happen: when the server sends a (non-redirecting) Content-Location header in the response.
+						// It's imperative that we do not trust that header though, so coerce the FinalUri to be
+						// what we just requested.
+						Logger.Http.WarnFormat("The response from {0} included an HTTP header indicating it's the same as {1}, but it's not a redirect so we won't trust that.", request.RequestUri, response.FinalUri);
+						response.FinalUri = request.RequestUri;
+					}
+
 					return response;
 				}
 			}
@@ -455,12 +464,14 @@ namespace DotNetOpenAuth.Messaging {
 				request.ReadWriteTimeout = (int)this.ReadWriteTimeout.TotalMilliseconds;
 				request.Timeout = (int)this.Timeout.TotalMilliseconds;
 				request.KeepAlive = false;
-
-				// If SSL is required throughout, we cannot allow auto redirects because
-				// it may include a pass through an unprotected HTTP request.
-				// We have to follow redirects manually.
-				request.AllowAutoRedirect = false;
 			}
+
+			// If SSL is required throughout, we cannot allow auto redirects because
+			// it may include a pass through an unprotected HTTP request.
+			// We have to follow redirects manually.
+			// It also allows us to ignore HttpWebResponse.FinalUri since that can be affected by
+			// the Content-Location header and open security holes.
+			request.AllowAutoRedirect = false;
 		}
 	}
 }

@@ -366,7 +366,16 @@ namespace DotNetOpenAuth.Messaging {
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			foreach (string key in pairs) {
-				headers.Add(key, pairs[key]);
+				try {
+					headers.Add(key, pairs[key]);
+				} catch (ArgumentException ex) {
+					Logger.Messaging.WarnFormat(
+						"{0} thrown when trying to add web header \"{1}: {2}\".  {3}",
+						ex.GetType().Name,
+						key,
+						pairs[key],
+						ex.Message);
+				}
 			}
 
 			return headers;
