@@ -156,7 +156,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Adding behaviors can impact the security settings of the <see cref="OpenIdProvider"/>
 		/// in ways that subsequently removing the behaviors will not reverse.
 		/// </remarks>
-		internal ICollection<IProviderBehavior> Behaviors {
+		public ICollection<IProviderBehavior> Behaviors {
 			get { return this.behaviors; }
 		}
 

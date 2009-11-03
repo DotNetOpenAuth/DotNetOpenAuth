@@ -10,11 +10,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Applies a custom security policy to certain OpenID security settings and behaviors.
 	/// </summary>
-	/// <remarks>
-	/// BEFORE MARKING THIS INTERFACE PUBLIC: it's very important that we shift the methods to be channel-level
-	/// rather than facade class level and for the OpenIdChannel to be the one to invoke these methods.
-	/// </remarks>
-	internal interface IProviderBehavior {
+	public interface IProviderBehavior {
 		/// <summary>
 		/// Applies a well known set of security requirements to a default set of security settings.
 		/// </summary>
