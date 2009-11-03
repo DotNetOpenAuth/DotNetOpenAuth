@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets or sets the level of verification a Provider performs on an identifier before
 		/// sending an unsolicited assertion for it.
 		/// </summary>
-		/// <value>The default value is <see cref="UnsolicitedAssertionVerificationLevel.Always"/>.</value>
+		/// <value>The default value is <see cref="UnsolicitedAssertionVerificationLevel.RequireSuccess"/>.</value>
 		public UnsolicitedAssertionVerificationLevel UnsolicitedAssertionVerification { get; set; }
 
 		/// <summary>
