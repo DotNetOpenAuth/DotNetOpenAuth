@@ -20,11 +20,11 @@
 			routes.MapRoute(
 				"User identities",
 				"user/{id}/{action}",
-				new { controller = "User", action = "Identity", id = string.Empty });
+				new { controller = "User", action = "Identity", id = string.Empty, anon = false });
 			routes.MapRoute(
 				"PPID identifiers",
 				"anon",
-				new { controller = "User", action = "PpidIdentity", id = string.Empty });
+				new { controller = "User", action = "Identity", id = string.Empty, anon = true });
 			routes.MapRoute(
 				"Default",                                              // Route name
 				"{controller}/{action}/{id}",                           // URL with parameters
