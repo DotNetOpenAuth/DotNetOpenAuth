@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);
 			TestContext.WriteLine("Created {0} associations in {1}, or {2} per second.", iterations, timer.Elapsed, executionsPerSecond);
-			Assert.IsTrue(executionsPerSecond >= 2, "Too slow");
+			Assert.IsTrue(executionsPerSecond >= 2, "Too slow ({0} >= 2 executions per second required.)", executionsPerSecond);
 		}
 
 		[TestMethod]
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);
 			TestContext.WriteLine("Created {0} associations in {1}, or {2} per second.", iterations, timer.Elapsed, executionsPerSecond);
-			Assert.IsTrue(executionsPerSecond > 1000, "Too slow.");
+			Assert.IsTrue(executionsPerSecond > 1000, "Too slow ({0} > 1000 executions per second required.)", executionsPerSecond);
 		}
 
 		[TestMethod]
@@ -78,7 +78,8 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Protocol protocol = Protocol.Default;
 			string assocType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			double executionsPerSecond = this.ParameterizedCheckIdTest(protocol, assocType);
-			Assert.IsTrue(executionsPerSecond > 500, "Too slow");
+			TestContext.WriteLine("{0} executions per second.", executionsPerSecond);
+			Assert.IsTrue(executionsPerSecond > 500, "Too slow ({0} > 500 executions per second required.)", executionsPerSecond);
 		}
 
 		[TestMethod]
@@ -86,7 +87,8 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Protocol protocol = Protocol.Default;
 			string assocType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 			double executionsPerSecond = this.ParameterizedCheckIdTest(protocol, assocType);
-			Assert.IsTrue(executionsPerSecond > 400, "Too slow");
+			TestContext.WriteLine("{0} executions per second.", executionsPerSecond);
+			Assert.IsTrue(executionsPerSecond > 400, "Too slow ({0} > 400 executions per second required.)", executionsPerSecond);
 		}
 
 		private static double GetExecutionsPerSecond(int iterations, Stopwatch timer) {
