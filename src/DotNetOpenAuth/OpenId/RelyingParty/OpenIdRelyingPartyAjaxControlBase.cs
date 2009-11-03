@@ -335,8 +335,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		protected override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-
 			// We delegate all our logic to another method, since invoking base. methods
 			// within an iterator method results in unverifiable code.
 			return this.CreateRequestsCore(base.CreateRequests(identifier));
