@@ -14,6 +14,8 @@
 	/// visit http://go.microsoft.com/?LinkId=9394801
 	/// </remarks>
 	public class MvcApplication : System.Web.HttpApplication {
+		private static object behaviorInitializationSyncObject = new object();
+
 		public static void RegisterRoutes(RouteCollection routes) {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
@@ -33,8 +35,21 @@
 
 		protected void Application_Start() {
 			RegisterRoutes(RouteTable.Routes);
-			DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
-			DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+		}
+
+		protected void Application_BeginRequest(object sender, EventArgs e) {
+			InitializeBehaviors();
+		}
+
+		private static void InitializeBehaviors() {
+			if (DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
+				lock (behaviorInitializationSyncObject) {
+					if (DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
+						DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+						DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+					}
+				}
+			}
 		}
 	}
 }
