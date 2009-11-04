@@ -22,7 +22,7 @@
 			</LoggedInTemplate>
 			<AnonymousTemplate>
 			<% if (Page.Request.Path != FormsAuthentication.LoginUrl) {%>
-				<a href="#" class="loginPopupLink">Login</a>
+				<a href="#" class="loginPopupLink">Login / Register</a>
 			<% }  %>
 			</AnonymousTemplate>
 		</asp:LoginView>
