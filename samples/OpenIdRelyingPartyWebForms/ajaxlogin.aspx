@@ -39,6 +39,11 @@ td
 
 	<asp:MultiView runat="server" ID="multiView" ActiveViewIndex='0'>
 		<asp:View runat="server" ID="commentSubmission">
+			<p>
+				The scenario here is that you've just read a blog post and you want to comment on
+				that post. You're <b>not</b> actually logging into the web site by entering your
+				OpenID here, but your OpenID <i>will</i> be verified before the comment is posted.
+			</p>
 			<table>
 				<tr>
 					<td>
