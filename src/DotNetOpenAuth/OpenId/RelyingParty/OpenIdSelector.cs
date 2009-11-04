@@ -157,7 +157,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets the InfoCard selector which may be displayed alongside the OP buttons.
 		/// </summary>
-		internal InfoCardSelector InfoCardSelector { get; set; }
+		public InfoCardSelector InfoCardSelector { get; set; }
 
 		/// <summary>
 		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).

@@ -361,6 +361,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			double assertionLifetimeInMilliseconds = Math.Min(TimeSpan.FromMinutes(5).TotalMilliseconds, Math.Min(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds));
 			initScript.AppendLine(MaxPositiveAssertionLifetimeJsName + " = " + assertionLifetimeInMilliseconds.ToString(CultureInfo.InvariantCulture) + ";");
 
+			// We register this callback code explicitly with a specific type rather than the derived-type of the control
+			// to ensure that this discovery callback function is only set ONCE for the HTML document.
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyControlBase), "initializer", initScript.ToString(), true);
 		}
 
