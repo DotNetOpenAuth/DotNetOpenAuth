@@ -3,14 +3,15 @@
 	var popupWindowName = 'openidlogin';
 	var popupWidth = 355;
 	var popupHeight = 273; // use 205 for 1 row of OP buttons
+	var iframe;
 
 	{
 		var div = window.document.createElement('div');
 		div.style.padding = 0;
 		div.id = 'loginDialog';
 
-		var iframe = window.document.createElement('iframe');
-		iframe.src = loginContent;
+		iframe = window.document.createElement('iframe');
+		iframe.src = "about:blank"; // don't set the actual page yet, since FireFox & Chrome will refresh it when the iframe is moved in the DOM anyway.
 		iframe.frameBorder = 0;
 		iframe.width = popupWidth;
 		iframe.height = popupHeight;
@@ -31,6 +32,13 @@
 			buttons: {},
 			closeOnEscape: true,
 			autoOpen: false,
+			close: function(event, ui) {
+				// Clear the URL so Chrome/Firefox don't refresh the iframe when it's hidden.
+				iframe.src = "about:blank";
+			},
+			open: function(event, ui) {
+				iframe.src = loginContent;
+			},
 			focus: function(event, ui) {
 				//				var box = $('#openid_identifier')[0];
 				//				if (box.style.display != 'none') {
