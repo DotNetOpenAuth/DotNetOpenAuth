@@ -41,6 +41,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string EmbeddedStylesheetResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdSelector.css";
 
+		/// <summary>
+		/// The substring to append to the end of the id or name of this control to form the
+		/// unique name of the hidden field that will carry the positive assertion on postback.
+		/// </summary>
+		private const string AuthDataFormKeySuffix = "_openidAuthData";
+
 		#region ViewState keys
 
 		/// <summary>
@@ -166,7 +172,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.
 		/// </value>
 		protected override string OpenIdAuthDataFormKey {
-			get { return this.ClientID + "_openidAuthData"; }
+			get { return this.UniqueID + AuthDataFormKeySuffix; }
 		}
 
 		/// <summary>
@@ -189,7 +195,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Controls.Add(this.textBox);
 
 			this.positiveAssertionField = new HiddenField();
-			this.positiveAssertionField.ID = this.OpenIdAuthDataFormKey;
+			this.positiveAssertionField.ID = this.ID + AuthDataFormKeySuffix;
 			this.Controls.Add(this.positiveAssertionField);
 		}
 
