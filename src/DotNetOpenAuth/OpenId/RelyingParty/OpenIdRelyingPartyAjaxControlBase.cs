@@ -76,6 +76,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Default value of the <see cref="Popup"/> property.
+		/// </summary>
+		private const PopupBehavior PopupDefault = PopupBehavior.Always;
+
+		/// <summary>
+		/// Default value of <see cref="LogOnMode"/> property..
+		/// </summary>
+		private const LogOnSiteNotification LogOnModeDefault = LogOnSiteNotification.None;
+
+		/// <summary>
 		/// Backing field for the <see cref="RelyingPartyNonVerifying"/> property.
 		/// </summary>
 		private static OpenIdRelyingParty relyingPartyNonVerifying;
@@ -102,10 +112,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		protected OpenIdRelyingPartyAjaxControlBase() {
 			// The AJAX login style always uses popups (or invisible iframes).
-			base.Popup = PopupBehavior.Always;
+			base.Popup = PopupDefault;
 
 			// The expected use case for the AJAX login box is for comments... not logging in.
-			this.LogOnMode = LogOnSiteNotification.None;
+			this.LogOnMode = LogOnModeDefault;
 		}
 
 		/// <summary>
@@ -125,10 +135,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
 		/// </summary>
 		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
-		[Bindable(false), Browsable(false)]
+		[Bindable(false), Browsable(false), DefaultValue(PopupDefault)]
 		public override PopupBehavior Popup {
 			get { return base.Popup; }
 			set { ErrorUtilities.VerifySupported(value == base.Popup, OpenIdStrings.PropertyValueNotSupported); }
+		}
+
+		/// <summary>
+		/// Gets or sets the way a completed login is communicated to the rest of the web site.
+		/// </summary>
+		[Bindable(true), DefaultValue(LogOnModeDefault), Category(BehaviorCategory)]
+		[Description("The way a completed login is communicated to the rest of the web site.")]
+		public override LogOnSiteNotification LogOnMode { // override to set new DefaultValue
+			get { return base.LogOnMode; }
+			set { base.LogOnMode = value; }
 		}
 
 		/// <summary>
