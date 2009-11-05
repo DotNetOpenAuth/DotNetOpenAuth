@@ -541,7 +541,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires<ArgumentNullException>(requests != null);
+			ErrorUtilities.VerifyArgumentNotNull(requests, "requests"); // NO CODE CONTRACTS! (yield return used here)
 
 			// Configure each generated request.
 			int reqIndex = 0;

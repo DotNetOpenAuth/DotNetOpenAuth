@@ -9,6 +9,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -25,6 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Methods of indicating to the rest of the web site that the user has logged in.
@@ -176,6 +178,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region Property view state keys
 
 		/// <summary>
+		/// The viewstate key to use for storing the value of the <see cref="Extensions"/> property.
+		/// </summary>
+		private const string ExtensionsViewStateKey = "Extensions";
+
+		/// <summary>
 		/// The viewstate key to use for the <see cref="Stateless"/> property.
 		/// </summary>
 		private const string StatelessViewStateKey = "Stateless";
@@ -301,6 +308,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				this.relyingParty = value;
 				this.relyingPartyOwned = false;
+			}
+		}
+
+		/// <summary>
+		/// Gets the collection of extension requests this selector should include in generated requests.
+		/// </summary>
+		[PersistenceMode(PersistenceMode.InnerProperty)]
+		public Collection<IOpenIdMessageExtension> Extensions {
+			get {
+				if (this.ViewState[ExtensionsViewStateKey] == null) {
+					var extensions = new Collection<IOpenIdMessageExtension>();
+					this.ViewState[ExtensionsViewStateKey] = extensions;
+					return extensions;
+				} else {
+					return (Collection<IOpenIdMessageExtension>)this.ViewState[ExtensionsViewStateKey];
+				}
 			}
 		}
 
@@ -542,65 +565,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </returns>
 		protected virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
-			IEnumerable<IAuthenticationRequest> requests;
 
-			// Approximate the returnTo (either based on the customize property or the page URL)
-			// so we can use it to help with Realm resolution.
-			Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.ReturnToUrl) : this.Page.Request.Url;
-
-			// Resolve the trust root, and swap out the scheme and port if necessary to match the
-			// return_to URL, since this match is required by OpenId, and the consumer app
-			// may be using HTTP at some times and HTTPS at others.
-			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
-			realm.Scheme = returnToApproximation.Scheme;
-			realm.Port = returnToApproximation.Port;
-
-			// Initiate openid request
-			// We use TryParse here to avoid throwing an exception which 
-			// might slip through our validator control if it is disabled.
-			Realm typedRealm = new Realm(realm);
-			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-				requests = this.RelyingParty.CreateRequests(identifier, typedRealm);
-			} else {
-				// Since the user actually gave us a return_to value,
-				// the "approximation" is exactly what we want.
-				requests = this.RelyingParty.CreateRequests(identifier, typedRealm, returnToApproximation);
-			}
-
-			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
-			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
-			// and don't try it multiple times.
-			requests = requests.Distinct(DuplicateRequestedHostsComparer.Instance);
-
-			// Configure each generated request.
-			foreach (var req in requests) {
-				if (this.IsPopupAppropriate(req)) {
-					// Inform ourselves in return_to that we're in a popup.
-					req.SetUntrustedCallbackArgument(UIPopupCallbackKey, "1");
-
-					if (req.Provider.IsExtensionSupported<UIRequest>()) {
-						// Inform the OP that we'll be using a popup window consistent with the UI extension.
-						req.AddExtension(new UIRequest());
-
-						// Provide a hint for the client javascript about whether the OP supports the UI extension.
-						// This is so the window can be made the correct size for the extension.
-						// If the OP doesn't advertise support for the extension, the javascript will use
-						// a bigger popup window.
-						req.SetUntrustedCallbackArgument(PopupUISupportedJSHint, "1");
-					}
-				}
-
-				// Add state that needs to survive across the redirect.
-				if (!this.Stateless) {
-					req.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
-					req.SetUntrustedCallbackArgument(ReturnToReceivingControlId, this.ClientID);
-				}
-
-				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
-				if (this.OnLoggingIn(req)) {
-					yield return req;
-				}
-			}
+			// Delegate to a private method to keep 'yield return' and Code Contract separate.
+			return this.CreateRequestsCore(identifier);
 		}
 
 		/// <summary>
@@ -893,6 +860,82 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			return cookie;
+		}
+
+		/// <summary>
+		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// </summary>
+		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(Identifier identifier) {
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier"); // NO CODE CONTRACTS! (yield return used here)
+			IEnumerable<IAuthenticationRequest> requests;
+
+			// Approximate the returnTo (either based on the customize property or the page URL)
+			// so we can use it to help with Realm resolution.
+			Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.ReturnToUrl) : this.Page.Request.Url;
+
+			// Resolve the trust root, and swap out the scheme and port if necessary to match the
+			// return_to URL, since this match is required by OpenId, and the consumer app
+			// may be using HTTP at some times and HTTPS at others.
+			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
+			realm.Scheme = returnToApproximation.Scheme;
+			realm.Port = returnToApproximation.Port;
+
+			// Initiate openid request
+			// We use TryParse here to avoid throwing an exception which 
+			// might slip through our validator control if it is disabled.
+			Realm typedRealm = new Realm(realm);
+			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
+				requests = this.RelyingParty.CreateRequests(identifier, typedRealm);
+			} else {
+				// Since the user actually gave us a return_to value,
+				// the "approximation" is exactly what we want.
+				requests = this.RelyingParty.CreateRequests(identifier, typedRealm, returnToApproximation);
+			}
+
+			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
+			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
+			// and don't try it multiple times.
+			requests = requests.Distinct(DuplicateRequestedHostsComparer.Instance);
+
+			// Configure each generated request.
+			foreach (var req in requests) {
+				if (this.IsPopupAppropriate(req)) {
+					// Inform ourselves in return_to that we're in a popup.
+					req.SetUntrustedCallbackArgument(UIPopupCallbackKey, "1");
+
+					if (req.Provider.IsExtensionSupported<UIRequest>()) {
+						// Inform the OP that we'll be using a popup window consistent with the UI extension.
+						req.AddExtension(new UIRequest());
+
+						// Provide a hint for the client javascript about whether the OP supports the UI extension.
+						// This is so the window can be made the correct size for the extension.
+						// If the OP doesn't advertise support for the extension, the javascript will use
+						// a bigger popup window.
+						req.SetUntrustedCallbackArgument(PopupUISupportedJSHint, "1");
+					}
+				}
+
+				// Add the extensions injected into the control.
+				foreach (var extension in this.Extensions) {
+					req.AddExtension(extension);
+				}
+
+				// Add state that needs to survive across the redirect.
+				if (!this.Stateless) {
+					req.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
+					req.SetUntrustedCallbackArgument(ReturnToReceivingControlId, this.ClientID);
+				}
+
+				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
+				if (this.OnLoggingIn(req)) {
+					yield return req;
+				}
+			}
 		}
 
 		/// <summary>
