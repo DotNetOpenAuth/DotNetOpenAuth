@@ -259,6 +259,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// </summary>
+		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected internal override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+			// If this control is actually a member of another OpenID RP control,
+			// delegate creation of requests to the parent control.
+			var parentOwner = this.ParentControls.OfType<OpenIdRelyingPartyControlBase>().FirstOrDefault();
+			if (parentOwner != null) {
+				return parentOwner.CreateRequests(identifier);
+			} else {
+				// We delegate all our logic to another method, since invoking base. methods
+				// within an iterator method results in unverifiable code.
+				return this.CreateRequestsCore(base.CreateRequests(identifier));
+			}
+		}
+
+		/// <summary>
 		/// Returns the results of a callback event that targets a control.
 		/// </summary>
 		/// <returns>The result of the callback.</returns>
@@ -344,20 +365,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Since the identifier changed, make sure we reset any cached authentication on the user agent.
 			this.ViewState.Remove(AuthDataViewStateKey);
-		}
-
-		/// <summary>
-		/// Creates the authentication requests for a given user-supplied Identifier.
-		/// </summary>
-		/// <param name="identifier">The identifier to create a request for.</param>
-		/// <returns>
-		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
-		/// </returns>
-		protected override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
-			// We delegate all our logic to another method, since invoking base. methods
-			// within an iterator method results in unverifiable code.
-			return this.CreateRequestsCore(base.CreateRequests(identifier));
 		}
 
 		/// <summary>

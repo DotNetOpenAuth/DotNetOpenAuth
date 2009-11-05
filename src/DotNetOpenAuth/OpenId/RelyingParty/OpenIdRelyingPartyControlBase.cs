@@ -469,6 +469,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal AssociationPreference AssociationPreference { get; set; }
 
 		/// <summary>
+		/// Gets ancestor controls, starting with the immediate parent, and progressing to more distant ancestors.
+		/// </summary>
+		protected IEnumerable<Control> ParentControls {
+			get {
+				Control parent = this;
+				while ((parent = parent.Parent) != null) {
+					yield return parent;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Clears any cookie set by this control to help the user on a returning visit next time.
 		/// </summary>
 		public static void LogOff() {
@@ -523,6 +535,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Creates the authentication requests for a given user-supplied Identifier.
+		/// </summary>
+		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected internal virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+			Contract.Requires<ArgumentNullException>(identifier != null);
+
+			// Delegate to a private method to keep 'yield return' and Code Contract separate.
+			return this.CreateRequestsCore(identifier);
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -553,21 +580,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected IEnumerable<IAuthenticationRequest> CreateRequests() {
 			Contract.Requires<InvalidOperationException>(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			return this.CreateRequests(this.Identifier);
-		}
-
-		/// <summary>
-		/// Creates the authentication requests for a given user-supplied Identifier.
-		/// </summary>
-		/// <param name="identifier">The identifier to create a request for.</param>
-		/// <returns>
-		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
-		/// </returns>
-		protected virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-
-			// Delegate to a private method to keep 'yield return' and Code Contract separate.
-			return this.CreateRequestsCore(identifier);
 		}
 
 		/// <summary>
