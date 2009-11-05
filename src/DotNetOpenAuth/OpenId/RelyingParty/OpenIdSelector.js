@@ -9,7 +9,7 @@
 $(function() {
 	var hint = $.cookie('openid_identifier') || '';
 
-	var ajaxbox = $('#openid_identifier')[0];
+	var ajaxbox = document.getElementsByName('openid_identifier')[0];
 	if (hint != 'infocard') {
 		ajaxbox.setValue(hint);
 	}
@@ -35,7 +35,7 @@ $(function() {
 					.removeClass('grayedOut')
 					.addClass('focused');
 			$('#OpenIDForm').show('slow', function() {
-				$('#openid_identifier').focus();
+				ajaxbox.focus();
 			});
 		}
 	}
@@ -158,12 +158,13 @@ $(function() {
 		}
 	});
 	$('#OpenIDButton').click(function() {
+		// Be careful to only try to select the text box once it is available.
 		if ($('#OpenIDForm').is(':hidden')) {
 			$('#OpenIDForm').show('slow', function() {
-				$('#openid_identifier').focus();
+				ajaxbox.focus();
 			});
 		} else {
-			$('#openid_identifier').focus();
+			ajaxbox.focus();
 		}
 	});
 
