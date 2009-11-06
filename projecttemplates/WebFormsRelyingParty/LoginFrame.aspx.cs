@@ -2,6 +2,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
+	using System.IdentityModel.Claims;
 	using System.Linq;
 	using System.Web;
 	using System.Web.Security;
@@ -26,11 +27,11 @@
 		}
 
 		protected void openIdSelector_LoggedIn(object sender, OpenIdEventArgs e) {
-			this.LoginUser(e.ClaimedIdentifier, e.Response.FriendlyIdentifierForDisplay, e.Response.GetExtension<ClaimsResponse>());
+			this.LoginUser(e.ClaimedIdentifier, e.Response.FriendlyIdentifierForDisplay, e.Response.GetExtension<ClaimsResponse>(), null);
 		}
 
-		protected void openIdSelector_ReceivedToken(object sender, DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs e) {
-			this.LoginUser(AuthenticationToken.SynthesizeClaimedIdentifierFromInfoCard(e.Token.UniqueId), e.Token.SiteSpecificId, null);
+		protected void openIdSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
+			this.LoginUser(AuthenticationToken.SynthesizeClaimedIdentifierFromInfoCard(e.Token.UniqueId), e.Token.SiteSpecificId, null, e.Token);
 		}
 
 		protected void openIdSelector_Failed(object sender, OpenIdEventArgs e) {
@@ -45,7 +46,7 @@
 			this.errorPanel.Visible = true;
 		}
 
-		private void LoginUser(string claimedIdentifier, string friendlyIdentifier, ClaimsResponse claims) {
+		private void LoginUser(string claimedIdentifier, string friendlyIdentifier, ClaimsResponse claims, Token samlToken) {
 			// Create an account for this user if we don't already have one.
 			AuthenticationToken openidToken = Global.DataContext.AuthenticationToken.FirstOrDefault(token => token.ClaimedIdentifier == claimedIdentifier);
 			if (openidToken == null) {
@@ -69,6 +70,17 @@
 						} else {
 							user.FirstName = claims.FullName;
 						}
+					}
+				} else if (samlToken != null) {
+					string email, givenName, surname;
+					if (samlToken.Claims.TryGetValue(ClaimTypes.Email, out email)) {
+						user.EmailAddress = email;
+					}
+					if (samlToken.Claims.TryGetValue(ClaimTypes.GivenName, out givenName)) {
+						user.FirstName = givenName;
+					}
+					if (samlToken.Claims.TryGetValue(ClaimTypes.Surname, out surname)) {
+						user.LastName = surname;
 					}
 				}
 

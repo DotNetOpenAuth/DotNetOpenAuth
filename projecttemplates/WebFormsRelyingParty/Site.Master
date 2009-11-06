@@ -15,7 +15,16 @@
 	<div style="float: right">
 		<asp:LoginView runat="server">
 			<LoggedInTemplate>
-				<%= Global.DataContext.AuthenticationToken.First(token => token.ClaimedIdentifier == Page.User.Identity.Name).FriendlyIdentifier %>
+				<%
+					var authToken = Global.DataContext.AuthenticationToken.Include("User").First(token => token.ClaimedIdentifier == Page.User.Identity.Name);
+					if (!string.IsNullOrEmpty(authToken.User.EmailAddress)) {
+						Response.Write(HttpUtility.HtmlEncode(authToken.User.EmailAddress));
+					} else if (!string.IsNullOrEmpty(authToken.User.FirstName)) {
+						Response.Write(HttpUtility.HtmlEncode(authToken.User.FirstName));
+					} else {
+						Response.Write(HttpUtility.HtmlEncode(authToken.FriendlyIdentifier));
+					}
+				%>
 				| <asp:HyperLink runat="server" NavigateUrl="~/" Text="Home" /> | <asp:HyperLink
 					runat="server" NavigateUrl="~/Members/AccountInfo.aspx" Text="Account" /> |
 				<asp:LoginStatus ID="LoginStatus1" runat="server" />

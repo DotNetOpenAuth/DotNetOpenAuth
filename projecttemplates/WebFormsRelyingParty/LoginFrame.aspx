@@ -3,6 +3,8 @@
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
+<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration" TagPrefix="sreg" %>
+<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- COPYRIGHT (C) 2009 Andrew Arnott.  All rights reserved. -->
 <!-- LICENSE: Microsoft Public License available at http://opensource.org/licenses/ms-pl.html -->
@@ -39,8 +41,19 @@
 				<rp:SelectorProviderButton OPIdentifier="https://www.myopenid.com/" Image="images/myopenid.png" />
 				<rp:SelectorProviderButton OPIdentifier="https://pip.verisignlabs.com/" Image="images/verisign.gif" SkipBackgroundAuthentication="true" />
 				<rp:SelectorOpenIdButton Image="images/openid.gif" />
-				<rp:SelectorInfoCardButton />
+				<rp:SelectorInfoCardButton>
+					<InfoCardSelector>
+						<ClaimsRequested>
+							<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" IsOptional="false" />
+							<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" IsOptional="true" />
+							<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" IsOptional="true" />
+						</ClaimsRequested>
+					</InfoCardSelector>
+				</rp:SelectorInfoCardButton>
 			</Buttons>
+			<Extensions>
+				<sreg:ClaimsRequest Email="Require" FullName="Request" />
+			</Extensions>
 		</rp:OpenIdSelector>
 		<asp:HiddenField runat="server" ID="topWindowUrl" />
 		<asp:Panel ID="errorPanel" runat="server" EnableViewState="false" Visible="false" ForeColor="Red">
