@@ -43,13 +43,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Contract.Requires<ArgumentNullException>(messageType != null);
 			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
 			Contract.Requires<ArgumentNullException>(messageVersion != null);
-			if (!typeof(IMessage).IsAssignableFrom(messageType)) {
-				throw new ArgumentException(string.Format(
-					CultureInfo.CurrentCulture,
-					MessagingStrings.UnexpectedType,
-					typeof(IMessage),
-					messageType));
-			}
 
 			this.messageType = messageType;
 			this.messageVersion = messageVersion;

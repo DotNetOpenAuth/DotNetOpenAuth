@@ -154,9 +154,7 @@ namespace DotNetOpenAuth {
 		/// <param name="type">A type whose full name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given type name.</returns>
 		internal static ILog Create(Type type) {
-			if (type == null) {
-				throw new ArgumentNullException("type");
-			}
+			Contract.Requires<ArgumentNullException>(type != null);
 
 			return Create(type.FullName);
 		}

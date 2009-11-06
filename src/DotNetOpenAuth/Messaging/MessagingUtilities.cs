@@ -906,9 +906,7 @@ namespace DotNetOpenAuth.Messaging {
 			/// </summary>
 			/// <param name="comparison">The comparison method to use.</param>
 			internal ComparisonHelper(Comparison<T> comparison) {
-				if (comparison == null) {
-					throw new ArgumentNullException("comparison");
-				}
+				Contract.Requires<ArgumentNullException>(comparison != null);
 
 				this.comparison = comparison;
 			}

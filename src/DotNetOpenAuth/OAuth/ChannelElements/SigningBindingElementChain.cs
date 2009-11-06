@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -29,19 +30,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// in preferred use order.
 		/// </param>
 		internal SigningBindingElementChain(ITamperProtectionChannelBindingElement[] signers) {
-			if (signers == null) {
-				throw new ArgumentNullException("signers");
-			}
-			if (signers.Length == 0) {
-				throw new ArgumentException(MessagingStrings.SequenceContainsNoElements, "signers");
-			}
-			if (signers.Contains(null)) {
-				throw new ArgumentException(MessagingStrings.SequenceContainsNullElement, "signers");
-			}
-			MessageProtections protection = signers[0].Protection;
-			if (signers.Any(element => element.Protection != protection)) {
-				throw new ArgumentException(OAuthStrings.SigningElementsMustShareSameProtection, "signers");
-			}
+			Contract.Requires<ArgumentNullException>(signers != null);
+			Contract.Requires<ArgumentException>(signers.Length > 0);
+			Contract.Requires<ArgumentException>(!signers.Contains(null), MessagingStrings.SequenceContainsNullElement);
+			Contract.Requires<ArgumentException>(signers.Select(s => s.Protection).Distinct().Count() == 1, OAuthStrings.SigningElementsMustShareSameProtection);
 
 			this.signers = signers;
 		}

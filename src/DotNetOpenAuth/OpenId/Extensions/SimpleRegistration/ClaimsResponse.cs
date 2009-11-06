@@ -122,11 +122,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			}
 
 			set {
+				Contract.Requires<ArgumentException>(value == null || birthDateValidator.IsMatch(value), OpenIdStrings.SregInvalidBirthdate);
 				if (value != null) {
-					if (!birthDateValidator.IsMatch(value)) {
-						throw new ArgumentException(OpenIdStrings.SregInvalidBirthdate, "value");
-					}
-
 					// Update the BirthDate property, if possible. 
 					// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
 					// Some valid sreg dob values like "2000-00-00" will not work as a DateTime struct, 

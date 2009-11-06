@@ -208,10 +208,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
-			if (response == null) {
-				throw new ArgumentNullException("response");
-			}
-
 			try {
 				return this.keyValueForm.GetDictionary(response.ResponseStream);
 			} catch (FormatException ex) {

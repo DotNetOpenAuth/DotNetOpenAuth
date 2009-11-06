@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -82,12 +83,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 			}
 
 			set {
+				Contract.Requires<ArgumentException>(!value.HasValue || value.Value.Kind != DateTimeKind.Unspecified, OpenIdStrings.UnspecifiedDateTimeKindNotAllowed);
+
 				// Make sure that whatever is set here, it becomes UTC time.
 				if (value.HasValue) {
-					if (value.Value.Kind == DateTimeKind.Unspecified) {
-						throw new ArgumentException(OpenIdStrings.UnspecifiedDateTimeKindNotAllowed, "value");
-					}
-
 					// Convert to UTC and cut to the second, since the protocol only allows for
 					// that level of precision.
 					this.authenticationTimeUtc = OpenIdUtilities.CutToSecond(value.Value.ToUniversalTimeSafe());

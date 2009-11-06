@@ -157,7 +157,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// of an incoming OpenID <i>indirect</i> message or <i>direct request</i>.
 		/// </summary>
 		internal static Protocol Detect(IDictionary<string, string> query) {
-			if (query == null) throw new ArgumentNullException("query");
+			Contract.Requires<ArgumentNullException>(query != null);
 			return query.ContainsKey(V20.openid.ns) ? V20 : V11;
 		}
 		/// <summary>
@@ -165,7 +165,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// of an incoming OpenID <i>direct</i> response message.
 		/// </summary>
 		internal static Protocol DetectFromDirectResponse(IDictionary<string, string> query) {
-			if (query == null) throw new ArgumentNullException("query");
+			Contract.Requires<ArgumentNullException>(query != null);
 			return query.ContainsKey(V20.openidnp.ns) ? V20 : V11;
 		}
 		/// <summary>
@@ -173,7 +173,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// of XRDS Service Type URIs included for some service.
 		/// </summary>
 		internal static Protocol Detect(IEnumerable<string> serviceTypeURIs) {
-			if (serviceTypeURIs == null) throw new ArgumentNullException("serviceTypeURIs");
+			Contract.Requires<ArgumentNullException>(serviceTypeURIs != null);
 			return FindBestVersion(p => p.OPIdentifierServiceTypeURI, serviceTypeURIs) ??
 				   FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, serviceTypeURIs) ??
 				   FindBestVersion(p => p.RPReturnToTypeURI, serviceTypeURIs);

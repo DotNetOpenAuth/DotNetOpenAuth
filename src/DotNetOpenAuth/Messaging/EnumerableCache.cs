@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Extension methods for <see cref="IEnumerable&lt;T&gt;"/> types.
@@ -80,9 +81,7 @@ namespace DotNetOpenAuth.Messaging {
 			/// </summary>
 			/// <param name="generator">The generator.</param>
 			internal EnumerableCache(IEnumerable<T> generator) {
-				if (generator == null) {
-					throw new ArgumentNullException("generator");
-				}
+				Contract.Requires<ArgumentNullException>(generator != null);
 
 				this.generator = generator;
 			}
@@ -140,9 +139,7 @@ namespace DotNetOpenAuth.Messaging {
 				/// </summary>
 				/// <param name="parent">The parent cached enumerable whose GetEnumerator method is calling this constructor.</param>
 				internal EnumeratorCache(EnumerableCache<T> parent) {
-					if (parent == null) {
-						throw new ArgumentNullException("parent");
-					}
+					Contract.Requires<ArgumentNullException>(parent != null);
 
 					this.parent = parent;
 				}
