@@ -161,11 +161,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets the InfoCard selector which may be displayed alongside the OP buttons.
-		/// </summary>
-		public InfoCardSelector InfoCardSelector { get; set; }
-
-		/// <summary>
 		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
 		/// </summary>
 		/// <value>
@@ -181,12 +176,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void CreateChildControls() {
 			base.CreateChildControls();
 
-			this.InfoCardSelector = new InfoCardSelector();
-			this.InfoCardSelector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
-			this.InfoCardSelector.ImageSize = InfoCardImageSize.Size60x42;
-			this.InfoCardSelector.ReceivedToken += this.InfoCardSelector_ReceivedToken;
-			this.InfoCardSelector.TokenProcessingError += this.InfoCardSelector_TokenProcessingError;
-			this.Controls.Add(this.InfoCardSelector);
+			var selectorButton = this.Buttons.OfType<SelectorInfoCardButton>().FirstOrDefault();
+			if (selectorButton != null) {
+				var selector = selectorButton.InfoCardSelector;
+				selector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
+				selector.ImageSize = InfoCardImageSize.Size60x42;
+				selector.ReceivedToken += this.InfoCardSelector_ReceivedToken;
+				selector.TokenProcessingError += this.InfoCardSelector_TokenProcessingError;
+				this.Controls.Add(selector);
+			}
 
 			this.textBox = new OpenIdAjaxTextBox();
 			this.textBox.ID = "openid_identifier";
