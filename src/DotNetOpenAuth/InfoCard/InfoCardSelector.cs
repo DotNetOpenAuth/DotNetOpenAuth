@@ -222,7 +222,7 @@ namespace DotNetOpenAuth.InfoCard {
 		#region Properties
 
 		/// <summary>
-		/// Gets the set of claims that are requested from the Information Card..
+		/// Gets the set of claims that are requested from the Information Card.
 		/// </summary>
 		[Description("Specifies the required and optional claims.")]
 		[PersistenceMode(PersistenceMode.InnerProperty), Category(InfoCardCategory)]
