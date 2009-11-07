@@ -69,6 +69,7 @@ namespace DotNetOpenAuth.Test {
 				new HttpResponse(new StringWriter()));
 		}
 
+#pragma warning disable 0618
 		protected internal static void SuspendLogging() {
 			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["OFF"];
 		}
@@ -76,5 +77,6 @@ namespace DotNetOpenAuth.Test {
 		protected internal static void ResumeLogging() {
 			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["ALL"];
 		}
+#pragma warning restore 0618
 	}
 }
