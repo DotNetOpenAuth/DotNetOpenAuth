@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			}
 
 			set {
-				Contract.Requires<ArgumentException>(value == null || birthDateValidator.IsMatch(value), OpenIdStrings.SregInvalidBirthdate);
+				ErrorUtilities.VerifyArgument(value == null || birthDateValidator.IsMatch(value), OpenIdStrings.SregInvalidBirthdate);
 				if (value != null) {
 					// Update the BirthDate property, if possible. 
 					// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
