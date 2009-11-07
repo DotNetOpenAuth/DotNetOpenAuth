@@ -23,6 +23,6 @@
 	</fieldset>
 	<p>
 		<rp:OpenIdButton runat="server" ImageUrl="~/images/yahoo.png" Text="Login with Yahoo!" ID="yahooLoginButton"
-			Identifier="https://me.yahoo.com/" />
+			Identifier="https://me.yahoo.com/" OnLoggingIn="OpenIdLogin1_LoggingIn" OnLoggedIn="OpenIdLogin1_LoggedIn" />
 	</p>
 </asp:Content>
