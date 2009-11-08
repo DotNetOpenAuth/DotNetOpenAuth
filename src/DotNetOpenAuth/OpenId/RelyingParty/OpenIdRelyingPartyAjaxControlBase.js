@@ -42,8 +42,31 @@ window.dnoa_internal.argsToString = function() {
 };
 
 window.dnoa_internal.registerEvent = function(name) {
+	var filterOnApplicability = function(fn, domElement) {
+		/// <summary>Wraps a given function with a check so that the function only executes when a given element is still in the DOM.</summary>
+		return function() {
+			var args = Array.prototype.slice.call(arguments);
+			if (!domElement) {
+				// no element used as a basis of applicability indicates we always fire this callback.
+				fn.apply(null, args);
+			} else {
+				var elements = document.getElementsByTagName(domElement.tagName);
+				var isElementInDom = false;
+				for (var i = 0; i < elements.length; i++) {
+					if (elements[i] === domElement) {
+						isElementInDom = true;
+						break;
+					}
+				}
+				if (isElementInDom) {
+					fn.apply(null, args);
+				}
+			}
+		}
+	};
+
 	window.dnoa_internal[name + 'Listeners'] = [];
-	window.dnoa_internal['add' + name] = function(fn) { window.dnoa_internal[name + 'Listeners'].push(fn); };
+	window.dnoa_internal['add' + name] = function(fn, whileDomElementApplicable) { window.dnoa_internal[name + 'Listeners'].push(filterOnApplicability(fn, whileDomElementApplicable)); };
 	window.dnoa_internal['remove' + name] = function(fn) { window.dnoa_internal[name + 'Listeners'].remove(fn); };
 	window.dnoa_internal['fire' + name] = function() {
 		var args = Array.prototype.slice.call(arguments);

@@ -376,7 +376,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		if (identifier == box.value) {
 			box.dnoi_internal.setVisualCue('discovering');
 		}
-	});
+	}, box);
 
 	window.dnoa_internal.addDiscoverySuccess(function(identifier, discoveryResult, state) {
 		if (identifier == box.value && (box.dnoi_internal.state == 'discovering' || !box.dnoi_internal.state)) {
@@ -401,20 +401,20 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				if (discoveryResult.error) { box.title = discoveryResult.error; }
 			}
 		}
-	});
+	}, box);
 
 	window.dnoa_internal.addDiscoveryFailed(function(identifier, message) {
 		if (identifier == box.value) {
 			box.dnoi_internal.setVisualCue('failed');
 			if (message) { box.title = message; }
 		}
-	});
+	}, box);
 
 	window.dnoa_internal.addAuthStarted(function(discoveryResult, serviceEndpoint, state) {
 		if (discoveryResult.userSuppliedIdentifier == box.value) {
 			box.dnoi_internal.setVisualCue('discovering');
 		}
-	});
+	}, box);
 
 	window.dnoa_internal.addAuthSuccess(function(discoveryResult, serviceEndpoint, extensionResponses, state) {
 		if (discoveryResult.userSuppliedIdentifier == box.value) {
@@ -459,7 +459,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.postback(discoveryResult, serviceEndpoint, extensionResponses, state);
 			}
 		}
-	});
+	}, box);
 
 	window.dnoa_internal.addAuthFailed(function(discoveryResult, serviceEndpoint, state) {
 		if (discoveryResult.userSuppliedIdentifier == box.value) {
@@ -468,7 +468,7 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 				box.dnoi_internal.displayLoginButton(discoveryResult);
 			}
 		}
-	});
+	}, box);
 
 	window.dnoa_internal.addAuthCleared(function(discoveryResult, serviceEndpoint) {
 		if (discoveryResult.userSuppliedIdentifier == box.value) {
@@ -482,7 +482,11 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 					box.timeout);
 			}
 		}
-	});
+	}, box);
+
+	/*****************************************
+	* Flow
+	*****************************************/
 
 	box.dnoi_internal.displayLoginButton = function(discoveryResult) {
 		trace('No asynchronous authentication attempt is in progress.  Display setup view.');
@@ -496,10 +500,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 		// visual cue that auth failed
 		box.dnoi_internal.setVisualCue('setup', null, null, providers);
 	};
-
-	/*****************************************
-	* Flow
-	*****************************************/
 
 	/// <summary>Called to initiate discovery on some identifier.</summary>
 	box.dnoi_internal.performDiscovery = function() {

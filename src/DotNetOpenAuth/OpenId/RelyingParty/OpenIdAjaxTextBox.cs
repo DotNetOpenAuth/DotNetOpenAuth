@@ -825,7 +825,6 @@ loader.insert();";
 
 			// Call into the .js file with initialization information.
 			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("<script language='javascript'>");
 			startupScript.AppendFormat("var box = document.getElementsByName('{0}')[0];{1}", this.Name, Environment.NewLine);
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
@@ -854,10 +853,7 @@ loader.insert();";
 				Page.ClientScript.GetPostBackEventReference(this, null),
 				Environment.NewLine);
 
-			startupScript.AppendLine("</script>");
-
-			Page.ClientScript.RegisterStartupScript(this.GetType(), "ajaxstartup", startupScript.ToString());
-
+			ScriptManager.RegisterStartupScript(this, this.GetType(), "ajaxstartup", startupScript.ToString(), true);
 			if (this.HookFormSubmit) {
 				string htmlFormat = @"
 var openidbox = document.getElementsByName('{0}')[0];
