@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Collections.Specialized;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
@@ -51,6 +52,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// The behavior a Provider takes when verifying that it is authoritative for an
 		/// identifier it is about to send an unsolicited assertion for.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By design")]
 		public enum UnsolicitedAssertionVerificationLevel {
 			/// <summary>
 			/// Always verify that the Provider is authoritative for an identifier before

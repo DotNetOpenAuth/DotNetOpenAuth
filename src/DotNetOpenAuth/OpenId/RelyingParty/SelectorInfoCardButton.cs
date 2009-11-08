@@ -16,8 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A button that appears in the <see cref="OpenIdSelector"/> control that
 	/// activates the Information Card selector on the browser, if one is available.
 	/// </summary>
-	[Serializable]
-	public class SelectorInfoCardButton : SelectorButton {
+	public class SelectorInfoCardButton : SelectorButton, IDisposable {
 		/// <summary>
 		/// The backing field for the <see cref="InfoCardSelector"/> property.
 		/// </summary>
@@ -52,6 +51,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 		}
 
+		#region IDisposable Members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Ensures that this button has been initialized to a valid state.
 		/// </summary>
@@ -73,6 +84,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="selector">The containing selector control.</param>
 		protected internal override void RenderButtonContent(HtmlTextWriter writer, OpenIdSelector selector) {
 			this.InfoCardSelector.RenderControl(writer);
+		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				if (this.infoCardSelector != null) {
+					this.infoCardSelector.Dispose();
+				}
+			}
 		}
 	}
 }
