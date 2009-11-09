@@ -33,8 +33,13 @@ window.dnoa_internal.argsToString = function() {
 	for (var i = 0; i < arguments.length; i++) {
 		if (i > 0) { result += ', '; }
 		var arg = arguments[i];
-		if (typeof (arg) == 'string') { arg = '"' + arg + '"'; }
-		if (arg === null) { arg = '[null]'; }
+		if (typeof (arg) == 'string') {
+			arg = '"' + arg + '"';
+		} else if (arg === null) {
+			arg = '[null]';
+		} else if (arg === undefined) {
+			arg = '[undefined]';
+		}
 		result += arg.toString();
 	}
 	result += ')';
