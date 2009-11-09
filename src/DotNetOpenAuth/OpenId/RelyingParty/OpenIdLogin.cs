@@ -831,7 +831,7 @@ idselector_input_id = '" + this.ClientID + @"';
 			base.OnFailed(response);
 
 			if (!string.IsNullOrEmpty(this.FailedMessageText)) {
-				this.errorLabel.Text = string.Format(CultureInfo.CurrentCulture, this.FailedMessageText, response.Exception.Message);
+				this.errorLabel.Text = string.Format(CultureInfo.CurrentCulture, this.FailedMessageText, response.Exception.ToStringDescriptive());
 				this.errorLabel.Visible = true;
 			}
 		}

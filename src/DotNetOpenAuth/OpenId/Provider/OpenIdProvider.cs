@@ -488,7 +488,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				return null;
 			}
 
-			errorMessage.ErrorMessage = ex.GetAllMessages();
+			errorMessage.ErrorMessage = ex.ToStringDescriptive();
 
 			// Allow host to log this error and issue a ticket #.
 			// We tear off the field to a local var for thread safety.

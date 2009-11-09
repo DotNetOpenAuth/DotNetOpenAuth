@@ -193,7 +193,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="exception">The exception.</param>
 		/// <returns>The assembled message.</returns>
-		internal static string GetAllMessages(this Exception exception) {
+		public static string ToStringDescriptive(this Exception exception) {
 			// The input being null is probably bad, but since this method is called
 			// from a catch block, we don't really want to throw a new exception and
 			// hide the details of this one.  
