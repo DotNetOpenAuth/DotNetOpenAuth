@@ -8,12 +8,16 @@ CREATE TABLE [dbo].[User](
 	[FirstName] [nvarchar](50) NULL,
 	[LastName] [nvarchar](50) NULL,
 	[EmailAddress] [nvarchar](100) NULL,
+	[EmailAddressVerified] [bit] NOT NULL,
  CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF_User_EmailAddressVerified]  DEFAULT ((0)) FOR [EmailAddressVerified]
+GO
+
 /****** Object:  Table [dbo].[Role]    Script Date: 10/08/2009 18:10:17 ******/
 SET ANSI_NULLS ON
 GO

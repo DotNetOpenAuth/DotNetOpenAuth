@@ -13,7 +13,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "UserAuthenticationToken", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(WebFormsRelyingParty.User), "AuthenticationToken", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.AuthenticationToken))]
 
 // Original file name:
-// Generation date: 10/10/2009 9:43:51 AM
+// Generation date: 11/9/2009 7:05:56 AM
 namespace WebFormsRelyingParty
 {
     
@@ -350,10 +350,12 @@ namespace WebFormsRelyingParty
         /// Create a new User object.
         /// </summary>
         /// <param name="id">Initial value of Id.</param>
-        public static User CreateUser(int id)
+        /// <param name="emailAddressVerified">Initial value of EmailAddressVerified.</param>
+        public static User CreateUser(int id, bool emailAddressVerified)
         {
             User user = new User();
             user.Id = id;
+            user.EmailAddressVerified = emailAddressVerified;
             return user;
         }
         /// <summary>
@@ -426,7 +428,7 @@ namespace WebFormsRelyingParty
         partial void OnLastNameChanging(string value);
         partial void OnLastNameChanged();
         /// <summary>
-        /// There are no comments for Property EmailAddress in the schema.
+        /// The email address claimed to be controlled by the user.  Whether it is actually owned by the user is indicated by the EmailAddressVerified property.
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
@@ -448,6 +450,29 @@ namespace WebFormsRelyingParty
         private string _EmailAddress;
         partial void OnEmailAddressChanging(string value);
         partial void OnEmailAddressChanged();
+        /// <summary>
+        /// A value indicating whether the email address has been verified as actually owned by this user.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public bool EmailAddressVerified
+        {
+            get
+            {
+                return this._EmailAddressVerified;
+            }
+            set
+            {
+                this.OnEmailAddressVerifiedChanging(value);
+                this.ReportPropertyChanging("EmailAddressVerified");
+                this._EmailAddressVerified = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("EmailAddressVerified");
+                this.OnEmailAddressVerifiedChanged();
+            }
+        }
+        private bool _EmailAddressVerified;
+        partial void OnEmailAddressVerifiedChanging(bool value);
+        partial void OnEmailAddressVerifiedChanged();
         /// <summary>
         /// There are no comments for Roles in the schema.
         /// </summary>

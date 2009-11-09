@@ -21,6 +21,7 @@ namespace WebFormsRelyingParty.Members {
 			if (!IsPostBack) {
 				this.Repeater1.DataBind();
 				this.emailBox.Text = Global.LoggedInUser.EmailAddress;
+				this.emailVerifiedLabel.Visible = Global.LoggedInUser.EmailAddressVerified;
 				this.firstNameBox.Text = Global.LoggedInUser.FirstName;
 				this.lastNameBox.Text = Global.LoggedInUser.LastName;
 			}
@@ -48,6 +49,7 @@ namespace WebFormsRelyingParty.Members {
 			Global.LoggedInUser.EmailAddress = this.emailBox.Text;
 			Global.LoggedInUser.FirstName = this.firstNameBox.Text;
 			Global.LoggedInUser.LastName = this.lastNameBox.Text;
+			this.emailVerifiedLabel.Visible = Global.LoggedInUser.EmailAddressVerified;
 		}
 
 		protected void InfoCardSelector1_ReceivedToken(object sender, ReceivedTokenEventArgs e) {

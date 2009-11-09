@@ -51,7 +51,8 @@
 						<asp:TextBox ID="emailBox" runat="server" Columns="40" ValidationGroup="Profile" />
 						<asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ControlToValidate="emailBox"
 							ErrorMessage="Invalid email address" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"
-							ValidationGroup="Profile">invalid</asp:RegularExpressionValidator>
+							ValidationGroup="Profile" Text="invalid" Display="Dynamic" />
+						<asp:Label runat="server" ID="emailVerifiedLabel" Text="verified" Visible="false" />
 					</td>
 				</tr>
 				<tr>

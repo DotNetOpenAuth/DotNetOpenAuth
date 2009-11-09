@@ -12,6 +12,7 @@
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using WebFormsRelyingParty.Code;
 
 	public partial class LoginFrame : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
@@ -27,11 +28,13 @@
 		}
 
 		protected void openIdSelector_LoggedIn(object sender, OpenIdEventArgs e) {
-			this.LoginUser(e.ClaimedIdentifier, e.Response.FriendlyIdentifierForDisplay, e.Response.GetExtension<ClaimsResponse>(), null);
+			bool trustedEmail = Policies.ProviderEndpointsProvidingTrustedEmails.Contains(e.Response.Provider.Uri);
+			this.LoginUser(e.ClaimedIdentifier, e.Response.FriendlyIdentifierForDisplay, e.Response.GetExtension<ClaimsResponse>(), null, trustedEmail);
 		}
 
 		protected void openIdSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
-			this.LoginUser(AuthenticationToken.SynthesizeClaimedIdentifierFromInfoCard(e.Token.UniqueId), e.Token.SiteSpecificId, null, e.Token);
+			bool trustedEmail = false; // we don't trust InfoCard email addresses, since these can be self-issued.
+			this.LoginUser(AuthenticationToken.SynthesizeClaimedIdentifierFromInfoCard(e.Token.UniqueId), e.Token.SiteSpecificId, null, e.Token, trustedEmail);
 		}
 
 		protected void openIdSelector_Failed(object sender, OpenIdEventArgs e) {
@@ -46,7 +49,7 @@
 			this.errorPanel.Visible = true;
 		}
 
-		private void LoginUser(string claimedIdentifier, string friendlyIdentifier, ClaimsResponse claims, Token samlToken) {
+		private void LoginUser(string claimedIdentifier, string friendlyIdentifier, ClaimsResponse claims, Token samlToken, bool trustedEmail) {
 			// Create an account for this user if we don't already have one.
 			AuthenticationToken openidToken = Global.DataContext.AuthenticationToken.FirstOrDefault(token => token.ClaimedIdentifier == claimedIdentifier);
 			if (openidToken == null) {
@@ -62,6 +65,7 @@
 				if (claims != null) {
 					if (!string.IsNullOrEmpty(claims.Email)) {
 						user.EmailAddress = claims.Email;
+						user.EmailAddressVerified = trustedEmail;
 					}
 					if (!string.IsNullOrEmpty(claims.FullName)) {
 						if (claims.FullName.IndexOf(' ') > 0) {
@@ -75,6 +79,7 @@
 					string email, givenName, surname;
 					if (samlToken.Claims.TryGetValue(ClaimTypes.Email, out email)) {
 						user.EmailAddress = email;
+						user.EmailAddressVerified = trustedEmail;
 					}
 					if (samlToken.Claims.TryGetValue(ClaimTypes.GivenName, out givenName)) {
 						user.FirstName = givenName;

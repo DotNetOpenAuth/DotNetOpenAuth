@@ -47,6 +47,7 @@
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" />
           <Property Name="EmailAddress" Type="nvarchar" MaxLength="100" />
+          <Property Name="EmailAddressVerified" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="UserRole">
           <Key>
@@ -136,9 +137,15 @@
           <Property Name="Id" Type="Int32" Nullable="false" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
           <Property Name="FirstName" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="LastName" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
-          <Property Name="EmailAddress" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="EmailAddress" Type="String" MaxLength="100" Unicode="true" FixedLength="false" >
+            <Documentation>
+              <Summary>The email address claimed to be controlled by the user.  Whether it is actually owned by the user is indicated by the EmailAddressVerified property.</Summary></Documentation></Property>
           <NavigationProperty Name="Roles" Relationship="DatabaseModel.UserRole" FromRole="User" ToRole="Role" />
-          <NavigationProperty Name="AuthenticationTokens" Relationship="DatabaseModel.UserAuthenticationToken" FromRole="User" ToRole="AuthenticationToken" /></EntityType>
+          <NavigationProperty Name="AuthenticationTokens" Relationship="DatabaseModel.UserAuthenticationToken" FromRole="User" ToRole="AuthenticationToken" />
+          <Property Name="EmailAddressVerified" Type="Boolean" Nullable="false" >
+            <Documentation>
+              <Summary>A value indicating whether the email address has been verified as actually owned by this user.</Summary></Documentation></Property>
+          </EntityType>
         <Association Name="UserRole">
           <End Role="Role" Type="DatabaseModel.Role" Multiplicity="*" />
           <End Role="User" Type="DatabaseModel.User" Multiplicity="*" />
@@ -162,6 +169,7 @@
           <EntitySetMapping Name="User">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.User)">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="EmailAddressVerified" ColumnName="EmailAddressVerified" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
@@ -211,7 +219,7 @@
       <Diagram Name="Model">
         <EntityTypeShape EntityType="DatabaseModel.AuthenticationToken" Width="1.875" PointX="5.25" PointY="1.125" Height="1.4033821614583335" IsExpanded="true" />
         <EntityTypeShape EntityType="DatabaseModel.Role" Width="1.5" PointX="0.75" PointY="1.25" Height="1.5956835937500002" IsExpanded="true" />
-        <EntityTypeShape EntityType="DatabaseModel.User" Width="1.75" PointX="2.875" PointY="0.875" Height="2.364889322916667" IsExpanded="true" />
+        <EntityTypeShape EntityType="DatabaseModel.User" Width="1.75" PointX="2.875" PointY="0.875" Height="2.3648893229166661" IsExpanded="true" />
         <AssociationConnector Association="DatabaseModel.UserRole" ManuallyRouted="false">
           <ConnectorPoint PointX="2.25" PointY="2.0478417968750002" />
           <ConnectorPoint PointX="2.875" PointY="2.0478417968750002" /></AssociationConnector>
@@ -219,7 +227,7 @@
           <ConnectorPoint PointX="6.5625" PointY="3.375" />
           <ConnectorPoint PointX="6.5625" PointY="2.9129850260416665" /></InheritanceConnector>
         <AssociationConnector Association="DatabaseModel.UserAuthenticationToken">
-          <ConnectorPoint PointX="4.625" PointY="1.8266910807291668" />
-          <ConnectorPoint PointX="5.25" PointY="1.8266910807291668" /></AssociationConnector></Diagram></edmx:Diagrams>
+          <ConnectorPoint PointX="4.625" PointY="2.0189925130208337" />
+          <ConnectorPoint PointX="5.25" PointY="2.0189925130208337" /></AssociationConnector></Diagram></edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>
