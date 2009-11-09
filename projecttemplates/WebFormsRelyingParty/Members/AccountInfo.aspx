@@ -6,6 +6,19 @@
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <%@ Register Assembly="System.Web.Entity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
 	Namespace="System.Web.UI.WebControls" TagPrefix="asp" %>
+<asp:Content runat="server" ContentPlaceHolderID="head">
+<% if (Request.Url.IsLoopback) { %>
+	<script type="text/javascript" src="../scripts/jquery-1.3.1.js"></script>
+	<script type="text/javascript" src="../scripts/jquery-ui-personalized-1.6rc6.js"></script>
+<% } else { %>
+	<script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript" language="javascript">
+		google.load("jquery", "1.3.2");
+		google.load("jqueryui", "1.7.2");
+	</script>
+<% } %>
+	<script type="text/javascript" src="../scripts/jquery.cookie.js"></script>
+</asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="Body">
 	<asp:ScriptManager ID="ScriptManager1" runat="server" />
 	<h3>
@@ -82,18 +95,22 @@
 			</ul>
 		</FooterTemplate>
 	</asp:Repeater>
-	<asp:Panel ID="Panel1" runat="server">
-		<rp:OpenIdAjaxTextBox runat="server" ID="openIdBox" OnLoggedIn="openIdBox_LoggedIn"
-			AutoPostBack="true" />
-		<asp:Label ID="differentAccountLabel" runat="server" EnableViewState="False" ForeColor="Red"
-			Text="This identifier already belongs to a different user account." Visible="False" />
-		<asp:Label ID="alreadyLinkedLabel" runat="server" EnableViewState="False" ForeColor="Red"
-			Text="This identifier is already linked to your account." Visible="False" />
-	</asp:Panel>
-	<asp:Panel ID="Panel2" runat="server">
-		<ic:InfoCardSelector ID="InfoCardSelector1" runat="server" ImageSize="Size92x64"
-			ToolTip="Log in with your Information Card" OnReceivedToken="InfoCardSelector1_ReceivedToken">
-			<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
-		</ic:InfoCardSelector>
-	</asp:Panel>
+	<div>
+		<p>
+			Add a way to log into your account:
+		</p>
+		<rp:OpenIdSelector runat="server" ID="openIdSelector" OnLoggedIn="openIdBox_LoggedIn"
+			OnReceivedToken="InfoCardSelector1_ReceivedToken">
+			<Buttons>
+				<rp:SelectorProviderButton OPIdentifier="https://me.yahoo.com/" Image="~/images/yahoo.gif" />
+				<rp:SelectorProviderButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="~/images/google.gif" />
+				<rp:SelectorInfoCardButton />
+				<rp:SelectorOpenIdButton Image="~/images/openid.gif" />
+			</Buttons>
+		</rp:OpenIdSelector>
+	</div>
+	<asp:Label ID="differentAccountLabel" runat="server" EnableViewState="False" ForeColor="Red"
+		Text="This identifier already belongs to a different user account." Visible="False" />
+	<asp:Label ID="alreadyLinkedLabel" runat="server" EnableViewState="False" ForeColor="Red"
+		Text="This identifier is already linked to your account." Visible="False" />
 </asp:Content>

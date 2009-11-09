@@ -30,7 +30,6 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void openIdBox_LoggedIn(object sender, OpenIdEventArgs e) {
 			this.AddIdentifier(e.ClaimedIdentifier, e.Response.FriendlyIdentifierForDisplay);
-			this.openIdBox.Focus();
 		}
 
 		protected void deleteOpenId_Command(object sender, CommandEventArgs e) {
@@ -69,7 +68,7 @@ namespace WebFormsRelyingParty.Members {
 				this.Repeater1.DataBind();
 
 				// Clear the box for the next entry
-				this.openIdBox.Text = string.Empty;
+				this.openIdSelector.Identifier = null;
 			} else {
 				if (existingToken.User == Global.LoggedInUser) {
 					this.alreadyLinkedLabel.Visible = true;
