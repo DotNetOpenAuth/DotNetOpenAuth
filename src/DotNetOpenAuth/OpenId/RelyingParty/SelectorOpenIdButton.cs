@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="writer">The writer.</param>
 		/// <param name="selector">The containing selector control.</param>
 		protected internal override void RenderButtonContent(HtmlTextWriter writer, OpenIdSelector selector) {
-			writer.AddAttribute(HtmlTextWriterAttribute.Src, this.Image);
+			writer.AddAttribute(HtmlTextWriterAttribute.Src, selector.Page.ResolveUrl(this.Image));
 			writer.RenderBeginTag(HtmlTextWriterTag.Img);
 			writer.RenderEndTag();
 
