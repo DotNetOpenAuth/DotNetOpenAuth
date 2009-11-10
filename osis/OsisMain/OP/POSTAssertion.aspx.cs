@@ -38,7 +38,7 @@ public partial class OP_POSTAssertion : System.Web.UI.Page {
 		// Check that this was a POST, and that expected callback arguments are present
 		if (string.IsNullOrEmpty(e.Response.GetCallbackArgument("op_endpoint"))) {
 			testResultDisplay.Pass = false;
-			testResultDisplay.Details = "OP dropped the callback arguments or moved them to the POST entity.";
+			testResultDisplay.Details = "OP dropped the callback arguments or moved them to the POST entity.  See OpenID 2.0 spec sections 10.1, 11.1, which together require that the URL POSTed to must include the query string included in the openid.return_to parameter (even for POSTs).";
 			return;
 		}
 		if (Request.HttpMethod != "POST") {
