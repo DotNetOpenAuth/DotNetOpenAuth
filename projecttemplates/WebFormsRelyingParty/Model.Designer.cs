@@ -11,9 +11,11 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmSchemaAttribute()]
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "UserRole", "Role", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.Role), "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.User))]
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "UserAuthenticationToken", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(WebFormsRelyingParty.User), "AuthenticationToken", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.AuthenticationToken))]
+[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_Consumer", "Consumer", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(WebFormsRelyingParty.Consumer), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
+[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(WebFormsRelyingParty.User), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/9/2009 7:05:56 AM
+// Generation date: 11/10/2009 8:32:12 AM
 namespace WebFormsRelyingParty
 {
     
@@ -93,6 +95,36 @@ namespace WebFormsRelyingParty
         }
         private global::System.Data.Objects.ObjectQuery<AuthenticationToken> _AuthenticationToken;
         /// <summary>
+        /// There are no comments for Consumer in the schema.
+        /// </summary>
+        public global::System.Data.Objects.ObjectQuery<Consumer> Consumer
+        {
+            get
+            {
+                if ((this._Consumer == null))
+                {
+                    this._Consumer = base.CreateQuery<Consumer>("[Consumer]");
+                }
+                return this._Consumer;
+            }
+        }
+        private global::System.Data.Objects.ObjectQuery<Consumer> _Consumer;
+        /// <summary>
+        /// There are no comments for IssuedToken in the schema.
+        /// </summary>
+        public global::System.Data.Objects.ObjectQuery<IssuedToken> IssuedToken
+        {
+            get
+            {
+                if ((this._IssuedToken == null))
+                {
+                    this._IssuedToken = base.CreateQuery<IssuedToken>("[IssuedToken]");
+                }
+                return this._IssuedToken;
+            }
+        }
+        private global::System.Data.Objects.ObjectQuery<IssuedToken> _IssuedToken;
+        /// <summary>
         /// There are no comments for Role in the schema.
         /// </summary>
         public void AddToRole(Role role)
@@ -112,6 +144,20 @@ namespace WebFormsRelyingParty
         public void AddToAuthenticationToken(AuthenticationToken authenticationToken)
         {
             base.AddObject("AuthenticationToken", authenticationToken);
+        }
+        /// <summary>
+        /// There are no comments for Consumer in the schema.
+        /// </summary>
+        public void AddToConsumer(Consumer consumer)
+        {
+            base.AddObject("Consumer", consumer);
+        }
+        /// <summary>
+        /// There are no comments for IssuedToken in the schema.
+        /// </summary>
+        public void AddToIssuedToken(IssuedToken issuedToken)
+        {
+            base.AddObject("IssuedToken", issuedToken);
         }
     }
     /// <summary>
@@ -512,6 +558,550 @@ namespace WebFormsRelyingParty
                 if ((value != null))
                 {
                     ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<AuthenticationToken>("DatabaseModel.UserAuthenticationToken", "AuthenticationToken", value);
+                }
+            }
+        }
+        /// <summary>
+        /// There are no comments for IssuedToken in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("DatabaseModel", "FK_IssuedToken_User", "IssuedTokens")]
+        [global::System.Xml.Serialization.XmlIgnoreAttribute()]
+        [global::System.Xml.Serialization.SoapIgnoreAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Data.Objects.DataClasses.EntityCollection<IssuedToken> IssuedToken
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedCollection<IssuedToken>("DatabaseModel.FK_IssuedToken_User", "IssuedTokens");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<IssuedToken>("DatabaseModel.FK_IssuedToken_User", "IssuedTokens", value);
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// There are no comments for DatabaseModel.Consumer in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// ConsumerId
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="Consumer")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class Consumer : global::System.Data.Objects.DataClasses.EntityObject
+    {
+        /// <summary>
+        /// Create a new Consumer object.
+        /// </summary>
+        /// <param name="consumerKey">Initial value of ConsumerKey.</param>
+        /// <param name="verificationCodeFormatAsInt">Initial value of VerificationCodeFormatAsInt.</param>
+        /// <param name="verificationCodeLength">Initial value of VerificationCodeLength.</param>
+        /// <param name="consumerId">Initial value of ConsumerId.</param>
+        public static Consumer CreateConsumer(string consumerKey, int verificationCodeFormatAsInt, int verificationCodeLength, int consumerId)
+        {
+            Consumer consumer = new Consumer();
+            consumer.ConsumerKey = consumerKey;
+            consumer.VerificationCodeFormatAsInt = verificationCodeFormatAsInt;
+            consumer.VerificationCodeLength = verificationCodeLength;
+            consumer.ConsumerId = consumerId;
+            return consumer;
+        }
+        /// <summary>
+        /// There are no comments for Property ConsumerKey in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string ConsumerKey
+        {
+            get
+            {
+                return this._ConsumerKey;
+            }
+            set
+            {
+                this.OnConsumerKeyChanging(value);
+                this.ReportPropertyChanging("ConsumerKey");
+                this._ConsumerKey = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("ConsumerKey");
+                this.OnConsumerKeyChanged();
+            }
+        }
+        private string _ConsumerKey;
+        partial void OnConsumerKeyChanging(string value);
+        partial void OnConsumerKeyChanged();
+        /// <summary>
+        /// There are no comments for Property ConsumerSecret in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string ConsumerSecret
+        {
+            get
+            {
+                return this._ConsumerSecret;
+            }
+            set
+            {
+                this.OnConsumerSecretChanging(value);
+                this.ReportPropertyChanging("ConsumerSecret");
+                this._ConsumerSecret = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("ConsumerSecret");
+                this.OnConsumerSecretChanged();
+            }
+        }
+        private string _ConsumerSecret;
+        partial void OnConsumerSecretChanging(string value);
+        partial void OnConsumerSecretChanged();
+        /// <summary>
+        /// There are no comments for Property X509CertificateAsBinary in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public byte[] X509CertificateAsBinary
+        {
+            get
+            {
+                return global::System.Data.Objects.DataClasses.StructuralObject.GetValidValue(this._X509CertificateAsBinary);
+            }
+            set
+            {
+                this.OnX509CertificateAsBinaryChanging(value);
+                this.ReportPropertyChanging("X509CertificateAsBinary");
+                this._X509CertificateAsBinary = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("X509CertificateAsBinary");
+                this.OnX509CertificateAsBinaryChanged();
+            }
+        }
+        private byte[] _X509CertificateAsBinary;
+        partial void OnX509CertificateAsBinaryChanging(byte[] value);
+        partial void OnX509CertificateAsBinaryChanged();
+        /// <summary>
+        /// There are no comments for Property CallbackAsString in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string CallbackAsString
+        {
+            get
+            {
+                return this._CallbackAsString;
+            }
+            set
+            {
+                this.OnCallbackAsStringChanging(value);
+                this.ReportPropertyChanging("CallbackAsString");
+                this._CallbackAsString = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("CallbackAsString");
+                this.OnCallbackAsStringChanged();
+            }
+        }
+        private string _CallbackAsString;
+        partial void OnCallbackAsStringChanging(string value);
+        partial void OnCallbackAsStringChanged();
+        /// <summary>
+        /// There are no comments for Property VerificationCodeFormatAsInt in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public int VerificationCodeFormatAsInt
+        {
+            get
+            {
+                return this._VerificationCodeFormatAsInt;
+            }
+            set
+            {
+                this.OnVerificationCodeFormatAsIntChanging(value);
+                this.ReportPropertyChanging("VerificationCodeFormatAsInt");
+                this._VerificationCodeFormatAsInt = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("VerificationCodeFormatAsInt");
+                this.OnVerificationCodeFormatAsIntChanged();
+            }
+        }
+        private int _VerificationCodeFormatAsInt;
+        partial void OnVerificationCodeFormatAsIntChanging(int value);
+        partial void OnVerificationCodeFormatAsIntChanged();
+        /// <summary>
+        /// There are no comments for Property VerificationCodeLength in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public int VerificationCodeLength
+        {
+            get
+            {
+                return this._VerificationCodeLength;
+            }
+            set
+            {
+                this.OnVerificationCodeLengthChanging(value);
+                this.ReportPropertyChanging("VerificationCodeLength");
+                this._VerificationCodeLength = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("VerificationCodeLength");
+                this.OnVerificationCodeLengthChanged();
+            }
+        }
+        private int _VerificationCodeLength;
+        partial void OnVerificationCodeLengthChanging(int value);
+        partial void OnVerificationCodeLengthChanged();
+        /// <summary>
+        /// There are no comments for Property ConsumerId in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public int ConsumerId
+        {
+            get
+            {
+                return this._ConsumerId;
+            }
+            set
+            {
+                this.OnConsumerIdChanging(value);
+                this.ReportPropertyChanging("ConsumerId");
+                this._ConsumerId = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ConsumerId");
+                this.OnConsumerIdChanged();
+            }
+        }
+        private int _ConsumerId;
+        partial void OnConsumerIdChanging(int value);
+        partial void OnConsumerIdChanged();
+        /// <summary>
+        /// There are no comments for IssuedToken in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("DatabaseModel", "FK_IssuedToken_Consumer", "IssuedTokens")]
+        [global::System.Xml.Serialization.XmlIgnoreAttribute()]
+        [global::System.Xml.Serialization.SoapIgnoreAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Data.Objects.DataClasses.EntityCollection<IssuedToken> IssuedToken
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedCollection<IssuedToken>("DatabaseModel.FK_IssuedToken_Consumer", "IssuedTokens");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<IssuedToken>("DatabaseModel.FK_IssuedToken_Consumer", "IssuedTokens", value);
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// There are no comments for DatabaseModel.IssuedToken in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// TokenId
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="IssuedToken")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class IssuedToken : global::System.Data.Objects.DataClasses.EntityObject
+    {
+        /// <summary>
+        /// Create a new IssuedToken object.
+        /// </summary>
+        /// <param name="tokenId">Initial value of TokenId.</param>
+        /// <param name="token">Initial value of Token.</param>
+        /// <param name="tokenSecret">Initial value of TokenSecret.</param>
+        /// <param name="createdOn">Initial value of CreatedOn.</param>
+        /// <param name="consumerVersionAsString">Initial value of ConsumerVersionAsString.</param>
+        /// <param name="isAccessToken">Initial value of IsAccessToken.</param>
+        public static IssuedToken CreateIssuedToken(int tokenId, string token, string tokenSecret, global::System.DateTime createdOn, string consumerVersionAsString, bool isAccessToken)
+        {
+            IssuedToken issuedToken = new IssuedToken();
+            issuedToken.TokenId = tokenId;
+            issuedToken.Token = token;
+            issuedToken.TokenSecret = tokenSecret;
+            issuedToken.CreatedOn = createdOn;
+            issuedToken.ConsumerVersionAsString = consumerVersionAsString;
+            issuedToken.IsAccessToken = isAccessToken;
+            return issuedToken;
+        }
+        /// <summary>
+        /// There are no comments for Property TokenId in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public int TokenId
+        {
+            get
+            {
+                return this._TokenId;
+            }
+            set
+            {
+                this.OnTokenIdChanging(value);
+                this.ReportPropertyChanging("TokenId");
+                this._TokenId = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("TokenId");
+                this.OnTokenIdChanged();
+            }
+        }
+        private int _TokenId;
+        partial void OnTokenIdChanging(int value);
+        partial void OnTokenIdChanged();
+        /// <summary>
+        /// There are no comments for Property Token in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string Token
+        {
+            get
+            {
+                return this._Token;
+            }
+            set
+            {
+                this.OnTokenChanging(value);
+                this.ReportPropertyChanging("Token");
+                this._Token = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("Token");
+                this.OnTokenChanged();
+            }
+        }
+        private string _Token;
+        partial void OnTokenChanging(string value);
+        partial void OnTokenChanged();
+        /// <summary>
+        /// There are no comments for Property TokenSecret in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string TokenSecret
+        {
+            get
+            {
+                return this._TokenSecret;
+            }
+            set
+            {
+                this.OnTokenSecretChanging(value);
+                this.ReportPropertyChanging("TokenSecret");
+                this._TokenSecret = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("TokenSecret");
+                this.OnTokenSecretChanged();
+            }
+        }
+        private string _TokenSecret;
+        partial void OnTokenSecretChanging(string value);
+        partial void OnTokenSecretChanged();
+        /// <summary>
+        /// There are no comments for Property CreatedOn in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.DateTime CreatedOn
+        {
+            get
+            {
+                return this._CreatedOn;
+            }
+            set
+            {
+                this.OnCreatedOnChanging(value);
+                this.ReportPropertyChanging("CreatedOn");
+                this._CreatedOn = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("CreatedOn");
+                this.OnCreatedOnChanged();
+            }
+        }
+        private global::System.DateTime _CreatedOn;
+        partial void OnCreatedOnChanging(global::System.DateTime value);
+        partial void OnCreatedOnChanged();
+        /// <summary>
+        /// There are no comments for Property CallbackAsString in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string CallbackAsString
+        {
+            get
+            {
+                return this._CallbackAsString;
+            }
+            set
+            {
+                this.OnCallbackAsStringChanging(value);
+                this.ReportPropertyChanging("CallbackAsString");
+                this._CallbackAsString = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("CallbackAsString");
+                this.OnCallbackAsStringChanged();
+            }
+        }
+        private string _CallbackAsString;
+        partial void OnCallbackAsStringChanging(string value);
+        partial void OnCallbackAsStringChanged();
+        /// <summary>
+        /// There are no comments for Property VerificationCode in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string VerificationCode
+        {
+            get
+            {
+                return this._VerificationCode;
+            }
+            set
+            {
+                this.OnVerificationCodeChanging(value);
+                this.ReportPropertyChanging("VerificationCode");
+                this._VerificationCode = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("VerificationCode");
+                this.OnVerificationCodeChanged();
+            }
+        }
+        private string _VerificationCode;
+        partial void OnVerificationCodeChanging(string value);
+        partial void OnVerificationCodeChanged();
+        /// <summary>
+        /// There are no comments for Property ConsumerVersionAsString in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string ConsumerVersionAsString
+        {
+            get
+            {
+                return this._ConsumerVersionAsString;
+            }
+            set
+            {
+                this.OnConsumerVersionAsStringChanging(value);
+                this.ReportPropertyChanging("ConsumerVersionAsString");
+                this._ConsumerVersionAsString = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("ConsumerVersionAsString");
+                this.OnConsumerVersionAsStringChanged();
+            }
+        }
+        private string _ConsumerVersionAsString;
+        partial void OnConsumerVersionAsStringChanging(string value);
+        partial void OnConsumerVersionAsStringChanged();
+        /// <summary>
+        /// There are no comments for Property ExpirationDate in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Nullable<global::System.DateTime> ExpirationDate
+        {
+            get
+            {
+                return this._ExpirationDate;
+            }
+            set
+            {
+                this.OnExpirationDateChanging(value);
+                this.ReportPropertyChanging("ExpirationDate");
+                this._ExpirationDate = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ExpirationDate");
+                this.OnExpirationDateChanged();
+            }
+        }
+        private global::System.Nullable<global::System.DateTime> _ExpirationDate;
+        partial void OnExpirationDateChanging(global::System.Nullable<global::System.DateTime> value);
+        partial void OnExpirationDateChanged();
+        /// <summary>
+        /// There are no comments for Property IsAccessToken in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsAccessToken
+        {
+            get
+            {
+                return this._IsAccessToken;
+            }
+            set
+            {
+                this.OnIsAccessTokenChanging(value);
+                this.ReportPropertyChanging("IsAccessToken");
+                this._IsAccessToken = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("IsAccessToken");
+                this.OnIsAccessTokenChanged();
+            }
+        }
+        private bool _IsAccessToken;
+        partial void OnIsAccessTokenChanging(bool value);
+        partial void OnIsAccessTokenChanged();
+        /// <summary>
+        /// There are no comments for Consumer in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("DatabaseModel", "FK_IssuedToken_Consumer", "Consumer")]
+        [global::System.Xml.Serialization.XmlIgnoreAttribute()]
+        [global::System.Xml.Serialization.SoapIgnoreAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public Consumer Consumer
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Consumer>("DatabaseModel.FK_IssuedToken_Consumer", "Consumer").Value;
+            }
+            set
+            {
+                ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Consumer>("DatabaseModel.FK_IssuedToken_Consumer", "Consumer").Value = value;
+            }
+        }
+        /// <summary>
+        /// There are no comments for Consumer in the schema.
+        /// </summary>
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Data.Objects.DataClasses.EntityReference<Consumer> ConsumerReference
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Consumer>("DatabaseModel.FK_IssuedToken_Consumer", "Consumer");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<Consumer>("DatabaseModel.FK_IssuedToken_Consumer", "Consumer", value);
+                }
+            }
+        }
+        /// <summary>
+        /// There are no comments for User in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("DatabaseModel", "FK_IssuedToken_User", "User")]
+        [global::System.Xml.Serialization.XmlIgnoreAttribute()]
+        [global::System.Xml.Serialization.SoapIgnoreAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public User User
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<User>("DatabaseModel.FK_IssuedToken_User", "User").Value;
+            }
+            set
+            {
+                ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<User>("DatabaseModel.FK_IssuedToken_User", "User").Value = value;
+            }
+        }
+        /// <summary>
+        /// There are no comments for User in the schema.
+        /// </summary>
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Data.Objects.DataClasses.EntityReference<User> UserReference
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<User>("DatabaseModel.FK_IssuedToken_User", "User");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<User>("DatabaseModel.FK_IssuedToken_User", "User", value);
                 }
             }
         }
