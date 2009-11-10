@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(WebFormsRelyingParty.User), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/10/2009 8:32:12 AM
+// Generation date: 11/10/2009 8:47:09 AM
 namespace WebFormsRelyingParty
 {
     
@@ -802,28 +802,10 @@ namespace WebFormsRelyingParty
     [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="IssuedToken")]
     [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
     [global::System.Serializable()]
-    public partial class IssuedToken : global::System.Data.Objects.DataClasses.EntityObject
+    [global::System.Runtime.Serialization.KnownTypeAttribute(typeof(global::WebFormsRelyingParty.IssuedRequestToken))]
+    [global::System.Runtime.Serialization.KnownTypeAttribute(typeof(global::WebFormsRelyingParty.IssuedAccessToken))]
+    public abstract partial class IssuedToken : global::System.Data.Objects.DataClasses.EntityObject
     {
-        /// <summary>
-        /// Create a new IssuedToken object.
-        /// </summary>
-        /// <param name="tokenId">Initial value of TokenId.</param>
-        /// <param name="token">Initial value of Token.</param>
-        /// <param name="tokenSecret">Initial value of TokenSecret.</param>
-        /// <param name="createdOn">Initial value of CreatedOn.</param>
-        /// <param name="consumerVersionAsString">Initial value of ConsumerVersionAsString.</param>
-        /// <param name="isAccessToken">Initial value of IsAccessToken.</param>
-        public static IssuedToken CreateIssuedToken(int tokenId, string token, string tokenSecret, global::System.DateTime createdOn, string consumerVersionAsString, bool isAccessToken)
-        {
-            IssuedToken issuedToken = new IssuedToken();
-            issuedToken.TokenId = tokenId;
-            issuedToken.Token = token;
-            issuedToken.TokenSecret = tokenSecret;
-            issuedToken.CreatedOn = createdOn;
-            issuedToken.ConsumerVersionAsString = consumerVersionAsString;
-            issuedToken.IsAccessToken = isAccessToken;
-            return issuedToken;
-        }
         /// <summary>
         /// There are no comments for Property TokenId in the schema.
         /// </summary>
@@ -917,121 +899,6 @@ namespace WebFormsRelyingParty
         partial void OnCreatedOnChanging(global::System.DateTime value);
         partial void OnCreatedOnChanged();
         /// <summary>
-        /// There are no comments for Property CallbackAsString in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public string CallbackAsString
-        {
-            get
-            {
-                return this._CallbackAsString;
-            }
-            set
-            {
-                this.OnCallbackAsStringChanging(value);
-                this.ReportPropertyChanging("CallbackAsString");
-                this._CallbackAsString = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
-                this.ReportPropertyChanged("CallbackAsString");
-                this.OnCallbackAsStringChanged();
-            }
-        }
-        private string _CallbackAsString;
-        partial void OnCallbackAsStringChanging(string value);
-        partial void OnCallbackAsStringChanged();
-        /// <summary>
-        /// There are no comments for Property VerificationCode in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public string VerificationCode
-        {
-            get
-            {
-                return this._VerificationCode;
-            }
-            set
-            {
-                this.OnVerificationCodeChanging(value);
-                this.ReportPropertyChanging("VerificationCode");
-                this._VerificationCode = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
-                this.ReportPropertyChanged("VerificationCode");
-                this.OnVerificationCodeChanged();
-            }
-        }
-        private string _VerificationCode;
-        partial void OnVerificationCodeChanging(string value);
-        partial void OnVerificationCodeChanged();
-        /// <summary>
-        /// There are no comments for Property ConsumerVersionAsString in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public string ConsumerVersionAsString
-        {
-            get
-            {
-                return this._ConsumerVersionAsString;
-            }
-            set
-            {
-                this.OnConsumerVersionAsStringChanging(value);
-                this.ReportPropertyChanging("ConsumerVersionAsString");
-                this._ConsumerVersionAsString = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
-                this.ReportPropertyChanged("ConsumerVersionAsString");
-                this.OnConsumerVersionAsStringChanged();
-            }
-        }
-        private string _ConsumerVersionAsString;
-        partial void OnConsumerVersionAsStringChanging(string value);
-        partial void OnConsumerVersionAsStringChanged();
-        /// <summary>
-        /// There are no comments for Property ExpirationDate in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public global::System.Nullable<global::System.DateTime> ExpirationDate
-        {
-            get
-            {
-                return this._ExpirationDate;
-            }
-            set
-            {
-                this.OnExpirationDateChanging(value);
-                this.ReportPropertyChanging("ExpirationDate");
-                this._ExpirationDate = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
-                this.ReportPropertyChanged("ExpirationDate");
-                this.OnExpirationDateChanged();
-            }
-        }
-        private global::System.Nullable<global::System.DateTime> _ExpirationDate;
-        partial void OnExpirationDateChanging(global::System.Nullable<global::System.DateTime> value);
-        partial void OnExpirationDateChanged();
-        /// <summary>
-        /// There are no comments for Property IsAccessToken in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsAccessToken
-        {
-            get
-            {
-                return this._IsAccessToken;
-            }
-            set
-            {
-                this.OnIsAccessTokenChanging(value);
-                this.ReportPropertyChanging("IsAccessToken");
-                this._IsAccessToken = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
-                this.ReportPropertyChanged("IsAccessToken");
-                this.OnIsAccessTokenChanged();
-            }
-        }
-        private bool _IsAccessToken;
-        partial void OnIsAccessTokenChanging(bool value);
-        partial void OnIsAccessTokenChanged();
-        /// <summary>
         /// There are no comments for Consumer in the schema.
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("DatabaseModel", "FK_IssuedToken_Consumer", "Consumer")]
@@ -1105,5 +972,155 @@ namespace WebFormsRelyingParty
                 }
             }
         }
+    }
+    /// <summary>
+    /// There are no comments for DatabaseModel.IssuedRequestToken in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// TokenId
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="IssuedRequestToken")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class IssuedRequestToken : IssuedToken
+    {
+        /// <summary>
+        /// Create a new IssuedRequestToken object.
+        /// </summary>
+        /// <param name="tokenId">Initial value of TokenId.</param>
+        /// <param name="token">Initial value of Token.</param>
+        /// <param name="tokenSecret">Initial value of TokenSecret.</param>
+        /// <param name="createdOn">Initial value of CreatedOn.</param>
+        /// <param name="consumerVersionAsString">Initial value of ConsumerVersionAsString.</param>
+        public static IssuedRequestToken CreateIssuedRequestToken(int tokenId, string token, string tokenSecret, global::System.DateTime createdOn, string consumerVersionAsString)
+        {
+            IssuedRequestToken issuedRequestToken = new IssuedRequestToken();
+            issuedRequestToken.TokenId = tokenId;
+            issuedRequestToken.Token = token;
+            issuedRequestToken.TokenSecret = tokenSecret;
+            issuedRequestToken.CreatedOn = createdOn;
+            issuedRequestToken.ConsumerVersionAsString = consumerVersionAsString;
+            return issuedRequestToken;
+        }
+        /// <summary>
+        /// There are no comments for Property ConsumerVersionAsString in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string ConsumerVersionAsString
+        {
+            get
+            {
+                return this._ConsumerVersionAsString;
+            }
+            set
+            {
+                this.OnConsumerVersionAsStringChanging(value);
+                this.ReportPropertyChanging("ConsumerVersionAsString");
+                this._ConsumerVersionAsString = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("ConsumerVersionAsString");
+                this.OnConsumerVersionAsStringChanged();
+            }
+        }
+        private string _ConsumerVersionAsString;
+        partial void OnConsumerVersionAsStringChanging(string value);
+        partial void OnConsumerVersionAsStringChanged();
+        /// <summary>
+        /// There are no comments for Property VerificationCode in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string VerificationCode
+        {
+            get
+            {
+                return this._VerificationCode;
+            }
+            set
+            {
+                this.OnVerificationCodeChanging(value);
+                this.ReportPropertyChanging("VerificationCode");
+                this._VerificationCode = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("VerificationCode");
+                this.OnVerificationCodeChanged();
+            }
+        }
+        private string _VerificationCode;
+        partial void OnVerificationCodeChanging(string value);
+        partial void OnVerificationCodeChanged();
+        /// <summary>
+        /// There are no comments for Property CallbackAsString in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string CallbackAsString
+        {
+            get
+            {
+                return this._CallbackAsString;
+            }
+            set
+            {
+                this.OnCallbackAsStringChanging(value);
+                this.ReportPropertyChanging("CallbackAsString");
+                this._CallbackAsString = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("CallbackAsString");
+                this.OnCallbackAsStringChanged();
+            }
+        }
+        private string _CallbackAsString;
+        partial void OnCallbackAsStringChanging(string value);
+        partial void OnCallbackAsStringChanged();
+    }
+    /// <summary>
+    /// There are no comments for DatabaseModel.IssuedAccessToken in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// TokenId
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="IssuedAccessToken")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class IssuedAccessToken : IssuedToken
+    {
+        /// <summary>
+        /// Create a new IssuedAccessToken object.
+        /// </summary>
+        /// <param name="tokenId">Initial value of TokenId.</param>
+        /// <param name="token">Initial value of Token.</param>
+        /// <param name="tokenSecret">Initial value of TokenSecret.</param>
+        /// <param name="createdOn">Initial value of CreatedOn.</param>
+        public static IssuedAccessToken CreateIssuedAccessToken(int tokenId, string token, string tokenSecret, global::System.DateTime createdOn)
+        {
+            IssuedAccessToken issuedAccessToken = new IssuedAccessToken();
+            issuedAccessToken.TokenId = tokenId;
+            issuedAccessToken.Token = token;
+            issuedAccessToken.TokenSecret = tokenSecret;
+            issuedAccessToken.CreatedOn = createdOn;
+            return issuedAccessToken;
+        }
+        /// <summary>
+        /// There are no comments for Property ExpirationDate in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Nullable<global::System.DateTime> ExpirationDate
+        {
+            get
+            {
+                return this._ExpirationDate;
+            }
+            set
+            {
+                this.OnExpirationDateChanging(value);
+                this.ReportPropertyChanging("ExpirationDate");
+                this._ExpirationDate = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ExpirationDate");
+                this.OnExpirationDateChanged();
+            }
+        }
+        private global::System.Nullable<global::System.DateTime> _ExpirationDate;
+        partial void OnExpirationDateChanging(global::System.Nullable<global::System.DateTime> value);
+        partial void OnExpirationDateChanged();
     }
 }

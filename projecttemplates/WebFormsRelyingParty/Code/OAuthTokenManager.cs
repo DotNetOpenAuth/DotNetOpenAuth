@@ -88,8 +88,8 @@ namespace WebFormsRelyingParty.Code {
 		/// been authorized, has expired or does not exist.
 		/// </returns>
 		public bool IsRequestTokenAuthorized(string requestToken) {
-			return Global.DataContext.IssuedToken.Any(
-				t => t.Token == requestToken && !t.IsAccessToken && t.User != null);
+			return Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().Any(
+				t => t.Token == requestToken && t.User != null);
 		}
 
 		/// <summary>
@@ -106,7 +106,7 @@ namespace WebFormsRelyingParty.Code {
 		/// </remarks>
 		public IServiceProviderRequestToken GetRequestToken(string token) {
 			try {
-				return Global.DataContext.IssuedToken.First(tok => !tok.IsAccessToken && tok.Token == token);
+				return Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(tok => tok.Token == token);
 			} catch (InvalidOperationException) {
 				throw new KeyNotFoundException();
 			}
@@ -126,7 +126,7 @@ namespace WebFormsRelyingParty.Code {
 		/// </remarks>
 		public IServiceProviderAccessToken GetAccessToken(string token) {
 			try {
-				return Global.DataContext.IssuedToken.First(tok => tok.IsAccessToken && tok.Token == token);
+				return Global.DataContext.IssuedToken.OfType<IssuedAccessToken>().First(tok => tok.Token == token);
 			} catch (InvalidOperationException) {
 				throw new KeyNotFoundException();
 			}
@@ -189,11 +189,10 @@ namespace WebFormsRelyingParty.Code {
 				throw new ArgumentOutOfRangeException();
 			}
 
-			var token = new IssuedToken {
+			var token = new IssuedRequestToken {
 				Callback = request.Callback,
 				Consumer = consumer,
 				CreatedOn = DateTime.Now,
-				ExpirationDate = DateTime.Now.AddHours(1),
 				Token = response.Token,
 				TokenSecret = response.TokenSecret,
 			};
@@ -202,16 +201,18 @@ namespace WebFormsRelyingParty.Code {
 		}
 
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			var token = Global.DataContext.IssuedToken.First(
-				t => t.Consumer.ConsumerKey == consumerKey && !t.IsAccessToken && t.Token == requestToken);
+			var requestTokenEntity = Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(
+				t => t.Consumer.ConsumerKey == consumerKey && t.Token == requestToken);
+			Global.DataContext.DeleteObject(requestTokenEntity);
 
-			// Repurpose this request token to be our access token.
-			token.Token = accessToken;
-			token.TokenSecret = accessTokenSecret;
-			token.ExpirationDate = null; // currently, our access tokens don't expire
-			token.IsAccessToken = true;
-			token.VerificationCode = null;
-			token.CreatedOn = DateTime.Now;
+			var accessTokenEntity = new IssuedAccessToken {
+				Token = accessToken,
+				TokenSecret = accessTokenSecret,
+				ExpirationDate = null, // currently, our access tokens don't expire
+				CreatedOn = DateTime.Now,
+			};
+
+			Global.DataContext.AddToIssuedToken(accessTokenEntity);
 			Global.DataContext.SaveChanges();
 		}
 
@@ -227,7 +228,7 @@ namespace WebFormsRelyingParty.Code {
 			if (tok == null) {
 				return TokenType.InvalidToken;
 			} else {
-				return tok.IsAccessToken ? TokenType.AccessToken : TokenType.RequestToken;
+				return tok is IssuedAccessToken ? TokenType.AccessToken : TokenType.RequestToken;
 			}
 		}
 

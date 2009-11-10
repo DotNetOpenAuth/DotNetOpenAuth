@@ -5,12 +5,7 @@
 	using System.Web;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
-	public partial class IssuedToken : IServiceProviderRequestToken, IServiceProviderAccessToken {
-		public Uri Callback {
-			get { return this.CallbackAsString != null ? new Uri(this.CallbackAsString) : null; }
-			set { this.CallbackAsString = value != null ? value.AbsoluteUri : null; }
-		}
-
+	public partial class IssuedAccessToken : IServiceProviderAccessToken {
 		string[] IServiceProviderAccessToken.Roles {
 			get {
 				List<string> roles = new List<string>();
@@ -33,15 +28,6 @@
 				// is what the rest of the web site expects.
 				return this.User.AuthenticationTokens.First().ClaimedIdentifier;
 			}
-		}
-
-		Version IServiceProviderRequestToken.ConsumerVersion {
-			get { return this.ConsumerVersionAsString != null ? new Version(this.ConsumerVersionAsString) : null; }
-			set { this.ConsumerVersionAsString = value != null ? value.ToString() : null; }
-		}
-
-		string IServiceProviderRequestToken.ConsumerKey {
-			get { return this.Consumer.ConsumerKey; }
 		}
 	}
 }

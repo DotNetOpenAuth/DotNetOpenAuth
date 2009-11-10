@@ -89,7 +89,8 @@
   <ItemGroup>
     <Compile Include="Code\OAuthTokenManager.cs" />
     <Compile Include="Code\Policies.cs" />
-    <Compile Include="Model.IssuedToken.cs" />
+    <Compile Include="Model.IssuedRequestToken.cs" />
+    <Compile Include="Model.IssuedAccessToken.cs" />
     <Compile Include="Model.Consumer.cs" />
     <Compile Include="Model.User.cs" />
     <Compile Include="LoginFrame.aspx.cs">

@@ -187,7 +187,8 @@
             <End Role="IssuedTokens" EntitySet="IssuedToken" /></AssociationSet>
           <AssociationSet Name="FK_IssuedToken_User" Association="DatabaseModel.FK_IssuedToken_User">
             <End Role="User" EntitySet="User" />
-            <End Role="IssuedTokens" EntitySet="IssuedToken" /></AssociationSet></EntityContainer>
+            <End Role="IssuedTokens" EntitySet="IssuedToken" /></AssociationSet>
+          </EntityContainer>
         <EntityType Name="AuthenticationToken" Abstract="false">
           <Key>
             <PropertyRef Name="Id" /></Key>
@@ -237,18 +238,13 @@
           <Property Name="VerificationCodeLength" Type="Int32" Nullable="false" />
           <Property Name="ConsumerId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="IssuedToken" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="Consumer" ToRole="IssuedTokens" /></EntityType>
-        <EntityType Name="IssuedToken">
+        <EntityType Name="IssuedToken" Abstract="true">
           <Key>
             <PropertyRef Name="TokenId" /></Key>
           <Property Name="TokenId" Type="Int32" Nullable="false" />
           <Property Name="Token" Type="String" Nullable="false" />
           <Property Name="TokenSecret" Type="String" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" />
-          <Property Name="CallbackAsString" Type="String" Nullable="true" />
-          <Property Name="VerificationCode" Type="String" Nullable="true" />
-          <Property Name="ConsumerVersionAsString" Type="String" Nullable="false" />
-          <Property Name="ExpirationDate" Type="DateTime" Nullable="true" />
-          <Property Name="IsAccessToken" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Consumer" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="IssuedTokens" ToRole="Consumer" />
           <NavigationProperty Name="User" Relationship="DatabaseModel.FK_IssuedToken_User" FromRole="IssuedTokens" ToRole="User" /></EntityType>
         <Association Name="FK_IssuedToken_Consumer">
@@ -256,7 +252,13 @@
           <End Type="DatabaseModel.IssuedToken" Role="IssuedTokens" Multiplicity="*" /></Association>
         <Association Name="FK_IssuedToken_User">
           <End Type="DatabaseModel.User" Role="User" Multiplicity="0..1" />
-          <End Type="DatabaseModel.IssuedToken" Role="IssuedTokens" Multiplicity="*" /></Association></Schema>
+          <End Type="DatabaseModel.IssuedToken" Role="IssuedTokens" Multiplicity="*" /></Association>
+        <EntityType Name="IssuedRequestToken" BaseType="DatabaseModel.IssuedToken">
+          <Property Name="ConsumerVersionAsString" Type="String" Nullable="false" />
+          <Property Name="VerificationCode" Type="String" Nullable="true" />
+          <Property Name="CallbackAsString" Type="String" Nullable="true" /></EntityType>
+        <EntityType Name="IssuedAccessToken" BaseType="DatabaseModel.IssuedToken">
+          <Property Name="ExpirationDate" Type="DateTime" Nullable="true" /></EntityType></Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -315,15 +317,22 @@
           <EntitySetMapping Name="IssuedToken">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedToken)">
               <MappingFragment StoreEntitySet="IssuedToken">
-                <ScalarProperty Name="IsAccessToken" ColumnName="IsAccessToken" />
-                <ScalarProperty Name="ExpirationDate" ColumnName="ExpirationDate" />
-                <ScalarProperty Name="ConsumerVersionAsString" ColumnName="ConsumerVersion" />
-                <ScalarProperty Name="VerificationCode" ColumnName="VerificationCode" />
-                <ScalarProperty Name="CallbackAsString" ColumnName="Callback" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="TokenSecret" ColumnName="TokenSecret" />
                 <ScalarProperty Name="Token" ColumnName="Token" />
-                <ScalarProperty Name="TokenId" ColumnName="TokenId" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" /></MappingFragment></EntityTypeMapping>
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedRequestToken)">
+              <MappingFragment StoreEntitySet="IssuedToken" >
+                <ScalarProperty Name="CallbackAsString" ColumnName="Callback" />
+                <ScalarProperty Name="ConsumerVersionAsString" ColumnName="ConsumerVersion" />
+                <ScalarProperty Name="VerificationCode" ColumnName="VerificationCode" />
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" />
+                <Condition ColumnName="IsAccessToken" Value="0" /></MappingFragment></EntityTypeMapping>
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedAccessToken)">
+              <MappingFragment StoreEntitySet="IssuedToken" >
+                <ScalarProperty Name="ExpirationDate" ColumnName="ExpirationDate" />
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" />
+                <Condition ColumnName="IsAccessToken" Value="1" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
           <AssociationSetMapping Name="FK_IssuedToken_Consumer" TypeName="DatabaseModel.FK_IssuedToken_Consumer" StoreEntitySet="IssuedToken">
             <EndProperty Name="IssuedTokens">
               <ScalarProperty Name="TokenId" ColumnName="TokenId" /></EndProperty>
@@ -366,15 +375,24 @@
           <ConnectorPoint PointX="4.625" PointY="2.0189925130208337" />
           <ConnectorPoint PointX="5.25" PointY="2.0189925130208337" /></AssociationConnector>
         <EntityTypeShape EntityType="DatabaseModel.Consumer" Width="2.125" PointX="0.5" PointY="3.625" Height="2.1725878906249996" />
-        <EntityTypeShape EntityType="DatabaseModel.IssuedToken" Width="2" PointX="5.375" PointY="3.625" Height="3.1340950520833326" />
+        <EntityTypeShape EntityType="DatabaseModel.IssuedToken" Width="2" PointX="4.5" PointY="3.625" Height="2.1725878906249996" />
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_Consumer" ManuallyRouted="false" >
-          <ConnectorPoint PointX="2.625" PointY="4.9035953776041659" />
-          <ConnectorPoint PointX="5.375" PointY="4.9035953776041659" />
+          <ConnectorPoint PointX="2.625" PointY="5.359375" />
+          <ConnectorPoint PointX="4.5" PointY="5.359375" />
           </AssociationConnector>
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_User" >
-          <ConnectorPoint PointX="4.625" PointY="3.2038378906250005" />
-          <ConnectorPoint PointX="7.28125" PointY="3.2038378906250005" />
-          <ConnectorPoint PointX="7.28125" PointY="3.625" />
-          </AssociationConnector></Diagram></edmx:Diagrams>
+          <ConnectorPoint PointX="3.6874995" PointY="3.4321907552083331" />
+          <ConnectorPoint PointX="3.6874995" PointY="4.005208333333333" />
+          <ConnectorPoint PointX="4.5" PointY="4.005208333333333" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="DatabaseModel.IssuedRequestToken" Width="2" PointX="4.25" PointY="6.25" Height="1.5956835937499996" />
+        <EntityTypeShape EntityType="DatabaseModel.IssuedAccessToken" Width="1.625" PointX="6.5" PointY="6.25" Height="1.2110807291666657" />
+        <InheritanceConnector EntityType="DatabaseModel.IssuedRequestToken">
+          <ConnectorPoint PointX="5.375" PointY="5.797587890625" />
+          <ConnectorPoint PointX="5.375" PointY="6.25" /></InheritanceConnector>
+        <InheritanceConnector EntityType="DatabaseModel.IssuedAccessToken">
+          <ConnectorPoint PointX="6.5" PointY="4.7112939453125" />
+          <ConnectorPoint PointX="7.34375" PointY="4.7112939453125" />
+          <ConnectorPoint PointX="7.34375" PointY="6.25" /></InheritanceConnector></Diagram></edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>
