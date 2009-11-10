@@ -8,147 +8,22 @@ namespace WebFormsRelyingParty.Code {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Web;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
-	using System.Security.Cryptography.X509Certificates;
-	using DotNetOpenAuth.OAuth;
 
 	/// <summary>
 	/// The token manager this web site uses in its roles both as
 	/// a consumer and as a service provider.
 	/// </summary>
-	public class OAuthTokenManager : IConsumerTokenManager, IServiceProviderTokenManager {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthTokenManager"/> class
-		/// for use as a Consumer.
-		/// </summary>
-		/// <param name="consumerKey">The consumer key.</param>
-		/// <param name="consumerSecret">The consumer secret.</param>
-		private OAuthTokenManager(string consumerKey, string consumerSecret) {
-			if (String.IsNullOrEmpty(consumerKey)) {
-				throw new ArgumentNullException("consumerKey");
-			}
-			if (consumerSecret == null) {
-				throw new ArgumentNullException("consumerSecret");
-			}
-
-			this.ConsumerKey = consumerKey;
-			this.ConsumerSecret = consumerSecret;
-		}
-
+	public class OAuthTokenManager : ITokenManager {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthTokenManager"/> class.
 		/// </summary>
-		private OAuthTokenManager() {
+		protected OAuthTokenManager() {
 		}
-
-		#region IConsumerTokenManager Members
-
-		/// <summary>
-		/// Gets the consumer key.
-		/// </summary>
-		/// <value>The consumer key.</value>
-		public string ConsumerKey { get; private set; }
-
-		/// <summary>
-		/// Gets the consumer secret.
-		/// </summary>
-		/// <value>The consumer secret.</value>
-		public string ConsumerSecret { get; private set; }
-
-		#endregion
-
-		#region IServiceProviderTokenManager Members
-
-		/// <summary>
-		/// Gets the Consumer description for a given a Consumer Key.
-		/// </summary>
-		/// <param name="consumerKey">The Consumer Key.</param>
-		/// <returns>
-		/// A description of the consumer.  Never null.
-		/// </returns>
-		/// <exception cref="KeyNotFoundException">Thrown if the consumer key cannot be found.</exception>
-		public IConsumerDescription GetConsumer(string consumerKey) {
-			try {
-				return Global.DataContext.Consumer.First(c => c.ConsumerKey == consumerKey);
-			} catch (InvalidOperationException) {
-				throw new KeyNotFoundException();
-			}
-		}
-
-		/// <summary>
-		/// Checks whether a given request token has already been authorized
-		/// by some user for use by the Consumer that requested it.
-		/// </summary>
-		/// <param name="requestToken">The Consumer's request token.</param>
-		/// <returns>
-		/// True if the request token has already been fully authorized by the user
-		/// who owns the relevant protected resources.  False if the token has not yet
-		/// been authorized, has expired or does not exist.
-		/// </returns>
-		public bool IsRequestTokenAuthorized(string requestToken) {
-			return Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().Any(
-				t => t.Token == requestToken && t.User != null);
-		}
-
-		/// <summary>
-		/// Gets details on the named request token.
-		/// </summary>
-		/// <param name="token">The request token.</param>
-		/// <returns>A description of the token.  Never null.</returns>
-		/// <exception cref="KeyNotFoundException">Thrown if the token cannot be found.</exception>
-		/// <remarks>
-		/// It is acceptable for implementations to find the token, see that it has expired,
-		/// delete it from the database and then throw <see cref="KeyNotFoundException"/>,
-		/// or alternatively it can return the expired token anyway and the OAuth channel will
-		/// log and throw the appropriate error.
-		/// </remarks>
-		public IServiceProviderRequestToken GetRequestToken(string token) {
-			try {
-				return Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(tok => tok.Token == token);
-			} catch (InvalidOperationException) {
-				throw new KeyNotFoundException();
-			}
-		}
-
-		/// <summary>
-		/// Gets details on the named access token.
-		/// </summary>
-		/// <param name="token">The access token.</param>
-		/// <returns>A description of the token.  Never null.</returns>
-		/// <exception cref="KeyNotFoundException">Thrown if the token cannot be found.</exception>
-		/// <remarks>
-		/// It is acceptable for implementations to find the token, see that it has expired,
-		/// delete it from the database and then throw <see cref="KeyNotFoundException"/>,
-		/// or alternatively it can return the expired token anyway and the OAuth channel will
-		/// log and throw the appropriate error.
-		/// </remarks>
-		public IServiceProviderAccessToken GetAccessToken(string token) {
-			try {
-				return Global.DataContext.IssuedToken.OfType<IssuedAccessToken>().First(tok => tok.Token == token);
-			} catch (InvalidOperationException) {
-				throw new KeyNotFoundException();
-			}
-		}
-
-		/// <summary>
-		/// Persists any changes made to the token.
-		/// </summary>
-		/// <param name="token">The token whose properties have been changed.</param>
-		/// <remarks>
-		/// This library will invoke this method after making a set
-		/// of changes to the token as part of a web request to give the host
-		/// the opportunity to persist those changes to a database.
-		/// Depending on the object persistence framework the host site uses,
-		/// this method MAY not need to do anything (if changes made to the token
-		/// will automatically be saved without any extra handling).
-		/// </remarks>
-		public void UpdateToken(IServiceProviderRequestToken token) {
-			Global.DataContext.SaveChanges();
-		}
-
-		#endregion
 
 		#region ITokenManager Members
 
@@ -233,31 +108,5 @@ namespace WebFormsRelyingParty.Code {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Creates a token manager for use when this web site acts as a consumer of
-		/// another OAuth service provider.
-		/// </summary>
-		/// <param name="consumerKey">The consumer key.</param>
-		/// <param name="consumerSecret">The consumer secret.</param>
-		/// <returns>The token manager.</returns>
-		internal static IConsumerTokenManager CreateConsumer(string consumerKey, string consumerSecret) {
-			if (String.IsNullOrEmpty(consumerKey)) {
-				throw new ArgumentNullException("consumerKey");
-			}
-			if (consumerSecret == null) {
-				throw new ArgumentNullException("consumerSecret");
-			}
-
-			return new OAuthTokenManager(consumerKey, consumerSecret);
-		}
-
-		/// <summary>
-		/// Creates a token manager suitable for this web site acting as an OAuth service provider.
-		/// </summary>
-		/// <returns>The token manager.</returns>
-		internal static IServiceProviderTokenManager CreateServiceProvider() {
-			return new OAuthTokenManager();
-		}
 	}
 }
