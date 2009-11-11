@@ -71,6 +71,10 @@ namespace WebFormsRelyingParty.Code {
 				Token = response.Token,
 				TokenSecret = response.TokenSecret,
 			};
+			string scope;
+			if (request.ExtraData.TryGetValue("scope", out scope)) {
+				token.Scope = scope;
+			}
 			Global.DataContext.AddToIssuedToken(token);
 			Global.DataContext.SaveChanges();
 		}
@@ -108,6 +112,7 @@ namespace WebFormsRelyingParty.Code {
 				ExpirationDate = null, // currently, our access tokens don't expire
 				CreatedOn = DateTime.Now,
 				User = requestTokenEntity.User,
+				Scope = requestTokenEntity.Scope,
 			};
 
 			Global.DataContext.DeleteObject(requestTokenEntity);

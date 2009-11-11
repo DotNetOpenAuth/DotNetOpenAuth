@@ -70,6 +70,7 @@
           <Property Name="ConsumerVersion" Type="varchar" MaxLength="10" />
           <Property Name="ExpirationDate" Type="datetime" />
           <Property Name="IsAccessToken" Type="bit" Nullable="false" />
+          <Property Name="Scope" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -248,7 +249,8 @@
           <Property Name="TokenSecret" Type="String" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" />
           <NavigationProperty Name="Consumer" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="IssuedTokens" ToRole="Consumer" />
-          <NavigationProperty Name="User" Relationship="DatabaseModel.FK_IssuedToken_User" FromRole="IssuedTokens" ToRole="User" /></EntityType>
+          <NavigationProperty Name="User" Relationship="DatabaseModel.FK_IssuedToken_User" FromRole="IssuedTokens" ToRole="User" />
+          <Property Name="Scope" Type="String" Nullable="true" /></EntityType>
         <Association Name="FK_IssuedToken_Consumer">
           <End Type="DatabaseModel.Consumer" Role="Consumer" Multiplicity="1" />
           <End Type="DatabaseModel.IssuedToken" Role="IssuedTokens" Multiplicity="*" /></Association>
@@ -320,6 +322,7 @@
           <EntitySetMapping Name="IssuedToken">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedToken)">
               <MappingFragment StoreEntitySet="IssuedToken">
+                <ScalarProperty Name="Scope" ColumnName="Scope" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="TokenSecret" ColumnName="TokenSecret" />
                 <ScalarProperty Name="Token" ColumnName="Token" />

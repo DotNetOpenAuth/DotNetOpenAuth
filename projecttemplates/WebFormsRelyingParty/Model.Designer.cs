@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(WebFormsRelyingParty.User), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/10/2009 8:48:49 PM
+// Generation date: 11/10/2009 9:17:16 PM
 namespace WebFormsRelyingParty
 {
     
@@ -921,6 +921,29 @@ namespace WebFormsRelyingParty
         private global::System.DateTime _CreatedOn;
         partial void OnCreatedOnChanging(global::System.DateTime value);
         partial void OnCreatedOnChanged();
+        /// <summary>
+        /// There are no comments for Property Scope in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string Scope
+        {
+            get
+            {
+                return this._Scope;
+            }
+            set
+            {
+                this.OnScopeChanging(value);
+                this.ReportPropertyChanging("Scope");
+                this._Scope = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("Scope");
+                this.OnScopeChanged();
+            }
+        }
+        private string _Scope;
+        partial void OnScopeChanging(string value);
+        partial void OnScopeChanged();
         /// <summary>
         /// There are no comments for Consumer in the schema.
         /// </summary>
