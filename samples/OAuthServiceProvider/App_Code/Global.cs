@@ -96,7 +96,10 @@ public class Global : HttpApplication {
 		if (!appPath.EndsWith("/")) {
 			appPath += "/";
 		}
-		Constants.WebRootUrl = new Uri(appPath);
+		// This will break in IIS Integrated Pipeline mode, since applications
+		// start before the first incoming request context is available.
+		// TODO: fix this.
+		Constants.WebRootUrl = new Uri(HttpContext.Current.Request.Url, appPath);
 		var tokenManager = new DatabaseTokenManager();
 		Global.TokenManager = tokenManager;
 	}
