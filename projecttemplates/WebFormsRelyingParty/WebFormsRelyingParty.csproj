@@ -87,7 +87,10 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\OAuthAuthenticationModule.cs" />
+    <Compile Include="Code\OAuthAuthorizationManager.cs" />
     <Compile Include="Code\OAuthConsumerTokenManager.cs" />
+    <Compile Include="Code\OAuthPrincipalAuthorizationPolicy.cs" />
     <Compile Include="Code\OAuthServiceProvider.cs" />
     <Compile Include="Code\OAuthServiceProviderTokenManager.cs" />
     <Compile Include="Code\OAuthTokenManager.cs" />
