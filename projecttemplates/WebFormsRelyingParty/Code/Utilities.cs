@@ -15,14 +15,17 @@ namespace WebFormsRelyingParty.Code {
 		private const string csrfCookieName = "CsrfCookie";
 		private static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
-		public static string ApplicationRoot {
+		/// <summary>
+		/// Gets the full URI of the web application root.  Guaranteed to end in a slash.
+		/// </summary>
+		public static Uri ApplicationRoot {
 			get {
 				string appRoot = HttpContext.Current.Request.ApplicationPath;
 				if (!appRoot.EndsWith("/", StringComparison.Ordinal)) {
 					appRoot += "/";
 				}
 
-				return appRoot;
+				return new Uri(HttpContext.Current.Request.Url, appRoot);
 			}
 		}
 

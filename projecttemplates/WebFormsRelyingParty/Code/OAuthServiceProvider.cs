@@ -94,12 +94,13 @@ namespace WebFormsRelyingParty.Code {
 			if (serviceProvider == null) {
 				lock (initializerLock) {
 					if (serviceDescription == null) {
-						var endpoint = new MessageReceivingEndpoint(Utilities.ApplicationRoot + "OAuth.ashx", HttpDeliveryMethods.PostRequest);
+						var postEndpoint = new MessageReceivingEndpoint(new Uri(Utilities.ApplicationRoot, "OAuth.ashx"), HttpDeliveryMethods.PostRequest);
+						var getEndpoint = new MessageReceivingEndpoint(postEndpoint.Location, HttpDeliveryMethods.GetRequest);
 						serviceDescription = new ServiceProviderDescription {
 							TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-							RequestTokenEndpoint = endpoint,
-							AccessTokenEndpoint = endpoint,
-							UserAuthorizationEndpoint = endpoint,
+							RequestTokenEndpoint = postEndpoint,
+							AccessTokenEndpoint = postEndpoint,
+							UserAuthorizationEndpoint = getEndpoint,
 						};
 					}
 
