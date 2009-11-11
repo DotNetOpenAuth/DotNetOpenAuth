@@ -12,6 +12,7 @@ namespace WebFormsRelyingParty.Code {
 	using System.Web;
 
 	public static class Utilities {
+		private const string csrfCookieName = "CsrfCookie";
 		private static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
 		public static string ApplicationRoot {
@@ -34,7 +35,7 @@ namespace WebFormsRelyingParty.Code {
 			string secret = Convert.ToBase64String(randomData);
 
 			// Send the secret down as a cookie...
-			var cookie = new HttpCookie("CsrfCookie", secret) {
+			var cookie = new HttpCookie(csrfCookieName, secret) {
 				Path = HttpContext.Current.Request.Path,
 				HttpOnly = true,
 				Expires = DateTime.Now.AddMinutes(30),
@@ -46,7 +47,7 @@ namespace WebFormsRelyingParty.Code {
 		}
 
 		public static void VerifyCsrfCookie(string secret) {
-			var cookie = HttpContext.Current.Request.Cookies["CsrfCookie"];
+			var cookie = HttpContext.Current.Request.Cookies[csrfCookieName];
 			if (cookie != null) {
 				if (cookie.Value == secret) {
 					// Valid CSRF check.  Clear the cookie and return.
