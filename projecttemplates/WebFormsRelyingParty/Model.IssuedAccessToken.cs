@@ -1,4 +1,10 @@
-﻿namespace WebFormsRelyingParty {
+﻿//-----------------------------------------------------------------------
+// <copyright file="Model.IssuedAccessToken.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace WebFormsRelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;

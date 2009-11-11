@@ -75,18 +75,42 @@ namespace WebFormsRelyingParty.Code {
 			Global.DataContext.SaveChanges();
 		}
 
+		/// <summary>
+		/// Deletes a request token and its associated secret and stores a new access token and secret.
+		/// </summary>
+		/// <param name="consumerKey">The Consumer that is exchanging its request token for an access token.</param>
+		/// <param name="requestToken">The Consumer's request token that should be deleted/expired.</param>
+		/// <param name="accessToken">The new access token that is being issued to the Consumer.</param>
+		/// <param name="accessTokenSecret">The secret associated with the newly issued access token.</param>
+		/// <remarks>
+		/// 	<para>
+		/// Any scope of granted privileges associated with the request token from the
+		/// original call to <see cref="StoreNewRequestToken"/> should be carried over
+		/// to the new Access Token.
+		/// </para>
+		/// 	<para>
+		/// To associate a user account with the new access token,
+		/// <see cref="System.Web.HttpContext.User">HttpContext.Current.User</see> may be
+		/// useful in an ASP.NET web application within the implementation of this method.
+		/// Alternatively you may store the access token here without associating with a user account,
+		/// and wait until <see cref="WebConsumer.ProcessUserAuthorization()"/> or
+		/// <see cref="DesktopConsumer.ProcessUserAuthorization(string, string)"/> return the access
+		/// token to associate the access token with a user account at that point.
+		/// </para>
+		/// </remarks>
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
 			var requestTokenEntity = Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(
 				t => t.Consumer.ConsumerKey == consumerKey && t.Token == requestToken);
-			Global.DataContext.DeleteObject(requestTokenEntity);
 
 			var accessTokenEntity = new IssuedAccessToken {
 				Token = accessToken,
 				TokenSecret = accessTokenSecret,
 				ExpirationDate = null, // currently, our access tokens don't expire
 				CreatedOn = DateTime.Now,
+				User = requestTokenEntity.User,
 			};
 
+			Global.DataContext.DeleteObject(requestTokenEntity);
 			Global.DataContext.AddToIssuedToken(accessTokenEntity);
 			Global.DataContext.SaveChanges();
 		}

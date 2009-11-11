@@ -53,6 +53,7 @@
           <Property Name="Callback" Type="nvarchar" MaxLength="2048" />
           <Property Name="VerificationCodeFormat" Type="int" Nullable="false" />
           <Property Name="VerificationCodeLength" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="IssuedToken">
           <Key>
@@ -237,7 +238,8 @@
           <Property Name="VerificationCodeFormatAsInt" Type="Int32" Nullable="false" />
           <Property Name="VerificationCodeLength" Type="Int32" Nullable="false" />
           <Property Name="ConsumerId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="IssuedToken" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="Consumer" ToRole="IssuedTokens" /></EntityType>
+          <NavigationProperty Name="IssuedToken" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="Consumer" ToRole="IssuedTokens" />
+          <Property Name="Name" Type="String" Nullable="true" /></EntityType>
         <EntityType Name="IssuedToken" Abstract="true">
           <Key>
             <PropertyRef Name="TokenId" /></Key>
@@ -307,6 +309,7 @@
           <EntitySetMapping Name="Consumer">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.Consumer)">
               <MappingFragment StoreEntitySet="Consumer">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ConsumerId" ColumnName="ConsumerId" />
                 <ScalarProperty Name="VerificationCodeLength" ColumnName="VerificationCodeLength" />
                 <ScalarProperty Name="VerificationCodeFormatAsInt" ColumnName="VerificationCodeFormat" />

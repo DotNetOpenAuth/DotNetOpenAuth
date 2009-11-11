@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(WebFormsRelyingParty.User), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/10/2009 8:47:09 AM
+// Generation date: 11/10/2009 8:48:49 PM
 namespace WebFormsRelyingParty
 {
     
@@ -771,6 +771,29 @@ namespace WebFormsRelyingParty
         private int _ConsumerId;
         partial void OnConsumerIdChanging(int value);
         partial void OnConsumerIdChanged();
+        /// <summary>
+        /// There are no comments for Property Name in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string Name
+        {
+            get
+            {
+                return this._Name;
+            }
+            set
+            {
+                this.OnNameChanging(value);
+                this.ReportPropertyChanging("Name");
+                this._Name = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("Name");
+                this.OnNameChanged();
+            }
+        }
+        private string _Name;
+        partial void OnNameChanging(string value);
+        partial void OnNameChanged();
         /// <summary>
         /// There are no comments for IssuedToken in the schema.
         /// </summary>
