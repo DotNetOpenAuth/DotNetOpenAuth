@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(WebFormsRelyingParty.User), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/10/2009 9:17:16 PM
+// Generation date: 11/11/2009 10:26:25 PM
 namespace WebFormsRelyingParty
 {
     
@@ -598,14 +598,12 @@ namespace WebFormsRelyingParty
         /// Create a new Consumer object.
         /// </summary>
         /// <param name="consumerKey">Initial value of ConsumerKey.</param>
-        /// <param name="verificationCodeFormatAsInt">Initial value of VerificationCodeFormatAsInt.</param>
         /// <param name="verificationCodeLength">Initial value of VerificationCodeLength.</param>
         /// <param name="consumerId">Initial value of ConsumerId.</param>
-        public static Consumer CreateConsumer(string consumerKey, int verificationCodeFormatAsInt, int verificationCodeLength, int consumerId)
+        public static Consumer CreateConsumer(string consumerKey, int verificationCodeLength, int consumerId)
         {
             Consumer consumer = new Consumer();
             consumer.ConsumerKey = consumerKey;
-            consumer.VerificationCodeFormatAsInt = verificationCodeFormatAsInt;
             consumer.VerificationCodeLength = verificationCodeLength;
             consumer.ConsumerId = consumerId;
             return consumer;
@@ -661,7 +659,7 @@ namespace WebFormsRelyingParty
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public byte[] X509CertificateAsBinary
+        private byte[] X509CertificateAsBinary
         {
             get
             {
@@ -707,7 +705,7 @@ namespace WebFormsRelyingParty
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public int VerificationCodeFormatAsInt
+        private int VerificationCodeFormatAsInt
         {
             get
             {
@@ -1037,15 +1035,13 @@ namespace WebFormsRelyingParty
         /// <param name="token">Initial value of Token.</param>
         /// <param name="tokenSecret">Initial value of TokenSecret.</param>
         /// <param name="createdOn">Initial value of CreatedOn.</param>
-        /// <param name="consumerVersionAsString">Initial value of ConsumerVersionAsString.</param>
-        public static IssuedRequestToken CreateIssuedRequestToken(int tokenId, string token, string tokenSecret, global::System.DateTime createdOn, string consumerVersionAsString)
+        public static IssuedRequestToken CreateIssuedRequestToken(int tokenId, string token, string tokenSecret, global::System.DateTime createdOn)
         {
             IssuedRequestToken issuedRequestToken = new IssuedRequestToken();
             issuedRequestToken.TokenId = tokenId;
             issuedRequestToken.Token = token;
             issuedRequestToken.TokenSecret = tokenSecret;
             issuedRequestToken.CreatedOn = createdOn;
-            issuedRequestToken.ConsumerVersionAsString = consumerVersionAsString;
             return issuedRequestToken;
         }
         /// <summary>
@@ -1053,7 +1049,7 @@ namespace WebFormsRelyingParty
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public string ConsumerVersionAsString
+        private string ConsumerVersionAsString
         {
             get
             {
@@ -1099,7 +1095,7 @@ namespace WebFormsRelyingParty
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public string CallbackAsString
+        private string CallbackAsString
         {
             get
             {

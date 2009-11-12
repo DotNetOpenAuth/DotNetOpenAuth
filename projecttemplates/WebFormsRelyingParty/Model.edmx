@@ -234,9 +234,9 @@
             <PropertyRef Name="ConsumerId" /></Key>
           <Property Name="ConsumerKey" Type="String" Nullable="false" />
           <Property Name="ConsumerSecret" Type="String" Nullable="true" />
-          <Property Name="X509CertificateAsBinary" Type="Binary" Nullable="true" />
+          <Property Name="X509CertificateAsBinary" Type="Binary" Nullable="true" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:GetterAccess="Private" />
           <Property Name="CallbackAsString" Type="String" Nullable="true" />
-          <Property Name="VerificationCodeFormatAsInt" Type="Int32" Nullable="false" />
+          <Property Name="VerificationCodeFormatAsInt" Type="Int32" Nullable="false" a:GetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Private" />
           <Property Name="VerificationCodeLength" Type="Int32" Nullable="false" />
           <Property Name="ConsumerId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="IssuedToken" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="Consumer" ToRole="IssuedTokens" />
@@ -258,9 +258,9 @@
           <End Type="DatabaseModel.User" Role="User" Multiplicity="0..1" />
           <End Type="DatabaseModel.IssuedToken" Role="IssuedTokens" Multiplicity="*" /></Association>
         <EntityType Name="IssuedRequestToken" BaseType="DatabaseModel.IssuedToken">
-          <Property Name="ConsumerVersionAsString" Type="String" Nullable="false" />
+          <Property Name="ConsumerVersionAsString" Type="String" Nullable="false" a:GetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Private" />
           <Property Name="VerificationCode" Type="String" Nullable="true" />
-          <Property Name="CallbackAsString" Type="String" Nullable="true" /></EntityType>
+          <Property Name="CallbackAsString" Type="String" Nullable="true" a:GetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Private" /></EntityType>
         <EntityType Name="IssuedAccessToken" BaseType="DatabaseModel.IssuedToken">
           <Property Name="ExpirationDate" Type="DateTime" Nullable="true" /></EntityType></Schema>
     </edmx:ConceptualModels>
