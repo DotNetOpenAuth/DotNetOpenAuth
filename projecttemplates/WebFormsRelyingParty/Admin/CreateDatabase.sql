@@ -1,10 +1,10 @@
-/****** Object:  Table [dbo].[Consumer]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Table [dbo].[Consumer]    Script Date: 11/11/2009 17:04:47 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Consumer](
-	[ConsumerId] [int] NOT NULL,
+	[ConsumerId] [int] IDENTITY(1,1) NOT NULL,
 	[ConsumerKey] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
 	[ConsumerSecret] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	[X509Certificate] [image] NULL,
@@ -23,7 +23,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Consumer] ON [dbo].[Consumer]
 	[ConsumerKey] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[User]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Table [dbo].[User]    Script Date: 11/11/2009 17:04:47 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -40,7 +40,7 @@ CREATE TABLE [dbo].[User](
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Role]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Table [dbo].[Role]    Script Date: 11/11/2009 17:04:47 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -54,7 +54,7 @@ CREATE TABLE [dbo].[Role](
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[IssuedToken]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Table [dbo].[IssuedToken]    Script Date: 11/11/2009 17:04:47 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -62,7 +62,7 @@ GO
 SET ANSI_PADDING ON
 GO
 CREATE TABLE [dbo].[IssuedToken](
-	[TokenId] [int] NOT NULL,
+	[TokenId] [int] IDENTITY(1,1) NOT NULL,
 	[ConsumerId] [int] NOT NULL,
 	[UserId] [int] NULL,
 	[Token] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
@@ -87,7 +87,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_IssuedToken] ON [dbo].[IssuedToken]
 	[Token] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[UserRole]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Table [dbo].[UserRole]    Script Date: 11/11/2009 17:04:47 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -102,7 +102,7 @@ CREATE TABLE [dbo].[UserRole](
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AuthenticationToken]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Table [dbo].[AuthenticationToken]    Script Date: 11/11/2009 17:04:47 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -118,7 +118,7 @@ CREATE TABLE [dbo].[AuthenticationToken](
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  StoredProcedure [dbo].[AddUser]    Script Date: 11/11/2009 07:57:45 ******/
+/****** Object:  StoredProcedure [dbo].[AddUser]    Script Date: 11/11/2009 17:05:07 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -161,16 +161,16 @@ AS
 	
 	RETURN @userid
 GO
-/****** Object:  Default [DF_User_EmailAddressVerified]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Default [DF_User_EmailAddressVerified]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF_User_EmailAddressVerified]  DEFAULT ((0)) FOR [EmailAddressVerified]
 GO
-/****** Object:  Default [DF_IssuedToken_CreatedOn]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Default [DF_IssuedToken_CreatedOn]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[IssuedToken] ADD  CONSTRAINT [DF_IssuedToken_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
 GO
-/****** Object:  Default [DF_IssuedToken_IsAccessToken]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  Default [DF_IssuedToken_IsAccessToken]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[IssuedToken] ADD  CONSTRAINT [DF_IssuedToken_IsAccessToken]  DEFAULT ((0)) FOR [IsAccessToken]
 GO
-/****** Object:  ForeignKey [FK_IssuedToken_Consumer]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  ForeignKey [FK_IssuedToken_Consumer]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[IssuedToken]  WITH CHECK ADD  CONSTRAINT [FK_IssuedToken_Consumer] FOREIGN KEY([ConsumerId])
 REFERENCES [dbo].[Consumer] ([ConsumerId])
 ON UPDATE CASCADE
@@ -178,7 +178,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[IssuedToken] CHECK CONSTRAINT [FK_IssuedToken_Consumer]
 GO
-/****** Object:  ForeignKey [FK_IssuedToken_User]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  ForeignKey [FK_IssuedToken_User]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[IssuedToken]  WITH CHECK ADD  CONSTRAINT [FK_IssuedToken_User] FOREIGN KEY([UserId])
 REFERENCES [dbo].[User] ([Id])
 ON UPDATE CASCADE
@@ -186,7 +186,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[IssuedToken] CHECK CONSTRAINT [FK_IssuedToken_User]
 GO
-/****** Object:  ForeignKey [FK_UserRole_Role]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  ForeignKey [FK_UserRole_Role]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[UserRole]  WITH CHECK ADD  CONSTRAINT [FK_UserRole_Role] FOREIGN KEY([RoleId])
 REFERENCES [dbo].[Role] ([Id])
 ON UPDATE CASCADE
@@ -194,7 +194,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[UserRole] CHECK CONSTRAINT [FK_UserRole_Role]
 GO
-/****** Object:  ForeignKey [FK_UserRole_User]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  ForeignKey [FK_UserRole_User]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[UserRole]  WITH CHECK ADD  CONSTRAINT [FK_UserRole_User] FOREIGN KEY([UserId])
 REFERENCES [dbo].[User] ([Id])
 ON UPDATE CASCADE
@@ -202,7 +202,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[UserRole] CHECK CONSTRAINT [FK_UserRole_User]
 GO
-/****** Object:  ForeignKey [FK_AuthenticationToken_User]    Script Date: 11/11/2009 07:57:44 ******/
+/****** Object:  ForeignKey [FK_AuthenticationToken_User]    Script Date: 11/11/2009 17:04:47 ******/
 ALTER TABLE [dbo].[AuthenticationToken]  WITH CHECK ADD  CONSTRAINT [FK_AuthenticationToken_User] FOREIGN KEY([UserId])
 REFERENCES [dbo].[User] ([Id])
 ON UPDATE CASCADE
