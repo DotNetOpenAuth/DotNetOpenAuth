@@ -46,7 +46,7 @@
           <Key>
             <PropertyRef Name="ConsumerId" />
           </Key>
-          <Property Name="ConsumerId" Type="int" Nullable="false" />
+          <Property Name="ConsumerId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ConsumerKey" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="ConsumerSecret" Type="nvarchar" MaxLength="255" />
           <Property Name="X509Certificate" Type="image" />
@@ -59,7 +59,7 @@
           <Key>
             <PropertyRef Name="TokenId" />
           </Key>
-          <Property Name="TokenId" Type="int" Nullable="false" />
+          <Property Name="TokenId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ConsumerId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" />
           <Property Name="Token" Type="nvarchar" Nullable="false" MaxLength="255" />
