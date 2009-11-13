@@ -39,13 +39,13 @@
 
 		protected void openIdSelector_Failed(object sender, OpenIdEventArgs e) {
 			if (e.Response.Exception != null) {
-				this.errorMessageLabel.Text = e.Response.Exception.ToStringDescriptive();
+				this.errorMessageLabel.Text = HttpUtility.HtmlEncode(e.Response.Exception.ToStringDescriptive());
 			}
 			this.errorPanel.Visible = true;
 		}
 
 		protected void openIdSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
-			this.errorMessageLabel.Text = e.Exception.ToStringDescriptive();
+			this.errorMessageLabel.Text = HttpUtility.HtmlEncode(e.Exception.ToStringDescriptive());
 			this.errorPanel.Visible = true;
 		}
 

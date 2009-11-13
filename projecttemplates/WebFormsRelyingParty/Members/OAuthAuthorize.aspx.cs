@@ -27,8 +27,8 @@ namespace WebFormsRelyingParty.Members {
 				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
 				OAuth10ConsumerWarning.Visible = pendingRequest.IsUnsafeRequest;
 
-				serviceProviderDomainNameLabel.Text = this.Request.Url.Host;
-				this.consumerDomainNameLabel3.Text = this.consumerDomainNameLabel2.Text = this.consumerDomainNameLabel1.Text = OAuthServiceProvider.PendingAuthorizationConsumer.Name;
+				serviceProviderDomainNameLabel.Text = HttpUtility.HtmlEncode(this.Request.Url.Host);
+				this.consumerDomainNameLabel3.Text = this.consumerDomainNameLabel2.Text = this.consumerDomainNameLabel1.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
 			} else {
 				Utilities.VerifyCsrfCookie(this.csrfCheck.Value);
 			}
@@ -52,7 +52,7 @@ namespace WebFormsRelyingParty.Members {
 			} else {
 				this.verifierMultiView.SetActiveView(this.verificationCodeView);
 				string verifier = ServiceProvider.CreateVerificationCode(consumer.VerificationCodeFormat, consumer.VerificationCodeLength);
-				this.verificationCodeLabel.Text = verifier;
+				this.verificationCodeLabel.Text = HttpUtility.HtmlEncode(verifier);
 				requestToken.VerificationCode = verifier;
 				tokenManager.UpdateToken(requestToken);
 			}

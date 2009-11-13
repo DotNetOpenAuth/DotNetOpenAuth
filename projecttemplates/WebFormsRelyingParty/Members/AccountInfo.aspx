@@ -89,9 +89,9 @@
 				</HeaderTemplate>
 				<ItemTemplate>
 					<li>
-						<asp:Label runat="server" Text='<%# Eval("Consumer.Name") %>' />
+						<asp:Label runat="server" Text='<%# HttpUtility.HtmlEncode(Eval("Consumer.Name").ToString()) %>' />
 						-
-						<asp:Label ID="Label1" runat="server" Text='<%# Eval("CreatedOn") %>' ForeColor="Gray" />
+						<asp:Label ID="Label1" runat="server" Text='<%# HttpUtility.HtmlEncode(Eval("CreatedOn").ToString()) %>' ForeColor="Gray" />
 						-
 						<asp:LinkButton ID="revokeLink" runat="server" Text="revoke" OnCommand="revokeToken_Command"
 							CommandName="revokeToken" CommandArgument='<%# Eval("Token") %>' />
@@ -112,7 +112,7 @@
 		</HeaderTemplate>
 		<ItemTemplate>
 			<li class='<%# ((bool)Eval("IsInfoCard")) ? "InfoCard" : "OpenID" %>'>
-				<asp:Label ID="OpenIdClaimedIdentifierLabel" runat="server" Text='<%# Eval("FriendlyIdentifier") %>'
+				<asp:Label ID="OpenIdClaimedIdentifierLabel" runat="server" Text='<%# HttpUtility.HtmlEncode(Eval("FriendlyIdentifier").ToString()) %>'
 					ToolTip='<%# Eval("ClaimedIdentifier") %>' />
 				<asp:Label runat="server" ForeColor="Gray" Text="(current login token)" ToolTip="To delete this token, you must log in using some other token."
 					Visible='<%# String.Equals((string)Eval("ClaimedIdentifier"), Page.User.Identity.Name, StringComparison.Ordinal) %>' />
