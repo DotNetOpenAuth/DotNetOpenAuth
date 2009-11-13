@@ -36,7 +36,16 @@
         <ProjectItem ReplaceParameters="true" TargetFileName="log4net.xml">log4net.xml</ProjectItem>
       </Folder>
       <Folder Name="Code" TargetFolderName="Code">
-        <ProjectItem ReplaceParameters="true" TargetFileName="DataRoleProvider.cs">DataRoleProvider.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">DataRoleProvider.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthAuthenticationModule.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthAuthorizationManager.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthConsumerTokenManager.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthPrincipalAuthorizationPolicy.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthServiceProvider.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthServiceProviderTokenManager.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthTokenManager.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">Policies.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">Utilities.cs</ProjectItem>
       </Folder>
       <ProjectItem ReplaceParameters="true" TargetFileName="Default.aspx">Default.aspx</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Default.aspx.cs">Default.aspx.cs</ProjectItem>
@@ -69,10 +78,19 @@
         <ProjectItem ReplaceParameters="true" TargetFileName="Default.aspx.cs">Default.aspx.cs</ProjectItem>
         <ProjectItem ReplaceParameters="true" TargetFileName="Default.aspx.designer.cs">Default.aspx.designer.cs</ProjectItem>
         <ProjectItem ReplaceParameters="true" TargetFileName="Web.config">Web.config</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthAuthorize.aspx</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthAuthorize.aspx.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true">OAuthAuthorize.aspx.designer.cs</ProjectItem>
       </Folder>
-      <ProjectItem ReplaceParameters="true" TargetFileName="Model.cs">Model.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Model.IssuedAccessToken.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Model.IssuedRequestToken.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Model.AuthenticationToken.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Model.User.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Model.Consumer.cs</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Model.edmx">Model.edmx</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Model.Designer.cs">Model.Designer.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">OAuth.ashx</ProjectItem>
+      <ProjectItem ReplaceParameters="true">OAuth.ashx.cs</ProjectItem>
       <Folder Name="Properties" TargetFolderName="Properties">
         <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
       </Folder>

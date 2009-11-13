@@ -266,7 +266,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Admin\CreateDatabase.sql" />
-    <Content Include="bin\Microsoft.Contracts.dll" />
     <Content Include="Members\OAuthAuthorize.aspx" />
     <Content Include="OAuth.ashx" />
   </ItemGroup>
