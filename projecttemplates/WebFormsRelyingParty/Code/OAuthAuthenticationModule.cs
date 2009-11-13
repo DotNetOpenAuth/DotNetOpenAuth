@@ -10,6 +10,7 @@ namespace WebFormsRelyingParty.Code {
 	using System.Linq;
 	using System.Security.Principal;
 	using System.Web;
+	using System.Web.Security;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -27,6 +28,10 @@ namespace WebFormsRelyingParty.Code {
 		public void Init(HttpApplication context) {
 			this.application = context;
 			this.application.AuthenticateRequest += this.context_AuthenticateRequest;
+
+			// Register an event that allows us to override roles for OAuth requests.
+			var roleManager = (RoleManagerModule)this.application.Modules["RoleManager"];
+			roleManager.GetRoles += this.roleManager_GetRoles;
 		}
 
 		/// <summary>
@@ -57,6 +62,17 @@ namespace WebFormsRelyingParty.Code {
 
 		private bool IsOAuthControllerRequest() {
 			return string.Equals(this.application.Context.Request.Url.AbsolutePath, "/OAuth.ashx", StringComparison.OrdinalIgnoreCase);
+		}
+
+		/// <summary>
+		/// Handles the GetRoles event of the roleManager control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Web.Security.RoleManagerEventArgs"/> instance containing the event data.</param>
+		private void roleManager_GetRoles(object sender, RoleManagerEventArgs e) {
+			if (this.application.User is OAuthPrincipal) {
+				e.RolesPopulated = true;
+			}
 		}
 	}
 }
