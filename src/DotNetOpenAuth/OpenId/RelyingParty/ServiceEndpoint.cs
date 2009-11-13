@@ -149,7 +149,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						}
 					} else if (uri != null) {
 						if (uri != this.Protocol.ClaimedIdentifierForOPIdentifier) {
-							string displayUri = uri.Uri.Authority + uri.Uri.PathAndQuery;
+							string displayUri = uri.Uri.Host + uri.Uri.AbsolutePath;
 							displayUri = displayUri.TrimEnd('/');
 
 							// Multi-byte unicode characters get encoded by the Uri class for transit.
