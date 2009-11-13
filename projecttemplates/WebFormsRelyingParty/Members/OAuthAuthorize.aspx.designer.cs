@@ -77,6 +77,42 @@ namespace WebFormsRelyingParty.Members {
         protected global::System.Web.UI.WebControls.Panel OAuth10ConsumerWarning;
         
         /// <summary>
+        /// serviceProviderDomainNameLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label serviceProviderDomainNameLabel;
+        
+        /// <summary>
+        /// consumerDomainNameLabel1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label consumerDomainNameLabel1;
+        
+        /// <summary>
+        /// consumerDomainNameLabel2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label consumerDomainNameLabel2;
+        
+        /// <summary>
+        /// consumerDomainNameLabel3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label consumerDomainNameLabel3;
+        
+        /// <summary>
         /// authorizationGrantedView control.
         /// </summary>
         /// <remarks>

@@ -29,7 +29,7 @@
 				to be enabled to better protect your security.
 			</div>
 			<asp:Panel runat="server" BackColor="Red" ForeColor="White" Font-Bold="true" Visible="false" ID="OAuth10ConsumerWarning">
-				This website is registered with service_PROVIDER_DOMAIN_NAME to make authorization requests, but has not been configured to send requests securely. If you grant access but you did not initiate this request at consumer_DOMAIN_NAME, it may be possible for other users of consumer_DOMAIN_NAME to access your data. We recommend you deny access unless you are certain that you initiated this request directly with consumer_DOMAIN_NAME.
+				This website is registered with <asp:Label runat="server" ID="serviceProviderDomainNameLabel" /> to make authorization requests, but has not been configured to send requests securely. If you grant access but you did not initiate this request at <asp:Label runat="server" ID="consumerDomainNameLabel1" />, it may be possible for other users of <asp:Label runat="server" ID="consumerDomainNameLabel2" /> to access your data. We recommend you deny access unless you are certain that you initiated this request directly with <asp:Label runat="server" ID="consumerDomainNameLabel3" />.
 			</asp:Panel>
 
 			<script language="javascript" type="text/javascript">

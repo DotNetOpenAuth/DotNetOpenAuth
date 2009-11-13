@@ -26,6 +26,9 @@ namespace WebFormsRelyingParty.Members {
 				this.csrfCheck.Value = Utilities.SetCsrfCookie();
 				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
 				OAuth10ConsumerWarning.Visible = pendingRequest.IsUnsafeRequest;
+
+				serviceProviderDomainNameLabel.Text = this.Request.Url.Host;
+				consumerDomainNameLabel3.Text = consumerDomainNameLabel2.Text = consumerDomainNameLabel1.Text = OAuthServiceProvider.PendingAuthorizationConsumer.Name;
 			} else {
 				Utilities.VerifyCsrfCookie(this.csrfCheck.Value);
 			}
