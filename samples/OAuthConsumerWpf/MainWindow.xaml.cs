@@ -171,7 +171,7 @@
 					string requestToken;
 					Uri authorizeUrl = consumer.RequestUserAuthorization(null, null, out requestToken);
 					Process.Start(authorizeUrl.AbsoluteUri);
-					MessageBox.Show("Click OK when you've authorized the app.");
+					MessageBox.Show(this, "Click OK when you've authorized the app.");
 					var authorizationResponse = consumer.ProcessUserAuthorization(requestToken);
 					accessToken = authorizationResponse.AccessToken;
 				} else {
@@ -195,7 +195,7 @@
 					resultsBox.Text = resourceResponse.GetResponseReader().ReadToEnd();
 				}
 			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
-				MessageBox.Show(ex.Message);
+				MessageBox.Show(this, ex.Message);
 			}
 		}
 	}
