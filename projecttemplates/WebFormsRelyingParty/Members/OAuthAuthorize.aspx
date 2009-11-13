@@ -17,7 +17,8 @@
 				alright with you?
 			</p>
 			<p>
-				If you grant access now, you can revoke it at any time by returning to this page.
+				If you grant access now, you can revoke it at any time by returning to <a href="AccountInfo.aspx"
+					target="_blank">your account page</a>.
 			</p>
 			<div style="display: none" id="responseButtonsDiv">
 				<asp:Button ID="yesButton" runat="server" Text="Yes" OnClick="yesButton_Click" />
@@ -28,8 +29,18 @@
 				<b>Javascript appears to be disabled in your browser. </b>This page requires Javascript
 				to be enabled to better protect your security.
 			</div>
-			<asp:Panel runat="server" BackColor="Red" ForeColor="White" Font-Bold="true" Visible="false" ID="OAuth10ConsumerWarning">
-				This website is registered with <asp:Label runat="server" ID="serviceProviderDomainNameLabel" /> to make authorization requests, but has not been configured to send requests securely. If you grant access but you did not initiate this request at <asp:Label runat="server" ID="consumerDomainNameLabel1" />, it may be possible for other users of <asp:Label runat="server" ID="consumerDomainNameLabel2" /> to access your data. We recommend you deny access unless you are certain that you initiated this request directly with <asp:Label runat="server" ID="consumerDomainNameLabel3" />.
+			<asp:Panel runat="server" BackColor="Red" ForeColor="White" Font-Bold="true" Visible="false"
+				ID="OAuth10ConsumerWarning">
+				This website is registered with
+				<asp:Label runat="server" ID="serviceProviderDomainNameLabel" />
+				to make authorization requests, but has not been configured to send requests securely.
+				If you grant access but you did not initiate this request at
+				<asp:Label runat="server" ID="consumerDomainNameLabel1" />, it may be possible for
+				other users of
+				<asp:Label runat="server" ID="consumerDomainNameLabel2" />
+				to access your data. We recommend you deny access unless you are certain that you
+				initiated this request directly with
+				<asp:Label runat="server" ID="consumerDomainNameLabel3" />.
 			</asp:Panel>
 
 			<script language="javascript" type="text/javascript">
@@ -49,19 +60,26 @@
 
 		</asp:View>
 		<asp:View ID="authorizationGrantedView" runat="server">
-			<p>Authorization has been granted.</p>
+			<p>
+				Authorization has been granted.</p>
 			<asp:MultiView runat="server" ID="verifierMultiView" ActiveViewIndex="0">
 				<asp:View ID="verificationCodeView" runat="server">
-					<p>You must enter this verification code at the Consumer: <asp:Label runat="server"
-						ID="verificationCodeLabel" /> </p>
+					<p>
+						You must enter this verification code at the Consumer:
+						<asp:Label runat="server" ID="verificationCodeLabel" />
+					</p>
 				</asp:View>
 				<asp:View ID="noCallbackView" runat="server">
-					<p>You may now close this window and return to the Consumer. </p>
+					<p>
+						You may now close this window and return to the Consumer.
+					</p>
 				</asp:View>
 			</asp:MultiView>
 		</asp:View>
 		<asp:View ID="authorizationDeniedView" runat="server">
-			<p>Authorization has been denied. You're free to do whatever now. </p>
+			<p>
+				Authorization has been denied. You're free to do whatever now.
+			</p>
 		</asp:View>
 	</asp:MultiView>
 </asp:Content>

@@ -75,6 +75,34 @@
 			<asp:AsyncPostBackTrigger ControlID="saveChanges" EventName="Click" />
 		</Triggers>
 	</asp:UpdatePanel>
+	<asp:UpdatePanel runat="server" ID="authorizedClientsPanel" ChildrenAsTriggers="true">
+		<ContentTemplate>
+			<h3>
+				Authorized clients
+			</h3>
+			<asp:Panel runat="server" ID="noAuthorizedClientsPanel" Visible="false">
+				You have not authorized any clients to access your data.
+			</asp:Panel>
+			<asp:Repeater runat="server" ID="tokenListRepeater">
+				<HeaderTemplate>
+					<ul>
+				</HeaderTemplate>
+				<ItemTemplate>
+					<li>
+						<asp:Label runat="server" Text='<%# Eval("Consumer.Name") %>' />
+						-
+						<asp:Label ID="Label1" runat="server" Text='<%# Eval("CreatedOn") %>' ForeColor="Gray" />
+						-
+						<asp:LinkButton ID="revokeLink" runat="server" Text="revoke" OnCommand="revokeToken_Command"
+							CommandName="revokeToken" CommandArgument='<%# Eval("Token") %>' />
+					</li>
+				</ItemTemplate>
+				<FooterTemplate>
+					</ul>
+				</FooterTemplate>
+			</asp:Repeater>
+		</ContentTemplate>
+	</asp:UpdatePanel>
 	<h3>
 		OpenIDs &amp; InfoCards
 	</h3>

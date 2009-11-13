@@ -18,8 +18,21 @@ namespace WebFormsRelyingParty.Members {
 		protected void Page_Load(object sender, EventArgs e) {
 			Global.LoggedInUser.AuthenticationTokens.Load();
 			this.Repeater1.DataSource = Global.LoggedInUser.AuthenticationTokens;
+
+			if (!Global.LoggedInUser.IssuedToken.IsLoaded) {
+				Global.LoggedInUser.IssuedToken.Load();
+			}
+			this.tokenListRepeater.DataSource = Global.LoggedInUser.IssuedToken;
+			foreach (var token in Global.LoggedInUser.IssuedToken) {
+				if (!token.ConsumerReference.IsLoaded) {
+					token.ConsumerReference.Load();
+				}
+			}
+			this.authorizedClientsPanel.Visible = Global.LoggedInUser.IssuedToken.Count > 0;
+
 			if (!IsPostBack) {
 				this.Repeater1.DataBind();
+				this.tokenListRepeater.DataBind();
 				this.emailBox.Text = Global.LoggedInUser.EmailAddress;
 				this.emailVerifiedLabel.Visible = Global.LoggedInUser.EmailAddressVerified;
 				this.firstNameBox.Text = Global.LoggedInUser.FirstName;
@@ -54,6 +67,17 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void InfoCardSelector1_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
 			this.AddIdentifier(AuthenticationToken.SynthesizeClaimedIdentifierFromInfoCard(e.Token.UniqueId), e.Token.SiteSpecificId);
+		}
+
+		protected void revokeToken_Command(object sender, CommandEventArgs e) {
+			string token = (string)e.CommandArgument;
+			var tokenToRevoke = Global.DataContext.IssuedToken.FirstOrDefault(t => t.Token == token && t.User.Id == Global.LoggedInUser.Id);
+			if (tokenToRevoke != null) {
+				Global.DataContext.DeleteObject(tokenToRevoke);
+			}
+
+			this.tokenListRepeater.DataBind();
+			this.noAuthorizedClientsPanel.Visible = Global.LoggedInUser.IssuedToken.Count == 0;
 		}
 
 		private void AddIdentifier(string claimedId, string friendlyId) {

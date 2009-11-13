@@ -28,7 +28,7 @@ namespace WebFormsRelyingParty.Members {
 				OAuth10ConsumerWarning.Visible = pendingRequest.IsUnsafeRequest;
 
 				serviceProviderDomainNameLabel.Text = this.Request.Url.Host;
-				consumerDomainNameLabel3.Text = consumerDomainNameLabel2.Text = consumerDomainNameLabel1.Text = OAuthServiceProvider.PendingAuthorizationConsumer.Name;
+				this.consumerDomainNameLabel3.Text = this.consumerDomainNameLabel2.Text = this.consumerDomainNameLabel1.Text = OAuthServiceProvider.PendingAuthorizationConsumer.Name;
 			} else {
 				Utilities.VerifyCsrfCookie(this.csrfCheck.Value);
 			}
@@ -48,9 +48,9 @@ namespace WebFormsRelyingParty.Members {
 			// The rest of this method only executes if we couldn't automatically
 			// redirect to the consumer.
 			if (pendingRequest.IsUnsafeRequest) {
-				this.verifierMultiView.SetActiveView(noCallbackView);
+				this.verifierMultiView.SetActiveView(this.noCallbackView);
 			} else {
-				this.verifierMultiView.SetActiveView(verificationCodeView);
+				this.verifierMultiView.SetActiveView(this.verificationCodeView);
 				string verifier = ServiceProvider.CreateVerificationCode(consumer.VerificationCodeFormat, consumer.VerificationCodeLength);
 				this.verificationCodeLabel.Text = verifier;
 				requestToken.VerificationCode = verifier;
@@ -59,7 +59,7 @@ namespace WebFormsRelyingParty.Members {
 		}
 
 		protected void noButton_Click(object sender, EventArgs e) {
-			outerMultiView.SetActiveView(authorizationDeniedView);
+			this.outerMultiView.SetActiveView(this.authorizationDeniedView);
 			OAuthServiceProvider.PendingAuthorizationRequest = null;
 		}
 	}
