@@ -20,7 +20,7 @@ namespace WebFormsRelyingParty.Members {
 			if (!IsPostBack) {
 				var pendingRequest = OAuthServiceProvider.PendingAuthorizationRequest;
 				if (pendingRequest == null) {
-					Response.Redirect("~/");
+					Response.Redirect("AccountInfo.aspx");
 				}
 
 				this.csrfCheck.Value = Utilities.SetCsrfCookie();
