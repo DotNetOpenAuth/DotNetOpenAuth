@@ -7,12 +7,22 @@
     <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
         <EntityContainer Name="DatabaseModelStoreContainer">
           <EntitySet Name="AuthenticationToken" EntityType="DatabaseModel.Store.AuthenticationToken" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Consumer" EntityType="DatabaseModel.Store.Consumer" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IssuedToken" EntityType="DatabaseModel.Store.IssuedToken" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Role" EntityType="DatabaseModel.Store.Role" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User" EntityType="DatabaseModel.Store.User" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="UserRole" EntityType="DatabaseModel.Store.UserRole" store:Type="Tables" Schema="dbo" />
           <AssociationSet Name="FK_AuthenticationToken_User" Association="DatabaseModel.Store.FK_AuthenticationToken_User">
             <End Role="User" EntitySet="User" />
             <End Role="AuthenticationToken" EntitySet="AuthenticationToken" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IssuedToken_Consumer" Association="DatabaseModel.Store.FK_IssuedToken_Consumer">
+            <End Role="Consumer" EntitySet="Consumer" />
+            <End Role="IssuedToken" EntitySet="IssuedToken" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IssuedToken_User" Association="DatabaseModel.Store.FK_IssuedToken_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="IssuedToken" EntitySet="IssuedToken" />
           </AssociationSet>
           <AssociationSet Name="FK_UserRole_Role" Association="DatabaseModel.Store.FK_UserRole_Role">
             <End Role="Role" EntitySet="Role" />
@@ -31,6 +41,36 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="OpenIdClaimedIdentifier" Type="nvarchar" Nullable="false" MaxLength="250" />
           <Property Name="OpenIdFriendlyIdentifier" Type="nvarchar" MaxLength="250" />
+        </EntityType>
+        <EntityType Name="Consumer">
+          <Key>
+            <PropertyRef Name="ConsumerId" />
+          </Key>
+          <Property Name="ConsumerId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ConsumerKey" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="ConsumerSecret" Type="nvarchar" MaxLength="255" />
+          <Property Name="X509Certificate" Type="image" />
+          <Property Name="Callback" Type="nvarchar" MaxLength="2048" />
+          <Property Name="VerificationCodeFormat" Type="int" Nullable="false" />
+          <Property Name="VerificationCodeLength" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="IssuedToken">
+          <Key>
+            <PropertyRef Name="TokenId" />
+          </Key>
+          <Property Name="TokenId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ConsumerId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="Token" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="TokenSecret" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+          <Property Name="Callback" Type="nvarchar" MaxLength="2048" />
+          <Property Name="VerificationCode" Type="nvarchar" MaxLength="255" />
+          <Property Name="ConsumerVersion" Type="varchar" MaxLength="10" />
+          <Property Name="ExpirationDate" Type="datetime" />
+          <Property Name="IsAccessToken" Type="bit" Nullable="false" />
+          <Property Name="Scope" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -67,6 +107,34 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="AuthenticationToken">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IssuedToken_Consumer">
+          <End Role="Consumer" Type="DatabaseModel.Store.Consumer" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IssuedToken" Type="DatabaseModel.Store.IssuedToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Consumer">
+              <PropertyRef Name="ConsumerId" />
+            </Principal>
+            <Dependent Role="IssuedToken">
+              <PropertyRef Name="ConsumerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IssuedToken_User">
+          <End Role="User" Type="DatabaseModel.Store.User" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="IssuedToken" Type="DatabaseModel.Store.IssuedToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IssuedToken">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
@@ -114,6 +182,14 @@
           <AssociationSet Name="UserAuthenticationToken" Association="DatabaseModel.UserAuthenticationToken">
             <End Role="User" EntitySet="User" />
             <End Role="AuthenticationToken" EntitySet="AuthenticationToken" /></AssociationSet>
+          <EntitySet Name="Consumer" EntityType="DatabaseModel.Consumer" />
+          <EntitySet Name="IssuedToken" EntityType="DatabaseModel.IssuedToken" />
+          <AssociationSet Name="FK_IssuedToken_Consumer" Association="DatabaseModel.FK_IssuedToken_Consumer">
+            <End Role="Consumer" EntitySet="Consumer" />
+            <End Role="IssuedTokens" EntitySet="IssuedToken" /></AssociationSet>
+          <AssociationSet Name="FK_IssuedToken_User" Association="DatabaseModel.FK_IssuedToken_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="IssuedTokens" EntitySet="IssuedToken" /></AssociationSet>
           </EntityContainer>
         <EntityType Name="AuthenticationToken" Abstract="false">
           <Key>
@@ -145,14 +221,48 @@
           <Property Name="EmailAddressVerified" Type="Boolean" Nullable="false" >
             <Documentation>
               <Summary>A value indicating whether the email address has been verified as actually owned by this user.</Summary></Documentation></Property>
-          </EntityType>
+          <NavigationProperty Name="IssuedToken" Relationship="DatabaseModel.FK_IssuedToken_User" FromRole="User" ToRole="IssuedTokens" /></EntityType>
         <Association Name="UserRole">
           <End Role="Role" Type="DatabaseModel.Role" Multiplicity="*" />
           <End Role="User" Type="DatabaseModel.User" Multiplicity="*" />
         </Association>
         <Association Name="UserAuthenticationToken">
           <End Type="DatabaseModel.User" Role="User" Multiplicity="1" />
-          <End Type="DatabaseModel.AuthenticationToken" Role="AuthenticationToken" Multiplicity="*" /></Association></Schema>
+          <End Type="DatabaseModel.AuthenticationToken" Role="AuthenticationToken" Multiplicity="*" /></Association>
+        <EntityType Name="Consumer">
+          <Key>
+            <PropertyRef Name="ConsumerId" /></Key>
+          <Property Name="ConsumerKey" Type="String" Nullable="false" />
+          <Property Name="ConsumerSecret" Type="String" Nullable="true" />
+          <Property Name="X509CertificateAsBinary" Type="Binary" Nullable="true" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:GetterAccess="Private" />
+          <Property Name="CallbackAsString" Type="String" Nullable="true" />
+          <Property Name="VerificationCodeFormatAsInt" Type="Int32" Nullable="false" a:GetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Private" />
+          <Property Name="VerificationCodeLength" Type="Int32" Nullable="false" />
+          <Property Name="ConsumerId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="IssuedToken" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="Consumer" ToRole="IssuedTokens" />
+          <Property Name="Name" Type="String" Nullable="true" /></EntityType>
+        <EntityType Name="IssuedToken" Abstract="true">
+          <Key>
+            <PropertyRef Name="TokenId" /></Key>
+          <Property Name="TokenId" Type="Int32" Nullable="false" />
+          <Property Name="Token" Type="String" Nullable="false" />
+          <Property Name="TokenSecret" Type="String" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Consumer" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="IssuedTokens" ToRole="Consumer" />
+          <NavigationProperty Name="User" Relationship="DatabaseModel.FK_IssuedToken_User" FromRole="IssuedTokens" ToRole="User" />
+          <Property Name="Scope" Type="String" Nullable="true" /></EntityType>
+        <Association Name="FK_IssuedToken_Consumer">
+          <End Type="DatabaseModel.Consumer" Role="Consumer" Multiplicity="1" />
+          <End Type="DatabaseModel.IssuedToken" Role="IssuedTokens" Multiplicity="*" /></Association>
+        <Association Name="FK_IssuedToken_User">
+          <End Type="DatabaseModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="DatabaseModel.IssuedToken" Role="IssuedTokens" Multiplicity="*" /></Association>
+        <EntityType Name="IssuedRequestToken" BaseType="DatabaseModel.IssuedToken">
+          <Property Name="ConsumerVersionAsString" Type="String" Nullable="false" a:GetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Private" />
+          <Property Name="VerificationCode" Type="String" Nullable="true" />
+          <Property Name="CallbackAsString" Type="String" Nullable="true" a:GetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Private" /></EntityType>
+        <EntityType Name="IssuedAccessToken" BaseType="DatabaseModel.IssuedToken">
+          <Property Name="ExpirationDate" Type="DateTime" Nullable="true" /></EntityType></Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -198,7 +308,48 @@
               <ScalarProperty Name="Id" ColumnName="Id" /></EndProperty>
             <EndProperty Name="User">
               <ScalarProperty Name="Id" ColumnName="UserId" /></EndProperty></AssociationSetMapping>
-          </EntityContainerMapping>
+          <EntitySetMapping Name="Consumer">
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.Consumer)">
+              <MappingFragment StoreEntitySet="Consumer">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ConsumerId" ColumnName="ConsumerId" />
+                <ScalarProperty Name="VerificationCodeLength" ColumnName="VerificationCodeLength" />
+                <ScalarProperty Name="VerificationCodeFormatAsInt" ColumnName="VerificationCodeFormat" />
+                <ScalarProperty Name="CallbackAsString" ColumnName="Callback" />
+                <ScalarProperty Name="X509CertificateAsBinary" ColumnName="X509Certificate" />
+                <ScalarProperty Name="ConsumerSecret" ColumnName="ConsumerSecret" />
+                <ScalarProperty Name="ConsumerKey" ColumnName="ConsumerKey" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="IssuedToken">
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedToken)">
+              <MappingFragment StoreEntitySet="IssuedToken">
+                <ScalarProperty Name="Scope" ColumnName="Scope" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="TokenSecret" ColumnName="TokenSecret" />
+                <ScalarProperty Name="Token" ColumnName="Token" />
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" /></MappingFragment></EntityTypeMapping>
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedRequestToken)">
+              <MappingFragment StoreEntitySet="IssuedToken" >
+                <ScalarProperty Name="CallbackAsString" ColumnName="Callback" />
+                <ScalarProperty Name="ConsumerVersionAsString" ColumnName="ConsumerVersion" />
+                <ScalarProperty Name="VerificationCode" ColumnName="VerificationCode" />
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" />
+                <Condition ColumnName="IsAccessToken" Value="0" /></MappingFragment></EntityTypeMapping>
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedAccessToken)">
+              <MappingFragment StoreEntitySet="IssuedToken" >
+                <ScalarProperty Name="ExpirationDate" ColumnName="ExpirationDate" />
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" />
+                <Condition ColumnName="IsAccessToken" Value="1" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <AssociationSetMapping Name="FK_IssuedToken_Consumer" TypeName="DatabaseModel.FK_IssuedToken_Consumer" StoreEntitySet="IssuedToken">
+            <EndProperty Name="IssuedTokens">
+              <ScalarProperty Name="TokenId" ColumnName="TokenId" /></EndProperty>
+            <EndProperty Name="Consumer">
+              <ScalarProperty Name="ConsumerId" ColumnName="ConsumerId" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_IssuedToken_User" TypeName="DatabaseModel.FK_IssuedToken_User" StoreEntitySet="IssuedToken">
+            <EndProperty Name="IssuedTokens">
+              <ScalarProperty Name="TokenId" ColumnName="TokenId" /></EndProperty>
+            <EndProperty Name="User">
+              <ScalarProperty Name="Id" ColumnName="UserId" /></EndProperty>
+            <Condition ColumnName="UserId" IsNull="false" /></AssociationSetMapping></EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
@@ -228,6 +379,26 @@
           <ConnectorPoint PointX="6.5625" PointY="2.9129850260416665" /></InheritanceConnector>
         <AssociationConnector Association="DatabaseModel.UserAuthenticationToken">
           <ConnectorPoint PointX="4.625" PointY="2.0189925130208337" />
-          <ConnectorPoint PointX="5.25" PointY="2.0189925130208337" /></AssociationConnector></Diagram></edmx:Diagrams>
+          <ConnectorPoint PointX="5.25" PointY="2.0189925130208337" /></AssociationConnector>
+        <EntityTypeShape EntityType="DatabaseModel.Consumer" Width="2.125" PointX="0.5" PointY="3.625" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="DatabaseModel.IssuedToken" Width="2" PointX="4.5" PointY="3.625" Height="2.1725878906249996" />
+        <AssociationConnector Association="DatabaseModel.FK_IssuedToken_Consumer" ManuallyRouted="false" >
+          <ConnectorPoint PointX="2.625" PointY="5.359375" />
+          <ConnectorPoint PointX="4.5" PointY="5.359375" />
+          </AssociationConnector>
+        <AssociationConnector Association="DatabaseModel.FK_IssuedToken_User" >
+          <ConnectorPoint PointX="3.6874995" PointY="3.4321907552083331" />
+          <ConnectorPoint PointX="3.6874995" PointY="4.005208333333333" />
+          <ConnectorPoint PointX="4.5" PointY="4.005208333333333" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="DatabaseModel.IssuedRequestToken" Width="2" PointX="4.25" PointY="6.25" Height="1.5956835937499996" />
+        <EntityTypeShape EntityType="DatabaseModel.IssuedAccessToken" Width="1.625" PointX="6.5" PointY="6.25" Height="1.2110807291666657" />
+        <InheritanceConnector EntityType="DatabaseModel.IssuedRequestToken">
+          <ConnectorPoint PointX="5.375" PointY="5.797587890625" />
+          <ConnectorPoint PointX="5.375" PointY="6.25" /></InheritanceConnector>
+        <InheritanceConnector EntityType="DatabaseModel.IssuedAccessToken">
+          <ConnectorPoint PointX="6.5" PointY="4.7112939453125" />
+          <ConnectorPoint PointX="7.34375" PointY="4.7112939453125" />
+          <ConnectorPoint PointX="7.34375" PointY="6.25" /></InheritanceConnector></Diagram></edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

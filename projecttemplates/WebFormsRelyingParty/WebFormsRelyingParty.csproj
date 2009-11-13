@@ -87,7 +87,25 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\OAuthAuthenticationModule.cs" />
+    <Compile Include="Code\OAuthAuthorizationManager.cs" />
+    <Compile Include="Code\OAuthConsumerTokenManager.cs" />
+    <Compile Include="Code\OAuthPrincipalAuthorizationPolicy.cs" />
+    <Compile Include="Code\OAuthServiceProvider.cs" />
+    <Compile Include="Code\OAuthServiceProviderTokenManager.cs" />
+    <Compile Include="Code\OAuthTokenManager.cs" />
     <Compile Include="Code\Policies.cs" />
+    <Compile Include="Code\Utilities.cs" />
+    <Compile Include="Members\OAuthAuthorize.aspx.cs">
+      <DependentUpon>OAuthAuthorize.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Members\OAuthAuthorize.aspx.designer.cs">
+      <DependentUpon>OAuthAuthorize.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Model.IssuedRequestToken.cs" />
+    <Compile Include="Model.IssuedAccessToken.cs" />
+    <Compile Include="Model.Consumer.cs" />
     <Compile Include="Model.User.cs" />
     <Compile Include="LoginFrame.aspx.cs">
       <DependentUpon>LoginFrame.aspx</DependentUpon>
@@ -153,6 +171,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Model.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="OAuth.ashx.cs">
+      <DependentUpon>OAuth.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EntityDeploy Include="Model.edmx">
@@ -245,6 +266,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Admin\CreateDatabase.sql" />
+    <Content Include="bin\Microsoft.Contracts.dll" />
+    <Content Include="Members\OAuthAuthorize.aspx" />
+    <Content Include="OAuth.ashx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
