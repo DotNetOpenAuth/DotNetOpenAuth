@@ -45,6 +45,12 @@ namespace WebFormsRelyingParty {
 				// We don't really have the concept of a single username, but we
 				// can use any of the authentication tokens instead since that
 				// is what the rest of the web site expects.
+				if (!this.UserReference.IsLoaded) {
+					this.UserReference.Load();
+				}
+				if (!this.User.AuthenticationTokens.IsLoaded) {
+					this.User.AuthenticationTokens.Load();
+				}
 				return this.User.AuthenticationTokens.First().ClaimedIdentifier;
 			}
 		}

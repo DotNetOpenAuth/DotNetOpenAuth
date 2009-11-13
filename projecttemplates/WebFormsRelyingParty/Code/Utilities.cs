@@ -52,7 +52,7 @@ namespace WebFormsRelyingParty.Code {
 		public static void VerifyCsrfCookie(string secret) {
 			var cookie = HttpContext.Current.Request.Cookies[csrfCookieName];
 			if (cookie != null) {
-				if (cookie.Value == secret) {
+				if (cookie.Value == secret && !string.IsNullOrEmpty(secret)) {
 					// Valid CSRF check.  Clear the cookie and return.
 					cookie.Expires = DateTime.Now.Subtract(TimeSpan.FromDays(1));
 					cookie.Value = string.Empty;

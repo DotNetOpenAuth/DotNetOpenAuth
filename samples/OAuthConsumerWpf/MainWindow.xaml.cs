@@ -2,6 +2,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Net;
 	using System.Security.Cryptography.X509Certificates;
@@ -125,6 +126,7 @@
 			Authorize auth = new Authorize(
 				this.wcf,
 				(DesktopConsumer consumer, out string requestToken) => consumer.RequestUserAuthorization(requestArgs, null, out requestToken));
+			auth.Owner = this;
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
 				this.wcfAccessToken = auth.AccessToken;
@@ -147,6 +149,53 @@
 			using (OperationContextScope scope = new OperationContextScope(client.InnerChannel)) {
 				OperationContext.Current.OutgoingMessageProperties[HttpRequestMessageProperty.Name] = httpDetails;
 				return predicate(client);
+			}
+		}
+
+		private void beginButton_Click(object sender, RoutedEventArgs e) {
+			try {
+				var service = new ServiceProviderDescription {
+					RequestTokenEndpoint = new MessageReceivingEndpoint(requestTokenUrlBox.Text, requestTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
+					UserAuthorizationEndpoint = new MessageReceivingEndpoint(authorizeUrlBox.Text, HttpDeliveryMethods.GetRequest),
+					AccessTokenEndpoint = new MessageReceivingEndpoint(accessTokenUrlBox.Text, accessTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
+					TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
+					ProtocolVersion = oauthVersion.SelectedIndex == 0 ? ProtocolVersion.V10 : ProtocolVersion.V10a,
+				};
+				var tokenManager = new InMemoryTokenManager();
+				tokenManager.ConsumerKey = consumerKeyBox.Text;
+				tokenManager.ConsumerSecret = consumerSecretBox.Text;
+
+				var consumer = new DesktopConsumer(service, tokenManager);
+				string accessToken;
+				if (service.ProtocolVersion == ProtocolVersion.V10) {
+					string requestToken;
+					Uri authorizeUrl = consumer.RequestUserAuthorization(null, null, out requestToken);
+					Process.Start(authorizeUrl.AbsoluteUri);
+					MessageBox.Show("Click OK when you've authorized the app.");
+					var authorizationResponse = consumer.ProcessUserAuthorization(requestToken);
+					accessToken = authorizationResponse.AccessToken;
+				} else {
+					var authorizePopup = new Authorize(
+						consumer,
+						(DesktopConsumer c, out string requestToken) => c.RequestUserAuthorization(null, null, out requestToken));
+					authorizePopup.Owner = this;
+					bool? result = authorizePopup.ShowDialog();
+					if (result.HasValue && result.Value) {
+						accessToken = authorizePopup.AccessToken;
+					} else {
+						return;
+					}
+				}
+				HttpDeliveryMethods resourceHttpMethod = resourceHttpMethodList.SelectedIndex < 2 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest;
+				if (resourceHttpMethodList.SelectedIndex == 1) {
+					resourceHttpMethod |= HttpDeliveryMethods.AuthorizationHeaderRequest;
+				}
+				var resourceEndpoint = new MessageReceivingEndpoint(resourceUrlBox.Text, resourceHttpMethod);
+				using (IncomingWebResponse resourceResponse = consumer.PrepareAuthorizedRequestAndSend(resourceEndpoint, accessToken)) {
+					resultsBox.Text = resourceResponse.GetResponseReader().ReadToEnd();
+				}
+			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
+				MessageBox.Show(ex.Message);
 			}
 		}
 	}

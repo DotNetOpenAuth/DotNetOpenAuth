@@ -148,6 +148,7 @@ namespace WebFormsRelyingParty {
 			if (DataContextTransactionSimple != null) {
 				DataContextTransactionSimple.Rollback();
 				DataContextTransactionSimple.Dispose();
+				DataContextTransactionSimple = null;
 			}
 		}
 

@@ -9,6 +9,7 @@ namespace WebFormsRelyingParty {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web;
+	using System.Web.SessionState;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -17,7 +18,7 @@ namespace WebFormsRelyingParty {
 	/// <summary>
 	/// Responds to incoming OAuth Service Provider messages.
 	/// </summary>
-	public class OAuth : IHttpHandler {
+	public class OAuth : IHttpHandler, IRequiresSessionState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth"/> class.
 		/// </summary>

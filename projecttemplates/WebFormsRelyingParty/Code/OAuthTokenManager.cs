@@ -103,8 +103,9 @@ namespace WebFormsRelyingParty.Code {
 		/// </para>
 		/// </remarks>
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			var requestTokenEntity = Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(
-				t => t.Consumer.ConsumerKey == consumerKey && t.Token == requestToken);
+			var requestTokenEntity = Global.DataContext.IssuedToken.OfType<IssuedRequestToken>()
+				.Include("User")
+				.First(t => t.Consumer.ConsumerKey == consumerKey && t.Token == requestToken);
 
 			var accessTokenEntity = new IssuedAccessToken {
 				Token = accessToken,
@@ -113,6 +114,7 @@ namespace WebFormsRelyingParty.Code {
 				CreatedOn = DateTime.Now,
 				User = requestTokenEntity.User,
 				Scope = requestTokenEntity.Scope,
+				Consumer = requestTokenEntity.Consumer,
 			};
 
 			Global.DataContext.DeleteObject(requestTokenEntity);

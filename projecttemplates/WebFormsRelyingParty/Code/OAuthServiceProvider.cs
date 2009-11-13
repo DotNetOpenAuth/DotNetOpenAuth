@@ -68,7 +68,7 @@ namespace WebFormsRelyingParty.Code {
 					throw new InvalidOperationException();
 				}
 
-				return Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(t => t.Token == message.Token).Consumer;
+				return Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().Include("Consumer").First(t => t.Token == message.Token).Consumer;
 			}
 		}
 
@@ -82,9 +82,11 @@ namespace WebFormsRelyingParty.Code {
 			var token = Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(t => t.Token == msg.Token);
 			token.Authorize();
 
-			var response = serviceProvider.PrepareAuthorizationResponse(pendingRequest);
-			serviceProvider.Channel.Send(response);
 			PendingAuthorizationRequest = null;
+			var response = serviceProvider.PrepareAuthorizationResponse(pendingRequest);
+			if (response != null) {
+				serviceProvider.Channel.Send(response);
+			}
 		}
 
 		/// <summary>
