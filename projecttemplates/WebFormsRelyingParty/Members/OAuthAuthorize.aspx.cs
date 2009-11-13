@@ -45,11 +45,11 @@ namespace WebFormsRelyingParty.Members {
 			// The rest of this method only executes if we couldn't automatically
 			// redirect to the consumer.
 			if (pendingRequest.IsUnsafeRequest) {
-				verifierMultiView.SetActiveView(noCallbackView);
+				this.verifierMultiView.SetActiveView(noCallbackView);
 			} else {
-				verifierMultiView.SetActiveView(verificationCodeView);
+				this.verifierMultiView.SetActiveView(verificationCodeView);
 				string verifier = ServiceProvider.CreateVerificationCode(consumer.VerificationCodeFormat, consumer.VerificationCodeLength);
-				verificationCodeLabel.Text = verifier;
+				this.verificationCodeLabel.Text = verifier;
 				requestToken.VerificationCode = verifier;
 				tokenManager.UpdateToken(requestToken);
 			}

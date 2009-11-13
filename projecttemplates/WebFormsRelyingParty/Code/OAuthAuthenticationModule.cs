@@ -26,7 +26,7 @@ namespace WebFormsRelyingParty.Code {
 		/// <param name="context">An <see cref="T:System.Web.HttpApplication"/> that provides access to the methods, properties, and events common to all application objects within an ASP.NET application</param>
 		public void Init(HttpApplication context) {
 			this.application = context;
-			this.application.AuthenticateRequest += new EventHandler(context_AuthenticateRequest);
+			this.application.AuthenticateRequest += this.context_AuthenticateRequest;
 		}
 
 		/// <summary>

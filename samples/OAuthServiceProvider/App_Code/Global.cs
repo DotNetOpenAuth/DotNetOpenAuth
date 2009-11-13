@@ -96,6 +96,7 @@ public class Global : HttpApplication {
 		if (!appPath.EndsWith("/")) {
 			appPath += "/";
 		}
+
 		// This will break in IIS Integrated Pipeline mode, since applications
 		// start before the first incoming request context is available.
 		// TODO: fix this.
