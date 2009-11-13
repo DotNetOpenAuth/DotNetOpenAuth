@@ -576,8 +576,10 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 
 			var newValue = box.value;
 			if (e.keyCode == 13) {
-				if (box.dnoi_internal.state == 'setup') {
+				if (box.dnoi_internal.state === 'setup') {
 					box.dnoi_internal.loginButton.click();
+				} else if (box.dnoi_internal.postbackLoginButton) {
+					box.dnoi_internal.postbackLoginButton.click();
 				} else {
 					discover();
 				}
