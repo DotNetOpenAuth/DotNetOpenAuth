@@ -9,14 +9,14 @@
 //------------------------------------------------------------------------------
 
 [assembly: global::System.Data.Objects.DataClasses.EdmSchemaAttribute()]
-[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "UserRole", "Role", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.Role), "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.User))]
-[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "UserAuthenticationToken", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(WebFormsRelyingParty.User), "AuthenticationToken", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.AuthenticationToken))]
-[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_Consumer", "Consumer", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(WebFormsRelyingParty.Consumer), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
-[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(WebFormsRelyingParty.User), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(WebFormsRelyingParty.IssuedToken))]
+[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "UserRole", "Role", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.Role), "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.User))]
+[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "UserAuthenticationToken", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(RelyingPartyLogic.User), "AuthenticationToken", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.AuthenticationToken))]
+[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_Consumer", "Consumer", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(RelyingPartyLogic.Consumer), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.IssuedToken))]
+[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(RelyingPartyLogic.User), "IssuedTokens", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/11/2009 10:26:25 PM
-namespace WebFormsRelyingParty
+// Generation date: 11/13/2009 4:45:45 PM
+namespace RelyingPartyLogic
 {
     
     /// <summary>
@@ -823,8 +823,8 @@ namespace WebFormsRelyingParty
     [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="IssuedToken")]
     [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
     [global::System.Serializable()]
-    [global::System.Runtime.Serialization.KnownTypeAttribute(typeof(global::WebFormsRelyingParty.IssuedRequestToken))]
-    [global::System.Runtime.Serialization.KnownTypeAttribute(typeof(global::WebFormsRelyingParty.IssuedAccessToken))]
+    [global::System.Runtime.Serialization.KnownTypeAttribute(typeof(global::RelyingPartyLogic.IssuedRequestToken))]
+    [global::System.Runtime.Serialization.KnownTypeAttribute(typeof(global::RelyingPartyLogic.IssuedAccessToken))]
     public abstract partial class IssuedToken : global::System.Data.Objects.DataClasses.EntityObject
     {
         /// <summary>

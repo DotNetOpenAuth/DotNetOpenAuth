@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace WebFormsRelyingParty.Code {
+namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.IdentityModel.Claims;

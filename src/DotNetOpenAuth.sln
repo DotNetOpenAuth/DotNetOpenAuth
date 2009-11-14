@@ -168,6 +168,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Templates", "Projec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsRelyingParty", "..\projecttemplates\WebFormsRelyingParty\WebFormsRelyingParty.csproj", "{A78F8FC6-7B03-4230-BE41-761E400D6810}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyLogic", "..\projecttemplates\RelyingPartyLogic\RelyingPartyLogic.csproj", "{17932639-1F50-48AF-B0A5-E2BF832F82CC}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DotNetOpenAuth.vsmdi
@@ -268,6 +270,12 @@ Global
 		{A78F8FC6-7B03-4230-BE41-761E400D6810}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A78F8FC6-7B03-4230-BE41-761E400D6810}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A78F8FC6-7B03-4230-BE41-761E400D6810}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
+		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
+		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -289,5 +297,6 @@ Global
 		{7ADCCD5C-AC2B-4340-9410-FE3A31A48191} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{5C65603B-235F-47E6-B536-06385C60DE7F} = {E9ED920D-1F83-48C0-9A4B-09CCE505FE6D}
 		{A78F8FC6-7B03-4230-BE41-761E400D6810} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
+		{17932639-1F50-48AF-B0A5-E2BF832F82CC} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
 	EndGlobalSection
 EndGlobal

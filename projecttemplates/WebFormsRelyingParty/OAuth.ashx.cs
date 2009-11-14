@@ -13,6 +13,7 @@ namespace WebFormsRelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
+	using RelyingPartyLogic;
 	using WebFormsRelyingParty.Code;
 
 	/// <summary>

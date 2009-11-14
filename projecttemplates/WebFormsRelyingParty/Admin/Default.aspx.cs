@@ -14,10 +14,11 @@ namespace WebFormsRelyingParty.Admin {
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
+	using RelyingPartyLogic;
 
 	public partial class Default : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
-			this.usersRepeater.DataSource = Global.DataContext.User.Include("AuthenticationTokens");
+			this.usersRepeater.DataSource = Database.DataContext.User.Include("AuthenticationTokens");
 			this.usersRepeater.DataBind();
 		}
 	}
