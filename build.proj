@@ -180,19 +180,17 @@
 			<ProjectTemplatesSource Include="$(ProjectRoot)\doc\logo\dotnetopenid.ico" />
 			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
 
+			<!-- Add external libraries -->
 			<!-- Include the unified, signed version of the library -->
-			<ProjectTemplatesSource Include="$(ILMergeOutputAssembly)" />
-			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)lib\$(ProductName).dll" />
-			<ProjectTemplatesSource Include="$(ILMergeOutputAssemblyDirectory)\$(ProductName).pdb" />
-			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)lib\$(ProductName).pdb" />
-			<ProjectTemplatesSource Include="$(OutputPath)\$(ProductName).Contracts.dll" />
-			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)lib\$(ProductName).Contracts.dll" />
-
+			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
+			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)\$(ProductName).pdb" />
+			<ProjectTemplateLibraries Include="$(OutputPath)\$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
-			<ProjectTemplatesSource Include="$(ProjectRoot)\lib\log4net.dll" />
-			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)lib\log4net.dll" />
-			<ProjectTemplatesSource Include="$(ProjectRoot)\lib\log4net.xml" />
-			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)lib\log4net.xml" />
+			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.dll" />
+			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.xml" />
+
+			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
+			<ProjectTemplatesLayout Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)lib\%(FileName)%(Extension)')" />
 		</ItemGroup>
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
