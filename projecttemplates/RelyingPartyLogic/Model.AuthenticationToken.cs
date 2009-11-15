@@ -1,4 +1,4 @@
-﻿namespace WebFormsRelyingParty {
+﻿namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -10,7 +10,7 @@
 		}
 
 		private static string UriPrefixForInfoCard {
-			get { return new Uri(HttpContext.Current.Request.Url, Global.ApplicationPath + "infocard/").AbsoluteUri; }
+			get { return new Uri(Utilities.ApplicationRoot, "infocard/").AbsoluteUri; }
 		}
 
 		public static string SynthesizeClaimedIdentifierFromInfoCard(string uniqueId) {

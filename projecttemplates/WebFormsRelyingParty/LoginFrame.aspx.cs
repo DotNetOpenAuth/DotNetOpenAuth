@@ -12,6 +12,7 @@
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using RelyingPartyLogic;
 	using WebFormsRelyingParty.Code;
 
 	public partial class LoginFrame : System.Web.UI.Page {
@@ -51,7 +52,7 @@
 
 		private void LoginUser(string claimedIdentifier, string friendlyIdentifier, ClaimsResponse claims, Token samlToken, bool trustedEmail) {
 			// Create an account for this user if we don't already have one.
-			AuthenticationToken openidToken = Global.DataContext.AuthenticationToken.FirstOrDefault(token => token.ClaimedIdentifier == claimedIdentifier);
+			AuthenticationToken openidToken = Database.DataContext.AuthenticationToken.FirstOrDefault(token => token.ClaimedIdentifier == claimedIdentifier);
 			if (openidToken == null) {
 				// this is a user we haven't seen before.
 				User user = new User();
@@ -89,7 +90,7 @@
 					}
 				}
 
-				Global.DataContext.AddToUser(user);
+				Database.DataContext.AddToUser(user);
 			}
 
 			bool persistentCookie = false;

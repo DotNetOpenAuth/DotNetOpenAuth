@@ -13,6 +13,7 @@ namespace WebFormsRelyingParty.Members {
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
+	using RelyingPartyLogic;
 	using WebFormsRelyingParty.Code;
 
 	public partial class OAuthAuthorize : System.Web.UI.Page {
@@ -23,14 +24,14 @@ namespace WebFormsRelyingParty.Members {
 					Response.Redirect("AccountInfo.aspx");
 				}
 
-				this.csrfCheck.Value = Utilities.SetCsrfCookie();
+				this.csrfCheck.Value = Code.Utilities.SetCsrfCookie();
 				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
 				OAuth10ConsumerWarning.Visible = pendingRequest.IsUnsafeRequest;
 
 				serviceProviderDomainNameLabel.Text = HttpUtility.HtmlEncode(this.Request.Url.Host);
 				this.consumerDomainNameLabel3.Text = this.consumerDomainNameLabel2.Text = this.consumerDomainNameLabel1.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
 			} else {
-				Utilities.VerifyCsrfCookie(this.csrfCheck.Value);
+				Code.Utilities.VerifyCsrfCookie(this.csrfCheck.Value);
 			}
 		}
 

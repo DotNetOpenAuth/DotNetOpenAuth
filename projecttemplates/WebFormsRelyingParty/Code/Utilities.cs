@@ -15,20 +15,6 @@ namespace WebFormsRelyingParty.Code {
 		private const string CsrfCookieName = "CsrfCookie";
 		private static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
-		/// <summary>
-		/// Gets the full URI of the web application root.  Guaranteed to end in a slash.
-		/// </summary>
-		public static Uri ApplicationRoot {
-			get {
-				string appRoot = HttpContext.Current.Request.ApplicationPath;
-				if (!appRoot.EndsWith("/", StringComparison.Ordinal)) {
-					appRoot += "/";
-				}
-
-				return new Uri(HttpContext.Current.Request.Url, appRoot);
-			}
-		}
-
 		public static string SetCsrfCookie() {
 			// Generate an unpredictable secret that goes to the user agent and must come back
 			// with authorization to guarantee the user interacted with this page rather than

@@ -3,6 +3,10 @@
 	<PropertyGroup>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
 	</PropertyGroup>
+	<ItemGroup>
+		<VsTemplateParameterReplaceExtensions Include=".cs;.csproj;.sql;.config;.Master;.aspx;.vb" />
+		<VsTemplateProjectItemTypes Include="Compile;EmbeddedResource;EntityDeploy;Content;None" />
+	</ItemGroup>
 
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="GetBuildVersion" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
@@ -17,5 +21,9 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="FilterItems" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="JsPack" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="CopyWithTokenSubstitution" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="MergeProjectWithVSTemplate" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="DiscoverProjectTemplates" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="FixupReferenceHintPaths" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="AddProjectItems" />
 
 </Project>

@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.BuildTasks {
 					item => item.Name == "ProjectReference" && item.Include == ProjectReference).Single();
 				doc.RemoveItem(projectReference);
 
-				var newReference = doc.AddNewItem("Reference", Path.GetFileNameWithoutExtension(Reference));
+				var newReference = doc.AddNewItem("Reference", Path.GetFileNameWithoutExtension(Reference), true);
 				newReference.SetMetadata("HintPath", Reference);
 
 				doc.Save(project.ItemSpec);

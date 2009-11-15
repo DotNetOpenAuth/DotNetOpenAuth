@@ -1,6 +1,6 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="WebFormsRelyingParty.Site" %>
 
-<%@ Import Namespace="WebFormsRelyingParty" %>
+<%@ Import Namespace="RelyingPartyLogic" %>
 <%@ Import Namespace="System.Linq" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -16,7 +16,7 @@
 		<asp:LoginView runat="server">
 			<LoggedInTemplate>
 				<%
-					var authToken = Global.DataContext.AuthenticationToken.Include("User").First(token => token.ClaimedIdentifier == Page.User.Identity.Name);
+					var authToken = Database.DataContext.AuthenticationToken.Include("User").First(token => token.ClaimedIdentifier == Page.User.Identity.Name);
 					if (!string.IsNullOrEmpty(authToken.User.EmailAddress)) {
 						Response.Write(HttpUtility.HtmlEncode(authToken.User.EmailAddress));
 					} else if (!string.IsNullOrEmpty(authToken.User.FirstName)) {

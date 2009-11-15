@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace WebFormsRelyingParty.Code {
+namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.IdentityModel.Policy;
@@ -33,7 +33,7 @@ namespace WebFormsRelyingParty.Code {
 			ServiceProvider sp = OAuthServiceProvider.ServiceProvider;
 			var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
 			if (auth != null) {
-				var accessToken = Global.DataContext.IssuedToken.OfType<IssuedAccessToken>().First(token => token.Token == auth.AccessToken);
+				var accessToken = Database.DataContext.IssuedToken.OfType<IssuedAccessToken>().First(token => token.Token == auth.AccessToken);
 
 				var principal = sp.CreatePrincipal(auth);
 				var policy = new OAuthPrincipalAuthorizationPolicy(principal);

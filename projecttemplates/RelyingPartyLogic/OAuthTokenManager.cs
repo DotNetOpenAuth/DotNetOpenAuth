@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace WebFormsRelyingParty.Code {
+namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -37,7 +37,7 @@ namespace WebFormsRelyingParty.Code {
 		/// <exception cref="ArgumentException">Thrown if the secret cannot be found for the given token.</exception>
 		public string GetTokenSecret(string token) {
 			try {
-				return Global.DataContext.IssuedToken.First(t => t.Token == token).TokenSecret;
+				return Database.DataContext.IssuedToken.First(t => t.Token == token).TokenSecret;
 			} catch (InvalidOperationException) {
 				throw new ArgumentOutOfRangeException();
 			}
@@ -59,7 +59,7 @@ namespace WebFormsRelyingParty.Code {
 		public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
 			Consumer consumer;
 			try {
-				consumer = Global.DataContext.Consumer.First(c => c.ConsumerKey == request.ConsumerKey);
+				consumer = Database.DataContext.Consumer.First(c => c.ConsumerKey == request.ConsumerKey);
 			} catch (InvalidOperationException) {
 				throw new ArgumentOutOfRangeException();
 			}
@@ -75,8 +75,8 @@ namespace WebFormsRelyingParty.Code {
 			if (request.ExtraData.TryGetValue("scope", out scope)) {
 				token.Scope = scope;
 			}
-			Global.DataContext.AddToIssuedToken(token);
-			Global.DataContext.SaveChanges();
+			Database.DataContext.AddToIssuedToken(token);
+			Database.DataContext.SaveChanges();
 		}
 
 		/// <summary>
@@ -103,7 +103,7 @@ namespace WebFormsRelyingParty.Code {
 		/// </para>
 		/// </remarks>
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			var requestTokenEntity = Global.DataContext.IssuedToken.OfType<IssuedRequestToken>()
+			var requestTokenEntity = Database.DataContext.IssuedToken.OfType<IssuedRequestToken>()
 				.Include("User")
 				.First(t => t.Consumer.ConsumerKey == consumerKey && t.Token == requestToken);
 
@@ -117,9 +117,9 @@ namespace WebFormsRelyingParty.Code {
 				Consumer = requestTokenEntity.Consumer,
 			};
 
-			Global.DataContext.DeleteObject(requestTokenEntity);
-			Global.DataContext.AddToIssuedToken(accessTokenEntity);
-			Global.DataContext.SaveChanges();
+			Database.DataContext.DeleteObject(requestTokenEntity);
+			Database.DataContext.AddToIssuedToken(accessTokenEntity);
+			Database.DataContext.SaveChanges();
 		}
 
 		/// <summary>
@@ -130,7 +130,7 @@ namespace WebFormsRelyingParty.Code {
 		/// Request or Access token, or invalid if the token is not recognized.
 		/// </returns>
 		public TokenType GetTokenType(string token) {
-			IssuedToken tok = Global.DataContext.IssuedToken.FirstOrDefault(t => t.Token == token);
+			IssuedToken tok = Database.DataContext.IssuedToken.FirstOrDefault(t => t.Token == token);
 			if (tok == null) {
 				return TokenType.InvalidToken;
 			} else {

@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace WebFormsRelyingParty {
+namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -49,8 +49,8 @@ namespace WebFormsRelyingParty {
 		/// Call this method when the user has completed web-based authorization.
 		/// </remarks>
 		public void Authorize() {
-			this.User = Global.LoggedInUser;
-			Global.DataContext.SaveChanges();
+			this.User = Database.LoggedInUser;
+			Database.DataContext.SaveChanges();
 		}
 	}
 }

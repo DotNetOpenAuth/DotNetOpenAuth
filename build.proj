@@ -5,7 +5,7 @@
 		<SolutionPath>$(ProjectRoot)\src\$(ProductName).sln</SolutionPath>
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)\unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)\$(ProductName).dll</ILMergeOutputAssembly>
-		<ProjectTemplatesLayoutPath>$(ProjectRoot)\obj\$(Configuration)\projecttemplates\</ProjectTemplatesLayoutPath>
+		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
@@ -153,9 +153,7 @@
 			                   $(ProjectRoot)\projecttemplates\**\StyleCop.Cache;
 			                   $(ProjectRoot)\projecttemplates\**\*.user;
 			                   $(ProjectRoot)\projecttemplates\**\obj\**;
-			                   $(ProjectRoot)\projecttemplates\**\bin\DotNetOpenAuth.dll;
-			                   $(ProjectRoot)\projecttemplates\**\bin\DotNetOpenAuth.pdb;
-			                   $(ProjectRoot)\projecttemplates\**\bin\Microsoft.Contracts.dll;
+			                   $(ProjectRoot)\projecttemplates\**\bin\**;
 			                   $(ProjectRoot)\projecttemplates\**\*.ldf;
 			                   $(ProjectRoot)\projecttemplates\**\*.mdf;
 			                   "/>
@@ -175,17 +173,28 @@
 			<ProjectTemplatesLayout Include="@(ProjectTemplatesSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<ProjectTemplatesTransformLayout Include="@(_ProjectTemplatesTransformSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
-			<!-- Include the template icon -->
-			<ProjectTemplatesSource Include="@(ProjectTemplates->'$(ProjectRoot)\doc\logo\dotnetopenid.ico')" />
-			<ProjectTemplatesLayout Include="@(ProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)__TemplateIcon.ico')" />
+			<VSProjectTemplates Include="@(ProjectTemplatesLayout)" Condition="'%(Extension)' == '.vstemplate'" />
+			<TopLevelVSProjectTemplates Include="@(VSProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(ProjectTemplatesLayoutPath)'" />
 
+			<!-- Include the template icon -->
+			<ProjectTemplatesSource Include="$(ProjectRoot)\doc\logo\dotnetopenid.ico" />
+			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
+
+			<!-- Add external libraries -->
 			<!-- Include the unified, signed version of the library -->
-			<ProjectTemplatesSource Include="@(ProjectTemplates->'$(ILMergeOutputAssembly)')" />
-			<ProjectTemplatesSource Include="@(ProjectTemplates->'$(ILMergeOutputAssemblyDirectory)\$(ProductName).pdb')" />
-			<ProjectTemplatesSource Include="@(ProjectTemplates->'$(OutputPath)\$(ProductName).Contracts.dll')" />
-			<ProjectTemplatesLayout Include="@(ProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)bin\$(ProductName).dll')" />
-			<ProjectTemplatesLayout Include="@(ProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)bin\$(ProductName).pdb')" />
-			<ProjectTemplatesLayout Include="@(ProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)bin\$(ProductName).Contracts.dll')" />
+			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
+			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)\$(ProductName).pdb" />
+			<ProjectTemplateLibraries Include="$(OutputPath)\$(ProductName).Contracts.dll" />
+			<!-- ... and log4net -->
+			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.dll" />
+			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.xml" />
+			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(FileName)%(Extension)')" />
+
+			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
+			<ProjectTemplatesLayout Include="@(ProjectTemplateLibrariesTargets)" />
+			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
+
+			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
 		</ItemGroup>
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
@@ -199,22 +208,61 @@
 		<ChangeProjectReferenceToAssemblyReference
 			Projects="@(CopiedProjectTemplateFiles)"
 			Condition="'%(Extension)' == '.csproj'"
-		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj"
-			Reference="Bin\$(ProductName).dll" />
+			ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj"
+			Reference="Lib\$(ProductName).dll" />
+		<FixupReferenceHintPaths
+			Projects="@(CopiedProjectTemplateFiles)"
+			Condition="'%(CopiedProjectTemplateFiles.Extension)' == '.csproj'"
+			References="@(FixupReferenceAssemblies)"
+			/>
+		<AddProjectItems
+			Projects="@(CopiedProjectTemplateFiles)"
+			Condition="'%(CopiedProjectTemplateFiles.FileName)%(CopiedProjectTemplateFiles.Extension)' == 'RelyingPartyLogic.csproj'"
+			Items="@(InjectedLibraryItems)"
+			/>
+		<MergeProjectWithVSTemplate
+			ProjectItemTypes="@(VsTemplateProjectItemTypes)"
+			ReplaceParametersExtensions="@(VsTemplateParameterReplaceExtensions)"
+			Templates="@(VSProjectTemplates)"
+			/>
 	</Target>
 
 	<Target Name="ProjectTemplates" DependsOnTargets="ProjectTemplatesLayout">
-		<PropertyGroup>
-			<WebFormsRelyingPartyZipFile>$(ProjectTemplatesLayoutPath)\WebFormsRelyingParty.zip</WebFormsRelyingPartyZipFile>
-		</PropertyGroup>
 		<ItemGroup>
-			<WebFormsRelyingPartyProjectTemplateLayout Include="$(ProjectTemplatesLayoutPath)\WebFormsRelyingParty\**\*" />
+			<VSProjectTemplateZipFiles Include="@(TopLevelVSProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
 		</ItemGroup>
-		<Delete Files="$(WebFormsRelyingPartyZipFile)" />
+
+		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVSProjectTemplates)">
+			<Output TaskParameter="ProjectTemplates" ItemName="SubVSTemplates" />
+			<Output TaskParameter="ProjectTemplateContents" ItemName="TemplateItemContents" />
+		</DiscoverProjectTemplates>
+
+		<ItemGroup>
+			<!-- Include in each template .zip file the top-level .vstemplate file itself. -->
+			<VSProjectTemplateContents Include="@(TopLevelVSProjectTemplates)">
+				<ZipFile>$(ProjectTemplatesLayoutPath)%(FileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
+			</VSProjectTemplateContents>
+
+			<!-- Now throw in all the files in each of the project-level template's directories and their children. -->
+			<VSProjectTemplateContents Include="@(TemplateItemContents)">
+				<ZipFile>$(ProjectTemplatesLayoutPath)%(TemplateItemContents.TopLevelTemplateFileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
+			</VSProjectTemplateContents>
+
+			<!-- Include the template icon for each .zip file. -->
+			<VSProjectTemplateContents Include="@(TopLevelVSProjectTemplates->'$(ProjectTemplatesLayoutPath)__TemplateIcon.ico')">
+				<ZipFile>$(ProjectTemplatesLayoutPath)%(TopLevelVSProjectTemplates.FileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
+			</VSProjectTemplateContents>
+		</ItemGroup>
+
+		<Delete Files="@(VSProjectTemplateZipFiles)" />
 		<Zip
-			Files="@(WebFormsRelyingPartyProjectTemplateLayout)"
-			ZipFileName="$(WebFormsRelyingPartyZipFile)"
-			WorkingDirectory="$(ProjectTemplatesLayoutPath)\WebFormsRelyingParty" />
+			Files="@(VSProjectTemplateContents)"
+			ZipFileName="%(VSProjectTemplateContents.ZipFile)"
+			WorkingDirectory="%(VSProjectTemplateContents.WorkingDirectory)"
+			/>
 	</Target>
 
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">

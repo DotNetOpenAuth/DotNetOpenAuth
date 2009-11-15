@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace WebFormsRelyingParty.Code {
+namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -61,14 +61,14 @@ namespace WebFormsRelyingParty.Code {
 			set { HttpContext.Current.Session[PendingAuthorizationRequestSessionKey] = value; }
 		}
 
-		public static WebFormsRelyingParty.Consumer PendingAuthorizationConsumer {
+		public static Consumer PendingAuthorizationConsumer {
 			get {
 				ITokenContainingMessage message = PendingAuthorizationRequest;
 				if (message == null) {
 					throw new InvalidOperationException();
 				}
 
-				return Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().Include("Consumer").First(t => t.Token == message.Token).Consumer;
+				return Database.DataContext.IssuedToken.OfType<IssuedRequestToken>().Include("Consumer").First(t => t.Token == message.Token).Consumer;
 			}
 		}
 
@@ -79,7 +79,7 @@ namespace WebFormsRelyingParty.Code {
 			}
 
 			ITokenContainingMessage msg = pendingRequest;
-			var token = Global.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(t => t.Token == msg.Token);
+			var token = Database.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(t => t.Token == msg.Token);
 			token.Authorize();
 
 			PendingAuthorizationRequest = null;
