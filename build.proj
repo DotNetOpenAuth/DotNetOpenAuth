@@ -188,15 +188,13 @@
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.dll" />
 			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.xml" />
+			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(FileName)%(Extension)')" />
 
 			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
-			<ProjectTemplatesLayout Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)lib\%(FileName)%(Extension)')" />
-			<FixupReferenceAssemblies Include="$(ProjectTemplatesLayoutPath)lib\*.dll" />
+			<ProjectTemplatesLayout Include="@(ProjectTemplateLibrariesTargets)" />
+			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
 
-			<!-- force the hint paths to resolve to a path within the project, as required by .vstemplate  -->
-			<FixupReferenceAssemblies>
-				<HintPath>lib\%(FileName)%(Extension)</HintPath>
-			</FixupReferenceAssemblies>
+			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
 		</ItemGroup>
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
@@ -216,6 +214,11 @@
 			Projects="@(CopiedProjectTemplateFiles)"
 			Condition="'%(CopiedProjectTemplateFiles.Extension)' == '.csproj'"
 			References="@(FixupReferenceAssemblies)"
+			/>
+		<AddProjectItems
+			Projects="@(CopiedProjectTemplateFiles)"
+			Condition="'%(CopiedProjectTemplateFiles.FileName)%(CopiedProjectTemplateFiles.Extension)' == 'RelyingPartyLogic.csproj'"
+			Items="@(InjectedLibraryItems)"
 			/>
 		<MergeProjectWithVSTemplate
 			ProjectItemTypes="@(VsTemplateProjectItemTypes)"

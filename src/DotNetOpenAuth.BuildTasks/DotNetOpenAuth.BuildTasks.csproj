@@ -79,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddProjectItems.cs" />
     <Compile Include="ChangeProjectReferenceToAssemblyReference.cs" />
     <Compile Include="CompareFiles.cs" />
     <Compile Include="ChangeAssemblyReference.cs" />

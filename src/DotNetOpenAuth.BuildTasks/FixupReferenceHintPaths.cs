@@ -19,18 +19,20 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// <summary>
 		/// Gets or sets the projects to fixup references for.
 		/// </summary>
+		[Required]
 		public ITaskItem[] Projects { get; set; }
 
 		/// <summary>
 		/// Gets or sets the set of full paths to assemblies that may be found in any of the <see cref="Projects"/>.
 		/// </summary>
+		[Required]
 		public ITaskItem[] References { get; set; }
 
 		/// <summary>
 		/// Executes this instance.
 		/// </summary>
 		public override bool Execute() {
-			if (this.References == null || this.Projects == null || this.References.Length == 0 || this.Projects.Length == 0) {
+			if (this.References.Length == 0 || this.Projects.Length == 0) {
 				this.Log.LogMessage(MessageImportance.Low, "Skipping reference hintpath fixup because no projects or no references were supplied.");
 				return !this.Log.HasLoggedErrors;
 			}

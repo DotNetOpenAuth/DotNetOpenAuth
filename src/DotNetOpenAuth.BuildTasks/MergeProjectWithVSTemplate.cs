@@ -19,10 +19,13 @@ namespace DotNetOpenAuth.BuildTasks {
 	public class MergeProjectWithVSTemplate : Task {
 		internal const string VSTemplateNamespace = "http://schemas.microsoft.com/developer/vstemplate/2005";
 
+		[Required]
 		public string[] ProjectItemTypes { get; set; }
 
+		[Required]
 		public string[] ReplaceParametersExtensions { get; set; }
 
+		[Required]
 		public ITaskItem[] Templates { get; set; }
 
 		/// <summary>
@@ -56,8 +59,10 @@ namespace DotNetOpenAuth.BuildTasks {
 						bool replaceParameters = this.ReplaceParametersExtensions.Contains(Path.GetExtension(item.Include));
 						var projectItem = new XElement(
 							XName.Get("ProjectItem", VSTemplateNamespace),
-							new XAttribute("ReplaceParameters", replaceParameters ? "true" : "false"),
 							Path.GetFileName(item.Include));
+						if (replaceParameters) {
+							projectItem.SetAttributeValue("ReplaceParameters", "true");
+						}
 						parentNode.Add(projectItem);
 					}
 				}
