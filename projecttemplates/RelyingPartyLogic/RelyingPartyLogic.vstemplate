@@ -1,0 +1,11 @@
+<VSTemplate Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+	<TemplateData>
+		<Name>ASP.NET OpenID-InfoCard RP</Name>
+		<Description>An ASP.NET web forms web site that accepts OpenID and InfoCard logins</Description>
+		<ProjectType>CSharp</ProjectType>
+		<Icon>__TemplateIcon.ico</Icon>
+	</TemplateData>
+	<TemplateContent>
+		<Project File="RelyingPartyLogic.csproj" ReplaceParameters="true" />
+	</TemplateContent>
+</VSTemplate>
