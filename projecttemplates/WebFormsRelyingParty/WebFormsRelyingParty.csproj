@@ -186,11 +186,6 @@
     <Content Include="styles\Standard.css" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\DotNetOpenAuth.dll" />
-    <Content Include="bin\DotNetOpenAuth.pdb" />
-    <Content Include="bin\DotNetOpenAuth.xml" />
-    <Content Include="bin\log4net.dll" />
-    <Content Include="bin\log4net.xml" />
     <Content Include="GettingStarted.htm" />
     <Content Include="images\infocard_23x16.png" />
     <Content Include="images\myopenid.png" />
@@ -238,8 +233,6 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\RelyingPartyLogic.dll" />
-    <Content Include="bin\RelyingPartyLogic.pdb" />
     <Content Include="Members\OAuthAuthorize.aspx" />
     <Content Include="OAuth.ashx" />
   </ItemGroup>
@@ -255,6 +248,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="bin\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />
