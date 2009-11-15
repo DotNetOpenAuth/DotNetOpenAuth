@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.BuildTasks {
 
 				var projectPath = Path.Combine(Path.GetDirectoryName(sourceTemplateTaskItem.ItemSpec), projectElement.Attribute("File").Value);
 				Log.LogMessage("Merging project \"{0}\" with \"{1}\".", projectPath, sourceTemplateTaskItem.ItemSpec);
-				var sourceProject = new Microsoft.Build.BuildEngine.Project();
+				var sourceProject = new Project();
 				sourceProject.Load(projectPath);
 
 				// Collect the project items from the project that are appropriate

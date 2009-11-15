@@ -191,6 +191,7 @@
 
 			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
 			<ProjectTemplatesLayout Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)lib\%(FileName)%(Extension)')" />
+			<FixupReferenceAssemblies Include="$(ProjectTemplatesLayoutPath)lib\*.dll" />
 		</ItemGroup>
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
@@ -205,7 +206,12 @@
 			Projects="@(CopiedProjectTemplateFiles)"
 			Condition="'%(Extension)' == '.csproj'"
 			ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj"
-			Reference="Bin\$(ProductName).dll" />
+			Reference="Lib\$(ProductName).dll" />
+		<FixupReferenceHintPaths
+			Projects="@(CopiedProjectTemplateFiles)"
+			Condition="'%(CopiedProjectTemplateFiles.Extension)' == '.csproj'"
+			References="@(FixupReferenceAssemblies)"
+			/>
 		<MergeProjectWithVSTemplate
 			ProjectItemTypes="@(VsTemplateProjectItemTypes)"
 			ReplaceParametersExtensions="@(VsTemplateParameterReplaceExtensions)"

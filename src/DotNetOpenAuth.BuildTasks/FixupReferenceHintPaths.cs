@@ -1,0 +1,60 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="FixupReferenceHintPaths.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.BuildTasks {
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+	using System.Reflection;
+	using System.Text;
+	using Microsoft.Build.BuildEngine;
+	using Microsoft.Build.Framework;
+	using Microsoft.Build.Utilities;
+
+	public class FixupReferenceHintPaths : Task {
+		/// <summary>
+		/// Gets or sets the projects to fixup references for.
+		/// </summary>
+		public ITaskItem[] Projects { get; set; }
+
+		/// <summary>
+		/// Gets or sets the set of full paths to assemblies that may be found in any of the <see cref="Projects"/>.
+		/// </summary>
+		public ITaskItem[] References { get; set; }
+
+		/// <summary>
+		/// Executes this instance.
+		/// </summary>
+		public override bool Execute() {
+			// Figure out what the assembly names are of the references that are available.
+			AssemblyName[] availableReferences = new AssemblyName[this.References.Length];
+			for (int i = 0; i < this.References.Length; i++) {
+				availableReferences[i] = AssemblyName.GetAssemblyName(this.References[i].ItemSpec);
+			}
+
+			foreach (var projectTaskItem in this.Projects) {
+				var project = new Project();
+				Uri projectUri = new Uri(projectTaskItem.GetMetadata("FullPath"));
+				project.Load(projectTaskItem.ItemSpec);
+
+				foreach (BuildItem referenceItem in project.GetEvaluatedItemsByName("Reference")) {
+					var referenceAssemblyName = new AssemblyName(referenceItem.Include);
+					var matchingReference = availableReferences.FirstOrDefault(r => string.Equals(r.Name, referenceAssemblyName.Name, StringComparison.OrdinalIgnoreCase));
+					if (matchingReference != null) {
+						string hintPath = projectUri.MakeRelativeUri(new Uri(matchingReference.CodeBase)).OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+						this.Log.LogMessage("Fixing up HintPath to \"{0}\" in project \"{1}\".", referenceAssemblyName.Name, projectTaskItem.ItemSpec);
+						referenceItem.SetMetadata("HintPath", hintPath);
+					}
+				}
+
+				project.Save(projectTaskItem.ItemSpec);
+			}
+
+			return !this.Log.HasLoggedErrors;
+		}
+	}
+}
