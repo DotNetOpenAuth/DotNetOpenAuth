@@ -30,6 +30,11 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// Executes this instance.
 		/// </summary>
 		public override bool Execute() {
+			if (this.References == null || this.Projects == null || this.References.Length == 0 || this.Projects.Length == 0) {
+				this.Log.LogMessage(MessageImportance.Low, "Skipping reference hintpath fixup because no projects or no references were supplied.");
+				return !this.Log.HasLoggedErrors;
+			}
+
 			// Figure out what the assembly names are of the references that are available.
 			AssemblyName[] availableReferences = new AssemblyName[this.References.Length];
 			for (int i = 0; i < this.References.Length; i++) {
@@ -45,7 +50,11 @@ namespace DotNetOpenAuth.BuildTasks {
 					var referenceAssemblyName = new AssemblyName(referenceItem.Include);
 					var matchingReference = availableReferences.FirstOrDefault(r => string.Equals(r.Name, referenceAssemblyName.Name, StringComparison.OrdinalIgnoreCase));
 					if (matchingReference != null) {
-						string hintPath = projectUri.MakeRelativeUri(new Uri(matchingReference.CodeBase)).OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+						var originalSuppliedReferenceItem = this.References[Array.IndexOf(availableReferences, matchingReference)];
+						string hintPath = originalSuppliedReferenceItem.GetMetadata("HintPath");
+						if (string.IsNullOrEmpty(hintPath)) {
+							hintPath = projectUri.MakeRelativeUri(new Uri(matchingReference.CodeBase)).OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+						}
 						this.Log.LogMessage("Fixing up HintPath to \"{0}\" in project \"{1}\".", referenceAssemblyName.Name, projectTaskItem.ItemSpec);
 						referenceItem.SetMetadata("HintPath", hintPath);
 					}

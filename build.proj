@@ -192,6 +192,11 @@
 			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
 			<ProjectTemplatesLayout Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)lib\%(FileName)%(Extension)')" />
 			<FixupReferenceAssemblies Include="$(ProjectTemplatesLayoutPath)lib\*.dll" />
+
+			<!-- force the hint paths to resolve to a path within the project, as required by .vstemplate  -->
+			<FixupReferenceAssemblies>
+				<HintPath>lib\%(FileName)%(Extension)</HintPath>
+			</FixupReferenceAssemblies>
 		</ItemGroup>
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
