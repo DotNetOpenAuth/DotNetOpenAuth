@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AutomatedBuild>true</AutomatedBuild>
 		<SolutionPath>$(ProjectRoot)src\$(ProductName).sln</SolutionPath>
-		<ILMergeOutputAssemblyDirectory>$(OutputPath)\unified\</ILMergeOutputAssemblyDirectory>
+		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
 	</PropertyGroup>
@@ -18,12 +18,12 @@
 		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj" />
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
 		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.csproj" />
-		<ILMergeInputAssemblies Include="$(OutputPath)\$(ProductName).dll;
+		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll;
 		                                 $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
 		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
-		                                $(OutputPath)\$(ProductName).dll;
-		                                $(OutputPath)\$(ProductName).Contracts.dll;
-		                                $(OutputPath)\$(ProductName).Test.dll;
+		                                $(OutputPath)$(ProductName).dll;
+		                                $(OutputPath)$(ProductName).Contracts.dll;
+		                                $(OutputPath)$(ProductName).Test.dll;
 		                                $(ProjectRoot)samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
 
@@ -185,7 +185,7 @@
 			<!-- Include the unified, signed version of the library -->
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb" />
-			<ProjectTemplateLibraries Include="$(OutputPath)\$(ProductName).Contracts.dll" />
+			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />
@@ -271,9 +271,9 @@
 	<!-- Test depends on "Build" rather than "BuildTests" until we can figure out how to build the 
 	     no-.csproj file test project (to copy binaries to Bin directory). -->
 	<Target Name="Test" DependsOnTargets="Build"
-	        Inputs="$(OutputPath)\$(ProductName).Test.dll"
-	        Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log'>
-		<Exec Command='"mstest.exe" /testcontainer:"$(OutputPath)\$(ProductName).Test.dll"' />
+	        Inputs="$(OutputPath)$(ProductName).Test.dll"
+	        Outputs='$(OutputPath)Test-results.xml;$(OutputPath)Test-output-results.log'>
+		<Exec Command='"mstest.exe" /testcontainer:"$(OutputPath)$(ProductName).Test.dll"' />
 	</Target>
 
 	<Target Name="_SetDropProperties">
@@ -312,9 +312,9 @@
 											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
 																$(ILMergeOutputAssemblyDirectory)$(ProductName).???;
-																$(OutputPath)\**\$(ProductName).resources.dll;
-																$(OutputPath)\$(ProductName).xml;
-																$(OutputPath)\$(ProductName).Contracts.???;
+																$(OutputPath)**\$(ProductName).resources.dll;
+																$(OutputPath)$(ProductName).xml;
+																$(OutputPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />

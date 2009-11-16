@@ -7,7 +7,7 @@
 		<OutputPath>$(ProjectRoot)bin\$(Configuration)</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc</DocOutputPath>
 		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)</IntermediatePath>
-		<DocumentationFile>$(OutputPath)\$(OutputAssembly).xml</DocumentationFile>
+		<DocumentationFile>$(OutputPath)$(OutputAssembly).xml</DocumentationFile>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />

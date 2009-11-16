@@ -11,7 +11,7 @@
 		<Presentation>$(DxRoot)\Presentation\$(PresentationStyle)</Presentation>
 		<HHC>$(PROGRAMFILES)\Html Help Workshop\hhc.exe</HHC>
 
-		<OutputAssemblyFile>$(OutputPath)\$(OutputAssembly).dll</OutputAssemblyFile>
+		<OutputAssemblyFile>$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
 
 		<DocOutputApiPath>$(DocOutputPath)\api</DocOutputApiPath>
 		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)</DocIntermediatePath>
@@ -147,7 +147,7 @@
 	  DependsOnTargets="Build"
 	  Inputs="$(DocOutputPath)\html\*.htm;$(TocFile)"
 	  Outputs="$(HxsFile)">
-		<Copy SourceFiles="@(HxsFiles)" DestinationFiles="@(HxsFiles->'$(OutputPath)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+		<Copy SourceFiles="@(HxsFiles)" DestinationFiles="@(HxsFiles->'$(OutputPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 		<Exec Command='"$(DxRoot)\Presentation\shared\copyhavana.bat" $(OutputAssembly)' />
 		<Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateHxc.xsl" "$(TocFile)" /arg:fileNamePrefix="$(OutputAssembly)" /out:"$(HxcFile)"' />
 		<Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\TocToHxSContents.xsl" "$(TocFile)" /out:"$(HxtFile)"' />
