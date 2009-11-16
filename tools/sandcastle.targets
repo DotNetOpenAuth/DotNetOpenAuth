@@ -13,7 +13,7 @@
 
 		<OutputAssemblyFile>$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
 
-		<DocOutputApiPath>$(DocOutputPath)api</DocOutputApiPath>
+		<DocOutputApiPath>$(DocOutputPath)api\</DocOutputApiPath>
 		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)\</DocIntermediatePath>
 		<FxReflectionIntermediatePath>$(ProjectRoot)obj\Doc\Tmp</FxReflectionIntermediatePath>
 		<FxReflectionOutputPath>$(ProjectRoot)obj\Doc\Reflection</FxReflectionOutputPath>
@@ -30,7 +30,7 @@
 		<ManifestFile>$(DocIntermediatePath)manifest.xml</ManifestFile>
 		<ReflectionBaseFile>$(DocIntermediatePath)reflection_base.xml</ReflectionBaseFile>
 
-		<SampleHtmlOutputForUpToDateCheck>$(DocOutputApiPath)\html\N_DotNetOpenAuth.htm</SampleHtmlOutputForUpToDateCheck>
+		<SampleHtmlOutputForUpToDateCheck>$(DocOutputApiPath)html\N_DotNetOpenAuth.htm</SampleHtmlOutputForUpToDateCheck>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -56,7 +56,7 @@
 		<SetEnvironmentVariable Name="DxRoot" Value="$(DxRoot)" />
 		<SetEnvironmentVariable Name="DocumentationFile" Value="$(DocumentationFile)" />
 		<SetEnvironmentVariable Name="ReflectionXmlFile" Value="$(ReflectionFile)" />
-		<SetEnvironmentVariable Name="OutputHtml" Value="$(DocOutputApiPath)\html" />
+		<SetEnvironmentVariable Name="OutputHtml" Value="$(DocOutputApiPath)html" />
 		<SetEnvironmentVariable Name="FxReflectionData" Value="$(FxReflectionOutputPath)" />
 	</Target>
 
@@ -81,16 +81,16 @@
 		<IconFiles Include="$(Presentation)\icons\**\*.*"/>
 		<ScriptFiles Include="$(Presentation)\scripts\**\*.*"/>
 		<StyleFiles Include="$(Presentation)\styles\**\*.*"/>
-		<IconDestFiles Include="@(IconFiles->'$(DocOutputApiPath)\icons\%(RecursiveDir)%(FileName)%(Extension)')"/>
-		<ScriptDestFiles Include="@(ScriptFiles->'$(DocOutputApiPath)\scripts\%(RecursiveDir)%(FileName)%(Extension)')"/>
-		<StyleDestFiles Include="@(StyleFiles->'$(DocOutputApiPath)\styles\%(RecursiveDir)%(FileName)%(Extension)')"/>
+		<IconDestFiles Include="@(IconFiles->'$(DocOutputApiPath)icons\%(RecursiveDir)%(FileName)%(Extension)')"/>
+		<ScriptDestFiles Include="@(ScriptFiles->'$(DocOutputApiPath)scripts\%(RecursiveDir)%(FileName)%(Extension)')"/>
+		<StyleDestFiles Include="@(StyleFiles->'$(DocOutputApiPath)styles\%(RecursiveDir)%(FileName)%(Extension)')"/>
 	</ItemGroup>
 
 	<Target Name="Template">
 		<Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconDestFiles)" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(ScriptFiles)" DestinationFiles="@(ScriptDestFiles)" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(StyleFiles)" DestinationFiles="@(StyleDestFiles)" SkipUnchangedFiles="true"/>
-		<MakeDir Directories="$(DocOutputApiPath)\html;$(DocOutputApiPath)\media;$(DocOutputApiPath)\intellisense"/>
+		<MakeDir Directories="$(DocOutputApiPath)html;$(DocOutputApiPath)media;$(DocOutputApiPath)intellisense"/>
 	</Target>
 
 	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)" 
@@ -133,7 +133,7 @@
 		<Exec Condition="Exists('$(chmDir)s\Local')" Command='xcopy.exe "$(ChmDir)Local\*" "$(ChmDir)Local\" /y /r'/>
 
 		<!-- generate CHM-specific HTML and HH* files -->
-		<Exec Command='"$(ProductionTools)\ChmBuilder.exe" /project:$(OutputAssembly) /html:"$(DocOutputApiPath)\html" /lcid:1033 /toc:"$(TocFile)" /out:"$(chmDir)"'/>
+		<Exec Command='"$(ProductionTools)\ChmBuilder.exe" /project:$(OutputAssembly) /html:"$(DocOutputApiPath)html" /lcid:1033 /toc:"$(TocFile)" /out:"$(chmDir)"'/>
 
 		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ReflectionToChmIndex.xsl" "$(ReflectionFile)" /out:"$(HhkFile)"' />
 		<Exec Command='"$(ProductionTools)\DBCSFix.exe" /d:$(chmDir) /l:1033'/>
