@@ -287,11 +287,11 @@
 
 	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;ProjectTemplates;Documentation">
 		<PropertyGroup>
-			<DropBinDirectory>$(DropDirectory)Bin</DropBinDirectory>
-			<DropLibDirectory>$(DropDirectory)Lib</DropLibDirectory>
-			<DropProjectTemplatesDirectory>$(DropDirectory)Project Templates</DropProjectTemplatesDirectory>
-			<DropSamplesDirectory>$(DropDirectory)Samples</DropSamplesDirectory>
-			<DropSpecsDirectory>$(DropDirectory)Specs</DropSpecsDirectory>
+			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
+			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
+			<DropProjectTemplatesDirectory>$(DropDirectory)Project Templates\</DropProjectTemplatesDirectory>
+			<DropSamplesDirectory>$(DropDirectory)Samples\</DropSamplesDirectory>
+			<DropSpecsDirectory>$(DropDirectory)Specs\</DropSpecsDirectory>
 		</PropertyGroup>
 		<ItemGroup>
 			<DropDirectories Include="
@@ -345,12 +345,12 @@
 			<DropSpecsSourceFiles Include="$(ProjectRoot)Doc\specs\*.htm*" />
 
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)\%(RecurisveDir)%(FileName)%(Extension)')"/>
-			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)\%(FileName)%(Extension)')" />
-			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName).refresh')"/>
-			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecurisveDir)%(FileName)%(Extension)')"/>
+			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
+			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
+			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<AllDropSources Include="
 										@(DropSourceFiles);
@@ -381,7 +381,7 @@
 		<Purge Directories="$(DropDirectory)" IntendedFiles="@(AllDropTargets)" />
 		<!-- fix up the samples so that they will compile right out of the drop -->
 		<ItemGroup>
-			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
+			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.csproj" />
 		</ItemGroup>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
