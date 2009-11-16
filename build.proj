@@ -119,10 +119,11 @@
 
 		<MSBuild Projects="@(ToolProjects)" />
 
-		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
-		<RemoveDir Directories="$(ToolsDirectory)" Condition="'$(NoClean)' != 'true'" />
 		<MakeDir Directories="@(ToolsDirectory)" />
 		<Copy SourceFiles="@(AllToolSources)" DestinationFiles="@(AllToolTargets)" SkipUnchangedFiles="true" />
+
+		<!-- remove files that shouldn't be in the directory (perhaps from a previous version). -->
+		<Purge Directories="$(ToolsDirectory)" IntendedFiles="@(AllToolTargets)" />
 	</Target>
 	
 	<Target Name="Tools" DependsOnTargets="ToolsLayout">
@@ -200,7 +201,6 @@
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
 		</Trim>
 		<MSBuild Projects="@(ProjectTemplates)" />
-		<RemoveDir Directories="$(ProjectTemplatesLayoutPath)" Condition="'$(NoClean)' != 'true'" />
 		<Copy SourceFiles="@(ProjectTemplatesSource)" DestinationFiles="@(ProjectTemplatesLayout)" SkipUnchangedFiles="true" />
 		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)" SkipUnchangedFiles="true">
 			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
@@ -376,9 +376,9 @@
 		</ItemGroup>
 
 		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
-		<RemoveDir Directories="$(DropDirectory)" Condition="'$(NoClean)' != 'true'" />
 		<MakeDir Directories="@(DropDirectories)" />
 		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
+		<Purge Directories="$(DropDirectory)" IntendedFiles="@(AllDropTargets)" />
 		<!-- fix up the samples so that they will compile right out of the drop -->
 		<ItemGroup>
 			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />

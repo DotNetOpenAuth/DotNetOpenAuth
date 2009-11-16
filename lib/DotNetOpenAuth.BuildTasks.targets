@@ -25,5 +25,6 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="DiscoverProjectTemplates" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="FixupReferenceHintPaths" />
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="AddProjectItems" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="Purge" />
 
 </Project>
