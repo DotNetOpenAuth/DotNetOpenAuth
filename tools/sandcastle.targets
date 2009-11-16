@@ -8,7 +8,7 @@
 		<DxRoot>$(ProjectRoot)tools\Sandcastle</DxRoot>
 		<ProductionTools>$(DxRoot)\ProductionTools\</ProductionTools>
 		<ProductionTransforms>$(DxRoot)\ProductionTransforms\</ProductionTransforms>
-		<Presentation>$(DxRoot)\Presentation\$(PresentationStyle)</Presentation>
+		<Presentation>$(DxRoot)\Presentation\$(PresentationStyle)\</Presentation>
 		<HHC>$(PROGRAMFILES)\Html Help Workshop\hhc.exe</HHC>
 
 		<OutputAssemblyFile>$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
@@ -78,9 +78,9 @@
 	</Target>
 
 	<ItemGroup>
-		<IconFiles Include="$(Presentation)\icons\**\*.*"/>
-		<ScriptFiles Include="$(Presentation)\scripts\**\*.*"/>
-		<StyleFiles Include="$(Presentation)\styles\**\*.*"/>
+		<IconFiles Include="$(Presentation)icons\**\*.*"/>
+		<ScriptFiles Include="$(Presentation)scripts\**\*.*"/>
+		<StyleFiles Include="$(Presentation)styles\**\*.*"/>
 		<IconDestFiles Include="@(IconFiles->'$(DocOutputApiPath)icons\%(RecursiveDir)%(FileName)%(Extension)')"/>
 		<ScriptDestFiles Include="@(ScriptFiles->'$(DocOutputApiPath)scripts\%(RecursiveDir)%(FileName)%(Extension)')"/>
 		<StyleDestFiles Include="@(StyleFiles->'$(DocOutputApiPath)styles\%(RecursiveDir)%(FileName)%(Extension)')"/>
@@ -112,7 +112,7 @@
 	      Inputs="$(ManifestFile);$(ReflectionFile);$(DocumentationFile)"
 	      Outputs="$(SampleHtmlOutputForUpToDateCheck)"
 	      DependsOnTargets="SetEnvironmentVars;Template;Manifest">
-		<Exec Command='"$(ProductionTools)BuildAssembler.exe" /config:"$(Presentation)\configuration\sandcastle.config" "$(ManifestFile)"' />
+		<Exec Command='"$(ProductionTools)BuildAssembler.exe" /config:"$(Presentation)configuration\sandcastle.config" "$(ManifestFile)"' />
 	</Target>
 
 	<Target Name="Chm" Inputs="$(SampleHtmlOutputForUpToDateCheck);$(ReflectionFile)" Outputs="$(ChmFile)" DependsOnTargets="Html">
