@@ -14,10 +14,10 @@
 		<OutputAssemblyFile>$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
 
 		<DocOutputApiPath>$(DocOutputPath)api</DocOutputApiPath>
-		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)</DocIntermediatePath>
+		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)\</DocIntermediatePath>
 		<FxReflectionIntermediatePath>$(ProjectRoot)obj\Doc\Tmp</FxReflectionIntermediatePath>
 		<FxReflectionOutputPath>$(ProjectRoot)obj\Doc\Reflection</FxReflectionOutputPath>
-		<ChmDir>$(DocIntermediatePath)\chm</ChmDir>
+		<ChmDir>$(DocIntermediatePath)chm</ChmDir>
 
 		<TocFile>$(ChmDir)\toc.xml</TocFile>
 		<ChmFile>$(DocOutputPath)$(OutputAssembly).chm</ChmFile>
@@ -26,9 +26,9 @@
 		<HxcFile>$(DocOutputPath)$(OutputAssembly).hxc</HxcFile>
 		<HhkFile>$(chmDir)\$(OutputAssembly).hhk</HhkFile>
 		<HhpFile>$(chmDir)\$(OutputAssembly).hhp</HhpFile>
-		<ReflectionFile>$(DocIntermediatePath)\reflection.xml</ReflectionFile>
-		<ManifestFile>$(DocIntermediatePath)\manifest.xml</ManifestFile>
-		<ReflectionBaseFile>$(DocIntermediatePath)\reflection_base.xml</ReflectionBaseFile>
+		<ReflectionFile>$(DocIntermediatePath)reflection.xml</ReflectionFile>
+		<ManifestFile>$(DocIntermediatePath)manifest.xml</ManifestFile>
+		<ReflectionBaseFile>$(DocIntermediatePath)reflection_base.xml</ReflectionBaseFile>
 
 		<SampleHtmlOutputForUpToDateCheck>$(DocOutputApiPath)\html\N_DotNetOpenAuth.htm</SampleHtmlOutputForUpToDateCheck>
 	</PropertyGroup>
