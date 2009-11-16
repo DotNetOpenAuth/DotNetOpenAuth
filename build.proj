@@ -4,7 +4,7 @@
 		<AutomatedBuild>true</AutomatedBuild>
 		<SolutionPath>$(ProjectRoot)src\$(ProductName).sln</SolutionPath>
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)\unified\</ILMergeOutputAssemblyDirectory>
-		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)\$(ProductName).dll</ILMergeOutputAssembly>
+		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
 	</PropertyGroup>
 
@@ -184,7 +184,7 @@
 			<!-- Add external libraries -->
 			<!-- Include the unified, signed version of the library -->
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
-			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)\$(ProductName).pdb" />
+			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb" />
 			<ProjectTemplateLibraries Include="$(OutputPath)\$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
@@ -311,7 +311,7 @@
 																"
 											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
-																$(ILMergeOutputAssemblyDirectory)\$(ProductName).???;
+																$(ILMergeOutputAssemblyDirectory)$(ProductName).???;
 																$(OutputPath)\**\$(ProductName).resources.dll;
 																$(OutputPath)\$(ProductName).xml;
 																$(OutputPath)\$(ProductName).Contracts.???;
@@ -321,7 +321,7 @@
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)Lib\log4net.*;
 																" />
-			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesLayoutPath)\*.zip" />
+			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesLayoutPath)*.zip" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
 															$(ProjectRoot)**\obj\**;
 															$(ProjectRoot)**\*.sln.cache;
