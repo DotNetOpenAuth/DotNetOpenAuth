@@ -346,7 +346,7 @@
 
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecurisveDir)%(FileName)%(Extension)')"/>
+			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
