@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
 	<PropertyGroup>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 	</PropertyGroup>
 
-	<Import Project="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.targets" />
+	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />
 
 	<PropertyGroup>
 		<PackJs Condition="'$(PackJs)' == '' and '$(Configuration)' == 'Release'">true</PackJs>
