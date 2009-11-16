@@ -7,7 +7,7 @@
 		<Framework>$(WINDIR)\Microsoft.NET\Framework\v2.0.50727</Framework>
 		<DxRoot>$(ProjectRoot)tools\Sandcastle</DxRoot>
 		<ProductionTools>$(DxRoot)\ProductionTools\</ProductionTools>
-		<ProductionTransforms>$(DxRoot)\ProductionTransforms</ProductionTransforms>
+		<ProductionTransforms>$(DxRoot)\ProductionTransforms\</ProductionTransforms>
 		<Presentation>$(DxRoot)\Presentation\$(PresentationStyle)</Presentation>
 		<HHC>$(PROGRAMFILES)\Html Help Workshop\hhc.exe</HHC>
 
@@ -70,11 +70,11 @@
 		<Exec ContinueOnError="true" IgnoreExitCode="true"
 			Command='"$(ProductionTools)Mrefbuilder.exe" "%(Assemblies.FullPath)" /out:"$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml"' />
 		<Exec Condition="'$(PresentationStyle)' == 'prototype'" ContinueOnError="true" IgnoreExitCode="true"
-			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)\AddGuidFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)AddGuidFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
 		<Exec Condition="'$(PresentationStyle)' == 'vs2005'" ContinueOnError="true" IgnoreExitCode="true"
-			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
+			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
 		<Exec Condition="'$(PresentationStyle)' == 'hana'" ContinueOnError="true" IgnoreExitCode="true"
-			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)\%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
 	</Target>
 
 	<ItemGroup>
@@ -99,13 +99,13 @@
 	</Target>
 
 	<Target Name="ReflectionData" DependsOnTargets="FxReflection;ReflectionBase" Inputs="$(ReflectionBaseFile)" Outputs="$(ReflectionFile)">
-		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)\AddGuidFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)"' />
-		<Exec Condition="'$(PresentationStyle)' == 'vs2005'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
-		<Exec Condition="'$(PresentationStyle)' == 'hana'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)AddGuidFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)"' />
+		<Exec Condition="'$(PresentationStyle)' == 'vs2005'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
+		<Exec Condition="'$(PresentationStyle)' == 'hana'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(ReflectionBaseFile)" /out:"$(ReflectionFile)" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
 	</Target>
 
 	<Target Name="Manifest" DependsOnTargets="ReflectionData" Inputs="$(ReflectionFile)" Outputs="$(ManifestFile)">
-		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ReflectionToManifest.xsl" "$(ReflectionFile)" /out:"$(ManifestFile)"' />
+		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ReflectionToManifest.xsl" "$(ReflectionFile)" /out:"$(ManifestFile)"' />
 	</Target>
 
 	<Target Name="Html"
@@ -123,8 +123,8 @@
 		<MakeDir Directories="$(ChmDir)Styles" Condition="!Exists('$(ChmDir)Styles')" />
 		<MakeDir Directories="$(ChmDir)Local" Condition="!Exists('$(ChmDir)Local')" />
 
-		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\CreatePrototypeToc.xsl" "$(ReflectionFile)" /out:"$(TocFile)"' />
-		<Exec Condition="'$(PresentationStyle)' != 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateVSToc.xsl" "$(ReflectionFile)" /out:"$(TocFile)"' />
+		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)CreatePrototypeToc.xsl" "$(ReflectionFile)" /out:"$(TocFile)"' />
+		<Exec Condition="'$(PresentationStyle)' != 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)CreateVSToc.xsl" "$(ReflectionFile)" /out:"$(TocFile)"' />
 
 		<!--copy directories from hxs -->
 		<Copy SourceFiles="@(IconFiles)" DestinationFolder="$(ChmDir)icons\%(RecursiveDir)" SkipUnchangedFiles="true"/>
@@ -135,7 +135,7 @@
 		<!-- generate CHM-specific HTML and HH* files -->
 		<Exec Command='"$(ProductionTools)ChmBuilder.exe" /project:$(OutputAssembly) /html:"$(DocOutputApiPath)html" /lcid:1033 /toc:"$(TocFile)" /out:"$(chmDir)"'/>
 
-		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\ReflectionToChmIndex.xsl" "$(ReflectionFile)" /out:"$(HhkFile)"' />
+		<Exec Condition="'$(PresentationStyle)' == 'prototype'" Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ReflectionToChmIndex.xsl" "$(ReflectionFile)" /out:"$(HhkFile)"' />
 		<Exec Command='"$(ProductionTools)DBCSFix.exe" /d:$(chmDir) /l:1033'/>
 
 		<Exec Command='"$(HHC)" "$(HhpFile)"' IgnoreExitCode="true" />
@@ -149,8 +149,8 @@
 	  Outputs="$(HxsFile)">
 		<Copy SourceFiles="@(HxsFiles)" DestinationFiles="@(HxsFiles->'$(OutputPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 		<Exec Command='"$(DxRoot)\Presentation\shared\copyhavana.bat" $(OutputAssembly)' />
-		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateHxc.xsl" "$(TocFile)" /arg:fileNamePrefix="$(OutputAssembly)" /out:"$(HxcFile)"' />
-		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)\TocToHxSContents.xsl" "$(TocFile)" /out:"$(HxtFile)"' />
+		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)CreateHxc.xsl" "$(TocFile)" /arg:fileNamePrefix="$(OutputAssembly)" /out:"$(HxcFile)"' />
+		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)TocToHxSContents.xsl" "$(TocFile)" /out:"$(HxtFile)"' />
 		<Exec Command='hxcomp.exe -p "$(HxcFile)"' IgnoreExitCode="true" />
 	</Target>
 
