@@ -5,10 +5,10 @@
 		<!-- Environment -->
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<Framework>$(WINDIR)\Microsoft.NET\Framework\v2.0.50727</Framework>
-		<DxRoot>$(ProjectRoot)tools\Sandcastle</DxRoot>
-		<ProductionTools>$(DxRoot)\ProductionTools\</ProductionTools>
-		<ProductionTransforms>$(DxRoot)\ProductionTransforms\</ProductionTransforms>
-		<Presentation>$(DxRoot)\Presentation\$(PresentationStyle)\</Presentation>
+		<DxRoot>$(ProjectRoot)tools\Sandcastle\</DxRoot>
+		<ProductionTools>$(DxRoot)ProductionTools\</ProductionTools>
+		<ProductionTransforms>$(DxRoot)ProductionTransforms\</ProductionTransforms>
+		<Presentation>$(DxRoot)Presentation\$(PresentationStyle)\</Presentation>
 		<HHC>$(PROGRAMFILES)\Html Help Workshop\hhc.exe</HHC>
 
 		<OutputAssemblyFile>$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
@@ -148,13 +148,13 @@
 	  Inputs="$(DocOutputPath)html\*.htm;$(TocFile)"
 	  Outputs="$(HxsFile)">
 		<Copy SourceFiles="@(HxsFiles)" DestinationFiles="@(HxsFiles->'$(OutputPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
-		<Exec Command='"$(DxRoot)\Presentation\shared\copyhavana.bat" $(OutputAssembly)' />
+		<Exec Command='"$(DxRoot)Presentation\shared\copyhavana.bat" $(OutputAssembly)' />
 		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)CreateHxc.xsl" "$(TocFile)" /arg:fileNamePrefix="$(OutputAssembly)" /out:"$(HxcFile)"' />
 		<Exec Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)TocToHxSContents.xsl" "$(TocFile)" /out:"$(HxtFile)"' />
 		<Exec Command='hxcomp.exe -p "$(HxcFile)"' IgnoreExitCode="true" />
 	</Target>
 
 	<Target Name="ProductionTools">
-		<MSBuild Projects="$(DxRoot)\Source\build.proj" />
+		<MSBuild Projects="$(DxRoot)Source\build.proj" />
 	</Target>
 </Project>
