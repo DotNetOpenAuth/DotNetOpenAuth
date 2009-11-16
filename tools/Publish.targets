@@ -26,9 +26,9 @@
 		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
 
 		<ItemGroup>
-			<_SampleWebConfigs Include="$(ProjectRoot)\samples\*\web.config" />
+			<_SampleWebConfigs Include="$(ProjectRoot)samples\*\web.config" />
 			<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
-			<SampleSources Include="$(ProjectRoot)\samples\**\*" />
+			<SampleSources Include="$(ProjectRoot)samples\**\*" />
 			<SampleSources>
 				<PublishedLocation>$(SampleWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)</PublishedLocation>
 			</SampleSources>
@@ -69,7 +69,7 @@
 
 	<Target Name="PrepareForPublishDocumentation" DependsOnTargets="Documentation">
 		<ItemGroup>
-			<DocSources Include="$(ProjectRoot)\doc\api\**\*" />
+			<DocSources Include="$(ProjectRoot)doc\api\**\*" />
 			<DocTargets Include="@(DocSources->'$(DocWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)')" />
 		</ItemGroup>
 	</Target>

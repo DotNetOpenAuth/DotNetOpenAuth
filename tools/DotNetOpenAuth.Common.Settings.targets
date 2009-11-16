@@ -2,18 +2,18 @@
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)</ProjectRoot>
-		<DropsRoot>$(ProjectRoot)\drops\$(Configuration)\</DropsRoot>
-		<OutputPath>$(ProjectRoot)\bin\$(Configuration)\</OutputPath>
-		<DocOutputPath>$(ProjectRoot)\doc\</DocOutputPath>
-		<IntermediatePath>$(ProjectRoot)\obj\$(Configuration)\</IntermediatePath>
-		<ToolsDir>$(ProjectRoot)\tools\</ToolsDir>
-		<PublicKeyFile>$(ProjectRoot)\src\official-build-key.pub</PublicKeyFile>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\</ProjectRoot>
+		<DropsRoot>$(ProjectRoot)drops\$(Configuration)\</DropsRoot>
+		<OutputPath>$(ProjectRoot)bin\$(Configuration)\</OutputPath>
+		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
+		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)\</IntermediatePath>
+		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
+		<PublicKeyFile>$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
 		<KeyPairContainer Condition="'$(KeyPairContainer)' == ''">DotNetOpenAuth</KeyPairContainer>
 		<PublicKeyToken>2780CCD10D57B246</PublicKeyToken>
 	</PropertyGroup>
 
-	<Import Project="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.targets" />
+	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />
 
 	<Target Name="InitializeProps">
 		<CheckAdminRights>

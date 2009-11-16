@@ -2,48 +2,48 @@
 	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.Common.Settings.targets"/>
 	<PropertyGroup>
 		<AutomatedBuild>true</AutomatedBuild>
-		<SolutionPath>$(ProjectRoot)\src\$(ProductName).sln</SolutionPath>
+		<SolutionPath>$(ProjectRoot)src\$(ProductName).sln</SolutionPath>
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)\unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)\$(ProductName).dll</ILMergeOutputAssembly>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
 	</PropertyGroup>
 
-	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
-	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
-	<Import Project="$(ProjectRoot)\tools\Publish.targets"/>
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
+	<Import Project="$(ProjectRoot)tools\$(ProductName).Versioning.targets"/>
+	<Import Project="$(ProjectRoot)tools\Documentation.targets"/>
+	<Import Project="$(ProjectRoot)tools\Publish.targets"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
 	<ItemGroup>
-		<SampleProjects Include="$(ProjectRoot)\samples\**\*.csproj" />
+		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj" />
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
-		<ProjectTemplates Include="$(ProjectRoot)\projecttemplates\**\*.csproj" />
+		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.csproj" />
 		<ILMergeInputAssemblies Include="$(OutputPath)\$(ProductName).dll;
-		                                 $(ProjectRoot)\lib\Microsoft.Contracts.dll; "/>
+		                                 $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
 		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
 		                                $(OutputPath)\$(ProductName).dll;
 		                                $(OutputPath)\$(ProductName).Contracts.dll;
 		                                $(OutputPath)\$(ProductName).Test.dll;
-		                                $(ProjectRoot)\samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
+		                                $(ProjectRoot)samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
 
 	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
 		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 		<ItemGroup>
 			<DirtyDirectories Include="
-			                           $(ProjectRoot)\bin;
-			                           $(ProjectRoot)\**\obj;
-			                           $(ProjectRoot)\doc\api;
+			                           $(ProjectRoot)bin;
+			                           $(ProjectRoot)**\obj;
+			                           $(ProjectRoot)doc\api;
 			                           $(DropsRoot);
-			                           $(ProjectRoot)\src\PrecompiledWeb;
+			                           $(ProjectRoot)src\PrecompiledWeb;
 			                           $(ProjectTemplatesLayoutPath);
 			                           " />
 			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
 			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
 			<DirtyFiles Include="
-			                     $(ProjectRoot)\**\*~;
-			                     $(ProjectRoot)\**\*.log*;
-			                     $(ProjectRoot)\doc\$(ProductName).chm;
+			                     $(ProjectRoot)**\*~;
+			                     $(ProjectRoot)**\*.log*;
+			                     $(ProjectRoot)doc\$(ProductName).chm;
 			                     " />
 		</ItemGroup>
 		<Delete Files="@(DirtyFiles)" />
@@ -55,11 +55,11 @@
 	</Target>
 	
 	<Target Name="BuildProduct" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName)\$(ProductName).csproj" />
+		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).csproj" />
 	</Target>
 
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).Test\$(ProductName).Test.csproj" />
+		<MSBuild Projects="$(ProjectRoot)src\$(ProductName).Test\$(ProductName).Test.csproj" />
 	</Target>
 
 	<Target Name="BuildSamples" DependsOnTargets="SkipVerification">
@@ -80,7 +80,7 @@
 					Inputs="@(ILMergeInputAssemblies)"
 					Outputs="$(ILMergeOutputAssembly)">
 		<MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
-		<ILMerge ExcludeFile="$(ProjectRoot)\ILMergeInternalizeExceptions.txt"
+		<ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 		         InputAssemblies="@(ILMergeInputAssemblies)"
 		         OutputFile="$(ILMergeOutputAssembly)"
 		         KeyFile="$(PublicKeyFile)"
@@ -102,13 +102,13 @@
 		</PropertyGroup>
 
 		<ItemGroup>
-			<ToolProjects Include="$(ProjectRoot)\Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
+			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
 			<OfflineProvider Include="
-											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\**\*.dll;
+											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\**\*.dll;
 											 $(ILMergeOutputAssembly).*;
-											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe"
+											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe"
 											 Exclude="
-											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\$(ProductName).*;
+											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\$(ProductName).*;
 											 "/>
 			<OfflineProviderTargets Include="
 											 @(OfflineProvider->'$(ToolsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
@@ -143,20 +143,20 @@
 
 	<Target Name="ProjectTemplatesLayout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates">
 		<ItemGroup>
-			<ProjectTemplatesSource Include="$(ProjectRoot)\projecttemplates\**\*"
+			<ProjectTemplatesSource Include="$(ProjectRoot)projecttemplates\**\*"
 			                   Exclude="
-			                   $(ProjectRoot)\projecttemplates\**\*.sln.cache;
-			                   $(ProjectRoot)\projecttemplates\**\*.suo;
-			                   $(ProjectRoot)\projecttemplates\**\*.gitignore;
-			                   $(ProjectRoot)\projecttemplates\**\*.log*;
-			                   $(ProjectRoot)\projecttemplates\**\*~;
-			                   $(ProjectRoot)\projecttemplates\**\Settings.StyleCop;
-			                   $(ProjectRoot)\projecttemplates\**\StyleCop.Cache;
-			                   $(ProjectRoot)\projecttemplates\**\*.user;
-			                   $(ProjectRoot)\projecttemplates\**\obj\**;
-			                   $(ProjectRoot)\projecttemplates\**\bin\**;
-			                   $(ProjectRoot)\projecttemplates\**\*.ldf;
-			                   $(ProjectRoot)\projecttemplates\**\*.mdf;
+			                   $(ProjectRoot)projecttemplates\**\*.sln.cache;
+			                   $(ProjectRoot)projecttemplates\**\*.suo;
+			                   $(ProjectRoot)projecttemplates\**\*.gitignore;
+			                   $(ProjectRoot)projecttemplates\**\*.log*;
+			                   $(ProjectRoot)projecttemplates\**\*~;
+			                   $(ProjectRoot)projecttemplates\**\Settings.StyleCop;
+			                   $(ProjectRoot)projecttemplates\**\StyleCop.Cache;
+			                   $(ProjectRoot)projecttemplates\**\*.user;
+			                   $(ProjectRoot)projecttemplates\**\obj\**;
+			                   $(ProjectRoot)projecttemplates\**\bin\**;
+			                   $(ProjectRoot)projecttemplates\**\*.ldf;
+			                   $(ProjectRoot)projecttemplates\**\*.mdf;
 			                   "/>
 			<_ProjectTemplatesTransformSource Include="@(ProjectTemplatesSource)" Condition="
 																			 '%(Extension)' == '.cs'
@@ -178,7 +178,7 @@
 			<TopLevelVSProjectTemplates Include="@(VSProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(ProjectTemplatesLayoutPath)'" />
 
 			<!-- Include the template icon -->
-			<ProjectTemplatesSource Include="$(ProjectRoot)\doc\logo\dotnetopenid.ico" />
+			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\dotnetopenid.ico" />
 			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
 
 			<!-- Add external libraries -->
@@ -187,8 +187,8 @@
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)\$(ProductName).pdb" />
 			<ProjectTemplateLibraries Include="$(OutputPath)\$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
-			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.dll" />
-			<ProjectTemplateLibraries Include="$(ProjectRoot)\lib\log4net.xml" />
+			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
+			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />
 			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(FileName)%(Extension)')" />
 
 			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
@@ -304,45 +304,45 @@
 										 " />
 
 			<DropSourceFiles Include="
-																$(ProjectRoot)\Doc\$(ProductName).chm;
-																$(ProjectRoot)\Doc\*.htm*;
-																$(ProjectRoot)\LICENSE.txt;
-																$(ProjectRoot)\CONTRIB.txt;
+																$(ProjectRoot)Doc\$(ProductName).chm;
+																$(ProjectRoot)Doc\*.htm*;
+																$(ProjectRoot)LICENSE.txt;
+																$(ProjectRoot)CONTRIB.txt;
 																"
-											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
+											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
 																$(ILMergeOutputAssemblyDirectory)\$(ProductName).???;
 																$(OutputPath)\**\$(ProductName).resources.dll;
 																$(OutputPath)\$(ProductName).xml;
 																$(OutputPath)\$(ProductName).Contracts.???;
-																$(ProjectRoot)\Doc\README.Bin.html;
-																$(ProjectRoot)\src\$(ProductName)\Configuration\$(ProductName).xsd;
+																$(ProjectRoot)Doc\README.Bin.html;
+																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
 			<DropLibSourceFiles Include="
-																$(ProjectRoot)\Lib\log4net.*;
+																$(ProjectRoot)Lib\log4net.*;
 																" />
 			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesLayoutPath)\*.zip" />
-			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
-															$(ProjectRoot)\**\obj\**;
-															$(ProjectRoot)\**\*.sln.cache;
-															$(ProjectRoot)\**\*.suo;
-															$(ProjectRoot)\**\*.user;
-															$(ProjectRoot)\**\*.gitignore;
-															$(ProjectRoot)\**\*.ldf;
-															$(ProjectRoot)\**\*.log*;
-															$(ProjectRoot)\**\*~;
-															$(ProjectRoot)\**\Debug\**;
-															$(ProjectRoot)\**\Settings.StyleCop;
-															$(ProjectRoot)\**\StyleCop.Cache;
-															$(ProjectRoot)\Samples\**\DotNetOpenAuth.???;
-															$(ProjectRoot)\Samples\**\log4net.???;
-															$(ProjectRoot)\Samples\**\PresentationCore.dll;
-															$(ProjectRoot)\Samples\**\System.Printing.dll;
-															$(ProjectRoot)\Samples\**\*.refresh_;
+			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
+															$(ProjectRoot)**\obj\**;
+															$(ProjectRoot)**\*.sln.cache;
+															$(ProjectRoot)**\*.suo;
+															$(ProjectRoot)**\*.user;
+															$(ProjectRoot)**\*.gitignore;
+															$(ProjectRoot)**\*.ldf;
+															$(ProjectRoot)**\*.log*;
+															$(ProjectRoot)**\*~;
+															$(ProjectRoot)**\Debug\**;
+															$(ProjectRoot)**\Settings.StyleCop;
+															$(ProjectRoot)**\StyleCop.Cache;
+															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
+															$(ProjectRoot)Samples\**\log4net.???;
+															$(ProjectRoot)Samples\**\PresentationCore.dll;
+															$(ProjectRoot)Samples\**\System.Printing.dll;
+															$(ProjectRoot)Samples\**\*.refresh_;
 															" />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
-			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)\Samples\**\*.refresh_" />
-			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
+			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)Samples\**\*.refresh_" />
+			<DropSpecsSourceFiles Include="$(ProjectRoot)Doc\specs\*.htm*" />
 
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
