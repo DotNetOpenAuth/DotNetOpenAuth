@@ -98,7 +98,7 @@
 
 	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct">
 		<PropertyGroup>
-			<ToolsDirectory>$(DropsRoot)\$(ProductName)-Tools-$(BuildVersion)</ToolsDirectory>
+			<ToolsDirectory>$(DropsRoot)$(ProductName)-Tools-$(BuildVersion)</ToolsDirectory>
 		</PropertyGroup>
 
 		<ItemGroup>
@@ -281,7 +281,7 @@
 		     where CallTarget is fired do NOT affect those called targets. -->
 		<!-- The rest of these are here so that other DependsOn targets have access to these properties. -->
 		<PropertyGroup>
-			<DropDirectory>$(DropsRoot)\$(ProductName)-$(BuildVersion)</DropDirectory>
+			<DropDirectory>$(DropsRoot)$(ProductName)-$(BuildVersion)</DropDirectory>
 		</PropertyGroup>
 	</Target>
 
