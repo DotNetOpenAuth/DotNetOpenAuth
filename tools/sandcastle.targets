@@ -16,7 +16,7 @@
 		<DocOutputApiPath>$(DocOutputPath)api\</DocOutputApiPath>
 		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)\</DocIntermediatePath>
 		<FxReflectionIntermediatePath>$(ProjectRoot)obj\Doc\Tmp\</FxReflectionIntermediatePath>
-		<FxReflectionOutputPath>$(ProjectRoot)obj\Doc\Reflection</FxReflectionOutputPath>
+		<FxReflectionOutputPath>$(ProjectRoot)obj\Doc\Reflection\</FxReflectionOutputPath>
 		<ChmDir>$(DocIntermediatePath)chm\</ChmDir>
 
 		<TocFile>$(ChmDir)toc.xml</TocFile>
@@ -70,11 +70,11 @@
 		<Exec ContinueOnError="true" IgnoreExitCode="true"
 			Command='"$(ProductionTools)Mrefbuilder.exe" "%(Assemblies.FullPath)" /out:"$(FxReflectionIntermediatePath)%(Assemblies.FileName).xml"' />
 		<Exec Condition="'$(PresentationStyle)' == 'prototype'" ContinueOnError="true" IgnoreExitCode="true"
-			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)AddGuidFilenames.xsl" "$(FxReflectionIntermediatePath)%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)AddGuidFilenames.xsl" "$(FxReflectionIntermediatePath)%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
 		<Exec Condition="'$(PresentationStyle)' == 'vs2005'" ContinueOnError="true" IgnoreExitCode="true"
-			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
+			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
 		<Exec Condition="'$(PresentationStyle)' == 'hana'" ContinueOnError="true" IgnoreExitCode="true"
-			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)\%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+			Command='"$(ProductionTools)XslTransform.exe" /xsl:"$(ProductionTransforms)ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)AddFriendlyFilenames.xsl" "$(FxReflectionIntermediatePath)%(Assemblies.FileName).xml" /out:"$(FxReflectionOutputPath)%(Assemblies.FileName).xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
 	</Target>
 
 	<ItemGroup>
