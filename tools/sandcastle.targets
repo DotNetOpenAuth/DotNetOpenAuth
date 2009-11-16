@@ -29,6 +29,8 @@
 		<ReflectionFile>$(DocIntermediatePath)\reflection.xml</ReflectionFile>
 		<ManifestFile>$(DocIntermediatePath)\manifest.xml</ManifestFile>
 		<ReflectionBaseFile>$(DocIntermediatePath)\reflection_base.xml</ReflectionBaseFile>
+
+		<SampleHtmlOutputForUpToDateCheck>$(DocOutputApiPath)\html\N_DotNetOpenAuth.htm</SampleHtmlOutputForUpToDateCheck>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -108,12 +110,12 @@
 
 	<Target Name="Html"
 	      Inputs="$(ManifestFile);$(ReflectionFile);$(DocumentationFile)"
-	      Outputs="$(DocOutputApiPath)\html\N_DotNetOpenAuth.htm"
+	      Outputs="$(SampleHtmlOutputForUpToDateCheck)"
 	      DependsOnTargets="SetEnvironmentVars;Template;Manifest">
 		<Exec Command='"$(ProductionTools)\BuildAssembler.exe" /config:"$(Presentation)\configuration\sandcastle.config" "$(ManifestFile)"' />
 	</Target>
 
-	<Target Name="Chm" Inputs="$(DocOutputApiPath)\html\N_DotNetOpenAuth.htm;$(ReflectionFile)" Outputs="$(ChmFile)" DependsOnTargets="Html">
+	<Target Name="Chm" Inputs="$(SampleHtmlOutputForUpToDateCheck);$(ReflectionFile)" Outputs="$(ChmFile)" DependsOnTargets="Html">
 		<MakeDir Directories="$(chmDir)" Condition="!Exists('$(chmDir)')" />
 		<MakeDir Directories="$(chmDir)\Html" Condition="!Exists('$(chmDir)\Html')" />
 		<MakeDir Directories="$(chmDir)\Icons" Condition="!Exists('$(chmDir)\Icons')" />
