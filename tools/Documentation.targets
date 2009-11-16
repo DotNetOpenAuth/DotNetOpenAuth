@@ -4,9 +4,9 @@
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<OutputAssembly>DotNetOpenAuth</OutputAssembly>
-		<OutputPath>$(ProjectRoot)bin\$(Configuration)</OutputPath>
-		<DocOutputPath>$(ProjectRoot)doc</DocOutputPath>
-		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)</IntermediatePath>
+		<OutputPath>$(ProjectRoot)bin\$(Configuration)\</OutputPath>
+		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
+		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)\</IntermediatePath>
 		<DocumentationFile>$(OutputPath)$(OutputAssembly).xml</DocumentationFile>
 	</PropertyGroup>
 
