@@ -13,17 +13,17 @@
 
 		<OutputAssemblyFile>$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
 
-		<DocOutputApiPath>$(DocOutputPath)\api</DocOutputApiPath>
+		<DocOutputApiPath>$(DocOutputPath)api</DocOutputApiPath>
 		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)</DocIntermediatePath>
 		<FxReflectionIntermediatePath>$(ProjectRoot)obj\Doc\Tmp</FxReflectionIntermediatePath>
 		<FxReflectionOutputPath>$(ProjectRoot)obj\Doc\Reflection</FxReflectionOutputPath>
 		<ChmDir>$(DocIntermediatePath)\chm</ChmDir>
 
 		<TocFile>$(ChmDir)\toc.xml</TocFile>
-		<ChmFile>$(DocOutputPath)\$(OutputAssembly).chm</ChmFile>
-		<HxtFile>$(DocOutputPath)\$(OutputAssembly).HxT</HxtFile>
-		<HxsFile>$(DocOutputPath)\$(OutputAssembly).hxs</HxsFile>
-		<HxcFile>$(DocOutputPath)\$(OutputAssembly).hxc</HxcFile>
+		<ChmFile>$(DocOutputPath)$(OutputAssembly).chm</ChmFile>
+		<HxtFile>$(DocOutputPath)$(OutputAssembly).HxT</HxtFile>
+		<HxsFile>$(DocOutputPath)$(OutputAssembly).hxs</HxsFile>
+		<HxcFile>$(DocOutputPath)$(OutputAssembly).hxc</HxcFile>
 		<HhkFile>$(chmDir)\$(OutputAssembly).hhk</HhkFile>
 		<HhpFile>$(chmDir)\$(OutputAssembly).hhp</HhpFile>
 		<ReflectionFile>$(DocIntermediatePath)\reflection.xml</ReflectionFile>
@@ -145,7 +145,7 @@
 
 	<Target Name="HxS"
 	  DependsOnTargets="Build"
-	  Inputs="$(DocOutputPath)\html\*.htm;$(TocFile)"
+	  Inputs="$(DocOutputPath)html\*.htm;$(TocFile)"
 	  Outputs="$(HxsFile)">
 		<Copy SourceFiles="@(HxsFiles)" DestinationFiles="@(HxsFiles->'$(OutputPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 		<Exec Command='"$(DxRoot)\Presentation\shared\copyhavana.bat" $(OutputAssembly)' />
