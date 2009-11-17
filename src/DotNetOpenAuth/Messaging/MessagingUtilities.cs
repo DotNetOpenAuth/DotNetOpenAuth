@@ -326,6 +326,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
 		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
+			Contract.Requires<ArgumentNullException>(copyFrom != null);
+			Contract.Requires<ArgumentNullException>(copyTo != null);
+			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
+			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
 			return CopyTo(copyFrom, copyTo, int.MaxValue);
 		}
 
@@ -366,6 +370,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A seekable stream with the same contents as the original.</returns>
 		internal static Stream CreateSnapshot(this Stream copyFrom) {
 			Contract.Requires<ArgumentNullException>(copyFrom != null);
+			Contract.Requires<ArgumentException>(copyFrom.CanRead);
 
 			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
 			copyFrom.CopyTo(copyTo);
@@ -380,6 +385,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The newly created instance.</returns>
 		internal static HttpWebRequest Clone(this HttpWebRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(request.RequestUri != null);
 			return Clone(request, request.RequestUri);
 		}
 
@@ -547,6 +553,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="second">The second dictionary in the comparison. May not be null.</param>
 		/// <returns>True if the arrays equal; false otherwise.</returns>
 		internal static bool AreEquivalent<TKey, TValue>(IDictionary<TKey, TValue> first, IDictionary<TKey, TValue> second) {
+			Contract.Requires<ArgumentNullException>(first != null);
+			Contract.Requires<ArgumentNullException>(second != null);
 			return AreEquivalent(first.ToArray(), second.ToArray());
 		}
 
@@ -752,6 +760,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="comparer">A comparison function to compare keys.</param>
 		/// <returns>An System.Linq.IOrderedEnumerable&lt;TElement&gt; whose elements are sorted according to a key.</returns>
 		internal static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Comparison<TKey> comparer) {
+			Contract.Requires<ArgumentNullException>(source != null);
+			Contract.Requires<ArgumentNullException>(comparer != null);
+			Contract.Requires<ArgumentNullException>(keySelector != null);
 			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSource>>() != null);
 			return System.Linq.Enumerable.OrderBy<TSource, TKey>(source, keySelector, new ComparisonHelper<TKey>(comparer));
 		}
@@ -850,6 +861,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// host actually having this configuration element present.
 		/// </remarks>
 		internal static string EscapeUriDataStringRfc3986(string value) {
+			Contract.Requires<ArgumentNullException>(value != null);
+
 			// Start with RFC 2396 escaping by calling the .NET method to do the work.
 			// This MAY sometimes exhibit RFC 3986 behavior (according to the documentation).
 			// If it does, the escaping we do that follows it will be a no-op since the
