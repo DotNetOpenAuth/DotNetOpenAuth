@@ -54,5 +54,21 @@ namespace RelyingPartyLogic {
 				return this.User.AuthenticationTokens.First().ClaimedIdentifier;
 			}
 		}
+
+		/// <summary>
+		/// Gets the expiration date (local time) for the access token.
+		/// </summary>
+		/// <value>
+		/// The expiration date, or <c>null</c> if there is no expiration date.
+		/// </value>
+		DateTime? IServiceProviderAccessToken.ExpirationDate {
+			get { return this.ExpirationDateUtc.HasValue ? (DateTime?)this.ExpirationDateUtc.Value.ToLocalTime() : null; }
+		}
+
+		partial void OnExpirationDateUtcChanging(DateTime? value) {
+			if (value.HasValue && value.Value.Kind != DateTimeKind.Utc) {
+				throw new ArgumentException("DateTime must be given in UTC time.");
+			}
+		}
 	}
 }

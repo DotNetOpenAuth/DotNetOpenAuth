@@ -20,16 +20,16 @@ namespace WebFormsRelyingParty.Members {
 			Database.LoggedInUser.AuthenticationTokens.Load();
 			this.Repeater1.DataSource = Database.LoggedInUser.AuthenticationTokens;
 
-			if (!Database.LoggedInUser.IssuedToken.IsLoaded) {
-				Database.LoggedInUser.IssuedToken.Load();
+			if (!Database.LoggedInUser.IssuedTokens.IsLoaded) {
+				Database.LoggedInUser.IssuedTokens.Load();
 			}
-			this.tokenListRepeater.DataSource = Database.LoggedInUser.IssuedToken;
-			foreach (var token in Database.LoggedInUser.IssuedToken) {
+			this.tokenListRepeater.DataSource = Database.LoggedInUser.IssuedTokens;
+			foreach (var token in Database.LoggedInUser.IssuedTokens) {
 				if (!token.ConsumerReference.IsLoaded) {
 					token.ConsumerReference.Load();
 				}
 			}
-			this.authorizedClientsPanel.Visible = Database.LoggedInUser.IssuedToken.Count > 0;
+			this.authorizedClientsPanel.Visible = Database.LoggedInUser.IssuedTokens.Count > 0;
 
 			if (!IsPostBack) {
 				this.Repeater1.DataBind();
@@ -49,7 +49,7 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void deleteOpenId_Command(object sender, CommandEventArgs e) {
 			string claimedId = (string)e.CommandArgument;
-			var token = Database.DataContext.AuthenticationToken.First(t => t.ClaimedIdentifier == claimedId && t.User.Id == Database.LoggedInUser.Id);
+			var token = Database.DataContext.AuthenticationToken.First(t => t.ClaimedIdentifier == claimedId && t.User.UserId == Database.LoggedInUser.UserId);
 			Database.DataContext.DeleteObject(token);
 			Database.DataContext.SaveChanges();
 			this.Repeater1.DataBind();
@@ -72,13 +72,13 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void revokeToken_Command(object sender, CommandEventArgs e) {
 			string token = (string)e.CommandArgument;
-			var tokenToRevoke = Database.DataContext.IssuedToken.FirstOrDefault(t => t.Token == token && t.User.Id == Database.LoggedInUser.Id);
+			var tokenToRevoke = Database.DataContext.IssuedToken.FirstOrDefault(t => t.Token == token && t.User.UserId == Database.LoggedInUser.UserId);
 			if (tokenToRevoke != null) {
 				Database.DataContext.DeleteObject(tokenToRevoke);
 			}
 
 			this.tokenListRepeater.DataBind();
-			this.noAuthorizedClientsPanel.Visible = Database.LoggedInUser.IssuedToken.Count == 0;
+			this.noAuthorizedClientsPanel.Visible = Database.LoggedInUser.IssuedTokens.Count == 0;
 		}
 
 		private void AddIdentifier(string claimedId, string friendlyId) {

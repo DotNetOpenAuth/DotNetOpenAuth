@@ -43,6 +43,13 @@ namespace RelyingPartyLogic {
 		}
 
 		/// <summary>
+		/// Gets the (local) date that this request token was first created on.
+		/// </summary>
+		DateTime IServiceProviderRequestToken.CreatedOn {
+			get { return this.CreatedOnUtc.ToLocalTime(); }
+		}
+
+		/// <summary>
 		/// Authorizes this request token to allow exchange for an access token.
 		/// </summary>
 		/// <remarks>

@@ -91,6 +91,9 @@
 				}
 
 				Database.DataContext.AddToUser(user);
+			} else {
+				openidToken.UsageCount++;
+				openidToken.LastUsedUtc = DateTime.UtcNow;
 			}
 
 			bool persistentCookie = false;

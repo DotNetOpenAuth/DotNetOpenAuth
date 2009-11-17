@@ -27,14 +27,15 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[User](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
 	[FirstName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	[LastName] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	[EmailAddress] [nvarchar](100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	[EmailAddressVerified] [bit] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
  CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
 (
-	[Id] ASC
+	[UserId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -43,11 +44,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Role](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RoleId] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
  CONSTRAINT [PK_Role] PRIMARY KEY CLUSTERED 
 (
-	[Id] ASC
+	[RoleId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -58,7 +59,7 @@ GO
 SET ANSI_PADDING ON
 GO
 CREATE TABLE [dbo].[IssuedToken](
-	[TokenId] [int] IDENTITY(1,1) NOT NULL,
+	[IssuedTokenId] [int] IDENTITY(1,1) NOT NULL,
 	[ConsumerId] [int] NOT NULL,
 	[UserId] [int] NULL,
 	[Token] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
@@ -72,7 +73,7 @@ CREATE TABLE [dbo].[IssuedToken](
 	[Scope] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
  CONSTRAINT [PK_IssuedToken] PRIMARY KEY CLUSTERED 
 (
-	[TokenId] ASC
+	[IssuedTokenId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -102,13 +103,16 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[AuthenticationToken](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[AuthenticationTokenId] [int] IDENTITY(1,1) NOT NULL,
 	[UserId] [int] NOT NULL,
 	[OpenIdClaimedIdentifier] [nvarchar](250) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
 	[OpenIdFriendlyIdentifier] [nvarchar](250) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[LastUsed] [datetime] NOT NULL,
+	[UsageCount] [int] NOT NULL,
  CONSTRAINT [PK_AuthenticationToken] PRIMARY KEY CLUSTERED 
 (
-	[Id] ASC
+	[AuthenticationTokenId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
@@ -156,9 +160,17 @@ AS
 GO
 ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF_User_EmailAddressVerified]  DEFAULT ((0)) FOR [EmailAddressVerified]
 GO
+ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF_User_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
+GO
 ALTER TABLE [dbo].[IssuedToken] ADD  CONSTRAINT [DF_IssuedToken_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
 GO
 ALTER TABLE [dbo].[IssuedToken] ADD  CONSTRAINT [DF_IssuedToken_IsAccessToken]  DEFAULT ((0)) FOR [IsAccessToken]
+GO
+ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
+GO
+ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_LastUsed]  DEFAULT (getdate()) FOR [LastUsed]
+GO
+ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_UsageCount]  DEFAULT ((0)) FOR [UsageCount]
 GO
 ALTER TABLE [dbo].[IssuedToken]  WITH CHECK ADD  CONSTRAINT [FK_IssuedToken_Consumer] FOREIGN KEY([ConsumerId])
 REFERENCES [dbo].[Consumer] ([ConsumerId])
@@ -168,28 +180,28 @@ GO
 ALTER TABLE [dbo].[IssuedToken] CHECK CONSTRAINT [FK_IssuedToken_Consumer]
 GO
 ALTER TABLE [dbo].[IssuedToken]  WITH CHECK ADD  CONSTRAINT [FK_IssuedToken_User] FOREIGN KEY([UserId])
-REFERENCES [dbo].[User] ([Id])
+REFERENCES [dbo].[User] ([UserId])
 ON UPDATE CASCADE
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[IssuedToken] CHECK CONSTRAINT [FK_IssuedToken_User]
 GO
 ALTER TABLE [dbo].[UserRole]  WITH CHECK ADD  CONSTRAINT [FK_UserRole_Role] FOREIGN KEY([RoleId])
-REFERENCES [dbo].[Role] ([Id])
+REFERENCES [dbo].[Role] ([RoleId])
 ON UPDATE CASCADE
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[UserRole] CHECK CONSTRAINT [FK_UserRole_Role]
 GO
 ALTER TABLE [dbo].[UserRole]  WITH CHECK ADD  CONSTRAINT [FK_UserRole_User] FOREIGN KEY([UserId])
-REFERENCES [dbo].[User] ([Id])
+REFERENCES [dbo].[User] ([UserId])
 ON UPDATE CASCADE
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[UserRole] CHECK CONSTRAINT [FK_UserRole_User]
 GO
 ALTER TABLE [dbo].[AuthenticationToken]  WITH CHECK ADD  CONSTRAINT [FK_AuthenticationToken_User] FOREIGN KEY([UserId])
-REFERENCES [dbo].[User] ([Id])
+REFERENCES [dbo].[User] ([UserId])
 ON UPDATE CASCADE
 ON DELETE CASCADE
 GO

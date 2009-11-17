@@ -82,6 +82,7 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model.IssuedToken.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DataRoleProvider.cs" />
     <Compile Include="Model.AuthenticationToken.cs" />

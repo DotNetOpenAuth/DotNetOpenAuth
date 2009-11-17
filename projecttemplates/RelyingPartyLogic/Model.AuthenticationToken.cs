@@ -5,6 +5,15 @@
 	using System.Web;
 
 	public partial class AuthenticationToken {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AuthenticationToken"/> class.
+		/// </summary>
+		public AuthenticationToken() {
+			this.CreatedOnUtc = DateTime.UtcNow;
+			this.LastUsedUtc = DateTime.UtcNow;
+			this.UsageCount = 1;
+		}
+
 		public bool IsInfoCard {
 			get { return this.ClaimedIdentifier.StartsWith(UriPrefixForInfoCard); }
 		}
@@ -16,6 +25,18 @@
 		public static string SynthesizeClaimedIdentifierFromInfoCard(string uniqueId) {
 			string synthesizedClaimedId = UriPrefixForInfoCard + Uri.EscapeDataString(uniqueId);
 			return synthesizedClaimedId;
+		}
+
+		partial void OnLastUsedUtcChanging(DateTime value) {
+			if (value.Kind != DateTimeKind.Utc) {
+				throw new ArgumentException("DateTime must be given in UTC time.");
+			}
+		}
+
+		partial void OnCreatedOnUtcChanging(DateTime value) {
+			if (value.Kind != DateTimeKind.Utc) {
+				throw new ArgumentException("DateTime must be given in UTC time.");
+			}
 		}
 	}
 }

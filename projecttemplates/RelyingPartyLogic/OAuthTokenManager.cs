@@ -67,7 +67,6 @@ namespace RelyingPartyLogic {
 			var token = new IssuedRequestToken {
 				Callback = request.Callback,
 				Consumer = consumer,
-				CreatedOn = DateTime.Now,
 				Token = response.Token,
 				TokenSecret = response.TokenSecret,
 			};
@@ -110,8 +109,7 @@ namespace RelyingPartyLogic {
 			var accessTokenEntity = new IssuedAccessToken {
 				Token = accessToken,
 				TokenSecret = accessTokenSecret,
-				ExpirationDate = null, // currently, our access tokens don't expire
-				CreatedOn = DateTime.Now,
+				ExpirationDateUtc = null, // currently, our access tokens don't expire
 				User = requestTokenEntity.User,
 				Scope = requestTokenEntity.Scope,
 				Consumer = requestTokenEntity.Consumer,
