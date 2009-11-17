@@ -66,8 +66,8 @@ namespace RelyingPartyLogic {
 		}
 
 		partial void OnExpirationDateUtcChanging(DateTime? value) {
-			if (value.HasValue && value.Value.Kind != DateTimeKind.Utc) {
-				throw new ArgumentException("DateTime must be given in UTC time.");
+			if (value.HasValue) {
+				Utilities.VerifyThrowNotLocalTime(value.Value);
 			}
 		}
 	}

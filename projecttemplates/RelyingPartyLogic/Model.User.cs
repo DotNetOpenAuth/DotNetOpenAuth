@@ -19,9 +19,7 @@ namespace RelyingPartyLogic {
 		}
 
 		partial void OnCreatedOnUtcChanging(DateTime value) {
-			if (value.Kind != DateTimeKind.Utc) {
-				throw new ArgumentException("DateTime must be given in UTC time.");
-			}
+			Utilities.VerifyThrowNotLocalTime(value);
 		}
 
 		partial void OnEmailAddressChanged() {
