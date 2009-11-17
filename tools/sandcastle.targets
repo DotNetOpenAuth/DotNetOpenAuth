@@ -130,7 +130,7 @@
 		<Copy SourceFiles="@(IconFiles)" DestinationFolder="$(chmDir)\icons\%(RecursiveDir)" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(ScriptFiles)" DestinationFolder="$(chmDir)\scripts\%(RecursiveDir)" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(StyleFiles)" DestinationFolder="$(chmDir)\styles\%(RecursiveDir)" SkipUnchangedFiles="true"/>
-		<Exec Condition="Exists('$(chmDir)\Local')" Command='xcopy.exe "$(chmDir)\Local\*" "$(chmDir)\Local\" /y /r'/>
+		<!--<Exec Condition="Exists('$(chmDir)\Local')" Command='xcopy.exe "$(chmDir)\Local\*" "$(chmDir)\Local\" /y /r'/>-->
 
 		<!-- generate CHM-specific HTML and HH* files -->
 		<Exec Command='"$(ProductionTools)ChmBuilder.exe" /project:$(OutputAssembly) /html:"$(DocOutputApiPath)html" /lcid:1033 /toc:"$(TocFile)" /out:"$(chmDir)"'/>
