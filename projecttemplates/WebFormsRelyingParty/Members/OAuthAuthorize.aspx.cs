@@ -26,9 +26,9 @@ namespace WebFormsRelyingParty.Members {
 
 				this.csrfCheck.Value = Code.Utilities.SetCsrfCookie();
 				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
-				OAuth10ConsumerWarning.Visible = pendingRequest.IsUnsafeRequest;
+				this.OAuth10ConsumerWarning.Visible = pendingRequest.IsUnsafeRequest;
 
-				serviceProviderDomainNameLabel.Text = HttpUtility.HtmlEncode(this.Request.Url.Host);
+				this.serviceProviderDomainNameLabel.Text = HttpUtility.HtmlEncode(this.Request.Url.Host);
 				this.consumerDomainNameLabel3.Text = this.consumerDomainNameLabel2.Text = this.consumerDomainNameLabel1.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
 			} else {
 				Code.Utilities.VerifyCsrfCookie(this.csrfCheck.Value);
@@ -36,7 +36,7 @@ namespace WebFormsRelyingParty.Members {
 		}
 
 		protected void yesButton_Click(object sender, EventArgs e) {
-			outerMultiView.SetActiveView(authorizationGrantedView);
+			this.outerMultiView.SetActiveView(authorizationGrantedView);
 
 			var consumer = OAuthServiceProvider.PendingAuthorizationConsumer;
 			var tokenManager = OAuthServiceProvider.ServiceProvider.TokenManager;
