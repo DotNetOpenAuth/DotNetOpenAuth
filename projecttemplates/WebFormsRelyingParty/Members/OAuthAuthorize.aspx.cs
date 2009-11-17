@@ -36,7 +36,7 @@ namespace WebFormsRelyingParty.Members {
 		}
 
 		protected void yesButton_Click(object sender, EventArgs e) {
-			this.outerMultiView.SetActiveView(authorizationGrantedView);
+			this.outerMultiView.SetActiveView(this.authorizationGrantedView);
 
 			var consumer = OAuthServiceProvider.PendingAuthorizationConsumer;
 			var tokenManager = OAuthServiceProvider.ServiceProvider.TokenManager;
