@@ -138,14 +138,14 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			};
 			ServiceEndpoint se;
 
-			// strip of protocol and fragment
+			// strip of protocol, port, query and fragment
 			se = ServiceEndpoint.CreateForClaimedIdentifier(
-				"http://someprovider.somedomain.com:79/someuser#frag",
+				"http://someprovider.somedomain.com:79/someuser?query#frag",
 				localId,
 				new ProviderEndpointDescription(providerEndpoint, serviceTypeUris),
 				null,
 				null);
-			Assert.AreEqual("someprovider.somedomain.com:79/someuser", se.FriendlyIdentifierForDisplay);
+			Assert.AreEqual("someprovider.somedomain.com/someuser", se.FriendlyIdentifierForDisplay);
 
 			// unescape characters
 			Uri foreignUri = new Uri("http://server崎/村");
