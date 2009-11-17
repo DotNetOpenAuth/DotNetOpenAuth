@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Utilities.cs" company="Andrew Arnott">
+// <copyright file="SiteUtilities.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,7 +11,7 @@ namespace WebFormsRelyingParty.Code {
 	using System.Security.Cryptography;
 	using System.Web;
 
-	public static class Utilities {
+	public static class SiteUtilities {
 		private const string CsrfCookieName = "CsrfCookie";
 		private static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 

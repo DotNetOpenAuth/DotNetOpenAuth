@@ -103,7 +103,12 @@
 					Uri topWindowUri = new Uri(this.topWindowUrl.Value);
 					string returnUrl = HttpUtility.ParseQueryString(topWindowUri.Query)["ReturnUrl"];
 					if (string.IsNullOrEmpty(returnUrl)) {
-						Response.Redirect(this.topWindowUrl.Value);
+						if (string.Equals(topWindowUri.AbsolutePath, Utilities.ApplicationRoot.AbsolutePath + "login.aspx", StringComparison.OrdinalIgnoreCase)) {
+							// this happens when the user navigates deliberately directly to login.aspx
+							Response.Redirect("~/");
+						} else {
+							Response.Redirect(this.topWindowUrl.Value);
+						}
 					} else {
 						Response.Redirect(returnUrl);
 					}
