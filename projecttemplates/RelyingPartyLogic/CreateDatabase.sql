@@ -144,7 +144,7 @@ AS
 	END
 	ELSE
 	BEGIN
-		SET @roleid = (SELECT Id FROM dbo.Role WHERE [Name] = @role)
+		SET @roleid = (SELECT RoleId FROM dbo.Role WHERE [Name] = @role)
 	END
 	
 	INSERT INTO dbo.UserRole (UserId, RoleId) VALUES (@userId, @roleid)
