@@ -7,6 +7,10 @@
 namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
+	using System.Data;
+	using System.Data.Common;
+	using System.Data.EntityClient;
+	using System.Data.Objects;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -17,7 +21,7 @@ namespace RelyingPartyLogic {
 	using Microsoft.SqlServer.Management.Common;
 	using Microsoft.SqlServer.Management.Smo;
 
-	public class Utilities {
+	public static class Utilities {
 		internal const string DefaultNamespace = "RelyingPartyLogic";
 
 		/// <summary>
@@ -58,6 +62,31 @@ GO
 				server.DetachDatabase(databasePath, true);
 			} finally {
 				serverConnection.Disconnect();
+			}
+		}
+
+		/// <summary>
+		/// Executes a SQL command against the SQL connection.
+		/// </summary>
+		/// <param name="objectContext">The object context.</param>
+		/// <param name="command">The command to execute.</param>
+		/// <returns>The result of executing the command.</returns>
+		public static int ExecuteCommand(this ObjectContext objectContext, string command) {
+			DbConnection connection = ((EntityConnection)objectContext.Connection).StoreConnection;
+			bool opening = (connection.State == ConnectionState.Closed);
+			if (opening) {
+				connection.Open();
+			}
+
+			DbCommand cmd = connection.CreateCommand();
+			cmd.CommandText = command;
+			cmd.CommandType = CommandType.StoredProcedure;
+			try {
+				return cmd.ExecuteNonQuery();
+			} finally {
+				if (opening && connection.State == ConnectionState.Open) {
+					connection.Close();
+				}
 			}
 		}
 

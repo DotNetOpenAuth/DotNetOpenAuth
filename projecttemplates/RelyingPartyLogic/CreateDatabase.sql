@@ -2,6 +2,85 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+CREATE PROCEDURE [dbo].[ClearExpiredNonces]
+AS
+
+DELETE FROM dbo.[Nonce]
+WHERE [Expires] < getutcdate()
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[ClearExpiredAssociations]
+AS
+
+DELETE FROM dbo.OpenIDAssociation
+WHERE [Expiration] < getutcdate()
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Nonce](
+	[NonceId] [int] IDENTITY(1,1) NOT NULL,
+	[Context] [varchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+	[Code] [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[Issued] [datetime] NOT NULL,
+	[Expires] [datetime] NOT NULL,
+ CONSTRAINT [PK_Nonce] PRIMARY KEY CLUSTERED 
+(
+	[NonceId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Nonce_Code] ON [dbo].[Nonce] 
+(
+	[Context] ASC,
+	[Code] ASC,
+	[Issued] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_Nonce_Expires] ON [dbo].[Nonce] 
+(
+	[Expires] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[OpenIDAssociation](
+	[AssociationId] [int] IDENTITY(1,1) NOT NULL,
+	[DistinguishingFactor] [varchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+	[AssociationHandle] [varchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+	[Expiration] [datetime] NOT NULL,
+	[PrivateData] [binary](64) NOT NULL,
+	[PrivateDataLength] [int] NOT NULL,
+ CONSTRAINT [PK_OpenIDAssociations] PRIMARY KEY CLUSTERED 
+(
+	[AssociationId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_OpenIDAssociations] ON [dbo].[OpenIDAssociation] 
+(
+	[DistinguishingFactor] ASC,
+	[AssociationHandle] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE TABLE [dbo].[Consumer](
 	[ConsumerId] [int] IDENTITY(1,1) NOT NULL,
 	[ConsumerKey] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
@@ -158,17 +237,19 @@ AS
 	
 	RETURN @userid
 GO
+ALTER TABLE [dbo].[Nonce] ADD  CONSTRAINT [DF_Nonce_Issued]  DEFAULT (getutcdate()) FOR [Issued]
+GO
 ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF_User_EmailAddressVerified]  DEFAULT ((0)) FOR [EmailAddressVerified]
 GO
-ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF_User_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
+ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF_User_CreatedOn]  DEFAULT (getutcdate()) FOR [CreatedOn]
 GO
-ALTER TABLE [dbo].[IssuedToken] ADD  CONSTRAINT [DF_IssuedToken_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
+ALTER TABLE [dbo].[IssuedToken] ADD  CONSTRAINT [DF_IssuedToken_CreatedOn]  DEFAULT (getutcdate()) FOR [CreatedOn]
 GO
 ALTER TABLE [dbo].[IssuedToken] ADD  CONSTRAINT [DF_IssuedToken_IsAccessToken]  DEFAULT ((0)) FOR [IsAccessToken]
 GO
-ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
+ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_CreatedOn]  DEFAULT (getutcdate()) FOR [CreatedOn]
 GO
-ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_LastUsed]  DEFAULT (getdate()) FOR [LastUsed]
+ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_LastUsed]  DEFAULT (getutcdate()) FOR [LastUsed]
 GO
 ALTER TABLE [dbo].[AuthenticationToken] ADD  CONSTRAINT [DF_AuthenticationToken_UsageCount]  DEFAULT ((0)) FOR [UsageCount]
 GO
