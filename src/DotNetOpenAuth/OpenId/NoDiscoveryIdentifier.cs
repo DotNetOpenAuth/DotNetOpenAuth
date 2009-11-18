@@ -70,17 +70,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Performs discovery on the Identifier.
-		/// </summary>
-		/// <param name="requestHandler">The web request handler to use for discovery.</param>
-		/// <returns>
-		/// An initialized structure containing the discovered provider endpoint information.
-		/// </returns>
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			return Enumerable.Empty<ServiceEndpoint>();
-		}
-
-		/// <summary>
 		/// Returns an <see cref="Identifier"/> that has no URI fragment.
 		/// Quietly returns the original <see cref="Identifier"/> if it is not
 		/// a <see cref="UriIdentifier"/> or no fragment exists.

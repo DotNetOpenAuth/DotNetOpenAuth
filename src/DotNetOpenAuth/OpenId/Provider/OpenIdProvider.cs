@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using RP = DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
@@ -41,6 +42,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private ProviderSecuritySettings securitySettings;
+
+		/// <summary>
+		/// The relying party used to perform discovery on identifiers being sent in
+		/// unsolicited positive assertions.
+		/// </summary>
+		private RP.OpenIdRelyingParty relyingParty;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
@@ -168,6 +175,25 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		internal IDirectWebRequestHandler WebRequestHandler {
 			get { return this.Channel.WebRequestHandler; }
+		}
+
+		/// <summary>
+		/// Gets the relying party used for discovery of identifiers sent in unsolicited assertions.
+		/// </summary>
+		private RP.OpenIdRelyingParty RelyingParty {
+			get {
+				if (this.relyingParty == null) {
+					lock (this) {
+						if (this.relyingParty == null) {
+							// we just need an RP that's capable of discovery, so stateless mode is fine.
+							this.relyingParty = new RP.OpenIdRelyingParty(null);
+						}
+					}
+				}
+
+				this.relyingParty.Channel.WebRequestHandler = this.WebRequestHandler;
+				return this.relyingParty;
+			}
 		}
 
 		/// <summary>
@@ -312,7 +338,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// web site and log him/her in immediately in one uninterrupted step.
 		/// </summary>
 		/// <param name="providerEndpoint">The absolute URL on the Provider site that receives OpenID messages.</param>
-		/// <param name="relyingParty">The URL of the Relying Party web site.
+		/// <param name="relyingPartyRealm">The URL of the Relying Party web site.
 		/// This will typically be the home page, but may be a longer URL if
 		/// that Relying Party considers the scope of its realm to be more specific.
 		/// The URL provided here must allow discovery of the Relying Party's
@@ -321,15 +347,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
 		/// be the same as <paramref name="claimedIdentifier"/>.</param>
 		/// <param name="extensions">The extensions.</param>
-		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires<ArgumentException>(providerEndpoint.IsAbsoluteUri);
-			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Contract.Requires<ArgumentNullException>(relyingPartyRealm != null);
 			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(localIdentifier != null);
 
-			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingParty, claimedIdentifier, localIdentifier, extensions).Send();
+			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartyRealm, claimedIdentifier, localIdentifier, extensions).Send();
 		}
 
 		/// <summary>
@@ -338,7 +364,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// web site and log him/her in immediately in one uninterrupted step.
 		/// </summary>
 		/// <param name="providerEndpoint">The absolute URL on the Provider site that receives OpenID messages.</param>
-		/// <param name="relyingParty">The URL of the Relying Party web site.
+		/// <param name="relyingPartyRealm">The URL of the Relying Party web site.
 		/// This will typically be the home page, but may be a longer URL if
 		/// that Relying Party considers the scope of its realm to be more specific.
 		/// The URL provided here must allow discovery of the Relying Party's
@@ -351,10 +377,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// A <see cref="OutgoingWebResponse"/> object describing the HTTP response to send
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
-		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires<ArgumentException>(providerEndpoint.IsAbsoluteUri);
-			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Contract.Requires<ArgumentNullException>(relyingPartyRealm != null);
 			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(localIdentifier != null);
 			Contract.Requires<InvalidOperationException>(this.Channel.WebRequestHandler != null);
@@ -365,7 +391,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// and make sure that it is tied to this OP and OP local identifier.
 			if (this.SecuritySettings.UnsolicitedAssertionVerification != ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.NeverVerify) {
 				var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
-				var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
+				var discoveredEndpoints = this.RelyingParty.Discover(claimedIdentifier);
 				if (!discoveredEndpoints.Contains(serviceEndpoint)) {
 					Logger.OpenId.WarnFormat(
 						"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
@@ -383,11 +409,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			RelyingPartyEndpointDescription returnToEndpoint = null;
-			var returnToEndpoints = relyingParty.DiscoverReturnToEndpoints(this.WebRequestHandler, true);
+			var returnToEndpoints = relyingPartyRealm.DiscoverReturnToEndpoints(this.WebRequestHandler, true);
 			if (returnToEndpoints != null) {
 				returnToEndpoint = returnToEndpoints.FirstOrDefault();
 			}
-			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingParty);
+			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingPartyRealm);
 
 			var positiveAssertion = new PositiveAssertionResponse(returnToEndpoint) {
 				ProviderEndpoint = providerEndpoint,
@@ -424,6 +450,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				IDisposable channel = this.Channel as IDisposable;
 				if (channel != null) {
 					channel.Dispose();
+				}
+
+				if (this.relyingParty != null) {
+					this.relyingParty.Dispose();
 				}
 			}
 		}

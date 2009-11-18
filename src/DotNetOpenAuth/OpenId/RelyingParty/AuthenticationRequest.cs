@@ -366,7 +366,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Perform discovery right now (not deferred).
 			IEnumerable<ServiceEndpoint> serviceEndpoints;
 			try {
-				serviceEndpoints = userSuppliedIdentifier.Discover(relyingParty.WebRequestHandler);
+				serviceEndpoints = relyingParty.Discover(userSuppliedIdentifier);
 			} catch (ProtocolException ex) {
 				Logger.Yadis.ErrorFormat("Error while performing discovery on: \"{0}\": {1}", userSuppliedIdentifier, ex);
 				serviceEndpoints = EmptyList<ServiceEndpoint>.Instance;

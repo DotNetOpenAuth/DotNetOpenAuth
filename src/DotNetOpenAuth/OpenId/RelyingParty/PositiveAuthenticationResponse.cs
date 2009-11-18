@@ -153,7 +153,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// is signed by the RP before it's considered reliable.  In 1.x stateless mode, this RP
 			// doesn't (and can't) sign its own return_to URL, so its cached discovery information
 			// is merely a hint that must be verified by performing discovery again here.
-			var discoveryResults = claimedId.Discover(relyingParty.WebRequestHandler);
+			var discoveryResults = relyingParty.Discover(claimedId);
 			ErrorUtilities.VerifyProtocol(
 				discoveryResults.Contains(this.Endpoint),
 				OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery,

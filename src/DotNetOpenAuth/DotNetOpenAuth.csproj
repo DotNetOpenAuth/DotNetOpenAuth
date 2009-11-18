@@ -437,6 +437,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
     <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
     <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
+    <Compile Include="OpenId\DiscoveryServices\IIdentifierDiscoveryService.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
@@ -552,7 +553,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
     <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
+    <Compile Include="OpenId\DiscoveryServices\UriDiscoveryService.cs" />
     <Compile Include="OpenId\UriIdentifier.cs" />
+    <Compile Include="OpenId\DiscoveryServices\XriDiscoveryProxyService.cs" />
     <Compile Include="OpenId\XriIdentifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />

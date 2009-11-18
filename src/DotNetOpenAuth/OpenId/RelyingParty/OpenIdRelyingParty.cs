@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 
@@ -47,6 +48,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
 		private readonly ObservableCollection<IRelyingPartyBehavior> behaviors = new ObservableCollection<IRelyingPartyBehavior>();
+
+		/// <summary>
+		/// Backing field for the <see cref="DiscoveryServices"/> property.
+		/// </summary>
+		private readonly IList<IIdentifierDiscoveryService> discoveryServices = new List<IIdentifierDiscoveryService>(2);
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -90,6 +96,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
+
+			foreach (var discoveryService in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.DiscoveryServices.CreateInstances(true)) {
+				this.discoveryServices.Add(discoveryService);
+			}
+
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
@@ -224,6 +235,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public ICollection<IRelyingPartyBehavior> Behaviors {
 			get { return this.behaviors; }
+		}
+
+		/// <summary>
+		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
+		/// </summary>
+		internal IList<IIdentifierDiscoveryService> DiscoveryServices {
+			get { return this.discoveryServices; }
 		}
 
 		/// <summary>
@@ -566,6 +584,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 			rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
 			return rp;
+		}
+
+		/// <summary>
+		/// Performs discovery on the specified identifier.
+		/// </summary>
+		/// <param name="identifier">The identifier to discover services for.</param>
+		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
+		internal IEnumerable<ServiceEndpoint> Discover(Identifier identifier) {
+			Contract.Requires<ArgumentNullException>(identifier != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
+
+			IEnumerable<ServiceEndpoint> results = Enumerable.Empty<ServiceEndpoint>();
+			foreach (var discoverer in this.DiscoveryServices) {
+				bool abortDiscoveryChain;
+				var discoveryResults = discoverer.Discover(identifier, this.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();
+				results = results.Concat(discoveryResults);
+				if (abortDiscoveryChain) {
+					Logger.OpenId.InfoFormat("Further discovery on '{0}' was stopped by the {1} discovery service.", identifier, discoverer.GetType().Name);
+					break;
+				}
+			}
+
+			return results;
 		}
 
 		/// <summary>
