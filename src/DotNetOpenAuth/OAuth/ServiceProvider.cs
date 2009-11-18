@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
@@ -30,6 +31,12 @@ namespace DotNetOpenAuth.OAuth {
 	/// </list>
 	/// </remarks>
 	public class ServiceProvider : IDisposable {
+		/// <summary>
+		/// The name of the key to use in the HttpApplication cache to store the
+		/// instance of <see cref="NonceMemoryStore"/> to use.
+		/// </summary>
+		private const string ApplicationStoreKey = "DotNetOpenAuth.OAuth.ServiceProvider.HttpApplicationStore";
+
 		/// <summary>
 		/// The length of the verifier code (in raw bytes before base64 encoding) to generate.
 		/// </summary>
@@ -56,7 +63,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
 		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
-			: this(serviceDescription, tokenManager, new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge), messageTypeProvider) {
+			: this(serviceDescription, tokenManager, DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.ApplicationStore.CreateInstance(HttpApplicationStore), messageTypeProvider) {
 		}
 
 		/// <summary>
@@ -87,6 +94,33 @@ namespace DotNetOpenAuth.OAuth {
 			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		}
+
+		/// <summary>
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public static INonceStore HttpApplicationStore {
+			get {
+				Contract.Ensures(Contract.Result<INonceStore>() != null);
+
+				HttpContext context = HttpContext.Current;
+				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
+				var store = (INonceStore)context.Application[ApplicationStoreKey];
+				if (store == null) {
+					context.Application.Lock();
+					try {
+						if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
+							context.Application[ApplicationStoreKey] = store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
+						}
+					} finally {
+						context.Application.UnLock();
+					}
+				}
+
+				return store;
+			}
 		}
 
 		/// <summary>

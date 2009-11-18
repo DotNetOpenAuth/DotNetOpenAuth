@@ -120,4 +120,7 @@
   <data name="ConfigurationTypeMustBePublic" xml:space="preserve">
     <value>The configuration-specified type {0} must be public, and is not.</value>
   </data>
+  <data name="StoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
+    <value>No current HttpContext was detected, so an {0} instance must be explicitly provided or specified in the .config file.  Call the constructor overload that takes an {0}.</value>
+  </data>
 </root>

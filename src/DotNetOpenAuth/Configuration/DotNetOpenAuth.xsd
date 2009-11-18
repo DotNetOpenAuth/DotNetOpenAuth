@@ -236,6 +236,11 @@
 												<xs:attribute name="maxAuthorizationTime" type="xs:string" default="0:05" />
 											</xs:complexType>
 										</xs:element>
+										<xs:element name="store">
+											<xs:complexType>
+												<xs:attribute name="type" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
 									</xs:choice>
 								</xs:complexType>
 							</xs:element>

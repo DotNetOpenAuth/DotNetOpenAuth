@@ -542,15 +542,6 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No current HttpContext was detected, so an {0} instance must be explicitly provided or specified in the .config file.  Call the constructor overload that takes an {0}..
-        /// </summary>
-        internal static string StoreRequiredWhenNoHttpContextAvailable {
-            get {
-                return ResourceManager.GetString("StoreRequiredWhenNoHttpContextAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The type must implement {0}..
         /// </summary>
         internal static string TypeMustImplementX {
