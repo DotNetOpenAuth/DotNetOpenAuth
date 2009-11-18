@@ -19,16 +19,6 @@
 	public class CustomStore : IRelyingPartyApplicationStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
-		#region IPrivateSecretStore Members
-
-		/// <summary>
-		/// Gets or sets a secret key that can be used for signing.
-		/// </summary>
-		/// <value>A 64-byte binary value, which may contain null bytes.</value>
-		public byte[] PrivateSecret { get; set; }
-
-		#endregion
-
 		#region INonceStore Members
 
 		/// <summary>
