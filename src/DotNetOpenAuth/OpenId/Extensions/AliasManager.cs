@@ -68,6 +68,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUris">The type URIs to create aliases for.</param>
 		/// <param name="preferredTypeUriToAliases">An optional dictionary of URI/alias pairs that suggest preferred aliases to use if available for certain type URIs.</param>
 		public void AssignAliases(IEnumerable<string> typeUris, IDictionary<string, string> preferredTypeUriToAliases) {
+			Contract.Requires<ArgumentNullException>(typeUris != null);
+
 			// First go through the actually used type URIs and see which ones have matching preferred aliases.
 			if (preferredTypeUriToAliases != null) {
 				foreach (string typeUri in typeUris) {
