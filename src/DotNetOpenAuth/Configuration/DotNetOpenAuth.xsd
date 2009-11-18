@@ -206,6 +206,42 @@
 						<xs:attribute name="maxAuthenticationTime" type="xs:string" />
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="oauth">
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="consumer">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="security">
+											<xs:complexType>
+												
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="serviceProvider">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="security">
+											<xs:complexType>
+												<xs:attribute name="minimumRequiredOAuthVersion" default="V10">
+													<xs:simpleType>
+														<xs:restriction base="xs:NMTOKEN">
+															<xs:enumeration value="V10" />
+															<xs:enumeration value="V10a" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="maxAuthorizationTime" type="xs:string" default="0:05" />
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
