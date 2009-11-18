@@ -12,15 +12,33 @@
 				runat="server" Text="[consumer]" /> wants access to your <asp:Label ID="desiredAccessLabel"
 					Font-Bold="true" runat="server" Text="[protected resource]" />. </p>
 			<p>Do you want to allow this? </p>
-			<div>
+			<div style="display: none" id="responseButtonsDiv">
 				<asp:Button ID="allowAccessButton" runat="server" Text="Yes" OnClick="allowAccessButton_Click" />
 				<asp:Button ID="denyAccessButton" runat="server" Text="No" OnClick="denyAccessButton_Click" />
+			</div>
+			<div id="javascriptDisabled">
+				<b>Javascript appears to be disabled in your browser. </b>This page requires Javascript
+				to be enabled to better protect your security.
 			</div>
 			<p>If you grant access now, you can revoke it at any time by returning to this page.
 			</p>
 			<asp:Panel runat="server" BackColor="Red" ForeColor="White" Font-Bold="true" Visible="false" ID="OAuth10ConsumerWarning">
 				This website is registered with service_PROVIDER_DOMAIN_NAME to make authorization requests, but has not been configured to send requests securely. If you grant access but you did not initiate this request at consumer_DOMAIN_NAME, it may be possible for other users of consumer_DOMAIN_NAME to access your data. We recommend you deny access unless you are certain that you initiated this request directly with consumer_DOMAIN_NAME.
 			</asp:Panel>
+			<script language="javascript" type="text/javascript">
+				//<![CDATA[
+				// we use HTML to hide the action buttons and Javascript to show them
+				// to protect against click-jacking in an iframe whose javascript is disabled.
+				document.getElementById('responseButtonsDiv').style.display = 'block';
+				document.getElementById('javascriptDisabled').style.display = 'none';
+
+				// Frame busting code (to protect us from being hosted in an iframe).
+				// This protects us from click-jacking.
+				if (document.location !== window.top.location) {
+					window.top.location = document.location;
+				}
+				//]]>
+			</script>
 		</asp:View>
 		<asp:View runat="server">
 			<p>Authorization has been granted.</p>
