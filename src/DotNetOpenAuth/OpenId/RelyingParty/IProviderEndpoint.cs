@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// Because information provided by this interface is suppplied by a 
 	/// user's individually published documents, it may be incomplete or inaccurate.
 	/// </remarks>
-	////[ContractClass(typeof(IProviderEndpointContract))]
+	[ContractClass(typeof(IProviderEndpointContract))]
 	public interface IProviderEndpoint {
 		/// <summary>
 		/// Gets the detected version of OpenID implemented by the Provider.
