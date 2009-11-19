@@ -6,12 +6,14 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
 	using System.Reflection;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
@@ -176,6 +178,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 		}
 
+		internal IEnumerable<ServiceEndpoint> Discover(Identifier identifier) {
+			var rp = this.CreateRelyingParty(true);
+			rp.Channel.WebRequestHandler = this.RequestHandler;
+			return rp.Discover(identifier);
+		}
+
 		protected Realm GetMockRealm(bool useSsl) {
 			var rpDescription = new RelyingPartyEndpointDescription(useSsl ? RPUriSsl : RPUri, new string[] { Protocol.V20.RPReturnToTypeURI });
 			return new MockRealm(useSsl ? RPRealmUriSsl : RPRealmUri, rpDescription);
@@ -211,6 +219,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
 			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore());
 			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+			rp.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
 			return rp;
 		}
 
@@ -221,6 +230,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		protected OpenIdProvider CreateProvider() {
 			var op = new OpenIdProvider(new StandardProviderApplicationStore());
 			op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+			op.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
 			return op;
 		}
 	}

@@ -187,6 +187,7 @@
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
+    <Compile Include="Mocks\MockIdentifierDiscoveryService.cs" />
     <Compile Include="Mocks\MockOpenIdExtension.cs" />
     <Compile Include="Mocks\MockRealm.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
@@ -221,6 +222,8 @@
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElementTests.cs" />
     <Compile Include="OpenId\DiffieHellmanTests.cs" />
+    <Compile Include="OpenId\DiscoveryServices\UriDiscoveryServiceTests.cs" />
+    <Compile Include="OpenId\DiscoveryServices\XriDiscoveryProxyServiceTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchRequestTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchResponseTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeExchangeRoundtripTests.cs" />

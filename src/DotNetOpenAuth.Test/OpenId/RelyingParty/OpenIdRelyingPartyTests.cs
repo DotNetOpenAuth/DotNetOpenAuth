@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 		[TestMethod]
 		public void CreateRequestDumbMode() {
-			var rp = new OpenIdRelyingParty(null);
+			var rp = this.CreateRelyingParty(true);
 			Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
 			var authReq = rp.CreateRequest(id, RPRealmUri, RPUri);
 			CheckIdRequest requestMessage = (CheckIdRequest)authReq.RedirectingResponse.OriginalMessage;

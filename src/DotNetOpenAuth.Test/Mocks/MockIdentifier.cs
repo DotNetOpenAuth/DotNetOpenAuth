@@ -39,6 +39,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 			mockHttpRequest.RegisterMockXrdsResponse(new Uri(wrappedIdentifier.ToString()), endpoints);
 		}
 
+		internal IEnumerable<ServiceEndpoint> DiscoveryEndpoints {
+			get { return this.endpoints; }
+		}
+
 		public override string ToString() {
 			return this.wrappedIdentifier.ToString();
 		}
@@ -49,10 +53,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		public override int GetHashCode() {
 			return this.wrappedIdentifier.GetHashCode();
-		}
-
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			return this.endpoints;
 		}
 
 		internal override Identifier TrimFragment() {

@@ -57,10 +57,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void EnsurePartiesAreInitialized() {
 			if (this.RelyingParty == null) {
 				this.RelyingParty = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
+				this.RelyingParty.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
 			}
 
 			if (this.Provider == null) {
 				this.Provider = new OpenIdProvider(new StandardProviderApplicationStore());
+				this.Provider.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
 			}
 		}
 	}

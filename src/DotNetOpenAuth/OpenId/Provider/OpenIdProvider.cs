@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Messages;
 	using RP = DotNetOpenAuth.OpenId.RelyingParty;
 
@@ -162,6 +163,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public ICollection<IProviderBehavior> Behaviors {
 			get { return this.behaviors; }
+		}
+
+		/// <summary>
+		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
+		/// </summary>
+		internal IList<IIdentifierDiscoveryService> DiscoveryServices {
+			get { return this.RelyingParty.DiscoveryServices; }
 		}
 
 		/// <summary>
