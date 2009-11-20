@@ -29,9 +29,11 @@
 			some fake, non-blank values. </li>
 	</ol>
 	<h3>Passing criteria: </h3>
-	<p>The Provider must correctly prompt you to share information with the relying party,
-		and return you to this test page. You must see a "PASS" on this test page. </p>
+	<p>The Provider must EITHER correctly prompt you to share information with the relying party,
+		and return you to this test page OR not appear in your browser at all, but immediately redirect
+		back to the RP with a openid.mode=cancel message. You must see a "PASS" on this test page. </p>
 	<p>A failing test will typically be in the form of the Provider displaying some error
-		about an invalid OpenID request because it cannot understand identity-less messages.
+		about an invalid OpenID request because it cannot understand identity-less messages,
+		or by asserting the user's identity despite the RP indicating it did not want the identity.
 	</p>
 </asp:Content>

@@ -25,6 +25,9 @@ public partial class OP_IdentitylessCheckId : System.Web.UI.Page {
 							testResultDisplay.Pass = false;
 							testResultDisplay.Details = "No sreg or AX extension response was present in the response.";
 						}
+					} else if (response.Status == AuthenticationStatus.Canceled) {
+						testResultDisplay.Pass = true;
+						testResultDisplay.Details = "OP sent a 'cancel' response, which may be acceptable depending on the Provider.";
 					} else {
 						testResultDisplay.Pass = false;
 						testResultDisplay.Details = "Expected an identity-less id_res message but got a " + response.Status + " response instead.";
