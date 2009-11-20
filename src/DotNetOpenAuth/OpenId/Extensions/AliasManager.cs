@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <summary>
 		/// The format of auto-generated aliases.
 		/// </summary>
-		private readonly string aliasFormat = "alias{0}";
+		private const string AliasFormat = "alias{0}";
 
 		/// <summary>
 		/// Tracks extension Type URIs and aliases assigned to them.
@@ -68,6 +68,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUris">The type URIs to create aliases for.</param>
 		/// <param name="preferredTypeUriToAliases">An optional dictionary of URI/alias pairs that suggest preferred aliases to use if available for certain type URIs.</param>
 		public void AssignAliases(IEnumerable<string> typeUris, IDictionary<string, string> preferredTypeUriToAliases) {
+			Contract.Requires<ArgumentNullException>(typeUris != null);
+
 			// First go through the actually used type URIs and see which ones have matching preferred aliases.
 			if (preferredTypeUriToAliases != null) {
 				foreach (string typeUri in typeUris) {
@@ -126,6 +128,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <returns>The Type URI.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if the given alias does not have a matching TypeURI.</exception>
 		public string ResolveAlias(string alias) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(alias));
 			string typeUri = this.TryResolveAlias(alias);
 			if (typeUri == null) {
 				throw new ArgumentOutOfRangeException("alias");
@@ -175,7 +178,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		private string AssignNewAlias(string typeUri) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 			ErrorUtilities.VerifyInternal(!this.typeUriToAliasMap.ContainsKey(typeUri), "Oops!  This type URI already has an alias!");
-			string alias = string.Format(CultureInfo.InvariantCulture, this.aliasFormat, this.typeUriToAliasMap.Count + 1);
+			string alias = string.Format(CultureInfo.InvariantCulture, AliasFormat, this.typeUriToAliasMap.Count + 1);
 			this.typeUriToAliasMap.Add(typeUri, alias);
 			this.aliasToTypeUriMap.Add(alias, typeUri);
 			return alias;

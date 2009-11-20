@@ -112,6 +112,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
 		public bool IsExtensionSupported<T>() where T : IOpenIdMessageExtension, new() {
+			ErrorUtilities.VerifyOperation(this.Capabilities != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
 			T extension = new T();
 			return this.IsExtensionSupported(extension);
 		}
@@ -131,6 +132,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
 		public bool IsExtensionSupported(Type extensionType) {
+			ErrorUtilities.VerifyOperation(this.Capabilities != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
 			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
 			return this.IsExtensionSupported(extension);
 		}
@@ -159,6 +161,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		protected internal bool IsExtensionSupported(IOpenIdMessageExtension extension) {
 			Contract.Requires<ArgumentNullException>(extension != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(extension.TypeUri));
+			Contract.Requires<InvalidOperationException>(this.Capabilities != null, OpenIdStrings.ExtensionLookupSupportUnavailable);
 
 			// Consider the primary case.
 			if (this.IsExtensionSupported(extension.TypeUri)) {

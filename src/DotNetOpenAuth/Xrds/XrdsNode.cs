@@ -45,6 +45,7 @@ namespace DotNetOpenAuth.Xrds {
 		/// <param name="document">The document's root node, which this instance represents.</param>
 		protected XrdsNode(XPathNavigator document) {
 			Contract.Requires<ArgumentNullException>(document != null);
+			Contract.Requires<ArgumentException>(document.NameTable != null);
 
 			this.Node = document;
 			this.XmlNamespaceResolver = new XmlNamespaceManager(document.NameTable);
