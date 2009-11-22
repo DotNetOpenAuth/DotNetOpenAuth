@@ -373,6 +373,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);
 		}
 
+		internal static AuthenticationRequest CreateForTest(IIdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnTo, OpenIdRelyingParty rp) {
+			return new AuthenticationRequest(discoveryResult, realm, returnTo, rp);
+		}
+
 		/// <summary>
 		/// Performs deferred request generation for the <see cref="Create"/> method.
 		/// </summary>
