@@ -6,9 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
-	using DotNetOpenAuth.OpenId.Messages;
-using System.Collections.ObjectModel;
+	using System.Collections.ObjectModel;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// A very simple IXrdsProviderEndpoint implementation for verifying that all positive

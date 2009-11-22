@@ -13,10 +13,10 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	[TestClass]
 	public class UriDiscoveryServiceTests : OpenIdTestBase {

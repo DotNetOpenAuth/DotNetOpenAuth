@@ -12,12 +12,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	[TestClass]
 	public class ServiceEndpointTests : OpenIdTestBase {

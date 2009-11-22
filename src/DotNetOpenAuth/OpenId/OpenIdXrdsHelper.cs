@@ -10,9 +10,9 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	/// <summary>
 	/// Adds OpenID-specific extension methods to the XrdsDocument class.

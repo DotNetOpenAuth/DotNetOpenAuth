@@ -15,10 +15,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.OpenId;
 	using DotNetOpenAuth.Yadis;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	internal class MockHttpRequest {
 		private readonly Dictionary<Uri, IncomingWebResponse> registeredMockResponses = new Dictionary<Uri, IncomingWebResponse>();

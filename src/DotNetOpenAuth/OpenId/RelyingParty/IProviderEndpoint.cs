@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	[ContractClassFor(typeof(IProviderEndpoint))]
 	internal abstract class IProviderEndpointContract : IProviderEndpoint {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="IProviderEndpointContract"/> class.
+		/// Prevents a default instance of the <see cref="IProviderEndpointContract"/> class from being created.
 		/// </summary>
 		private IProviderEndpointContract() {
 		}

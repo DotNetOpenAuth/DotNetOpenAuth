@@ -11,8 +11,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Linq;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.DiscoveryServices;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Wraps a positive assertion response in an <see cref="IAuthenticationResponse"/> instance

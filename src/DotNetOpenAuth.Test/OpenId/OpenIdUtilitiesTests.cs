@@ -9,10 +9,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
 	public class OpenIdUtilitiesTests : OpenIdTestBase {

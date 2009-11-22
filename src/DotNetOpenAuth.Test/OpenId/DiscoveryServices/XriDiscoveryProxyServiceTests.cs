@@ -10,9 +10,9 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	[TestClass]
 	public class XriDiscoveryProxyServiceTests : OpenIdTestBase {

@@ -15,20 +15,92 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-using DotNetOpenAuth.OpenId.DiscoveryServices;
-	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
 	/// </summary>
-	internal static class OpenIdUtilities {
+	public static class OpenIdUtilities {
 		/// <summary>
 		/// The prefix to designate this library's proprietary parameters added to the protocol.
 		/// </summary>
 		internal const string CustomParameterPrefix = "dnoa.";
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <typeparam name="T">The extension whose support is being queried.</typeparam>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all.")]
+		public static bool IsExtensionSupported<T>(this IProviderEndpoint providerEndpoint) where T : IOpenIdMessageExtension, new() {
+			Contract.Requires(providerEndpoint != null);
+			T extension = new T();
+			return IsExtensionSupported(providerEndpoint, extension);
+		}
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <param name="extensionType">The extension whose support is being queried.</param>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		public static bool IsExtensionSupported(this IProviderEndpoint providerEndpoint, Type extensionType) {
+			Contract.Requires(providerEndpoint != null);
+			Contract.Requires(extensionType != null);
+			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
+			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
+			return IsExtensionSupported(providerEndpoint, extension);
+		}
+
+		/// <summary>
+		/// Determines whether a given extension is supported by this endpoint.
+		/// </summary>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <param name="extension">An instance of the extension to check support for.</param>
+		/// <returns>
+		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
+		/// </returns>
+		public static bool IsExtensionSupported(this IProviderEndpoint providerEndpoint, IOpenIdMessageExtension extension) {
+			Contract.Requires(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(extension != null);
+
+			// Consider the primary case.
+			if (providerEndpoint.IsTypeUriPresent(extension.TypeUri)) {
+				return true;
+			}
+
+			// Consider the secondary cases.
+			if (extension.AdditionalSupportedTypeUris != null) {
+				if (extension.AdditionalSupportedTypeUris.Any(typeUri => providerEndpoint.IsTypeUriPresent(typeUri))) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 
 		/// <summary>
 		/// Gets the OpenID protocol instance for the version in a message.
@@ -161,6 +233,8 @@ using DotNetOpenAuth.OpenId.DiscoveryServices;
 		/// <summary>
 		/// Gets the OpenID protocol used by the Provider.
 		/// </summary>
+		/// <param name="providerDescription">The provider description.</param>
+		/// <returns>The OpenID protocol.</returns>
 		internal static Protocol GetProtocol(this IProviderEndpoint providerDescription) {
 			return Protocol.Lookup(providerDescription.Version);
 		}
@@ -168,6 +242,8 @@ using DotNetOpenAuth.OpenId.DiscoveryServices;
 		/// <summary>
 		/// Gets the value for the <see cref="IAuthenticationResponse.FriendlyIdentifierForDisplay"/> property.
 		/// </summary>
+		/// <param name="discoveryResult">The discovery result.</param>
+		/// <returns>A human-readable, abbreviated (but not secure) identifier the user MAY recognize as his own.</returns>
 		internal static string GetFriendlyIdentifierForDisplay(this IIdentifierDiscoveryResult discoveryResult) {
 			Contract.Requires(discoveryResult != null);
 			XriIdentifier xri = discoveryResult.ClaimedIdentifier as XriIdentifier;
@@ -196,51 +272,6 @@ using DotNetOpenAuth.OpenId.DiscoveryServices;
 		}
 
 		/// <summary>
-		/// Checks whether the OpenId Identifier claims support for a given extension.
-		/// </summary>
-		/// <typeparam name="T">The extension whose support is being queried.</typeparam>
-		/// <param name="providerEndpoint">The provider endpoint.</param>
-		/// <returns>
-		/// True if support for the extension is advertised.  False otherwise.
-		/// </returns>
-		/// <remarks>
-		/// Note that a true or false return value is no guarantee of a Provider's
-		/// support for or lack of support for an extension.  The return value is
-		/// determined by how the authenticating user filled out his/her XRDS document only.
-		/// The only way to be sure of support for a given extension is to include
-		/// the extension in the request and see if a response comes back for that extension.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all.")]
-		public static bool IsExtensionSupported<T>(this IProviderEndpoint providerEndpoint) where T : IOpenIdMessageExtension, new() {
-			Contract.Requires(providerEndpoint != null);
-			T extension = new T();
-			return IsExtensionSupported(providerEndpoint, extension);
-		}
-
-		/// <summary>
-		/// Checks whether the OpenId Identifier claims support for a given extension.
-		/// </summary>
-		/// <param name="providerEndpoint">The provider endpoint.</param>
-		/// <param name="extensionType">The extension whose support is being queried.</param>
-		/// <returns>
-		/// True if support for the extension is advertised.  False otherwise.
-		/// </returns>
-		/// <remarks>
-		/// Note that a true or false return value is no guarantee of a Provider's
-		/// support for or lack of support for an extension.  The return value is
-		/// determined by how the authenticating user filled out his/her XRDS document only.
-		/// The only way to be sure of support for a given extension is to include
-		/// the extension in the request and see if a response comes back for that extension.
-		/// </remarks>
-		public static bool IsExtensionSupported(this IProviderEndpoint providerEndpoint, Type extensionType) {
-			Contract.Requires(providerEndpoint != null);
-			Contract.Requires(extensionType != null);
-			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
-			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
-			return IsExtensionSupported(providerEndpoint, extension);
-		}
-
-		/// <summary>
 		/// Determines whether a given type URI is present on the specified provider endpoint.
 		/// </summary>
 		/// <param name="providerEndpoint">The provider endpoint.</param>
@@ -252,33 +283,6 @@ using DotNetOpenAuth.OpenId.DiscoveryServices;
 			Contract.Requires(providerEndpoint != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
 			return providerEndpoint.Capabilities.Contains(typeUri);
-		}
-
-		/// <summary>
-		/// Determines whether a given extension is supported by this endpoint.
-		/// </summary>
-		/// <param name="providerEndpoint">The provider endpoint.</param>
-		/// <param name="extension">An instance of the extension to check support for.</param>
-		/// <returns>
-		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
-		/// </returns>
-		internal static bool IsExtensionSupported(this IProviderEndpoint providerEndpoint, IOpenIdMessageExtension extension) {
-			Contract.Requires(providerEndpoint != null);
-			Contract.Requires<ArgumentNullException>(extension != null);
-
-			// Consider the primary case.
-			if (providerEndpoint.IsTypeUriPresent(extension.TypeUri)) {
-				return true;
-			}
-
-			// Consider the secondary cases.
-			if (extension.AdditionalSupportedTypeUris != null) {
-				if (extension.AdditionalSupportedTypeUris.Any(typeUri => providerEndpoint.IsTypeUriPresent(typeUri))) {
-					return true;
-				}
-			}
-
-			return false;
 		}
 	}
 }

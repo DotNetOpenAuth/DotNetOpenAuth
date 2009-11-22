@@ -14,8 +14,8 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.DiscoveryServices;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		private int? servicePriority;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ServiceEndpoint"/> class.
+		/// Initializes a new instance of the <see cref="IdentifierDiscoveryResult"/> class.
 		/// </summary>
 		/// <param name="providerEndpoint">The provider endpoint.</param>
 		/// <param name="claimedIdentifier">The Claimed Identifier.</param>
@@ -60,29 +60,6 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ServiceEndpoint"/> class.
-		/// </summary>
-		/// <param name="providerEndpoint">The provider endpoint.</param>
-		/// <param name="claimedIdentifier">The Claimed Identifier.</param>
-		/// <param name="userSuppliedIdentifier">The User-supplied Identifier.</param>
-		/// <param name="providerLocalIdentifier">The Provider Local Identifier.</param>
-		/// <param name="protocol">The protocol.</param>
-		/// <remarks>
-		/// Used for deserializing <see cref="ServiceEndpoint"/> from authentication responses.
-		/// </remarks>
-		private IdentifierDiscoveryResult(Uri providerEndpoint, Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, Protocol protocol) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
-			Contract.Requires<ArgumentNullException>(providerLocalIdentifier != null);
-			Contract.Requires<ArgumentNullException>(protocol != null);
-
-			this.ClaimedIdentifier = claimedIdentifier;
-			this.UserSuppliedIdentifier = userSuppliedIdentifier;
-			this.ProviderEndpoint = new ProviderEndpointDescription(providerEndpoint, protocol.Version);
-			this.ProviderLocalIdentifier = providerLocalIdentifier ?? claimedIdentifier;
-		}
-
-		/// <summary>
 		/// Gets the Identifier that was presented by the end user to the Relying Party, 
 		/// or selected by the user at the OpenID Provider. 
 		/// During the initiation phase of the protocol, an end user may enter 
@@ -93,7 +70,7 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		public Identifier UserSuppliedIdentifier { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the Identifier that the end user claims to own.
+		/// Gets or sets the Identifier that the end user claims to control.
 		/// </summary>
 		public Identifier ClaimedIdentifier {
 			get {
@@ -116,6 +93,12 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// </summary>
 		public Identifier ProviderLocalIdentifier { get; private set; }
 
+		/// <summary>
+		/// Gets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The discovered provider endpoint.  May optionally implement <see cref="IXrdsProviderEndpoint"/>.
+		/// </value>
 		public IProviderEndpoint ProviderEndpoint { get; private set; }
 
 		/// <summary>
@@ -249,13 +232,13 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		}
 
 		/// <summary>
-		/// Creates a <see cref="ServiceEndpoint"/> instance to represent some OP Identifier.
+		/// Creates a <see cref="IIdentifierDiscoveryResult"/> instance to represent some OP Identifier.
 		/// </summary>
 		/// <param name="providerIdentifier">The provider identifier (actually the user-supplied identifier).</param>
 		/// <param name="providerEndpoint">The provider endpoint.</param>
 		/// <param name="servicePriority">The service priority.</param>
 		/// <param name="uriPriority">The URI priority.</param>
-		/// <returns>The created <see cref="ServiceEndpoint"/> instance</returns>
+		/// <returns>The created <see cref="IIdentifierDiscoveryResult"/> instance</returns>
 		internal static IIdentifierDiscoveryResult CreateForProviderIdentifier(Identifier providerIdentifier, ProviderEndpointDescription providerEndpoint, int? servicePriority, int? uriPriority) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 
@@ -271,20 +254,20 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		}
 
 		/// <summary>
-		/// Creates a <see cref="ServiceEndpoint"/> instance to represent some Claimed Identifier.
+		/// Creates a <see cref="IIdentifierDiscoveryResult"/> instance to represent some Claimed Identifier.
 		/// </summary>
 		/// <param name="claimedIdentifier">The claimed identifier.</param>
 		/// <param name="providerLocalIdentifier">The provider local identifier.</param>
 		/// <param name="providerEndpoint">The provider endpoint.</param>
 		/// <param name="servicePriority">The service priority.</param>
 		/// <param name="uriPriority">The URI priority.</param>
-		/// <returns>The created <see cref="ServiceEndpoint"/> instance</returns>
+		/// <returns>The created <see cref="IIdentifierDiscoveryResult"/> instance</returns>
 		internal static IIdentifierDiscoveryResult CreateForClaimedIdentifier(Identifier claimedIdentifier, Identifier providerLocalIdentifier, IProviderEndpoint providerEndpoint, int? servicePriority, int? uriPriority) {
 			return CreateForClaimedIdentifier(claimedIdentifier, null, providerLocalIdentifier, providerEndpoint, servicePriority, uriPriority);
 		}
 
 		/// <summary>
-		/// Creates a <see cref="ServiceEndpoint"/> instance to represent some Claimed Identifier.
+		/// Creates a <see cref="IIdentifierDiscoveryResult"/> instance to represent some Claimed Identifier.
 		/// </summary>
 		/// <param name="claimedIdentifier">The claimed identifier.</param>
 		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
@@ -292,7 +275,7 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// <param name="providerEndpoint">The provider endpoint.</param>
 		/// <param name="servicePriority">The service priority.</param>
 		/// <param name="uriPriority">The URI priority.</param>
-		/// <returns>The created <see cref="ServiceEndpoint"/> instance</returns>
+		/// <returns>The created <see cref="IdentifierDiscoveryResult"/> instance</returns>
 		internal static IIdentifierDiscoveryResult CreateForClaimedIdentifier(Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, IProviderEndpoint providerEndpoint, int? servicePriority, int? uriPriority) {
 			return new IdentifierDiscoveryResult(providerEndpoint, claimedIdentifier, userSuppliedIdentifier, providerLocalIdentifier, servicePriority, uriPriority);
 		}

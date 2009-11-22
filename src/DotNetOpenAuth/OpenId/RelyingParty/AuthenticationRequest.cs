@@ -14,8 +14,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.DiscoveryServices;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Facilitates customization and creation and an authentication request
@@ -373,6 +373,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);
 		}
 
+		/// <summary>
+		/// Creates an instance of <see cref="AuthenticationRequest"/> FOR TESTING PURPOSES ONLY.
+		/// </summary>
+		/// <param name="discoveryResult">The discovery result.</param>
+		/// <param name="realm">The realm.</param>
+		/// <param name="returnTo">The return to.</param>
+		/// <param name="rp">The relying party.</param>
+		/// <returns>The instantiated <see cref="AuthenticationRequest"/>.</returns>
 		internal static AuthenticationRequest CreateForTest(IIdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnTo, OpenIdRelyingParty rp) {
 			return new AuthenticationRequest(discoveryResult, realm, returnTo, rp);
 		}

@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId {
+	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -12,7 +13,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using System.Collections.ObjectModel;
 
 	[TestClass]
 	public class ExtensionsInteropHelperRPRequestTests : OpenIdTestBase {

@@ -10,8 +10,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.OpenId.DiscoveryServices;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Performs similar to an ordinary <see cref="Identifier"/>, but when called upon

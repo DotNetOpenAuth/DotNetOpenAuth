@@ -28,8 +28,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// <see cref="UIModes.Popup"/>. </para>
 	/// 	<para>An RP may determine whether an arbitrary OP supports this extension (and thereby determine
 	/// whether to use a standard full window redirect or a popup) via the
-	/// <see cref="IProviderEndpoint.IsExtensionSupported"/> method on the <see cref="DotNetOpenAuth.OpenId.RelyingParty.IAuthenticationRequest.Provider"/>
-	/// object.</para>
+	/// <see cref="OpenIdUtilities.IsExtensionSupported&lt;T&gt;(IProviderEndpoint)"/> method.</para>
 	/// </remarks>
 	public sealed class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
 		/// <summary>
