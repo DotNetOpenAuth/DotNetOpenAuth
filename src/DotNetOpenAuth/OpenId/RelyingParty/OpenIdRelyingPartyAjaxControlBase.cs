@@ -557,7 +557,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
 				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
-					Identifier userSuppliedIdentifier = ((AuthenticationRequest)req).Endpoint.UserSuppliedIdentifier;
+					Identifier userSuppliedIdentifier = ((AuthenticationRequest)req).DiscoveryResult.UserSuppliedIdentifier;
 					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
 				}
 
