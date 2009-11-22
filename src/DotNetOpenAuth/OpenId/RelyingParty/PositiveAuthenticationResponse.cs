@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	/// <summary>
 	/// Wraps a positive assertion response in an <see cref="IAuthenticationResponse"/> instance
@@ -28,7 +29,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			: base(response) {
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
-			this.Endpoint = ServiceEndpoint.CreateForClaimedIdentifier(
+			this.Endpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				this.Response.ClaimedIdentifier,
 				this.Response.GetReturnToArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName),
 				this.Response.LocalIdentifier,
@@ -91,7 +92,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </para>
 		/// </remarks>
 		public override string FriendlyIdentifierForDisplay {
-			get { return this.Endpoint.FriendlyIdentifierForDisplay; }
+			get { return this.Endpoint.GetFriendlyIdentifierForDisplay(); }
 		}
 
 		/// <summary>
@@ -112,7 +113,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// the claimed identifier to avoid a Provider asserting an Identifier
 		/// for which it has no authority. 
 		/// </remarks>
-		internal ServiceEndpoint Endpoint { get; private set; }
+		internal IIdentifierDiscoveryResult Endpoint { get; private set; }
 
 		/// <summary>
 		/// Gets the positive assertion response message.

@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.IsNull(authResponse.Exception);
 			Assert.AreEqual<string>(assertion.ClaimedIdentifier, authResponse.ClaimedIdentifier);
-			Assert.AreEqual<string>(authResponse.Endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
+			Assert.AreEqual<string>(authResponse.Endpoint.GetFriendlyIdentifierForDisplay(), authResponse.FriendlyIdentifierForDisplay);
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension(typeof(ClaimsResponse)));
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension<ClaimsResponse>());
 			Assert.IsNull(authResponse.GetCallbackArgument("a"));

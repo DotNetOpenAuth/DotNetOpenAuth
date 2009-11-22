@@ -30,12 +30,5 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <see cref="ServicePriority"/>.
 		/// </remarks>
 		int? UriPriority { get; }
-
-		/// <summary>
-		/// Checks for the presence of a given Type URI in an XRDS service.
-		/// </summary>
-		/// <param name="typeUri">The type URI to check for.</param>
-		/// <returns><c>true</c> if the service type uri is present; <c>false</c> otherwise.</returns>
-		bool IsTypeUriPresent(string typeUri);
 	}
 }

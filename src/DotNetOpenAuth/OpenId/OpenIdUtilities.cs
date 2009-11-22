@@ -18,6 +18,8 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+using DotNetOpenAuth.OpenId.DiscoveryServices;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
@@ -154,6 +156,129 @@ namespace DotNetOpenAuth.OpenId {
 			var aggregator = factory as OpenIdExtensionFactoryAggregator;
 			ErrorUtilities.VerifyOperation(aggregator != null, OpenIdStrings.UnsupportedChannelConfiguration);
 			return aggregator.Factories;
+		}
+
+		/// <summary>
+		/// Gets the OpenID protocol used by the Provider.
+		/// </summary>
+		internal static Protocol GetProtocol(this IProviderEndpoint providerDescription) {
+			return Protocol.Lookup(providerDescription.Version);
+		}
+
+		/// <summary>
+		/// Gets the value for the <see cref="IAuthenticationResponse.FriendlyIdentifierForDisplay"/> property.
+		/// </summary>
+		internal static string GetFriendlyIdentifierForDisplay(this IIdentifierDiscoveryResult discoveryResult) {
+			Contract.Requires(discoveryResult != null);
+			XriIdentifier xri = discoveryResult.ClaimedIdentifier as XriIdentifier;
+			UriIdentifier uri = discoveryResult.ClaimedIdentifier as UriIdentifier;
+			if (xri != null) {
+				if (discoveryResult.UserSuppliedIdentifier == null || String.Equals(discoveryResult.UserSuppliedIdentifier, discoveryResult.ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
+					return discoveryResult.ClaimedIdentifier;
+				} else {
+					return discoveryResult.UserSuppliedIdentifier;
+				}
+			} else if (uri != null) {
+				if (uri != discoveryResult.ProviderEndpoint.GetProtocol().ClaimedIdentifierForOPIdentifier) {
+					string displayUri = uri.Uri.Host + uri.Uri.AbsolutePath;
+					displayUri = displayUri.TrimEnd('/');
+
+					// Multi-byte unicode characters get encoded by the Uri class for transit.
+					// Since discoveryResult is for display purposes, we want to reverse discoveryResult and display a readable
+					// representation of these foreign characters.  
+					return Uri.UnescapeDataString(displayUri);
+				}
+			} else {
+				return discoveryResult.ClaimedIdentifier;
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <typeparam name="T">The extension whose support is being queried.</typeparam>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all.")]
+		public static bool IsExtensionSupported<T>(this IProviderEndpoint providerEndpoint) where T : IOpenIdMessageExtension, new() {
+			Contract.Requires(providerEndpoint != null);
+			T extension = new T();
+			return IsExtensionSupported(providerEndpoint, extension);
+		}
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <param name="extensionType">The extension whose support is being queried.</param>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		public static bool IsExtensionSupported(this IProviderEndpoint providerEndpoint, Type extensionType) {
+			Contract.Requires(providerEndpoint != null);
+			Contract.Requires(extensionType != null);
+			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
+			var extension = (IOpenIdMessageExtension)Activator.CreateInstance(extensionType);
+			return IsExtensionSupported(providerEndpoint, extension);
+		}
+
+		/// <summary>
+		/// Determines whether a given type URI is present on the specified provider endpoint.
+		/// </summary>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <param name="typeUri">The type URI.</param>
+		/// <returns>
+		/// 	<c>true</c> if the type URI is present on the specified provider endpoint; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsTypeUriPresent(this IProviderEndpoint providerEndpoint, string typeUri) {
+			Contract.Requires(providerEndpoint != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
+			return providerEndpoint.Capabilities.Contains(typeUri);
+		}
+
+		/// <summary>
+		/// Determines whether a given extension is supported by this endpoint.
+		/// </summary>
+		/// <param name="providerEndpoint">The provider endpoint.</param>
+		/// <param name="extension">An instance of the extension to check support for.</param>
+		/// <returns>
+		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsExtensionSupported(this IProviderEndpoint providerEndpoint, IOpenIdMessageExtension extension) {
+			Contract.Requires(providerEndpoint != null);
+			Contract.Requires<ArgumentNullException>(extension != null);
+
+			// Consider the primary case.
+			if (providerEndpoint.IsTypeUriPresent(extension.TypeUri)) {
+				return true;
+			}
+
+			// Consider the secondary cases.
+			if (extension.AdditionalSupportedTypeUris != null) {
+				if (extension.AdditionalSupportedTypeUris.Any(typeUri => providerEndpoint.IsTypeUriPresent(typeUri))) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

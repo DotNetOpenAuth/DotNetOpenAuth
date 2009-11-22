@@ -118,17 +118,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 		}
 
-		internal static ServiceEndpoint GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
+		internal static IIdentifierDiscoveryResult GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
 			return GetServiceEndpoint(user, providerVersion, servicePriority, useSsl, false);
 		}
 
-		internal static ServiceEndpoint GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl, bool delegating) {
+		internal static IIdentifierDiscoveryResult GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl, bool delegating) {
 			var providerEndpoint = new ProviderEndpointDescription(
 				useSsl ? OpenIdTestBase.OPUriSsl : OpenIdTestBase.OPUri,
 				new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI });
 			var local_id = useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user];
 			var claimed_id = delegating ? (useSsl ? VanityUriSsl : VanityUri) : local_id;
-			return ServiceEndpoint.CreateForClaimedIdentifier(
+			return IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				claimed_id,
 				claimed_id,
 				local_id,
@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 		}
 
-		internal IEnumerable<ServiceEndpoint> Discover(Identifier identifier) {
+		internal IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier) {
 			var rp = this.CreateRelyingParty(true);
 			rp.Channel.WebRequestHandler = this.RequestHandler;
 			return rp.Discover(identifier);
@@ -198,9 +198,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
-			ServiceEndpoint se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
+			var se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
 			UriIdentifier identityUri = (UriIdentifier)se.ClaimedIdentifier;
-			return new MockIdentifier(identityUri, this.MockResponder, new ServiceEndpoint[] { se });
+			return new MockIdentifier(identityUri, this.MockResponder, new IIdentifierDiscoveryResult[] { se });
 		}
 
 		/// <summary>

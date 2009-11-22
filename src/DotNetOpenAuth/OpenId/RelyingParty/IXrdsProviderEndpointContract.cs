@@ -6,6 +6,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.OpenId.Messages;
+	using System.Collections.ObjectModel;
 
 	[ContractClassFor(typeof(IXrdsProviderEndpoint))]
 	internal abstract class IXrdsProviderEndpointContract : IXrdsProviderEndpoint {
@@ -24,34 +25,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region IProviderEndpoint Properties
 
 		Version IProviderEndpoint.Version {
-			get { throw new System.NotImplementedException(); }
+			get {
+				Contract.Ensures(Contract.Result<Version>() != null);
+				throw new System.NotImplementedException();
+			}
 		}
 
 		Uri IProviderEndpoint.Uri {
-			get { throw new System.NotImplementedException(); }
+			get {
+				Contract.Ensures(Contract.Result<Uri>() != null);
+				throw new System.NotImplementedException();
+			}
 		}
 
-		#endregion
-
-		#region IXrdsProviderEndpoint Methods
-
-		bool IXrdsProviderEndpoint.IsTypeUriPresent(string typeUri) {
-			throw new System.NotImplementedException();
-		}
-
-		#endregion
-
-		#region IProviderEndpoint Methods
-
-		bool IProviderEndpoint.IsExtensionSupported<T>() {
-			throw new System.NotImplementedException();
-		}
-
-		bool IProviderEndpoint.IsExtensionSupported(System.Type extensionType) {
-			Contract.Requires<ArgumentNullException>(extensionType != null);
-			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
-			////ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), string.Format(CultureInfo.CurrentCulture, OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName));
-			throw new System.NotImplementedException();
+		ReadOnlyCollection<string> IProviderEndpoint.Capabilities {
+			get {
+				Contract.Ensures(Contract.Result<ReadOnlyCollection<string>>() != null);
+				throw new NotImplementedException();
+			}
 		}
 
 		#endregion

@@ -276,8 +276,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <returns>The AX format(s) to use based on the Provider's advertised AX support.</returns>
 		private static bool TryDetectOPAttributeFormat(RelyingParty.IAuthenticationRequest request, out AXAttributeFormats attributeFormat) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			var provider = (RelyingParty.ServiceEndpoint)request.Provider;
-			attributeFormat = DetectAXFormat(provider.ProviderDescription.Capabilities);
+			attributeFormat = DetectAXFormat(request.Provider.Capabilities);
 			return attributeFormat != AXAttributeFormats.None;
 		}
 

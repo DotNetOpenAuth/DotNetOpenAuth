@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
-			get { return ServiceEndpoint.EndpointOrder; }
+			get { return IdentifierDiscoveryResult.EndpointOrder; }
 		}
 
 		/// <summary>
@@ -591,11 +591,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="identifier">The identifier to discover services for.</param>
 		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
-		internal IEnumerable<ServiceEndpoint> Discover(Identifier identifier) {
+		internal IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IIdentifierDiscoveryResult>>() != null);
 
-			IEnumerable<ServiceEndpoint> results = Enumerable.Empty<ServiceEndpoint>();
+			IEnumerable<IIdentifierDiscoveryResult> results = Enumerable.Empty<IIdentifierDiscoveryResult>();
 			foreach (var discoverer in this.DiscoveryServices) {
 				bool abortDiscoveryChain;
 				var discoveryResults = discoverer.Discover(identifier, this.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();

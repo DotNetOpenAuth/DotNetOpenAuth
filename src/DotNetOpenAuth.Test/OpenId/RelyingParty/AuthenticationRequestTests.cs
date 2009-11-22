@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	[TestClass]
 	public class AuthenticationRequestTests : OpenIdTestBase {
@@ -62,7 +63,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void ProviderVersion() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
-			Assert.AreEqual(this.protocol.Version, authRequest.endpoint.Protocol.Version);
+			Assert.AreEqual(this.protocol.Version, authRequest.Endpoint.ProviderEndpoint.GetProtocol().Version);
 		}
 
 		/// <summary>
@@ -183,8 +184,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 		private AuthenticationRequest_Accessor CreateAuthenticationRequest(Identifier claimedIdentifier, Identifier providerLocalIdentifier) {
 			ProviderEndpointDescription providerEndpoint = new ProviderEndpointDescription(OPUri, this.protocol.Version);
-			ServiceEndpoint endpoint = ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
-			ServiceEndpoint_Accessor endpointAccessor = ServiceEndpoint_Accessor.AttachShadow(endpoint);
+			IIdentifierDiscoveryResult endpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
+			IdentifierDiscoveryResult_Accessor endpointAccessor = IdentifierDiscoveryResult_Accessor.AttachShadow(endpoint);
 			OpenIdRelyingParty rp = this.CreateRelyingParty();
 			AuthenticationRequest_Accessor authRequest = new AuthenticationRequest_Accessor(endpointAccessor, this.realm, this.returnTo, rp);
 			return authRequest;

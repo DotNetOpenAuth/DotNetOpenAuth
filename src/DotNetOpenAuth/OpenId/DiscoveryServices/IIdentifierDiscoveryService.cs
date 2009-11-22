@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
 		[Pure]
-		IEnumerable<ServiceEndpoint> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain);
+		IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain);
 	}
 
 	/// <summary>
@@ -47,10 +47,10 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		IEnumerable<ServiceEndpoint> IIdentifierDiscoveryService.Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
+		IEnumerable<IIdentifierDiscoveryResult> IIdentifierDiscoveryService.Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IIdentifierDiscoveryResult>>() != null);
 			throw new NotImplementedException();
 		}
 

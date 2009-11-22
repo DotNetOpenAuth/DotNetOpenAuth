@@ -398,7 +398,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// do due diligence by performing our own discovery on the claimed identifier
 			// and make sure that it is tied to this OP and OP local identifier.
 			if (this.SecuritySettings.UnsolicitedAssertionVerification != ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.NeverVerify) {
-				var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
+				var serviceEndpoint = DotNetOpenAuth.OpenId.DiscoveryServices.IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
 				var discoveredEndpoints = this.RelyingParty.Discover(claimedIdentifier);
 				if (!discoveredEndpoints.Contains(serviceEndpoint)) {
 					Logger.OpenId.WarnFormat(

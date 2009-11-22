@@ -51,11 +51,11 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<ServiceEndpoint> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
+		public IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
 			abortDiscoveryChain = false;
 			var xriIdentifier = identifier as XriIdentifier;
 			if (xriIdentifier == null) {
-				return Enumerable.Empty<ServiceEndpoint>();
+				return Enumerable.Empty<IIdentifierDiscoveryResult>();
 			}
 
 			return DownloadXrds(xriIdentifier, requestHandler).CreateServiceEndpoints(xriIdentifier);

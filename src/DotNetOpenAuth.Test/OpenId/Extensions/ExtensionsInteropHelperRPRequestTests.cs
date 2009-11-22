@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Collections.ObjectModel;
 
 	[TestClass]
 	public class ExtensionsInteropHelperRPRequestTests : OpenIdTestBase {
@@ -118,11 +119,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <param name="typeUri">The type URI.</param>
 		private void InjectAdvertisedTypeUri(string typeUri) {
-			var serviceEndpoint = ServiceEndpoint_Accessor.AttachShadow(((ServiceEndpoint)this.authReq.Provider));
-			serviceEndpoint.ProviderDescription = ProviderEndpointDescription_Accessor.AttachShadow(
-				new ProviderEndpointDescription(
-					serviceEndpoint.ProviderDescription.Endpoint,
-					serviceEndpoint.ProviderDescription.Capabilities.Concat(new[] { typeUri })));
+			var serviceEndpoint = ProviderEndpointDescription_Accessor.AttachShadow(((ProviderEndpointDescription)this.authReq.Provider));
+			serviceEndpoint.Capabilities = new ReadOnlyCollection<string>(
+					serviceEndpoint.Capabilities.Concat(new[] { typeUri }).ToList());
 		}
 	}
 }

@@ -32,11 +32,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<ServiceEndpoint> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
+		public IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
 			var mockIdentifier = identifier as MockIdentifier;
 			if (mockIdentifier == null) {
 				abortDiscoveryChain = false;
-				return Enumerable.Empty<ServiceEndpoint>();
+				return Enumerable.Empty<IIdentifierDiscoveryResult>();
 			}
 
 			abortDiscoveryChain = true;
