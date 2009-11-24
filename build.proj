@@ -6,6 +6,7 @@
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
+		<ProjectTemplatesVsi>$(ProjectTemplatesLayoutPath)DotNetOpenAuth Starter Kits.vsi</ProjectTemplatesVsi>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)tools\$(ProductName).Versioning.targets"/>
@@ -196,7 +197,9 @@
 			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
 
 			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
+			<VSProjectTemplateZipFiles Include="@(TopLevelVSProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
 		</ItemGroup>
+
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
 		</Trim>
@@ -205,6 +208,13 @@
 		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)" SkipUnchangedFiles="true">
 			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
 		</CopyWithTokenSubstitution>
+		<Purge Directories="$(ProjectTemplatesLayoutPath)"
+					 IntendedFiles="
+						@(ProjectTemplatesLayout);
+						@(ProjectTemplatesTransformLayout);
+						@(VSProjectTemplateZipFiles);
+						$(ProjectTemplatesVsi);
+						" />
 		<ChangeProjectReferenceToAssemblyReference
 			Projects="@(CopiedProjectTemplateFiles)"
 			Condition="'%(Extension)' == '.csproj'"
@@ -228,10 +238,6 @@
 	</Target>
 
 	<Target Name="ProjectTemplates" DependsOnTargets="ProjectTemplatesLayout">
-		<ItemGroup>
-			<VSProjectTemplateZipFiles Include="@(TopLevelVSProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
-		</ItemGroup>
-
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVSProjectTemplates)">
 			<Output TaskParameter="ProjectTemplates" ItemName="SubVSTemplates" />
 			<Output TaskParameter="ProjectTemplateContents" ItemName="TemplateItemContents" />
@@ -265,6 +271,22 @@
 			/>
 	</Target>
 
+	<Target Name="vsi" DependsOnTargets="ProjectTemplates">
+		<ItemGroup>
+			<ProjectTemplateVsiContents Include="
+																	$(ProjectTemplatesLayoutPath)*.vscontent;
+																	$(ProjectTemplatesLayoutPath)*.zip
+																	" />
+		</ItemGroup>
+
+		<Delete Files="$(ProjectTemplatesVsi)" />
+		<Zip
+			Files="@(ProjectTemplateVsiContents)"
+			ZipFileName="$(ProjectTemplatesVsi)"
+			WorkingDirectory="$(ProjectTemplatesLayoutPath)"
+			/>
+	</Target>
+
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
 	</Target>
 
@@ -285,7 +307,7 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;ProjectTemplates;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;vsi;Documentation">
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
@@ -321,7 +343,7 @@
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)Lib\log4net.*;
 																" />
-			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesLayoutPath)*.zip" />
+			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesVsi)" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
 															$(ProjectRoot)**\obj\**;
 															$(ProjectRoot)**\*.sln.cache;
