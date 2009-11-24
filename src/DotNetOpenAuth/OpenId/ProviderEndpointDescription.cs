@@ -54,9 +54,9 @@ namespace DotNetOpenAuth.OpenId {
 				this.Version = opIdentifierProtocol.Version;
 			} else if (claimedIdentifierProviderVersion != null) {
 				this.Version = claimedIdentifierProviderVersion.Version;
+			} else {
+				ErrorUtilities.ThrowProtocol(OpenIdStrings.ProviderVersionUnrecognized, this.Uri);
 			}
-
-			ErrorUtilities.VerifyProtocol(this.Version != null, OpenIdStrings.ProviderVersionUnrecognized, this.Uri);
 		}
 
 		/// <summary>
@@ -126,8 +126,6 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		private void ObjectInvariant() {
-			Contract.Invariant(this.Uri != null);
-			Contract.Invariant(this.Version != null);
 			Contract.Invariant(this.Capabilities != null);
 		}
 #endif

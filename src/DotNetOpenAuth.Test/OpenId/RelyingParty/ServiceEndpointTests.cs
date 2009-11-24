@@ -69,16 +69,6 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreSame(Protocol.V11, se.Protocol);
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
-		public void ProtocolDetectionWithoutClues() {
-			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
-				this.claimedId,
-				this.localId,
-				new ProviderEndpointDescription(this.providerEndpoint, new[] { Protocol.V20.HtmlDiscoveryLocalIdKey }), // random type URI irrelevant to detection
-				this.servicePriority,
-				this.uriPriority);
-		}
-
 		[TestMethod]
 		public void EqualsTests() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);

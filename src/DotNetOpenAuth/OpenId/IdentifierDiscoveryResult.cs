@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Backing field for the <see cref="FriendlyIdentifierForDisplay"/> property.
 		/// </summary>
-		private Identifier friendlyIdentifierForDisplay;
+		private string friendlyIdentifierForDisplay;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IdentifierDiscoveryResult"/> class.
@@ -51,7 +51,6 @@ namespace DotNetOpenAuth.OpenId {
 		private IdentifierDiscoveryResult(ProviderEndpointDescription providerEndpoint, Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, int? servicePriority, int? uriPriority) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
-			Contract.Requires<ArgumentNullException>(providerLocalIdentifier != null);
 			this.ProviderEndpoint = providerEndpoint.Uri;
 			this.Capabilities = new ReadOnlyCollection<string>(providerEndpoint.Capabilities);
 			this.Version = providerEndpoint.Version;
@@ -105,7 +104,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets a more user-friendly (but NON-secure!) string to display to the user as his identifier.
 		/// </summary>
 		/// <returns>A human-readable, abbreviated (but not secure) identifier the user MAY recognize as his own.</returns>
-		public Identifier FriendlyIdentifierForDisplay {
+		public string FriendlyIdentifierForDisplay {
 			get {
 				if (this.friendlyIdentifierForDisplay == null) {
 					XriIdentifier xri = this.ClaimedIdentifier as XriIdentifier;
@@ -122,11 +121,12 @@ namespace DotNetOpenAuth.OpenId {
 							displayUri = displayUri.TrimEnd('/');
 
 							// Multi-byte unicode characters get encoded by the Uri class for transit.
-							// Since discoveryResult is for display purposes, we want to reverse discoveryResult and display a readable
+							// Since this is for display purposes, we want to reverse this and display a readable
 							// representation of these foreign characters.  
 							this.friendlyIdentifierForDisplay = Uri.UnescapeDataString(displayUri);
 						}
 					} else {
+						ErrorUtilities.ThrowInternal("ServiceEndpoint.ClaimedIdentifier neither XRI nor URI.");
 						this.friendlyIdentifierForDisplay = this.ClaimedIdentifier;
 					}
 				}
@@ -471,7 +471,6 @@ namespace DotNetOpenAuth.OpenId {
 		private void ObjectInvariant() {
 			Contract.Invariant(this.ProviderEndpoint != null);
 			Contract.Invariant(this.ClaimedIdentifier != null);
-			Contract.Invariant(this.UserSuppliedIdentifier != null);
 			Contract.Invariant(this.ProviderLocalIdentifier != null);
 			Contract.Invariant(this.Capabilities != null);
 			Contract.Invariant(this.Version != null);

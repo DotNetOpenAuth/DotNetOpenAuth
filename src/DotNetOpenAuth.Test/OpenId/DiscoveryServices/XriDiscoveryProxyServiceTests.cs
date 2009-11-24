@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
 			IdentifierDiscoveryResult se = this.VerifyCanonicalId("=Arnott", expectedCanonicalId);
-			Assert.AreEqual(Protocol.V10, Protocol.Lookup(se.Version).ProtocolVersion);
+			Assert.AreEqual(Protocol.V10, Protocol.Lookup(se.Version));
 			Assert.AreEqual("http://1id.com/sso", se.ProviderEndpoint.ToString());
 			Assert.AreEqual(se.ClaimedIdentifier, se.ProviderLocalIdentifier);
 			Assert.AreEqual("=Arnott", se.FriendlyIdentifierForDisplay);

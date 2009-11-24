@@ -337,7 +337,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SendResponse(req);
 				});
 			coordinator.IncomingMessageFilter = message => {
-				Assert.AreSame(Protocol.Lookup(opDescription.Version).ProtocolVersion, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);
+				Assert.AreSame(opDescription.Version, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);
 				var associateSuccess = message as AssociateSuccessfulResponse;
 				var associateFailed = message as AssociateUnsuccessfulResponse;
 				if (associateSuccess != null) {
@@ -348,7 +348,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				}
 			};
 			coordinator.OutgoingMessageFilter = message => {
-				Assert.AreSame(Protocol.Lookup(opDescription.Version).ProtocolVersion, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, Protocol.Lookup(opDescription.Version).Version);
+				Assert.AreEqual(opDescription.Version, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, opDescription.Version);
 			};
 			coordinator.Run();
 
