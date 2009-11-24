@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// A module that provides discovery services for OpenID identifiers.
 	/// </summary>
 	[ContractClass(typeof(IIdentifierDiscoveryServiceContract))]
-	internal interface IIdentifierDiscoveryService {
+	public interface IIdentifierDiscoveryService {
 		/// <summary>
 		/// Performs discovery on the specified identifier.
 		/// </summary>

@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// The discovery service for XRI identifiers that uses an XRI proxy resolver for discovery.
 	/// </summary>
-	internal class XriDiscoveryProxyService : IIdentifierDiscoveryService {
+	public class XriDiscoveryProxyService : IIdentifierDiscoveryService {
 		/// <summary>
 		/// The magic URL that will provide us an XRDS document for a given XRI identifier.
 		/// </summary>

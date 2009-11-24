@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// The discovery service for URI identifiers.
 	/// </summary>
-	internal class UriDiscoveryService : IIdentifierDiscoveryService {
+	public class UriDiscoveryService : IIdentifierDiscoveryService {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriDiscoveryService"/> class.
 		/// </summary>
