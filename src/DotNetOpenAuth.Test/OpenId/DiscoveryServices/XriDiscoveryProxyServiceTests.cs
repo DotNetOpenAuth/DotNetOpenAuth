@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -56,11 +55,11 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			this.MockResponder.RegisterMockXrdsResponses(mocks);
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
-			IIdentifierDiscoveryResult se = this.VerifyCanonicalId("=Arnott", expectedCanonicalId);
-			Assert.AreEqual(Protocol.V10, Protocol.Lookup(se.ProviderEndpoint.Version).ProtocolVersion);
+			IdentifierDiscoveryResult se = this.VerifyCanonicalId("=Arnott", expectedCanonicalId);
+			Assert.AreEqual(Protocol.V10, Protocol.Lookup(se.Version).ProtocolVersion);
 			Assert.AreEqual("http://1id.com/sso", se.ProviderEndpoint.ToString());
 			Assert.AreEqual(se.ClaimedIdentifier, se.ProviderLocalIdentifier);
-			Assert.AreEqual("=Arnott", se.GetFriendlyIdentifierForDisplay());
+			Assert.AreEqual("=Arnott", se.FriendlyIdentifierForDisplay);
 		}
 
 		[TestMethod]
@@ -380,12 +379,12 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 			this.VerifyCanonicalId("@id*andrewarnott", null);
 		}
 
-		private IIdentifierDiscoveryResult VerifyCanonicalId(Identifier iname, string expectedClaimedIdentifier) {
+		private IdentifierDiscoveryResult VerifyCanonicalId(Identifier iname, string expectedClaimedIdentifier) {
 			var se = this.Discover(iname).FirstOrDefault();
 			if (expectedClaimedIdentifier != null) {
 				Assert.IsNotNull(se);
 				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);
-				Assert.IsTrue(se.ProviderEndpoint.Capabilities.Count > 0);
+				Assert.IsTrue(se.Capabilities.Count > 0);
 			} else {
 				Assert.IsNull(se);
 			}

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -20,8 +21,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <remarks>
 	/// This is an immutable type.
 	/// </remarks>
-	[Serializable]
-	internal class ProviderEndpointDescription : IProviderEndpoint {
+	internal sealed class ProviderEndpointDescription : IProviderEndpoint {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProviderEndpointDescription"/> class.
 		/// </summary>
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			this.Uri = providerEndpoint;
 			this.Version = openIdVersion;
-			this.Capabilities = new ReadOnlyCollection<string>(new List<string>());
+			this.Capabilities = new ReadOnlyCollection<string>(EmptyList<string>.Instance);
 		}
 
 		/// <summary>
@@ -76,6 +76,60 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the collection of service type URIs found in the XRDS document describing this Provider.
 		/// </summary>
-		public ReadOnlyCollection<string> Capabilities { get; private set; }
+		internal ReadOnlyCollection<string> Capabilities { get; private set; }
+
+		#region IProviderEndpoint Members
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <typeparam name="T">The extension whose support is being queried.</typeparam>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		bool IProviderEndpoint.IsExtensionSupported<T>() {
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <param name="extensionType">The extension whose support is being queried.</param>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		bool IProviderEndpoint.IsExtensionSupported(Type extensionType) {
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.Uri != null);
+			Contract.Invariant(this.Version != null);
+			Contract.Invariant(this.Capabilities != null);
+		}
+#endif
 	}
 }

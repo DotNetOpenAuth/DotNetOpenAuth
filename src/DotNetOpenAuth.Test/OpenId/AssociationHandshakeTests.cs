@@ -318,7 +318,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void ParameterizedAssociationTest(
 			ProviderEndpointDescription opDescription,
 			string expectedAssociationType) {
-			Protocol protocol = Protocol.Lookup(opDescription.GetProtocol().ProtocolVersion);
+			Protocol protocol = Protocol.Lookup(Protocol.Lookup(opDescription.Version).ProtocolVersion);
 			bool expectSuccess = expectedAssociationType != null;
 			bool expectDiffieHellman = !opDescription.Uri.IsTransportSecure();
 			Association rpAssociation = null, opAssociation;
@@ -337,7 +337,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SendResponse(req);
 				});
 			coordinator.IncomingMessageFilter = message => {
-				Assert.AreSame(opDescription.GetProtocol().ProtocolVersion, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, opDescription.GetProtocol().ProtocolVersion);
+				Assert.AreSame(Protocol.Lookup(opDescription.Version).ProtocolVersion, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);
 				var associateSuccess = message as AssociateSuccessfulResponse;
 				var associateFailed = message as AssociateUnsuccessfulResponse;
 				if (associateSuccess != null) {
@@ -348,7 +348,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				}
 			};
 			coordinator.OutgoingMessageFilter = message => {
-				Assert.AreSame(opDescription.GetProtocol().ProtocolVersion, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, opDescription.GetProtocol().Version);
+				Assert.AreSame(Protocol.Lookup(opDescription.Version).ProtocolVersion, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, Protocol.Lookup(opDescription.Version).Version);
 			};
 			coordinator.Run();
 

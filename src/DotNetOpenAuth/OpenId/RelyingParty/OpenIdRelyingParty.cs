@@ -18,7 +18,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 
@@ -31,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <c>True</c> if the endpoint should be considered.  
 	/// <c>False</c> to remove it from the pool of acceptable providers.
 	/// </returns>
-	public delegate bool EndpointSelector(IXrdsProviderEndpoint endpoint);
+	public delegate bool EndpointSelector(IProviderEndpoint endpoint);
 
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
@@ -62,7 +61,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Backing store for the <see cref="EndpointOrder"/> property.
 		/// </summary>
-		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
+		private Comparison<IdentifierDiscoveryResult> endpointOrder = DefaultEndpointOrder;
 
 		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
@@ -125,7 +124,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Endpoints lacking any priority value are sorted to the end of the list.
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
+		public static Comparison<IdentifierDiscoveryResult> DefaultEndpointOrder {
 			get { return IdentifierDiscoveryResult.EndpointOrder; }
 		}
 
@@ -208,7 +207,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// can be set to the value of <see cref="DefaultEndpointOrder"/>.
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public Comparison<IXrdsProviderEndpoint> EndpointOrder {
+		public Comparison<IdentifierDiscoveryResult> EndpointOrder {
 			get {
 				return this.endpointOrder;
 			}
@@ -591,11 +590,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="identifier">The identifier to discover services for.</param>
 		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
-		internal IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier) {
+		internal IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Ensures(Contract.Result<IEnumerable<IIdentifierDiscoveryResult>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 
-			IEnumerable<IIdentifierDiscoveryResult> results = Enumerable.Empty<IIdentifierDiscoveryResult>();
+			IEnumerable<IdentifierDiscoveryResult> results = Enumerable.Empty<IdentifierDiscoveryResult>();
 			foreach (var discoverer in this.DiscoveryServices) {
 				bool abortDiscoveryChain;
 				var discoveryResults = discoverer.Discover(identifier, this.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();

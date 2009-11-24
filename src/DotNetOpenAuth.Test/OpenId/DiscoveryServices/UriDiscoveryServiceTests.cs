@@ -13,7 +13,6 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -119,7 +118,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			var insecureEndpoint = GetServiceEndpoint(0, ProtocolVersion.V20, 10, false);
 			var secureEndpoint = GetServiceEndpoint(1, ProtocolVersion.V20, 20, true);
 			UriIdentifier secureClaimedId = new UriIdentifier(VanityUriSsl, true);
-			this.MockResponder.RegisterMockXrdsResponse(secureClaimedId, new IIdentifierDiscoveryResult[] { insecureEndpoint, secureEndpoint });
+			this.MockResponder.RegisterMockXrdsResponse(secureClaimedId, new IdentifierDiscoveryResult[] { insecureEndpoint, secureEndpoint });
 			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, this.Discover(secureClaimedId).Single().ProviderLocalIdentifier);
 		}
 
@@ -203,21 +202,21 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			}
 			this.MockResponder.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType, headers ?? new WebHeaderCollection(), LoadEmbeddedFile(url));
 
-			IIdentifierDiscoveryResult expected = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
+			IdentifierDiscoveryResult expected = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				claimedId,
 				expectedLocalId,
 				new ProviderEndpointDescription(new Uri(providerEndpoint), new string[] { protocol.ClaimedIdentifierServiceTypeURI }), // services aren't checked by Equals
 				null,
 				null);
 
-			IIdentifierDiscoveryResult se = this.Discover(idToDiscover).FirstOrDefault(ep => ep.Equals(expected));
+			IdentifierDiscoveryResult se = this.Discover(idToDiscover).FirstOrDefault(ep => ep.Equals(expected));
 			Assert.IsNotNull(se, url + " failed to be discovered.");
 
 			// Do extra checking of service type URIs, which aren't included in 
 			// the ServiceEndpoint.Equals method.
-			Assert.AreEqual(expectSreg ? 2 : 1, se.ProviderEndpoint.Capabilities.Count);
-			Assert.IsTrue(se.ProviderEndpoint.Capabilities.Contains(protocol.ClaimedIdentifierServiceTypeURI));
-			Assert.AreEqual(expectSreg, se.ProviderEndpoint.IsExtensionSupported<ClaimsRequest>());
+			Assert.AreEqual(expectSreg ? 2 : 1, se.Capabilities.Count);
+			Assert.IsTrue(se.Capabilities.Contains(protocol.ClaimedIdentifierServiceTypeURI));
+			Assert.AreEqual(expectSreg, se.IsExtensionSupported<ClaimsRequest>());
 		}
 
 		private void DiscoverXrds(string page, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint) {

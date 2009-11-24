@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>

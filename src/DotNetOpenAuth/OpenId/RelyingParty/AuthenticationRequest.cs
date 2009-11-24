@@ -14,7 +14,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -66,7 +65,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="realm">The realm, or root URL, of the host web site.</param>
 		/// <param name="returnToUrl">The base return_to URL that the Provider should return the user to to complete authentication.  This should not include callback parameters as these should be added using the <see cref="AddCallbackArguments(string, string)"/> method.</param>
 		/// <param name="relyingParty">The relying party that created this instance.</param>
-		private AuthenticationRequest(IIdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
+		private AuthenticationRequest(IdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
 			Contract.Requires<ArgumentNullException>(discoveryResult != null);
 			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Requires<ArgumentNullException>(returnToUrl != null);
@@ -140,7 +139,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// determine and send the ClaimedIdentifier after authentication.
 		/// </summary>
 		public bool IsDirectedIdentity {
-			get { return this.DiscoveryResult.ClaimedIdentifier == this.DiscoveryResult.ProviderEndpoint.GetProtocol().ClaimedIdentifierForOPIdentifier; }
+			get { return this.DiscoveryResult.ClaimedIdentifier == this.DiscoveryResult.Protocol.ClaimedIdentifierForOPIdentifier; }
 		}
 
 		/// <summary>
@@ -159,8 +158,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// location.
 		/// </summary>
 		public IProviderEndpoint Provider {
-			get { return this.DiscoveryResult.ProviderEndpoint; }
+			get { return this.DiscoveryResult; }
 		}
+
+		/// <summary>
+		/// Gets the discovery result leading to the formulation of this request.
+		/// </summary>
+		/// <value>The discovery result.</value>
+		public IdentifierDiscoveryResult DiscoveryResult { get; private set; }
 
 		#endregion
 
@@ -186,12 +191,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal IList<IOpenIdMessageExtension> Extensions {
 			get { return this.extensions; }
 		}
-
-		/// <summary>
-		/// Gets the endpoint that describes the particular OpenID Identifier and Provider that
-		/// will be used to create the authentication request.
-		/// </summary>
-		internal IIdentifierDiscoveryResult DiscoveryResult { get; private set; }
 
 		#region IAuthenticationRequest methods
 
@@ -358,12 +357,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyProtocol(realm.Contains(returnToUrl), OpenIdStrings.ReturnToNotUnderRealm, returnToUrl, realm);
 
 			// Perform discovery right now (not deferred).
-			IEnumerable<IIdentifierDiscoveryResult> serviceEndpoints;
+			IEnumerable<IdentifierDiscoveryResult> serviceEndpoints;
 			try {
 				serviceEndpoints = relyingParty.Discover(userSuppliedIdentifier);
 			} catch (ProtocolException ex) {
 				Logger.Yadis.ErrorFormat("Error while performing discovery on: \"{0}\": {1}", userSuppliedIdentifier, ex);
-				serviceEndpoints = Enumerable.Empty<IIdentifierDiscoveryResult>();
+				serviceEndpoints = Enumerable.Empty<IdentifierDiscoveryResult>();
 			}
 
 			// Filter disallowed endpoints.
@@ -381,7 +380,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="returnTo">The return to.</param>
 		/// <param name="rp">The relying party.</param>
 		/// <returns>The instantiated <see cref="AuthenticationRequest"/>.</returns>
-		internal static AuthenticationRequest CreateForTest(IIdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnTo, OpenIdRelyingParty rp) {
+		internal static AuthenticationRequest CreateForTest(IdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnTo, OpenIdRelyingParty rp) {
 			return new AuthenticationRequest(discoveryResult, realm, returnTo, rp);
 		}
 
@@ -402,7 +401,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// All data validation and cleansing steps must have ALREADY taken place
 		/// before calling this method.
 		/// </remarks>
-		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<IIdentifierDiscoveryResult> serviceEndpoints, bool createNewAssociationsAsNeeded) {
+		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<IdentifierDiscoveryResult> serviceEndpoints, bool createNewAssociationsAsNeeded) {
 			// DO NOT USE CODE CONTRACTS IN THIS METHOD, since it uses yield return
 			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
@@ -414,12 +413,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyOperation(!relyingParty.SecuritySettings.RequireAssociation || relyingParty.AssociationManager.HasAssociationStore, OpenIdStrings.AssociationStoreRequired);
 
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
-			IEnumerable<IIdentifierDiscoveryResult> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
+			IEnumerable<IdentifierDiscoveryResult> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
 
 			// Maintain a list of endpoints that we could not form an association with.
 			// We'll fallback to generating requests to these if the ones we CAN create
 			// an association with run out.
-			var failedAssociationEndpoints = new List<IIdentifierDiscoveryResult>(0);
+			var failedAssociationEndpoints = new List<IdentifierDiscoveryResult>(0);
 
 			foreach (var endpoint in endpoints) {
 				Logger.OpenId.InfoFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
@@ -430,7 +429,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					// In some scenarios (like the AJAX control wanting ALL auth requests possible),
 					// we don't want to create associations with every Provider.  But we'll use
 					// associations where they are already formed from previous authentications.
-					association = createNewAssociationsAsNeeded ? relyingParty.AssociationManager.GetOrCreateAssociation(endpoint.ProviderEndpoint) : relyingParty.AssociationManager.GetExistingAssociation(endpoint.ProviderEndpoint);
+					association = createNewAssociationsAsNeeded ? relyingParty.AssociationManager.GetOrCreateAssociation(endpoint) : relyingParty.AssociationManager.GetExistingAssociation(endpoint);
 					if (association == null && createNewAssociationsAsNeeded) {
 						Logger.OpenId.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
 
@@ -473,7 +472,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="endpoints">The endpoints.</param>
 		/// <param name="relyingParty">The relying party.</param>
 		/// <returns>A filtered and sorted list of endpoints; may be empty if the input was empty or the filter removed all endpoints.</returns>
-		private static List<IIdentifierDiscoveryResult> FilterAndSortEndpoints(IEnumerable<IIdentifierDiscoveryResult> endpoints, OpenIdRelyingParty relyingParty) {
+		private static List<IdentifierDiscoveryResult> FilterAndSortEndpoints(IEnumerable<IdentifierDiscoveryResult> endpoints, OpenIdRelyingParty relyingParty) {
 			Contract.Requires<ArgumentNullException>(endpoints != null);
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
@@ -482,9 +481,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			EndpointSelector hostingSiteFilter = relyingParty.EndpointFilter ?? (ep => true);
 
 			bool anyFilteredOut = false;
-			var filteredEndpoints = new List<IIdentifierDiscoveryResult>();
+			var filteredEndpoints = new List<IdentifierDiscoveryResult>();
 			foreach (var endpoint in endpoints) {
-				if (versionFilter((IXrdsProviderEndpoint)endpoint.ProviderEndpoint) && hostingSiteFilter((IXrdsProviderEndpoint)endpoint.ProviderEndpoint)) {
+				if (versionFilter(endpoint) && hostingSiteFilter(endpoint)) {
 					filteredEndpoints.Add(endpoint);
 				} else {
 					anyFilteredOut = true;
@@ -492,9 +491,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			// Sort endpoints so that the first one in the list is the most preferred one.
-			filteredEndpoints.OrderBy(ep => (IXrdsProviderEndpoint)ep.ProviderEndpoint, relyingParty.EndpointOrder);
+			filteredEndpoints.OrderBy(ep => ep, relyingParty.EndpointOrder);
 
-			var endpointList = new List<IIdentifierDiscoveryResult>(filteredEndpoints.Count);
+			var endpointList = new List<IdentifierDiscoveryResult>(filteredEndpoints.Count);
 			foreach (var endpoint in filteredEndpoints) {
 				endpointList.Add(endpoint);
 			}
@@ -524,12 +523,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			SignedResponseRequest request;
 			if (!this.IsExtensionOnly) {
-				CheckIdRequest authRequest = new CheckIdRequest(this.DiscoveryResult.ProviderEndpoint.Version, this.DiscoveryResult.ProviderEndpoint.Uri, this.Mode);
+				CheckIdRequest authRequest = new CheckIdRequest(this.DiscoveryResult.Version, this.DiscoveryResult.ProviderEndpoint, this.Mode);
 				authRequest.ClaimedIdentifier = this.DiscoveryResult.ClaimedIdentifier;
 				authRequest.LocalIdentifier = this.DiscoveryResult.ProviderLocalIdentifier;
 				request = authRequest;
 			} else {
-				request = new SignedResponseRequest(this.DiscoveryResult.ProviderEndpoint.Version, this.DiscoveryResult.ProviderEndpoint.Uri, this.Mode);
+				request = new SignedResponseRequest(this.DiscoveryResult.Version, this.DiscoveryResult.ProviderEndpoint, this.Mode);
 			}
 			request.Realm = this.Realm;
 			request.ReturnTo = this.ReturnToUrl;
@@ -554,7 +553,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Association association = null;
 			switch (this.associationPreference) {
 				case AssociationPreference.IfPossible:
-					association = this.RelyingParty.AssociationManager.GetOrCreateAssociation(this.DiscoveryResult.ProviderEndpoint);
+					association = this.RelyingParty.AssociationManager.GetOrCreateAssociation(this.DiscoveryResult);
 					if (association == null) {
 						// Avoid trying to create the association again if the redirecting response
 						// is generated again.
@@ -562,7 +561,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 					break;
 				case AssociationPreference.IfAlreadyEstablished:
-					association = this.RelyingParty.AssociationManager.GetExistingAssociation(this.DiscoveryResult.ProviderEndpoint);
+					association = this.RelyingParty.AssociationManager.GetExistingAssociation(this.DiscoveryResult);
 					break;
 				case AssociationPreference.Never:
 					break;

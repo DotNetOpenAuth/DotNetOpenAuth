@@ -37,10 +37,35 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		Uri Uri { get; }
 
 		/// <summary>
-		/// Gets the collection of service type URIs found in the XRDS document describing this Provider.
+		/// Checks whether the OpenId Identifier claims support for a given extension.
 		/// </summary>
-		/// <value>Should never be null, but may be empty.</value>
-		ReadOnlyCollection<string> Capabilities { get; }
+		/// <typeparam name="T">The extension whose support is being queried.</typeparam>
+		/// <returns>True if support for the extension is advertised.  False otherwise.</returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's 
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all.")]
+		[Obsolete("Use IAuthenticationRequest.DiscoveryResult.IsExtensionSupported instead.")]
+		bool IsExtensionSupported<T>() where T : IOpenIdMessageExtension, new();
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <param name="extensionType">The extension whose support is being queried.</param>
+		/// <returns>True if support for the extension is advertised.  False otherwise.</returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's 
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		[Obsolete("Use IAuthenticationRequest.DiscoveryResult.IsExtensionSupported instead.")]
+		bool IsExtensionSupported(Type extensionType);
 	}
 
 	/// <summary>
@@ -77,14 +102,41 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the collection of service type URIs found in the XRDS document describing this Provider.
+		/// Checks whether the OpenId Identifier claims support for a given extension.
 		/// </summary>
-		/// <value>Should never be null, but may be empty.</value>
-		ReadOnlyCollection<string> IProviderEndpoint.Capabilities {
-			get {
-				Contract.Ensures(Contract.Result<ReadOnlyCollection<string>>() != null);
-				throw new NotImplementedException();
-			}
+		/// <typeparam name="T">The extension whose support is being queried.</typeparam>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		bool IProviderEndpoint.IsExtensionSupported<T>() {
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Checks whether the OpenId Identifier claims support for a given extension.
+		/// </summary>
+		/// <param name="extensionType">The extension whose support is being queried.</param>
+		/// <returns>
+		/// True if support for the extension is advertised.  False otherwise.
+		/// </returns>
+		/// <remarks>
+		/// Note that a true or false return value is no guarantee of a Provider's
+		/// support for or lack of support for an extension.  The return value is
+		/// determined by how the authenticating user filled out his/her XRDS document only.
+		/// The only way to be sure of support for a given extension is to include
+		/// the extension in the request and see if a response comes back for that extension.
+		/// </remarks>
+		bool IProviderEndpoint.IsExtensionSupported(Type extensionType) {
+			Contract.Requires<ArgumentNullException>(extensionType != null);
+			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
+			throw new NotImplementedException();
 		}
 
 		#endregion

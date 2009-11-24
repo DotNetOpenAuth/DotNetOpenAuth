@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 
@@ -56,8 +55,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// A sequence of OpenID Providers that can assert ownership of the <paramref name="claimedIdentifier"/>.
 		/// </returns>
-		internal static IEnumerable<IIdentifierDiscoveryResult> CreateServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
-			var endpoints = new List<IIdentifierDiscoveryResult>();
+		internal static IEnumerable<IdentifierDiscoveryResult> CreateServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
+			var endpoints = new List<IdentifierDiscoveryResult>();
 			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 
 			// If any OP Identifier service elements were found, we must not proceed
@@ -77,11 +76,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument instance to use in this process.</param>
 		/// <param name="userSuppliedIdentifier">The user-supplied i-name that was used to discover this XRDS document.</param>
 		/// <returns>A sequence of OpenID Providers that can assert ownership of the canonical ID given in this document.</returns>
-		internal static IEnumerable<IIdentifierDiscoveryResult> CreateServiceEndpoints(this XrdsDocument xrds, XriIdentifier userSuppliedIdentifier) {
+		internal static IEnumerable<IdentifierDiscoveryResult> CreateServiceEndpoints(this XrdsDocument xrds, XriIdentifier userSuppliedIdentifier) {
 			Contract.Requires<ArgumentNullException>(xrds != null);
 			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
-			Contract.Ensures(Contract.Result<IEnumerable<IIdentifierDiscoveryResult>>() != null);
-			var endpoints = new List<IIdentifierDiscoveryResult>();
+			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
+			var endpoints = new List<IdentifierDiscoveryResult>();
 			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 
 			// If any OP Identifier service elements were found, we must not proceed
@@ -100,10 +99,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument instance to use in this process.</param>
 		/// <param name="opIdentifier">The OP Identifier entered (and resolved) by the user.  Essentially the user-supplied identifier.</param>
 		/// <returns>A sequence of the providers that can offer directed identity services.</returns>
-		private static IEnumerable<IIdentifierDiscoveryResult> GenerateOPIdentifierServiceEndpoints(this XrdsDocument xrds, Identifier opIdentifier) {
+		private static IEnumerable<IdentifierDiscoveryResult> GenerateOPIdentifierServiceEndpoints(this XrdsDocument xrds, Identifier opIdentifier) {
 			Contract.Requires<ArgumentNullException>(xrds != null);
 			Contract.Requires<ArgumentNullException>(opIdentifier != null);
-			Contract.Ensures(Contract.Result<IEnumerable<IIdentifierDiscoveryResult>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 			return from service in xrds.FindOPIdentifierServices()
 				   from uri in service.UriElements
 				   let protocol = Protocol.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris)
@@ -121,7 +120,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// A sequence of the providers that can assert ownership of the given identifier.
 		/// </returns>
-		private static IEnumerable<IIdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
+		private static IEnumerable<IdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
 			return from service in xrds.FindClaimedIdentifierServices()
 				   from uri in service.UriElements
 				   where uri.Uri != null
@@ -136,7 +135,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument instance to use in this process.</param>
 		/// <param name="userSuppliedIdentifier">The i-name supplied by the user.</param>
 		/// <returns>A sequence of the providers that can assert ownership of the given identifier.</returns>
-		private static IEnumerable<IIdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this XrdsDocument xrds, XriIdentifier userSuppliedIdentifier) {
+		private static IEnumerable<IdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this XrdsDocument xrds, XriIdentifier userSuppliedIdentifier) {
 			foreach (var service in xrds.FindClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					// spec section 7.3.2.3 on Claimed Id -> CanonicalID substitution

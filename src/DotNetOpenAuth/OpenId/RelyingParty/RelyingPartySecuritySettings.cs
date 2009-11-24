@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 
 	/// <summary>
 	/// Security settings that are applicable to relying parties.
@@ -116,10 +115,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="endpoints">The endpoints discovered on an Identifier.</param>
 		/// <returns>A sequence of endpoints that satisfy all security requirements.</returns>
-		internal IEnumerable<IIdentifierDiscoveryResult> FilterEndpoints(IEnumerable<IIdentifierDiscoveryResult> endpoints) {
+		internal IEnumerable<IdentifierDiscoveryResult> FilterEndpoints(IEnumerable<IdentifierDiscoveryResult> endpoints) {
 			return endpoints
 				.Where(se => !this.RejectDelegatingIdentifiers || se.ClaimedIdentifier == se.ProviderLocalIdentifier)
-				.Where(se => !this.RequireDirectedIdentity || se.ClaimedIdentifier == se.ProviderEndpoint.GetProtocol().ClaimedIdentifierForOPIdentifier);
+				.Where(se => !this.RequireDirectedIdentity || se.ClaimedIdentifier == se.Protocol.ClaimedIdentifierForOPIdentifier);
 		}
 	}
 }

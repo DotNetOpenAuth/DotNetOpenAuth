@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
@@ -19,13 +18,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 	/// having a dependency on a hosted web site to actually perform discovery on.
 	/// </summary>
 	internal class MockIdentifier : Identifier {
-		private IEnumerable<IIdentifierDiscoveryResult> endpoints;
+		private IEnumerable<IdentifierDiscoveryResult> endpoints;
 
 		private MockHttpRequest mockHttpRequest;
 
 		private Identifier wrappedIdentifier;
 
-		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<IIdentifierDiscoveryResult> endpoints)
+		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<IdentifierDiscoveryResult> endpoints)
 			: base(wrappedIdentifier.OriginalString, false) {
 			Contract.Requires<ArgumentNullException>(wrappedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(mockHttpRequest != null);
@@ -40,7 +39,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			mockHttpRequest.RegisterMockXrdsResponse(new Uri(wrappedIdentifier.ToString()), endpoints);
 		}
 
-		internal IEnumerable<IIdentifierDiscoveryResult> DiscoveryEndpoints {
+		internal IEnumerable<IdentifierDiscoveryResult> DiscoveryEndpoints {
 			get { return this.endpoints; }
 		}
 

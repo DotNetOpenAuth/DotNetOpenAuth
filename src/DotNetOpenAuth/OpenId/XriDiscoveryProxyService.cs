@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.DiscoveryServices {
+namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
@@ -51,11 +51,11 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
+		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
 			abortDiscoveryChain = false;
 			var xriIdentifier = identifier as XriIdentifier;
 			if (xriIdentifier == null) {
-				return Enumerable.Empty<IIdentifierDiscoveryResult>();
+				return Enumerable.Empty<IdentifierDiscoveryResult>();
 			}
 
 			return DownloadXrds(xriIdentifier, requestHandler).CreateServiceEndpoints(xriIdentifier);

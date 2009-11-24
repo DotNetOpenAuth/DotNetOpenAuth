@@ -437,7 +437,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
     <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
     <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
-    <Compile Include="OpenId\DiscoveryServices\IIdentifierDiscoveryService.cs" />
+    <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
@@ -504,7 +504,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
-    <Compile Include="OpenId\DiscoveryServices\IIdentifierDiscoveryResult.cs" />
+    <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
@@ -512,7 +512,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
-    <Compile Include="OpenId\RelyingParty\IXrdsProviderEndpointContract.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
@@ -529,9 +528,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\ISetupRequiredAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\IXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\OpenIdStrings.Designer.cs">
       <DependentUpon>OpenIdStrings.resx</DependentUpon>
@@ -546,7 +543,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\PrivateSecretManager.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
-    <Compile Include="OpenId\DiscoveryServices\IdentifierDiscoveryResult.cs" />
+    <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
@@ -554,9 +551,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
     <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
-    <Compile Include="OpenId\DiscoveryServices\UriDiscoveryService.cs" />
+    <Compile Include="OpenId\UriDiscoveryService.cs" />
     <Compile Include="OpenId\UriIdentifier.cs" />
-    <Compile Include="OpenId\DiscoveryServices\XriDiscoveryProxyService.cs" />
+    <Compile Include="OpenId\XriDiscoveryProxyService.cs" />
     <Compile Include="OpenId\XriIdentifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />

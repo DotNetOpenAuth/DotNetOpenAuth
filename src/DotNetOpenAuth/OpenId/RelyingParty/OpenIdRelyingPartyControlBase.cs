@@ -793,7 +793,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				case PopupBehavior.Always:
 					return true;
 				case PopupBehavior.IfProviderSupported:
-					return request.Provider.IsExtensionSupported<UIRequest>();
+					return request.DiscoveryResult.IsExtensionSupported<UIRequest>();
 				default:
 					throw ErrorUtilities.ThrowInternal("Unexpected value for Popup property.");
 			}
@@ -920,7 +920,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					// Inform ourselves in return_to that we're in a popup.
 					req.SetUntrustedCallbackArgument(UIPopupCallbackKey, "1");
 
-					if (req.Provider.IsExtensionSupported<UIRequest>()) {
+					if (req.DiscoveryResult.IsExtensionSupported<UIRequest>()) {
 						// Inform the OP that we'll be using a popup window consistent with the UI extension.
 						req.AddExtension(new UIRequest());
 

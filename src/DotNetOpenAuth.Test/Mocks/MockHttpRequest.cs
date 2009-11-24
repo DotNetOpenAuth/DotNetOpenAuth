@@ -15,7 +15,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.OpenId;
 	using DotNetOpenAuth.Yadis;
@@ -84,19 +83,19 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 		}
 
-		internal void RegisterMockXrdsResponse(IIdentifierDiscoveryResult endpoint) {
+		internal void RegisterMockXrdsResponse(IdentifierDiscoveryResult endpoint) {
 			Contract.Requires<ArgumentNullException>(endpoint != null);
 
 			string identityUri;
-			if (endpoint.ClaimedIdentifier == endpoint.ProviderEndpoint.GetProtocol().ClaimedIdentifierForOPIdentifier) {
+			if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
 				identityUri = endpoint.UserSuppliedIdentifier;
 			} else {
 				identityUri = endpoint.UserSuppliedIdentifier ?? endpoint.ClaimedIdentifier;
 			}
-			this.RegisterMockXrdsResponse(new Uri(identityUri), new IIdentifierDiscoveryResult[] { endpoint });
+			this.RegisterMockXrdsResponse(new Uri(identityUri), new IdentifierDiscoveryResult[] { endpoint });
 		}
 
-		internal void RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<IIdentifierDiscoveryResult> endpoints) {
+		internal void RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<IdentifierDiscoveryResult> endpoints) {
 			Contract.Requires<ArgumentNullException>(endpoints != null);
 
 			StringBuilder xrds = new StringBuilder();
@@ -111,16 +110,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 			<openid:Delegate xmlns:openid='http://openid.net/xmlns/1.0'>{2}</openid:Delegate>
 		</Service>";
 				string serviceTypeUri;
-				if (endpoint.ClaimedIdentifier == endpoint.ProviderEndpoint.GetProtocol().ClaimedIdentifierForOPIdentifier) {
-					serviceTypeUri = endpoint.ProviderEndpoint.GetProtocol().OPIdentifierServiceTypeURI;
+				if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
+					serviceTypeUri = endpoint.Protocol.OPIdentifierServiceTypeURI;
 				} else {
-					serviceTypeUri = endpoint.ProviderEndpoint.GetProtocol().ClaimedIdentifierServiceTypeURI;
+					serviceTypeUri = endpoint.Protocol.ClaimedIdentifierServiceTypeURI;
 				}
 				string xrd = string.Format(
 					CultureInfo.InvariantCulture,
 					template,
 					HttpUtility.HtmlEncode(serviceTypeUri),
-					HttpUtility.HtmlEncode(endpoint.ProviderEndpoint.Uri.AbsoluteUri),
+					HttpUtility.HtmlEncode(endpoint.ProviderEndpoint.AbsoluteUri),
 					HttpUtility.HtmlEncode(endpoint.ProviderLocalIdentifier));
 				xrds.Append(xrd);
 			}
@@ -131,12 +130,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.RegisterMockResponse(respondingUri, ContentTypes.Xrds, xrds.ToString());
 		}
 
-		internal void RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, IIdentifierDiscoveryResult providerEndpoint) {
-			IIdentifierDiscoveryResult identityEndpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
+		internal void RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, IdentifierDiscoveryResult providerEndpoint) {
+			IdentifierDiscoveryResult identityEndpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				directedIdentityAssignedIdentifier,
 				directedIdentityAssignedIdentifier,
 				providerEndpoint.ProviderLocalIdentifier,
-				providerEndpoint.ProviderEndpoint,
+				new ProviderEndpointDescription(providerEndpoint.ProviderEndpoint, providerEndpoint.Capabilities),
 				10,
 				10);
 			this.RegisterMockXrdsResponse(identityEndpoint);

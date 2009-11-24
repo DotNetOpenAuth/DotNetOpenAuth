@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Linq;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -92,7 +91,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </para>
 		/// </remarks>
 		public override string FriendlyIdentifierForDisplay {
-			get { return this.Endpoint.GetFriendlyIdentifierForDisplay(); }
+			get { return this.Endpoint.FriendlyIdentifierForDisplay; }
 		}
 
 		/// <summary>
@@ -113,7 +112,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// the claimed identifier to avoid a Provider asserting an Identifier
 		/// for which it has no authority. 
 		/// </remarks>
-		internal IIdentifierDiscoveryResult Endpoint { get; private set; }
+		internal IdentifierDiscoveryResult Endpoint { get; private set; }
 
 		/// <summary>
 		/// Gets the positive assertion response message.

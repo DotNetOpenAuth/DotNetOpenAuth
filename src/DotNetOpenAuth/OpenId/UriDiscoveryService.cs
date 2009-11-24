@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.DiscoveryServices {
+namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -38,14 +38,14 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
+		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
 			abortDiscoveryChain = false;
 			var uriIdentifier = identifier as UriIdentifier;
 			if (uriIdentifier == null) {
-				return Enumerable.Empty<IIdentifierDiscoveryResult>();
+				return Enumerable.Empty<IdentifierDiscoveryResult>();
 			}
 
-			var endpoints = new List<IIdentifierDiscoveryResult>();
+			var endpoints = new List<IdentifierDiscoveryResult>();
 
 			// Attempt YADIS discovery
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, uriIdentifier, identifier.IsDiscoverySecureEndToEnd);
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 
 						// Filter out insecure endpoints if high security is required.
 						if (uriIdentifier.IsDiscoverySecureEndToEnd) {
-							xrdsEndpoints = xrdsEndpoints.Where(se => se.ProviderEndpoint.Uri.IsTransportSecure());
+							xrdsEndpoints = xrdsEndpoints.Where(se => se.ProviderEndpoint.IsTransportSecure());
 						}
 						endpoints.AddRange(xrdsEndpoints);
 					} catch (XmlException ex) {
@@ -67,11 +67,11 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
-					var htmlEndpoints = new List<IIdentifierDiscoveryResult>(DiscoverFromHtml(yadisResult.NormalizedUri, uriIdentifier, yadisResult.ResponseText));
+					var htmlEndpoints = new List<IdentifierDiscoveryResult>(DiscoverFromHtml(yadisResult.NormalizedUri, uriIdentifier, yadisResult.ResponseText));
 					if (htmlEndpoints.Any()) {
 						Logger.Yadis.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);
 						Logger.Yadis.Debug(htmlEndpoints.ToStringDeferred(true));
-						endpoints.AddRange(htmlEndpoints.Where(ep => !uriIdentifier.IsDiscoverySecureEndToEnd || ep.ProviderEndpoint.Uri.IsTransportSecure()));
+						endpoints.AddRange(htmlEndpoints.Where(ep => !uriIdentifier.IsDiscoverySecureEndToEnd || ep.ProviderEndpoint.IsTransportSecure()));
 						if (endpoints.Count == 0) {
 							Logger.Yadis.Info("No HTML discovered endpoints met the security requirements.");
 						}
@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.DiscoveryServices {
 		/// <returns>
 		/// A sequence of any discovered ServiceEndpoints.
 		/// </returns>
-		private static IEnumerable<IIdentifierDiscoveryResult> DiscoverFromHtml(Uri claimedIdentifier, UriIdentifier userSuppliedIdentifier, string html) {
+		private static IEnumerable<IdentifierDiscoveryResult> DiscoverFromHtml(Uri claimedIdentifier, UriIdentifier userSuppliedIdentifier, string html) {
 			var linkTags = new List<HtmlLink>(HtmlParser.HeadTags<HtmlLink>(html));
 			foreach (var protocol in Protocol.AllPracticalVersions) {
 				// rel attributes are supposed to be interpreted with case INsensitivity, 

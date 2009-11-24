@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	internal class MockIdentifierDiscoveryService : IIdentifierDiscoveryService {
@@ -32,11 +31,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IIdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
+		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
 			var mockIdentifier = identifier as MockIdentifier;
 			if (mockIdentifier == null) {
 				abortDiscoveryChain = false;
-				return Enumerable.Empty<IIdentifierDiscoveryResult>();
+				return Enumerable.Empty<IdentifierDiscoveryResult>();
 			}
 
 			abortDiscoveryChain = true;

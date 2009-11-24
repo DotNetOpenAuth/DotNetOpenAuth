@@ -13,7 +13,6 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.DiscoveryServices;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -63,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[TestMethod]
 		public void ProviderVersion() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
-			Assert.AreEqual(this.protocol.Version, authRequest.DiscoveryResult.ProviderEndpoint.GetProtocol().Version);
+			Assert.AreEqual(this.protocol.Version, authRequest.DiscoveryResult.Version);
 		}
 
 		/// <summary>
@@ -184,7 +183,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 		private AuthenticationRequest CreateAuthenticationRequest(Identifier claimedIdentifier, Identifier providerLocalIdentifier) {
 			ProviderEndpointDescription providerEndpoint = new ProviderEndpointDescription(OPUri, this.protocol.Version);
-			IIdentifierDiscoveryResult endpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
+			IdentifierDiscoveryResult endpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
 			OpenIdRelyingParty rp = this.CreateRelyingParty();
 			return AuthenticationRequest.CreateForTest(endpoint, this.realm, this.returnTo, rp);
 		}
