@@ -13,7 +13,6 @@
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using RelyingPartyLogic;
-	using WebFormsRelyingParty.Code;
 
 	public partial class LoginFrame : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {

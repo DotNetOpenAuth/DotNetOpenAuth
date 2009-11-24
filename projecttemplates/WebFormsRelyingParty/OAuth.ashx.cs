@@ -14,7 +14,6 @@ namespace WebFormsRelyingParty {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using RelyingPartyLogic;
-	using WebFormsRelyingParty.Code;
 
 	/// <summary>
 	/// Responds to incoming OAuth Service Provider messages.
