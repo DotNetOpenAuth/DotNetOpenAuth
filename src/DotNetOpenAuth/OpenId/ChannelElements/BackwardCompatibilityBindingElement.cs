@@ -17,13 +17,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	internal class BackwardCompatibilityBindingElement : IChannelBindingElement {
 		/// <summary>
-		/// The name of the callback parameter that stores the Provider Endpoint URL
+		/// The "dnoa.op_endpoint" callback parameter that stores the Provider Endpoint URL
 		/// to tack onto the return_to URI.
 		/// </summary>
 		private const string ProviderEndpointParameterName = OpenIdUtilities.CustomParameterPrefix + "op_endpoint";
 
 		/// <summary>
-		/// The name of the callback parameter that stores the Claimed Identifier
+		/// The "dnoa.claimed_id" callback parameter that stores the Claimed Identifier
 		/// to tack onto the return_to URI.
 		/// </summary>
 		private const string ClaimedIdentifierParameterName = OpenIdUtilities.CustomParameterPrefix + "claimed_id";
