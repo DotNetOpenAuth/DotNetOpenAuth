@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ServiceEndpointTests.cs" company="Andrew Arnott">
+// <copyright file="IdentifierDiscoveryResultTests.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class ServiceEndpointTests : OpenIdTestBase {
+	public class IdentifierDiscoveryResultTests : OpenIdTestBase {
 		private UriIdentifier claimedId = new UriIdentifier("http://claimedid.justatest.com");
 		private XriIdentifier claimedXri = new XriIdentifier("=!9B72.7DD1.50A9.5CCD");
 		private XriIdentifier userSuppliedXri = new XriIdentifier("=Arnot");
