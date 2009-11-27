@@ -202,6 +202,18 @@ namespace DotNetOpenAuth.Test.OpenId {
 			return new MockIdentifier(identityUri, this.MockResponder, new IdentifierDiscoveryResult[] { se });
 		}
 
+		protected Identifier GetMockDualIdentifier() {
+			Protocol protocol = Protocol.Default;
+			var opDesc = new ProviderEndpointDescription(OPUri, protocol.Version);
+			var dualResults = new IdentifierDiscoveryResult[] {
+				IdentifierDiscoveryResult.CreateForClaimedIdentifier(VanityUri.AbsoluteUri, VanityUri.AbsoluteUri, opDesc, 10, 10),
+				IdentifierDiscoveryResult.CreateForProviderIdentifier(protocol.ClaimedIdentifierForOPIdentifier, opDesc, 20, 20),
+			};
+
+			Identifier dualId = new MockIdentifier(VanityUri, this.MockResponder, dualResults);
+			return dualId;
+		}
+
 		/// <summary>
 		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
 		/// </summary>

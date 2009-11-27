@@ -359,7 +359,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Perform discovery right now (not deferred).
 			IEnumerable<IdentifierDiscoveryResult> serviceEndpoints;
 			try {
-				serviceEndpoints = relyingParty.Discover(userSuppliedIdentifier);
+				var results = relyingParty.Discover(userSuppliedIdentifier).CacheGeneratedResults();
+
+				// If any OP Identifier service elements were found, we must not proceed
+				// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.
+				// For a discussion on this topic, see
+				// http://groups.google.com/group/dotnetopenid/browse_thread/thread/4b5a8c6b2210f387/5e25910e4d2252c8
+				var opIdentifiers = results.Where(result => result.ClaimedIdentifier == result.Protocol.ClaimedIdentifierForOPIdentifier).CacheGeneratedResults();
+				var claimedIdentifiers = results.Where(result => result.ClaimedIdentifier != result.Protocol.ClaimedIdentifierForOPIdentifier);
+				serviceEndpoints = opIdentifiers.Any() ? opIdentifiers : claimedIdentifiers;
 			} catch (ProtocolException ex) {
 				Logger.Yadis.ErrorFormat("Error while performing discovery on: \"{0}\": {1}", userSuppliedIdentifier, ex);
 				serviceEndpoints = Enumerable.Empty<IdentifierDiscoveryResult>();

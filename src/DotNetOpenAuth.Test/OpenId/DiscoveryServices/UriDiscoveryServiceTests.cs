@@ -178,6 +178,18 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			this.DiscoverXrds("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, "http://a/b", headers);
 		}
 
+		/// <summary>
+		/// Verifies that a dual identifier yields two service endpoints.
+		/// </summary>
+		[TestMethod]
+		public void DualIdentifier() {
+			this.MockResponder.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml"));
+			var results = this.Discover(VanityUri).ToList();
+			Assert.AreEqual(1, results.Count(r => r.ClaimedIdentifier == r.Protocol.ClaimedIdentifierForOPIdentifier), "OP Identifier missing from discovery results.");
+			Assert.AreEqual(1, results.Count(r => r.ClaimedIdentifier == VanityUri), "Claimed identifier missing from discovery results.");
+			Assert.AreEqual(2, results.Count, "Unexpected additional services discovered.");
+		}
+
 		private void Discover(string url, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, bool expectSreg, bool useRedirect) {
 			this.Discover(url, version, expectedLocalId, providerEndpoint, expectSreg, useRedirect, null);
 		}

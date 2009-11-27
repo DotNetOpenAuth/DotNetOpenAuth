@@ -57,13 +57,17 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		internal static IEnumerable<IdentifierDiscoveryResult> CreateServiceEndpoints(this XrdsDocument xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
 			var endpoints = new List<IdentifierDiscoveryResult>();
-			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 
-			// If any OP Identifier service elements were found, we must not proceed
-			// to return any Claimed Identifier services.
-			if (endpoints.Count == 0) {
-				endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(claimedIdentifier, userSuppliedIdentifier));
-			}
+			// We used to be particular here about NOT returning any claimed identifier services
+			// when OP Identifier services were found, consistent with OpenID 2.0 sections 7.3.2.2 and 11.2.
+			// But now to enable one XRDS document to describe both the originating OP Identifier and also
+			// fill the role (with appropriate query strings) of a claimed identifier, we return both service
+			// types.  The AuthenticationRequest class is now responsible to ignore claimed identifier services
+			// when OP Identifier services are present when formulating authentication requests.
+			// For a discussion on this topic and the reason for this change, see 
+			// http://groups.google.com/group/dotnetopenid/browse_thread/thread/4b5a8c6b2210f387/5e25910e4d2252c8
+			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
+			endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(claimedIdentifier, userSuppliedIdentifier));
 			Logger.Yadis.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
 			Logger.Yadis.Debug(endpoints.ToStringDeferred(true));
 			return endpoints;

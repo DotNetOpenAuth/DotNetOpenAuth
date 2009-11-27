@@ -331,6 +331,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\xrds20dual.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="OpenId\UI\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

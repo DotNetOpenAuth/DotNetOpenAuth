@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -169,6 +170,17 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsTrue(authRequest.IsExtensionOnly);
 			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
 			Assert.IsNotInstanceOfType(req, typeof(CheckIdRequest), "An unexpected SignedResponseRequest derived type was generated.");
+		}
+
+		/// <summary>
+		/// Verifies that discovery on identifiers that serve as OP identifiers and claimed identifiers
+		/// only generate OP Identifier auth requests.
+		/// </summary>
+		[TestMethod]
+		public void DualIdentifierUsedOnlyAsOPIdentifierForAuthRequest() {
+			var results = AuthenticationRequest.Create(GetMockDualIdentifier(), this.CreateRelyingParty(true), this.realm, this.returnTo, false).ToList();
+			Assert.AreEqual(1, results.Count);
+			Assert.IsTrue(results[0].IsDirectedIdentity);
 		}
 
 		/// <summary>
