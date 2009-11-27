@@ -21,7 +21,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="locationUri">The URL of this endpoint.</param>
 		/// <param name="method">The HTTP method(s) allowed.</param>
 		public MessageReceivingEndpoint(string locationUri, HttpDeliveryMethods method)
-			: this(new Uri(locationUri), method) { }
+			: this(new Uri(locationUri), method) {
+			Contract.Requires<ArgumentNullException>(locationUri != null);
+			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageReceivingEndpoint"/> class.
@@ -30,7 +33,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="method">The HTTP method(s) allowed.</param>
 		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
 			Contract.Requires<ArgumentNullException>(location != null);
-			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None, "method");
+			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None);
 			Contract.Requires<ArgumentOutOfRangeException>((method & HttpDeliveryMethods.HttpVerbMask) != 0, MessagingStrings.GetOrPostFlagsRequired);
 
 			this.Location = location;

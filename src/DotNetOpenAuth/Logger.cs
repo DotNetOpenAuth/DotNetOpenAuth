@@ -143,6 +143,7 @@ namespace DotNetOpenAuth {
 		/// <param name="name">A name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
 		internal static ILog CreateWithBanner(string name) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(name));
 			ILog log = Create(name);
 			log.Info(Util.LibraryVersion);
 			return log;

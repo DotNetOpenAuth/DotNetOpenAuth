@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test {
 	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
@@ -58,7 +59,7 @@ namespace DotNetOpenAuth.Test {
 			WebConsumer consumer = new WebConsumer(this.serviceDescription, consumerTokenManager) {
 				OAuthChannel = consumerChannel,
 			};
-			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager) {
+			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager, new NonceMemoryStore()) {
 				OAuthChannel = serviceProviderChannel,
 			};
 

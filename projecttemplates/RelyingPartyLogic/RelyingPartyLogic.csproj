@@ -82,6 +82,7 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model.cs" />
     <Compile Include="Model.IssuedToken.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DataRoleProvider.cs" />
@@ -94,7 +95,9 @@
     </Compile>
     <Compile Include="Model.IssuedAccessToken.cs" />
     <Compile Include="Model.IssuedRequestToken.cs" />
+    <Compile Include="Model.OpenIdAssociation.cs" />
     <Compile Include="Model.User.cs" />
+    <Compile Include="NonceDbStore.cs" />
     <Compile Include="OAuthAuthenticationModule.cs" />
     <Compile Include="OAuthAuthorizationManager.cs" />
     <Compile Include="OAuthConsumerTokenManager.cs" />
@@ -104,6 +107,7 @@
     <Compile Include="OAuthTokenManager.cs" />
     <Compile Include="Policies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelyingPartyApplicationDbStore.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

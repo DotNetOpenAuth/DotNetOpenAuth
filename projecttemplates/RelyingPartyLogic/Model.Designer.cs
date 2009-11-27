@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User1", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(RelyingPartyLogic.User), "IssuedToken", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/16/2009 8:23:18 PM
+// Generation date: 11/18/2009 9:09:23 AM
 namespace RelyingPartyLogic
 {
     
@@ -125,6 +125,36 @@ namespace RelyingPartyLogic
         }
         private global::System.Data.Objects.ObjectQuery<IssuedToken> _IssuedToken;
         /// <summary>
+        /// There are no comments for Nonces in the schema.
+        /// </summary>
+        public global::System.Data.Objects.ObjectQuery<Nonce> Nonces
+        {
+            get
+            {
+                if ((this._Nonces == null))
+                {
+                    this._Nonces = base.CreateQuery<Nonce>("[Nonces]");
+                }
+                return this._Nonces;
+            }
+        }
+        private global::System.Data.Objects.ObjectQuery<Nonce> _Nonces;
+        /// <summary>
+        /// There are no comments for OpenIdAssociations in the schema.
+        /// </summary>
+        public global::System.Data.Objects.ObjectQuery<OpenIdAssociation> OpenIdAssociations
+        {
+            get
+            {
+                if ((this._OpenIdAssociations == null))
+                {
+                    this._OpenIdAssociations = base.CreateQuery<OpenIdAssociation>("[OpenIdAssociations]");
+                }
+                return this._OpenIdAssociations;
+            }
+        }
+        private global::System.Data.Objects.ObjectQuery<OpenIdAssociation> _OpenIdAssociations;
+        /// <summary>
         /// There are no comments for Role in the schema.
         /// </summary>
         public void AddToRole(Role role)
@@ -158,6 +188,20 @@ namespace RelyingPartyLogic
         public void AddToIssuedToken(IssuedToken issuedToken)
         {
             base.AddObject("IssuedToken", issuedToken);
+        }
+        /// <summary>
+        /// There are no comments for Nonces in the schema.
+        /// </summary>
+        public void AddToNonces(Nonce nonce)
+        {
+            base.AddObject("Nonces", nonce);
+        }
+        /// <summary>
+        /// There are no comments for OpenIdAssociations in the schema.
+        /// </summary>
+        public void AddToOpenIdAssociations(OpenIdAssociation openIdAssociation)
+        {
+            base.AddObject("OpenIdAssociations", openIdAssociation);
         }
     }
     /// <summary>
@@ -1264,5 +1308,320 @@ namespace RelyingPartyLogic
         private global::System.Nullable<global::System.DateTime> _ExpirationDateUtc;
         partial void OnExpirationDateUtcChanging(global::System.Nullable<global::System.DateTime> value);
         partial void OnExpirationDateUtcChanged();
+    }
+    /// <summary>
+    /// There are no comments for DatabaseModel.Nonce in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// NonceId
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="Nonce")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class Nonce : global::System.Data.Objects.DataClasses.EntityObject
+    {
+        /// <summary>
+        /// Create a new Nonce object.
+        /// </summary>
+        /// <param name="nonceId">Initial value of NonceId.</param>
+        /// <param name="context">Initial value of Context.</param>
+        /// <param name="code">Initial value of Code.</param>
+        /// <param name="issuedUtc">Initial value of IssuedUtc.</param>
+        /// <param name="expiresUtc">Initial value of ExpiresUtc.</param>
+        public static Nonce CreateNonce(int nonceId, string context, string code, global::System.DateTime issuedUtc, global::System.DateTime expiresUtc)
+        {
+            Nonce nonce = new Nonce();
+            nonce.NonceId = nonceId;
+            nonce.Context = context;
+            nonce.Code = code;
+            nonce.IssuedUtc = issuedUtc;
+            nonce.ExpiresUtc = expiresUtc;
+            return nonce;
+        }
+        /// <summary>
+        /// There are no comments for Property NonceId in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public int NonceId
+        {
+            get
+            {
+                return this._NonceId;
+            }
+            set
+            {
+                this.OnNonceIdChanging(value);
+                this.ReportPropertyChanging("NonceId");
+                this._NonceId = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("NonceId");
+                this.OnNonceIdChanged();
+            }
+        }
+        private int _NonceId;
+        partial void OnNonceIdChanging(int value);
+        partial void OnNonceIdChanged();
+        /// <summary>
+        /// Gets or sets the Provider Endpoint URL the nonce came from.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string Context
+        {
+            get
+            {
+                return this._Context;
+            }
+            set
+            {
+                this.OnContextChanging(value);
+                this.ReportPropertyChanging("Context");
+                this._Context = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("Context");
+                this.OnContextChanged();
+            }
+        }
+        private string _Context;
+        partial void OnContextChanging(string value);
+        partial void OnContextChanged();
+        /// <summary>
+        /// There are no comments for Property Code in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string Code
+        {
+            get
+            {
+                return this._Code;
+            }
+            set
+            {
+                this.OnCodeChanging(value);
+                this.ReportPropertyChanging("Code");
+                this._Code = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("Code");
+                this.OnCodeChanged();
+            }
+        }
+        private string _Code;
+        partial void OnCodeChanging(string value);
+        partial void OnCodeChanged();
+        /// <summary>
+        /// There are no comments for Property IssuedUtc in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.DateTime IssuedUtc
+        {
+            get
+            {
+                return this._IssuedUtc;
+            }
+            set
+            {
+                this.OnIssuedUtcChanging(value);
+                this.ReportPropertyChanging("IssuedUtc");
+                this._IssuedUtc = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("IssuedUtc");
+                this.OnIssuedUtcChanged();
+            }
+        }
+        private global::System.DateTime _IssuedUtc;
+        partial void OnIssuedUtcChanging(global::System.DateTime value);
+        partial void OnIssuedUtcChanged();
+        /// <summary>
+        /// There are no comments for Property ExpiresUtc in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.DateTime ExpiresUtc
+        {
+            get
+            {
+                return this._ExpiresUtc;
+            }
+            set
+            {
+                this.OnExpiresUtcChanging(value);
+                this.ReportPropertyChanging("ExpiresUtc");
+                this._ExpiresUtc = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ExpiresUtc");
+                this.OnExpiresUtcChanged();
+            }
+        }
+        private global::System.DateTime _ExpiresUtc;
+        partial void OnExpiresUtcChanging(global::System.DateTime value);
+        partial void OnExpiresUtcChanged();
+    }
+    /// <summary>
+    /// There are no comments for DatabaseModel.OpenIdAssociation in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// AssociationId
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="OpenIdAssociation")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class OpenIdAssociation : global::System.Data.Objects.DataClasses.EntityObject
+    {
+        /// <summary>
+        /// Create a new OpenIdAssociation object.
+        /// </summary>
+        /// <param name="associationId">Initial value of AssociationId.</param>
+        /// <param name="distinguishingFactor">Initial value of DistinguishingFactor.</param>
+        /// <param name="associationHandle">Initial value of AssociationHandle.</param>
+        /// <param name="expirationUtc">Initial value of ExpirationUtc.</param>
+        /// <param name="privateData">Initial value of PrivateData.</param>
+        /// <param name="privateDataLength">Initial value of PrivateDataLength.</param>
+        public static OpenIdAssociation CreateOpenIdAssociation(int associationId, string distinguishingFactor, string associationHandle, global::System.DateTime expirationUtc, byte[] privateData, int privateDataLength)
+        {
+            OpenIdAssociation openIdAssociation = new OpenIdAssociation();
+            openIdAssociation.AssociationId = associationId;
+            openIdAssociation.DistinguishingFactor = distinguishingFactor;
+            openIdAssociation.AssociationHandle = associationHandle;
+            openIdAssociation.ExpirationUtc = expirationUtc;
+            openIdAssociation.PrivateData = privateData;
+            openIdAssociation.PrivateDataLength = privateDataLength;
+            return openIdAssociation;
+        }
+        /// <summary>
+        /// There are no comments for Property AssociationId in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public int AssociationId
+        {
+            get
+            {
+                return this._AssociationId;
+            }
+            set
+            {
+                this.OnAssociationIdChanging(value);
+                this.ReportPropertyChanging("AssociationId");
+                this._AssociationId = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("AssociationId");
+                this.OnAssociationIdChanged();
+            }
+        }
+        private int _AssociationId;
+        partial void OnAssociationIdChanging(int value);
+        partial void OnAssociationIdChanged();
+        /// <summary>
+        /// Gets or sets the Provider Endpoint URL the association is with.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string DistinguishingFactor
+        {
+            get
+            {
+                return this._DistinguishingFactor;
+            }
+            set
+            {
+                this.OnDistinguishingFactorChanging(value);
+                this.ReportPropertyChanging("DistinguishingFactor");
+                this._DistinguishingFactor = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("DistinguishingFactor");
+                this.OnDistinguishingFactorChanged();
+            }
+        }
+        private string _DistinguishingFactor;
+        partial void OnDistinguishingFactorChanging(string value);
+        partial void OnDistinguishingFactorChanged();
+        /// <summary>
+        /// There are no comments for Property AssociationHandle in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string AssociationHandle
+        {
+            get
+            {
+                return this._AssociationHandle;
+            }
+            set
+            {
+                this.OnAssociationHandleChanging(value);
+                this.ReportPropertyChanging("AssociationHandle");
+                this._AssociationHandle = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("AssociationHandle");
+                this.OnAssociationHandleChanged();
+            }
+        }
+        private string _AssociationHandle;
+        partial void OnAssociationHandleChanging(string value);
+        partial void OnAssociationHandleChanged();
+        /// <summary>
+        /// There are no comments for Property ExpirationUtc in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.DateTime ExpirationUtc
+        {
+            get
+            {
+                return this._ExpirationUtc;
+            }
+            set
+            {
+                this.OnExpirationUtcChanging(value);
+                this.ReportPropertyChanging("ExpirationUtc");
+                this._ExpirationUtc = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ExpirationUtc");
+                this.OnExpirationUtcChanged();
+            }
+        }
+        private global::System.DateTime _ExpirationUtc;
+        partial void OnExpirationUtcChanging(global::System.DateTime value);
+        partial void OnExpirationUtcChanged();
+        /// <summary>
+        /// There are no comments for Property PrivateData in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public byte[] PrivateData
+        {
+            get
+            {
+                return global::System.Data.Objects.DataClasses.StructuralObject.GetValidValue(this._PrivateData);
+            }
+            set
+            {
+                this.OnPrivateDataChanging(value);
+                this.ReportPropertyChanging("PrivateData");
+                this._PrivateData = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("PrivateData");
+                this.OnPrivateDataChanged();
+            }
+        }
+        private byte[] _PrivateData;
+        partial void OnPrivateDataChanging(byte[] value);
+        partial void OnPrivateDataChanged();
+        /// <summary>
+        /// There are no comments for Property PrivateDataLength in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public int PrivateDataLength
+        {
+            get
+            {
+                return this._PrivateDataLength;
+            }
+            set
+            {
+                this.OnPrivateDataLengthChanging(value);
+                this.ReportPropertyChanging("PrivateDataLength");
+                this._PrivateDataLength = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("PrivateDataLength");
+                this.OnPrivateDataLengthChanged();
+            }
+        }
+        private int _PrivateDataLength;
+        partial void OnPrivateDataLengthChanging(int value);
+        partial void OnPrivateDataLengthChanged();
     }
 }
