@@ -387,7 +387,7 @@ namespace DotNetOpenAuth.OpenId {
 		internal static IdentifierDiscoveryResult CreateForProviderIdentifier(Identifier providerIdentifier, ProviderEndpointDescription providerEndpoint, int? servicePriority, int? uriPriority) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 
-			Protocol protocol = Protocol.Detect(providerEndpoint.Capabilities);
+			Protocol protocol = Protocol.Lookup(providerEndpoint.Version);
 
 			return new IdentifierDiscoveryResult(
 				providerEndpoint,
