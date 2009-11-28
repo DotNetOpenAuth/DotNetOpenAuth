@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Xrds {
+	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml.XPath;
 
 	/// <summary>
@@ -18,6 +20,8 @@ namespace DotNetOpenAuth.Xrds {
 		/// <param name="parent">The parent.</param>
 		public TypeElement(XPathNavigator typeElement, ServiceElement parent) :
 			base(typeElement, parent) {
+			Contract.Requires<ArgumentNullException>(typeElement != null);
+			Contract.Requires<ArgumentNullException>(parent != null);
 		}
 
 		/// <summary>

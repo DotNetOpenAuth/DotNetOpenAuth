@@ -9,6 +9,8 @@
           <EntitySet Name="AuthenticationToken" EntityType="DatabaseModel.Store.AuthenticationToken" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Consumer" EntityType="DatabaseModel.Store.Consumer" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IssuedToken" EntityType="DatabaseModel.Store.IssuedToken" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Nonce" EntityType="DatabaseModel.Store.Nonce" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="OpenIDAssociation" EntityType="DatabaseModel.Store.OpenIDAssociation" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Role" EntityType="DatabaseModel.Store.Role" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User" EntityType="DatabaseModel.Store.User" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="UserRole" EntityType="DatabaseModel.Store.UserRole" store:Type="Tables" Schema="dbo" />
@@ -74,6 +76,27 @@
           <Property Name="ExpirationDate" Type="datetime" />
           <Property Name="IsAccessToken" Type="bit" Nullable="false" />
           <Property Name="Scope" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Nonce">
+          <Key>
+            <PropertyRef Name="NonceId" />
+          </Key>
+          <Property Name="NonceId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Context" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="Code" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="Issued" Type="datetime" Nullable="false" />
+          <Property Name="Expires" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OpenIDAssociation">
+          <Key>
+            <PropertyRef Name="AssociationId" />
+          </Key>
+          <Property Name="AssociationId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="DistinguishingFactor" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="AssociationHandle" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="Expiration" Type="datetime" Nullable="false" />
+          <Property Name="PrivateData" Type="binary" Nullable="false" MaxLength="32" />
+          <Property Name="PrivateDataLength" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -171,6 +194,8 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="ClearExpiredAssociations" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="ClearExpiredNonces" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -193,7 +218,10 @@
             <End Role="IssuedToken" EntitySet="IssuedToken" /></AssociationSet>
           <AssociationSet Name="FK_IssuedToken_User1" Association="DatabaseModel.FK_IssuedToken_User1">
             <End Role="User" EntitySet="User" />
-            <End Role="IssuedToken" EntitySet="IssuedToken" /></AssociationSet></EntityContainer>
+            <End Role="IssuedToken" EntitySet="IssuedToken" /></AssociationSet>
+          <EntitySet Name="Nonces" EntityType="DatabaseModel.Nonce" />
+          <EntitySet Name="OpenIdAssociations" EntityType="DatabaseModel.OpenIdAssociation" />
+          <FunctionImport Name="ClearExpiredNonces" /></EntityContainer>
         <EntityType Name="AuthenticationToken" Abstract="false">
           <Key>
             <PropertyRef Name="AuthenticationTokenId" /></Key>
@@ -266,7 +294,28 @@
           <End Type="DatabaseModel.IssuedToken" Role="IssuedToken" Multiplicity="*" /></Association>
         <Association Name="FK_IssuedToken_User1">
           <End Type="DatabaseModel.User" Role="User" Multiplicity="0..1" />
-          <End Type="DatabaseModel.IssuedToken" Role="IssuedToken" Multiplicity="*" /></Association></Schema>
+          <End Type="DatabaseModel.IssuedToken" Role="IssuedToken" Multiplicity="*" /></Association>
+        <EntityType Name="Nonce" a:TypeAccess="Public" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration">
+          <Key>
+            <PropertyRef Name="NonceId" /></Key>
+          <Property Name="NonceId" Type="Int32" Nullable="false" />
+          <Property Name="Context" Type="String" Nullable="false" >
+            <Documentation>
+              <Summary>Gets or sets the Provider Endpoint URL the nonce came from.</Summary></Documentation></Property>
+          <Property Name="Code" Type="String" Nullable="false" />
+          <Property Name="IssuedUtc" Type="DateTime" Nullable="false" />
+          <Property Name="ExpiresUtc" Type="DateTime" Nullable="false" /></EntityType>
+        <EntityType Name="OpenIdAssociation" a:TypeAccess="Public" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration">
+          <Key>
+            <PropertyRef Name="AssociationId" /></Key>
+          <Property Name="AssociationId" Type="Int32" Nullable="false" />
+          <Property Name="DistinguishingFactor" Type="String" Nullable="false" >
+            <Documentation>
+              <Summary>Gets or sets the Provider Endpoint URL the association is with.</Summary></Documentation></Property>
+          <Property Name="AssociationHandle" Type="String" Nullable="false" />
+          <Property Name="ExpirationUtc" Type="DateTime" Nullable="false" />
+          <Property Name="PrivateData" Type="Binary" Nullable="false" />
+          <Property Name="PrivateDataLength" Type="Int32" Nullable="false" /></EntityType></Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -356,7 +405,25 @@
               <ScalarProperty Name="IssuedTokenId" ColumnName="IssuedTokenId" /></EndProperty>
             <EndProperty Name="User">
               <ScalarProperty Name="UserId" ColumnName="UserId" /></EndProperty>
-            <Condition ColumnName="UserId" IsNull="false" /></AssociationSetMapping></EntityContainerMapping>
+            <Condition ColumnName="UserId" IsNull="false" /></AssociationSetMapping>
+          <EntitySetMapping Name="Nonces">
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.Nonce)">
+              <MappingFragment StoreEntitySet="Nonce">
+                <ScalarProperty Name="ExpiresUtc" ColumnName="Expires" />
+                <ScalarProperty Name="IssuedUtc" ColumnName="Issued" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Context" ColumnName="Context" />
+                <ScalarProperty Name="NonceId" ColumnName="NonceId" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="OpenIdAssociations">
+            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.OpenIdAssociation)">
+              <MappingFragment StoreEntitySet="OpenIDAssociation">
+                <ScalarProperty Name="PrivateDataLength" ColumnName="PrivateDataLength" />
+                <ScalarProperty Name="PrivateData" ColumnName="PrivateData" />
+                <ScalarProperty Name="ExpirationUtc" ColumnName="Expiration" />
+                <ScalarProperty Name="AssociationHandle" ColumnName="AssociationHandle" />
+                <ScalarProperty Name="DistinguishingFactor" ColumnName="DistinguishingFactor" />
+                <ScalarProperty Name="AssociationId" ColumnName="AssociationId" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="ClearExpiredNonces" FunctionName="DatabaseModel.Store.ClearExpiredNonces" /></EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
@@ -374,7 +441,7 @@
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram Name="Model" ZoomLevel="86">
+      <Diagram Name="Model" ZoomLevel="98">
         <EntityTypeShape EntityType="DatabaseModel.AuthenticationToken" Width="1.875" PointX="5.25" PointY="0.75" Height="2.5571907552083339" IsExpanded="true" />
         <EntityTypeShape EntityType="DatabaseModel.Role" Width="1.5" PointX="0.75" PointY="1.25" Height="1.59568359375" IsExpanded="true" />
         <EntityTypeShape EntityType="DatabaseModel.User" Width="1.75" PointX="2.875" PointY="0.5" Height="3.1340950520833339" IsExpanded="true" />
@@ -406,6 +473,8 @@
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_User1" >
           <ConnectorPoint PointX="3.75" PointY="3.6340950520833339" />
           <ConnectorPoint PointX="3.75" PointY="4.0627779870647478" />
-          <ConnectorPoint PointX="5.25" PointY="4.0627779870647478" /></AssociationConnector></Diagram></edmx:Diagrams>
+          <ConnectorPoint PointX="5.25" PointY="4.0627779870647478" /></AssociationConnector>
+        <EntityTypeShape EntityType="DatabaseModel.Nonce" Width="1.5" PointX="0.5" PointY="7.75" Height="1.9802864583333326" />
+        <EntityTypeShape EntityType="DatabaseModel.OpenIdAssociation" Width="1.75" PointX="2.25" PointY="7.75" Height="1.9802864583333333" /></Diagram></edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>
