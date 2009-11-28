@@ -239,7 +239,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
 		/// </summary>
-		internal IList<IIdentifierDiscoveryService> DiscoveryServices {
+		public IList<IIdentifierDiscoveryService> DiscoveryServices {
 			get { return this.discoveryServices; }
 		}
 
