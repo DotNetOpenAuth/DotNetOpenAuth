@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OpenId {
 				if (yadisResult.IsXrds) {
 					try {
 						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-						var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, uriIdentifier);
+						var xrdsEndpoints = xrds.XrdElements.CreateServiceEndpoints(yadisResult.NormalizedUri, uriIdentifier);
 
 						// Filter out insecure endpoints if high security is required.
 						if (uriIdentifier.IsDiscoverySecureEndToEnd) {

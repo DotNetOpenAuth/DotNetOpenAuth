@@ -431,7 +431,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
     <Compile Include="OpenId\Extensions\UI\UIModes.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
-    <Compile Include="OpenId\GoogleAppsDiscoveryService.cs" />
+    <Compile Include="OpenId\HostMetaDiscoveryService.cs" />
     <Compile Include="OpenId\Identifier.cs" />
     <Compile Include="OpenId\IdentifierContract.cs" />
     <Compile Include="OpenId\Extensions\ExtensionsInteropHelper.cs" />

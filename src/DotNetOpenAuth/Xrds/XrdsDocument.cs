@@ -17,6 +17,10 @@ namespace DotNetOpenAuth.Xrds {
 	/// An XRDS document.
 	/// </summary>
 	internal class XrdsDocument : XrdsNode {
+		private const string XmlDSigNamespace = "http://www.w3.org/2000/09/xmldsig#";
+
+		private const string GoogleOpenIdNamespace = "http://namespace.google.com/openid/xmlns";
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="XrdsDocument"/> class.
 		/// </summary>
@@ -26,6 +30,8 @@ namespace DotNetOpenAuth.Xrds {
 			XmlNamespaceResolver.AddNamespace("xrd", XrdsNode.XrdNamespace);
 			XmlNamespaceResolver.AddNamespace("xrds", XrdsNode.XrdsNamespace);
 			XmlNamespaceResolver.AddNamespace("openid10", Protocol.V10.XmlNamespace);
+			XmlNamespaceResolver.AddNamespace("ds", XmlDSigNamespace);
+			XmlNamespaceResolver.AddNamespace("google", GoogleOpenIdNamespace);
 		}
 
 		/// <summary>
