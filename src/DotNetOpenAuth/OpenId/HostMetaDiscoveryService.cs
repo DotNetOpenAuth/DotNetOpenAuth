@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Yadis;
 
 	/// <summary>
-	/// The discovery service to support Google Apps for Domains' proprietary discovery.
+	/// The discovery service to support host-meta based discovery, such as Google Apps for Domains.
 	/// </summary>
 	/// <remarks>
 	/// The spec for this discovery mechanism can be found at:
