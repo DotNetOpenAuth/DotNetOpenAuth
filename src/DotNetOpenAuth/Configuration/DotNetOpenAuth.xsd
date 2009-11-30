@@ -134,6 +134,7 @@
 												<xs:attribute name="rejectUnsolicitedAssertions" type="xs:boolean" />
 												<xs:attribute name="rejectDelegatingIdentifiers" type="xs:boolean" />
 												<xs:attribute name="ignoreUnsignedExtensions" type="xs:boolean" />
+												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean" />
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="behaviors">

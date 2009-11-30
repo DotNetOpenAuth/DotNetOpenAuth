@@ -206,7 +206,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.Default;
 			var opDesc = new ProviderEndpointDescription(OPUri, protocol.Version);
 			var dualResults = new IdentifierDiscoveryResult[] {
-				IdentifierDiscoveryResult.CreateForClaimedIdentifier(VanityUri.AbsoluteUri, VanityUri.AbsoluteUri, opDesc, 10, 10),
+				IdentifierDiscoveryResult.CreateForClaimedIdentifier(VanityUri.AbsoluteUri, OPLocalIdentifiers[0], opDesc, 10, 10),
 				IdentifierDiscoveryResult.CreateForProviderIdentifier(protocol.ClaimedIdentifierForOPIdentifier, opDesc, 20, 20),
 			};
 

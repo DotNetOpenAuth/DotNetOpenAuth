@@ -365,6 +365,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.
 				// For a discussion on this topic, see
 				// http://groups.google.com/group/dotnetopenid/browse_thread/thread/4b5a8c6b2210f387/5e25910e4d2252c8
+				// Usually the Discover method we called will automatically filter this for us, but
+				// just to be sure, we'll do it here as well since the RP may be configured to allow
+				// these dual identifiers for assertion verification purposes.
 				var opIdentifiers = results.Where(result => result.ClaimedIdentifier == result.Protocol.ClaimedIdentifierForOPIdentifier).CacheGeneratedResults();
 				var claimedIdentifiers = results.Where(result => result.ClaimedIdentifier != result.Protocol.ClaimedIdentifierForOPIdentifier);
 				serviceEndpoints = opIdentifiers.Any() ? opIdentifiers : claimedIdentifiers;

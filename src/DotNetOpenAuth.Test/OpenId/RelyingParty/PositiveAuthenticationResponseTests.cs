@@ -50,7 +50,21 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// </summary>
 		[TestMethod]
 		public void DualIdentifierMatchesInAssertionVerification() {
-			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
+			var rp = CreateRelyingParty();
+			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
+			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+		}
+
+		/// <summary>
+		/// Verifies that discovery verification of a positive assertion cannot match a dual identifier
+		/// if the default settings are in place.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void DualIdentifierNoMatchInAssertionVerificationByDefault() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
 			ClaimsResponse extension = new ClaimsResponse();
 			assertion.Extensions.Add(extension);
 			var rp = CreateRelyingParty();

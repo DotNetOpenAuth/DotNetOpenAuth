@@ -179,12 +179,26 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		}
 
 		/// <summary>
-		/// Verifies that a dual identifier yields two service endpoints.
+		/// Verifies that a dual identifier yields only one service endpoint by default.
+		/// </summary>
+		[TestMethod]
+		public void DualIdentifierOffByDefault() {
+			this.MockResponder.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml"));
+			var results = this.Discover(VanityUri).ToList();
+			Assert.AreEqual(1, results.Count(r => r.ClaimedIdentifier == r.Protocol.ClaimedIdentifierForOPIdentifier), "OP Identifier missing from discovery results.");
+			Assert.AreEqual(1, results.Count, "Unexpected additional services discovered.");
+		}
+
+		/// <summary>
+		/// Verifies that a dual identifier yields two service endpoints when that feature is turned on.
 		/// </summary>
 		[TestMethod]
 		public void DualIdentifier() {
 			this.MockResponder.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml"));
-			var results = this.Discover(VanityUri).ToList();
+			var rp = this.CreateRelyingParty(true);
+			rp.Channel.WebRequestHandler = this.RequestHandler;
+			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
+			var results = rp.Discover(VanityUri).ToList();
 			Assert.AreEqual(1, results.Count(r => r.ClaimedIdentifier == r.Protocol.ClaimedIdentifierForOPIdentifier), "OP Identifier missing from discovery results.");
 			Assert.AreEqual(1, results.Count(r => r.ClaimedIdentifier == VanityUri), "Claimed identifier missing from discovery results.");
 			Assert.AreEqual(2, results.Count, "Unexpected additional services discovered.");

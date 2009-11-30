@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Xml;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
 

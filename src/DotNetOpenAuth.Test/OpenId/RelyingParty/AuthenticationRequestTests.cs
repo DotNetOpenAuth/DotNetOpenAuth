@@ -178,7 +178,14 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// </summary>
 		[TestMethod]
 		public void DualIdentifierUsedOnlyAsOPIdentifierForAuthRequest() {
-			var results = AuthenticationRequest.Create(GetMockDualIdentifier(), this.CreateRelyingParty(true), this.realm, this.returnTo, false).ToList();
+			var rp = this.CreateRelyingParty(true);
+			var results = AuthenticationRequest.Create(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false).ToList();
+			Assert.AreEqual(1, results.Count);
+			Assert.IsTrue(results[0].IsDirectedIdentity);
+
+			// Also test when dual identiifer support is turned on.
+			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
+			results = AuthenticationRequest.Create(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false).ToList();
 			Assert.AreEqual(1, results.Count);
 			Assert.IsTrue(results[0].IsDirectedIdentity);
 		}
