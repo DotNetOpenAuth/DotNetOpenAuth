@@ -27,6 +27,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// or for Provider's to perform RP discovery/verification as part of authentication.
 		/// </remarks>
 		internal static IEnumerable<RelyingPartyEndpointDescription> FindRelyingPartyReceivingEndpoints(this XrdsDocument xrds) {
+			Contract.Requires<ArgumentNullException>(xrds != null);
+			Contract.Ensures(Contract.Result<IEnumerable<RelyingPartyEndpointDescription>>() != null);
+
 			return from service in xrds.FindReturnToServices()
 				   from uri in service.UriElements
 				   select new RelyingPartyEndpointDescription(uri.Uri, service.TypeElementUris);
@@ -39,6 +42,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument to search.</param>
 		/// <returns>A sequence of the icon URLs in preferred order.</returns>
 		internal static IEnumerable<Uri> FindRelyingPartyIcons(this XrdsDocument xrds) {
+			Contract.Requires<ArgumentNullException>(xrds != null);
+			Contract.Ensures(Contract.Result<IEnumerable<Uri>>() != null);
+
 			return from xrd in xrds.XrdElements
 				   from service in xrd.OpenIdRelyingPartyIcons
 				   from uri in service.UriElements
@@ -118,6 +124,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// A sequence of the providers that can assert ownership of the given identifier.
 		/// </returns>
 		private static IEnumerable<IdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this IEnumerable<XrdElement> xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
+			Contract.Requires<ArgumentNullException>(xrds != null);
+			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
+
 			return from service in xrds.FindClaimedIdentifierServices()
 				   from uri in service.UriElements
 				   where uri.Uri != null
@@ -133,6 +143,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="userSuppliedIdentifier">The i-name supplied by the user.</param>
 		/// <returns>A sequence of the providers that can assert ownership of the given identifier.</returns>
 		private static IEnumerable<IdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this IEnumerable<XrdElement> xrds, XriIdentifier userSuppliedIdentifier) {
+			Contract.Requires<ArgumentNullException>(xrds != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
+
 			foreach (var service in xrds.FindClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					// spec section 7.3.2.3 on Claimed Id -> CanonicalID substitution
@@ -157,6 +170,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of service elements.</returns>
 		private static IEnumerable<ServiceElement> FindOPIdentifierServices(this IEnumerable<XrdElement> xrds) {
 			Contract.Requires<ArgumentNullException>(xrds != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
+
 			return from xrd in xrds
 				   from service in xrd.OpenIdProviderIdentifierServices
 				   select service;
@@ -170,6 +185,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of the services offered.</returns>
 		private static IEnumerable<ServiceElement> FindClaimedIdentifierServices(this IEnumerable<XrdElement> xrds) {
 			Contract.Requires<ArgumentNullException>(xrds != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
+
 			return from xrd in xrds
 				   from service in xrd.OpenIdClaimedIdentifierServices
 				   select service;
@@ -182,6 +199,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument instance to use in this process.</param>
 		/// <returns>A sequence of service elements.</returns>
 		private static IEnumerable<ServiceElement> FindReturnToServices(this XrdsDocument xrds) {
+			Contract.Requires<ArgumentNullException>(xrds != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
+
 			return from xrd in xrds.XrdElements
 				   from service in xrd.OpenIdRelyingPartyReturnToServices
 				   select service;
