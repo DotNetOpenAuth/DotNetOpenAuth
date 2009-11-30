@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// The URI template for discovery host-meta on domains hosted by
 		/// Google Apps for Domains.
 		/// </summary>
-		private const string GoogleHostedHostMeta = "https://www.google.com/accounts/o8/.well-known/host-meta?hd={0}";
+		private static readonly HostMetaProxy GoogleHostedHostMeta = new HostMetaProxy("https://www.google.com/accounts/o8/.well-known/host-meta?hd={0}", "hosted-id.google.com");
 
 		private const string LocalHostMetaPath = "/.well-known/host-meta";
 
@@ -46,14 +46,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="HostMetaDiscoveryService"/> class.
 		/// </summary>
 		public HostMetaDiscoveryService() {
-			this.TrustedHostMetaProxies = new List<string>();
+			this.TrustedHostMetaProxies = new List<HostMetaProxy>();
 		}
 
 		/// <summary>
 		/// Gets the set of URI templates to use to contact host-meta hosting proxies
 		/// for domain discovery.
 		/// </summary>
-		public IList<string> TrustedHostMetaProxies { get; private set; }
+		public IList<HostMetaProxy> TrustedHostMetaProxies { get; private set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to trust Google to host domains' host-meta documents.
@@ -99,12 +99,13 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			var results = new List<IdentifierDiscoveryResult>();
-			var response = GetXrdsResponse(uriIdentifier, requestHandler);
+			string signingHost;
+			var response = GetXrdsResponse(uriIdentifier, requestHandler, out signingHost);
 
 			if (response != null) {
 				try {
 					var document = new XrdsDocument(XmlReader.Create(response.ResponseStream));
-					ValidateXmlDSig(document, uriIdentifier, response);
+					ValidateXmlDSig(document, uriIdentifier, response, signingHost);
 					var xrds = GetXrdElements(document, uriIdentifier.Uri.Host);
 
 					// Find OP identifiers
@@ -151,7 +152,7 @@ namespace DotNetOpenAuth.OpenId {
 					try {
 						var externalXrdsResponse = GetXrdsResponse(identifier, requestHandler, externalLocation);
 						XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream));
-						ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse/*, signer: nextAuthority.Value.Trim()*/);
+						ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority.Value.Trim());
 						results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
 					} catch (ProtocolException ex) {
 						Logger.Yadis.WarnFormat("HTTP GET error while retrieving described-by XRDS document {0}: {1}", externalLocation.AbsoluteUri, ex);
@@ -164,7 +165,7 @@ namespace DotNetOpenAuth.OpenId {
 			return results;
 		}
 
-		private static void ValidateXmlDSig(XrdsDocument document, UriIdentifier identifier, IncomingWebResponse response) {
+		private static void ValidateXmlDSig(XrdsDocument document, UriIdentifier identifier, IncomingWebResponse response, string signingHost) {
 			Contract.Requires<ArgumentNullException>(document != null);
 			Contract.Requires<ArgumentNullException>(identifier != null);
 			Contract.Requires<ArgumentNullException>(response != null);
@@ -188,8 +189,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			// Verify that the certificate is issued to the host on whom we are performing discovery.
 			string hostName = certs[0].GetNameInfo(X509NameType.DnsName, false);
-			////ErrorUtilities.VerifyProtocol(string.Equals(hostName, identifier.Uri.Host, StringComparison.OrdinalIgnoreCase), "X.509 signing certificate issued to {0} but used to sign XRD describing {1}", hostName, identifier.Uri.Host);
-			// TODO: code here
+			ErrorUtilities.VerifyProtocol(string.Equals(hostName, signingHost, StringComparison.OrdinalIgnoreCase), "X.509 signing certificate issued to {0}, but a certificate for {1} was expected.", hostName, signingHost);
 
 			// Verify the signature itself
 			byte[] signature = Convert.FromBase64String(response.Headers["Signature"]);
@@ -218,10 +218,10 @@ namespace DotNetOpenAuth.OpenId {
 			return response;
 		}
 
-		private IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
+		private IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			Uri xrdsLocation = this.GetXrdsLocation(identifier, requestHandler);
+			Uri xrdsLocation = this.GetXrdsLocation(identifier, requestHandler, out signingHost);
 			if (xrdsLocation == null) {
 				return null;
 			}
@@ -231,10 +231,10 @@ namespace DotNetOpenAuth.OpenId {
 			return response;
 		}
 
-		private Uri GetXrdsLocation(UriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
+		private Uri GetXrdsLocation(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			var hostMetaResponse = this.GetHostMeta(identifier, requestHandler);
+			var hostMetaResponse = this.GetHostMeta(identifier, requestHandler, out signingHost);
 			if (hostMetaResponse == null) {
 				return null;
 			}
@@ -259,10 +259,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier.</param>
 		/// <param name="requestHandler">The request handler.</param>
 		/// <returns>The host-meta response, or <c>null</c> if no host-meta document could be obtained.</returns>
-		private IncomingWebResponse GetHostMeta(UriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
+		private IncomingWebResponse GetHostMeta(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			foreach (Uri hostMetaLocation in this.GetHostMetaLocations(identifier)) {
+			foreach (var hostMetaProxy in this.GetHostMetaLocations(identifier)) {
+				var hostMetaLocation = hostMetaProxy.GetProxy(identifier);
 				var request = (HttpWebRequest)WebRequest.Create(hostMetaLocation);
 				request.CachePolicy = Yadis.IdentifierDiscoveryCachePolicy;
 				var options = DirectWebRequestOptions.AcceptAllHttpResponses;
@@ -272,12 +273,14 @@ namespace DotNetOpenAuth.OpenId {
 				var response = requestHandler.GetResponse(request, options);
 				if (response.Status == HttpStatusCode.OK) {
 					Logger.Yadis.InfoFormat("Found host-meta for {0} at: {1}", identifier.Uri.Host, hostMetaLocation);
+					signingHost = hostMetaProxy.GetSigningHost(identifier);
 					return response;
 				} else {
 					Logger.Yadis.InfoFormat("Could not obtain host-meta for {0} from {1}", identifier.Uri.Host, hostMetaLocation);
 				}
 			}
 
+			signingHost = null;
 			return null;
 		}
 
@@ -286,20 +289,62 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
 		/// <returns>A sequence of URIs that MAY provide the host-meta for a given identifier.</returns>
-		private IEnumerable<Uri> GetHostMetaLocations(UriIdentifier identifier) {
+		private IEnumerable<HostMetaProxy> GetHostMetaLocations(UriIdentifier identifier) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
+
 			// First try the proxies, as they are considered more "secure" than the local
 			// host-meta for a domain since the domain may be defaced.
-			foreach (string proxyPattern in this.TrustedHostMetaProxies) {
-				yield return new Uri(string.Format(CultureInfo.InvariantCulture, proxyPattern, identifier.Uri.Host));
-			}
+			IEnumerable<HostMetaProxy> result = this.TrustedHostMetaProxies;
 
 			// Finally, look for the local host-meta.
 			UriBuilder localHostMetaBuilder = new UriBuilder();
 			localHostMetaBuilder.Scheme = identifier.IsDiscoverySecureEndToEnd || identifier.Uri.IsTransportSecure() ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
 			localHostMetaBuilder.Host = identifier.Uri.Host;
 			localHostMetaBuilder.Path = LocalHostMetaPath;
-			yield return localHostMetaBuilder.Uri;
+			result = result.Concat(new[] { new HostMetaProxy(localHostMetaBuilder.Uri.AbsoluteUri, identifier.Uri.Host) });
+
+			return result;
+		}
+
+		public class HostMetaProxy {
+			/// <summary>
+			/// Initializes a new instance of the <see cref="HostMetaProxy"/> class.
+			/// </summary>
+			/// <param name="proxy">The proxy.</param>
+			/// <param name="signingHostFormat">The signing host format.</param>
+			public HostMetaProxy(string proxyFormat, string signingHostFormat) {
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(proxyFormat));
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(signingHostFormat));
+				this.ProxyFormat = proxyFormat;
+				this.SigningHostFormat = signingHostFormat;
+			}
+
+			/// <summary>
+			/// Gets or sets the URL of the host-meta proxy.
+			/// </summary>
+			/// <value>The absolute proxy URL, which may include {0} to be replaced with the host of the identifier to be discovered.</value>
+			public string ProxyFormat { get; private set; }
+
+			/// <summary>
+			/// Gets or sets the formatting string to determine the expected host name on the certificate
+			/// that is expected to be used to sign the XRDS document.
+			/// </summary>
+			/// <value>
+			/// Either a string literal, or a formatting string where these placeholders may exist:
+			/// {0} the host on the identifier discovery was originally performed on;
+			/// {1} the host on this proxy.
+			/// </value>
+			public string SigningHostFormat { get; private set; }
+
+			public virtual Uri GetProxy(UriIdentifier identifier) {
+				Contract.Requires<ArgumentNullException>(identifier != null);
+				return new Uri(string.Format(CultureInfo.InvariantCulture, this.ProxyFormat, Uri.EscapeDataString(identifier.Uri.Host)));
+			}
+
+			public virtual string GetSigningHost(UriIdentifier identifier) {
+				Contract.Requires<ArgumentNullException>(identifier != null);
+				return string.Format(CultureInfo.InvariantCulture, this.SigningHostFormat, identifier.Uri.Host, this.GetProxy(identifier).Host);
+			}
 		}
 	}
 }
