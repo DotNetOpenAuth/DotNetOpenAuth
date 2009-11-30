@@ -12,8 +12,10 @@ namespace DotNetOpenAuth.OpenId {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Security;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
+	using System.Security.Permissions;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Xml;
@@ -185,7 +187,12 @@ namespace DotNetOpenAuth.OpenId {
 			var certs = certNodes.Cast<XPathNavigator>().Select(n => new X509Certificate2(Convert.FromBase64String(n.Value.Trim()))).ToList();
 
 			// Verify that we trust the signer of the certificates.
-			////ErrorUtilities.VerifyProtocol(certs.All(cert => cert.Verify()), "Invalid or untrusted signing certificate.");
+			try {
+				VerifyCertChain(certs);
+			} catch (SecurityException) {
+				Logger.Yadis.Warn("Insufficient security permissions to perform custom certificate chain validation.  Performing basic validation policy check on signing certificate.");
+				ErrorUtilities.VerifyProtocol(certs[0].Verify(), "Invalid or untrusted signing certificate.");
+			}
 
 			// Verify that the certificate is issued to the host on whom we are performing discovery.
 			string hostName = certs[0].GetNameInfo(X509NameType.DnsName, false);
@@ -198,6 +205,14 @@ namespace DotNetOpenAuth.OpenId {
 			response.ResponseStream.Seek(0, SeekOrigin.Begin);
 			response.ResponseStream.Read(data, 0, data.Length);
 			ErrorUtilities.VerifyProtocol(provider.VerifyData(data, "SHA1", signature), "Invalid XmlDSig signature on XRDS document.");
+		}
+
+		private static void VerifyCertChain(List<X509Certificate2> certs) {
+			var chain = new X509Chain();
+			foreach (var cert in certs) {
+				chain.Build(cert);
+			}
+			ErrorUtilities.VerifyProtocol(chain.ChainStatus.Length == 0, "Invalid or untrusted signing certificate.");
 		}
 
 		private static IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, Uri xrdsLocation) {
