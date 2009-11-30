@@ -54,16 +54,16 @@ namespace DotNetOpenAuth.Xrds {
 		/// <summary>
 		/// Gets the node.
 		/// </summary>
-		protected XPathNavigator Node { get; private set; }
+		internal XPathNavigator Node { get; private set; }
 
 		/// <summary>
 		/// Gets the parent node, or null if this is the root node.
 		/// </summary>
-		protected XrdsNode ParentNode { get; private set; }
+		protected internal XrdsNode ParentNode { get; private set; }
 
 		/// <summary>
 		/// Gets the XML namespace resolver to use in XPath expressions.
 		/// </summary>
-		protected XmlNamespaceManager XmlNamespaceResolver { get; private set; }
+		protected internal XmlNamespaceManager XmlNamespaceResolver { get; private set; }
 	}
 }

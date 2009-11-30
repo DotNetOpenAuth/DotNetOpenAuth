@@ -117,8 +117,15 @@ namespace DotNetOpenAuth.OpenId {
 						}
 					} else if (uri != null) {
 						if (uri != this.Protocol.ClaimedIdentifierForOPIdentifier) {
-							string displayUri = uri.Uri.Host + uri.Uri.AbsolutePath;
-							displayUri = displayUri.TrimEnd('/');
+							string displayUri = uri.Uri.Host;
+
+							// We typically want to display the path, because that will often have the username in it.
+							// As Google Apps for Domains and the like become more popular, a standard /openid path
+							// will often appear, which is not helpful to identifying the user so we'll avoid including
+							// that path if it's present.
+							if (!string.Equals(uri.Uri.AbsolutePath, "/openid", StringComparison.OrdinalIgnoreCase)) {
+								displayUri += uri.Uri.AbsolutePath.TrimEnd('/');
+							}
 
 							// Multi-byte unicode characters get encoded by the Uri class for transit.
 							// Since this is for display purposes, we want to reverse this and display a readable

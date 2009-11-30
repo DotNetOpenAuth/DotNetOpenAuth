@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OpenId {
 				return Enumerable.Empty<IdentifierDiscoveryResult>();
 			}
 
-			return DownloadXrds(xriIdentifier, requestHandler).CreateServiceEndpoints(xriIdentifier);
+			return DownloadXrds(xriIdentifier, requestHandler).XrdElements.CreateServiceEndpoints(xriIdentifier);
 		}
 
 		#endregion

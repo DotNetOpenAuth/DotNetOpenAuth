@@ -101,6 +101,13 @@
     <Compile Include="Code\InMemoryTokenManager.cs" />
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
+    <Compile Include="loginGoogleApps.aspx.cs">
+      <DependentUpon>loginGoogleApps.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="loginGoogleApps.aspx.designer.cs">
+      <DependentUpon>loginGoogleApps.aspx</DependentUpon>
+    </Compile>
     <Compile Include="loginPlusOAuthSampleOP.aspx.cs">
       <DependentUpon>loginPlusOAuthSampleOP.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -176,6 +183,7 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="loginGoogleApps.aspx" />
     <Content Include="loginPlusOAuthSampleOP.aspx" />
     <Content Include="images\attention.png" />
     <Content Include="images\dotnetopenid_tiny.gif" />
