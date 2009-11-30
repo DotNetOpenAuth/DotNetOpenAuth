@@ -174,14 +174,15 @@ namespace DotNetOpenAuth.OpenId {
 
 			var results = new List<IdentifierDiscoveryResult>();
 			foreach (var serviceElement in GetDescribedByServices(xrds)) {
-				var template = serviceElement.Node.SelectSingleNode("google:URITemplate", serviceElement.XmlNamespaceResolver);
-				var nextAuthority = serviceElement.Node.SelectSingleNode("google:NextAuthority", serviceElement.XmlNamespaceResolver);
-				if (template != null && nextAuthority != null) {
-					Uri externalLocation = new Uri(template.Value.Trim().Replace("{%uri}", Uri.EscapeDataString(identifier.Uri.AbsoluteUri)));
+				var templateNode = serviceElement.Node.SelectSingleNode("google:URITemplate", serviceElement.XmlNamespaceResolver);
+				var nextAuthorityNode = serviceElement.Node.SelectSingleNode("google:NextAuthority", serviceElement.XmlNamespaceResolver);
+				if (templateNode != null) {
+					Uri externalLocation = new Uri(templateNode.Value.Trim().Replace("{%uri}", Uri.EscapeDataString(identifier.Uri.AbsoluteUri)));
+					string nextAuthority = nextAuthorityNode != null ? nextAuthorityNode.Value.Trim() : identifier.Uri.Host;
 					try {
 						var externalXrdsResponse = GetXrdsResponse(identifier, requestHandler, externalLocation);
 						XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream));
-						ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority.Value.Trim());
+						ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority);
 						results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
 					} catch (ProtocolException ex) {
 						Logger.Yadis.WarnFormat("HTTP GET error while retrieving described-by XRDS document {0}: {1}", externalLocation.AbsoluteUri, ex);
