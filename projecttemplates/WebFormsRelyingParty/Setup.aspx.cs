@@ -26,7 +26,7 @@
 			if (e.IsDirectedIdentity) {
 				this.noOPIdentifierLabel.Visible = true;
 			} else if (!this.databaseCreated) {
-				Utilities.CreateDatabase(e.ClaimedIdentifier, this.openidLogin.Text);
+				Utilities.CreateDatabase(e.ClaimedIdentifier, this.openidLogin.Text, "WebFormsRelyingParty");
 				this.MultiView1.ActiveViewIndex = 1;
 
 				// indicate we have already created the database so that if the
