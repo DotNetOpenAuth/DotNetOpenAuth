@@ -2,6 +2,8 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Security;
+	using System.Security.Permissions;
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
@@ -29,10 +31,21 @@
 		protected void Page_Load(object sender, EventArgs e) {
 			this.OpenIdLogin1.RelyingParty = relyingParty;
 			this.OpenIdLogin1.Focus();
+
+			this.fullTrustRequired.Visible = IsPartiallyTrusted();
 		}
 
 		protected void OpenIdLogin1_LoggedIn(object sender, OpenIdEventArgs e) {
 			State.FriendlyLoginName = e.Response.FriendlyIdentifierForDisplay;
+		}
+
+		private static bool IsPartiallyTrusted() {
+			try {
+				new SecurityPermission(PermissionState.Unrestricted).Demand();
+				return false;
+			} catch (SecurityException) {
+				return true;
+			}
 		}
 	}
 }

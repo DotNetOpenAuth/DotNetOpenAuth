@@ -8,8 +8,9 @@
 	<rp:OpenIdLogin ID="OpenIdLogin1" runat="server" ExampleUrl="yourname@yourdomain.com"
 		TabIndex="1" LabelText="Google Apps email address or domain:" 
 		RegisterVisible="False" onloggedin="OpenIdLogin1_LoggedIn" />
-	<p>
-		<b>NOTE:</b> Full trust permissions are required. Modify web.config to allow full
-		trust before trying this sample.
-	</p>
+	<asp:Panel runat="server" ID="fullTrustRequired" EnableViewState="false">
+		<b>STOP:</b> Full trust permissions are required for Google Apps support
+		due to certificate chain verification requirements.
+		Modify web.config to allow full trust before trying this sample.
+	</asp:Panel>
 </asp:Content>
