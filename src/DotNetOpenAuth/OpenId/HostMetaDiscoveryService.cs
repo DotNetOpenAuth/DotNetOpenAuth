@@ -224,11 +224,16 @@ namespace DotNetOpenAuth.OpenId {
 			var certs = certNodes.Cast<XPathNavigator>().Select(n => new X509Certificate2(Convert.FromBase64String(n.Value.Trim()))).ToList();
 
 			// Verify that we trust the signer of the certificates.
-			try {
-				VerifyCertChain(certs);
-			} catch (SecurityException) {
-				Logger.Yadis.Warn("Insufficient security permissions to perform custom certificate chain validation.  Performing basic validation policy check on signing certificate.");
-				ErrorUtilities.VerifyProtocol(certs[0].Verify(), "Invalid or untrusted signing certificate.");
+			// Start by trying to validate just the certificate used to sign the XRDS document,
+			// since we can do that with partial trust.
+			if (!certs[0].Verify()) {
+				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
+				try {
+					VerifyCertChain(certs);
+				} catch (SecurityException) {
+					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
+					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
+				}
 			}
 
 			// Verify that the certificate is issued to the host on whom we are performing discovery.
@@ -263,8 +268,10 @@ namespace DotNetOpenAuth.OpenId {
 
 			if (chain.ChainStatus.Length > 0) {
 				ErrorUtilities.ThrowProtocol(
-					"Failure(s) in validating the certificate chain: ",
-					string.Join(", ", chain.ChainStatus.Select(status => status.StatusInformation).ToArray()));
+					string.Format(
+						CultureInfo.CurrentCulture,
+						OpenIdStrings.X509CertificateNotTrusted + " {0}",
+						string.Join(", ", chain.ChainStatus.Select(status => status.StatusInformation).ToArray())));
 			}
 		}
 

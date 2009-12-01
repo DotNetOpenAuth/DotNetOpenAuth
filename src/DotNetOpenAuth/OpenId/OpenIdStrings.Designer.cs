@@ -722,6 +722,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The X.509 certificate used to sign this document is not trusted..
+        /// </summary>
+        internal static string X509CertificateNotTrusted {
+            get {
+                return ResourceManager.GetString("X509CertificateNotTrusted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XRI support has been disabled at this site..
         /// </summary>
         internal static string XriResolutionDisabled {
