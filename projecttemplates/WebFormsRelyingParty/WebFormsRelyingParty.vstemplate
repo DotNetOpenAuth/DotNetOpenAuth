@@ -6,6 +6,8 @@
 		<Icon>__TemplateIcon.ico</Icon>
 	</TemplateData>
 	<TemplateContent>
-		<Project File="WebFormsRelyingParty.csproj" ReplaceParameters="true" />
+		<Project File="WebFormsRelyingParty.csproj" ReplaceParameters="true">
+			<ProjectItem OpenInWebBrowser="true">GettingStarted.htm</ProjectItem>
+		</Project>
 	</TemplateContent>
 </VSTemplate>
