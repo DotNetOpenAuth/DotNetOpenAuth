@@ -163,6 +163,7 @@
 			<_ProjectTemplatesTransformSource Include="@(ProjectTemplatesSource)" Condition="
 																			 '%(Extension)' == '.cs'
 																			 or '%(Extension)' == '.csproj'
+																			 or '%(Extension)' == '.sql'
 																			 or '%(Extension)' == '.config'
 																			 or '%(Extension)' == '.Master'
 																			 or '%(Extension)' == '.aspx'
