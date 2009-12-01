@@ -117,11 +117,17 @@ namespace DotNetOpenAuth.OpenId {
 					ValidateXmlDSig(document, uriIdentifier, response, signingHost);
 					var xrds = GetXrdElements(document, uriIdentifier.Uri.Host);
 
-					// Find OP identifiers
-					results.AddRange(xrds.CreateServiceEndpoints(uriIdentifier, uriIdentifier));
-
 					// Look for claimed identifier template URIs for an additional XRDS document.
 					results.AddRange(GetExternalServices(xrds, uriIdentifier, requestHandler));
+
+					// If we couldn't find any claimed identifiers, look for OP identifiers.
+					// Normally this would be the opposite (OP Identifiers take precedence over
+					// claimed identifiers, but for Google Apps, XRDS' always have OP Identifiers
+					// mixed in, which the OpenID spec mandate should eclipse Claimed Identifiers,
+					// which would break positive assertion checks).
+					if (results.Count == 0) {
+						results.AddRange(xrds.CreateServiceEndpoints(uriIdentifier, uriIdentifier));
+					}
 
 					abortDiscoveryChain = true;
 				} catch (XmlException ex) {
