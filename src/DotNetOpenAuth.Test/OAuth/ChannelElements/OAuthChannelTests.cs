@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			base.SetUp();
 
 			this.webRequestHandler = new TestWebRequestHandler();
-			this.signingElement = new RsaSha1SigningBindingElement();
+			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 			this.accessor = OAuthChannel_Accessor.AttachShadow(this.channel);
@@ -47,22 +47,22 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), null, new InMemoryTokenManager(), new TestMessageFactory());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), new TestMessageFactory());
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, null, new TestMessageFactory());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, new TestMessageFactory());
 		}
 
 		[TestMethod]
 		public void CtorSimpleConsumer() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager());
 		}
 
 		[TestMethod]
 		public void CtorSimpleServiceProvider() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager());
 		}
 
 		[TestMethod]

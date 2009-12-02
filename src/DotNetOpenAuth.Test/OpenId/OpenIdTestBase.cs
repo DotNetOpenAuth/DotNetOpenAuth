@@ -71,6 +71,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.MockResponder = MockHttpRequest.CreateUntrustedMockHttpHandler();
 			this.RequestHandler = this.MockResponder.MockWebRequestHandler;
 			this.AutoProviderScenario = Scenarios.AutoApproval;
+			Identifier.EqualityOnStrings = true;
+		}
+
+		[TestCleanup]
+		public override void Cleanup() {
+			base.Cleanup();
+
+			Identifier.EqualityOnStrings = false;
 		}
 
 		/// <summary>
@@ -168,6 +176,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 		}
 
+		protected Realm GetMockRealm(bool useSsl) {
+			var rpDescription = new RelyingPartyEndpointDescription(useSsl ? RPUriSsl : RPUri, new string[] { Protocol.V20.RPReturnToTypeURI });
+			return new MockRealm(useSsl ? RPRealmUriSsl : RPRealmUri, rpDescription);
+		}
+
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion) {
 			return this.GetMockIdentifier(providerVersion, false);
 		}
@@ -187,7 +200,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <returns>The new instance.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
+			return this.CreateRelyingParty(false);
+		}
+
+		/// <summary>
+		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
+		/// </summary>
+		/// <param name="stateless">if set to <c>true</c> a stateless RP is created.</param>
+		/// <returns>The new instance.</returns>
+		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
+			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore());
 			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
 			return rp;
 		}

@@ -48,6 +48,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		protected const string BehaviorCategory = "Behavior";
 
+		/// <summary>
+		/// The "OpenID" category for properties and events.
+		/// </summary>
+		protected const string OpenIdCategory = "OpenID";
+
 		#endregion
 
 		#region Property default values
@@ -171,25 +176,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// process begins.  Offers a chance for the web application to disallow based on 
 		/// OpenID URL before redirecting the user to the OpenID Provider.
 		/// </summary>
-		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider.")]
+		[Description("Fired after the user clicks the log in button, but before the authentication process begins.  Offers a chance for the web application to disallow based on OpenID URL before redirecting the user to the OpenID Provider."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> LoggingIn;
 
 		/// <summary>
 		/// Fired upon completion of a successful login.
 		/// </summary>
-		[Description("Fired upon completion of a successful login.")]
+		[Description("Fired upon completion of a successful login."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> LoggedIn;
 
 		/// <summary>
 		/// Fired when a login attempt fails.
 		/// </summary>
-		[Description("Fired when a login attempt fails.")]
+		[Description("Fired when a login attempt fails."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> Failed;
 
 		/// <summary>
 		/// Fired when an authentication attempt is canceled at the OpenID Provider.
 		/// </summary>
-		[Description("Fired when an authentication attempt is canceled at the OpenID Provider.")]
+		[Description("Fired when an authentication attempt is canceled at the OpenID Provider."), Category(OpenIdCategory)]
 		public event EventHandler<OpenIdEventArgs> Canceled;
 
 		#endregion
@@ -222,7 +227,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets a value indicating whether stateless mode is used.
 		/// </summary>
-		[Bindable(true), DefaultValue(StatelessDefault), Category(BehaviorCategory)]
+		[Bindable(true), DefaultValue(StatelessDefault), Category(OpenIdCategory)]
 		[Description("Controls whether stateless mode is used.")]
 		public bool Stateless {
 			get { return (bool)(ViewState[StatelessViewStateKey] ?? StatelessDefault); }
@@ -235,7 +240,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
-		[Bindable(true), DefaultValue(RealmUrlDefault), Category(BehaviorCategory)]
+		[Bindable(true), DefaultValue(RealmUrlDefault), Category(OpenIdCategory)]
 		[Description("The OpenID Realm of the relying party web site.")]
 		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string RealmUrl {
@@ -267,7 +272,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Bindable property must be simple type")]
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
 		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
-		[Bindable(true), DefaultValue(ReturnToUrlDefault), Category(BehaviorCategory)]
+		[Bindable(true), DefaultValue(ReturnToUrlDefault), Category(OpenIdCategory)]
 		[Description("The OpenID ReturnTo of the relying party web site.")]
 		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
 		public string ReturnToUrl {
@@ -321,7 +326,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets a value indicating whether to enforce on high security mode,
 		/// which requires the full authentication pipeline to be protected by SSL.
 		/// </summary>
-		[Bindable(true), DefaultValue(RequireSslDefault), Category(BehaviorCategory)]
+		[Bindable(true), DefaultValue(RequireSslDefault), Category(OpenIdCategory)]
 		[Description("Turns on high security mode, requiring the full authentication pipeline to be protected by SSL.")]
 		public bool RequireSsl {
 			get { return (bool)(ViewState[RequireSslViewStateKey] ?? RequireSslDefault); }
@@ -332,7 +337,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets the URL to your privacy policy page that describes how 
 		/// claims will be used and/or shared.
 		/// </summary>
-		[Bindable(true), Category(BehaviorCategory)]
+		[Bindable(true), Category(OpenIdCategory)]
 		[Description("The OpenID Identifier that this button will use to initiate login.")]
 		[TypeConverter(typeof(IdentifierConverter))]
 		public Identifier Identifier {
@@ -454,7 +459,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (receiver == null || receiver == this.ClientID) {
 				var response = this.RelyingParty.GetResponse();
 				if (response != null) {
-					string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+					string persistentString = response.GetUntrustedCallbackArgument(UsePersistentCookieCallbackKey);
 					bool persistentBool;
 					if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
 						this.UsePersistentCookie = persistentBool;

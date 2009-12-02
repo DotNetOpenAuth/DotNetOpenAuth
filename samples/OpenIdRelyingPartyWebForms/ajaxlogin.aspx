@@ -3,12 +3,16 @@
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="openid" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
+<script>
+//	window.openid_visible_iframe = true; // causes the hidden iframe to show up
+//	window.openid_trace = true; // causes lots of messages
+</script>
 <style type="text/css">
 .textbox
 {
 	width: 200px;
 }
-.openidtextbox
+input.openidtextbox
 {
 	width: 185px;
 }

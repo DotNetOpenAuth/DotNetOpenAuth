@@ -16,12 +16,39 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// </summary>
 	public interface IServiceProviderTokenManager : ITokenManager {
 		/// <summary>
-		/// Gets the Consumer Secret for a given a Consumer Key.
+		/// Gets the Consumer description for a given a Consumer Key.
 		/// </summary>
 		/// <param name="consumerKey">The Consumer Key.</param>
-		/// <returns>The Consumer Secret.</returns>
-		/// <exception cref="ArgumentException">Thrown if the consumer key cannot be found.</exception>
-		/// <exception cref="InvalidOperationException">May be thrown if called when the signature algorithm does not require a consumer secret, such as when RSA-SHA1 is used.</exception>
-		string GetConsumerSecret(string consumerKey);
+		/// <returns>A description of the consumer.  Never null.</returns>
+		/// <exception cref="KeyNotFoundException">Thrown if the consumer key cannot be found.</exception>
+		IConsumerDescription GetConsumer(string consumerKey);
+
+		/// <summary>
+		/// Gets details on the named request token.
+		/// </summary>
+		/// <param name="token">The request token.</param>
+		/// <returns>A description of the token.  Never null.</returns>
+		/// <exception cref="KeyNotFoundException">Thrown if the token cannot be found.</exception>
+		/// <remarks>
+		/// It is acceptable for implementations to find the token, see that it has expired,
+		/// delete it from the database and then throw <see cref="KeyNotFoundException"/>,
+		/// or alternatively it can return the expired token anyway and the OAuth channel will
+		/// log and throw the appropriate error.
+		/// </remarks>
+		IServiceProviderRequestToken GetRequestToken(string token);
+
+		/// <summary>
+		/// Gets details on the named access token.
+		/// </summary>
+		/// <param name="token">The access token.</param>
+		/// <returns>A description of the token.  Never null.</returns>
+		/// <exception cref="KeyNotFoundException">Thrown if the token cannot be found.</exception>
+		/// <remarks>
+		/// It is acceptable for implementations to find the token, see that it has expired,
+		/// delete it from the database and then throw <see cref="KeyNotFoundException"/>,
+		/// or alternatively it can return the expired token anyway and the OAuth channel will
+		/// log and throw the appropriate error.
+		/// </remarks>
+		IServiceProviderAccessToken GetAccessToken(string token);
 	}
 }

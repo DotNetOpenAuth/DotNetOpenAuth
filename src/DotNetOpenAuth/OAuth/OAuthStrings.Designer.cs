@@ -79,20 +79,20 @@ namespace DotNetOpenAuth.OAuth {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The RSA-SHA1 signing binding element&apos;s consumer certificate provider has not been set, so no incoming messages from consumers using this signature method can be verified..
-        /// </summary>
-        internal static string ConsumerCertificateProviderNotAvailable {
-            get {
-                return ResourceManager.GetString("ConsumerCertificateProviderNotAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failure looking up secret for consumer or token..
         /// </summary>
         internal static string ConsumerOrTokenSecretNotFound {
             get {
                 return ResourceManager.GetString("ConsumerOrTokenSecretNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to oauth_verifier argument was incorrect..
+        /// </summary>
+        internal static string IncorrectVerifier {
+            get {
+                return ResourceManager.GetString("IncorrectVerifier", resourceCulture);
             }
         }
         
@@ -133,6 +133,15 @@ namespace DotNetOpenAuth.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This OAuth service provider requires OAuth consumers to implement OAuth {0}, but this consumer appears to only support {1}..
+        /// </summary>
+        internal static string MinimumConsumerVersionRequirementNotMet {
+            get {
+                return ResourceManager.GetString("MinimumConsumerVersionRequirementNotMet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The request URL query MUST NOT contain any OAuth Protocol Parameters..
         /// </summary>
         internal static string RequestUrlMustNotHaveOAuthParameters {
@@ -156,6 +165,15 @@ namespace DotNetOpenAuth.OAuth {
         internal static string SigningElementsMustShareSameProtection {
             get {
                 return ResourceManager.GetString("SigningElementsMustShareSameProtection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A token in the message was not recognized by the service provider..
+        /// </summary>
+        internal static string TokenNotFound {
+            get {
+                return ResourceManager.GetString("TokenNotFound", resourceCulture);
             }
         }
         

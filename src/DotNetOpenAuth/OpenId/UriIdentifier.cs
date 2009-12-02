@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
@@ -129,6 +130,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </exception>
 		public override bool Equals(object obj) {
 			UriIdentifier other = obj as UriIdentifier;
+			if (obj != null && other == null && Identifier.EqualityOnStrings) { // test hook to enable MockIdentifier comparison
+				other = Identifier.Parse(obj.ToString()) as UriIdentifier;
+			}
 			if (other == null) {
 				return false;
 			}
@@ -215,14 +219,18 @@ namespace DotNetOpenAuth.OpenId {
 			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this, IsDiscoverySecureEndToEnd);
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
-					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
+					try {
+						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+						var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
 
-					// Filter out insecure endpoints if high security is required.
-					if (IsDiscoverySecureEndToEnd) {
-						xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
+						// Filter out insecure endpoints if high security is required.
+						if (IsDiscoverySecureEndToEnd) {
+							xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
+						}
+						endpoints.AddRange(xrdsEndpoints);
+					} catch (XmlException ex) {
+						Logger.Yadis.Error("Error while parsing the XRDS document.  Falling back to HTML discovery.", ex);
 					}
-					endpoints.AddRange(xrdsEndpoints);
 				}
 
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
@@ -324,7 +332,7 @@ namespace DotNetOpenAuth.OpenId {
 			foreach (var protocol in Protocol.AllPracticalVersions) {
 				// rel attributes are supposed to be interpreted with case INsensitivity, 
 				// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
-				var serverLinkTag = linkTags.FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
+				var serverLinkTag = linkTags.WithAttribute("rel").FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
 				if (serverLinkTag == null) {
 					continue;
 				}
@@ -333,7 +341,7 @@ namespace DotNetOpenAuth.OpenId {
 				if (Uri.TryCreate(serverLinkTag.Href, UriKind.Absolute, out providerEndpoint)) {
 					// See if a LocalId tag of the discovered version exists
 					Identifier providerLocalIdentifier = null;
-					var delegateLinkTag = linkTags.FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
+					var delegateLinkTag = linkTags.WithAttribute("rel").FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
 					if (delegateLinkTag != null) {
 						if (Identifier.IsValid(delegateLinkTag.Href)) {
 							providerLocalIdentifier = delegateLinkTag.Href;

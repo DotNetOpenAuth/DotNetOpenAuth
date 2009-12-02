@@ -47,6 +47,13 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonceMemoryStore"/> class.
 		/// </summary>
+		internal NonceMemoryStore()
+			: this(StandardExpirationBindingElement.DefaultMaximumMessageAge) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NonceMemoryStore"/> class.
+		/// </summary>
 		/// <param name="maximumMessageAge">The maximum age a message can be before it is discarded.</param>
 		internal NonceMemoryStore(TimeSpan maximumMessageAge) {
 			this.maximumMessageAge = maximumMessageAge;
@@ -73,7 +80,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
 		/// </remarks>
 		public bool StoreNonce(string context, string nonce, DateTime timestamp) {
-			if (timestamp.ToUniversalTime() + this.maximumMessageAge < DateTime.UtcNow) {
+			if (timestamp.ToUniversalTimeSafe() + this.maximumMessageAge < DateTime.UtcNow) {
 				// The expiration binding element should have taken care of this, but perhaps
 				// it's at the boundary case.  We should fail just to be safe.
 				return false;
@@ -115,7 +122,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		public void ClearExpiredNonces() {
 			lock (this.nonceLock) {
-				var oldNonceLists = this.usedNonces.Keys.Where(time => time.ToUniversalTime() + this.maximumMessageAge < DateTime.UtcNow).ToList();
+				var oldNonceLists = this.usedNonces.Keys.Where(time => time.ToUniversalTimeSafe() + this.maximumMessageAge < DateTime.UtcNow).ToList();
 				foreach (DateTime time in oldNonceLists) {
 					this.usedNonces.Remove(time);
 				}

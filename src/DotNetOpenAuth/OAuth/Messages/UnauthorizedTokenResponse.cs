@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// This constructor is used by the Service Provider to send the message.
 		/// </remarks>
 		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret)
-			: this(requestMessage) {
+			: this(requestMessage, requestMessage.Version) {
 			ErrorUtilities.VerifyArgumentNotNull(requestToken, "requestToken");
 			ErrorUtilities.VerifyArgumentNotNull(tokenSecret, "tokenSecret");
 
@@ -37,9 +37,10 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Initializes a new instance of the <see cref="UnauthorizedTokenResponse"/> class.
 		/// </summary>
 		/// <param name="originatingRequest">The originating request.</param>
+		/// <param name="version">The OAuth version.</param>
 		/// <remarks>This constructor is used by the consumer to deserialize the message.</remarks>
-		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest originatingRequest)
-			: base(MessageProtections.None, originatingRequest) {
+		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest originatingRequest, Version version)
+			: base(MessageProtections.None, originatingRequest, version) {
 		}
 
 		/// <summary>
@@ -84,5 +85,15 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		[MessagePart("oauth_token_secret", IsRequired = true)]
 		protected internal string TokenSecret { get; set; }
+
+		/// <summary>
+		/// Gets a value indicating whether the Service Provider recognized the callback parameter in the request.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Message serialization invoked.")]
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Message parts must be instance members.")]
+		[MessagePart("oauth_callback_confirmed", IsRequired = true, MinVersion = Protocol.V10aVersion)]
+		private bool CallbackConfirmed {
+			get { return true; }
+		}
 	}
 }

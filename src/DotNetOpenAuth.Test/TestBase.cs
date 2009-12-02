@@ -57,5 +57,13 @@ namespace DotNetOpenAuth.Test {
 		public virtual void Cleanup() {
 			log4net.LogManager.Shutdown();
 		}
+
+		protected internal static void SuspendLogging() {
+			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["OFF"];
+		}
+
+		protected internal static void ResumeLogging() {
+			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["ALL"];
+		}
 	}
 }

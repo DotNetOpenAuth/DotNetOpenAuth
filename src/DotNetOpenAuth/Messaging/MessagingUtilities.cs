@@ -36,6 +36,27 @@ namespace DotNetOpenAuth.Messaging {
 		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
 
 		/// <summary>
+		/// The uppercase alphabet.
+		/// </summary>
+		internal const string UppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+		/// <summary>
+		/// The lowercase alphabet.
+		/// </summary>
+		internal const string LowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+
+		/// <summary>
+		/// The set of base 10 digits.
+		/// </summary>
+		internal const string Digits = "0123456789";
+
+		/// <summary>
+		/// The set of digits, and alphabetic letters (upper and lowercase) that are clearly
+		/// visually distinguishable.
+		/// </summary>
+		internal const string AlphaNumericNoLookAlikes = "23456789abcdefghjkmnpqrstwxyzABCDEFGHJKMNPQRSTWXYZ";
+
+		/// <summary>
 		/// The set of characters that are unreserved in RFC 2396 but are NOT unreserved in RFC 3986.
 		/// </summary>
 		private static readonly string[] UriRfc3986CharsToEscape = new[] { "!", "*", "'", "(", ")" };
@@ -176,6 +197,24 @@ namespace DotNetOpenAuth.Messaging {
 			byte[] uniq_bytes = GetCryptoRandomData(binaryLength);
 			string uniq = Convert.ToBase64String(uniq_bytes);
 			return uniq;
+		}
+
+		/// <summary>
+		/// Gets a random string made up of a given set of allowable characters.
+		/// </summary>
+		/// <param name="length">The length of the desired random string.</param>
+		/// <param name="allowableCharacters">The allowable characters.</param>
+		/// <returns>A random string.</returns>
+		internal static string GetRandomString(int length, string allowableCharacters) {
+			Contract.Requires(length >= 0);
+			Contract.Requires(allowableCharacters != null && allowableCharacters.Length >= 2);
+
+			char[] randomString = new char[length];
+			for (int i = 0; i < length; i++) {
+				randomString[i] = allowableCharacters[NonCryptoRandomDataGenerator.Next(allowableCharacters.Length)];
+			}
+
+			return new string(randomString);
 		}
 
 		/// <summary>
@@ -738,6 +777,32 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Return the fully-RFC3986-escaped string.
 			return escaped.ToString();
+		}
+
+		/// <summary>
+		/// Ensures that UTC times are converted to local times.  Unspecified kinds are unchanged.
+		/// </summary>
+		/// <param name="value">The date-time to convert.</param>
+		/// <returns>The date-time in local time.</returns>
+		internal static DateTime ToLocalTimeSafe(this DateTime value) {
+			if (value.Kind == DateTimeKind.Unspecified) {
+				return value;
+			}
+
+			return value.ToLocalTime();
+		}
+
+		/// <summary>
+		/// Ensures that local times are converted to UTC times.  Unspecified kinds are unchanged.
+		/// </summary>
+		/// <param name="value">The date-time to convert.</param>
+		/// <returns>The date-time in UTC time.</returns>
+		internal static DateTime ToUniversalTimeSafe(this DateTime value) {
+			if (value.Kind == DateTimeKind.Unspecified) {
+				return value;
+			}
+
+			return value.ToUniversalTime();
 		}
 
 		/// <summary>

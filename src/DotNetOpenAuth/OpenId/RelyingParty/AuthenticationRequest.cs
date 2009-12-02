@@ -153,7 +153,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// OpenId discovery documents found at the <see cref="ClaimedIdentifier"/>
 		/// location.
 		/// </summary>
-		IProviderEndpoint IAuthenticationRequest.Provider {
+		public IProviderEndpoint Provider {
 			get { return this.endpoint; }
 		}
 
@@ -169,9 +169,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the extensions that have been added to th request.
+		/// Gets the extensions that have been added to the request.
 		/// </summary>
 		internal IEnumerable<IOpenIdMessageExtension> AppliedExtensions {
+			get { return this.extensions; }
+		}
+
+		/// <summary>
+		/// Gets the list of extensions for this request.
+		/// </summary>
+		internal IList<IOpenIdMessageExtension> Extensions {
 			get { return this.extensions; }
 		}
 
@@ -182,17 +189,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="arguments">The arguments to add to the request's return_to URI.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
-		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
+		/// privacy-sensitive data should be stored using this method.</para>
 		/// 	<para>The values stored here can be retrieved using
-		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>.</para>
+		/// <see cref="IAuthenticationResponse.GetCallbackArguments"/>, which will only return the value
+		/// if it hasn't been tampered with in transit.</para>
 		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void AddCallbackArguments(IDictionary<string, string> arguments) {
 			ErrorUtilities.VerifyArgumentNotNull(arguments, "arguments");
-			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
 			foreach (var pair in arguments) {
 				ErrorUtilities.VerifyArgument(!string.IsNullOrEmpty(pair.Key), MessagingStrings.UnexpectedNullOrEmptyKey);
@@ -208,10 +215,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="key">The parameter name.</param>
 		/// <param name="value">The value of the argument.</param>
 		/// <remarks>
-		/// 	<para>Note that these values are NOT protected against tampering in transit.  No
-		/// security-sensitive data should be stored using this method.</para>
+		/// 	<para>Note that these values are NOT protected against eavesdropping in transit.  No
+		/// privacy-sensitive data should be stored using this method.</para>
 		/// 	<para>The value stored here can be retrieved using
-		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>.</para>
+		/// <see cref="IAuthenticationResponse.GetCallbackArgument"/>, which will only return the value
+		/// if it hasn't been tampered with in transit.</para>
 		/// 	<para>Since the data set here is sent in the querystring of the request and some
 		/// servers place limits on the size of a request URL, this data should be kept relatively
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
@@ -219,7 +227,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public void AddCallbackArguments(string key, string value) {
 			ErrorUtilities.VerifyNonZeroLength(key, "key");
 			ErrorUtilities.VerifyArgumentNotNull(value, "value");
-			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgs.Add(key, value);
 		}

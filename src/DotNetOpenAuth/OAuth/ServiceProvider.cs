@@ -6,11 +6,15 @@
 
 namespace DotNetOpenAuth.OAuth {
 	using System;
+	using System.Collections.Generic;
+	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.Security.Principal;
 	using System.ServiceModel.Channels;
 	using System.Web;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -33,6 +37,17 @@ namespace DotNetOpenAuth.OAuth {
 	/// </remarks>
 	public class ServiceProvider : IDisposable {
 		/// <summary>
+		/// The name of the key to use in the HttpApplication cache to store the
+		/// instance of <see cref="NonceMemoryStore"/> to use.
+		/// </summary>
+		private const string ApplicationStoreKey = "DotNetOpenAuth.OAuth.ServiceProvider.HttpApplicationStore";
+
+		/// <summary>
+		/// The length of the verifier code (in raw bytes before base64 encoding) to generate.
+		/// </summary>
+		private const int VerifierCodeLength = 5;
+
+		/// <summary>
 		/// The field behind the <see cref="OAuthChannel"/> property.
 		/// </summary>
 		private OAuthChannel channel;
@@ -52,16 +67,65 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
-		public ServiceProvider(ServiceProviderDescription serviceDescription, ITokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider) {
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
+			: this(serviceDescription, tokenManager, DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.ApplicationStore.CreateInstance(HttpApplicationStore), messageTypeProvider) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+		/// </summary>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
+		/// <param name="nonceStore">The nonce store.</param>
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore)
+			: this(serviceDescription, tokenManager, nonceStore, new OAuthServiceProviderMessageFactory(tokenManager)) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ServiceProvider"/> class.
+		/// </summary>
+		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
+		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
+		/// <param name="nonceStore">The nonce store.</param>
+		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
+		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore, OAuthServiceProviderMessageFactory messageTypeProvider) {
 			ErrorUtilities.VerifyArgumentNotNull(serviceDescription, "serviceDescription");
 			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 			ErrorUtilities.VerifyArgumentNotNull(messageTypeProvider, "messageTypeProvider");
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
-			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
 			this.ServiceDescription = serviceDescription;
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, messageTypeProvider);
+			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
+			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		}
+
+		/// <summary>
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public static INonceStore HttpApplicationStore {
+			get {
+				Contract.Ensures(Contract.Result<INonceStore>() != null);
+
+				HttpContext context = HttpContext.Current;
+				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
+				var store = (INonceStore)context.Application[ApplicationStoreKey];
+				if (store == null) {
+					context.Application.Lock();
+					try {
+						if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
+							context.Application[ApplicationStoreKey] = store = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
+						}
+					} finally {
+						context.Application.UnLock();
+					}
+				}
+
+				return store;
+			}
 		}
 
 		/// <summary>
@@ -77,8 +141,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Gets the persistence store for tokens and secrets.
 		/// </summary>
-		public ITokenManager TokenManager {
-			get { return this.OAuthChannel.TokenManager; }
+		public IServiceProviderTokenManager TokenManager {
+			get { return (IServiceProviderTokenManager)this.OAuthChannel.TokenManager; }
 		}
 
 		/// <summary>
@@ -89,6 +153,11 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
+		/// Gets the security settings for this service provider.
+		/// </summary>
+		public ServiceProviderSecuritySettings SecuritySettings { get; private set; }
+
+		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
 		internal OAuthChannel OAuthChannel {
@@ -97,15 +166,38 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			set {
-				if (this.channel != null) {
-					this.channel.Sending -= this.OAuthChannel_Sending;
-				}
-
+				Contract.Requires(value != null);
+				ErrorUtilities.VerifyArgumentNotNull(value, "value");
 				this.channel = value;
+			}
+		}
 
-				if (this.channel != null) {
-					this.channel.Sending += this.OAuthChannel_Sending;
-				}
+		/// <summary>
+		/// Creates a cryptographically strong random verification code.
+		/// </summary>
+		/// <param name="format">The desired format of the verification code.</param>
+		/// <param name="length">The length of the code.
+		/// When <paramref name="format"/> is <see cref="VerificationCodeFormat.IncludedInCallback"/>,
+		/// this is the length of the original byte array before base64 encoding rather than the actual
+		/// length of the final string.</param>
+		/// <returns>The verification code.</returns>
+		public static string CreateVerificationCode(VerificationCodeFormat format, int length) {
+			Contract.Requires(length >= 0);
+			ErrorUtilities.VerifyArgumentInRange(length >= 0, "length");
+
+			switch (format) {
+				case VerificationCodeFormat.IncludedInCallback:
+					return MessagingUtilities.GetCryptoRandomDataAsBase64(length);
+				case VerificationCodeFormat.AlphaNumericNoLookAlikes:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.AlphaNumericNoLookAlikes);
+				case VerificationCodeFormat.AlphaUpper:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.UppercaseLetters);
+				case VerificationCodeFormat.AlphaLower:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.LowercaseLetters);
+				case VerificationCodeFormat.Numeric:
+					return MessagingUtilities.GetRandomString(length, MessagingUtilities.Digits);
+				default:
+					throw new ArgumentOutOfRangeException("format");
 			}
 		}
 
@@ -149,7 +241,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		public UnauthorizedTokenRequest ReadTokenRequest(HttpRequestInfo request) {
 			UnauthorizedTokenRequest message;
-			this.Channel.TryReadFromRequest(request, out message);
+			if (this.Channel.TryReadFromRequest(request, out message)) {
+				ErrorUtilities.VerifyProtocol(message.Version >= Protocol.Lookup(this.SecuritySettings.MinimumRequiredOAuthVersion).Version, OAuthStrings.MinimumConsumerVersionRequirementNotMet, this.SecuritySettings.MinimumRequiredOAuthVersion, message.Version);
+			}
 			return message;
 		}
 
@@ -160,9 +254,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The token request message the Consumer sent that the Service Provider is now responding to.</param>
 		/// <returns>The response message to send using the <see cref="Channel"/>, after optionally adding extra data to it.</returns>
 		public UnauthorizedTokenResponse PrepareUnauthorizedTokenMessage(UnauthorizedTokenRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
 			string token = this.TokenGenerator.GenerateRequestToken(request.ConsumerKey);
 			string secret = this.TokenGenerator.GenerateSecret();
@@ -278,11 +370,27 @@ namespace DotNetOpenAuth.OAuth {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			if (request.Callback != null) {
-				return this.PrepareAuthorizationResponse(request, request.Callback);
+			// It is very important for us to ignore the oauth_callback argument in the
+			// UserAuthorizationRequest if the Consumer is a 1.0a consumer or else we
+			// open up a security exploit.
+			IServiceProviderRequestToken token = this.TokenManager.GetRequestToken(request.RequestToken);
+			Uri callback;
+			if (request.Version >= Protocol.V10a.Version) {
+				// In OAuth 1.0a, we'll prefer the token-specific callback to the pre-registered one.
+				if (token.Callback != null) {
+					callback = token.Callback;
+				} else {
+					IConsumerDescription consumer = this.TokenManager.GetConsumer(token.ConsumerKey);
+					callback = consumer.Callback;
+				}
 			} else {
-				return null;
+				// In OAuth 1.0, we'll prefer the pre-registered callback over the token-specific one
+				// since 1.0 has a security weakness for user-modified callback URIs.
+				IConsumerDescription consumer = this.TokenManager.GetConsumer(token.ConsumerKey);
+				callback = consumer.Callback ?? request.Callback;
 			}
+
+			return callback != null ? this.PrepareAuthorizationResponse(request, callback) : null;
 		}
 
 		/// <summary>
@@ -291,7 +399,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The Consumer's original authorization request.</param>
 		/// <param name="callback">The callback URI the consumer has previously registered
-		/// with this service provider.</param>
+		/// with this service provider or that came in the <see cref="UnauthorizedTokenRequest"/>.</param>
 		/// <returns>
 		/// The message to send to the Consumer using <see cref="Channel"/>.
 		/// </returns>
@@ -302,9 +410,14 @@ namespace DotNetOpenAuth.OAuth {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			ErrorUtilities.VerifyArgumentNotNull(callback, "callback");
 
-			var authorization = new UserAuthorizationResponse(request.Callback) {
+			var authorization = new UserAuthorizationResponse(callback, request.Version) {
 				RequestToken = request.RequestToken,
 			};
+
+			if (authorization.Version >= Protocol.V10a.Version) {
+				authorization.VerificationCode = CreateVerificationCode(VerificationCodeFormat.IncludedInCallback, VerifierCodeLength);
+			}
+
 			return authorization;
 		}
 
@@ -338,17 +451,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The Consumer's message requesting an access token.</param>
 		/// <returns>The HTTP response to actually send to the Consumer.</returns>
 		public AuthorizedTokenResponse PrepareAccessTokenMessage(AuthorizedTokenRequest request) {
-			if (request == null) {
-				throw new ArgumentNullException("request");
-			}
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			if (!this.TokenManager.IsRequestTokenAuthorized(request.RequestToken)) {
-				throw new ProtocolException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						OAuthStrings.AccessTokenNotAuthorized,
-						request.RequestToken));
-			}
+			ErrorUtilities.VerifyProtocol(this.TokenManager.IsRequestTokenAuthorized(request.RequestToken), OAuthStrings.AccessTokenNotAuthorized, request.RequestToken);
 
 			string accessToken = this.TokenGenerator.GenerateAccessToken(request.ConsumerKey);
 			string tokenSecret = this.TokenGenerator.GenerateSecret();
@@ -419,6 +525,19 @@ namespace DotNetOpenAuth.OAuth {
 			return accessMessage;
 		}
 
+		/// <summary>
+		/// Creates a security principal that may be used.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>The <see cref="IPrincipal"/> instance that can be used for access control of resources.</returns>
+		public OAuthPrincipal CreatePrincipal(AccessProtectedResourceRequest request) {
+			Contract.Requires(request != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+
+			IServiceProviderAccessToken accessToken = this.TokenManager.GetAccessToken(request.AccessToken);
+			return new OAuthPrincipal(accessToken);
+		}
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -440,18 +559,5 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Hooks the channel in order to perform some operations on some outgoing messages.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DotNetOpenAuth.Messaging.ChannelEventArgs"/> instance containing the event data.</param>
-		private void OAuthChannel_Sending(object sender, ChannelEventArgs e) {
-			// Hook to store the token and secret on its way down to the Consumer.
-			var grantRequestTokenResponse = e.Message as UnauthorizedTokenResponse;
-			if (grantRequestTokenResponse != null) {
-				this.TokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
-			}
-		}
 	}
 }

@@ -96,6 +96,13 @@ namespace DotNetOpenAuth.Xrds {
 		}
 
 		/// <summary>
+		/// Gets the services that would be discoverable at an RP for the UI extension icon.
+		/// </summary>
+		public IEnumerable<ServiceElement> OpenIdRelyingPartyIcons {
+			get { return this.SearchForServiceTypeUris(p => "http://specs.openid.net/extensions/ui/icon"); }
+		}
+
+		/// <summary>
 		/// Gets an enumeration of all Service/URI elements, sorted in priority order.
 		/// </summary>
 		public IEnumerable<UriElement> ServiceUris {

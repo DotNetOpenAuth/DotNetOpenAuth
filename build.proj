@@ -7,6 +7,7 @@
 
 	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
 	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
+	<Import Project="$(ProjectRoot)\tools\Publish.targets"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
 
 	<ItemGroup>
@@ -14,7 +15,7 @@
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
 	</ItemGroup>
 
-	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
 		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 		<ItemGroup>
 			<DirtyDirectories Include="
@@ -164,8 +165,8 @@
 											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
 																$(OutputPath)\$(ProductName).???;
-																$(OutputPath)\$(ProductName).Contracts.???;
 																$(ProjectRoot)\Doc\README.Bin.html;
+																$(ProjectRoot)\src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)\Lib\log4net.*;
@@ -184,6 +185,8 @@
 															$(ProjectRoot)\**\Settings.StyleCop;
 															$(ProjectRoot)\Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)\Samples\**\log4net.???;
+															$(ProjectRoot)\Samples\**\PresentationCore.dll;
+															$(ProjectRoot)\Samples\**\System.Printing.dll;
 															$(ProjectRoot)\Samples\**\*.refresh_;
 															" />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
@@ -236,7 +239,9 @@
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
 	</Target>
 
-	<Target Name="Nightly" DependsOnTargets="Drop;Tools">
+	<!-- Although Nightly includes publishing samples and docs, those targets are conditioned for
+	     running only when the SampleWebRoot and DocWebRoot properties are set, respectively. -->
+	<Target Name="Nightly" DependsOnTargets="Drop;Tools;PublishSamples;PublishDocumentation">
 
 	</Target>
 

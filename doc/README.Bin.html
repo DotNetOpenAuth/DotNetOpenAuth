@@ -9,10 +9,20 @@
 		{
 			vertical-align: top;
 		}
+	.style1
+	{
+	  font-family: "Courier New", Courier, monospace;
+	}
+	.style2
+	{
+	  font-family: "Courier New", Courier, monospace;
+	  font-style: italic;
+	}
 	</style>
 </head>
 <body>
-	<h1>Binary dependencies of sites using this library</h1>
+	<h1>Files in this directory</h1>
+	<h2>Binary dependencies of sites using this library</h2>
 	<table>
 		<tr>
 			<th>
@@ -43,7 +53,7 @@
 			<th>
 				log4net.dll
 			</th>
-			<td>If present, will allow for recording log messages this library emits.</td>
+			<td>If present and v1.2.10, will allow for recording log messages this library emits.</td>
 		</tr>
 		<tr>
 			<th>
@@ -51,6 +61,22 @@
 			</th>
 			<td>enables contract compile-time and runtime enforcement, but currently only used for
 				developing DotNetOpenAuth itself.</td>
+		</tr>
+	</table>
+	<h2>Other files</h2>
+	<table>
+		<tr>
+			<th>
+				DotNetOpenAuth.xsd
+			</th>
+			<td>Provides Intellisense for the web.config or app.config files of projects using this library.&nbsp; 
+				To activate Intellisense, modify your <span class="style1">
+				%PROGRAMFILES%\Microsoft Visual Studio 9.0\Xml\Schemas\catalog.xml</span> file 
+				to include this entry:<br />
+				<span class="style1">&lt;Association extension=&quot;config&quot; schema=&quot;</span><span 
+					class="style2">permanent-directory</span><span class="style1">\DotNetOpenAuth.xsd&quot; 
+				condition=&quot;%TargetFrameworkVersion% != 2.0 and %TargetFrameworkVersion% != 3.0&quot; 
+				/&gt; </span>&nbsp;</td>
 		</tr>
 	</table>
 </body>

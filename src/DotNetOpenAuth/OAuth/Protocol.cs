@@ -7,9 +7,27 @@
 namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+
+	/// <summary>
+	/// An enumeration of the OAuth protocol versions supported by this library.
+	/// </summary>
+	public enum ProtocolVersion {
+		/// <summary>
+		/// OAuth 1.0 specification
+		/// </summary>
+		V10,
+
+		/// <summary>
+		/// OAuth 1.0a specification
+		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "a", Justification = "By design.")]
+		V10a,
+	}
 
 	/// <summary>
 	/// Constants used in the OAuth protocol.
@@ -18,6 +36,7 @@ namespace DotNetOpenAuth.OAuth {
 	/// OAuth Protocol Parameter names and values are case sensitive. Each OAuth Protocol Parameters MUST NOT appear more than once per request, and are REQUIRED unless otherwise noted,
 	/// per OAuth 1.0 section 5.
 	/// </remarks>
+	[DebuggerDisplay("OAuth {Version}")]
 	internal class Protocol {
 		/// <summary>
 		/// The namespace to use for V1.0 of the protocol.
@@ -25,11 +44,47 @@ namespace DotNetOpenAuth.OAuth {
 		internal const string DataContractNamespaceV10 = "http://oauth.net/core/1.0/";
 
 		/// <summary>
+		/// The prefix used for all key names in the protocol.
+		/// </summary>
+		internal const string ParameterPrefix = "oauth_";
+
+		/// <summary>
+		/// The string representation of a <see cref="Version"/> instance to be used to represent OAuth 1.0a.
+		/// </summary>
+		internal const string V10aVersion = "1.0.1";
+
+		/// <summary>
+		/// The scheme to use in Authorization header message requests.
+		/// </summary>
+		internal const string AuthorizationHeaderScheme = "OAuth";
+
+		/// <summary>
 		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0 of the protocol.
 		/// </summary>
 		internal static readonly Protocol V10 = new Protocol {
 			dataContractNamespace = DataContractNamespaceV10,
+			Version = new Version(1, 0),
+			ProtocolVersion = ProtocolVersion.V10,
 		};
+
+		/// <summary>
+		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0a of the protocol.
+		/// </summary>
+		internal static readonly Protocol V10a = new Protocol {
+			dataContractNamespace = DataContractNamespaceV10,
+			Version = new Version(V10aVersion),
+			ProtocolVersion = ProtocolVersion.V10a,
+		};
+
+		/// <summary>
+		/// A list of all supported OAuth versions, in order starting from newest version.
+		/// </summary>
+		internal static readonly List<Protocol> AllVersions = new List<Protocol>() { V10a, V10 };
+
+		/// <summary>
+		/// The default (or most recent) supported version of the OpenID protocol.
+		/// </summary>
+		internal static readonly Protocol Default = AllVersions[0];
 
 		/// <summary>
 		/// The namespace to use for this version of the protocol.
@@ -37,19 +92,26 @@ namespace DotNetOpenAuth.OAuth {
 		private string dataContractNamespace;
 
 		/// <summary>
-		/// The prefix used for all key names in the protocol.
+		/// Initializes a new instance of the <see cref="Protocol"/> class.
 		/// </summary>
-		private string parameterPrefix = "oauth_";
+		internal Protocol() {
+			this.PublishedVersion = "1.0";
+		}
 
 		/// <summary>
-		/// The scheme to use in Authorization header message requests.
+		/// Gets the version used to represent OAuth 1.0a.
 		/// </summary>
-		private string authorizationHeaderScheme = "OAuth";
+		internal Version Version { get; private set; }
 
 		/// <summary>
-		/// Gets the default <see cref="Protocol"/> instance.
+		/// Gets the version to declare on the wire.
 		/// </summary>
-		internal static Protocol Default { get { return V10; } }
+		internal string PublishedVersion { get; private set; }
+
+		/// <summary>
+		/// Gets the <see cref="ProtocolVersion"/> enum value for the <see cref="Protocol"/> instance.
+		/// </summary>
+		internal ProtocolVersion ProtocolVersion { get; private set; }
 
 		/// <summary>
 		/// Gets the namespace to use for this version of the protocol.
@@ -59,29 +121,28 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Gets the prefix used for all key names in the protocol.
+		/// Gets the OAuth Protocol instance to use for the given version.
 		/// </summary>
-		internal string ParameterPrefix {
-			get { return this.parameterPrefix; }
-		}
-
-		/// <summary>
-		/// Gets the scheme to use in Authorization header message requests.
-		/// </summary>
-		internal string AuthorizationHeaderScheme {
-			get { return this.authorizationHeaderScheme; }
-		}
-
-		/// <summary>
-		/// Gets an instance of <see cref="Protocol"/> given a <see cref="Version"/>.
-		/// </summary>
-		/// <param name="version">The version of the protocol that is desired.</param>
-		/// <returns>The <see cref="Protocol"/> instance representing the requested version.</returns>
-		internal static Protocol Lookup(Version version) {
-			switch (version.Major) {
-				case 1: return Protocol.V10;
+		/// <param name="version">The OAuth version to get.</param>
+		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
+		public static Protocol Lookup(ProtocolVersion version) {
+			switch (version) {
+				case ProtocolVersion.V10: return Protocol.V10;
+				case ProtocolVersion.V10a: return Protocol.V10a;
 				default: throw new ArgumentOutOfRangeException("version");
 			}
+		}
+
+		/// <summary>
+		/// Gets the OAuth Protocol instance to use for the given version.
+		/// </summary>
+		/// <param name="version">The OAuth version to get.</param>
+		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
+		internal static Protocol Lookup(Version version) {
+			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			Protocol protocol = AllVersions.FirstOrDefault(p => p.Version == version);
+			ErrorUtilities.VerifyArgumentInRange(protocol != null, "version");
+			return protocol;
 		}
 	}
 }

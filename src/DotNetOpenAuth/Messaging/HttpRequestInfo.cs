@@ -226,7 +226,7 @@ namespace DotNetOpenAuth.Messaging {
 			get {
 				Contract.Ensures(Contract.Result<NameValueCollection>() != null);
 				if (this.form == null) {
-					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == "application/x-www-form-urlencoded") {
+					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == Channel.HttpFormUrlEncoded) {
 						StreamReader reader = new StreamReader(this.InputStream);
 						long originalPosition = 0;
 						if (this.InputStream.CanSeek) {
@@ -328,12 +328,11 @@ namespace DotNetOpenAuth.Messaging {
 			if (request.ServerVariables["HTTP_HOST"] != null) {
 				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
-				string[] hostAndPort = request.ServerVariables["HTTP_HOST"].Split(new[] { ':' }, 2);
-				publicRequestUri.Host = hostAndPort[0];
-				if (hostAndPort.Length > 1) {
-					publicRequestUri.Port = Convert.ToInt32(hostAndPort[1], CultureInfo.InvariantCulture);
-				} else {
-					publicRequestUri.Port = publicRequestUri.Scheme == Uri.UriSchemeHttps ? 443 : 80;
+				Uri hostAndPort = new Uri(request.Url.Scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
+				publicRequestUri.Host = hostAndPort.Host;
+				publicRequestUri.Port = hostAndPort.Port;
+				if (request.ServerVariables["HTTP_X_FORWARDED_PROTO"] != null) {
+					publicRequestUri.Scheme = request.ServerVariables["HTTP_X_FORWARDED_PROTO"];
 				}
 				return publicRequestUri.Uri;
 			} else {
@@ -372,7 +371,16 @@ namespace DotNetOpenAuth.Messaging {
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			foreach (string key in pairs) {
-				headers.Add(key, pairs[key]);
+				try {
+					headers.Add(key, pairs[key]);
+				} catch (ArgumentException ex) {
+					Logger.Messaging.WarnFormat(
+						"{0} thrown when trying to add web header \"{1}: {2}\".  {3}",
+						ex.GetType().Name,
+						key,
+						pairs[key],
+						ex.Message);
+				}
 			}
 
 			return headers;

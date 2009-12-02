@@ -221,7 +221,17 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.EnsuresOnThrow<ProtocolException>(!condition);
 			Contract.Assume(message != null);
 			if (!condition) {
-				throw new ProtocolException(string.Format(CultureInfo.CurrentCulture, message, args));
+				var exception = new ProtocolException(string.Format(CultureInfo.CurrentCulture, message, args));
+				if (Logger.Messaging.IsErrorEnabled) {
+					Logger.Messaging.Error(
+						string.Format(
+						CultureInfo.CurrentCulture,
+						"Protocol error: {0}{1}{2}",
+						exception.Message,
+						Environment.NewLine,
+						new StackTrace()));
+				}
+				throw exception;
 			}
 		}
 

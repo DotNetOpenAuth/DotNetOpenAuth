@@ -7,8 +7,10 @@
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
+	using System.Linq;
 	using System.Net.Security;
 	using System.Reflection;
 	using System.Xml;
@@ -17,6 +19,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
 	/// </summary>
+	[DebuggerDisplay("MessagePart {Name}")]
 	internal class MessagePart {
 		/// <summary>
 		/// A map of converters that help serialize custom objects to string values and back again.
@@ -67,6 +70,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<Identifier>(id => id.ToString(), str => Identifier.Parse(str));
 			Map<bool>(value => value.ToString().ToLowerInvariant(), str => bool.Parse(str));
 			Map<CultureInfo>(c => c.Name, str => new CultureInfo(str));
+			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
 		}
 
 		/// <summary>
@@ -115,10 +119,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
 				}
 			} else {
-				var encoder = GetEncoder(attribute.Encoder);
-				this.converter = new ValueMapping(
-					obj => encoder.Encode(obj),
-					str => encoder.Decode(str));
+				this.converter = new ValueMapping(GetEncoder(attribute.Encoder));
 			}
 
 			// readonly and const fields are considered legal, and "constants" for message transport.
@@ -191,7 +192,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						this.field.SetValue(message, this.ToValue(value));
 					}
 				}
-			} catch (FormatException ex) {
+			} catch (Exception ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartReadFailure, message.GetType(), this.Name, value);
 			}
 		}
@@ -288,7 +289,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// An instance of the appropriate type for setting the member.
 		/// </returns>
 		private object ToValue(string value) {
-			return value == null ? null : this.converter.StringToValue(value);
+			return this.converter.StringToValue(value);
 		}
 
 		/// <summary>
@@ -299,7 +300,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// The string representation of the member's value.
 		/// </returns>
 		private string ToString(object value) {
-			return value == null ? null : this.converter.ValueToString(value);
+			return this.converter.ValueToString(value);
 		}
 
 		/// <summary>

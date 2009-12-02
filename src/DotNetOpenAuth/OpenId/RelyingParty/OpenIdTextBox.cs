@@ -1035,7 +1035,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
-				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+				string persistentString = response.GetUntrustedCallbackArgument(UsePersistentCookieCallbackKey);
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
 					this.UsePersistentCookie = persistentBool;
@@ -1219,7 +1219,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private bool IsPopupAppropriate() {
 			Contract.Requires(this.Request != null);
 
-			return this.Popup == PopupBehavior.Always || this.Request.Provider.IsExtensionSupported<UIRequest>();
+			switch (this.Popup) {
+				case PopupBehavior.Never:
+					return false;
+				case PopupBehavior.Always:
+					return true;
+				case PopupBehavior.IfProviderSupported:
+					return this.Request.Provider.IsExtensionSupported<UIRequest>();
+				default:
+					throw new InternalErrorException();
+			}
 		}
 
 		/// <summary>

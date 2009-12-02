@@ -4,26 +4,28 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.ApplicationBlock {
+namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Runtime.InteropServices;
 	using System.Security.Principal;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Represents an OAuth consumer that is impersonating a known user on the system.
 	/// </summary>
+	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "Not cocreatable.")]
 	[Serializable]
 	[ComVisible(true)]
-	internal class OAuthIdentity : IIdentity {
+	public class OAuthIdentity : IIdentity {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthIdentity"/> class.
 		/// </summary>
 		/// <param name="username">The username.</param>
 		internal OAuthIdentity(string username) {
-			if (String.IsNullOrEmpty(username)) {
-				throw new ArgumentNullException("username");
-			}
-
+			Contract.Requires(!String.IsNullOrEmpty(username));
+			ErrorUtilities.VerifyNonZeroLength(username, "username");
 			this.Name = username;
 		}
 

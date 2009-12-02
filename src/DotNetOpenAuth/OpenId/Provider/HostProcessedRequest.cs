@@ -66,6 +66,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			get { return this.RequestMessage.Realm; }
 		}
 
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		public abstract Uri ProviderEndpoint { get; set; }
+
 		#endregion
 
 		/// <summary>
@@ -105,7 +113,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
 		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(OpenIdProvider provider) {
-			Contract.Requires(provider != null);
 			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
 
 			if (!this.realmDiscoveryResult.HasValue) {
@@ -131,7 +138,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
 
-				var returnToEndpoints = this.Realm.Discover(provider.Channel.WebRequestHandler, false);
+				var returnToEndpoints = this.Realm.DiscoverReturnToEndpoints(provider.Channel.WebRequestHandler, false);
 				if (returnToEndpoints == null) {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}

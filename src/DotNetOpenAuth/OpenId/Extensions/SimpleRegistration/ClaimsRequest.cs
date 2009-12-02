@@ -116,6 +116,12 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		public DemandLevel TimeZone { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="ClaimsRequest"/> instance
+		/// is synthesized from an AX request at the Provider.
+		/// </summary>
+		internal bool Synthesized { get; set; }
+
+		/// <summary>
 		/// Gets or sets the value of the sreg.required parameter.
 		/// </summary>
 		/// <value>A comma-delimited list of sreg fields.</value>
@@ -247,6 +253,8 @@ TimeZone = '{8}'";
 		internal void SetProfileRequestFromList(IEnumerable<string> fieldNames, DemandLevel requestLevel) {
 			foreach (string field in fieldNames) {
 				switch (field) {
+					case "": // this occurs for empty lists
+						break;
 					case Constants.nickname:
 						this.Nickname = requestLevel;
 						break;

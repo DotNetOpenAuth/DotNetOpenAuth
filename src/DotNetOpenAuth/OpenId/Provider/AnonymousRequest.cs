@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -26,6 +27,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="provider">The provider that received the request.</param>
 		/// <param name="request">The incoming authentication request message.</param>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts require it.")]
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
 			Contract.Requires(provider != null);
@@ -34,6 +36,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}
+
+		#region HostProcessedRequest members
+
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		public override Uri ProviderEndpoint {
+			get { return this.positiveResponse.ProviderEndpoint; }
+			set { this.positiveResponse.ProviderEndpoint = value; }
+		}
+
+		#endregion
 
 		#region IAnonymousRequest Members
 

@@ -244,9 +244,6 @@ Discovered endpoint info:
   <data name="XriResolutionFailed" xml:space="preserve">
     <value>XRI resolution failed.</value>
   </data>
-  <data name="StoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
-    <value>No current HttpContext was detected, so an {0} instance must be explicitly provided or specified in the .config file.  Call the constructor overload that takes an {0}.</value>
-  </data>
   <data name="AttributeAlreadyAdded" xml:space="preserve">
     <value>An attribute with type URI '{0}' has already been added.</value>
   </data>
@@ -333,5 +330,14 @@ Discovered endpoint info:
   </data>
   <data name="ArgumentIsPpidIdentifier" xml:space="preserve">
     <value>This is already a PPID Identifier.</value>
+  </data>
+  <data name="RequireSslNotSatisfiedByAssertedClaimedId" xml:space="preserve">
+    <value>Sorry.  This site only accepts OpenIDs that are HTTPS-secured, but {0} is not a secure Identifier.</value>
+  </data>
+  <data name="BadExtension" xml:space="preserve">
+    <value>The {0} extension failed to deserialize and will be skipped.  {1}</value>
+  </data>
+  <data name="PositiveAssertionFromNonWhitelistedProvider" xml:space="preserve">
+    <value>An positive OpenID assertion was received from OP endpoint {0} that is not on this relying party's whitelist.</value>
   </data>
 </root>

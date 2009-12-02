@@ -28,6 +28,12 @@ namespace DotNetOpenAuth.Messaging {
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
 		/// <summary>
+		/// The content-type used on HTTP POST requests where the POST entity is a
+		/// URL-encoded series of key=value pairs.
+		/// </summary>
+		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
+
+		/// <summary>
 		/// The encoding to use when writing out POST entity strings.
 		/// </summary>
 		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
@@ -61,7 +67,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		private const string IndirectMessageFormPostFormat = @"
 <html>
-<body onload=""var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; document.getElementById('openid_message').submit()"">
+<head>
+</head>
+<body onload=""document.body.style.display = 'none'; var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; document.getElementById('openid_message').submit()"">
 <form id=""openid_message"" action=""{0}"" method=""post"" accept-charset=""UTF-8"" enctype=""application/x-www-form-urlencoded"" onSubmit=""var btn = document.getElementById('submit_button'); btn.disabled = true; btn.value = 'Login in progress'; return true;"">
 {1}
 	<input id=""submit_button"" type=""submit"" value=""Continue"" />
@@ -317,10 +325,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message embedded in the given HTTP request, if present.
+		/// Gets the protocol message embedded in the current HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
-		/// <returns>The deserialized message.</returns>
+		/// <returns>The deserialized message.  Never null.</returns>
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
@@ -333,11 +341,11 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// Gets the protocol message embedded in the given HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <returns>The deserialized message.  Never null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
 		public TRequest ReadFromRequest<TRequest>(HttpRequestInfo httpRequest)
@@ -669,6 +677,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
+			headers.Add(HttpResponseHeader.ContentType, "text/html");
 			StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture);
 			StringBuilder hiddenFields = new StringBuilder();
 			foreach (var field in fields) {
@@ -848,7 +857,7 @@ namespace DotNetOpenAuth.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(httpRequest, "httpRequest");
 			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
-			httpRequest.ContentType = "application/x-www-form-urlencoded";
+			httpRequest.ContentType = HttpFormUrlEncoded;
 
 			// Setting the content-encoding to "utf-8" causes Google to reply
 			// with a 415 UnsupportedMediaType. But adding it doesn't buy us

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -34,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
-		private readonly Collection<IProviderBehavior> behaviors = new Collection<IProviderBehavior>();
+		private readonly ObservableCollection<IProviderBehavior> behaviors = new ObservableCollection<IProviderBehavior>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -79,6 +80,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
+			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
 			}
@@ -150,7 +152,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets a list of custom behaviors to apply to OpenID actions.
 		/// </summary>
-		internal ICollection<IProviderBehavior> Behaviors {
+		/// <remarks>
+		/// Adding behaviors can impact the security settings of the <see cref="OpenIdProvider"/>
+		/// in ways that subsequently removing the behaviors will not reverse.
+		/// </remarks>
+		public ICollection<IProviderBehavior> Behaviors {
 			get { return this.behaviors; }
 		}
 
@@ -367,21 +373,27 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// is authorized to send an assertion for the given claimed identifier,
 			// do due diligence by performing our own discovery on the claimed identifier
 			// and make sure that it is tied to this OP and OP local identifier.
-			var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
-			var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
-			if (!discoveredEndpoints.Contains(serviceEndpoint)) {
-				Logger.OpenId.DebugFormat(
-					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint.  This endpoint: {1}{2}  Discovered endpoints: {1}{3}",
-					claimedIdentifier,
-					Environment.NewLine,
-					serviceEndpoint,
-					discoveredEndpoints.ToStringDeferred(true));
-				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
+			if (this.SecuritySettings.UnsolicitedAssertionVerification != ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.NeverVerify) {
+				var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
+				var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
+				if (!discoveredEndpoints.Contains(serviceEndpoint)) {
+					Logger.OpenId.WarnFormat(
+						"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
+						claimedIdentifier,
+						Environment.NewLine,
+						serviceEndpoint,
+						discoveredEndpoints.ToStringDeferred(true));
+
+					// Only FAIL if the setting is set for it.
+					if (this.securitySettings.UnsolicitedAssertionVerification == ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.RequireSuccess) {
+						ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
+					}
+				}
 			}
 
 			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			RelyingPartyEndpointDescription returnToEndpoint = null;
-			var returnToEndpoints = relyingParty.Discover(this.WebRequestHandler, true);
+			var returnToEndpoints = relyingParty.DiscoverReturnToEndpoints(this.WebRequestHandler, true);
 			if (returnToEndpoints != null) {
 				returnToEndpoint = returnToEndpoints.FirstOrDefault();
 			}
@@ -502,6 +514,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				return new AutoResponsiveRequest(incomingMessage, errorMessage, this.SecuritySettings);
 			} else {
 				return new AutoResponsiveRequest(errorMessage, this.SecuritySettings);
+			}
+		}
+
+		/// <summary>
+		/// Called by derived classes when behaviors are added or removed.
+		/// </summary>
+		/// <param name="sender">The collection being modified.</param>
+		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			foreach (IProviderBehavior profile in e.NewItems) {
+				profile.ApplySecuritySettings(this.SecuritySettings);
 			}
 		}
 	}

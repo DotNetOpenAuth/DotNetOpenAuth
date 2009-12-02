@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
@@ -23,13 +24,28 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// <c>Application_Start</c> method in the global.asax.cs file.</para>
 	/// </remarks>
 	[Serializable]
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ppid", Justification = "Abbreviation")]
 	public sealed class PpidGeneration : IProviderBehavior {
 		/// <summary>
 		/// Gets or sets the provider for generating PPID identifiers.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ppid", Justification = "Abbreviation")]
 		public static IDirectedIdentityIdentifierProvider PpidIdentifierProvider { get; set; }
 
 		#region IProviderBehavior Members
+
+		/// <summary>
+		/// Applies a well known set of security requirements to a default set of security settings.
+		/// </summary>
+		/// <param name="securitySettings">The security settings to enhance with the requirements of this profile.</param>
+		/// <remarks>
+		/// Care should be taken to never decrease security when applying a profile.
+		/// Profiles should only enhance security requirements to avoid being
+		/// incompatible with each other.
+		/// </remarks>
+		void IProviderBehavior.ApplySecuritySettings(ProviderSecuritySettings securitySettings) {
+			// No special security to apply here.
+		}
 
 		/// <summary>
 		/// Called when a request is received by the Provider.

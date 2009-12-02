@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20B5E173-C3C4-49F8-BD25-E69044075B4D}"
 	ProjectSection(SolutionItems) = preProject
 		DotNetOpenAuth.vsmdi = DotNetOpenAuth.vsmdi
+		..\LICENSE.txt = ..\LICENSE.txt
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		..\doc\README.Bin.html = ..\doc\README.Bin.html
 		..\doc\README.html = ..\doc\README.html
@@ -16,7 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F-24F4-4136-8741-6063D0D7A031}"
 	ProjectSection(SolutionItems) = preProject
+		..\doc\specs\ICAM_OpenID20Profile.pdf = ..\doc\specs\ICAM_OpenID20Profile.pdf
 		..\doc\specs\OAuth Core 1.0.htm = ..\doc\specs\OAuth Core 1.0.htm
+		..\doc\specs\OAuth Core 1.0a (Draft 3).htm = ..\doc\specs\OAuth Core 1.0a (Draft 3).htm
 		..\doc\specs\OpenID OAuth Extension.htm = ..\doc\specs\OpenID OAuth Extension.htm
 		..\doc\specs\openid-attribute-exchange-1_0.html = ..\doc\specs\openid-attribute-exchange-1_0.html
 		..\doc\specs\openid-authentication-1_1.html = ..\doc\specs\openid-authentication-1_1.html
@@ -104,6 +107,9 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIdRelyingPartyClassicAs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthConsumerWpf", "..\samples\OAuthConsumerWpf\OAuthConsumerWpf.csproj", "{6EC36418-DBC5-4AD1-A402-413604AA7A08}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7ADCCD5C-AC2B-4340-9410-FE3A31A48191} = {7ADCCD5C-AC2B-4340-9410-FE3A31A48191}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenID", "OpenID", "{034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}"
 EndProject

@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An in-memory store for Relying Parties, suitable for single server, single process
 	/// ASP.NET web sites.
 	/// </summary>
-	internal class StandardRelyingPartyApplicationStore : IRelyingPartyApplicationStore {
+	public class StandardRelyingPartyApplicationStore : IRelyingPartyApplicationStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
 		/// </summary>
-		internal StandardRelyingPartyApplicationStore() {
+		public StandardRelyingPartyApplicationStore() {
 			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
 			this.associationStore = new AssociationMemoryStore<Uri>();
 		}
@@ -48,12 +48,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the best association (the one with the longest remaining life) for a given key.
 		/// </summary>
 		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="securitySettings">The security settings.</param>
+		/// <param name="securityRequirements">The security settings.</param>
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
 		/// </returns>
-		public Association GetAssociation(Uri distinguishingFactor, SecuritySettings securitySettings) {
-			return this.associationStore.GetAssociation(distinguishingFactor, securitySettings);
+		public Association GetAssociation(Uri distinguishingFactor, SecuritySettings securityRequirements) {
+			return this.associationStore.GetAssociation(distinguishingFactor, securityRequirements);
 		}
 
 		/// <summary>
