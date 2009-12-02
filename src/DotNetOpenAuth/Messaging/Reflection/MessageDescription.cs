@@ -116,8 +116,17 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="parts">The key/value pairs of the serialzied message.</param>
 		internal void EnsureMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
-			this.EnsureRequiredMessagePartsArePresent(parts.Keys);
-			this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
+			try {
+				this.EnsureRequiredMessagePartsArePresent(parts.Keys);
+				this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
+			} catch (ProtocolException) {
+				Logger.Messaging.ErrorFormat(
+					"Error while performing basic validation of {0} with these message parts:{1}{2}",
+					this.messageType.Name,
+					Environment.NewLine,
+					parts.ToStringDeferred());
+				throw;
+			}
 		}
 
 		/// <summary>
