@@ -101,7 +101,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This can be different from the <see cref="RequestUri"/> in cases of 
 		/// redirection during the request.
 		/// </remarks>
-		public Uri FinalUri { get; private set; }
+		public Uri FinalUri { get; internal set; }
 
 		/// <summary>
 		/// Gets the headers that must be included in the response to the user agent.

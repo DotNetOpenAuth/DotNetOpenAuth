@@ -121,14 +121,19 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private void ProcessRequests() {
 			Contract.Requires(this.listener != null);
 
-			try {
-				while (true) {
+			while (true) {
+				try {
 					HttpListenerContext context = this.listener.GetContext();
 					this.handler(context);
+				} catch (HttpListenerException ex) {
+					if (this.listener.IsListening) {
+						App.Logger.Error("Unexpected exception.", ex);
+					} else {
+						// the listener is probably being shut down
+						App.Logger.Warn("HTTP listener is closing down.", ex);
+						break;
+					}
 				}
-			} catch (HttpListenerException ex) {
-				// the listener is probably being shut down
-				App.Logger.Warn("HTTP listener is closing down.", ex);
 			}
 		}
 	}

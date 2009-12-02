@@ -28,6 +28,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal const bool SignOutgoingExtensionsDefault = true;
 
 		/// <summary>
+		/// The default value for the <see cref="UnsolicitedAssertionVerification"/> property.
+		/// </summary>
+		internal const UnsolicitedAssertionVerificationLevel UnsolicitedAssertionVerificationDefault = UnsolicitedAssertionVerificationLevel.RequireSuccess;
+
+		/// <summary>
 		/// The subset of association types and their customized lifetimes.
 		/// </summary>
 		private IDictionary<string, TimeSpan> associationLifetimes = new Dictionary<string, TimeSpan>();
@@ -39,6 +44,37 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			: base(true) {
 			this.SignOutgoingExtensions = SignOutgoingExtensionsDefault;
 			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
+			this.UnsolicitedAssertionVerification = UnsolicitedAssertionVerificationDefault;
+		}
+
+		/// <summary>
+		/// The behavior a Provider takes when verifying that it is authoritative for an
+		/// identifier it is about to send an unsolicited assertion for.
+		/// </summary>
+		public enum UnsolicitedAssertionVerificationLevel {
+			/// <summary>
+			/// Always verify that the Provider is authoritative for an identifier before
+			/// sending an unsolicited assertion for it and fail if it is not.
+			/// </summary>
+			RequireSuccess,
+
+			/// <summary>
+			/// Always check that the Provider is authoritative for an identifier before
+			/// sending an unsolicited assertion for it, but only log failures, and proceed
+			/// to send the unsolicited assertion.
+			/// </summary>
+			LogWarningOnFailure,
+
+			/// <summary>
+			/// Never verify that the Provider is authoritative for an identifier before
+			/// sending an unsolicited assertion for it.
+			/// </summary>
+			/// <remarks>
+			/// This setting is useful for web servers that refuse to allow a Provider to
+			/// introspectively perform an HTTP GET on itself, when sending unsolicited assertions
+			/// for identifiers that the OP controls.
+			/// </remarks>
+			NeverVerify,
 		}
 
 		/// <summary>
@@ -55,6 +91,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <value>Default is <c>false</c>.</value>
 		public bool RequireSsl { get; set; }
+
+		/// <summary>
+		/// Gets or sets the level of verification a Provider performs on an identifier before
+		/// sending an unsolicited assertion for it.
+		/// </summary>
+		/// <value>The default value is <see cref="UnsolicitedAssertionVerificationLevel.RequireSuccess"/>.</value>
+		public UnsolicitedAssertionVerificationLevel UnsolicitedAssertionVerification { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether OpenID 1.x relying parties that may not be
@@ -101,6 +144,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			securitySettings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
 			securitySettings.RequireSsl = this.RequireSsl;
 			securitySettings.SignOutgoingExtensions = this.SignOutgoingExtensions;
+			securitySettings.UnsolicitedAssertionVerification = this.UnsolicitedAssertionVerification;
 
 			return securitySettings;
 		}

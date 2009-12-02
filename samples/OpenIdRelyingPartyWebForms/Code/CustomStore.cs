@@ -19,16 +19,6 @@
 	public class CustomStore : IRelyingPartyApplicationStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
-		#region IPrivateSecretStore Members
-
-		/// <summary>
-		/// Gets or sets a secret key that can be used for signing.
-		/// </summary>
-		/// <value>A 64-byte binary value, which may contain null bytes.</value>
-		public byte[] PrivateSecret { get; set; }
-
-		#endregion
-
 		#region INonceStore Members
 
 		/// <summary>
@@ -64,13 +54,14 @@
 			// at you in the result of a race condition somewhere in your web site UI code
 			// and display some message to have the user try to log in again, and possibly
 			// warn them about a replay attack.
+			timestamp = timestamp.ToLocalTime();
 			lock (this) {
-				if (dataSet.Nonce.FindByCodeContext(nonce, context) != null) {
+				if (dataSet.Nonce.FindByIssuedCodeContext(timestamp, nonce, context) != null) {
 					return false;
 				}
 
 				TimeSpan maxMessageAge = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
-				dataSet.Nonce.AddNonceRow(context, nonce, timestamp.ToLocalTime(), (timestamp + maxMessageAge).ToLocalTime());
+				dataSet.Nonce.AddNonceRow(context, nonce, timestamp, timestamp + maxMessageAge);
 				return true;
 			}
 		}

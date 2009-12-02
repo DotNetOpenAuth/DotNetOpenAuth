@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
 		/// </summary>
-		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.ApplicationStore";
+		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.HttpApplicationStore";
 
 		/// <summary>
 		/// Backing store for the <see cref="Behaviors"/> property.
@@ -129,7 +129,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Contract.Ensures(Contract.Result<IRelyingPartyApplicationStore>() != null);
 
 				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, OpenIdStrings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
+				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
 				var store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
@@ -222,7 +222,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets a list of custom behaviors to apply to OpenID actions.
 		/// </summary>
-		internal ICollection<IRelyingPartyBehavior> Behaviors {
+		/// <remarks>
+		/// Adding behaviors can impact the security settings of this <see cref="OpenIdRelyingParty"/>
+		/// instance in ways that subsequently removing the behaviors will not reverse.
+		/// </remarks>
+		public ICollection<IRelyingPartyBehavior> Behaviors {
 			get { return this.behaviors; }
 		}
 

@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <returns>
 		/// The details of the endpoints if found, otherwise null.
 		/// </returns>
-		public override IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+		public override IEnumerable<RelyingPartyEndpointDescription> DiscoverReturnToEndpoints(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			return this.relyingPartyDescriptions;
 		}
 	}

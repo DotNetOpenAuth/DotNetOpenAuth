@@ -31,6 +31,11 @@ namespace DotNetOpenAuth.Messaging {
 	[Serializable]
 	public class OutgoingWebResponse {
 		/// <summary>
+		/// The encoder to use for serializing the response body.
+		/// </summary>
+		private static Encoding bodyStringEncoder = new UTF8Encoding(false);
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OutgoingWebResponse"/> class.
 		/// </summary>
 		internal OutgoingWebResponse() {
@@ -211,10 +216,9 @@ namespace DotNetOpenAuth.Messaging {
 				return;
 			}
 
-			Encoding encoding = Encoding.UTF8;
-			this.Headers[HttpResponseHeader.ContentEncoding] = encoding.HeaderName;
+			this.Headers[HttpResponseHeader.ContentEncoding] = bodyStringEncoder.HeaderName;
 			this.ResponseStream = new MemoryStream();
-			StreamWriter writer = new StreamWriter(this.ResponseStream, encoding);
+			StreamWriter writer = new StreamWriter(this.ResponseStream, bodyStringEncoder);
 			writer.Write(body);
 			writer.Flush();
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);

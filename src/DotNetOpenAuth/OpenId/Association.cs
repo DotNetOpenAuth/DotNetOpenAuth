@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="handle">The handle.</param>
 		/// <param name="secret">The secret.</param>
 		/// <param name="totalLifeLength">How long the association will be useful.</param>
-		/// <param name="issued">When this association was originally issued by the Provider.</param>
+		/// <param name="issued">The UTC time of when this association was originally issued by the Provider.</param>
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
 			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
 			ErrorUtilities.VerifyArgumentNotNull(secret, "secret");
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.OpenId {
 		public string Handle { get; set; }
 
 		/// <summary>
-		/// Gets the time when this <see cref="Association"/> will expire.
+		/// Gets the UTC time when this <see cref="Association"/> will expire.
 		/// </summary>
 		public DateTime Expires {
 			get { return this.Issued + this.TotalLifeLength; }
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Gets or sets the time that this <see cref="Association"/> was first created.
+		/// Gets or sets the UTC time that this <see cref="Association"/> was first created.
 		/// </summary>
 		internal DateTime Issued { get; set; }
 
@@ -130,8 +130,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="handle">
 		/// The <see cref="Handle"/> property of the previous <see cref="Association"/> instance.
 		/// </param>
-		/// <param name="expires">
-		/// The value of the <see cref="Expires"/> property of the previous <see cref="Association"/> instance.
+		/// <param name="expiresUtc">
+		/// The UTC value of the <see cref="Expires"/> property of the previous <see cref="Association"/> instance.
 		/// </param>
 		/// <param name="privateData">
 		/// The byte array returned by a call to <see cref="SerializePrivateData"/> on the previous
@@ -142,15 +142,15 @@ namespace DotNetOpenAuth.OpenId {
 		/// from a custom association store's 
 		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey, SecuritySettings)"/> method.
 		/// </returns>
-		public static Association Deserialize(string handle, DateTime expires, byte[] privateData) {
+		public static Association Deserialize(string handle, DateTime expiresUtc, byte[] privateData) {
 			if (string.IsNullOrEmpty(handle)) {
 				throw new ArgumentNullException("handle");
 			}
 			if (privateData == null) {
 				throw new ArgumentNullException("privateData");
 			}
-			expires = expires.ToUniversalTimeSafe();
-			TimeSpan remainingLifeLength = expires - DateTime.UtcNow;
+			expiresUtc = expiresUtc.ToUniversalTimeSafe();
+			TimeSpan remainingLifeLength = expiresUtc - DateTime.UtcNow;
 			byte[] secret = privateData; // the whole of privateData is the secret key for now.
 			// We figure out what derived type to instantiate based on the length of the secret.
 			try {

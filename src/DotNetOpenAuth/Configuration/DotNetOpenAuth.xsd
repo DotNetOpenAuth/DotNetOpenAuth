@@ -197,6 +197,15 @@
 												</xs:choice>
 												<xs:attribute name="requireSsl" type="xs:boolean" default="false" />
 												<xs:attribute name="protectDownlevelReplayAttacks" type="xs:boolean" />
+												<xs:attribute name="unsolicitedAssertionVerification">
+													<xs:simpleType>
+														<xs:restriction base="xs:NMTOKEN">
+															<xs:enumeration value="RequireSuccess" />
+															<xs:enumeration value="LogWarningOnFailure" />
+															<xs:enumeration value="NeverVerify" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
 												<xs:attribute name="minimumHashBitLength" type="xs:int" />
 												<xs:attribute name="maximumHashBitLength" type="xs:int" />
 											</xs:complexType>
@@ -261,6 +270,47 @@
 							</xs:element>
 						</xs:choice>
 						<xs:attribute name="maxAuthenticationTime" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="oauth">
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="consumer">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="security">
+											<xs:complexType>
+												
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="serviceProvider">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="security">
+											<xs:complexType>
+												<xs:attribute name="minimumRequiredOAuthVersion" default="V10">
+													<xs:simpleType>
+														<xs:restriction base="xs:NMTOKEN">
+															<xs:enumeration value="V10" />
+															<xs:enumeration value="V10a" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="maxAuthorizationTime" type="xs:string" default="0:05" />
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="store">
+											<xs:complexType>
+												<xs:attribute name="type" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>
