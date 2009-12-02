@@ -119,9 +119,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <param name="typeUri">The type URI.</param>
 		private void InjectAdvertisedTypeUri(string typeUri) {
-			var serviceEndpoint = IdentifierDiscoveryResult_Accessor.AttachShadow(this.authReq.Provider);
-			serviceEndpoint.Capabilities = new ReadOnlyCollection<string>(
-					serviceEndpoint.Capabilities.Concat(new[] { typeUri }).ToList());
+			var serviceEndpoint = (IdentifierDiscoveryResult)this.authReq.Provider;
+			serviceEndpoint.SetCapabilitiesForTestHook(
+				new ReadOnlyCollection<string>(serviceEndpoint.Capabilities.Concat(new[] { typeUri }).ToList()));
 		}
 	}
 }

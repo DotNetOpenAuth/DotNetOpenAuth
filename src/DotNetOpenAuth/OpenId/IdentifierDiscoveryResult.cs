@@ -445,6 +445,15 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Sets the Capabilities property (this method is a test hook.)
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <remarks>The publicize.exe tool should work for the unit tests, but for some reason it fails on the build server.</remarks>
+		internal void SetCapabilitiesForTestHook(ReadOnlyCollection<string> value) {
+			this.Capabilities = value;
+		}
+
+		/// <summary>
 		/// Gets the priority rating for a given type of endpoint, allowing a
 		/// priority sorting of endpoints.
 		/// </summary>
