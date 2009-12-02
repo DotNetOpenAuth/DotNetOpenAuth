@@ -28,13 +28,16 @@ public partial class OP_IdentitylessCheckId : System.Web.UI.Page {
 					} else if (response.Status == AuthenticationStatus.Canceled) {
 						testResultDisplay.Pass = true;
 						testResultDisplay.Details = "OP sent a 'cancel' response, which may be acceptable depending on the Provider.";
+					} else if (response.Status == AuthenticationStatus.Failed) {
+						testResultDisplay.Pass = true;
+						testResultDisplay.Details = "OP sent an 'error' response, which may be acceptable depending on the Provider.  Error details from Provider follow: " + response.Exception.Message;
 					} else {
 						testResultDisplay.Pass = false;
 						testResultDisplay.Details = "Expected an identity-less id_res message but got a " + response.Status + " response instead.";
 					}
 
-					testResultDisplay.ProviderEndpoint = new Uri(response.GetCallbackArgument("op_endpoint"));
-					testResultDisplay.ProtocolVersion = new Version(response.GetCallbackArgument("version"));
+					testResultDisplay.ProviderEndpoint = new Uri(this.Page.Request.QueryString["op_endpoint"]);
+					testResultDisplay.ProtocolVersion = new Version(this.Page.Request.QueryString["version"]);
 				}
 			} catch (ProtocolException ex) {
 				testResultDisplay.Pass = false;
