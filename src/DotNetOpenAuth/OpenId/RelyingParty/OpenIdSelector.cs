@@ -189,6 +189,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		protected override void CreateChildControls() {
 			base.CreateChildControls();
+			this.EnsureID();
 
 			var selectorButton = this.Buttons.OfType<SelectorInfoCardButton>().FirstOrDefault();
 			if (selectorButton != null) {

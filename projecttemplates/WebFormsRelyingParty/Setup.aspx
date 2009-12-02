@@ -20,7 +20,7 @@
 				Just tell me what OpenID you will use to administer the site.
 			</p>
 			<rp:OpenIdLogin runat="server" ButtonText="Create database" ID="openidLogin" 
-				OnLoggingIn="openidLogin_LoggingIn" 
+				OnLoggingIn="openidLogin_LoggingIn" Stateless="true"
 				TabIndex="1" LabelText="Administrator's OpenID:"
 				ButtonToolTip="Clicking this button will create the database and initialize the OpenID you specify as an admin of this web site." 
 				RegisterText="get an OpenID" />

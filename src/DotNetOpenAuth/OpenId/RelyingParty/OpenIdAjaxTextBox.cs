@@ -705,13 +705,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			base.OnPreRender(e);
 
 			if (this.DownloadYahooUILibrary) {
-				string yuiLoadScript = @"var loader = new YAHOO.util.YUILoader({
-	require: ['button', 'menu'],
-	loadOptional: false,
-	combine: true
-});
+				// Although we'll add the <script> tag to download the YAHOO component,
+				// a download failure may have occurred, so protect ourselves from a 
+				// script error using an if (YAHOO) block.  But apparently at least in IE
+				// that's not even enough, so we use a try/catch.
+				string yuiLoadScript = @"try { if (YAHOO) {
+	var loader = new YAHOO.util.YUILoader({
+		require: ['button', 'menu'],
+		loadOptional: false,
+		combine: true
+	});
 
-loader.insert();";
+	loader.insert();
+} } catch (e) { }";
 				this.Page.ClientScript.RegisterClientScriptInclude("yuiloader", this.Page.Request.Url.IsTransportSecure() ? YuiLoaderHttps : YuiLoaderHttp);
 				this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "requiredYuiComponents", yuiLoadScript, true);
 			}

@@ -57,13 +57,15 @@ namespace DotNetOpenAuth.BuildTasks {
 
 					foreach (var item in folder) {
 						bool replaceParameters = this.ReplaceParametersExtensions.Contains(Path.GetExtension(item.Include));
-						var projectItem = new XElement(
-							XName.Get("ProjectItem", VSTemplateNamespace),
-							Path.GetFileName(item.Include));
+						var itemName = XName.Get("ProjectItem", VSTemplateNamespace);
+						var projectItem = parentNode.Elements(itemName).FirstOrDefault(el => string.Equals(el.Value, Path.GetFileName(item.Include), StringComparison.OrdinalIgnoreCase));
+						if (projectItem == null) {
+							projectItem = new XElement(itemName, Path.GetFileName(item.Include));
+							parentNode.Add(projectItem);
+						}
 						if (replaceParameters) {
 							projectItem.SetAttributeValue("ReplaceParameters", "true");
 						}
-						parentNode.Add(projectItem);
 					}
 				}
 

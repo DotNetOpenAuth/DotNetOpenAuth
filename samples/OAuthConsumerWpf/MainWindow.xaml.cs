@@ -172,7 +172,7 @@
 					Uri authorizeUrl = consumer.RequestUserAuthorization(null, null, out requestToken);
 					Process.Start(authorizeUrl.AbsoluteUri);
 					MessageBox.Show(this, "Click OK when you've authorized the app.");
-					var authorizationResponse = consumer.ProcessUserAuthorization(requestToken);
+					var authorizationResponse = consumer.ProcessUserAuthorization(requestToken, null);
 					accessToken = authorizationResponse.AccessToken;
 				} else {
 					var authorizePopup = new Authorize(

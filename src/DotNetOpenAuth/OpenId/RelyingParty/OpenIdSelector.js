@@ -14,7 +14,7 @@ $(function() {
 		ajaxbox.setValue(hint);
 	}
 
-	if (document.infoCard.isSupported()) {
+	if (document.infoCard && document.infoCard.isSupported()) {
 		$('ul.OpenIdProviders li.infocard')[0].style.display = 'inline-block';
 	}
 

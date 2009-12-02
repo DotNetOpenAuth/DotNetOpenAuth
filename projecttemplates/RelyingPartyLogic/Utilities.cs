@@ -38,7 +38,7 @@ namespace RelyingPartyLogic {
 			}
 		}
 
-		public static void CreateDatabase(Identifier claimedId, string friendlyId) {
+		public static void CreateDatabase(Identifier claimedId, string friendlyId, string databaseName) {
 			const string SqlFormat = @"
 CREATE DATABASE [{0}] ON (NAME='{0}', FILENAME='{0}')
 GO
@@ -52,7 +52,7 @@ GO
 			using (var sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(DefaultNamespace + ".CreateDatabase.sql"))) {
 				schemaSql = sr.ReadToEnd();
 			}
-			string databasePath = HttpContext.Current.Server.MapPath("~/App_Data/Database.mdf");
+			string databasePath = HttpContext.Current.Server.MapPath("~/App_Data/" + databaseName + ".mdf");
 			string sql = string.Format(CultureInfo.InvariantCulture, SqlFormat, databasePath, schemaSql, claimedId, "Admin");
 
 			var serverConnection = new ServerConnection(".\\sqlexpress");

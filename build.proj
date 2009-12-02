@@ -6,6 +6,7 @@
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
+		<ProjectTemplatesVsi>$(ProjectTemplatesLayoutPath)DotNetOpenAuth Starter Kits.vsi</ProjectTemplatesVsi>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)tools\$(ProductName).Versioning.targets"/>
@@ -98,7 +99,8 @@
 
 	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct">
 		<PropertyGroup>
-			<ToolsDirectory>$(DropsRoot)$(ProductName)-Tools-$(BuildVersion)\</ToolsDirectory>
+			<ToolsDirectoryNoSlash>$(DropsRoot)$(ProductName)-Tools-$(BuildVersion)</ToolsDirectoryNoSlash>
+			<ToolsDirectory>$(ToolsDirectoryNoSlash)\</ToolsDirectory>
 		</PropertyGroup>
 
 		<ItemGroup>
@@ -128,7 +130,7 @@
 	
 	<Target Name="Tools" DependsOnTargets="ToolsLayout">
 		<PropertyGroup>
-			<ToolsZip>$(ToolsDirectory).zip</ToolsZip>
+			<ToolsZip>$(ToolsDirectoryNoSlash).zip</ToolsZip>
 		</PropertyGroup>
 
 		<Delete Files="$(ToolsZip)" />
@@ -161,6 +163,7 @@
 			<_ProjectTemplatesTransformSource Include="@(ProjectTemplatesSource)" Condition="
 																			 '%(Extension)' == '.cs'
 																			 or '%(Extension)' == '.csproj'
+																			 or '%(Extension)' == '.sql'
 																			 or '%(Extension)' == '.config'
 																			 or '%(Extension)' == '.Master'
 																			 or '%(Extension)' == '.aspx'
@@ -196,7 +199,9 @@
 			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
 
 			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
+			<VSProjectTemplateZipFiles Include="@(TopLevelVSProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
 		</ItemGroup>
+
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
 		</Trim>
@@ -205,6 +210,13 @@
 		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)" SkipUnchangedFiles="true">
 			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
 		</CopyWithTokenSubstitution>
+		<Purge Directories="$(ProjectTemplatesLayoutPath)"
+					 IntendedFiles="
+						@(ProjectTemplatesLayout);
+						@(ProjectTemplatesTransformLayout);
+						@(VSProjectTemplateZipFiles);
+						$(ProjectTemplatesVsi);
+						" />
 		<ChangeProjectReferenceToAssemblyReference
 			Projects="@(CopiedProjectTemplateFiles)"
 			Condition="'%(Extension)' == '.csproj'"
@@ -228,10 +240,6 @@
 	</Target>
 
 	<Target Name="ProjectTemplates" DependsOnTargets="ProjectTemplatesLayout">
-		<ItemGroup>
-			<VSProjectTemplateZipFiles Include="@(TopLevelVSProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
-		</ItemGroup>
-
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVSProjectTemplates)">
 			<Output TaskParameter="ProjectTemplates" ItemName="SubVSTemplates" />
 			<Output TaskParameter="ProjectTemplateContents" ItemName="TemplateItemContents" />
@@ -265,6 +273,22 @@
 			/>
 	</Target>
 
+	<Target Name="vsi" DependsOnTargets="ProjectTemplates">
+		<ItemGroup>
+			<ProjectTemplateVsiContents Include="
+																	$(ProjectTemplatesLayoutPath)*.vscontent;
+																	$(ProjectTemplatesLayoutPath)*.zip
+																	" />
+		</ItemGroup>
+
+		<Delete Files="$(ProjectTemplatesVsi)" />
+		<Zip
+			Files="@(ProjectTemplateVsiContents)"
+			ZipFileName="$(ProjectTemplatesVsi)"
+			WorkingDirectory="$(ProjectTemplatesLayoutPath)"
+			/>
+	</Target>
+
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
 	</Target>
 
@@ -281,11 +305,12 @@
 		     where CallTarget is fired do NOT affect those called targets. -->
 		<!-- The rest of these are here so that other DependsOn targets have access to these properties. -->
 		<PropertyGroup>
-			<DropDirectory>$(DropsRoot)$(ProductName)-$(BuildVersion)\</DropDirectory>
+			<DropDirectoryNoSlash>$(DropsRoot)$(ProductName)-$(BuildVersion)</DropDirectoryNoSlash>
+			<DropDirectory>$(DropDirectoryNoSlash)\</DropDirectory>
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;ProjectTemplates;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;vsi;Documentation">
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
@@ -321,7 +346,7 @@
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)Lib\log4net.*;
 																" />
-			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesLayoutPath)*.zip" />
+			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesVsi)" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
 															$(ProjectRoot)**\obj\**;
 															$(ProjectRoot)**\*.sln.cache;
@@ -389,7 +414,7 @@
 
 	<Target Name="Drop" DependsOnTargets="DropLayout">
 		<PropertyGroup>
-			<DropZip>$(DropDirectory).zip</DropZip>
+			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
 		</PropertyGroup>
 		<Delete Files="$(DropZip)" />
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" />

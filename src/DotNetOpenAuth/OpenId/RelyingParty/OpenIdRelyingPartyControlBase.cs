@@ -943,7 +943,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					req.SetUntrustedCallbackArgument(ReturnToReceivingControlId, this.ClientID);
 				}
 
-				((AuthenticationRequest)req).AssociationPreference = this.AssociationPreference;
+				// Apply the control's association preference to this auth request, but only if
+				// it is less demanding (greater ordinal value) than the existing one.
+				// That way, we protect against retrying an association that was already attempted.
+				var authReq = ((AuthenticationRequest)req);
+				if (authReq.AssociationPreference < this.AssociationPreference) {
+					authReq.AssociationPreference = this.AssociationPreference;
+				}
+
 				if (this.OnLoggingIn(req)) {
 					yield return req;
 				}

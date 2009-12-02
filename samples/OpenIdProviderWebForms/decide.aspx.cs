@@ -62,17 +62,15 @@ namespace OpenIdProviderWebForms {
 			}
 
 			if (this.OAuthPanel.Visible) {
-				string consumerKey = null;
 				string grantedScope = null;
 				if (this.oauthPermission.Checked) {
 					// This SIMPLE sample merely uses the realm as the consumerKey,
 					// but in a real app this will probably involve a database lookup to translate
 					// the realm to a known consumerKey.
-					consumerKey = ProviderEndpoint.PendingRequest.Realm;
 					grantedScope = string.Empty; // we don't scope individual access rights on this sample
 				}
 
-				OAuthHybrid.ServiceProvider.AttachAuthorizationResponse(ProviderEndpoint.PendingRequest, consumerKey, grantedScope);
+				OAuthHybrid.ServiceProvider.AttachAuthorizationResponse(ProviderEndpoint.PendingRequest, grantedScope);
 			}
 
 			var sregRequest = ProviderEndpoint.PendingRequest.GetExtension<ClaimsRequest>();
