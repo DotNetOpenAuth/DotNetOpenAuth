@@ -169,6 +169,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebFormsRelyingParty", "..\projecttemplates\WebFormsRelyingParty\WebFormsRelyingParty.csproj", "{A78F8FC6-7B03-4230-BE41-761E400D6810}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelyingPartyLogic", "..\projecttemplates\RelyingPartyLogic\RelyingPartyLogic.csproj", "{17932639-1F50-48AF-B0A5-E2BF832F82CC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D} = {2B4261AC-25AC-4B8D-B459-1C42B6B1401D}
+	EndProjectSection
+EndProject
+Project("{C8D11400-126E-41CD-887F-60BD40844F9E}") = "RelyingPartyDatabase", "..\projecttemplates\RelyingPartyDatabase\RelyingPartyDatabase.dbproj", "{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -276,6 +281,15 @@ Global
 		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17932639-1F50-48AF-B0A5-E2BF832F82CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.CodeAnalysis|Any CPU.Build.0 = Debug|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.CodeAnalysis|Any CPU.Deploy.0 = Debug|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -298,5 +312,6 @@ Global
 		{5C65603B-235F-47E6-B536-06385C60DE7F} = {E9ED920D-1F83-48C0-9A4B-09CCE505FE6D}
 		{A78F8FC6-7B03-4230-BE41-761E400D6810} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
 		{17932639-1F50-48AF-B0A5-E2BF832F82CC} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
+		{2B4261AC-25AC-4B8D-B459-1C42B6B1401D} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
 	EndGlobalSection
 EndGlobal
