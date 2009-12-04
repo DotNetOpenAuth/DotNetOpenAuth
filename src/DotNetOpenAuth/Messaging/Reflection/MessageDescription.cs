@@ -114,7 +114,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Ensures the message parts pass basic validation.
 		/// </summary>
-		/// <param name="parts">The key/value pairs of the serialzied message.</param>
+		/// <param name="parts">The key/value pairs of the serialized message.</param>
 		internal void EnsureMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
 			this.EnsureRequiredMessagePartsArePresent(parts.Keys);
 			this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
