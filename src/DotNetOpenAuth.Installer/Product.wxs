@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix  xmlns="http://schemas.microsoft.com/wix/2006/wi"
+       xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension"
+       xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="3b97d707-5a7a-4cdf-bab4-f8f1a93e5881" Name="DotNetOpenAuth (OpenID, OAuth and iCard Library)" Language="1033" Version="3.4.0.0" Manufacturer="DotNetOpenAuth" UpgradeCode="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">
+    <Package InstallerVersion="200" Compressed="yes" />
+
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+    <WixVariable Id="WixUILicenseRtf" Value="../../license.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="Bitmaps/bannrbmp.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="Bitmaps/dlgbmp.bmp" />
+    <PropertyRef Id="IISMAJORVERSION"/>
+    <PropertyRef Id="IISMINORVERSION"/>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="DotNetOpenAuth">
+          <Directory Id="LibraryFolder" Name="Bin">
+            <Component Id="ProductComponent" Guid="47ef004e-517c-4ae3-96b0-7e41e94875cc">
+              <File Id="DotNetOpenAuth.dll" Source="../../bin/$(Configuration)/DotNetOpenAuth.dll"></File>
+              <File Id="DotNetOpenAuth.pdb" Source="../../bin/$(Configuration)/DotNetOpenAuth.pdb"></File>
+              <File Id="DotNetOpenAuth.xml" Source="../../bin/$(Configuration)/DotNetOpenAuth.xml"></File>
+              
+                
+            </Component>
+            <Directory Id="LibraryFolder_Satellites" Name="SR">
+              <File Id="DotNetOpenAuth.dll" Source="../../bin/$(Configuration)/sr/DotNetOpenAuth.resources.dll"></File>
+
+
+            </Directory>
+          </Directory>
+          <Directory Id="WEBAPPLICATIONINSTALLFOLDER" Name="DotNetOpenAuth Samples">
+            <Component Id="DNOA_SamplesComponent" Guid="80b0ee2a-a102-46ec-a456-33a23eb0588e">
+              <Condition>IISMAJORVERSION = "#5"</Condition>
+              <File Id="Default.aspx" Name="Default.aspx" Source="..\..\Samples\DotNetOpenAuth.SamplesDirectory\Default.aspx" DiskId="1" />
+              <File Id="Default.aspx.cs" Name="Default.aspx.cs" Source="..\..\Samples\DotNetOpenAuth.SamplesDirectory\Default.aspx.cs" DiskId="1"/>
+              <iis:WebVirtualDir Id="MyWebApp" Alias="DNOA_Samples" Directory="WEBAPPLICATIONINSTALLFOLDER" WebSite="DefaultWebSite" DirProperties="WebVirtualDirProperties">
+                <iis:WebApplication Id="DNOA_Samples_Application" Name="DNOA_Samples_Application" WebAppPool="DNOA_Samples_AppPool"/>
+              </iis:WebVirtualDir>
+            </Component>
+            <Component Id='DNOA_AppPool' Guid='3C06911D-C31A-427E-8CA6-AEFC65161B1A'>
+              <iis:WebAppPool Id='DNOA_Samples_AppPool' Name='DNOA Samples App Pool'>
+              </iis:WebAppPool>
+              <CreateFolder/>
+            </Component>
+            <Component DiskId="1" Id="DNOA_IIS7SamplesComponent" Guid="3ef975d3-4bf0-4eb4-9526-3ca066af717e">
+              <Condition>IISMAJORVERSION = "#7"</Condition>
+              <iis:WebSite Id="IISSite5" Description="DotNetOpenAuth Samples Web" Directory="WEBAPPLICATIONINSTALLFOLDER">
+                <iis:WebAddress Id="IISSiteAddress5" Port="80"/>
+              </iis:WebSite>
+              <CreateFolder/>
+            </Component>
+            <Component Id="WebserviceRestart" Guid="{19B3144E-A9DE-47e0-A2DB-C16A7E3F4F14}" KeyPath="yes">
+              <ServiceControl Id="StopWeb1" Name="W3SVC" Stop="install">
+              </ServiceControl>
+              <ServiceControl Id="StartWeb1" Name="W3SVC" Start="install">
+              </ServiceControl>
+            </Component>
+          </Directory>
+          <Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
+            <Component Id="IntellisenseFile" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
+              <util:XmlFile Id='ModifyServiceEndPoint' Action='setValue'
+                 ElementPath='/configuration/system.serviceModel/client/endpoint[\[]@name="S113"[\]]'
+                 Name='address' File='[TARGETDIR]web.config' Value='http://[SERVICEENDPOINT]:8113/MyService/Service' />
+            </Component>
+            <File Id="VSI" Source="../../bin/$(Configuration)/sr/DotNetOpenAuth.resources.dll"></File>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Common" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
+    <UIRef Id="WixUI_Mondo"/>
+
+    <iis:WebDirProperties Id='WebVirtualDirProperties' Execute='yes' Script='yes' Read='yes' WindowsAuthentication='no' AnonymousAccess='yes'
+                          IIsControlledPassword='yes'/>
+
+    <iis:WebSite Id='DefaultWebSite' Description='Default Web Site'>
+      <iis:WebAddress Id='AllUnassigned' Port='80' />
+    </iis:WebSite>
+
+    <Feature Id="ProductFeature" Title="DotNetOpenAuth Library" Level="1" ConfigurableDirectory="INSTALLLOCATION">
+      <ComponentRef Id="ProductComponent" />
+    </Feature>
+    <Feature Id="SamplesFeature" Title="DotNetOpenAuth Sample Websites" Level="1" ConfigurableDirectory="WEBAPPLICATIONINSTALLFOLDER">
+      <ComponentRef Id="DNOA_SamplesComponent" />
+      <ComponentRef Id="DNOA_IIS7SamplesComponent" />
+      <ComponentRef Id="DNOA_AppPool" />
+      <ComponentRef Id="WebserviceRestart" />
+    </Feature>
+    <Feature Id="IntegrationFeature" Title="Visual Studio 2008 Integration" Level="1" ConfigurableDirectory="INSTALLLOCATION">
+      <Feature Id="IntegrationFeature-SubFeature1" Title="Config File Intellisense" Level="1" >
+        <ComponentRef Id="IntellisenseFile"/>
+      </Feature>
+      <Feature Id="IntegrationFeature-SubFeature2" Title="Project Template" Level="1" >
+        <ComponentRef Id="IntellisenseFile"/>
+      </Feature>
+    </Feature>
+
+  </Product>
+</Wix>

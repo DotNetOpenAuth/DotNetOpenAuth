@@ -28,7 +28,7 @@
 		                                $(ProjectRoot)samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
 
-	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation;">
 		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 		<ItemGroup>
 			<DirtyDirectories Include="
@@ -425,4 +425,8 @@
 	<Target Name="Nightly" DependsOnTargets="Drop;Tools;PublishSamples;PublishDocumentation">
 
 	</Target>
+
+  <Target Name="MSI" DependsOnTargets="DropLayout">
+    <MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj" />
+  </Target>
 </Project>
