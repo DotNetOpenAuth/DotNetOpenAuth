@@ -159,7 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
-    <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="Site.Master" />
     <Content Include="styles.css" />
     <Content Include="TracePage.aspx" />
@@ -177,6 +176,7 @@
     <None Include="Code\CustomStoreDataSet.xss">
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
     </None>
+    <Content Include="images\DotNetOpenAuth.png" />
     <Content Include="Provider.ashx" />
   </ItemGroup>
   <ItemGroup>

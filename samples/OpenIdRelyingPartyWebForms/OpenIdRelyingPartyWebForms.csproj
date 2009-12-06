@@ -184,10 +184,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
+    <Content Include="images\DotNetOpenAuth.png" />
     <Content Include="loginGoogleApps.aspx" />
     <Content Include="loginPlusOAuthSampleOP.aspx" />
     <Content Include="images\attention.png" />
-    <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo.png" />
     <Content Include="loginPlusOAuth.aspx" />
