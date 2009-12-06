@@ -181,7 +181,7 @@
 			<TopLevelVSProjectTemplates Include="@(VSProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(ProjectTemplatesLayoutPath)'" />
 
 			<!-- Include the template icon -->
-			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\dotnetopenid.ico" />
+			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\favicon.ico" />
 			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
 
 			<!-- Add external libraries -->
