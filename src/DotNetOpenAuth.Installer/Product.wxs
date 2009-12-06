@@ -3,7 +3,7 @@
        xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension"
        xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
       >
-  <Product Id="3b97d707-5a7a-4cdf-bab4-f8f1a93e5881" Name="DotNetOpenAuth (OpenID, OAuth and iCard Library)" Language="1033" Version="3.4.0.0" Manufacturer="DotNetOpenAuth" UpgradeCode="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">
+  <Product Id="3b97d707-5a7a-4cdf-bab4-f8f1a93e5881" Name="DotNetOpenAuth (OpenID, OAuth and InfoCard Library)" Language="1033" Version="$(var.BuildVersion)" Manufacturer="$(var.ProductName)" UpgradeCode="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">
     <Package InstallerVersion="200" Compressed="yes" />
 
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
@@ -129,7 +129,7 @@
       <Component Id="ApplicationShortcut" Guid="1f67dced-97f2-4486-80c0-ef21e797fe0a">
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="DotNetOpenAuth (Directory)"
-                  Description="OpenID, OAuth and iCard Library"
+                  Description="OpenID, OAuth and InfoCard Library"
                   Target="[APPLICATIONROOTDIRECTORY]"
                   WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
         <util:InternetShortcut Id="OnlineDocumentationShortcut"

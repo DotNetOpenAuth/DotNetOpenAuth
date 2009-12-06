@@ -12,15 +12,17 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>..\..\dist\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;DropDir=$(DropDir);configuration=$(Configuration)</DefineConstants>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
     <Cultures>
     </Cultures>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\dist\</OutputPath>
+    <DefineConstants>Release;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;DropDir=$(DropDir);configuration=$(Configuration)</DefineConstants>
+    <DefineConstants>$(DefineConstants);DropDir=$(DropDir);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
