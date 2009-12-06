@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix  xmlns="http://schemas.microsoft.com/wix/2006/wi"
        xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension"
-       xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+       xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+      >
   <Product Id="3b97d707-5a7a-4cdf-bab4-f8f1a93e5881" Name="DotNetOpenAuth (OpenID, OAuth and iCard Library)" Language="1033" Version="3.4.0.0" Manufacturer="DotNetOpenAuth" UpgradeCode="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">
     <Package InstallerVersion="200" Compressed="yes" />
 
@@ -12,28 +13,34 @@
     <PropertyRef Id="IISMAJORVERSION"/>
     <PropertyRef Id="IISMINORVERSION"/>
 
+    <!-- Visual Studio 2008 folder properties and custom actions -->
+    <PropertyRef Id="VS90_ROOT_FOLDER" />
+    <PropertyRef Id="VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED" />
+    <PropertyRef Id="VS90_IDE_VB_PROJECTSYSTEM_INSTALLED" />
+
+    <CustomActionRef Id="VS90Setup" />
+    <CustomActionRef Id="VCSHARP90Setup" />
+    <CustomActionRef Id="VB90Setup" />
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION" Name="DotNetOpenAuth">
           <Directory Id="LibraryFolder" Name="Bin">
             <Component Id="ProductComponent" Guid="47ef004e-517c-4ae3-96b0-7e41e94875cc">
-              <File Id="DotNetOpenAuth.dll" Source="../../bin/$(Configuration)/DotNetOpenAuth.dll"></File>
-              <File Id="DotNetOpenAuth.pdb" Source="../../bin/$(Configuration)/DotNetOpenAuth.pdb"></File>
-              <File Id="DotNetOpenAuth.xml" Source="../../bin/$(Configuration)/DotNetOpenAuth.xml"></File>
-              
-                
+              <File Id="DotNetOpenAuth.dll" Source="../../bin/$(var.configuration)/DotNetOpenAuth.dll"></File>
+              <File Id="DotNetOpenAuth.pdb" Source="../../bin/$(var.configuration)/DotNetOpenAuth.pdb"></File>
+              <File Id="DotNetOpenAuth.xml" Source="../../bin/$(var.configuration)/DotNetOpenAuth.xml"></File>
+              <File Id="DotNetOpenAuth.resources.dll" Source="../../bin/$(var.configuration)/sr/DotNetOpenAuth.resources.dll"></File>
             </Component>
-            <Directory Id="LibraryFolder_Satellites" Name="SR">
-              <File Id="DotNetOpenAuth.dll" Source="../../bin/$(Configuration)/sr/DotNetOpenAuth.resources.dll"></File>
-
-
-            </Directory>
+            <Component Id="Documentation" Guid="f716a056-eb0c-4bc1-bd92-37b704befac9">
+              <File Id="DotNetOpenAuth.chm" Source="../../doc/DotNetOpenAuth.chm"></File>
+            </Component>
           </Directory>
           <Directory Id="WEBAPPLICATIONINSTALLFOLDER" Name="DotNetOpenAuth Samples">
             <Component Id="DNOA_SamplesComponent" Guid="80b0ee2a-a102-46ec-a456-33a23eb0588e">
               <Condition>IISMAJORVERSION = "#5"</Condition>
-              <File Id="Default.aspx" Name="Default.aspx" Source="..\..\Samples\DotNetOpenAuth.SamplesDirectory\Default.aspx" DiskId="1" />
-              <File Id="Default.aspx.cs" Name="Default.aspx.cs" Source="..\..\Samples\DotNetOpenAuth.SamplesDirectory\Default.aspx.cs" DiskId="1"/>
+              <File Id="Default.aspx" Name="Default.aspx" Source="..\..\Samples\DotNetOpenAuth.Samples\Default.aspx" DiskId="1" />
+              <File Id="Default.aspx.cs" Name="Default.aspx.cs" Source="..\..\Samples\DotNetOpenAuth.Samples\Default.aspx.cs" DiskId="1"/>
               <iis:WebVirtualDir Id="MyWebApp" Alias="DNOA_Samples" Directory="WEBAPPLICATIONINSTALLFOLDER" WebSite="DefaultWebSite" DirProperties="WebVirtualDirProperties">
                 <iis:WebApplication Id="DNOA_Samples_Application" Name="DNOA_Samples_Application" WebAppPool="DNOA_Samples_AppPool"/>
               </iis:WebVirtualDir>
@@ -63,13 +70,64 @@
                  ElementPath='/configuration/system.serviceModel/client/endpoint[\[]@name="S113"[\]]'
                  Name='address' File='[TARGETDIR]web.config' Value='http://[SERVICEENDPOINT]:8113/MyService/Service' />
             </Component>
-            <File Id="VSI" Source="../../bin/$(Configuration)/sr/DotNetOpenAuth.resources.dll"></File>
-
+            <Component Id="ProjectTemplates" Guid="{c6537664-e497-4983-bb27-54ff1210c0c2}">
+              <File Id="VSI" Source="../../drops/Project Templates/DotNetOpenAuth Starter Kits.vsi"></File>
+            </Component>
           </Directory>
         </Directory>
+
+        <Directory Id="VS90_ROOT_FOLDER" Name="Visual Studio 9.0">
+          <Directory Id="Common7_2008" Name="Common7">
+            <Directory Id="IDE_2008" Name="IDE">
+              <Directory Id="ProjectTemplates_VS_2008" Name="ProjectTemplates">
+                <Directory Id="CSharpProjectTemplates_VS_2008" Name="CSharp">
+                  <Directory Id="DotNetOpenAuth_Starter_Kits" Name="DotNetOpenAuth"/>
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="DotNetOpenAuth"/>
       </Directory>
     </Directory>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="1f67dced-97f2-4486-80c0-ef21e797fe0a">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="DotNetOpenAuth (Directory)"
+                  Description="OpenID, OAuth and iCard Library"
+                  Target="[APPLICATIONROOTDIRECTORY]"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <util:InternetShortcut Id="OnlineDocumentationShortcut"
+                        Name="DotNetOpenAuth Online Documentation"
+                               Target="http://www.dotnetopenauth.net/"/>
+        <Shortcut Id="UninstallProduct"
+          Name="Uninstall DotNetOpenAuth"
+          Target="[System64Folder]msiexec.exe"
+          Arguments="/x [ProductCode]"
+          Description="Uninstalls DotNetOpenAuth" />
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
 
+    
+    <!-- Visual Studio VSI Installation -->
+    
+    <!-- VS 2008 -->
+    <DirectoryRef Id="DotNetOpenAuth_Starter_Kits">
+      <Component Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Guid="{70AE985D-706A-4C39-9417-20303DA605AC}" DiskId="1" Transitive="yes">
+        <Condition>(VS90_ROOT_FOLDER AND VS90DEVENV AND VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED)</Condition>
+        <File Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Name="DotNetOpenAuth_Starter_Kits.vsi" KeyPath="yes" Source="../../drops/Project Templates/DotNetOpenAuth Starter Kits.vsi"/>
+      </Component>
+    </DirectoryRef>
+    
+    
+    <!-- UI Aspects -->
+    
+    
     <UIRef Id="WixUI_Common" />
     <UIRef Id="WixUI_ErrorProgressText" />
     <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
@@ -84,6 +142,10 @@
 
     <Feature Id="ProductFeature" Title="DotNetOpenAuth Library" Level="1" ConfigurableDirectory="INSTALLLOCATION">
       <ComponentRef Id="ProductComponent" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+    <Feature Id="DocumentationFeature" Title="DotNetOpenAuth Documentation" Level="1" ConfigurableDirectory="INSTALLLOCATION">
+      <ComponentRef Id="Documentation" />
     </Feature>
     <Feature Id="SamplesFeature" Title="DotNetOpenAuth Sample Websites" Level="1" ConfigurableDirectory="WEBAPPLICATIONINSTALLFOLDER">
       <ComponentRef Id="DNOA_SamplesComponent" />
@@ -92,13 +154,18 @@
       <ComponentRef Id="WebserviceRestart" />
     </Feature>
     <Feature Id="IntegrationFeature" Title="Visual Studio 2008 Integration" Level="1" ConfigurableDirectory="INSTALLLOCATION">
-      <Feature Id="IntegrationFeature-SubFeature1" Title="Config File Intellisense" Level="1" >
+      <Feature Id="IntegrationFeatureSubFeature1" Title="Config File Intellisense" Level="1" >
         <ComponentRef Id="IntellisenseFile"/>
       </Feature>
-      <Feature Id="IntegrationFeature-SubFeature2" Title="Project Template" Level="1" >
-        <ComponentRef Id="IntellisenseFile"/>
+      <Feature Id="IntegrationFeatureProjectTemplates" Title="Project Template" Level="1" >
+        <ComponentRef Id="ProjectTemplates"/>
+        <ComponentRef Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008"/>
       </Feature>
     </Feature>
+
+    <Property Id="ALLUSERS">
+      <![CDATA[1]]>
+    </Property>
 
   </Product>
 </Wix>

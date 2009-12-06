@@ -274,6 +274,7 @@
 	</Target>
 
 	<Target Name="vsi" DependsOnTargets="ProjectTemplates">
+		<Message Text="Creating VSI in $(ProjectTemplatesLayoutPath)" Importance="High"/>
 		<ItemGroup>
 			<ProjectTemplateVsiContents Include="
 																	$(ProjectTemplatesLayoutPath)*.vscontent;
@@ -427,6 +428,7 @@
 	</Target>
 
   <Target Name="MSI" DependsOnTargets="DropLayout">
+	<Message Text="Creating MSI" Importance="High" />
     <MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj" />
   </Target>
 </Project>

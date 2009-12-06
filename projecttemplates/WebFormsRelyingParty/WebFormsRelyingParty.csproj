@@ -236,7 +236,10 @@
     <Content Include="bin\DotNetOpenAuth.dll" />
     <Content Include="bin\DotNetOpenAuth.pdb" />
     <Content Include="bin\DotNetOpenAuth.xml" />
+    <Content Include="bin\log4net.xml" />
     <Content Include="bin\Microsoft.Contracts.dll" />
+    <Content Include="bin\RelyingPartyLogic.dll" />
+    <Content Include="bin\RelyingPartyLogic.pdb" />
     <Content Include="Members\OAuthAuthorize.aspx" />
     <Content Include="OAuth.ashx" />
   </ItemGroup>

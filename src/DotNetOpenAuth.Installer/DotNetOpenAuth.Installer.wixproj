@@ -14,10 +14,14 @@
     <OutputPath>..\..\dist\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
+    <DefineConstants>configuration=$(Configuration)</DefineConstants>
+    <Cultures>
+    </Cultures>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\dist\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>configuration=$(Configuration)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
@@ -30,6 +34,9 @@
     <Folder Include="Bitmaps\" />
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+    </WixExtension>
     <WixExtension Include="WixVSExtension">
       <HintPath>$(WixExtDir)\WixVSExtension.dll</HintPath>
     </WixExtension>
