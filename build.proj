@@ -427,7 +427,7 @@
 
 	</Target>
 
-  <Target Name="MSI" DependsOnTargets="GetBuildVersion;_SetDropProperties;">
+  <Target Name="MSI" DependsOnTargets="DropLayout">
 	<Message Text="Creating MSI for $(DropDirectoryNoSlash)" Importance="High" />
     <MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj" Properties="DropDir=$(DropDirectoryNoSlash)" />
   </Target>
