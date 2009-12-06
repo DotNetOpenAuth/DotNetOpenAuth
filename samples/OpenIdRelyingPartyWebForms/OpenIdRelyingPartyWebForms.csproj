@@ -183,6 +183,7 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="favicon.ico" />
     <Content Include="loginGoogleApps.aspx" />
     <Content Include="loginPlusOAuthSampleOP.aspx" />
     <Content Include="images\attention.png" />
