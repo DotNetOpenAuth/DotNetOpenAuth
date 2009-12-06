@@ -27,20 +27,20 @@
         <Directory Id="INSTALLLOCATION" Name="DotNetOpenAuth">
           <Directory Id="LibraryFolder" Name="Bin">
             <Component Id="ProductComponent" Guid="47ef004e-517c-4ae3-96b0-7e41e94875cc">
-              <File Id="DotNetOpenAuth.dll" Source="../../bin/$(var.configuration)/DotNetOpenAuth.dll"></File>
-              <File Id="DotNetOpenAuth.pdb" Source="../../bin/$(var.configuration)/DotNetOpenAuth.pdb"></File>
-              <File Id="DotNetOpenAuth.xml" Source="../../bin/$(var.configuration)/DotNetOpenAuth.xml"></File>
-              <File Id="DotNetOpenAuth.resources.dll" Source="../../bin/$(var.configuration)/sr/DotNetOpenAuth.resources.dll"></File>
+              <File Id="DotNetOpenAuth.dll" Source="$(var.DropDir)\bin\DotNetOpenAuth.dll"></File>
+              <File Id="DotNetOpenAuth.pdb" Source="$(var.DropDir)\bin\DotNetOpenAuth.pdb"></File>
+              <File Id="DotNetOpenAuth.xml" Source="$(var.DropDir)\bin\DotNetOpenAuth.xml"></File>
+              <File Id="DotNetOpenAuth.resources.dll" Source="$(var.DropDir)\bin\sr\DotNetOpenAuth.resources.dll"></File>
             </Component>
             <Component Id="Documentation" Guid="f716a056-eb0c-4bc1-bd92-37b704befac9">
-              <File Id="DotNetOpenAuth.chm" Source="../../doc/DotNetOpenAuth.chm"></File>
+              <File Id="DotNetOpenAuth.chm" Source="$(var.DropDir)\DotNetOpenAuth.chm"></File>
             </Component>
           </Directory>
           <Directory Id="WEBAPPLICATIONINSTALLFOLDER" Name="DotNetOpenAuth Samples">
             <Component Id="DNOA_SamplesComponent" Guid="80b0ee2a-a102-46ec-a456-33a23eb0588e">
               <Condition>IISMAJORVERSION = "#5"</Condition>
-              <File Id="Default.aspx" Name="Default.aspx" Source="..\..\Samples\DotNetOpenAuth.Samples\Default.aspx" DiskId="1" />
-              <File Id="Default.aspx.cs" Name="Default.aspx.cs" Source="..\..\Samples\DotNetOpenAuth.Samples\Default.aspx.cs" DiskId="1"/>
+              <File Id="Default.aspx" Name="Default.aspx" Source="$(var.DropDir)\Samples\DotNetOpenAuth.Samples\Default.aspx" DiskId="1" />
+              <File Id="Default.aspx.cs" Name="Default.aspx.cs" Source="$(var.DropDir)\Samples\DotNetOpenAuth.Samples\Default.aspx.cs" DiskId="1"/>
               <iis:WebVirtualDir Id="MyWebApp" Alias="DNOA_Samples" Directory="WEBAPPLICATIONINSTALLFOLDER" WebSite="DefaultWebSite" DirProperties="WebVirtualDirProperties">
                 <iis:WebApplication Id="DNOA_Samples_Application" Name="DNOA_Samples_Application" WebAppPool="DNOA_Samples_AppPool"/>
               </iis:WebVirtualDir>
@@ -71,7 +71,7 @@
                  File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
                  Action="create"
                  On="install"
-                 ElementPath="//SchemaCatalog/system.data/DbProviderFactories"
+                 ElementPath="//SchemaCatalog"
                  Name="Association"
                  Node="element"
                  Sequence="1">
