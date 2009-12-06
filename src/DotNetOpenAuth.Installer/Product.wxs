@@ -52,16 +52,7 @@
         <![CDATA[NEWERVERSIONDETECTED]]>
       </Custom>
     </InstallUISequence>
-    <CloseApplication xmlns="http://schemas.microsoft.com/wix/UtilExtension" 
-                      Id="CloseVisualStudio2008" 
-                      Description="Please close all open instances of Visual Studio 2008" 
-                      CloseMessage="yes" 
-                      ElevatedCloseMessage="no"
-                      RebootPrompt="no"
-                      Target="devenv.exe" Sequence="10"/>
-    <!--
-    <UIRef Id="WixUI_Mondo"/> 
- -->
+
     <UIRef Id="WixUI_FeatureTree"/>
     <UIRef Id="WixUI_Common" />
     <UIRef Id="WixUI_ErrorProgressText" />
@@ -105,12 +96,6 @@
               </iis:WebSite>
               <CreateFolder/>
             </Component>
-            <!--Component Id="WebserviceRestart" Guid="{19B3144E-A9DE-47e0-A2DB-C16A7E3F4F14}" KeyPath="yes">
-              <ServiceControl Id="StopWeb1" Name="W3SVC" Stop="install">
-              </ServiceControl>
-              <ServiceControl Id="StartWeb1" Name="W3SVC" Start="install">
-              </ServiceControl>
-            </Component-->
           </Directory>
           <Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
             <Component Id="IntellisenseFile" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
@@ -223,6 +208,13 @@
     <iis:WebSite Id='DefaultWebSite' Description='Default Web Site'>
       <iis:WebAddress Id='AllUnassigned' Port='80' />
     </iis:WebSite>
+    <CloseApplication xmlns="http://schemas.microsoft.com/wix/UtilExtension"
+                      Id="CloseVisualStudio2008"
+                      Description="Please close all open instances of Visual Studio 2008"
+                      CloseMessage="yes"
+                      ElevatedCloseMessage="no"
+                      RebootPrompt="no"
+                      Target="devenv.exe" Sequence="10"/>
 
     <!-- Installable Features -->
     <Feature Id="ProductFeature" Title="Assembly File Library" Level="1" ConfigurableDirectory="INSTALLLOCATION"
