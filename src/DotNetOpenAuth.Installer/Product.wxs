@@ -66,12 +66,44 @@
           </Directory>
           <Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
             <Component Id="IntellisenseFile" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
-              <util:XmlFile Id='ModifyServiceEndPoint' Action='setValue'
-                 ElementPath='/configuration/system.serviceModel/client/endpoint[\[]@name="S113"[\]]'
-                 Name='address' File='[TARGETDIR]web.config' Value='http://[SERVICEENDPOINT]:8113/MyService/Service' />
+              <util:XmlConfig
+                 Id="Schemas_catalog"
+                 File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                 Action="create"
+                 On="install"
+                 ElementPath="//SchemaCatalog/system.data/DbProviderFactories"
+                 Name="Association"
+                 Node="element"
+                 Sequence="1">
+              </util:XmlConfig>
+              <util:XmlConfig
+                      Id="Schemas_catalog_2"
+                      File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                      ElementPath="Schemas_catalog"
+                      Name="extension"
+                      Value="config"
+                      Sequence="2">
+              </util:XmlConfig>
+              <util:XmlConfig
+                      Id="Schemas_catalog_3"
+                      File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                      ElementPath="Schemas_catalog"
+                      Name="schema"
+                      Value="[INSTALLLOCATION]bin\DotNetOpenAuth.xsd"
+                      Sequence="2">
+              </util:XmlConfig>
+              <util:XmlConfig
+                      Id="Schemas_catalog_4"
+                      File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                      ElementPath="Schemas_catalog"
+                      Name="condition"
+                      Value="%TargetFrameworkVersion% != 2.0 and %TargetFrameworkVersion% != 3.0"
+                      Sequence="2">
+              </util:XmlConfig>
+              <CreateFolder/>
             </Component>
             <Component Id="ProjectTemplates" Guid="{c6537664-e497-4983-bb27-54ff1210c0c2}">
-              <File Id="VSI" Source="../../drops/Project Templates/DotNetOpenAuth Starter Kits.vsi"></File>
+              <File Id="VSI" Source="$(var.DropDir)/Project Templates/DotNetOpenAuth Starter Kits.vsi"></File>
             </Component>
           </Directory>
         </Directory>
@@ -120,7 +152,7 @@
     <DirectoryRef Id="DotNetOpenAuth_Starter_Kits">
       <Component Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Guid="{70AE985D-706A-4C39-9417-20303DA605AC}" DiskId="1" Transitive="yes">
         <Condition>(VS90_ROOT_FOLDER AND VS90DEVENV AND VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED)</Condition>
-        <File Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Name="DotNetOpenAuth_Starter_Kits.vsi" KeyPath="yes" Source="../../drops/Project Templates/DotNetOpenAuth Starter Kits.vsi"/>
+        <File Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Name="DotNetOpenAuth_Starter_Kits.vsi" KeyPath="yes" Source="$(var.DropDir)/Project Templates/DotNetOpenAuth Starter Kits.vsi"/>
       </Component>
     </DirectoryRef>
     
