@@ -82,8 +82,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
-    <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile Condition="'$(AssemblyOriginatorKeyFile)' == ''">..\official-build-key.pub</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

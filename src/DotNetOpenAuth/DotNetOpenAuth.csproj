@@ -101,9 +101,6 @@ http://opensource.org/licenses/ms-pl.html
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
-    <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile Condition="'$(AssemblyOriginatorKeyFile)' == ''">..\official-build-key.pub</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);StrongNameSigned</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

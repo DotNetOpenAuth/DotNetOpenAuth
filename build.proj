@@ -90,7 +90,7 @@
 	</Target>
 
 	<Target Name="ReSignDelaySignedAssemblies">
-		<Message Text="Signing delay-signed assemblies." />
+		<Message Text="Signing delay-signed assemblies using key pair container $(KeyPairContainer)." />
 		<ReSignDelaySignedAssemblies
 			KeyContainer="$(KeyPairContainer)"
 			Assemblies="@(DelaySignedAssemblies)"
