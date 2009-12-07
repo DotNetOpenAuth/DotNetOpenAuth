@@ -75,28 +75,6 @@
               <File Id="DotNetOpenAuth.chm" Source="$(var.DropDir)\DotNetOpenAuth.chm"></File>
             </Component>
           </Directory>
-          <Directory Id="WEBAPPLICATIONINSTALLFOLDER" Name="DotNetOpenAuth Samples">
-            <Component Id="DNOA_SamplesComponent" Guid="80b0ee2a-a102-46ec-a456-33a23eb0588e">
-              <Condition>IISMAJORVERSION = "#5"</Condition>
-              <File Id="Default.aspx" Name="Default.aspx" Source="$(var.DropDir)\Samples\DotNetOpenAuth.Samples\Default.aspx" DiskId="1" />
-              <File Id="Default.aspx.cs" Name="Default.aspx.cs" Source="$(var.DropDir)\Samples\DotNetOpenAuth.Samples\Default.aspx.cs" DiskId="1"/>
-              <iis:WebVirtualDir Id="MyWebApp" Alias="DotNetOpenAuth" Directory="WEBAPPLICATIONINSTALLFOLDER" WebSite="DefaultWebSite" DirProperties="WebVirtualDirProperties">
-                <iis:WebApplication Id="DNOA_Samples_Application" Name="DNOA_Samples_Application" WebAppPool="DNOA_Samples_AppPool"/>
-              </iis:WebVirtualDir>
-            </Component>
-            <Component Id='DNOA_AppPool' Guid='3C06911D-C31A-427E-8CA6-AEFC65161B1A'>
-              <iis:WebAppPool Id='DNOA_Samples_AppPool' Name='DNOA Samples App Pool'>
-              </iis:WebAppPool>
-              <CreateFolder/>
-            </Component>
-            <Component DiskId="1" Id="DNOA_IIS7SamplesComponent" Guid="3ef975d3-4bf0-4eb4-9526-3ca066af717e">
-              <Condition>IISMAJORVERSION = "#7"</Condition>
-              <iis:WebSite Id="IISSite7" Description="DotNetOpenAuth Samples Web" Directory="WEBAPPLICATIONINSTALLFOLDER">
-                <iis:WebAddress Id="IISSiteAddress5" Port="8989"/>
-              </iis:WebSite>
-              <CreateFolder/>
-            </Component>
-          </Directory>
           <Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
             <Component Id="IntellisenseFile" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
               <util:XmlConfig
@@ -181,20 +159,6 @@
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
         <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
-      <Component Id="SamplesShortcut_IIS5" Guid="c2924c30-70cc-4031-b79c-82f2a2917f32">
-        <Condition>IISMAJORVERSION = "#5"</Condition>
-        <util:InternetShortcut Id="SamplesShortcut_5"
-                      Name="DotNetOpenAuth Samples"
-                      Target="http://localhost/DotNetOpenAuth"/>
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="samplelinkInstalled" Type="integer" Value="1" KeyPath="yes"/>
-      </Component>
-      <Component Id="SamplesShortcut_IIS7" Guid="9c167eb6-0b98-4536-a796-6c4213582867">
-        <Condition>IISMAJORVERSION = "#7"</Condition>
-        <util:InternetShortcut Id="SamplesShortcut_7"
-                      Name="DotNetOpenAuth Samples"
-                      Target="http://localhost:8989/"/>
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="samplelinkInstalled" Type="integer" Value="1" KeyPath="yes"/>
-      </Component>
     </DirectoryRef>
     <DirectoryRef Id="DotNetOpenAuth_Starter_Kits">
       <Component Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Guid="{70AE985D-706A-4C39-9417-20303DA605AC}" DiskId="1" Transitive="yes">
@@ -202,12 +166,6 @@
         <File Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Name="DotNetOpenAuth_Starter_Kits.vsi" KeyPath="yes" Source="$(var.DropDir)/Project Templates/DotNetOpenAuth Starter Kits.vsi"/>
       </Component>
     </DirectoryRef>
-
-    <iis:WebDirProperties Id='WebVirtualDirProperties' Execute='yes' Script='yes' Read='yes' WindowsAuthentication='no' AnonymousAccess='yes'
-                          IIsControlledPassword='yes'/>
-    <iis:WebSite Id='DefaultWebSite' Description='Default Web Site'>
-      <iis:WebAddress Id='AllUnassigned' Port='80' />
-    </iis:WebSite>
     <CloseApplication xmlns="http://schemas.microsoft.com/wix/UtilExtension"
                       Id="CloseVisualStudio2008"
                       Description="Please close all open instances of Visual Studio 2008"
@@ -225,22 +183,6 @@
     <Feature Id="DocumentationFeature" Title="Documentation" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Installs the library documentation">
       <ComponentRef Id="Documentation" />
-    </Feature>
-    <Feature Id="SamplesFeature" Title="Sample Websites (IIS5)"
-             Description="Creates a virtual directory called DotNetOpenAuth under your Default Web site and can be access at http://localhost/DotNetOpenAuth"
-             Level="1" ConfigurableDirectory="WEBAPPLICATIONINSTALLFOLDER">
-      <Condition Level="0">NOT IISMAJORVERSION = "#5"</Condition>
-      <ComponentRef Id="DNOA_SamplesComponent" />
-      <ComponentRef Id="DNOA_AppPool" />
-      <ComponentRef Id="SamplesShortcut_IIS5" />
-    </Feature>
-    <Feature Id="IIS7SamplesFeature" Title="Sample Websites (IIS7)"
-             Description="Creates a new web site called 'DotNetOpenAuth Samples Web' which can be accessed at http://localhost:8989/"
-             Level="1" ConfigurableDirectory="WEBAPPLICATIONINSTALLFOLDER">
-      <Condition Level="0">NOT IISMAJORVERSION = "#7"</Condition>
-      <ComponentRef Id="DNOA_IIS7SamplesComponent" />
-      <ComponentRef Id="DNOA_AppPool" />
-      <ComponentRef Id="SamplesShortcut_IIS7" />
     </Feature>
     <Feature Id="IntegrationFeature" Title="Visual Studio 2008 Integration" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Automagically installs the selected components into your Visual Studio environment">
