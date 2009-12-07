@@ -11,13 +11,13 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>..\..\dist\</OutputPath>
+    <OutputPath>$(DropDir)</OutputPath>
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
     <Cultures>
     </Cultures>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\dist\</OutputPath>
+    <OutputPath>$(DropDir)</OutputPath>
     <DefineConstants>Release;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
@@ -36,21 +36,21 @@
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixUtilExtension">
-      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <HintPath>$(WixToolPath)\WixUtilExtension.dll</HintPath>
     </WixExtension>
     <WixExtension Include="WixVSExtension">
-      <HintPath>$(WixExtDir)\WixVSExtension.dll</HintPath>
+      <HintPath>$(WixToolPath)\WixVSExtension.dll</HintPath>
     </WixExtension>
     <WixExtension Include="WixUIExtension">
-      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <HintPath>$(WixToolPath)\WixUIExtension.dll</HintPath>
     </WixExtension>
     <WixExtension Include="WixIIsExtension">
-      <HintPath>$(WixExtDir)\WixIIsExtension.dll</HintPath>
+      <HintPath>$(WixToolPath)\WixIIsExtension.dll</HintPath>
     </WixExtension>
   </ItemGroup>
   <PropertyGroup>
-    <WixToolPath>..\..\Tools\wix\</WixToolPath>
-    <WixTargetsPath>$(WixToolPath)Wix.targets</WixTargetsPath>
+    <WixToolPath>..\..\Tools\wix</WixToolPath>
+    <WixTargetsPath>$(WixToolPath)\Wix.targets</WixTargetsPath>
     <WixTasksPath>wixtasks.dll</WixTasksPath>
   </PropertyGroup>
   <Import Project="$(WixTargetsPath)" />
