@@ -7,7 +7,7 @@
 <body>
 	<div>
 		<a href="http://DotNetOpenId.googlecode.com">
-			<img runat="server" src="images/DotNetOpenId_tiny.gif" title="Jump to the project web site."
+			<img runat="server" src="images/DotNetOpenAuth.png" title="Jump to the project web site."
 				alt="DotNetOpenAuth" border='0' /></a>
 	</div>
 	<h2>Classic ASP OpenID Relying Party</h2>
