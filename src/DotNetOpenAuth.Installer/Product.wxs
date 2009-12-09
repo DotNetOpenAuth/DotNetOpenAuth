@@ -23,7 +23,8 @@
       <![CDATA[1]]>
     </Property>
     <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
-
+    <Icon Id="DotNetOpenAuthIcon.exe" SourceFile="$(var.DropDir)\bin\dnoa-icon-colour.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="DotNetOpenAuthIcon.exe" />
     <!-- Upgrade information used for major upgrades -->
     <Upgrade Id="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">
       <UpgradeVersion Minimum="$(var.BuildVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
@@ -64,18 +65,19 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION" Name="DotNetOpenAuth">
-          <Directory Id="LibraryFolder" Name="Bin">
+          <Directory Id="LIBRARYFOLDER" Name="Bin">
             <Component Id="ProductComponent" Guid="47ef004e-517c-4ae3-96b0-7e41e94875cc">
               <File Id="DotNetOpenAuth.dll" Source="$(var.DropDir)\bin\DotNetOpenAuth.dll"></File>
               <File Id="DotNetOpenAuth.pdb" Source="$(var.DropDir)\bin\DotNetOpenAuth.pdb"></File>
               <File Id="DotNetOpenAuth.xml" Source="$(var.DropDir)\bin\DotNetOpenAuth.xml"></File>
               <File Id="DotNetOpenAuth.resources.dll" Source="$(var.DropDir)\bin\sr\DotNetOpenAuth.resources.dll"></File>
             </Component>
-            <Component Id="Documentation" Guid="f716a056-eb0c-4bc1-bd92-37b704befac9">
-              <File Id="DotNetOpenAuth.chm" Source="$(var.DropDir)\DotNetOpenAuth.chm"></File>
-            </Component>
+            
           </Directory>
-          <Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
+			<Component Id="Documentation" Guid="f716a056-eb0c-4bc1-bd92-37b704befac9">
+				<File Id="DotNetOpenAuth.chm" Source="$(var.DropDir)\DotNetOpenAuth.chm"></File>
+            </Component>
+			<Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
             <Component Id="IntellisenseFile" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
               <util:XmlConfig
                  Id="Schemas_catalog"
@@ -139,23 +141,31 @@
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut" Guid="1f67dced-97f2-4486-80c0-ef21e797fe0a">
         <Shortcut Id="ApplicationStartMenuShortcut"
-                Name="DotNetOpenAuth (Directory)"
+                Name="Compiled Library"
                 Description="OpenID, OAuth and InfoCard Library"
-                Target="[APPLICATIONROOTDIRECTORY]"
-                WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+                Icon="DotNetOpenAuthIcon.exe"
+                Target="explorer.exe "
+                   Arguments="LIBRARYFOLDER"
+                WorkingDirectory="WindowsFolder">
+        </Shortcut>
         <Shortcut Id="ApplicationDocumentationShortcut"
-                Name="DotNetOpenAuth Documentation"
+                Name="Documentation"
                 Description="OpenID, OAuth and InfoCard Library Documentation"
-                Target="[APPLICATIONROOTDIRECTORY]\DotNetOpenAuth.chm"
-                WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+                Target="[INSTALLLOCATION]\DotNetOpenAuth.chm"
+                WorkingDirectory="INSTALLLOCATION"
+                  Icon="DotNetOpenAuthIcon.exe">
+        </Shortcut>
         <util:InternetShortcut Id="OnlineDocumentationShortcut"
-                      Name="DotNetOpenAuth Online Documentation"
-                      Target="http://www.dotnetopenauth.net/"/>
+                      Name="Online Documentation"
+                      Target="http://www.dotnetopenauth.net/"  Type="link">
+		</util:InternetShortcut>
         <Shortcut Id="UninstallProduct"
           Name="Uninstall DotNetOpenAuth"
           Target="[System64Folder]msiexec.exe"
           Arguments="/x [ProductCode]"
-          Description="Uninstalls DotNetOpenAuth" />
+          Description="Uninstalls DotNetOpenAuth"
+                  Icon="DotNetOpenAuthIcon.exe"
+                  />
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
         <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
