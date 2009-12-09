@@ -37,7 +37,7 @@ namespace RelyingPartyLogic {
 		/// <exception cref="ArgumentException">Thrown if the secret cannot be found for the given token.</exception>
 		public string GetTokenSecret(string token) {
 			try {
-				return Database.DataContext.IssuedToken.First(t => t.Token == token).TokenSecret;
+				return Database.DataContext.IssuedTokens.First(t => t.Token == token).TokenSecret;
 			} catch (InvalidOperationException) {
 				throw new ArgumentOutOfRangeException();
 			}
@@ -59,7 +59,7 @@ namespace RelyingPartyLogic {
 		public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
 			Consumer consumer;
 			try {
-				consumer = Database.DataContext.Consumer.First(c => c.ConsumerKey == request.ConsumerKey);
+				consumer = Database.DataContext.Consumers.First(c => c.ConsumerKey == request.ConsumerKey);
 			} catch (InvalidOperationException) {
 				throw new ArgumentOutOfRangeException();
 			}
@@ -74,7 +74,7 @@ namespace RelyingPartyLogic {
 			if (request.ExtraData.TryGetValue("scope", out scope)) {
 				token.Scope = scope;
 			}
-			Database.DataContext.AddToIssuedToken(token);
+			Database.DataContext.AddToIssuedTokens(token);
 			Database.DataContext.SaveChanges();
 		}
 
@@ -102,7 +102,7 @@ namespace RelyingPartyLogic {
 		/// </para>
 		/// </remarks>
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			var requestTokenEntity = Database.DataContext.IssuedToken.OfType<IssuedRequestToken>()
+			var requestTokenEntity = Database.DataContext.IssuedTokens.OfType<IssuedRequestToken>()
 				.Include("User")
 				.First(t => t.Consumer.ConsumerKey == consumerKey && t.Token == requestToken);
 
@@ -116,7 +116,7 @@ namespace RelyingPartyLogic {
 			};
 
 			Database.DataContext.DeleteObject(requestTokenEntity);
-			Database.DataContext.AddToIssuedToken(accessTokenEntity);
+			Database.DataContext.AddToIssuedTokens(accessTokenEntity);
 			Database.DataContext.SaveChanges();
 		}
 
@@ -128,7 +128,7 @@ namespace RelyingPartyLogic {
 		/// Request or Access token, or invalid if the token is not recognized.
 		/// </returns>
 		public TokenType GetTokenType(string token) {
-			IssuedToken tok = Database.DataContext.IssuedToken.FirstOrDefault(t => t.Token == token);
+			IssuedToken tok = Database.DataContext.IssuedTokens.FirstOrDefault(t => t.Token == token);
 			if (tok == null) {
 				return TokenType.InvalidToken;
 			} else {
