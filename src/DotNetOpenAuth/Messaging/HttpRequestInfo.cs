@@ -325,13 +325,12 @@ namespace DotNetOpenAuth.Messaging {
 			// the public URL:
 			if (request.ServerVariables["HTTP_HOST"] != null) {
 				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
+				string scheme = request.ServerVariables["HTTP_X_FORWARDED_PROTO"] ?? request.Url.Scheme;
+				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
-				Uri hostAndPort = new Uri(request.Url.Scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
+				publicRequestUri.Scheme = scheme;
 				publicRequestUri.Host = hostAndPort.Host;
 				publicRequestUri.Port = hostAndPort.Port;
-				if (request.ServerVariables["HTTP_X_FORWARDED_PROTO"] != null) {
-					publicRequestUri.Scheme = request.ServerVariables["HTTP_X_FORWARDED_PROTO"];
-				}
 				return publicRequestUri.Uri;
 			} else {
 				// Failover to the method that works for non-web farm enviroments.
