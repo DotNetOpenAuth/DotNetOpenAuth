@@ -27,7 +27,7 @@ GO
 CREATE TABLE [dbo].[Nonce](
 	[NonceId] [int] IDENTITY(1,1) NOT NULL,
 	[Context] [varchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
-	[Code] [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[Code] [varchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
 	[Issued] [datetime] NOT NULL,
 	[Expires] [datetime] NOT NULL,
  CONSTRAINT [PK_Nonce] PRIMARY KEY CLUSTERED 
@@ -84,7 +84,7 @@ GO
 CREATE TABLE [dbo].[Consumer](
 	[ConsumerId] [int] IDENTITY(1,1) NOT NULL,
 	[ConsumerKey] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
-	[ConsumerSecret] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[ConsumerSecret] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
 	[X509Certificate] [image] NULL,
 	[Callback] [nvarchar](2048) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	[VerificationCodeFormat] [int] NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE [dbo].[IssuedToken](
 	[TokenSecret] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
 	[CreatedOn] [datetime] NOT NULL,
 	[Callback] [nvarchar](2048) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-	[VerificationCode] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[VerificationCode] [nvarchar](255) COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
 	[ConsumerVersion] [varchar](10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	[ExpirationDate] [datetime] NULL,
 	[IsAccessToken] [bit] NOT NULL,
