@@ -15,6 +15,7 @@
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
     <Cultures>
     </Cultures>
+    <SuppressValidation>True</SuppressValidation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>$(DropDir)</OutputPath>
