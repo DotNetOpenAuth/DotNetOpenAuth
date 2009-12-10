@@ -313,6 +313,11 @@
 						</xs:choice>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="reporting">
+					<xs:complexType>
+						<xs:attribute name="enabled" type="xs:boolean" />
+					</xs:complexType>
+				</xs:element>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
