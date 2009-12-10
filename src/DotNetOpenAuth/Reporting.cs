@@ -7,17 +7,27 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.IO;
+	using System.IO.IsolatedStorage;
 	using System.Linq;
+	using System.Reflection;
 	using System.Text;
 	using DotNetOpenAuth.Configuration;
-	using System.IO;
-	using System.Reflection;
-	using System.Diagnostics;
-	using System.IO.IsolatedStorage;
 
+	/// <summary>
+	/// The statistical reporting mechanism used so this library's project authors
+	/// know what versions and features are in use.
+	/// </summary>
 	internal static class Reporting {
+		/// <summary>
+		/// The writer to use to log statistics.
+		/// </summary>
 		private static StreamWriter writer;
 
+		/// <summary>
+		/// Initializes static members of the <see cref="Reporting"/> class.
+		/// </summary>
 		static Reporting() {
 			Enabled = DotNetOpenAuthSection.Configuration.Reporting.Enabled;
 			if (Enabled) {
@@ -32,6 +42,27 @@ namespace DotNetOpenAuth {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this reporting is enabled.
+		/// </summary>
+		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		private static bool Enabled { get; set; }
+
+		/// <summary>
+		/// Called when an OpenID RP successfully authenticates someone.
+		/// </summary>
+		internal static void OnAuthenticated() {
+			if (!Enabled) {
+				return;
+			}
+
+			writer.Write("L");
+		}
+
+		/// <summary>
+		/// Opens the report file for append.
+		/// </summary>
+		/// <returns>The writer to use.</returns>
 		private static StreamWriter OpenReport() {
 			IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForDomain();
 			var assemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
@@ -39,16 +70,6 @@ namespace DotNetOpenAuth {
 			var writer = new StreamWriter(fileStream, Encoding.UTF8);
 			writer.AutoFlush = true;
 			return writer;
-		}
-
-		private static bool Enabled { get; set; }
-
-		internal static void OnAuthenticated() {
-			if (!Enabled) {
-				return;
-			}
-
-			writer.Write("L");
 		}
 	}
 }
