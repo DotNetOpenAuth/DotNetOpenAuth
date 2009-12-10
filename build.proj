@@ -21,7 +21,6 @@
 			<DirtyDirectories Include="
 			                           $(ProjectRoot)\bin;
 			                           $(ProjectRoot)\**\obj;
-			                           $(ProjectRoot)\doc\api;
 			                           $(ProjectRoot)\drops;
 			                           $(ProjectRoot)\src\PrecompiledWeb;
 			                           " />
