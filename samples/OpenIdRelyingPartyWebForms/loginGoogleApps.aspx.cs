@@ -25,7 +25,7 @@
 			// in knowing which discovered endpoints are authoritative.  Because of the
 			// extra security concerns it's a good idea to have a separate box 
 			relyingParty.DiscoveryServices.Clear();
-			relyingParty.DiscoveryServices.Insert(0, GoogleAppsDiscovery); // it should be first, if we don't clear it
+			relyingParty.DiscoveryServices.Insert(0, GoogleAppsDiscovery); // it should be first if we don't clear the other discovery services
 		}
 
 		protected void Page_Load(object sender, EventArgs e) {
