@@ -22,11 +22,7 @@ namespace DotNetOpenAuth {
 			Enabled = DotNetOpenAuthSection.Configuration.Reporting.Enabled;
 			if (Enabled) {
 				try {
-					IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForDomain();
-					var assemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
-					var fileStream = new IsolatedStorageFileStream("reporting.txt", FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
-					writer = new StreamWriter(fileStream, Encoding.UTF8);
-					writer.AutoFlush = true;
+					writer = OpenReport();
 					writer.WriteLine();
 					writer.WriteLine(Util.LibraryVersion);
 				} catch {
@@ -36,7 +32,16 @@ namespace DotNetOpenAuth {
 			}
 		}
 
-		internal static bool Enabled { get; set; }
+		private static StreamWriter OpenReport() {
+			IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForDomain();
+			var assemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
+			var fileStream = new IsolatedStorageFileStream("reporting.txt", FileMode.Append, FileAccess.Write, FileShare.Read);
+			var writer = new StreamWriter(fileStream, Encoding.UTF8);
+			writer.AutoFlush = true;
+			return writer;
+		}
+
+		private static bool Enabled { get; set; }
 
 		internal static void OnAuthenticated() {
 			if (!Enabled) {
