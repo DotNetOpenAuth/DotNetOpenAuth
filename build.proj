@@ -375,6 +375,7 @@
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
+			<DropSamplesToolsProjects Include="$(DropSamplesDirectory)OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
 			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<AllDropSources Include="
@@ -408,6 +409,7 @@
 		<ItemGroup>
 			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.csproj" />
 		</ItemGroup>
+		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" />
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
 	</Target>
