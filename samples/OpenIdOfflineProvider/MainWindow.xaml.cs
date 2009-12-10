@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Runtime.InteropServices;
 	using System.Text;
 	using System.Windows;
 	using System.Windows.Controls;
@@ -162,7 +163,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Input.MouseButtonEventArgs"/> instance containing the event data.</param>
 		private void opIdentifierLabel_MouseDown(object sender, MouseButtonEventArgs e) {
-			Clipboard.SetText(opIdentifierLabel.Content.ToString());
+			try {
+				Clipboard.SetText(opIdentifierLabel.Content.ToString());
+			} catch (COMException ex) {
+				MessageBox.Show(this, ex.Message, "Error while copying OP Identifier to the clipboard", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
 		}
 	}
 }
