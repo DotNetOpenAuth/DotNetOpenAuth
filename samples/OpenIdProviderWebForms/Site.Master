@@ -10,7 +10,7 @@
 <body>
 	<form id="form1" runat="server">
 	<div><a href="http://dotnetopenid.googlecode.com">
-		<img runat="server" src="~/images/dotnetopenid_tiny.gif" title="Jump to the project web site."
+		<img runat="server" src="~/images/DotNetOpenAuth.png" title="Jump to the project web site."
 			alt="DotNetOpenId" border='0' /></a> </div>
 	<div>
 		<asp:ContentPlaceHolder ID="Main" runat="server" />
