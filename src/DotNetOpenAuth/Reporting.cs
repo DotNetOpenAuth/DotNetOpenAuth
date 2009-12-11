@@ -350,6 +350,10 @@ namespace DotNetOpenAuth {
 				}
 			}
 
+			/// <summary>
+			/// Gets or sets the name of the file.
+			/// </summary>
+			/// <value>The name of the file.</value>
 			internal string FileName { get; private set; }
 
 			#region IDisposable Members
