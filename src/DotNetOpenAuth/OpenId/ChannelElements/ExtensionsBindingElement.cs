@@ -88,6 +88,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				foreach (IExtensionMessage protocolExtension in extendableMessage.Extensions) {
 					var extension = protocolExtension as IOpenIdMessageExtension;
 					if (extension != null) {
+						Reporting.RecordFeatureUse(protocolExtension);
+
 						// Give extensions that require custom serialization a chance to do their work.
 						var customSerializingExtension = extension as IMessageWithEvents;
 						if (customSerializingExtension != null) {
@@ -145,6 +147,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (extendableMessage != null) {
 				// First add the extensions that are signed by the Provider.
 				foreach (IOpenIdMessageExtension signedExtension in this.GetExtensions(extendableMessage, true, null)) {
+					Reporting.RecordFeatureUse(signedExtension);
 					signedExtension.IsSignedByRemoteParty = true;
 					extendableMessage.Extensions.Add(signedExtension);
 				}
@@ -154,6 +157,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				if (this.relyingPartySecuritySettings == null || !this.relyingPartySecuritySettings.IgnoreUnsignedExtensions) {
 					Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
 					foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
+						Reporting.RecordFeatureUse(unsignedExtension);
 						unsignedExtension.IsSignedByRemoteParty = false;
 						extendableMessage.Extensions.Add(unsignedExtension);
 					}

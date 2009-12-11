@@ -84,6 +84,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
 		}
 
 		/// <summary>

@@ -37,7 +37,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				null);
 
 			this.VerifyDiscoveryMatchesAssertion(relyingParty);
-			Reporting.OnAuthenticated();
 		}
 
 		#region IAuthenticationResponse Properties
