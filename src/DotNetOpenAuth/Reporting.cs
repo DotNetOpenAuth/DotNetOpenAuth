@@ -105,9 +105,11 @@ namespace DotNetOpenAuth {
 						// url rewriting?
 						////RecordFeatureUse(IsMVC ? "ASP.NET MVC" : "ASP.NET Web Forms");
 					}
-				} catch {
-					// This is supposed to be as low-risk as possible, so if it fails, just disable reporting.
+				} catch (Exception e) {
+					// This is supposed to be as low-risk as possible, so if it fails, just disable reporting
+					// and avoid rethrowing.
 					Enabled = false;
+					Logger.Library.Error("Error while trying to initialize reporting.", e);
 				}
 			}
 		}
@@ -317,7 +319,7 @@ namespace DotNetOpenAuth {
 			/// The maximum frequency the set can be flushed to disk.
 			/// </summary>
 #if DEBUG
-			private static readonly TimeSpan minimumFlushInterval = TimeSpan.FromSeconds(30);
+			private static readonly TimeSpan minimumFlushInterval = TimeSpan.Zero;
 #else
 			private static readonly TimeSpan minimumFlushInterval = TimeSpan.FromMinutes(15);
 #endif
