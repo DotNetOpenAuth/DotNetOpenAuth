@@ -140,6 +140,9 @@
 	</Target>
 
 	<Target Name="BuildProjectTemplates">
+		<!-- Deploy the latest SQL script first, so that the class library can embed the latest version. -->
+		<MSBuild Projects="$(ProjectRoot)projecttemplates\RelyingPartyDatabase\RelyingPartyDatabase.dbproj" Targets="Deploy" />
+
 		<MSBuild Projects="@(ProjectTemplates)" />
 	</Target>
 
