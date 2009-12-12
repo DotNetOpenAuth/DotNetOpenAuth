@@ -18,3 +18,4 @@ PrecompiledWeb
 *.swx
 .dotest
 *.Publish.xml
+*.dbproj.schemaview
