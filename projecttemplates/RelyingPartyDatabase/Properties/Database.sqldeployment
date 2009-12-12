@@ -2,8 +2,10 @@
 <DeploymentConfigurationSettings xmlns="urn:Microsoft.VisualStudio.Data.Schema.Project.DeploymentConfigurationSettings">
   <Version>1</Version>
   <Properties>
+    <AbortOnFirstError>False</AbortOnFirstError>
     <AlwaysCreateNewDatabase>False</AlwaysCreateNewDatabase>
     <BlockIncrementalDeploymentIfDataLoss>True</BlockIncrementalDeploymentIfDataLoss>
+    <CommentOutSetVarDeclarations>True</CommentOutSetVarDeclarations>
     <DeployDatabaseProperties>True</DeployDatabaseProperties>
     <DeploymentCollationPreference>UseSourceModelCollation</DeploymentCollationPreference>
     <DoNotUseAlterAssemblyStatementsToUpdateCLRTypes>False</DoNotUseAlterAssemblyStatementsToUpdateCLRTypes>

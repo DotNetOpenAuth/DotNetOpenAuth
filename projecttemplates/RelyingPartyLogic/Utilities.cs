@@ -11,6 +11,7 @@ namespace RelyingPartyLogic {
 	using System.Data.Common;
 	using System.Data.EntityClient;
 	using System.Data.Objects;
+	using System.Data.SqlClient;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -40,27 +41,56 @@ namespace RelyingPartyLogic {
 
 		public static void CreateDatabase(Identifier claimedId, string friendlyId, string databaseName) {
 			const string SqlFormat = @"
-CREATE DATABASE [{0}] ON (NAME='{0}', FILENAME='{0}')
+{0}
 GO
-USE ""{0}""
-GO
-{1}
-EXEC [dbo].[AddUser] 'admin', 'admin', '{2}', '{3}'
+EXEC [dbo].[AddUser] 'admin', 'admin', '{1}', '{2}'
 GO
 ";
-			string schemaSql;
+			var removeSnippets = new string[] { @"
+IF EXISTS (SELECT 1
+           FROM   [master].[dbo].[sysdatabases]
+           WHERE  [name] = N'$(DatabaseName)')
+    BEGIN
+        ALTER DATABASE [$(DatabaseName)]
+            SET HONOR_BROKER_PRIORITY OFF 
+            WITH ROLLBACK IMMEDIATE;
+    END
+
+
+GO", @"
+PRINT N'Creating AutoCreatedLocal...';
+
+
+GO
+CREATE ROUTE [AutoCreatedLocal]
+    AUTHORIZATION [dbo]
+    WITH ADDRESS = N'LOCAL';
+
+
+GO
+"};
+			StringBuilder schemaSqlBuilder = new StringBuilder();
 			using (var sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(DefaultNamespace + ".CreateDatabase.sql"))) {
-				schemaSql = sr.ReadToEnd();
+				schemaSqlBuilder.Append(sr.ReadToEnd());
 			}
+			foreach (string remove in removeSnippets) {
+				schemaSqlBuilder.Replace(remove, string.Empty);
+			}
+			schemaSqlBuilder.Replace("$(Path1)", HttpContext.Current.Server.MapPath("~/App_Data/"));
+			schemaSqlBuilder.Replace("$(DatabaseName)", databaseName);
+
 			string databasePath = HttpContext.Current.Server.MapPath("~/App_Data/" + databaseName + ".mdf");
-			string sql = string.Format(CultureInfo.InvariantCulture, SqlFormat, databasePath, schemaSql, claimedId, "Admin");
+			string sql = string.Format(CultureInfo.InvariantCulture, SqlFormat, schemaSqlBuilder, claimedId, "Admin");
 
 			var serverConnection = new ServerConnection(".\\sqlexpress");
 			try {
 				serverConnection.ExecuteNonQuery(sql);
-				var server = new Server(serverConnection);
-				server.DetachDatabase(databasePath, true);
 			} finally {
+				try {
+					var server = new Server(serverConnection);
+					server.DetachDatabase(databaseName, true);
+				} catch (SqlException) {
+				}
 				serverConnection.Disconnect();
 			}
 		}

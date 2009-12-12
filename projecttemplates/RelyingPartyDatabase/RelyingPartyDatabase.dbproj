@@ -132,7 +132,7 @@
     <Build Include="Schema Objects\Database Level Objects\Service Broker\Routes\AutoCreatedLocal.route.sql">
       <SubType>Code</SubType>
     </Build>
-    <Build Include="Schema Objects\Database Level Objects\Storage\Files\C__Users_andarno_git_dotnetopenid_projecttemplates_WebFormsRelyingParty_App_Data_Database.mdf.sqlfile.sql">
+    <Build Include="Schema Objects\Database Level Objects\Storage\Files\Database.mdf.sqlfile.sql">
       <SubType>Code</SubType>
     </Build>
     <Build Include="Schema Objects\Database Level Objects\Storage\Files\Database_log.sqlfile.sql">

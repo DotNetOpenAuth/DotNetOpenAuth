@@ -4,11 +4,7 @@
   <Properties>
     <Property>
       <PropertyName>Path1</PropertyName>
-      <PropertyValue>C:\Users\andarno\git\dotnetopenid\projecttemplates\WebFormsRelyingParty\App_Data\</PropertyValue>
-    </Property>
-    <Property>
-      <PropertyName>Path2</PropertyName>
-      <PropertyValue>C:\Users\andarno\git\dotnetopenid\projecttemplates\WebFormsRelyingParty\App_Data\</PropertyValue>
+      <PropertyValue>WEBROOT\App_Data\</PropertyValue>
     </Property>
   </Properties>
 </SqlCommandVariables>
