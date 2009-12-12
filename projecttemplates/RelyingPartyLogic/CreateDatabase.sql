@@ -37,8 +37,8 @@ PRINT N'Creating $(DatabaseName)...'
 GO
 CREATE DATABASE [$(DatabaseName)]
     ON 
-    PRIMARY(NAME = [$(Path1)Database.mdf], FILENAME = '$(Path1)Database.mdf', MAXSIZE = UNLIMITED, FILEGROWTH = 1024 KB)
-    LOG ON (NAME = [Database_log], FILENAME = '$(Path1)Database_log.LDF', MAXSIZE = 2097152 MB, FILEGROWTH = 10 %) COLLATE SQL_Latin1_General_CP1_CI_AS
+    PRIMARY(NAME = [$(Path1)$(DatabaseName).mdf], FILENAME = '$(Path1)$(DatabaseName).mdf', MAXSIZE = UNLIMITED, FILEGROWTH = 1024 KB)
+    LOG ON (NAME = [$(DatabaseName)_log], FILENAME = '$(Path1)$(DatabaseName)_log.LDF', MAXSIZE = 2097152 MB, FILEGROWTH = 10 %) COLLATE SQL_Latin1_General_CP1_CI_AS
 GO
 EXECUTE sp_dbcmptlevel [$(DatabaseName)], 90;
 
