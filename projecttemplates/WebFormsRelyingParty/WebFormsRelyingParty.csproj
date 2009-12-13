@@ -233,6 +233,7 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\verisign.gif" />
     <Content Include="Members\OAuthAuthorize.aspx" />
     <Content Include="OAuth.ashx" />
   </ItemGroup>
