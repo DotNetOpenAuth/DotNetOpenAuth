@@ -17,7 +17,7 @@ Copyright (c) 2009, Andrew Arnott. All rights reserved.
 Code licensed under the Ms-PL License:
 http://opensource.org/licenses/ms-pl.html
 </StandardCopyright>
-    <ApplicationIcon>dnoa-icon-colour.ico</ApplicationIcon>
+    <ApplicationIcon>..\..\doc\logo\dnoa-icon-colour.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -684,11 +684,6 @@ http://opensource.org/licenses/ms-pl.html
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.css" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="dnoa-icon-colour.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />

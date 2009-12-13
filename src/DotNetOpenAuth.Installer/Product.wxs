@@ -23,7 +23,7 @@
       <![CDATA[1]]>
     </Property>
     <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
-    <Icon Id="DotNetOpenAuthIcon.exe" SourceFile="$(var.DropDir)\bin\dnoa-icon-colour.ico"/>
+    <Icon Id="DotNetOpenAuthIcon.exe" SourceFile="$(var.ProjectRoot)\doc\logo\dnoa-icon-colour.ico"/>
     <Property Id="ARPPRODUCTICON" Value="DotNetOpenAuthIcon.exe" />
     <!-- Upgrade information used for major upgrades -->
     <Upgrade Id="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">

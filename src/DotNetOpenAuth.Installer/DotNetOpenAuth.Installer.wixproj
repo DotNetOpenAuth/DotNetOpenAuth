@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>$(DefineConstants);DropDir=$(DropDir);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
+    <DefineConstants>$(DefineConstants);ProjectRoot=$(ProjectRoot);DropDir=$(DropDir);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
