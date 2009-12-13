@@ -25,6 +25,7 @@
     <PreviousProjectVersion>3.5</PreviousProjectVersion>
     <AllowServerObjects>False</AllowServerObjects>
     <AllowDatabaseObjects>True</AllowDatabaseObjects>
+    <DeployScriptFileName>..\..\..\RelyingPartyLogic\CreateDatabase.sql</DeployScriptFileName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>.\sql\release\</OutputPath>
@@ -51,7 +52,6 @@
     <DeploymentConfigFile>Properties\Database.sqldeployment</DeploymentConfigFile>
     <SqlCommandVariablesFile>Properties\Database.sqlcmdvars</SqlCommandVariablesFile>
     <DeployToDatabase>False</DeployToDatabase>
-    <DeployScriptFileName>..\..\..\RelyingPartyLogic\CreateDatabase.sql</DeployScriptFileName>
   </PropertyGroup>
   <!--Import the settings-->
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\TeamData\Microsoft.Data.Schema.SqlTasks.targets" />
