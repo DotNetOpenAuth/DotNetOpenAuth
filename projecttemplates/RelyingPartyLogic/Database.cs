@@ -26,7 +26,7 @@ namespace RelyingPartyLogic {
 		}
 
 		public static User LoggedInUser {
-			get { return DataContext.AuthenticationToken.Where(token => token.ClaimedIdentifier == HttpContext.Current.User.Identity.Name).Select(token => token.User).FirstOrDefault(); }
+			get { return DataContext.AuthenticationTokens.Where(token => token.ClaimedIdentifier == HttpContext.Current.User.Identity.Name).Select(token => token.User).FirstOrDefault(); }
 		}
 
 		/// <summary>

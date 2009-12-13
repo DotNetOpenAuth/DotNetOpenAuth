@@ -34,7 +34,6 @@
 			<DirtyDirectories Include="
 			                           $(ProjectRoot)bin;
 			                           $(ProjectRoot)**\obj;
-			                           $(ProjectRoot)doc\api;
 			                           $(DropsRoot);
 			                           $(ProjectRoot)src\PrecompiledWeb;
 			                           $(ProjectTemplatesLayoutPath);
@@ -90,7 +89,7 @@
 	</Target>
 
 	<Target Name="ReSignDelaySignedAssemblies">
-		<Message Text="Signing delay-signed assemblies." />
+		<Message Text="Signing delay-signed assemblies using key pair container $(KeyPairContainer)." />
 		<ReSignDelaySignedAssemblies
 			KeyContainer="$(KeyPairContainer)"
 			Assemblies="@(DelaySignedAssemblies)"
@@ -140,6 +139,9 @@
 	</Target>
 
 	<Target Name="BuildProjectTemplates">
+		<!-- Deploy the latest SQL script first, so that the class library can embed the latest version. -->
+		<MSBuild Projects="$(ProjectRoot)projecttemplates\RelyingPartyDatabase\RelyingPartyDatabase.dbproj" Targets="Build;Deploy" />
+
 		<MSBuild Projects="@(ProjectTemplates)" />
 	</Target>
 
@@ -375,6 +377,7 @@
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
+			<DropSamplesToolsProjects Include="$(DropSamplesDirectory)OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
 			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<AllDropSources Include="
@@ -408,6 +411,7 @@
 		<ItemGroup>
 			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.csproj" />
 		</ItemGroup>
+		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" />
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
 	</Target>

@@ -90,6 +90,7 @@
     <Compile Include="ECMAScriptPacker.cs" />
     <Compile Include="FilterItems.cs" />
     <Compile Include="FixupReferenceHintPaths.cs" />
+    <Compile Include="FixupShippingToolSamples.cs" />
     <Compile Include="MergeProjectWithVSTemplate.cs" />
     <Compile Include="GetBuildVersion.cs" />
     <Compile Include="CheckAdminRights.cs" />

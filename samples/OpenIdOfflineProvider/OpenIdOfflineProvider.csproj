@@ -59,9 +59,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
-    <DefineConstants>$(DefineConstants);StrongNameSigned</DefineConstants>
-    <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\src\official-build-key.pub</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
@@ -162,11 +159,5 @@
     <Resource Include="openid.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+	<Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
 </Project>

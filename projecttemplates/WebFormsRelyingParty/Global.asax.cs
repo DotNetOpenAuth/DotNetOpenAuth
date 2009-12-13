@@ -16,7 +16,7 @@ namespace WebFormsRelyingParty {
 		/// <summary>
 		/// The logger for this sample to use.
 		/// </summary>
-		private static log4net.ILog logger = log4net.LogManager.GetLogger("DotNetOpenAuth.ConsumerSample");
+		private static log4net.ILog logger = log4net.LogManager.GetLogger("WebFormsRelyingParty");
 
 		public static log4net.ILog Logger {
 			get { return logger; }

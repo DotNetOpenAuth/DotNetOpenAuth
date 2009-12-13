@@ -51,7 +51,7 @@
 
 		private void LoginUser(string claimedIdentifier, string friendlyIdentifier, ClaimsResponse claims, Token samlToken, bool trustedEmail) {
 			// Create an account for this user if we don't already have one.
-			AuthenticationToken openidToken = Database.DataContext.AuthenticationToken.FirstOrDefault(token => token.ClaimedIdentifier == claimedIdentifier);
+			AuthenticationToken openidToken = Database.DataContext.AuthenticationTokens.FirstOrDefault(token => token.ClaimedIdentifier == claimedIdentifier);
 			if (openidToken == null) {
 				// this is a user we haven't seen before.
 				User user = new User();
@@ -89,7 +89,7 @@
 					}
 				}
 
-				Database.DataContext.AddToUser(user);
+				Database.DataContext.AddToUsers(user);
 			} else {
 				openidToken.UsageCount++;
 				openidToken.LastUsedUtc = DateTime.UtcNow;

@@ -33,7 +33,7 @@ namespace RelyingPartyLogic {
 			ServiceProvider sp = OAuthServiceProvider.ServiceProvider;
 			var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
 			if (auth != null) {
-				var accessToken = Database.DataContext.IssuedToken.OfType<IssuedAccessToken>().First(token => token.Token == auth.AccessToken);
+				var accessToken = Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>().First(token => token.Token == auth.AccessToken);
 
 				var principal = sp.CreatePrincipal(auth);
 				var policy = new OAuthPrincipalAuthorizationPolicy(principal);

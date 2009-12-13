@@ -30,7 +30,7 @@ namespace RelyingPartyLogic {
 		/// <exception cref="KeyNotFoundException">Thrown if the consumer key cannot be found.</exception>
 		public IConsumerDescription GetConsumer(string consumerKey) {
 			try {
-				return Database.DataContext.Consumer.First(c => c.ConsumerKey == consumerKey);
+				return Database.DataContext.Consumers.First(c => c.ConsumerKey == consumerKey);
 			} catch (InvalidOperationException) {
 				throw new KeyNotFoundException();
 			}
@@ -47,7 +47,7 @@ namespace RelyingPartyLogic {
 		/// been authorized, has expired or does not exist.
 		/// </returns>
 		public bool IsRequestTokenAuthorized(string requestToken) {
-			return Database.DataContext.IssuedToken.OfType<IssuedRequestToken>().Any(
+			return Database.DataContext.IssuedTokens.OfType<IssuedRequestToken>().Any(
 				t => t.Token == requestToken && t.User != null);
 		}
 
@@ -65,7 +65,7 @@ namespace RelyingPartyLogic {
 		/// </remarks>
 		public IServiceProviderRequestToken GetRequestToken(string token) {
 			try {
-				return Database.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(tok => tok.Token == token);
+				return Database.DataContext.IssuedTokens.OfType<IssuedRequestToken>().First(tok => tok.Token == token);
 			} catch (InvalidOperationException) {
 				throw new KeyNotFoundException();
 			}
@@ -85,7 +85,7 @@ namespace RelyingPartyLogic {
 		/// </remarks>
 		public IServiceProviderAccessToken GetAccessToken(string token) {
 			try {
-				return Database.DataContext.IssuedToken.OfType<IssuedAccessToken>().First(tok => tok.Token == token);
+				return Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>().First(tok => tok.Token == token);
 			} catch (InvalidOperationException) {
 				throw new KeyNotFoundException();
 			}

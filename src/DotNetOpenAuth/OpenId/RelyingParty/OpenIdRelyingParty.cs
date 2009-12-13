@@ -423,7 +423,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			
+
 			// This next code contract is a BAD idea, because it causes each authentication request to be generated
 			// at least an extra time.
 			////Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));

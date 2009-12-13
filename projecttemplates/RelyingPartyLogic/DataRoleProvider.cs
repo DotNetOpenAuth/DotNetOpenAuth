@@ -18,10 +18,10 @@ namespace RelyingPartyLogic {
 		}
 
 		public override void AddUsersToRoles(string[] usernames, string[] roleNames) {
-			var users = from token in Database.DataContext.AuthenticationToken
+			var users = from token in Database.DataContext.AuthenticationTokens
 						where usernames.Contains(token.ClaimedIdentifier)
 						select token.User;
-			var roles = from role in Database.DataContext.Role
+			var roles = from role in Database.DataContext.Roles
 						where roleNames.Contains(role.Name, StringComparer.OrdinalIgnoreCase)
 						select role;
 			foreach (User user in users) {
@@ -32,10 +32,10 @@ namespace RelyingPartyLogic {
 		}
 
 		public override void RemoveUsersFromRoles(string[] usernames, string[] roleNames) {
-			var users = from token in Database.DataContext.AuthenticationToken
+			var users = from token in Database.DataContext.AuthenticationTokens
 						where usernames.Contains(token.ClaimedIdentifier)
 						select token.User;
-			var roles = from role in Database.DataContext.Role
+			var roles = from role in Database.DataContext.Roles
 						where roleNames.Contains(role.Name, StringComparer.OrdinalIgnoreCase)
 						select role;
 			foreach (User user in users) {
@@ -46,7 +46,7 @@ namespace RelyingPartyLogic {
 		}
 
 		public override void CreateRole(string roleName) {
-			Database.DataContext.AddToRole(new Role { Name = roleName });
+			Database.DataContext.AddToRoles(new Role { Name = roleName });
 		}
 
 		/// <summary>
@@ -58,7 +58,7 @@ namespace RelyingPartyLogic {
 		/// true if the role was successfully deleted; otherwise, false.
 		/// </returns>
 		public override bool DeleteRole(string roleName, bool throwOnPopulatedRole) {
-			Role role = Database.DataContext.Role.SingleOrDefault(r => r.Name == roleName);
+			Role role = Database.DataContext.Roles.SingleOrDefault(r => r.Name == roleName);
 			if (role == null) {
 				return false;
 			}
@@ -80,7 +80,7 @@ namespace RelyingPartyLogic {
 		/// A string array containing the names of all the users where the user name matches <paramref name="usernameToMatch"/> and the user is a member of the specified role.
 		/// </returns>
 		public override string[] FindUsersInRole(string roleName, string usernameToMatch) {
-			return (from role in Database.DataContext.Role
+			return (from role in Database.DataContext.Roles
 					where role.Name == roleName
 					from user in role.Users
 					from authTokens in user.AuthenticationTokens
@@ -89,18 +89,18 @@ namespace RelyingPartyLogic {
 		}
 
 		public override string[] GetAllRoles() {
-			return Database.DataContext.Role.Select(role => role.Name).ToArray();
+			return Database.DataContext.Roles.Select(role => role.Name).ToArray();
 		}
 
 		public override string[] GetRolesForUser(string username) {
-			return (from authToken in Database.DataContext.AuthenticationToken
+			return (from authToken in Database.DataContext.AuthenticationTokens
 					where authToken.ClaimedIdentifier == username
 					from role in authToken.User.Roles
 					select role.Name).ToArray();
 		}
 
 		public override string[] GetUsersInRole(string roleName) {
-			return (from role in Database.DataContext.Role
+			return (from role in Database.DataContext.Roles
 					where string.Equals(role.Name, roleName, StringComparison.OrdinalIgnoreCase)
 					from user in role.Users
 					from token in user.AuthenticationTokens
@@ -108,7 +108,7 @@ namespace RelyingPartyLogic {
 		}
 
 		public override bool IsUserInRole(string username, string roleName) {
-			Role role = Database.DataContext.Role.SingleOrDefault(r => string.Equals(r.Name, roleName, StringComparison.OrdinalIgnoreCase));
+			Role role = Database.DataContext.Roles.SingleOrDefault(r => string.Equals(r.Name, roleName, StringComparison.OrdinalIgnoreCase));
 			if (role != null) {
 				return role.Users.Any(user => user.AuthenticationTokens.Any(token => token.ClaimedIdentifier == username));
 			}
@@ -117,7 +117,7 @@ namespace RelyingPartyLogic {
 		}
 
 		public override bool RoleExists(string roleName) {
-			return Database.DataContext.Role.Any(role => string.Equals(role.Name, roleName, StringComparison.OrdinalIgnoreCase));
+			return Database.DataContext.Roles.Any(role => string.Equals(role.Name, roleName, StringComparison.OrdinalIgnoreCase));
 		}
 	}
 }

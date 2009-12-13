@@ -7,6 +7,13 @@
 		<VersionCsFile>$(ProjectRoot)obj\$(Configuration)\$(AssemblyName).Version.cs</VersionCsFile>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(SignAssembly)' == 'true'">
+		<DefineConstants>$(DefineConstants);StrongNameSigned</DefineConstants>
+		<DelaySign>true</DelaySign>
+		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
+		<AssemblyOriginatorKeyFile Condition="'$(AssemblyOriginatorKeyFile)' == ''">$(PublicKeyFile)</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
 	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
 

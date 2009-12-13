@@ -201,24 +201,24 @@
     <edmx:ConceptualModels>
       <Schema Namespace="DatabaseModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
         <EntityContainer Name="DatabaseEntities">
-          <EntitySet Name="Role" EntityType="DatabaseModel.Role" />
-          <EntitySet Name="User" EntityType="DatabaseModel.User" />
+          <EntitySet Name="Roles" EntityType="DatabaseModel.Role" />
+          <EntitySet Name="Users" EntityType="DatabaseModel.User" />
           <AssociationSet Name="UserRole" Association="DatabaseModel.UserRole">
-            <End Role="Role" EntitySet="Role" />
-            <End Role="User" EntitySet="User" />
+            <End Role="Role" EntitySet="Roles" />
+            <End Role="User" EntitySet="Users" />
           </AssociationSet>
-          <EntitySet Name="AuthenticationToken" EntityType="DatabaseModel.AuthenticationToken" />
-          <EntitySet Name="Consumer" EntityType="DatabaseModel.Consumer" />
-          <EntitySet Name="IssuedToken" EntityType="DatabaseModel.IssuedToken" />
+          <EntitySet Name="AuthenticationTokens" EntityType="DatabaseModel.AuthenticationToken" />
+          <EntitySet Name="Consumers" EntityType="DatabaseModel.Consumer" />
+          <EntitySet Name="IssuedTokens" EntityType="DatabaseModel.IssuedToken" />
           <AssociationSet Name="FK_AuthenticationToken_User" Association="DatabaseModel.FK_AuthenticationToken_User">
-            <End Role="User" EntitySet="User" />
-            <End Role="AuthenticationToken" EntitySet="AuthenticationToken" /></AssociationSet>
+            <End Role="User" EntitySet="Users" />
+            <End Role="AuthenticationToken" EntitySet="AuthenticationTokens" /></AssociationSet>
           <AssociationSet Name="FK_IssuedToken_Consumer1" Association="DatabaseModel.FK_IssuedToken_Consumer1">
-            <End Role="Consumer" EntitySet="Consumer" />
-            <End Role="IssuedToken" EntitySet="IssuedToken" /></AssociationSet>
+            <End Role="Consumer" EntitySet="Consumers" />
+            <End Role="IssuedToken" EntitySet="IssuedTokens" /></AssociationSet>
           <AssociationSet Name="FK_IssuedToken_User1" Association="DatabaseModel.FK_IssuedToken_User1">
-            <End Role="User" EntitySet="User" />
-            <End Role="IssuedToken" EntitySet="IssuedToken" /></AssociationSet>
+            <End Role="User" EntitySet="Users" />
+            <End Role="IssuedToken" EntitySet="IssuedTokens" /></AssociationSet>
           <EntitySet Name="Nonces" EntityType="DatabaseModel.Nonce" />
           <EntitySet Name="OpenIdAssociations" EntityType="DatabaseModel.OpenIdAssociation" />
           <FunctionImport Name="ClearExpiredNonces" /></EntityContainer>
@@ -321,7 +321,7 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
         <EntityContainerMapping StorageEntityContainer="DatabaseModelStoreContainer" CdmEntityContainer="DatabaseEntities">
-          <EntitySetMapping Name="Role">
+          <EntitySetMapping Name="Roles">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.Role)">
               <MappingFragment StoreEntitySet="Role">
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
@@ -329,7 +329,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="User">
+          <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.User)">
               <MappingFragment StoreEntitySet="User">
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
@@ -347,7 +347,7 @@
             <EndProperty Name="Role">
               <ScalarProperty Name="RoleId" ColumnName="RoleId" /></EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="AuthenticationToken"><EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.AuthenticationToken)">
+          <EntitySetMapping Name="AuthenticationTokens"><EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.AuthenticationToken)">
               <MappingFragment StoreEntitySet="AuthenticationToken">
                 <ScalarProperty Name="AuthenticationTokenId" ColumnName="AuthenticationTokenId" />
                 <ScalarProperty Name="UsageCount" ColumnName="UsageCount" />
@@ -358,7 +358,7 @@
               </MappingFragment>
             </EntityTypeMapping>
             </EntitySetMapping>
-          <EntitySetMapping Name="Consumer">
+          <EntitySetMapping Name="Consumers">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.Consumer)">
               <MappingFragment StoreEntitySet="Consumer">
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -369,7 +369,7 @@
                 <ScalarProperty Name="X509CertificateAsBinary" ColumnName="X509Certificate" />
                 <ScalarProperty Name="ConsumerSecret" ColumnName="ConsumerSecret" />
                 <ScalarProperty Name="ConsumerKey" ColumnName="ConsumerKey" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="IssuedToken">
+          <EntitySetMapping Name="IssuedTokens">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.IssuedToken)">
               <MappingFragment StoreEntitySet="IssuedToken">
                 <ScalarProperty Name="IssuedTokenId" ColumnName="IssuedTokenId" />
@@ -441,7 +441,7 @@
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram Name="Model" ZoomLevel="98">
+      <Diagram Name="Model" ZoomLevel="56">
         <EntityTypeShape EntityType="DatabaseModel.AuthenticationToken" Width="1.875" PointX="5.25" PointY="0.75" Height="2.5571907552083339" IsExpanded="true" />
         <EntityTypeShape EntityType="DatabaseModel.Role" Width="1.5" PointX="0.75" PointY="1.25" Height="1.59568359375" IsExpanded="true" />
         <EntityTypeShape EntityType="DatabaseModel.User" Width="1.75" PointX="2.875" PointY="0.5" Height="3.1340950520833339" IsExpanded="true" />
