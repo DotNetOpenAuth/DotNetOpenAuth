@@ -34,7 +34,6 @@
 			<DirtyDirectories Include="
 			                           $(ProjectRoot)bin;
 			                           $(ProjectRoot)**\obj;
-			                           $(ProjectRoot)doc\api;
 			                           $(DropsRoot);
 			                           $(ProjectRoot)src\PrecompiledWeb;
 			                           $(ProjectTemplatesLayoutPath);
