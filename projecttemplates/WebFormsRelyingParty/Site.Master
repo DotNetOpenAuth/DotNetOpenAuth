@@ -16,7 +16,7 @@
 		<asp:LoginView runat="server">
 			<LoggedInTemplate>
 				<%
-					var authToken = Database.DataContext.AuthenticationToken.Include("User").First(token => token.ClaimedIdentifier == Page.User.Identity.Name);
+					var authToken = Database.DataContext.AuthenticationTokens.Include("User").First(token => token.ClaimedIdentifier == Page.User.Identity.Name);
 					if (!string.IsNullOrEmpty(authToken.User.EmailAddress)) {
 						Response.Write(HttpUtility.HtmlEncode(authToken.User.EmailAddress));
 					} else if (!string.IsNullOrEmpty(authToken.User.FirstName)) {
