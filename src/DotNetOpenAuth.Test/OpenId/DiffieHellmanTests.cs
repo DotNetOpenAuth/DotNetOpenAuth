@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using Org.Mentalis.Security.Cryptography;
 
 	[TestClass]
-	public class DiffieHellmanTests {
+	public class DiffieHellmanTests : OpenIdTestBase {
 		[TestMethod]
 		public void Test() {
 			string s1 = Test1();
@@ -28,7 +28,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 			try {
 				string line;
+				int lineNumber = 0;
 				while ((line = reader.ReadLine()) != null) {
+					TestContext.WriteLine("\tLine {0}", ++lineNumber);
 					string[] parts = line.Trim().Split(' ');
 					byte[] x = Convert.FromBase64String(parts[0]);
 					DiffieHellmanManaged dh = new DiffieHellmanManaged(AssociateDiffieHellmanRequest.DefaultMod, AssociateDiffieHellmanRequest.DefaultGen, x);
