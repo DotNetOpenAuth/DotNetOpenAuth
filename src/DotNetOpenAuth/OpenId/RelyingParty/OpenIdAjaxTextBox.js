@@ -38,7 +38,7 @@ Array.prototype.remove = function(element) {
 	}
 };
 
-function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url, success_icon_url, failure_icon_url,
+function initAjaxOpenId(box, openid_logo_url, spinner_url, success_icon_url, failure_icon_url,
 		throttle, timeout, assertionReceivedCode,
 		loginButtonText, loginButtonToolTip, retryButtonText, retryButtonToolTip, busyToolTip,
 		identifierRequiredMessage, loginInProgressMessage,
@@ -221,8 +221,6 @@ function initAjaxOpenId(box, openid_logo_url, dotnetopenid_logo_url, spinner_url
 	box.dnoi_internal.success_icon = box.dnoi_internal.constructIcon(success_icon_url, authenticatedAsToolTip, true);
 	//box.dnoi_internal.failure_icon = box.dnoi_internal.constructIcon(failure_icon_url, authenticationFailedToolTip, true);
 
-	// Disable the display of the DotNetOpenId logo
-	//box.dnoi_internal.dnoi_logo = box.dnoi_internal.constructIcon(dotnetopenid_logo_url);
 	box.dnoi_internal.dnoi_logo = box.dnoi_internal.openid_logo;
 
 	box.dnoi_internal.setVisualCue = function(state, authenticatedBy, authenticatedAs) {
