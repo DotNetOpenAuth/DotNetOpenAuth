@@ -236,6 +236,7 @@
     <Content Include="images\verisign.gif" />
     <Content Include="Members\OAuthAuthorize.aspx" />
     <Content Include="OAuth.ashx" />
+    <Content Include="PrivacyPolicy.aspx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
