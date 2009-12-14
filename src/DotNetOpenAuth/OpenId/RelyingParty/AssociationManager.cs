@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
@@ -40,8 +41,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="associationStore">The association store.  May be null for dumb mode relying parties.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal AssociationManager(Channel channel, IAssociationStore<Uri> associationStore, RelyingPartySecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(channel != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.channel = channel;
 			this.associationStore = associationStore;
@@ -58,7 +59,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.channel = value;
 			}
 		}
@@ -72,7 +73,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.securitySettings = value;
 			}
 		}
@@ -95,7 +96,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="provider">The provider to create an association with.</param>
 		/// <returns>The association if one exists and has useful life remaining.  Otherwise <c>null</c>.</returns>
 		internal Association GetExistingAssociation(ProviderEndpointDescription provider) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			// If the RP has no application store for associations, there's no point in creating one.
 			if (this.associationStore == null) {
@@ -140,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Any new association is automatically added to the <see cref="associationStore"/>.
 		/// </remarks>
 		public Association CreateNewAssociation(ProviderEndpointDescription provider) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			// If there is no association store, there is no point in creating an association.
 			if (this.associationStore == null) {
@@ -164,7 +165,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// the given Provider given the current security settings.
 		/// </returns>
 		private Association CreateNewAssociation(ProviderEndpointDescription provider, AssociateRequest associateRequest, int retriesRemaining) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			if (associateRequest == null || retriesRemaining < 0) {
 				// this can happen if security requirements and protocol conflict

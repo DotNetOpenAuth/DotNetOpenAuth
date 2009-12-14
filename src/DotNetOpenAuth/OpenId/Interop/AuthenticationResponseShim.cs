@@ -30,8 +30,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		internal AuthenticationResponseShim(IAuthenticationResponse response) {
-			Contract.Requires(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
 			var claimsResponse = this.response.GetExtension<ClaimsResponse>();

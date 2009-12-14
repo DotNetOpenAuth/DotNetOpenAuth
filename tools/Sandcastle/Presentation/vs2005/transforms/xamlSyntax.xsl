@@ -109,8 +109,6 @@
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>
-    <!-- Show the authored XAML Values section, if any. -->
-    <xsl:call-template name="showXamlValuesSection"/>
   </xsl:template>
 
   <!-- XAML syntax for ENUMERATION topics. This is the logic:
@@ -151,8 +149,6 @@
         </span>
       </xsl:when>
     </xsl:choose>
-    <!-- Show the authored XAML Values section, if any. -->
-    <xsl:call-template name="showXamlValuesSection"/>
   </xsl:template>
 
   <!-- XAML syntax for PROPERTY topics. This is the logic:
@@ -222,8 +218,6 @@
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>
-    <!-- Show the authored XAML Values section, if any. -->
-    <xsl:call-template name="showXamlValuesSection"/>
   </xsl:template>
 
   <!-- XAML syntax for EVENT topics. This is the logic:
@@ -259,8 +253,6 @@
         </xsl:with-param>
       </xsl:call-template>
     </xsl:if>
-    <!-- Show the authored XAML Values section, if any. -->
-    <xsl:call-template name="showXamlValuesSection"/>
   </xsl:template>
 
   <!-- XAML syntax for members that cannot be used in XAML: interface, delegate, method, field, constructor.
@@ -283,19 +275,19 @@
   <!-- Displays one of the standard XAML boilerplate strings. -->
   <xsl:template name="ShowXamlSyntaxBoilerplate">
     <xsl:param name="param0"/>
+    <!-- TFS bug 303004: DO NOT SHOW ANY xaml syntax boilerplate strings. -->
+    <xsl:variable name="boilerplateId"/>
+    
+    <!-- If future requirements call for showing one or more boilerplate strings for xaml, 
+         use the commented out code to specify the ids of the shared content items to include.
+         NOTE: the markup like div/@class[.='interfaceOverviewXamlSyntax' is added by XamlUsageSyntax.cs in BuildAssembler. -->
+    <!--
     <xsl:variable name="boilerplateId">
-      <xsl:choose>
-        <!-- don't show boilerplate for apis that are not in xaml assemblies -->
-        <xsl:when test="$showNonXamlAssemblyBoilerplate='false' and div[@class='nonXamlAssemblyBoilerplate']"/>
-        <xsl:otherwise>
-          <xsl:value-of select="div/@class[not(.='xamlAttributeUsageHeading' or
-                                           .='xamlObjectElementUsageHeading' or
-                                           .='xamlContentElementUsageHeading' or
-                                           .='xamlPropertyElementUsageHeading' or
-                                           .='xamlXmlnsUri')]"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="div/@class[.='interfaceOverviewXamlSyntax' or
+                    .='propertyXamlSyntax_abstractType' or                    
+                    .='classXamlSyntax_abstract']"/>
     </xsl:variable>
+    -->
 
     <xsl:if test="$boilerplateId!=''">
       <span codeLanguage="XAML">
@@ -402,7 +394,7 @@
   <!-- Display the XAML Values section. -->
   <xsl:template name="showXamlValuesSection">
     <xsl:for-each select="//ddue:section[starts-with(@address,'xamlValues')]">
-      <span codeLanguage="XAML">
+      <div id="xamlValues">
         <p/>
         <xsl:call-template name="subSection">
           <xsl:with-param name="title">
@@ -412,7 +404,7 @@
             <xsl:apply-templates select="ddue:content"/>
           </xsl:with-param>
         </xsl:call-template>
-      </span>
+      </div>
     </xsl:for-each>
   </xsl:template>
 

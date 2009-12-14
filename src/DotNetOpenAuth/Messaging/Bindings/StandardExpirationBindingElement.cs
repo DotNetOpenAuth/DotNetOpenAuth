@@ -6,17 +6,13 @@
 
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
+	using DotNetOpenAuth.Configuration;
 
 	/// <summary>
 	/// A message expiration enforcing binding element that supports messages
 	/// implementing the <see cref="IExpiringProtocolMessage"/> interface.
 	/// </summary>
 	internal class StandardExpirationBindingElement : IChannelBindingElement {
-		/// <summary>
-		/// The default maximum message age to use if the default constructor is called.
-		/// </summary>
-		internal static readonly TimeSpan DefaultMaximumMessageAge = TimeSpan.FromMinutes(13);
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardExpirationBindingElement"/> class.
 		/// </summary>

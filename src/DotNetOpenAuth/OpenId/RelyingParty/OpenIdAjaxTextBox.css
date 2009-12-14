@@ -1,0 +1,49 @@
+﻿.OpenIdAjaxTextBox input
+{
+	margin: 0px;
+}
+
+.OpenIdAjaxTextBox > span
+{
+	position: absolute;
+	right: -1px;
+	top: 2px;
+}
+
+.OpenIdAjaxTextBox input[type=button]
+{
+	visibility: hidden;
+	position: absolute;
+	padding: 0px;
+	font-size: 8px;
+	top: 1px;
+	bottom: 1px;
+	right: 2px;
+}
+
+.OpenIdAjaxTextBox .yui-split-button span button
+{
+	font-size: 50%;
+	font-size: 60%\9; /* the \9 is a hack that causes only IE7/8 to use this value. */
+	line-height: 1;
+	min-height: 1em;
+	padding-top: 2px;
+	padding-top: 3px\9;
+	padding-bottom: 1px;
+	padding-left: 5px;
+	height: auto;
+}
+
+.OpenIdAjaxTextBox .yuimenuitem .yuimenuitemlabel
+{
+	padding-left: 5px;
+}
+
+.OpenIdAjaxTextBox .yuimenuitem .yuimenuitemlabel img
+{
+	border: 0;
+	margin-right: 4px;
+	vertical-align: middle;
+	width: 16px;
+	height: 16px;
+}

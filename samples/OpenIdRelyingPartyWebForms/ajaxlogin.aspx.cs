@@ -13,7 +13,7 @@
 
 		protected void OpenIdAjaxTextBox1_LoggingIn(object sender, OpenIdEventArgs e) {
 			e.Request.AddExtension(new ClaimsRequest {
-				Email = DemandLevel.Request,
+				Email = DemandLevel.Require,
 			});
 		}
 

@@ -106,6 +106,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.tokens[token];
 		}
 
+		public void UpdateToken(IServiceProviderRequestToken token) {
+			// Nothing to do here, since we're using Linq To SQL.
+		}
+
 		#endregion
 
 		/// <summary>

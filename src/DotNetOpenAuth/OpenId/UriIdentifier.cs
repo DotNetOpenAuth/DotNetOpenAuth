@@ -35,6 +35,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		internal UriIdentifier(string uri)
 			: this(uri, false) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 		}
 
 		/// <summary>
@@ -43,8 +44,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(string uri, bool requireSslDiscovery)
-			: base(requireSslDiscovery) {
-			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
+			: base(uri, requireSslDiscovery) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 			Uri canonicalUri;
 			bool schemePrepended;
 			if (!TryCanonicalize(uri, out canonicalUri, requireSslDiscovery, out schemePrepended)) {
@@ -70,8 +71,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
-			: base(requireSslDiscovery) {
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			: base(uri != null ? uri.OriginalString : null, requireSslDiscovery) {
+			Contract.Requires<ArgumentNullException>(uri != null);
 			if (!TryCanonicalize(new UriBuilder(uri), out uri)) {
 				throw new UriFormatException();
 			}
@@ -416,8 +417,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// require network access are also done, such as lower-casing the hostname in the URI.
 		/// </remarks>
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
-			Contract.Requires(!string.IsNullOrEmpty(uri));
-			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(uri));
 
 			uri = uri.Trim();
 			canonicalUri = null;
@@ -462,6 +462,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		private void ObjectInvariant() {

@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// This interface should be implemented by the same class that implements
 	/// <see cref="ITokenManager"/> in order to enable the OpenID+OAuth extension.
 	/// </remarks>
-	public interface ICombinedOpenIdProviderTokenManager {
+	public interface ICombinedOpenIdProviderTokenManager : IOpenIdOAuthTokenManager, ITokenManager {
 		/// <summary>
 		/// Gets the OAuth consumer key for a given OpenID relying party realm.
 		/// </summary>

@@ -39,20 +39,6 @@ namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 			this.tokensAndSecrets[response.Token] = response.TokenSecret;
 		}
 
-		/// <summary>
-		/// Checks whether a given request token has already been authorized
-		/// by some user for use by the Consumer that requested it.
-		/// </summary>
-		/// <param name="requestToken">The Consumer's request token.</param>
-		/// <returns>
-		/// True if the request token has already been fully authorized by the user
-		/// who owns the relevant protected resources.  False if the token has not yet
-		/// been authorized, has expired or does not exist.
-		/// </returns>
-		public bool IsRequestTokenAuthorized(string requestToken) {
-			throw new NotImplementedException();
-		}
-
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
 			this.tokensAndSecrets.Remove(requestToken);
 			this.tokensAndSecrets[accessToken] = accessTokenSecret;

@@ -92,7 +92,15 @@ public class Global : HttpApplication {
 	private void Application_Start(object sender, EventArgs e) {
 		log4net.Config.XmlConfigurator.Configure();
 		Logger.Info("Sample starting...");
-		Constants.WebRootUrl = new Uri(HttpContext.Current.Request.Url, "/");
+		string appPath = HttpContext.Current.Request.ApplicationPath;
+		if (!appPath.EndsWith("/")) {
+			appPath += "/";
+		}
+
+		// This will break in IIS Integrated Pipeline mode, since applications
+		// start before the first incoming request context is available.
+		// TODO: fix this.
+		Constants.WebRootUrl = new Uri(HttpContext.Current.Request.Url, appPath);
 		var tokenManager = new DatabaseTokenManager();
 		Global.TokenManager = tokenManager;
 	}

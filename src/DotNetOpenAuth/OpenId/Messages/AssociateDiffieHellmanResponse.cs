@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -51,7 +52,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
 		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, "request");
 
@@ -73,10 +73,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
 		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
-			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, "request");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			ErrorUtilities.VerifyInternal(diffieHellmanRequest != null, "Expected a DH request type.");
 
 			this.SessionType = this.SessionType ?? request.SessionType;
 

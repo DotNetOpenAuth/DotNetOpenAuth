@@ -286,6 +286,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The HTML head tag must include runat=&quot;server&quot;..
+        /// </summary>
+        internal static string HeadTagMustIncludeRunatServer {
+            get {
+                return ResourceManager.GetString("HeadTagMustIncludeRunatServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true..
         /// </summary>
         internal static string IdentifierSelectRequiresMatchingIdentifiers {
@@ -358,7 +367,7 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Not a recognized XRI format..
         /// </summary>
         internal static string InvalidXri {
             get {
@@ -511,6 +520,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string PrivateRPSecretNotFound {
             get {
                 return ResourceManager.GetString("PrivateRPSecretNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} property must be set first..
+        /// </summary>
+        internal static string PropertyNotSet {
+            get {
+                return ResourceManager.GetString("PropertyNotSet", resourceCulture);
             }
         }
         

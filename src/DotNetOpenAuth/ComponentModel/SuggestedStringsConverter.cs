@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.ComponentModel {
 	/// A type that generates suggested strings for Intellisense,
 	/// but doesn't actually convert between strings and other types.
 	/// </summary>
+	[ContractClass(typeof(SuggestedStringsConverterContract))]
 	public abstract class SuggestedStringsConverter : ConverterBase<string> {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SuggestedStringsConverter"/> class.
@@ -35,6 +36,9 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <param name="type">The type to reflect over.</param>
 		/// <returns>A collection of values.</returns>
 		internal static ICollection GetStandardValuesForCacheShared(Type type) {
+			Contract.Requires<ArgumentNullException>(type != null);
+			Contract.Ensures(Contract.Result<ICollection>() != null);
+
 			var fields = from field in type.GetFields(BindingFlags.Static | BindingFlags.Public)
 						 select field.GetValue(null);
 			var properties = from prop in type.GetProperties(BindingFlags.Static | BindingFlags.Public)

@@ -148,19 +148,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// This method implements OAuth 1.0 section 9.1.
 		/// </remarks>
 		internal static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, MessageDictionary messageDictionary) {
-			Contract.Requires(message != null);
-			Contract.Requires(messageDictionary != null);
-			Contract.Requires(messageDictionary.Message == message);
-
-			if (String.IsNullOrEmpty(message.HttpMethod)) {
-				throw new ArgumentException(
-					string.Format(
-					CultureInfo.CurrentCulture,
-					MessagingStrings.ArgumentPropertyMissing,
-					typeof(ITamperResistantOAuthMessage).Name,
-					"HttpMethod"),
-					"message");
-			}
+			Contract.Requires<ArgumentNullException>(message != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(message.HttpMethod));
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Contract.Requires<ArgumentException>(messageDictionary.Message == message);
 
 			List<string> signatureBaseStringElements = new List<string>(3);
 

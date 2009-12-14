@@ -14,7 +14,7 @@
       - gets rid of duplicate element nodes in a namespace's api node
       - type api nodes: collapses duplicates into a single api node; saves library info for each duplicate
       - member api nodes: collapses duplicates into a single api node; saves library info for each duplicate
-      - enum api nodes: saves container info for each enum element, in case the element lists differ
+      - for element lists, add library info to elements that are not in all duplicates
   -->
   <xsl:key name="index" match="/*/apis/api" use="@id" />
 
@@ -58,16 +58,12 @@
 
   <xsl:template match="api[apidata/@group='type']">
     <xsl:variable name="ancestorId" select="family/ancestors/type[last()]/@api" />
-    <xsl:variable name="subgroup" select="apidata/@subgroup" />
-    <xsl:variable name="duplicates" select="key('index',@id)[apidata[@subgroup=$subgroup]]" />
-    <!--
-      (apidata[@subgroup!='class'] or family/ancestors/type[last()][@api=$ancestorId])]    
-    -->
+    <xsl:variable name="duplicates" select="key('index',@id)" />
     <xsl:choose>
       <!-- if dupes, merge them -->
       <xsl:when test="count($duplicates)&gt;1">
         <xsl:variable name="typeId" select="@id" />
-        <xsl:if test="not(preceding-sibling::api[@id=$typeId][apidata[@subgroup=$subgroup]])">
+        <xsl:if test="not(preceding-sibling::api[@id=$typeId])">
           <xsl:call-template name="mergeDuplicateTypes">
             <xsl:with-param name="duplicates" select="$duplicates"/>
           </xsl:call-template>
@@ -83,7 +79,6 @@
   <xsl:template name="mergeDuplicateTypes">
     <xsl:param name="duplicates"/>
     <xsl:variable name="typeId" select="@id"/>
-    <xsl:variable name="subgroup" select="apidata/@subgroup" />
     <xsl:variable name="duplicatesCount" select="count($duplicates)"/>
     <api>
       <xsl:copy-of select="@*" />
@@ -99,7 +94,7 @@
             <elements>
               <xsl:for-each select="$duplicates/elements/element">
                 <xsl:variable name="elementId" select="@api"/>
-                <xsl:if test="not(preceding::api[@id=$typeId][apidata[@subgroup=$subgroup]]/elements/element[@api=$elementId])">
+                <xsl:if test="not(preceding::api[@id=$typeId]/elements/element[@api=$elementId])">
                   <!-- need to add library info to elements that are not in all duplicates -->
                   <element>
                     <xsl:copy-of select="@*"/>

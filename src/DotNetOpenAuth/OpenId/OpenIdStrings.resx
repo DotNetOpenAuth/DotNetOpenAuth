@@ -178,7 +178,7 @@
     <value>The value '{0}' is not a valid URI.</value>
   </data>
   <data name="InvalidXri" xml:space="preserve">
-    <value>Not a recognized XRI format: '{0}'.</value>
+    <value>Not a recognized XRI format.</value>
   </data>
   <data name="IssuedAssertionFailsIdentifierDiscovery" xml:space="preserve">
     <value>The OpenID Provider issued an assertion for an Identifier whose discovery information did not match.  
@@ -339,5 +339,11 @@ Discovered endpoint info:
   </data>
   <data name="PositiveAssertionFromNonWhitelistedProvider" xml:space="preserve">
     <value>An positive OpenID assertion was received from OP endpoint {0} that is not on this relying party's whitelist.</value>
+  </data>
+  <data name="HeadTagMustIncludeRunatServer" xml:space="preserve">
+    <value>The HTML head tag must include runat="server".</value>
+  </data>
+  <data name="PropertyNotSet" xml:space="preserve">
+    <value>The {0} property must be set first.</value>
   </data>
 </root>

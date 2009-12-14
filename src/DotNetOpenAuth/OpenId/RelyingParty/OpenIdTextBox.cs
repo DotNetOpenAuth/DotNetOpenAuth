@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </remarks>
 	[DefaultProperty("Text"), ValidationProperty("Text")]
 	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\" />")]
-	public class OpenIdTextBox : CompositeControl, IEditableTextControl, ITextControl {
+	public class OpenIdTextBox : OpenIdRelyingPartyControlBase, IEditableTextControl, ITextControl, IPostBackDataHandler {
 		/// <summary>
 		/// The name of the manifest stream containing the
 		/// OpenID logo that is placed inside the text box.
@@ -52,36 +52,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		protected const short TabIndexDefault = 0;
 
-		/// <summary>
-		/// Default value of <see cref="UsePersistentCookie"/>.
-		/// </summary>
-		protected const bool UsePersistentCookieDefault = false;
-
 		#region Property category constants
-
-		/// <summary>
-		/// The "Appearance" category for properties.
-		/// </summary>
-		private const string AppearanceCategory = "Appearance";
 
 		/// <summary>
 		/// The "Simple Registration" category for properties.
 		/// </summary>
 		private const string ProfileCategory = "Simple Registration";
 
-		/// <summary>
-		/// The "Behavior" category for properties.
-		/// </summary>
-		private const string BehaviorCategory = "Behavior";
-
 		#endregion
 
 		#region Property viewstate keys
-
-		/// <summary>
-		/// The viewstate key to use for the <see cref="Popup"/> property.
-		/// </summary>
-		private const string PopupViewStateKey = "Popup";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestEmail"/> property.
@@ -102,11 +82,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The viewstate key to use for the <see cref="RequestCountry"/> property.
 		/// </summary>
 		private const string RequestCountryViewStateKey = "RequestCountry";
-
-		/// <summary>
-		/// The viewstate key to use for the <see cref="RequireSsl"/> property.
-		/// </summary>
-		private const string RequireSslViewStateKey = "RequireSsl";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestLanguage"/> property.
@@ -144,24 +119,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string ShowLogoViewStateKey = "ShowLogo";
 
 		/// <summary>
-		/// The viewstate key to use for the <see cref="UsePersistentCookie"/> property.
-		/// </summary>
-		private const string UsePersistentCookieViewStateKey = "UsePersistentCookie";
-
-		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestGender"/> property.
 		/// </summary>
 		private const string RequestGenderViewStateKey = "RequestGender";
-
-		/// <summary>
-		/// The viewstate key to use for the <see cref="ReturnToUrl"/> property.
-		/// </summary>
-		private const string ReturnToUrlViewStateKey = "ReturnToUrl";
-
-		/// <summary>
-		/// The viewstate key to use for the <see cref="Stateless"/> property.
-		/// </summary>
-		private const string StatelessViewStateKey = "Stateless";
 
 		/// <summary>
 		/// The viewstate key to use for the <see cref="RequestBirthDate"/> property.
@@ -169,18 +129,43 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string RequestBirthDateViewStateKey = "RequestBirthDate";
 
 		/// <summary>
-		/// The viewstate key to use for the <see cref="RealmUrl"/> property.
+		/// The viewstate key to use for the <see cref="CssClass"/> property.
 		/// </summary>
-		private const string RealmUrlViewStateKey = "RealmUrl";
+		private const string CssClassViewStateKey = "CssClass";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="MaxLength"/> property.
+		/// </summary>
+		private const string MaxLengthViewStateKey = "MaxLength";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Columns"/> property.
+		/// </summary>
+		private const string ColumnsViewStateKey = "Columns";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="TabIndex"/> property.
+		/// </summary>
+		private const string TabIndexViewStateKey = "TabIndex";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Enabled"/> property.
+		/// </summary>
+		private const string EnabledViewStateKey = "Enabled";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Name"/> property.
+		/// </summary>
+		private const string NameViewStateKey = "Name";
+
+		/// <summary>
+		/// The viewstate key to use for the <see cref="Text"/> property.
+		/// </summary>
+		private const string TextViewStateKey = "Text";
 
 		#endregion
 
 		#region Property defaults
-
-		/// <summary>
-		/// The default value for the <see cref="Popup"/> property.
-		/// </summary>
-		private const PopupBehavior PopupDefault = PopupBehavior.Never;
 
 		/// <summary>
 		/// The default value for the <see cref="Columns"/> property.
@@ -193,19 +178,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const int MaxLengthDefault = 40;
 
 		/// <summary>
+		/// The default value for the <see cref="Name"/> property.
+		/// </summary>
+		private const string NameDefault = "openid_identifier";
+
+		/// <summary>
 		/// The default value for the <see cref="EnableRequestProfile"/> property.
 		/// </summary>
 		private const bool EnableRequestProfileDefault = true;
-
-		/// <summary>
-		/// The default value for the <see cref="RequireSsl"/> property.
-		/// </summary>
-		private const bool RequireSslDefault = false;
-
-		/// <summary>
-		/// The default value for the <see cref="Stateless"/> property.
-		/// </summary>
-		private const bool StatelessDefault = false;
 
 		/// <summary>
 		/// The default value for the <see cref="ShowLogo"/> property.
@@ -228,19 +208,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string CssClassDefault = "openid";
 
 		/// <summary>
-		/// The default value for the <see cref="ReturnToUrl"/> property.
-		/// </summary>
-		private const string ReturnToUrlDefault = "";
-
-		/// <summary>
 		/// The default value for the <see cref="Text"/> property.
 		/// </summary>
 		private const string TextDefault = "";
-
-		/// <summary>
-		/// The default value for the <see cref="RealmUrl"/> property.
-		/// </summary>
-		private const string RealmUrlDefault = "~/";
 
 		/// <summary>
 		/// The default value for the <see cref="RequestEmail"/> property.
@@ -290,79 +260,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in a popup window.
+		/// An empty sreg request, used to compare with others to see if they too are empty.
 		/// </summary>
-		private const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
-
-		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in the parent window.
-		/// </summary>
-		private const string UIPopupCallbackParentKey = OpenIdUtilities.CustomParameterPrefix + "uipopupParent";
-
-		/// <summary>
-		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
-		/// </summary>
-		private const string UsePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
-
-		/// <summary>
-		/// The text in the text box before the text box is instantiated.
-		/// </summary>
-		private string text = TextDefault;
-
-		/// <summary>
-		/// The text box itself.
-		/// </summary>
-		private TextBox wrappedTextBox;
-
-		/// <summary>
-		/// Backing field for the <see cref="RelyingParty"/> property.
-		/// </summary>
-		private OpenIdRelyingParty relyingParty;
+		private static readonly ClaimsRequest EmptyClaimsRequest = new ClaimsRequest();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdTextBox"/> class.
 		/// </summary>
 		public OpenIdTextBox() {
-			this.InitializeControls();
 		}
-
-		#region Events
-
-		/// <summary>
-		/// Fired upon completion of a successful login.
-		/// </summary>
-		[Description("Fired upon completion of a successful login.")]
-		public event EventHandler<OpenIdEventArgs> LoggedIn;
-
-		/// <summary>
-		/// Fired when a login attempt fails.
-		/// </summary>
-		[Description("Fired when a login attempt fails.")]
-		public event EventHandler<OpenIdEventArgs> Failed;
-
-		/// <summary>
-		/// Fired when an authentication attempt is canceled at the OpenID Provider.
-		/// </summary>
-		[Description("Fired when an authentication attempt is canceled at the OpenID Provider.")]
-		public event EventHandler<OpenIdEventArgs> Canceled;
-
-		/// <summary>
-		/// Fired when an Immediate authentication attempt fails, and the Provider suggests using non-Immediate mode.
-		/// </summary>
-		[Description("Fired when an Immediate authentication attempt fails, and the Provider suggests using non-Immediate mode.")]
-		public event EventHandler<OpenIdEventArgs> SetupRequired;
-
-		#endregion
 
 		#region IEditableTextControl Members
 
 		/// <summary>
 		/// Occurs when the content of the text changes between posts to the server.
 		/// </summary>
-		public event EventHandler TextChanged {
-			add { this.WrappedTextBox.TextChanged += value; }
-			remove { this.WrappedTextBox.TextChanged -= value; }
-		}
+		public event EventHandler TextChanged;
 
 		#endregion
 
@@ -375,101 +288,32 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Description("The content of the text box.")]
 		public string Text {
 			get {
-				return this.WrappedTextBox != null ? this.WrappedTextBox.Text : this.text;
+				return this.Identifier != null ? this.Identifier.OriginalString : (this.ViewState[TextViewStateKey] as string ?? string.Empty);
 			}
 
 			set {
-				this.text = value;
-				if (this.WrappedTextBox != null) {
-					this.WrappedTextBox.Text = value;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the OpenID <see cref="Realm"/> of the relying party web site.
-		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
-		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
-		[Bindable(true), DefaultValue(RealmUrlDefault), Category(BehaviorCategory)]
-		[Description("The OpenID Realm of the relying party web site.")]
-		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
-		public string RealmUrl {
-			get {
-				return (string)(ViewState[RealmUrlViewStateKey] ?? RealmUrlDefault);
-			}
-
-			set {
-				if (Page != null && !DesignMode) {
-					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, this.RelyingParty.Channel.GetRequestFromContext())); // throws an exception on failure.
+				// Try to store it as a validated identifier,
+				// but failing that at least store the text.
+				Identifier id;
+				if (Identifier.TryParse(value, out id)) {
+					this.Identifier = id;
 				} else {
-					// We can't fully test it, but it should start with either ~/ or a protocol.
-					if (Regex.IsMatch(value, @"^https?://")) {
-						new Uri(value.Replace("*.", string.Empty)); // make sure it's fully-qualified, but ignore wildcards
-					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
-						// this is valid too
-					} else {
-						throw new UriFormatException();
-					}
+					// Be sure to set the viewstate AFTER setting the Identifier,
+					// since setting the Identifier clears the viewstate in OnIdentifierChanged.
+					this.Identifier = null;
+					this.ViewState[TextViewStateKey] = value;
 				}
-				ViewState[RealmUrlViewStateKey] = value;
 			}
 		}
 
 		/// <summary>
-		/// Gets or sets the OpenID ReturnTo of the relying party web site.
+		/// Gets or sets the form name to use for this input field.
 		/// </summary>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Bindable property must be simple type")]
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Using Uri.ctor for validation.")]
-		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Bindable property must be simple type")]
-		[Bindable(true), DefaultValue(ReturnToUrlDefault), Category(BehaviorCategory)]
-		[Description("The OpenID ReturnTo of the relying party web site.")]
-		[UrlProperty, Editor("System.Web.UI.Design.UrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
-		public string ReturnToUrl {
-			get {
-				return (string)(this.ViewState[ReturnToUrlViewStateKey] ?? ReturnToUrlDefault);
-			}
-
-			set {
-				if (this.Page != null && !this.DesignMode) {
-					// Validate new value by trying to construct a Uri based on it.
-					new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
-				} else {
-					// We can't fully test it, but it should start with either ~/ or a protocol.
-					if (Regex.IsMatch(value, @"^https?://")) {
-						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
-					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
-						// this is valid too
-					} else {
-						throw new UriFormatException();
-					}
-				}
-
-				this.ViewState[ReturnToUrlViewStateKey] = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating when to use a popup window to complete the login experience.
-		/// </summary>
-		/// <value>The default value is <see cref="PopupBehavior.Never"/>.</value>
-		[Bindable(true), DefaultValue(PopupDefault), Category(BehaviorCategory)]
-		[Description("When to use a popup window to complete the login experience.")]
-		public PopupBehavior Popup {
-			get { return (PopupBehavior)(ViewState[PopupViewStateKey] ?? PopupDefault); }
-			set { ViewState[PopupViewStateKey] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether stateless mode is used.
-		/// </summary>
-		[Bindable(true), DefaultValue(StatelessDefault), Category(BehaviorCategory)]
-		[Description("Controls whether stateless mode is used.")]
-		public bool Stateless {
-			get { return (bool)(ViewState[StatelessViewStateKey] ?? StatelessDefault); }
-			set { ViewState[StatelessViewStateKey] = value; }
+		[Bindable(true), DefaultValue(NameDefault), Category(BehaviorCategory)]
+		[Description("The form name of this input field.")]
+		public string Name {
+			get { return (string)(this.ViewState[NameViewStateKey] ?? NameDefault); }
+			set { this.ViewState[NameViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -477,9 +321,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		[Bindable(true), DefaultValue(CssClassDefault), Category(AppearanceCategory)]
 		[Description("The CSS class assigned to the text box.")]
-		public override string CssClass {
-			get { return this.WrappedTextBox.CssClass; }
-			set { this.WrappedTextBox.CssClass = value; }
+		public string CssClass {
+			get { return (string)this.ViewState[CssClassViewStateKey]; }
+			set { this.ViewState[CssClassViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -503,25 +347,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to send a persistent cookie upon successful 
-		/// login so the user does not have to log in upon returning to this site.
-		/// </summary>
-		[Bindable(true), DefaultValue(UsePersistentCookieDefault), Category(BehaviorCategory)]
-		[Description("Whether to send a persistent cookie upon successful " +
-			"login so the user does not have to log in upon returning to this site.")]
-		public virtual bool UsePersistentCookie {
-			get { return (bool)(this.ViewState[UsePersistentCookieViewStateKey] ?? UsePersistentCookieDefault); }
-			set { this.ViewState[UsePersistentCookieViewStateKey] = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the width of the text box in characters.
 		/// </summary>
 		[Bindable(true), DefaultValue(ColumnsDefault), Category(AppearanceCategory)]
 		[Description("The width of the text box in characters.")]
 		public int Columns {
-			get { return this.WrappedTextBox.Columns; }
-			set { this.WrappedTextBox.Columns = value; }
+			get { return (int)(this.ViewState[ColumnsViewStateKey] ?? ColumnsDefault); }
+			set { this.ViewState[ColumnsViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -530,8 +362,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Bindable(true), DefaultValue(MaxLengthDefault), Category(AppearanceCategory)]
 		[Description("The maximum number of characters the browser should allow.")]
 		public int MaxLength {
-			get { return this.WrappedTextBox.MaxLength; }
-			set { this.WrappedTextBox.MaxLength = value; }
+			get { return (int)(this.ViewState[MaxLengthViewStateKey] ?? MaxLengthDefault); }
+			set { this.ViewState[MaxLengthViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -546,9 +378,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </exception>
 		[Bindable(true), DefaultValue(TabIndexDefault), Category(BehaviorCategory)]
 		[Description("The tab index of the text box control.")]
-		public override short TabIndex {
-			get { return this.WrappedTextBox.TabIndex; }
-			set { this.WrappedTextBox.TabIndex = value; }
+		public virtual short TabIndex {
+			get { return (short)(this.ViewState[TabIndexViewStateKey] ?? TabIndexDefault); }
+			set { this.ViewState[TabIndexViewStateKey] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="OpenIdTextBox"/> is enabled
+		/// in the browser for editing and will respond to incoming OpenID messages.
+		/// </summary>
+		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+		[Bindable(true), DefaultValue(true), Category(BehaviorCategory)]
+		[Description("Whether the control is editable in the browser and will respond to OpenID messages.")]
+		public bool Enabled {
+			get { return (bool)(this.ViewState[EnabledViewStateKey] ?? true); }
+			set { this.ViewState[EnabledViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -673,344 +517,45 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set { ViewState[EnableRequestProfileViewStateKey] = value; }
 		}
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to enforce on high security mode,
-		/// which requires the full authentication pipeline to be protected by SSL.
-		/// </summary>
-		[Bindable(true), DefaultValue(RequireSslDefault), Category(BehaviorCategory)]
-		[Description("Turns on high security mode, requiring the full authentication pipeline to be protected by SSL.")]
-		public bool RequireSsl {
-			get { return (bool)(ViewState[RequireSslViewStateKey] ?? RequireSslDefault); }
-			set { ViewState[RequireSslViewStateKey] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the type of the custom application store to use, or <c>null</c> to use the default.
-		/// </summary>
-		/// <remarks>
-		/// If set, this property must be set in each Page Load event
-		/// as it is not persisted across postbacks.
-		/// </remarks>
-		public IRelyingPartyApplicationStore CustomApplicationStore { get; set; }
-
 		#endregion
 
-		#region Properties to hide
+		#region IPostBackDataHandler Members
 
 		/// <summary>
-		/// Gets or sets the foreground color (typically the color of the text) of the Web server control.
+		/// When implemented by a class, processes postback data for an ASP.NET server control.
 		/// </summary>
+		/// <param name="postDataKey">The key identifier for the control.</param>
+		/// <param name="postCollection">The collection of all incoming name values.</param>
 		/// <returns>
-		/// A <see cref="T:System.Drawing.Color"/> that represents the foreground color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>.
+		/// true if the server control's state changes as a result of the postback; otherwise, false.
 		/// </returns>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override System.Drawing.Color ForeColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
+		bool IPostBackDataHandler.LoadPostData(string postDataKey, NameValueCollection postCollection) {
+			return this.LoadPostData(postDataKey, postCollection);
 		}
 
 		/// <summary>
-		/// Gets or sets the background color of the Web server control.
+		/// When implemented by a class, signals the server control to notify the ASP.NET application that the state of the control has changed.
 		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Drawing.Color"/> that represents the background color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
-		/// </returns>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override System.Drawing.Color BackColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the border color of the Web control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Drawing.Color"/> that represents the border color of the control. The default is <see cref="F:System.Drawing.Color.Empty"/>, which indicates that this property is not set.
-		/// </returns>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override System.Drawing.Color BorderColor {
-			get { throw new NotSupportedException(); }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the border width of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.Unit"/> that represents the border width of a Web server control. The default value is <see cref="F:System.Web.UI.WebControls.Unit.Empty"/>, which indicates that this property is not set.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The specified border width is a negative value.
-		/// </exception>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override Unit BorderWidth {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the border style of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// One of the <see cref="T:System.Web.UI.WebControls.BorderStyle"/> enumeration values. The default is NotSet.
-		/// </returns>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override BorderStyle BorderStyle {
-			get { return BorderStyle.None; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets the font properties associated with the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.FontInfo"/> that represents the font properties of the Web server control.
-		/// </returns>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override FontInfo Font {
-			get { return null; }
-		}
-
-		/// <summary>
-		/// Gets or sets the height of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.Unit"/> that represents the height of the control. The default is <see cref="F:System.Web.UI.WebControls.Unit.Empty"/>.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The height was set to a negative value.
-		/// </exception>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override Unit Height {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the width of the Web server control.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Web.UI.WebControls.Unit"/> that represents the width of the control. The default is <see cref="F:System.Web.UI.WebControls.Unit.Empty"/>.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The width of the Web server control was set to a negative value.
-		/// </exception>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override Unit Width {
-			get { return Unit.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the text displayed when the mouse pointer hovers over the Web server control.
-		/// </summary>
-		/// <returns>
-		/// The text displayed when the mouse pointer hovers over the Web server control. The default is <see cref="F:System.String.Empty"/>.
-		/// </returns>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override string ToolTip {
-			get { return string.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets the skin to apply to the control.
-		/// </summary>
-		/// <returns>
-		/// The name of the skin to apply to the control. The default is <see cref="F:System.String.Empty"/>.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// The skin specified in the <see cref="P:System.Web.UI.WebControls.WebControl.SkinID"/> property does not exist in the theme.
-		/// </exception>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override string SkinID {
-			get { return string.Empty; }
-			set { throw new NotSupportedException(); }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether themes apply to this control.
-		/// </summary>
-		/// <returns>true to use themes; otherwise, false. The default is false.
-		/// </returns>
-		[Obsolete("This property does not do anything."), Browsable(false), Bindable(false)]
-		public override bool EnableTheming {
-			get { return false; }
-			set { throw new NotSupportedException(); }
+		void IPostBackDataHandler.RaisePostDataChangedEvent() {
+			this.RaisePostDataChangedEvent();
 		}
 
 		#endregion
 
 		/// <summary>
-		/// Gets or sets the <see cref="OpenIdRelyingParty"/> instance to use.
+		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
-		/// <value>The default value is an <see cref="OpenIdRelyingParty"/> instance initialized according to the web.config file.</value>
-		/// <remarks>
-		/// A performance optimization would be to store off the 
-		/// instance as a static member in your web site and set it
-		/// to this property in your <see cref="Control.Load">Page.Load</see>
-		/// event since instantiating these instances can be expensive on 
-		/// heavily trafficked web pages.
-		/// </remarks>
-		public OpenIdRelyingParty RelyingParty {
-			get {
-				if (this.relyingParty == null) {
-					this.relyingParty = this.CreateRelyingParty();
-				}
-				return this.relyingParty;
-			}
+		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		protected internal override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 
-			set {
-				this.relyingParty = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets the <see cref="TextBox"/> control that this control wraps.
-		/// </summary>
-		protected TextBox WrappedTextBox {
-			get { return this.wrappedTextBox; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the text box should 
-		/// receive input focus when the web page appears.
-		/// </summary>
-		protected bool ShouldBeFocused { get; set; }
-
-		/// <summary>
-		/// Gets or sets the OpenID authentication request that is about to be sent.
-		/// </summary>
-		protected IAuthenticationRequest Request { get; set; }
-
-		/// <summary>
-		/// Sets the input focus to start on the text box when the page appears
-		/// in the user's browser.
-		/// </summary>
-		public override void Focus() {
-			if (Controls.Count == 0) {
-				this.ShouldBeFocused = true;
-			} else {
-				this.WrappedTextBox.Focus();
-			}
-		}
-
-		/// <summary>
-		/// Constructs the authentication request and returns it.
-		/// </summary>
-		/// <returns>The instantiated authentication request.</returns>
-		/// <remarks>
-		/// 	<para>This method need not be called before calling the <see cref="LogOn"/> method,
-		/// but is offered in the event that adding extensions to the request is desired.</para>
-		/// 	<para>The Simple Registration extension arguments are added to the request
-		/// before returning if <see cref="EnableRequestProfile"/> is set to true.</para>
-		/// </remarks>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
-		public IAuthenticationRequest CreateRequest() {
-			ErrorUtilities.VerifyOperation(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
-			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
-
-			try {
-				// Approximate the returnTo (either based on the customize property or the page URL)
-				// so we can use it to help with Realm resolution.
-				var requestContext = this.RelyingParty.Channel.GetRequestFromContext();
-				Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(requestContext.UrlBeforeRewriting, this.ReturnToUrl) : this.Page.Request.Url;
-
-				// Resolve the trust root, and swap out the scheme and port if necessary to match the
-				// return_to URL, since this match is required by OpenId, and the consumer app
-				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
-				realm.Scheme = returnToApproximation.Scheme;
-				realm.Port = returnToApproximation.Port;
-
-				// Initiate openid request
-				// We use TryParse here to avoid throwing an exception which 
-				// might slip through our validator control if it is disabled.
-				Identifier userSuppliedIdentifier;
-				if (Identifier.TryParse(this.Text, out userSuppliedIdentifier)) {
-					Realm typedRealm = new Realm(realm);
-					if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm);
-					} else {
-						// Since the user actually gave us a return_to value,
-						// the "approximation" is exactly what we want.
-						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm, returnToApproximation);
-					}
-
-					if (this.EnableRequestProfile) {
-						this.AddProfileArgs(this.Request);
-					}
-
-					if (this.IsPopupAppropriate()) {
-						// Inform the OP that it will appear in a popup window.
-						this.Request.AddExtension(new UIRequest());
-					}
-
-					// Add state that needs to survive across the redirect.
-					if (!this.Stateless) {
-						this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
-					}
-				} else {
-					Logger.OpenId.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
-					this.Request = null;
-				}
-			} catch (ProtocolException ex) {
-				this.OnFailed(new FailedAuthenticationResponse(ex));
-			}
-
-			return this.Request;
-		}
-
-		/// <summary>
-		/// Immediately redirects to the OpenID Provider to verify the Identifier
-		/// provided in the text box.
-		/// </summary>
-		public void LogOn() {
-			if (this.Request == null) {
-				this.CreateRequest(); // sets this.Request
-			}
-
-			if (this.Request != null) {
-				if (this.IsPopupAppropriate()) {
-					this.ScriptPopupWindow();
-				} else {
-					this.Request.RedirectToProvider();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Enables a server control to perform final clean up before it is released from memory.
-		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
-		public sealed override void Dispose() {
-			this.Dispose(true);
-			base.Dispose();
-			GC.SuppressFinalize(this);
-		}
-
-		/// <summary>
-		/// Creates the text box control.
-		/// </summary>
-		protected override void CreateChildControls() {
-			base.CreateChildControls();
-
-			this.Controls.Add(this.wrappedTextBox);
-			if (this.ShouldBeFocused) {
-				this.WrappedTextBox.Focus();
-			}
-		}
-
-		/// <summary>
-		/// Initializes the text box control.
-		/// </summary>
-		protected virtual void InitializeControls() {
-			this.wrappedTextBox = new TextBox();
-			this.wrappedTextBox.ID = "wrappedTextBox";
-			this.wrappedTextBox.CssClass = CssClassDefault;
-			this.wrappedTextBox.Columns = ColumnsDefault;
-			this.wrappedTextBox.Text = this.text;
-			this.wrappedTextBox.TabIndex = TabIndexDefault;
+			// We delegate all our logic to another method, since invoking base. methods
+			// within an iterator method results in unverifiable code.
+			return this.CreateRequestsCore(base.CreateRequests(identifier));
 		}
 
 		/// <summary>
@@ -1018,155 +563,115 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="e">The <see cref="T:System.EventArgs"/> object that contains the event data.</param>
 		protected override void OnLoad(EventArgs e) {
-			base.OnLoad(e);
-
-			if (!Enabled || Page.IsPostBack) {
+			if (!this.Enabled) {
 				return;
 			}
 
-			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
-			// assertion is coming in.  We shouldn't process assertions in a popup window.
-			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
-				// We're in a popup window.  We need to close it and pass the
-				// message back to the parent window for processing.
-				this.ScriptClosingPopup();
-				return; // don't do any more processing on it now
-			}
-
-			var response = this.RelyingParty.GetResponse();
-			if (response != null) {
-				string persistentString = response.GetUntrustedCallbackArgument(UsePersistentCookieCallbackKey);
-				bool persistentBool;
-				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
-					this.UsePersistentCookie = persistentBool;
-				}
-
-				switch (response.Status) {
-					case AuthenticationStatus.Canceled:
-						this.OnCanceled(response);
-						break;
-					case AuthenticationStatus.Authenticated:
-						this.OnLoggedIn(response);
-						break;
-					case AuthenticationStatus.SetupRequired:
-						this.OnSetupRequired(response);
-						break;
-					case AuthenticationStatus.Failed:
-						this.OnFailed(response);
-						break;
-					case AuthenticationStatus.ExtensionsOnly:
-					default:
-						// The NotApplicable (extension-only assertion) is NOT one that we support
-						// in this control because that scenario is primarily interesting to RPs
-						// that are asking a specific OP, and it is not user-initiated as this textbox
-						// is designed for.
-						throw new InvalidOperationException(MessagingStrings.UnexpectedMessageReceivedOfMany);
-				}
-			}
+			this.Page.RegisterRequiresPostBack(this);
+			base.OnLoad(e);
 		}
 
 		/// <summary>
-		/// Prepares the text box to be rendered.
+		/// Called when the <see cref="Identifier"/> property is changed.
 		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
-		protected override void OnPreRender(EventArgs e) {
-			base.OnPreRender(e);
+		protected override void OnIdentifierChanged() {
+			this.ViewState.Remove(TextViewStateKey);
+			base.OnIdentifierChanged();
+		}
 
+		/// <summary>
+		/// Sends server control content to a provided <see cref="T:System.Web.UI.HtmlTextWriter"/> object, which writes the content to be rendered on the client.
+		/// </summary>
+		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
+		protected override void Render(HtmlTextWriter writer) {
 			if (this.ShowLogo) {
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
 					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BackgroundImage] = string.Format(
-					CultureInfo.InvariantCulture, "url({0})", HttpUtility.HtmlEncode(logoUrl));
-				this.WrappedTextBox.Style["background-repeat"] = "no-repeat";
-				this.WrappedTextBox.Style["background-position"] = "0 50%";
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
+				writer.AddStyleAttribute(
+					HtmlTextWriterStyle.BackgroundImage,
+					string.Format(CultureInfo.InvariantCulture, "url({0})", HttpUtility.HtmlEncode(logoUrl)));
+				writer.AddStyleAttribute("background-repeat", "no-repeat");
+				writer.AddStyleAttribute("background-position", "0 50%");
+				writer.AddStyleAttribute(HtmlTextWriterStyle.PaddingLeft, "18px");
 			}
 
 			if (this.PresetBorder) {
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderWidth] = "1px";
-				this.WrappedTextBox.Style[HtmlTextWriterStyle.BorderColor] = "lightgray";
+				writer.AddStyleAttribute(HtmlTextWriterStyle.BorderStyle, "solid");
+				writer.AddStyleAttribute(HtmlTextWriterStyle.BorderWidth, "1px");
+				writer.AddStyleAttribute(HtmlTextWriterStyle.BorderColor, "lightgray");
+			}
+
+			if (!string.IsNullOrEmpty(this.CssClass)) {
+				writer.AddAttribute(HtmlTextWriterAttribute.Class, this.CssClass);
+			}
+
+			writer.AddAttribute(HtmlTextWriterAttribute.Id, this.ClientID);
+			writer.AddAttribute(HtmlTextWriterAttribute.Name, HttpUtility.HtmlEncode(this.Name));
+			writer.AddAttribute(HtmlTextWriterAttribute.Type, "text");
+			writer.AddAttribute(HtmlTextWriterAttribute.Size, this.Columns.ToString(CultureInfo.InvariantCulture));
+			writer.AddAttribute(HtmlTextWriterAttribute.Value, HttpUtility.HtmlEncode(this.Text));
+			writer.AddAttribute(HtmlTextWriterAttribute.Tabindex, this.TabIndex.ToString(CultureInfo.CurrentCulture));
+
+			writer.RenderBeginTag(HtmlTextWriterTag.Input);
+			writer.RenderEndTag();
+		}
+
+		/// <summary>
+		/// When implemented by a class, processes postback data for an ASP.NET server control.
+		/// </summary>
+		/// <param name="postDataKey">The key identifier for the control.</param>
+		/// <param name="postCollection">The collection of all incoming name values.</param>
+		/// <returns>
+		/// true if the server control's state changes as a result of the postback; otherwise, false.
+		/// </returns>
+		protected virtual bool LoadPostData(string postDataKey, NameValueCollection postCollection) {
+			// If the control was temporarily hidden, it won't be in the Form data,
+			// and we'll just implicitly keep the last Text setting.
+			if (postCollection[this.Name] != null) {
+				this.Text = postCollection[this.Name];
+				return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// When implemented by a class, signals the server control to notify the ASP.NET application that the state of the control has changed.
+		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Preserve signature of interface we're implementing.")]
+		protected virtual void RaisePostDataChangedEvent() {
+			this.OnTextChanged();
+		}
+
+		/// <summary>
+		/// Called on a postback when the Text property has changed.
+		/// </summary>
+		protected virtual void OnTextChanged() {
+			EventHandler textChanged = this.TextChanged;
+			if (textChanged != null) {
+				textChanged(this, EventArgs.Empty);
 			}
 		}
 
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
+		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing) {
-			if (disposing) {
-				if (this.relyingParty != null) {
-					this.relyingParty.Dispose();
-					this.relyingParty = null;
+		/// <param name="requests">The authentication requests to prepare.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any one of which may be
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// </returns>
+		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
+			Contract.Requires(requests != null);
+
+			foreach (var request in requests) {
+				if (this.EnableRequestProfile) {
+					this.AddProfileArgs(request);
 				}
+
+				yield return request;
 			}
 		}
-
-		#region Events
-
-		/// <summary>
-		/// Fires the <see cref="LoggedIn"/> event.
-		/// </summary>
-		/// <param name="response">The response.</param>
-		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Authenticated, "Firing OnLoggedIn event without an authenticated response.");
-
-			var loggedIn = this.LoggedIn;
-			OpenIdEventArgs args = new OpenIdEventArgs(response);
-			if (loggedIn != null) {
-				loggedIn(this, args);
-			}
-
-			if (!args.Cancel) {
-				FormsAuthentication.RedirectFromLoginPage(response.ClaimedIdentifier, this.UsePersistentCookie);
-			}
-		}
-
-		/// <summary>
-		/// Fires the <see cref="Failed"/> event.
-		/// </summary>
-		/// <param name="response">The response.</param>
-		protected virtual void OnFailed(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Failed, "Firing Failed event for the wrong response type.");
-
-			var failed = this.Failed;
-			if (failed != null) {
-				failed(this, new OpenIdEventArgs(response));
-			}
-		}
-
-		/// <summary>
-		/// Fires the <see cref="Canceled"/> event.
-		/// </summary>
-		/// <param name="response">The response.</param>
-		protected virtual void OnCanceled(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Canceled, "Firing Canceled event for the wrong response type.");
-
-			var canceled = this.Canceled;
-			if (canceled != null) {
-				canceled(this, new OpenIdEventArgs(response));
-			}
-		}
-
-		/// <summary>
-		/// Fires the <see cref="SetupRequired"/> event.
-		/// </summary>
-		/// <param name="response">The response.</param>
-		protected virtual void OnSetupRequired(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
-			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.SetupRequired, "Firing SetupRequired event for the wrong response type.");
-
-			// Why are we firing Failed when we're OnSetupRequired?  Backward compatibility.
-			var setupRequired = this.SetupRequired;
-			if (setupRequired != null) {
-				setupRequired(this, new OpenIdEventArgs(response));
-			}
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Adds extensions to a given authentication request to ask the Provider
@@ -1174,9 +679,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The authentication request to add the extensions to.</param>
 		private void AddProfileArgs(IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
-			request.AddExtension(new ClaimsRequest() {
+			var sreg = new ClaimsRequest() {
 				Nickname = this.RequestNickname,
 				Email = this.RequestEmail,
 				FullName = this.RequestFullName,
@@ -1188,84 +693,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
 					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(this.PolicyUrl)),
-			});
-		}
+			};
 
-		/// <summary>
-		/// Creates the relying party instance used to generate authentication requests.
-		/// </summary>
-		/// <returns>The instantiated relying party.</returns>
-		private OpenIdRelyingParty CreateRelyingParty() {
-			// If we're in stateful mode, first use the explicitly given one on this control if there
-			// is one.  Then try the configuration file specified one.  Finally, use the default
-			// in-memory one that's built into OpenIdRelyingParty.
-			IRelyingPartyApplicationStore store = this.Stateless ? null :
-				(this.CustomApplicationStore ?? DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore));
-			var rp = new OpenIdRelyingParty(store);
-
-			// Only set RequireSsl to true, as we don't want to override 
-			// a .config setting of true with false.
-			if (this.RequireSsl) {
-				rp.SecuritySettings.RequireSsl = true;
+			// Only actually add the extension request if fields are actually being requested.
+			if (!sreg.Equals(EmptyClaimsRequest)) {
+				request.AddExtension(sreg);
 			}
-			return rp;
-		}
-
-		/// <summary>
-		/// Detects whether a popup window should be used to show the Provider's UI
-		/// and applies the UI extension to the request when appropriate.
-		/// </summary>
-		/// <returns><c>true</c> if a popup should be used; <c>false</c> otherwise.</returns>
-		private bool IsPopupAppropriate() {
-			Contract.Requires(this.Request != null);
-
-			switch (this.Popup) {
-				case PopupBehavior.Never:
-					return false;
-				case PopupBehavior.Always:
-					return true;
-				case PopupBehavior.IfProviderSupported:
-					return this.Request.Provider.IsExtensionSupported<UIRequest>();
-				default:
-					throw new InternalErrorException();
-			}
-		}
-
-		/// <summary>
-		/// Wires the return page to immediately display a popup window with the Provider in it.
-		/// </summary>
-		private void ScriptPopupWindow() {
-			Contract.Requires(this.Request != null);
-			Contract.Requires(this.RelyingParty != null);
-
-			this.Request.AddCallbackArguments(UIPopupCallbackKey, "1");
-
-			StringBuilder startupScript = new StringBuilder();
-
-			// Add a callback function that the popup window can call on this, the
-			// parent window, to pass back the authentication result.
-			startupScript.AppendLine("window.dnoa_internal = new Object();");
-			startupScript.AppendLine("window.dnoa_internal.processAuthorizationResult = function(uri) { window.location = uri; };");
-
-			// Open the popup window.
-			startupScript.AppendFormat(
-				@"var openidPopup = {0}",
-				UIUtilities.GetWindowPopupScript(this.RelyingParty, this.Request, "openidPopup"));
-
-			this.Page.ClientScript.RegisterStartupScript(this.GetType(), "loginPopup", startupScript.ToString(), true);
-		}
-
-		/// <summary>
-		/// Wires the popup window to close itself and pass the authentication result to the parent window.
-		/// </summary>
-		private void ScriptClosingPopup() {
-			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL + '&" + UIPopupCallbackParentKey + "=1');");
-			startupScript.AppendLine("window.close();");
-
-			// We're referencing the OpenIdRelyingPartyControlBase type here to avoid double-registering this script
-			// if the other control exists on the page.
-			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
 		}
 	}
 }

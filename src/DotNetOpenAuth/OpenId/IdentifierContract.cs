@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Prevents a default instance of the IdentifierContract class from being created.
 		/// </summary>
 		private IdentifierContract()
-			: base(false) {
+			: base(null, false) {
 		}
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
 		public override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			Contract.Requires(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
 			throw new NotImplementedException();
 		}

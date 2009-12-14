@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
 
@@ -38,9 +39,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// UserAuthorizationResponse
 		/// </remarks>
 		public virtual IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
 			MessageBase message = null;
 
 			if (fields.ContainsKey("oauth_token")) {
@@ -74,9 +72,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// AuthorizedTokenResponse
 		/// </remarks>
 		public virtual IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
 			MessageBase message = null;
 
 			// All response messages have the oauth_token field.

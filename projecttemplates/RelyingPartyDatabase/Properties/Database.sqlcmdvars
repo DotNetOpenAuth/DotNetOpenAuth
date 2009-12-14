@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SqlCommandVariables xmlns="urn:Microsoft.VisualStudio.Data.Schema.Project.SqlCmdVars">
+  <Version>1</Version>
+  <Properties>
+    <Property>
+      <PropertyName>Path1</PropertyName>
+      <PropertyValue>WEBROOT\App_Data\</PropertyValue>
+    </Property>
+  </Properties>
+</SqlCommandVariables>

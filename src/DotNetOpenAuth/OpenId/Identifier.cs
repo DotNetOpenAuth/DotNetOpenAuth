@@ -24,13 +24,19 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Identifier"/> class.
 		/// </summary>
-		/// <param name="isDiscoverySecureEndToEnd">
-		/// Whether the derived class is prepared to guarantee end-to-end discovery
-		/// and initial redirect for authentication is performed using SSL.
-		/// </param>
-		protected Identifier(bool isDiscoverySecureEndToEnd) {
+		/// <param name="originalString">The original string before any normalization.</param>
+		/// <param name="isDiscoverySecureEndToEnd">Whether the derived class is prepared to guarantee end-to-end discovery
+		/// and initial redirect for authentication is performed using SSL.</param>
+		[SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "string", Justification = "Emphasis on string instead of the strong-typed Identifier.")]
+		protected Identifier(string originalString, bool isDiscoverySecureEndToEnd) {
+			this.OriginalString = originalString;
 			this.IsDiscoverySecureEndToEnd = isDiscoverySecureEndToEnd;
 		}
+
+		/// <summary>
+		/// Gets the original string that was normalized to create this Identifier.
+		/// </summary>
+		public string OriginalString { get; private set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether <see cref="Identifier"/> instances are considered equal
@@ -61,7 +67,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
 		[DebuggerStepThrough]
 		public static implicit operator Identifier(string identifier) {
-			Contract.Requires(identifier == null || identifier.Length > 0);
+			Contract.Requires<ArgumentException>(identifier == null || identifier.Length > 0);
 			if (identifier == null) {
 				return null;
 			}
@@ -106,8 +112,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>An <see cref="Identifier"/> instance for the given value.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier) {
-			Contract.Requires((identifier != null && identifier.Length > 0) || !string.IsNullOrEmpty(identifier));
-			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
 			if (XriIdentifier.IsValidXri(identifier)) {
 				return new XriIdentifier(identifier);
 			} else {
@@ -147,7 +152,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static bool IsValid(string identifier) {
-			Contract.Requires(!string.IsNullOrEmpty(identifier));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(identifier));
 			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
 		}
 
@@ -208,6 +213,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// An initialized structure containing the discovered provider endpoint information.
 		/// </returns>
+		[Pure]
 		public abstract IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler);
 
 		/// <summary>
@@ -217,6 +223,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <returns>A new <see cref="Identifier"/> instance if there was a 
 		/// fragment to remove, otherwise this same instance..</returns>
+		[Pure]
 		internal abstract Identifier TrimFragment();
 
 		/// <summary>

@@ -40,7 +40,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="message">The message to sign.</param>
 		/// <returns>The signature for the message.</returns>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
-			Contract.Requires(this.Channel != null);
+			Contract.Requires<ArgumentNullException>(message != null);
+			Contract.Requires<InvalidOperationException>(this.Channel != null);
 			throw new NotImplementedException();
 		}
 	}

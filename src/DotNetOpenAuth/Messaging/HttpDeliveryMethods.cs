@@ -34,5 +34,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// Added to the URLs in the query part (as defined by [RFC3986] (Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .) section 3).
 		/// </summary>
 		GetRequest = 0x4,
+
+		/// <summary>
+		/// Added to the URLs in the query part (as defined by [RFC3986] (Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .) section 3).
+		/// </summary>
+		PutRequest = 0x8,
+
+		/// <summary>
+		/// Added to the URLs in the query part (as defined by [RFC3986] (Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .) section 3).
+		/// </summary>
+		DeleteRequest = 0x10,
+
+		/// <summary>
+		/// The flags that control HTTP verbs.
+		/// </summary>
+		HttpVerbMask = PostRequest | GetRequest | PutRequest | DeleteRequest,
 	}
 }

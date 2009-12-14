@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net.Mail;
 	using System.Text;
@@ -69,7 +70,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// </param>
 		internal ClaimsResponse(string typeUriToUse)
 			: base(new Version(1, 0), typeUriToUse, EmptyList<string>.Instance) {
-			ErrorUtilities.VerifyNonZeroLength(typeUriToUse, "typeUriToUse");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUriToUse));
 		}
 
 		/// <summary>
@@ -121,11 +122,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			}
 
 			set {
+				ErrorUtilities.VerifyArgument(value == null || birthDateValidator.IsMatch(value), OpenIdStrings.SregInvalidBirthdate);
 				if (value != null) {
-					if (!birthDateValidator.IsMatch(value)) {
-						throw new ArgumentException(OpenIdStrings.SregInvalidBirthdate, "value");
-					}
-
 					// Update the BirthDate property, if possible. 
 					// Don't use property accessor for peer property to avoid infinite loop between the two proeprty accessors.
 					// Some valid sreg dob values like "2000-00-00" will not work as a DateTime struct, 
@@ -316,7 +314,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			sreg[Constants.language] = this.Language;
 			sreg[Constants.timezone] = this.TimeZone;
 
-			return MessagingUtilities.CreateJsonObject(sreg);
+			return MessagingUtilities.CreateJsonObject(sreg, false);
 		}
 
 		#endregion

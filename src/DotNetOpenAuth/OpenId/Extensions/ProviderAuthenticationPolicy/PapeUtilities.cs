@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
@@ -45,7 +46,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// <returns>The concatenated string of elements.</returns>
 		/// <exception cref="FormatException">Thrown if any element in the sequence includes a space.</exception>
 		internal static string ConcatenateListOfElements(IEnumerable<string> values) {
-			ErrorUtilities.VerifyArgumentNotNull(values, "values");
+			Contract.Requires<ArgumentNullException>(values != null);
 
 			StringBuilder valuesList = new StringBuilder();
 			foreach (string value in values.Distinct()) {

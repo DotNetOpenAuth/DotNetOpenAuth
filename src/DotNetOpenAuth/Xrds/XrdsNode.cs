@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Xrds {
+	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
@@ -29,8 +31,8 @@ namespace DotNetOpenAuth.Xrds {
 		/// <param name="node">The node represented by this instance.</param>
 		/// <param name="parentNode">The parent node.</param>
 		protected XrdsNode(XPathNavigator node, XrdsNode parentNode) {
-			ErrorUtilities.VerifyArgumentNotNull(node, "node");
-			ErrorUtilities.VerifyArgumentNotNull(parentNode, "parentNode");
+			Contract.Requires<ArgumentNullException>(node != null);
+			Contract.Requires<ArgumentNullException>(parentNode != null);
 
 			this.Node = node;
 			this.ParentNode = parentNode;
@@ -42,7 +44,8 @@ namespace DotNetOpenAuth.Xrds {
 		/// </summary>
 		/// <param name="document">The document's root node, which this instance represents.</param>
 		protected XrdsNode(XPathNavigator document) {
-			ErrorUtilities.VerifyArgumentNotNull(document, "document");
+			Contract.Requires<ArgumentNullException>(document != null);
+			Contract.Requires<ArgumentException>(document.NameTable != null);
 
 			this.Node = document;
 			this.XmlNamespaceResolver = new XmlNamespaceManager(document.NameTable);

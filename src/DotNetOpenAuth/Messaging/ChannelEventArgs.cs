@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// The data packet sent with Channel events.
@@ -16,7 +17,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message behind the fired event..</param>
 		internal ChannelEventArgs(IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			this.Message = message;
 		}

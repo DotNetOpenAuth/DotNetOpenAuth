@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Security.Permissions;
 
 	/// <summary>
@@ -43,7 +44,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="faultedMessage">The message that was the cause of the exception.  Must not be null.</param>
 		protected internal ProtocolException(string message, IProtocolMessage faultedMessage)
 			: base(message) {
-			ErrorUtilities.VerifyArgumentNotNull(faultedMessage, "faultedMessage");
+			Contract.Requires<ArgumentNullException>(faultedMessage != null);
 			this.FaultedMessage = faultedMessage;
 		}
 

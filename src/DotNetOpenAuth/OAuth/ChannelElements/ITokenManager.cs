@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -16,6 +17,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// and recall of tokens and secrets for an individual OAuth consumer
 	/// or service provider.
 	/// </summary>
+	[ContractClass(typeof(ITokenManagerContract))]
 	public interface ITokenManager {
 		/// <summary>
 		/// Gets the Token Secret given a request or access token.
@@ -32,19 +34,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="request">The request message that resulted in the generation of a new unauthorized request token.</param>
 		/// <param name="response">The response message that includes the unauthorized request token.</param>
 		/// <exception cref="ArgumentException">Thrown if the consumer key is not registered, or a required parameter was not found in the parameters collection.</exception>
+		/// <remarks>
+		/// Request tokens stored by this method SHOULD NOT associate any user account with this token.
+		/// It usually opens up security holes in your application to do so.  Instead, you associate a user
+		/// account with access tokens (not request tokens) in the <see cref="ExpireRequestTokenAndStoreNewAccessToken"/>
+		/// method.
+		/// </remarks>
 		void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response);
-
-		/// <summary>
-		/// Checks whether a given request token has already been authorized
-		/// by some user for use by the Consumer that requested it.
-		/// </summary>
-		/// <param name="requestToken">The Consumer's request token.</param>
-		/// <returns>
-		/// True if the request token has already been fully authorized by the user
-		/// who owns the relevant protected resources.  False if the token has not yet
-		/// been authorized, has expired or does not exist.
-		/// </returns>
-		bool IsRequestTokenAuthorized(string requestToken);
 
 		/// <summary>
 		/// Deletes a request token and its associated secret and stores a new access token and secret.
@@ -54,9 +50,20 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="accessToken">The new access token that is being issued to the Consumer.</param>
 		/// <param name="accessTokenSecret">The secret associated with the newly issued access token.</param>
 		/// <remarks>
+		/// <para>
 		/// Any scope of granted privileges associated with the request token from the
 		/// original call to <see cref="StoreNewRequestToken"/> should be carried over
 		/// to the new Access Token.
+		/// </para>
+		/// <para>
+		/// To associate a user account with the new access token, 
+		/// <see cref="System.Web.HttpContext.User">HttpContext.Current.User</see> may be
+		/// useful in an ASP.NET web application within the implementation of this method.
+		/// Alternatively you may store the access token here without associating with a user account,
+		/// and wait until <see cref="WebConsumer.ProcessUserAuthorization()"/> or
+		/// <see cref="DesktopConsumer.ProcessUserAuthorization(string, string)"/> return the access
+		/// token to associate the access token with a user account at that point.
+		/// </para>
 		/// </remarks>
 		void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret);
 
@@ -66,5 +73,97 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="token">The token to classify.</param>
 		/// <returns>Request or Access token, or invalid if the token is not recognized.</returns>
 		TokenType GetTokenType(string token);
+	}
+
+	/// <summary>
+	/// The code contract class for the <see cref="ITokenManager"/> interface.
+	/// </summary>
+	[ContractClassFor(typeof(ITokenManager))]
+	internal class ITokenManagerContract : ITokenManager {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ITokenManagerContract"/> class.
+		/// </summary>
+		internal ITokenManagerContract() {
+		}
+
+		#region ITokenManager Members
+
+		/// <summary>
+		/// Gets the Token Secret given a request or access token.
+		/// </summary>
+		/// <param name="token">The request or access token.</param>
+		/// <returns>
+		/// The secret associated with the given token.
+		/// </returns>
+		/// <exception cref="ArgumentException">Thrown if the secret cannot be found for the given token.</exception>
+		string ITokenManager.GetTokenSecret(string token) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
+			Contract.Ensures(Contract.Result<string>() != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Stores a newly generated unauthorized request token, secret, and optional
+		/// application-specific parameters for later recall.
+		/// </summary>
+		/// <param name="request">The request message that resulted in the generation of a new unauthorized request token.</param>
+		/// <param name="response">The response message that includes the unauthorized request token.</param>
+		/// <exception cref="ArgumentException">Thrown if the consumer key is not registered, or a required parameter was not found in the parameters collection.</exception>
+		/// <remarks>
+		/// Request tokens stored by this method SHOULD NOT associate any user account with this token.
+		/// It usually opens up security holes in your application to do so.  Instead, you associate a user
+		/// account with access tokens (not request tokens) in the <see cref="ITokenManager.ExpireRequestTokenAndStoreNewAccessToken"/>
+		/// method.
+		/// </remarks>
+		void ITokenManager.StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(response != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Deletes a request token and its associated secret and stores a new access token and secret.
+		/// </summary>
+		/// <param name="consumerKey">The Consumer that is exchanging its request token for an access token.</param>
+		/// <param name="requestToken">The Consumer's request token that should be deleted/expired.</param>
+		/// <param name="accessToken">The new access token that is being issued to the Consumer.</param>
+		/// <param name="accessTokenSecret">The secret associated with the newly issued access token.</param>
+		/// <remarks>
+		/// 	<para>
+		/// Any scope of granted privileges associated with the request token from the
+		/// original call to <see cref="ITokenManager.StoreNewRequestToken"/> should be carried over
+		/// to the new Access Token.
+		/// </para>
+		/// 	<para>
+		/// To associate a user account with the new access token,
+		/// <see cref="System.Web.HttpContext.User">HttpContext.Current.User</see> may be
+		/// useful in an ASP.NET web application within the implementation of this method.
+		/// Alternatively you may store the access token here without associating with a user account,
+		/// and wait until <see cref="WebConsumer.ProcessUserAuthorization()"/> or
+		/// <see cref="DesktopConsumer.ProcessUserAuthorization(string, string)"/> return the access
+		/// token to associate the access token with a user account at that point.
+		/// </para>
+		/// </remarks>
+		void ITokenManager.ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(consumerKey));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(requestToken));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
+			Contract.Requires<ArgumentNullException>(accessTokenSecret != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Classifies a token as a request token or an access token.
+		/// </summary>
+		/// <param name="token">The token to classify.</param>
+		/// <returns>
+		/// Request or Access token, or invalid if the token is not recognized.
+		/// </returns>
+		TokenType ITokenManager.GetTokenType(string token) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
+			throw new NotImplementedException();
+		}
+
+		#endregion
 	}
 }

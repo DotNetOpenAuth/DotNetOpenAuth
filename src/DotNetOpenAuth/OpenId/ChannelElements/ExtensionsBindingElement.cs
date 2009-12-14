@@ -33,8 +33,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="extensionFactory">The extension factory.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(extensionFactory != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.ExtensionFactory = extensionFactory;
 			this.relyingPartySecuritySettings = securitySettings as RelyingPartySecuritySettings;
@@ -77,9 +77,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
-
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				Protocol protocol = Protocol.Lookup(message.Version);
@@ -236,8 +233,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A dictionary of message parts, including only signed parts when appropriate.
 		/// </returns>
 		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message, bool ignoreUnsigned) {
-			Contract.Requires(this.Channel != null);
-			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
+			Contract.Requires<InvalidOperationException>(this.Channel != null);
 
 			IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
 			if (signedResponse != null && ignoreUnsigned) {

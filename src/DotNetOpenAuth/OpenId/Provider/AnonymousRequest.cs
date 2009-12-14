@@ -30,9 +30,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts require it.")]
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
-			Contract.Requires(provider != null);
-			Contract.Requires(!(request is CheckIdRequest), "Instantiate " + typeof(AuthenticationRequest).Name + " to handle this kind of message.");
-			ErrorUtilities.VerifyInternal(!(request is CheckIdRequest), "Instantiate {0} to handle this kind of message.", typeof(AuthenticationRequest).Name);
+			Contract.Requires<ArgumentNullException>(provider != null);
+			Contract.Requires<ArgumentException>(!(request is CheckIdRequest), "Instantiate " + typeof(AuthenticationRequest).Name + " to handle this kind of message.");
 
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}

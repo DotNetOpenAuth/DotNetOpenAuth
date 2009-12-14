@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
@@ -135,8 +136,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private void ParameterizedAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool immediate, bool tamper) {
-			ErrorUtilities.VerifyArgument(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
-			ErrorUtilities.VerifyArgument(positive || !tamper, "Cannot tamper with a negative response.");
+			Contract.Requires<ArgumentException>(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
+			Contract.Requires<ArgumentException>(positive || !tamper, "Cannot tamper with a negative response.");
 			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
 			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(

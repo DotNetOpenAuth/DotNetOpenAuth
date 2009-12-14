@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Text;
@@ -99,7 +100,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// be used.
 		/// </remarks>
 		public static byte[] GetBytes(IEnumerable<KeyValuePair<string, string>> keysAndValues) {
-			ErrorUtilities.VerifyArgumentNotNull(keysAndValues, "keysAndValues");
+			Contract.Requires<ArgumentNullException>(keysAndValues != null);
 
 			MemoryStream ms = new MemoryStream();
 			using (StreamWriter sw = new StreamWriter(ms, textEncoding)) {

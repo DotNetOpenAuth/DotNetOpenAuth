@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -51,12 +52,19 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		private ExtensionArgumentsManager() { }
 
 		/// <summary>
+		/// Gets a value indicating whether the extensions are being read (as opposed to written).
+		/// </summary>
+		internal bool ReadMode {
+			get { return this.isReadMode; }
+		}
+
+		/// <summary>
 		/// Creates a <see cref="ExtensionArgumentsManager"/> instance to process incoming extensions.
 		/// </summary>
 		/// <param name="query">The parameters in the OpenID message.</param>
 		/// <returns>The newly created instance of <see cref="ExtensionArgumentsManager"/>.</returns>
 		public static ExtensionArgumentsManager CreateIncomingExtensions(IDictionary<string, string> query) {
-			ErrorUtilities.VerifyArgumentNotNull(query, "query");
+			Contract.Requires<ArgumentNullException>(query != null);
 			var mgr = new ExtensionArgumentsManager();
 			mgr.protocol = Protocol.Detect(query);
 			mgr.isReadMode = true;
@@ -120,6 +128,31 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		}
 
 		/// <summary>
+		/// Adds query parameters for OpenID extensions to the request directed
+		/// at the OpenID provider.
+		/// </summary>
+		/// <param name="extensionTypeUri">The extension type URI.</param>
+		/// <param name="arguments">The arguments for this extension to add to the message.</param>
+		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
+			Contract.Requires<InvalidOperationException>(!this.ReadMode);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(extensionTypeUri));
+			Contract.Requires<ArgumentNullException>(arguments != null);
+			if (arguments.Count == 0) {
+				return;
+			}
+
+			IDictionary<string, string> extensionArgs;
+			if (!this.extensions.TryGetValue(extensionTypeUri, out extensionArgs)) {
+				this.extensions.Add(extensionTypeUri, extensionArgs = new Dictionary<string, string>(arguments.Count));
+			}
+
+			ErrorUtilities.VerifyProtocol(extensionArgs.Count == 0, OpenIdStrings.ExtensionAlreadyAddedWithSameTypeURI, extensionTypeUri);
+			foreach (var pair in arguments) {
+				extensionArgs.Add(pair.Key, pair.Value);
+			}
+		}
+
+		/// <summary>
 		/// Gets the actual arguments to add to a querystring or other response,
 		/// where type URI, alias, and actual key/values are all defined.
 		/// </summary>
@@ -128,10 +161,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// This should be <c>true</c> for all but direct response messages.
 		/// </param>
 		/// <returns>A dictionary of key=value pairs to add to the message to carry the extension.</returns>
-		public IDictionary<string, string> GetArgumentsToSend(bool includeOpenIdPrefix) {
-			if (this.isReadMode) {
-				throw new InvalidOperationException();
-			}
+		internal IDictionary<string, string> GetArgumentsToSend(bool includeOpenIdPrefix) {
+			Contract.Requires<InvalidOperationException>(!this.ReadMode);
 			Dictionary<string, string> args = new Dictionary<string, string>();
 			foreach (var typeUriAndExtension in this.extensions) {
 				string typeUri = typeUriAndExtension.Key;
@@ -157,44 +188,15 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		}
 
 		/// <summary>
-		/// Adds query parameters for OpenID extensions to the request directed
-		/// at the OpenID provider.
-		/// </summary>
-		/// <param name="extensionTypeUri">The extension type URI.</param>
-		/// <param name="arguments">The arguments for this extension to add to the message.</param>
-		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
-			if (this.isReadMode) {
-				throw new InvalidOperationException();
-			}
-			ErrorUtilities.VerifyNonZeroLength(extensionTypeUri, "extensionTypeUri");
-			ErrorUtilities.VerifyArgumentNotNull(arguments, "arguments");
-			if (arguments.Count == 0) {
-				return;
-			}
-
-			IDictionary<string, string> extensionArgs;
-			if (!this.extensions.TryGetValue(extensionTypeUri, out extensionArgs)) {
-				this.extensions.Add(extensionTypeUri, extensionArgs = new Dictionary<string, string>(arguments.Count));
-			}
-
-			ErrorUtilities.VerifyProtocol(extensionArgs.Count == 0, OpenIdStrings.ExtensionAlreadyAddedWithSameTypeURI, extensionTypeUri);
-			foreach (var pair in arguments) {
-				extensionArgs.Add(pair.Key, pair.Value);
-			}
-		}
-
-		/// <summary>
 		/// Gets the fields carried by a given OpenId extension.
 		/// </summary>
 		/// <param name="extensionTypeUri">The type URI of the extension whose fields are being queried for.</param>
 		/// <returns>
 		/// The fields included in the given extension, or null if the extension is not present.
 		/// </returns>
-		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
-			ErrorUtilities.VerifyNonZeroLength(extensionTypeUri, "extensionTypeUri");
-			if (!this.isReadMode) {
-				throw new InvalidOperationException();
-			}
+		internal IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(extensionTypeUri));
+			Contract.Requires<InvalidOperationException>(this.ReadMode);
 
 			IDictionary<string, string> extensionArgs;
 			this.extensions.TryGetValue(extensionTypeUri, out extensionArgs);
@@ -206,7 +208,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </summary>
 		/// <param name="extensionTypeUri">The extension Type URI in question.</param>
 		/// <returns><c>true</c> if this extension is present; <c>false</c> otherwise.</returns>
-		public bool ContainsExtension(string extensionTypeUri) {
+		internal bool ContainsExtension(string extensionTypeUri) {
 			return this.extensions.ContainsKey(extensionTypeUri);
 		}
 
@@ -214,7 +216,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// Gets the type URIs of all discovered extensions in the message.
 		/// </summary>
 		/// <returns>A sequence of the type URIs.</returns>
-		public IEnumerable<string> GetExtensionTypeUris() {
+		internal IEnumerable<string> GetExtensionTypeUris() {
 			return this.extensions.Keys;
 		}
 	}

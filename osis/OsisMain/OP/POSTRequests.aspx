@@ -9,7 +9,7 @@
 		<asp:View ID="View1" runat="server">
 			<asp:Label ID="Label1" runat="server" Text="OpenID Identifier:" />
 			<rp:OpenIdTextBox runat="server" ID="openIdTextBox" OnCanceled="openIdTextBox_Response"
-				OnFailed="openIdTextBox_Response" OnLoggedIn="openIdTextBox_Response" />
+				OnFailed="openIdTextBox_Response" OnLoggedIn="openIdTextBox_Response" OnLoggingIn="openIdTextBox_LoggingIn" />
 			<asp:Button ID="beginButton" runat="server" Text="Begin" OnClick="beginButton_Click" />
 			<asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="openIdTextBox"
 				ErrorMessage="Enter an identifier first." Display="Dynamic" />
