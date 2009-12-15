@@ -190,6 +190,7 @@
 			<!-- Include the unified, signed version of the library -->
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb" />
+			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).xml" />
 			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
