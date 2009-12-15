@@ -10,7 +10,7 @@ $(function() {
 	var hint = $.cookie('openid_identifier') || '';
 
 	var ajaxbox = document.getElementsByName('openid_identifier')[0];
-	if (hint != 'infocard') {
+	if (ajaxbox && hint != 'infocard') {
 		ajaxbox.setValue(hint);
 	}
 
@@ -31,12 +31,18 @@ $(function() {
 			}
 		});
 		if (!matchFound) {
-			$('#OpenIDButton')
-					.removeClass('grayedOut')
-					.addClass('focused');
-			$('#OpenIDForm').show('slow', function() {
-				ajaxbox.focus();
-			});
+			if (ajaxbox) {
+				$('#OpenIDButton')
+				.removeClass('grayedOut')
+				.addClass('focused');
+				$('#OpenIDForm').show('slow', function() {
+					ajaxbox.focus();
+				});
+			} else {
+				// No OP button matched the last identifier, and there is no text box,
+				// so just un-gray all buttons.
+				ops.removeClass('grayedOut');
+			}
 		}
 	}
 
@@ -65,13 +71,15 @@ $(function() {
 		}
 	});
 
-	ajaxbox.onStateChanged = function(state) {
-		if (state == "authenticated") {
-			showLoginSuccess('OpenIDButton', true);
-		} else {
-			showLoginSuccess('OpenIDButton', false); // hide checkmark
-		}
-	};
+	if (ajaxbox) {
+		ajaxbox.onStateChanged = function(state) {
+			if (state == "authenticated") {
+				showLoginSuccess('OpenIDButton', true);
+			} else {
+				showLoginSuccess('OpenIDButton', false); // hide checkmark
+			}
+		};
+	}
 
 	function checkidSetup(identifier, timerBased) {
 		var openid = new window.OpenIdIdentifier(identifier);
@@ -88,8 +96,10 @@ $(function() {
 		window.postLoginAssertion(respondingEndpoint.response.toString(), window.parent.location.href);
 	}
 
-	// take over how the text box does postbacks.
-	ajaxbox.dnoi_internal.postback = doLogin;
+	if (ajaxbox) {
+		// take over how the text box does postbacks.
+		ajaxbox.dnoi_internal.postback = doLogin;
+	}
 
 	// This FrameManager will be used for background logins for the OP buttons
 	// and the last used identifier.  It is NOT the frame manager used by the
@@ -138,7 +148,7 @@ $(function() {
 		// Don't immediately login if the user clicked OpenID and he can't see the identifier box.
 		if ($(this)[0].id != 'OpenIDButton') {
 			relevantUserSuppliedIdentifier = $(this)[0].id;
-		} else if ($('#OpenIDForm').is(':visible')) {
+		} else if (ajaxbox && $('#OpenIDForm').is(':visible')) {
 			relevantUserSuppliedIdentifier = ajaxbox.value;
 		}
 
@@ -157,16 +167,18 @@ $(function() {
 			$('img', this)[0].click();
 		}
 	});
-	$('#OpenIDButton').click(function() {
-		// Be careful to only try to select the text box once it is available.
-		if ($('#OpenIDForm').is(':hidden')) {
-			$('#OpenIDForm').show('slow', function() {
+	if (ajaxbox) {
+		$('#OpenIDButton').click(function() {
+			// Be careful to only try to select the text box once it is available.
+			if ($('#OpenIDForm').is(':hidden')) {
+				$('#OpenIDForm').show('slow', function() {
+					ajaxbox.focus();
+				});
+			} else {
 				ajaxbox.focus();
-			});
-		} else {
-			ajaxbox.focus();
-		}
-	});
+			}
+		});
+	}
 
 	// Make popup window close on escape (the dialog style is already taken care of)
 	$(document).keydown(function(e) {

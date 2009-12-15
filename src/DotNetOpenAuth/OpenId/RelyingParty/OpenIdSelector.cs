@@ -182,6 +182,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether some button in the selector will want
+		/// to display the <see cref="OpenIdAjaxTextBox"/> control.
+		/// </summary>
+		protected virtual bool OpenIdTextBoxVisible {
+			get { return this.Buttons.OfType<SelectorOpenIdButton>().Any(); }
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -272,6 +280,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
 
 			this.PreloadDiscovery(this.Buttons.OfType<SelectorProviderButton>().Select(op => op.OPIdentifier).Where(id => id != null));
+			this.textBox.Visible = this.OpenIdTextBoxVisible;
 		}
 
 		/// <summary>
@@ -308,13 +317,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			writer.RenderEndTag(); // </ul>
 
-			writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "none");
-			writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDForm");
-			writer.RenderBeginTag(HtmlTextWriterTag.Div);
+			if (this.textBox.Visible) {
+				writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "none");
+				writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDForm");
+				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-			this.textBox.RenderControl(writer);
+				this.textBox.RenderControl(writer);
 
-			writer.RenderEndTag(); // </div>
+				writer.RenderEndTag(); // </div>
+			}
 
 			this.positiveAssertionField.RenderControl(writer);
 		}
