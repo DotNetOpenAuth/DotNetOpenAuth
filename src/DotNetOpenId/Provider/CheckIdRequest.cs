@@ -62,8 +62,7 @@ namespace DotNetOpenId.Provider {
 							// The spec requires that the return_to URLs given in an RPs XRDS doc
 							// do not contain wildcards.
 							if (discoveredReturnToUrl.DomainWildcard) {
-								if (TraceUtil.Switch.TraceWarning)
-									Trace.TraceWarning("Realm {0} contained return_to URL {1} which contains a wildcard, which is not allowed.",
+								Logger.WarnFormat("Realm {0} contained return_to URL {1} which contains a wildcard, which is not allowed.",
 										Realm, discoveredReturnToUrl);
 								continue;
 							}
@@ -75,13 +74,11 @@ namespace DotNetOpenId.Provider {
 							}
 						}
 					} catch (OpenIdException ex) {
-						if (TraceUtil.Switch.TraceInfo)
-							Trace.TraceInformation("Relying party discovery at URL {0} failed.  {1}",
+						Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}",
 								Realm, ex);
 						// Don't do anything else.  We quietly fail at return_to verification and return false.
 					} catch (WebException ex) {
-						if (TraceUtil.Switch.TraceInfo)
-							Trace.TraceInformation("Relying party discovery at URL {0} failed.  {1}",
+						Logger.InfoFormat("Relying party discovery at URL {0} failed.  {1}",
 								Realm, ex);
 						// Don't do anything else.  We quietly fail at return_to verification and return false.
 					}
@@ -94,6 +91,17 @@ namespace DotNetOpenId.Provider {
 		/// to send back to the relying party.
 		/// </summary>
 		public bool IsDirectedIdentity { get; private set; }
+		/// <summary>
+		/// A value indicating whether the requesting Relying Party is using a delegated URL.
+		/// </summary>
+		/// <remarks>
+		/// When delegated identifiers are used, the <see cref="ClaimedIdentifier"/> should not
+		/// be changed at the Provider during authentication.
+		/// Delegation is only detectable on requests originating from OpenID 2.0 relying parties.
+		/// A relying party implementing only OpenID 1.x may use delegation and this property will
+		/// return false anyway.
+		/// </remarks>
+		public bool IsDelegatedIdentifier { get; private set; }
 		Identifier localIdentifier;
 		/// <summary>
 		/// The user identifier used by this particular provider.
@@ -101,17 +109,16 @@ namespace DotNetOpenId.Provider {
 		public Identifier LocalIdentifier {
 			get { return localIdentifier; }
 			set {
+				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (IsDirectedIdentity) {
-					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (ClaimedIdentifier != null && ClaimedIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
-					} else {
-						localIdentifier = value;
-						claimedIdentifier = value;
 					}
-				} else {
-					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+
+					claimedIdentifier = value;
 				}
+
+				localIdentifier = value;
 			}
 		}
 		Identifier claimedIdentifier;
@@ -121,19 +128,53 @@ namespace DotNetOpenId.Provider {
 		public Identifier ClaimedIdentifier {
 			get { return claimedIdentifier; }
 			set {
+				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (IsDirectedIdentity) {
-					// Keep LocalIdentifier and ClaimedIdentifier in sync
 					if (LocalIdentifier != null && LocalIdentifier != value) {
 						throw new InvalidOperationException(Strings.IdentifierSelectRequiresMatchingIdentifiers);
-					} else {
-						claimedIdentifier = value;
-						localIdentifier = value;
 					}
-				} else {
-					throw new InvalidOperationException(Strings.IdentifierSelectModeOnly);
+
+					localIdentifier = value;
 				}
+
+				if (IsDelegatedIdentifier) {
+					throw new InvalidOperationException(Strings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
+				}
+				
+				claimedIdentifier = value;
 			}
 		}
+
+		/// <summary>
+		/// Adds an optional fragment (#fragment) portion to a URI ClaimedIdentifier.
+		/// Useful for identifier recycling.
+		/// </summary>
+		/// <param name="fragment">
+		/// Should not include the # prefix character as that will be added internally.
+		/// May be null or the empty string to clear a previously set fragment.
+		/// </param>
+		/// <remarks>
+		/// <para>Unlike the <see cref="ClaimedIdentifier"/> property, which can only be set if
+		/// using directed identity, this method can be called on any URI claimed identifier.</para>
+		/// <para>Because XRI claimed identifiers (the canonical IDs) are never recycled,
+		/// this method should<i>not</i> be called for XRIs.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown when this method is called on an XRI, or on a directed identity request
+		/// before the <see cref="ClaimedIdentifier"/> property is set.</exception>
+		public void SetClaimedIdentifierFragment(string fragment) {
+			if (IsDirectedIdentity && ClaimedIdentifier == null) {
+				throw new InvalidOperationException(Strings.ClaimedIdentifierMustBeSetFirst);
+			}
+			if (ClaimedIdentifier is XriIdentifier) {
+				throw new InvalidOperationException(Strings.FragmentNotAllowedOnXRIs);
+			}
+
+			UriBuilder builder = new UriBuilder(ClaimedIdentifier);
+			builder.Fragment = fragment;
+			claimedIdentifier = builder.Uri;
+		}
+
 		/// <summary>
 		/// The URL to redirect the user agent to after the authentication attempt.
 		/// This must fall "under" the realm URL.
@@ -218,18 +259,28 @@ namespace DotNetOpenId.Provider {
 				claimedIdentifier = null;
 				localIdentifier = null;
 			}
+
+			// URL delegation is only detectable from 2.0 RPs, since openid.claimed_id isn't included from 1.0 RPs.
+			// If the openid.claimed_id is present, and if it's different than the openid.identity argument, then
+			// the RP has discovered a claimed identifier that has delegated authentication to this Provider.
+			IsDelegatedIdentifier = ClaimedIdentifier != null && ClaimedIdentifier != LocalIdentifier;
 		}
 
-		internal override IEncodable CreateResponse() {
+		protected override IEncodable CreateResponse() {
 			Debug.Assert(IsAuthenticated.HasValue, "This should be checked internally before CreateResponse is called.");
 			return AssertionMessage.CreateAssertion(this);
 		}
 
 		/// <summary>
 		/// Encode this request as a URL to GET.
+		/// Only used in response to immediate auth requests from OpenID 1.x RPs.
 		/// </summary>
 		internal Uri SetupUrl {
 			get {
+				if (Protocol.Version.Major >= 2) {
+					Debug.Fail("This property only applicable to OpenID 1.x RPs.");
+					throw new InvalidOperationException();
+				}
 				Debug.Assert(Provider.Endpoint != null, "The OpenIdProvider should have guaranteed this.");
 				var q = new Dictionary<string, string>();
 

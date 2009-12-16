@@ -22,6 +22,7 @@ namespace DotNetOpenId {
 		/// </summary>
 		static readonly Dictionary<string, string> typeUriToAliasAffinity = new Dictionary<string, string> {
 			{ Extensions.SimpleRegistration.Constants.sreg_ns, Extensions.SimpleRegistration.Constants.sreg_compatibility_alias },
+			{ Extensions.ProviderAuthenticationPolicy.Constants.TypeUri, Extensions.ProviderAuthenticationPolicy.Constants.pape_compatibility_alias },
 		};
 
 		private ExtensionArgumentsManager() { }
@@ -113,6 +114,10 @@ namespace DotNetOpenId {
 			}
 		}
 
+		/// <summary>
+		/// Gets the fields carried by a given OpenId extension.
+		/// </summary>
+		/// <returns>The fields included in the given extension, or null if the extension is not present.</returns>
 		public IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
 			if (!isReadMode) throw new InvalidOperationException();
 			if (string.IsNullOrEmpty(extensionTypeUri)) throw new ArgumentNullException("extensionTypeUri");

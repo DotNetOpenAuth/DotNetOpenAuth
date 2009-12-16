@@ -56,11 +56,11 @@ namespace DotNetOpenId {
 			TimeSpan remainingLifeLength = expires - DateTime.UtcNow;
 			byte[] secret = privateData; // the whole of privateData is the secret key for now.
 			// We figure out what derived type to instantiate based on the length of the secret.
-			if(secret.Length == CryptUtil.Sha1.HashSize / 8)
-				return new HmacSha1Association(handle, secret, remainingLifeLength);
-			if (secret.Length == CryptUtil.Sha256.HashSize / 8)
-				return new HmacSha256Association(handle, secret, remainingLifeLength);
-			throw new ArgumentException(Strings.BadAssociationPrivateData, "privateData");
+			try {
+				return HmacShaAssociation.Create(secret.Length, handle, secret, remainingLifeLength);
+			} catch (ArgumentException ex) {
+				throw new ArgumentException(Strings.BadAssociationPrivateData, "privateData", ex);
+			}
 		}
 
 		static TimeSpan minimumUsefulAssociationLifetime {

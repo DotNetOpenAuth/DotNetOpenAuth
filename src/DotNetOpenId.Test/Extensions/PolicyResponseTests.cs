@@ -88,6 +88,19 @@ namespace DotNetOpenId.Test.Extensions {
 		}
 
 		[Test]
+		public void AssuranceLevels() {
+			PolicyResponse resp = new PolicyResponse();
+			Assert.AreEqual(0, resp.AssuranceLevels.Count);
+			resp.NistAssuranceLevel = NistAssuranceLevel.Level2;
+			Assert.AreEqual(1, resp.AssuranceLevels.Count);
+			Assert.AreEqual("2", resp.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri]);
+			resp.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "3";
+			Assert.AreEqual(NistAssuranceLevel.Level3, resp.NistAssuranceLevel);
+			resp.AssuranceLevels.Clear();
+			Assert.IsNull(resp.NistAssuranceLevel);
+		}
+
+		[Test]
 		public void EqualsTest() {
 			PolicyResponse resp = new PolicyResponse();
 			PolicyResponse resp2 = new PolicyResponse();
@@ -129,18 +142,30 @@ namespace DotNetOpenId.Test.Extensions {
 			Assert.AreNotEqual(resp, resp2);
 			resp2.NistAssuranceLevel = NistAssuranceLevel.Level2;
 			Assert.AreEqual(resp, resp2);
+
+			// Test AssuranceLevels comparison.
+			resp.AssuranceLevels.Add("custom", "b");
+			Assert.AreNotEqual(resp, resp2);
+			resp2.AssuranceLevels.Add("custom", "2");
+			Assert.AreNotEqual(resp, resp2);
+			resp2.AssuranceLevels["custom"] = "b";
+			Assert.AreEqual(resp, resp2);
+			resp.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "1";
+			Assert.AreNotEqual(resp, resp2);
+			resp2.AssuranceLevels[Constants.AuthenticationLevels.NistTypeUri] = "1";
+			Assert.AreEqual(resp, resp2);
 		}
 
 		[Test]
 		public void DeserializeNull() {
 			PolicyResponse resp = new PolicyResponse();
-			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(null, null));
+			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(null, null, Constants.TypeUri));
 		}
 
 		[Test]
 		public void DeserializeEmpty() {
 			PolicyResponse resp = new PolicyResponse();
-			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(new Dictionary<string,string>(), null));
+			Assert.IsFalse(((IExtensionResponse)resp).Deserialize(new Dictionary<string, string>(), null, Constants.TypeUri));
 		}
 
 		[Test]
@@ -151,7 +176,7 @@ namespace DotNetOpenId.Test.Extensions {
 			// Most basic test
 			PolicyResponse resp = new PolicyResponse(), resp2 = new PolicyResponse();
 			var fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(resp, resp2);
 
 			// Test with all fields set
@@ -160,14 +185,15 @@ namespace DotNetOpenId.Test.Extensions {
 			resp.AuthenticationTimeUtc = someUtcTime;
 			resp.NistAssuranceLevel = NistAssuranceLevel.Level2;
 			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(resp, resp2);
 
 			// Test with an extra policy
 			resp2 = new PolicyResponse();
 			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
+			resp.AssuranceLevels.Add("customlevel", "ABC");
 			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreEqual(resp, resp2);
 
 			// Test with a policy added twice.  We should see it intelligently leave one of
@@ -175,11 +201,58 @@ namespace DotNetOpenId.Test.Extensions {
 			resp2 = new PolicyResponse();
 			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			fields = ((IExtensionResponse)resp).Serialize(null);
-			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null));
+			Assert.IsTrue(((IExtensionResponse)resp2).Deserialize(fields, null, Constants.TypeUri));
 			Assert.AreNotEqual(resp, resp2);
 			// Now go ahead and add the doubled one so we can do our equality test.
 			resp2.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
 			Assert.AreEqual(resp, resp2);
+		}
+
+		[Test]
+		public void Serialize() {
+			PolicyResponse resp = new PolicyResponse(), resp2 = new PolicyResponse();
+			var fields = ((IExtensionResponse)resp).Serialize(null);
+			Assert.AreEqual(1, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("auth_policies"));
+			Assert.AreEqual(AuthenticationPolicies.None, fields["auth_policies"]);
+
+			resp.ActualPolicies.Add(AuthenticationPolicies.PhishingResistant);
+			fields = ((IExtensionResponse)resp).Serialize(null);
+			Assert.AreEqual(1, fields.Count);
+			Assert.AreEqual(AuthenticationPolicies.PhishingResistant, fields["auth_policies"]);
+
+			resp.ActualPolicies.Add(AuthenticationPolicies.PhysicalMultiFactor);
+			fields = ((IExtensionResponse)resp).Serialize(null);
+			Assert.AreEqual(1, fields.Count);
+			Assert.AreEqual(
+				AuthenticationPolicies.PhishingResistant + " " + AuthenticationPolicies.PhysicalMultiFactor,
+				fields["auth_policies"]);
+
+			resp.AuthenticationTimeUtc = DateTime.UtcNow;
+			fields = ((IExtensionResponse)resp).Serialize(null);
+			Assert.AreEqual(2, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("auth_time"));
+
+			resp.NistAssuranceLevel = NistAssuranceLevel.Level3;
+			fields = ((IExtensionResponse)resp).Serialize(null);
+			Assert.AreEqual(4, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("auth_level.ns.nist"));
+			Assert.AreEqual(Constants.AuthenticationLevels.NistTypeUri, fields["auth_level.ns.nist"]);
+			Assert.IsTrue(fields.ContainsKey("auth_level.nist"));
+			Assert.AreEqual("3", fields["auth_level.nist"]);
+
+			resp.AssuranceLevels.Add("custom", "CU");
+			fields = ((IExtensionResponse)resp).Serialize(null);
+			Assert.AreEqual(6, fields.Count);
+			Assert.IsTrue(fields.ContainsKey("auth_level.ns.alias2"));
+			Assert.AreEqual("custom", fields["auth_level.ns.alias2"]);
+			Assert.IsTrue(fields.ContainsKey("auth_level.alias2"));
+			Assert.AreEqual("CU", fields["auth_level.alias2"]);
+			// and make sure the NIST is still there.
+			Assert.IsTrue(fields.ContainsKey("auth_level.ns.nist"));
+			Assert.AreEqual(Constants.AuthenticationLevels.NistTypeUri, fields["auth_level.ns.nist"]);
+			Assert.IsTrue(fields.ContainsKey("auth_level.nist"));
+			Assert.AreEqual("3", fields["auth_level.nist"]);
 		}
 	}
 }

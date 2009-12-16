@@ -12,6 +12,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using DotNetOpenId.Extensions;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty
 {
@@ -19,8 +20,8 @@ namespace DotNetOpenId.RelyingParty
 	/// An ASP.NET control providing a complete OpenID login experience.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login")]
-	[DefaultProperty("OpenIdUrl")]
-	[ToolboxData("<{0}:OpenIdLogin runat=\"server\"></{0}:OpenIdLogin>")]
+	[DefaultProperty("Text"), ValidationProperty("Text")]
+	[ToolboxData("<{0}:OpenIdLogin runat=\"server\" />")]
 	public class OpenIdLogin : OpenIdTextBox
 	{
 		Panel panel;
@@ -32,6 +33,7 @@ namespace DotNetOpenId.RelyingParty
 		Label exampleUrlLabel;
 		HyperLink registerLink;
 		CheckBox rememberMeCheckBox;
+		Literal idselectorJavascript;
 
 		const short textBoxTabIndexOffset = 0;
 		const short loginButtonTabIndexOffset = 1;
@@ -164,6 +166,9 @@ namespace DotNetOpenId.RelyingParty
 			TabIndex = TabIndexDefault;
 
 			panel.Controls.Add(table);
+
+			idselectorJavascript = new Literal();
+			panel.Controls.Add(idselectorJavascript);
 		}
 
 		void identifierFormatValidator_ServerValidate(object source, ServerValidateEventArgs args) {
@@ -176,12 +181,31 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		/// <summary>
+		/// Customizes HTML rendering of the control.
+		/// </summary>
+		protected override void Render(HtmlTextWriter writer) {
+			// avoid writing begin and end SPAN tags for XHTML validity.
+			RenderContents(writer);
+		}
+
+		/// <summary>
 		/// Renders the child controls.
 		/// </summary>
 		protected override void RenderChildren(HtmlTextWriter writer)
 		{
-			if (!this.DesignMode)
+			if (!this.DesignMode) {
 				label.Attributes["for"] = WrappedTextBox.ClientID;
+
+				if (!string.IsNullOrEmpty(IdSelectorIdentifier)) {
+					idselectorJavascript.Visible = true;
+					idselectorJavascript.Text = @"<script type='text/javascript'><!--
+idselector_input_id = '" + WrappedTextBox.ClientID + @"';
+// --></script>
+<script type='text/javascript' id='__openidselector' src='https://www.idselector.com/selector/" + IdSelectorIdentifier + @"' charset='utf-8'></script>";
+				} else {
+					idselectorJavascript.Visible = false;
+				}
+			}
 
 			base.RenderChildren(writer);
 		}
@@ -439,6 +463,17 @@ namespace DotNetOpenId.RelyingParty
 				loginButton.ValidationGroup = value;
 			}
 		}
+
+		const string idSelectorIdentifierViewStateKey = "IdSelectorIdentifier";
+		/// <summary>
+		/// The unique hash string that ends your idselector.com account.
+		/// </summary>
+		[Category("Behavior")]
+		[Description("The unique hash string that ends your idselector.com account.")]
+		public string IdSelectorIdentifier {
+			get { return (string)(ViewState[idSelectorIdentifierViewStateKey]); }
+			set { ViewState[idSelectorIdentifierViewStateKey] = value; }
+		}
 		#endregion
 
 		#region Properties to hide
@@ -463,7 +498,7 @@ namespace DotNetOpenId.RelyingParty
 		void loginButton_Click(object sender, EventArgs e)
 		{
 			if (!Page.IsValid) return;
-			if (OnLoggingIn(Text))
+			if (OnLoggingIn())
 				LogOn();
 		}
 
@@ -480,18 +515,16 @@ namespace DotNetOpenId.RelyingParty
 		/// <summary>
 		/// Fires the <see cref="LoggingIn"/> event.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user via the login page.
-		/// </param>
 		/// <returns>
 		/// Returns whether the login should proceed.  False if some event handler canceled the request.
 		/// </returns>
-		protected virtual bool OnLoggingIn(Identifier userSuppliedIdentifier)
+		protected virtual bool OnLoggingIn()
 		{
 			EventHandler<OpenIdEventArgs> loggingIn = LoggingIn;
-			PrepareAuthenticationRequest();
+			if (Request == null)
+				CreateRequest();
 			if (Request != null) {
-				OpenIdEventArgs args = new OpenIdEventArgs(Request.ClaimedIdentifier);
+				OpenIdEventArgs args = new OpenIdEventArgs(Request);
 				if (loggingIn != null)
 					loggingIn(this, args);
 				return !args.Cancel;

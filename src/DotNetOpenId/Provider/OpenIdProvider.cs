@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
+using System.Configuration;
+using System.Diagnostics;
 using System.Web;
 using IProviderAssociationStore = DotNetOpenId.IAssociationStore<DotNetOpenId.AssociationRelyingPartyType>;
 using ProviderMemoryStore = DotNetOpenId.AssociationMemoryStore<DotNetOpenId.AssociationRelyingPartyType>;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
+using DotNetOpenId.Configuration;
 
 namespace DotNetOpenId.Provider {
 	/// <summary>
@@ -35,6 +35,10 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		internal Protocol Protocol { get; private set; }
 
+		internal static Uri DefaultProviderEndpoint { get { return getProviderEndpointFromContext(); } }
+		internal static Uri DefaultRequestUrl { get { return Util.GetRequestUrlFromContext(); } }
+		internal static NameValueCollection DefaultQuery { get { return Util.GetQueryOrFormFromContextNVC(); } }
+
 		/// <summary>
 		/// Constructs an OpenId server that uses the HttpApplication dictionary as
 		/// its association store and detects common settings.
@@ -43,8 +47,8 @@ namespace DotNetOpenId.Provider {
 		/// This method requires a current ASP.NET HttpContext.
 		/// </remarks>
 		public OpenIdProvider()
-			: this(HttpApplicationStore,
-			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryFromContext()) { }
+			: this(Configuration.Store.CreateInstanceOfStore(HttpApplicationStore),
+			getProviderEndpointFromContext(), Util.GetRequestUrlFromContext(), Util.GetQueryOrFormFromContext()) { }
 		/// <summary>
 		/// Constructs an OpenId server that uses a given query and IAssociationStore.
 		/// </summary>
@@ -67,6 +71,7 @@ namespace DotNetOpenId.Provider {
 			if (providerEndpoint == null) throw new ArgumentNullException("providerEndpoint");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
 			if (query == null) throw new ArgumentNullException("query");
+			Settings = new ProviderSecuritySettings();
 			Endpoint = providerEndpoint;
 			RequestUrl = requestUrl;
 			Query = query;
@@ -82,6 +87,13 @@ namespace DotNetOpenId.Provider {
 		/// An auto-detect attempt is made if an ASP.NET HttpContext is available.
 		/// </remarks>
 		internal Uri Endpoint { get; private set; }
+
+		// TODO: make this property public WHEN its security settings are actually supported.
+		/// <summary>
+		/// Provides access to the adjustable security settings of this instance
+		/// of <see cref="OpenIdProvider"/>.
+		/// </summary>
+		internal ProviderSecuritySettings Settings { get; private set; }
 
 		bool requestProcessed;
 		Request request;
@@ -116,8 +128,8 @@ namespace DotNetOpenId.Provider {
 			Protocol = Protocol.Detect(Query);
 			Request req = Provider.Request.CreateRequest(this);
 
-			if (TraceUtil.Switch.TraceInfo)
-				Trace.TraceInformation("Received OpenID {0} request.", req.Mode);
+			Logger.InfoFormat("Received OpenID {0} request.{1}{2}", req.Mode, Environment.NewLine,
+				Util.ToString(Query));
 
 			return req;
 		}
@@ -150,6 +162,8 @@ namespace DotNetOpenId.Provider {
 			if (relyingParty == null) throw new ArgumentNullException("relyingParty");
 			if (claimedIdentifier == null) throw new ArgumentNullException("claimedIdentifier");
 			if (localIdentifier == null) throw new ArgumentNullException("localIdentifier");
+
+			Logger.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			return AssertionMessage.CreateUnsolicitedAssertion(this, 
 				relyingParty, claimedIdentifier, localIdentifier);
 		}
@@ -182,10 +196,21 @@ namespace DotNetOpenId.Provider {
 			HttpContext context = HttpContext.Current;
 			if (context == null)
 				throw new InvalidOperationException(Strings.HttpContextRequiredForThisOverload);
-			UriBuilder builder = new UriBuilder(HttpContext.Current.Request.Url);
+			UriBuilder builder = new UriBuilder(Util.GetRequestUrlFromContext());
 			builder.Query = null;
 			builder.Fragment = null;
 			return builder.Uri;
+		}
+
+		/// <summary>
+		/// Gets the relevant Configuration section for this OpenIdRelyingParty.
+		/// </summary>
+		/// <remarks>
+		/// This is not a static member because depending on the context within which we are
+		/// invoked, the configuration section might be different. (location tag, for example).
+		/// </remarks>
+		internal static ProviderSection Configuration {
+			get { return ProviderSection.Configuration; }
 		}
 	}
 }

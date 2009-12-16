@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2A59DE0A-B76A-4B42-9A33-04D34548353D}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -54,7 +58,14 @@
     <Content Include="user_xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\CustomStore.cs" />
+    <Compile Include="Code\CustomStoreDataSet.Designer.cs">
+      <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
+    <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\URLRewriter.cs" />
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">
@@ -82,12 +93,22 @@
       <DependentUpon>ProfileFields.ascx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider.ashx.cs">
+      <DependentUpon>Provider.ashx</DependentUpon>
+    </Compile>
     <Compile Include="server.aspx.cs">
       <DependentUpon>server.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="server.aspx.designer.cs">
       <DependentUpon>server.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TracePage.aspx.cs">
+      <DependentUpon>TracePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TracePage.aspx.designer.cs">
+      <DependentUpon>TracePage.aspx</DependentUpon>
     </Compile>
     <Compile Include="user.aspx.cs">
       <DependentUpon>user.aspx</DependentUpon>
@@ -103,6 +124,27 @@
       <Name>DotNetOpenId</Name>
       <Private>True</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+    <Content Include="images\dotnetopenid_tiny.gif" />
+    <Content Include="Site.Master" />
+    <Content Include="styles.css" />
+    <Content Include="TracePage.aspx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Code\CustomStoreDataSet.xsc">
+      <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="Code\CustomStoreDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CustomStoreDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Code\CustomStoreDataSet.xss">
+      <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
+    </None>
+    <Content Include="Provider.ashx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />
@@ -124,6 +166,9 @@
           <IISUrl>
           </IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>

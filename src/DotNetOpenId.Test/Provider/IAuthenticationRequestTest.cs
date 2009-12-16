@@ -15,22 +15,25 @@ namespace DotNetOpenId.Test.Provider {
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
 		}
 
-		[Test, ExpectedException(typeof(WebException), UserMessage = "OP should throw WebException when return URL is unverifiable.")]
-		public void UnverifiableReturnUrl() {
-			Uri returnTo;
-			Realm realm;
-			getUnverifiableRP(out returnTo, out realm);
-			var consumer = new OpenIdRelyingParty(new ApplicationMemoryStore(), null, null);
-			var request = consumer.CreateRequest(TestSupport.GetIdentityUrl(TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20), realm, returnTo);
-			WebRequest.Create(request.RedirectingResponse.ExtractUrl()).GetResponse(); // the OP should return 500, causing exception here.
+		[TearDown]
+		public void TearDown() {
+			Mocks.MockHttpRequest.Reset();
 		}
 
-		static void getUnverifiableRP(out Uri returnTo, out Realm realm) {
-			var disableDiscovery = new Dictionary<string, string> {
-				{"AllowRPDiscovery", "false"},
-			};
-			returnTo = TestSupport.GetFullUrl(TestSupport.ConsumerPage, disableDiscovery);
-			realm = new Realm(returnTo);
+		[Test]
+		public void UnverifiableReturnUrl() {
+			var request = TestSupport.CreateRelyingPartyRequest(true, TestSupport.Scenarios.AutoApproval, ProtocolVersion.V20, false);
+
+			// Clear out the RP discovery information registered by TestSupport
+			Mocks.MockHttpRequest.DeleteResponse(TestSupport.Realm.UriWithWildcardChangedToWww);
+
+			bool reachedOP = false;
+			var response = TestSupport.CreateRelyingPartyResponseThroughProvider(request, req => {
+				Assert.IsFalse(req.IsReturnUrlDiscoverable);
+				reachedOP = true;
+				req.IsAuthenticated = false;
+			});
+			Assert.IsTrue(reachedOP);
 		}
 	}
 }

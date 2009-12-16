@@ -135,13 +135,13 @@ namespace DotNetOpenId {
 			if (Enabled && Visible && !string.IsNullOrEmpty(XrdsUrl)) {
 				if ((XrdsAdvertisement & XrdsUrlLocations.HttpHeader) != 0) {
 					Page.Response.AddHeader(Yadis.Yadis.HeaderName,
-						new Uri(Page.Request.Url, Page.Response.ApplyAppPathModifier(XrdsUrl)).AbsoluteUri);
+						new Uri(Util.GetRequestUrlFromContext(), Page.Response.ApplyAppPathModifier(XrdsUrl)).AbsoluteUri);
 				}
 				if ((XrdsAdvertisement & XrdsUrlLocations.HtmlMeta) != 0) {
 					writer.WriteBeginTag("meta");
 					writer.WriteAttribute("http-equiv", Yadis.Yadis.HeaderName);
 					writer.WriteAttribute("content",
-						new Uri(Page.Request.Url, Page.Response.ApplyAppPathModifier(XrdsUrl)).AbsoluteUri);
+						new Uri(Util.GetRequestUrlFromContext(), Page.Response.ApplyAppPathModifier(XrdsUrl)).AbsoluteUri);
 					writer.Write("/>");
 					writer.WriteLine();
 				}

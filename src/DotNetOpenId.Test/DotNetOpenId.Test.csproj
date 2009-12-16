@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CDEE655B-3902-420E-ADED-F4B6F666FB03}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -33,7 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.2.9.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>../../tools/NUnit/bin/nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
@@ -47,6 +52,8 @@
   <ItemGroup>
     <Compile Include="AssociationsTest.cs" />
     <Compile Include="AssociationTestSuite.cs" />
+    <Compile Include="Mocks\DirectMessageSniffWrapper.cs" />
+    <Compile Include="Mocks\DirectMessageTestRedirector.cs" />
     <Compile Include="ExtensionsArgumentsManagerTests.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchRequestTests.cs" />
     <Compile Include="Extensions\AttributeExchangeFetchResponseTests.cs" />
@@ -58,31 +65,36 @@
     <Compile Include="Extensions\PolicyRequestTests.cs" />
     <Compile Include="Extensions\PolicyResponseTests.cs" />
     <Compile Include="Extensions\SimpleRegistrationTests.cs" />
-    <Compile Include="Hosting\EncodingInterceptor.cs" />
     <Compile Include="IdentifierTests.cs" />
+    <Compile Include="Mocks\MockHttpRequest.cs" />
+    <Compile Include="Mocks\MockIdentifier.cs" />
     <Compile Include="NonceTest.cs" />
     <Compile Include="PiecewiseJointTesting.cs" />
     <Compile Include="Provider\IAuthenticationRequestTest.cs" />
+    <Compile Include="RelyingParty\AuthenticationRequestTests.cs" />
     <Compile Include="RelyingParty\AuthenticationResponseTests.cs" />
-    <Compile Include="RelyingParty\OpenIdMobileTextBoxTest.cs" />
+    <Compile Include="RelyingParty\IProviderEndpointTests.cs" />
+    <Compile Include="UI\OpenIdMobileTextBoxTest.cs" />
     <Compile Include="RelyingParty\OpenIdRelyingPartyTest.cs" />
-    <Compile Include="RelyingParty\OpenIdTextBoxTest.cs" />
-    <Compile Include="DiffieHellmanTestSuite.cs" />
+    <Compile Include="UI\OpenIdTextBoxTest.cs" />
+    <Compile Include="DiffieHellmanUtilTests.cs" />
     <Compile Include="EndToEndTesting.cs" />
     <Compile Include="KeyValueFormEncodingTests.cs" />
     <Compile Include="RelyingParty\ServiceEndpointTests.cs" />
-    <Compile Include="TestSupportSanityTest.cs" />
+    <Compile Include="UI\TestSupportSanityTest.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />
     <Compile Include="Hosting\HttpHost.cs" />
     <Compile Include="TestSupport.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
-    <Compile Include="ProfileFieldValuesTests.cs" />
+    <Compile Include="Extensions\ClaimsResponseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider\IdentityEndpointTest.cs" />
+    <Compile Include="UI\IdentityEndpointTest.cs" />
     <Compile Include="Provider\OpenIdProviderTest.cs" />
-    <Compile Include="Provider\ProviderEndpointTest.cs" />
+    <Compile Include="UI\ProviderEndpointTest.cs" />
     <Compile Include="RelyingParty\TokenTest.cs" />
     <Compile Include="RealmTestSuite.cs" />
+    <Compile Include="UI\UITestSupport.cs" />
+    <Compile Include="UI\WebControlTesting.cs" />
     <Compile Include="UntrustedWebRequestTests.cs" />
     <Compile Include="UriIdentifierTests.cs" />
     <Compile Include="UriUtilTest.cs" />
@@ -91,6 +103,28 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="dhpriv.txt" />
+    <EmbeddedResource Include="Logging.config" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html1020.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html10both.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html10del.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html10prov.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010combinedA.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010combinedB.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html2010combinedC.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20both.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20del.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20prov.html" />
+    <EmbeddedResource Include="Discovery\htmldiscovery\html20relative.html" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds-irrelevant.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds10.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds1020.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds11.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds20.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds2010a.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\xrds2010b.xml" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\XrdsReferencedInHead.html" />
+    <EmbeddedResource Include="Discovery\xrdsdiscovery\XrdsReferencedInHttpHeader.html" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOpenId\DotNetOpenId.csproj">
@@ -99,11 +133,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="..\..\tools\DotNetOpenId.Versioning.targets" />
 </Project>

@@ -6,11 +6,11 @@ using System.Web.Mvc;
 
 namespace RelyingPartyMvc.Controllers {
 	public class HomeController : Controller {
-		public void Index() {
+		public ActionResult Index() {
 			Response.AppendHeader("X-XRDS-Location",
 				new Uri(Request.Url, Response.ApplyAppPathModifier("~/Home/xrds")).AbsoluteUri);
-			RenderView("Index");
+			return View("Index");
 		}
-		public void Xrds() { RenderView("Xrds"); }
+		public ActionResult Xrds() { return View("Xrds"); }
 	}
 }

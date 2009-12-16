@@ -21,13 +21,9 @@ namespace DotNetOpenId.Test.Hosting {
 			httpHost = HttpHost.CreateHost(this);
 			if (!UntrustedWebRequest.WhitelistHosts.Contains("localhost"))
 				UntrustedWebRequest.WhitelistHosts.Add("localhost");
-			DotNetOpenId.Provider.SigningMessageEncoder.Signing += (s, e) => {
-				if (MessageInterceptor != null) MessageInterceptor.OnSigningMessage(e.Message);
-			};
 		}
 
 		public Uri BaseUri { get { return httpHost.BaseUri; } }
-		public EncodingInterceptor MessageInterceptor { get; set; }
 
 		public static AspNetHost CreateHost(string webDirectory) {
 			AspNetHost host = (AspNetHost)ApplicationHost.
@@ -48,8 +44,13 @@ namespace DotNetOpenId.Test.Hosting {
 		}
 
 		public void ProcessRequest(HttpListenerContext context) {
-			using (TextWriter tw = new StreamWriter(context.Response.OutputStream)) {
-				HttpRuntime.ProcessRequest(new TestingWorkerRequest(context, tw));
+			try {
+				using (TextWriter tw = new StreamWriter(context.Response.OutputStream)) {
+					HttpRuntime.ProcessRequest(new TestingWorkerRequest(context, tw));
+				}
+			} catch (Exception ex) {
+				TestSupport.Logger.Error("Exception in AspNetHost", ex);
+				throw;
 			}
 		}
 

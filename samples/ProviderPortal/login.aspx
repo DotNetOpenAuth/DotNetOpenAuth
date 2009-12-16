@@ -1,14 +1,5 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="login" CodeBehind="login.aspx.cs" %>
-
-<html>
-<head>
-	<title>Login</title>
-</head>
-<body>
-	<form id="Form1" runat="server">
-	<h1>
-		OpenID Provider Login
-	</h1>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="login" CodeBehind="login.aspx.cs" MasterPageFile="~/Site.Master" %>
+<asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
 	<p>
 		Usernames are defined in the App_Data\Users.xml file.
 	</p>
@@ -23,6 +14,4 @@
 		<tr><td>bob3</td><td>test</td></tr>
 		<tr><td>bob4</td><td>test</td></tr>
 	</table>
-	</form>
-</body>
-</html>
+</asp:Content>

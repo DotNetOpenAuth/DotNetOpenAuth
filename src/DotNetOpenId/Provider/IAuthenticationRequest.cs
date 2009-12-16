@@ -10,6 +10,10 @@ namespace DotNetOpenId.Provider {
 	/// </summary>
 	public interface IAuthenticationRequest : IRequest {
 		/// <summary>
+		/// Gets the version of OpenID being used by the relying party that sent the request.
+		/// </summary>
+		ProtocolVersion RelyingPartyVersion { get; }
+		/// <summary>
 		/// Whether the consumer demands an immediate response.
 		/// If false, the consumer is willing to wait for the identity provider
 		/// to authenticate the user.
@@ -36,6 +40,17 @@ namespace DotNetOpenId.Provider {
 		/// </summary>
 		bool IsDirectedIdentity { get; }
 		/// <summary>
+		/// A value indicating whether the requesting Relying Party is using a delegated URL.
+		/// </summary>
+		/// <remarks>
+		/// When delegated identifiers are used, the <see cref="ClaimedIdentifier"/> should not
+		/// be changed at the Provider during authentication.
+		/// Delegation is only detectable on requests originating from OpenID 2.0 relying parties.
+		/// A relying party implementing only OpenID 1.x may use delegation and this property will
+		/// return false anyway.
+		/// </remarks>
+		bool IsDelegatedIdentifier { get; }
+		/// <summary>
 		/// The Local Identifier to this OpenID Provider of the user attempting 
 		/// to authenticate.  Check <see cref="IsDirectedIdentity"/> to see if
 		/// this value is valid.
@@ -54,13 +69,33 @@ namespace DotNetOpenId.Provider {
 		/// Check <see cref="IsDirectedIdentity"/> to see if this value is valid.
 		/// </summary>
 		/// <remarks>
-		/// This will not be the same as this provider's local identifier for the user
+		/// <para>This property can only be set if <see cref="IsDelegatedIdentifier"/> is
+		/// false, to prevent breaking URL delegation.</para>
+		/// <para>This will not be the same as this provider's local identifier for the user
 		/// if the user has set up his/her own identity page that points to this 
-		/// provider for authentication.
-		/// The provider may use this identifier for displaying to the user when
-		/// asking for the user's permission to authenticate to the relying party.
+		/// provider for authentication.</para>
+		/// <para>The provider may use this identifier for displaying to the user when
+		/// asking for the user's permission to authenticate to the relying party.</para>
 		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown from the setter 
+		/// if <see cref="IsDelegatedIdentifier"/> is true.</exception>
 		Identifier ClaimedIdentifier { get; set; }
+		/// <summary>
+		/// Adds an optional fragment (#fragment) portion to the ClaimedIdentifier.
+		/// Useful for identifier recycling.
+		/// </summary>
+		/// <param name="fragment">
+		/// Should not include the # prefix character as that will be added internally.
+		/// May be null or the empty string to clear a previously set fragment.
+		/// </param>
+		/// <remarks>
+		/// <para>Unlike the <see cref="ClaimedIdentifier"/> property, which can only be set if
+		/// using directed identity, this method can be called on any URI claimed identifier.</para>
+		/// <para>Because XRI claimed identifiers (the canonical IDs) are never recycled,
+		/// this method should<i>not</i> be called for XRIs.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown when this method is called on an XRI.</exception>
+		void SetClaimedIdentifierFragment(string fragment);
 		/// <summary>
 		/// Gets/sets whether the provider has determined that the 
 		/// <see cref="ClaimedIdentifier"/> belongs to the currently logged in user

@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DotNetOpenId.RelyingParty;
 using NUnit.Framework;
-using DotNetOpenId.RelyingParty;
-using System.Threading;
 
 namespace DotNetOpenId.Test.RelyingParty {
 	[TestFixture]
 	public class TokenTest {
 		static ServiceEndpoint getServiceEndpoint(TestSupport.Scenarios scenario, ProtocolVersion version) {
 			Protocol protocol = Protocol.Lookup(version);
-			ServiceEndpoint ep = new ServiceEndpoint(
+			ServiceEndpoint ep = ServiceEndpoint.CreateForClaimedIdentifier(
 				TestSupport.GetIdentityUrl(scenario, version),
-				TestSupport.GetFullUrl(TestSupport.ProviderPage),
 				TestSupport.GetDelegateUrl(scenario),
-				new[] { protocol.ClaimedIdentifierServiceTypeURI }
+				TestSupport.GetFullUrl(TestSupport.ProviderPage),
+				new[] { protocol.ClaimedIdentifierServiceTypeURI },
+				10,
+				10
 				);
 			return ep;
 		}

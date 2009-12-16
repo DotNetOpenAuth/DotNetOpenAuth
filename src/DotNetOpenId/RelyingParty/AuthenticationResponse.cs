@@ -21,9 +21,12 @@ namespace DotNetOpenId.RelyingParty {
 		/// </summary>
 		Failed,
 		/// <summary>
-		/// The Provider responded to a request for immediate authentication approval
+		/// <para>The Provider responded to a request for immediate authentication approval
 		/// with a message stating that additional user agent interaction is required
-		/// before authentication can be completed.
+		/// before authentication can be completed.</para>
+		/// <para>Casting the <see cref="IAuthenticationResponse"/> to a 
+		/// <see cref="ISetupRequiredAuthenticationResponse"/> in this case can help
+		/// you retry the authentication using setup (non-immediate) mode.</para>
 		/// </summary>
 		SetupRequired,
 		/// <summary>
@@ -33,10 +36,19 @@ namespace DotNetOpenId.RelyingParty {
 	}
 
 	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
-	class AuthenticationResponse : IAuthenticationResponse {
+	class AuthenticationResponse : IAuthenticationResponse, ISetupRequiredAuthenticationResponse {
 		internal AuthenticationResponse(AuthenticationStatus status, ServiceEndpoint provider, IDictionary<string, string> query) {
 			if (provider == null) throw new ArgumentNullException("provider");
 			if (query == null) throw new ArgumentNullException("query");
+
+			if (status == AuthenticationStatus.Authenticated) {
+				Logger.InfoFormat("Verified positive authentication assertion for: {0}", provider.ClaimedIdentifier);
+			} else {
+				Logger.InfoFormat("Negative authentication assertion received: {0}", status);
+			}
+
+			// TODO: verify signature on callback args
+			CallbackArguments = cleanQueryForCallbackArguments(query);
 			Status = status;
 			Provider = provider;
 			signedArguments = new Dictionary<string, string>();
@@ -53,6 +65,26 @@ namespace DotNetOpenId.RelyingParty {
 			IncomingExtensions = ExtensionArgumentsManager.CreateIncomingExtensions(signedArguments);
 		}
 
+		internal IDictionary<string, string> CallbackArguments;
+		public IDictionary<string, string> GetCallbackArguments() {
+			// Return a copy so that the caller cannot change the contents.
+			return new Dictionary<string, string>(CallbackArguments);
+		}
+		/// <summary>
+		/// Gets a callback argument's value that was previously added using 
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
+		/// </summary>
+		/// <returns>The value of the argument, or null if the named parameter could not be found.</returns>
+		public string GetCallbackArgument(string key) {
+			if (String.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
+
+			string value;
+			if (CallbackArguments.TryGetValue(key, out value)) {
+				return value;
+			}
+			return null;
+		}
+
 		/// <summary>
 		/// The detailed success or failure status of the authentication attempt.
 		/// </summary>
@@ -67,8 +99,24 @@ namespace DotNetOpenId.RelyingParty {
 		/// An Identifier that the end user claims to own.
 		/// </summary>
 		public Identifier ClaimedIdentifier {
-			get { return Provider.ClaimedIdentifier; }
+			get {
+				if (Provider.ClaimedIdentifier == Provider.Protocol.ClaimedIdentifierForOPIdentifier) {
+					return null; // no claimed identifier -- failed directed identity authentication
+				}
+				return Provider.ClaimedIdentifier;
+			}
 		}
+		/// <summary>
+		/// Gets a user-friendly OpenID Identifier for display purposes ONLY.
+		/// </summary>
+		/// <remarks>
+		/// See <see cref="IAuthenticationResponse.FriendlyIdentifierForDisplay"/>.
+		/// </remarks>
+		public string FriendlyIdentifierForDisplay {
+			[DebuggerStepThrough]
+			get { return Provider.FriendlyIdentifierForDisplay; }
+		}
+		
 		/// <summary>
 		/// The discovered endpoint information.
 		/// </summary>
@@ -86,6 +134,56 @@ namespace DotNetOpenId.RelyingParty {
 			get { return new Uri(Util.GetRequiredArg(signedArguments, Provider.Protocol.openid.return_to)); }
 		}
 
+		internal string GetExtensionClientScript(Type extensionType) {
+			if (extensionType == null) throw new ArgumentNullException("extensionType");
+			if (!typeof(DotNetOpenId.Extensions.IClientScriptExtensionResponse).IsAssignableFrom(extensionType))
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+					Strings.TypeMustImplementX, typeof(IClientScriptExtensionResponse).FullName),
+					"extensionType");
+			var extension = (IClientScriptExtensionResponse)Activator.CreateInstance(extensionType);
+			return GetExtensionClientScript(extension);
+		}
+
+		internal string GetExtensionClientScript(IClientScriptExtensionResponse extension) {
+			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
+			if (fields != null) {
+				// The extension was found using the preferred TypeUri.
+				return extension.InitializeJavaScriptData(fields, this, extension.TypeUri);
+			} else {
+				// The extension may still be found using secondary TypeUris.
+				if (extension.AdditionalSupportedTypeUris != null) {
+					foreach (string typeUri in extension.AdditionalSupportedTypeUris) {
+						fields = IncomingExtensions.GetExtensionArguments(typeUri);
+						if (fields != null) {
+							// We found one of the older ones.
+							return extension.InitializeJavaScriptData(fields, this, typeUri);
+						}
+					}
+				}
+			}
+			return null;
+		}
+
+		bool getExtension(IExtensionResponse extension) {
+			var fields = IncomingExtensions.GetExtensionArguments(extension.TypeUri);
+			if (fields != null) {
+				// The extension was found using the preferred TypeUri.
+				return extension.Deserialize(fields, this, extension.TypeUri);
+			} else {
+				// The extension may still be found using secondary TypeUris.
+				if (extension.AdditionalSupportedTypeUris != null) {
+					foreach (string typeUri in extension.AdditionalSupportedTypeUris) {
+						fields = IncomingExtensions.GetExtensionArguments(typeUri);
+						if (fields != null) {
+							// We found one of the older ones.
+							return extension.Deserialize(fields, this, typeUri);
+						}
+					}
+				}
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Tries to get an OpenID extension that may be present in the response.
 		/// </summary>
@@ -93,7 +191,7 @@ namespace DotNetOpenId.RelyingParty {
 		/// <returns>The extension, if it is found.  Null otherwise.</returns>
 		public T GetExtension<T>() where T : IExtensionResponse, new() {
 			T extension = new T();
-			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : default(T);
+			return getExtension(extension) ? extension : default(T);
 		}
 
 		public IExtensionResponse GetExtension(Type extensionType) {
@@ -103,13 +201,16 @@ namespace DotNetOpenId.RelyingParty {
 					Strings.TypeMustImplementX, typeof(IExtensionResponse).FullName),
 					"extensionType");
 			var extension = (IExtensionResponse)Activator.CreateInstance(extensionType);
-			return extension.Deserialize(IncomingExtensions.GetExtensionArguments(extension.TypeUri), this) ? extension : null;
+			return getExtension(extension) ? extension : null;
 		}
 
 		internal static AuthenticationResponse Parse(IDictionary<string, string> query,
-			IRelyingPartyApplicationStore store, Uri requestUrl) {
+			OpenIdRelyingParty relyingParty, Uri requestUrl, bool verifySignature) {
 			if (query == null) throw new ArgumentNullException("query");
 			if (requestUrl == null) throw new ArgumentNullException("requestUrl");
+
+			Logger.DebugFormat("OpenID authentication response received:{0}{1}", Environment.NewLine, Util.ToString(query));
+
 			ServiceEndpoint tokenEndpoint = null;
 			// The query parameter may be the POST query or the GET query,
 			// but the token parameter will always be in the GET query because
@@ -118,7 +219,8 @@ namespace DotNetOpenId.RelyingParty {
 				HttpUtility.ParseQueryString(requestUrl.Query));
 			string token = Util.GetOptionalArg(requestUrlQuery, Token.TokenKey);
 			if (token != null) {
-				tokenEndpoint = Token.Deserialize(token, store).Endpoint;
+				token = FixDoublyUriDecodedToken(token);
+				tokenEndpoint = Token.Deserialize(token, relyingParty.Store).Endpoint;
 			}
 
 			Protocol protocol = Protocol.Detect(query);
@@ -139,8 +241,11 @@ namespace DotNetOpenId.RelyingParty {
 						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 							Strings.MissingInternalQueryParameter, Token.TokenKey));
 				} else {
-					// 2.0 OPs provide enough information to assemble the entire endpoint info
-					responseEndpoint = ServiceEndpoint.ParseFromAuthResponse(query);
+					// 2.0 OPs provide enough information to assemble the entire endpoint info,
+					// except perhaps for the original user supplied identifier, which if available
+					// allows us to display a friendly XRI.
+					Identifier friendlyIdentifier = tokenEndpoint != null ? tokenEndpoint.UserSuppliedIdentifier : null;
+					responseEndpoint = ServiceEndpoint.ParseFromAuthResponse(query, friendlyIdentifier);
 					// If this is a solicited assertion, we'll have a token with endpoint data too,
 					// which we can use to more quickly confirm the validity of the claimed
 					// endpoint info.
@@ -151,7 +256,7 @@ namespace DotNetOpenId.RelyingParty {
 				// verified.
 				// For the error-handling and cancellation cases, the info does not have to
 				// be verified, so we'll use whichever one is available.
-				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, store, requestUrl);
+				return parseIdResResponse(query, tokenEndpoint, responseEndpoint, relyingParty, requestUrl, verifySignature);
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 					Strings.InvalidOpenIdQueryParameterValue,
@@ -159,9 +264,38 @@ namespace DotNetOpenId.RelyingParty {
 			}
 		}
 
+		/// <summary>
+		/// Corrects any URI decoding the Provider may have inappropriately done
+		/// to our return_to URL, resulting in an otherwise corrupted base64 token.
+		/// </summary>
+		/// <param name="token">The token, which MAY have been corrupted by an extra URI decode.</param>
+		/// <returns>The token; corrected if corruption had occurred.</returns>
+		/// <remarks>
+		/// AOL may have incorrectly URI-decoded the token for us in the return_to, 
+		/// resulting in a token URI-decoded twice by the time we see it, and no
+		/// longer being a valid base64 string.
+		/// It turns out that the only symbols from base64 that is also encoded
+		/// in URI encoding rules are the + and / characters.
+		/// AOL decodes the %2b sequence to the + character 
+		/// and the %2f sequence to the / character (it shouldn't decode at all).
+		/// When we do our own URI decoding, the + character becomes a space (corrupting base64)
+		/// but the / character remains a /, so no further corruption happens to this character.
+		/// So to correct this we just need to change any spaces we find in the token
+		/// back to + characters.
+		/// </remarks>
+		private static string FixDoublyUriDecodedToken(string token) {
+			if (token == null) throw new ArgumentNullException("token");
+			if (token.Contains(" ")) {
+				Logger.Error("Deserializing a corrupted token.  The OpenID Provider may have inappropriately decoded the return_to URL before sending it back to us.");
+				token = token.Replace(' ', '+'); // Undo any extra decoding the Provider did
+			}
+
+			return token;
+		}
+
 		static AuthenticationResponse parseIdResResponse(IDictionary<string, string> query,
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint,
-			IRelyingPartyApplicationStore store, Uri requestUrl) {
+			OpenIdRelyingParty relyingParty, Uri requestUrl, bool verifyMessageSignature) {
 			// Use responseEndpoint if it is available so we get the
 			// Claimed Identifer correct in the AuthenticationResponse.
 			ServiceEndpoint unverifiedEndpoint = responseEndpoint ?? tokenEndpoint;
@@ -173,9 +307,11 @@ namespace DotNetOpenId.RelyingParty {
 			}
 
 			verifyReturnTo(query, unverifiedEndpoint, requestUrl);
-			verifyDiscoveredInfoMatchesAssertedInfo(query, tokenEndpoint, responseEndpoint);
-			verifyNonceUnused(query, unverifiedEndpoint, store);
-			verifySignature(query, unverifiedEndpoint, store);
+			verifyDiscoveredInfoMatchesAssertedInfo(relyingParty, query, tokenEndpoint, responseEndpoint);
+			if (verifyMessageSignature) {
+				verifyNonceUnused(query, unverifiedEndpoint, relyingParty.Store);
+				verifySignature(relyingParty, query, unverifiedEndpoint);
+			}
 
 			return new AuthenticationResponse(AuthenticationStatus.Authenticated, unverifiedEndpoint, query);
 		}
@@ -195,27 +331,49 @@ namespace DotNetOpenId.RelyingParty {
 			Debug.Assert(endpoint != null);
 			Debug.Assert(requestUrl != null);
 
+			Logger.Debug("Verifying return_to...");
 			Uri return_to = new Uri(Util.GetRequiredArg(query, endpoint.Protocol.openid.return_to));
 			if (return_to.Scheme != requestUrl.Scheme ||
 				return_to.Authority != requestUrl.Authority ||
 				return_to.AbsolutePath != requestUrl.AbsolutePath)
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-					Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to));
+					Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to,
+					return_to, requestUrl));
 
 			NameValueCollection returnToArgs = HttpUtility.ParseQueryString(return_to.Query);
 			NameValueCollection requestArgs = HttpUtility.ParseQueryString(requestUrl.Query);
 			foreach (string paramName in returnToArgs) {
 				if (requestArgs[paramName] != returnToArgs[paramName])
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-						Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to));
+						Strings.ReturnToParamDoesNotMatchRequestUrl, endpoint.Protocol.openid.return_to,
+						return_to, requestUrl));
 			}
 		}
 
 		/// <remarks>
 		/// This is documented in OpenId Authentication 2.0 section 11.2.
 		/// </remarks>
-		static void verifyDiscoveredInfoMatchesAssertedInfo(IDictionary<string, string> query, 
+		static void verifyDiscoveredInfoMatchesAssertedInfo(OpenIdRelyingParty relyingParty, 
+			IDictionary<string, string> query,
 			ServiceEndpoint tokenEndpoint, ServiceEndpoint responseEndpoint) {
+
+			Logger.Debug("Verifying assertion matches identifier discovery results...");
+
+			// Verify that the actual version of the OP endpoint matches discovery.
+			Protocol actualProtocol = Protocol.Detect(query);
+			Protocol discoveredProtocol = (tokenEndpoint ?? responseEndpoint).Protocol;
+			if (!actualProtocol.Equals(discoveredProtocol)) {
+				// Allow an exception so that v1.1 and v1.0 can be seen as identical for this
+				// verification.  v1.0 has no spec, and v1.1 and v1.0 cannot be clearly distinguished
+				// from the protocol, so detecting their differences is meaningless, and throwing here
+				// would just break thing unnecessarily.
+				if (!(actualProtocol.Version.Major == 1 && discoveredProtocol.Version.Major == 1)) {
+					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+						Strings.OpenIdDiscoveredAndActualVersionMismatch,
+						actualProtocol.Version, discoveredProtocol.Version));
+				}
+			}
+
 			if ((tokenEndpoint ?? responseEndpoint).Protocol.Version.Major < 2) {
 				Debug.Assert(tokenEndpoint != null, "Our OpenID 1.x implementation requires an RP token.  And this should have been verified by our caller.");
 				// For 1.x OPs, we only need to verify that the OP Local Identifier 
@@ -229,21 +387,28 @@ namespace DotNetOpenId.RelyingParty {
 				}
 			} else {
 				// In 2.0, we definitely have a responseEndpoint, but may not have a 
-				// tokenEndpoint. If we don't have a tokenEndpoint or if the user 
-				// gave us an OP Identifier originally, we need to perform discovery on
+				// tokenEndpoint. If we don't have a tokenEndpoint, or it doesn't match the assertion,
+				// or if the user gave us an OP Identifier originally, then we need to perform discovery on
 				// the responseEndpoint.ClaimedIdentifier to verify the OP has authority
 				// to speak for it.
-				if (tokenEndpoint == null ||
-					tokenEndpoint.ClaimedIdentifier == ((Identifier)tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier)) {
+				if (tokenEndpoint == null || // no token included (unsolicited assertion)
+					tokenEndpoint != responseEndpoint || // the OP is asserting something different than we asked for
+					tokenEndpoint.ClaimedIdentifier == ((Identifier)tokenEndpoint.Protocol.ClaimedIdentifierForOPIdentifier)) { // or directed identity is in effect
 					Identifier claimedIdentifier = Util.GetRequiredArg(query, responseEndpoint.Protocol.openid.claimed_id);
-					ServiceEndpoint claimedEndpoint = claimedIdentifier.Discover();
-					// Compare the two ServiceEndpoints to make sure they are the same.
-					if (responseEndpoint != claimedEndpoint)
-						throw new OpenIdException(Strings.IssuedAssertionFailsIdentifierDiscovery);
-				} else {
-					// Check that the assertion matches the service endpoint we know about.
-					if (responseEndpoint != tokenEndpoint)
-						throw new OpenIdException(Strings.IssuedAssertionFailsIdentifierDiscovery);
+					// Require SSL where appropriate.  This will filter out insecure identifiers, 
+					// redirects and provider endpoints automatically.  If we find a match after all that
+					// filtering with the responseEndpoint, then the unsolicited assertion is secure.
+					if (relyingParty.Settings.RequireSsl && !claimedIdentifier.TryRequireSsl(out claimedIdentifier)) {
+						throw new OpenIdException(Strings.InsecureWebRequestWithSslRequired, query);
+					}
+					Logger.InfoFormat("Provider asserted an identifier that requires (re)discovery to confirm.");
+					List<ServiceEndpoint> discoveredEndpoints = new List<ServiceEndpoint>(claimedIdentifier.Discover());
+					// Make sure the response endpoint matches one of the discovered endpoints.
+					if (!discoveredEndpoints.Contains(responseEndpoint)) {
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+							Strings.IssuedAssertionFailsIdentifierDiscovery,
+							responseEndpoint, Util.ToString(discoveredEndpoints)));
+					}
 				}
 			}
 		}
@@ -251,11 +416,13 @@ namespace DotNetOpenId.RelyingParty {
 		static void verifyNonceUnused(IDictionary<string, string> query, ServiceEndpoint endpoint, IRelyingPartyApplicationStore store) {
 			if (endpoint.Protocol.Version.Major < 2) return; // nothing to validate
 			if (store == null) return; // we'll pass verifying the nonce responsibility to the OP
+
+			Logger.Debug("Verifying nonce is unused...");
 			var nonce = new Nonce(Util.GetRequiredArg(query, endpoint.Protocol.openid.response_nonce), true);
 			nonce.Consume(store);
 		}
 
-		static void verifySignature(IDictionary<string, string> query, ServiceEndpoint endpoint, IRelyingPartyApplicationStore store) {
+		static void verifySignature(OpenIdRelyingParty relyingParty, IDictionary<string, string> query, ServiceEndpoint endpoint) {
 			string signed = Util.GetRequiredArg(query, endpoint.Protocol.openid.signed);
 			string[] signedFields = signed.Split(',');
 
@@ -278,17 +445,19 @@ namespace DotNetOpenId.RelyingParty {
 
 			// Now actually validate the signature itself.
 			string assoc_handle = Util.GetRequiredArg(query, endpoint.Protocol.openid.assoc_handle);
-			Association assoc = store != null ? store.GetAssociation(endpoint.ProviderEndpoint, assoc_handle) : null;
+			Association assoc = relyingParty.Store != null ? relyingParty.Store.GetAssociation(endpoint.ProviderEndpoint, assoc_handle) : null;
 
 			if (assoc == null) {
 				// It's not an association we know about.  Dumb mode is our
 				// only possible path for recovery.
-				verifySignatureByProvider(query, endpoint, store);
+				Logger.Debug("Passing signature back to Provider for verification (no association available)...");
+				verifySignatureByProvider(relyingParty, query, endpoint);
 			} else {
 				if (assoc.IsExpired)
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						"Association with {0} expired", endpoint.ProviderEndpoint), endpoint.ClaimedIdentifier);
 
+				Logger.Debug("Verifying signature by association...");
 				verifySignatureByAssociation(query, endpoint.Protocol, signedFields, assoc);
 			}
 		}
@@ -325,12 +494,45 @@ namespace DotNetOpenId.RelyingParty {
 		/// to the consumer site with an authenticated status.
 		/// </summary>
 		/// <returns>Whether the authentication is valid.</returns>
-		static void verifySignatureByProvider(IDictionary<string, string> query, ServiceEndpoint provider, IRelyingPartyApplicationStore store) {
-			var request = CheckAuthRequest.Create(provider, query);
-			if (request.Response.InvalidatedAssociationHandle != null && store != null)
-				store.RemoveAssociation(provider.ProviderEndpoint, request.Response.InvalidatedAssociationHandle);
+		static void verifySignatureByProvider(OpenIdRelyingParty relyingParty, IDictionary<string, string> query, ServiceEndpoint provider) {
+			var request = CheckAuthRequest.Create(relyingParty, provider, query);
+			if (request.Response.InvalidatedAssociationHandle != null && relyingParty.Store != null)
+				relyingParty.Store.RemoveAssociation(provider.ProviderEndpoint, request.Response.InvalidatedAssociationHandle);
 			if (!request.Response.IsAuthenticationValid)
 				throw new OpenIdException(Strings.InvalidSignature);
 		}
+
+		static IDictionary<string, string> cleanQueryForCallbackArguments(IDictionary<string, string> query) {
+			var dictionary = new Dictionary<string, string>();
+			foreach (var pair in query) {
+				// Disallow lookup of any openid parameters.
+				if (pair.Key.StartsWith("openid.", StringComparison.OrdinalIgnoreCase)) {
+					continue;
+				}
+				dictionary.Add(pair.Key, pair.Value);
+			}
+			return dictionary;
+		}
+
+		#region ISetupRequiredAuthenticationResponse Members
+
+		/// <summary>
+		/// The <see cref="Identifier"/> to pass to <see cref="OpenIdRelyingParty.CreateRequest(Identifier)"/>
+		/// in a subsequent authentication attempt.
+		/// </summary>
+		/// <remarks>
+		/// When directed identity is used, this will be the Provider Identifier given by the user.
+		/// Otherwise it will be the Claimed Identifier derived from the user-supplied identifier.
+		/// </remarks>
+		public Identifier ClaimedOrProviderIdentifier {
+			get {
+				if (Status != AuthenticationStatus.SetupRequired) {
+					throw new InvalidOperationException(Strings.OperationOnlyValidForSetupRequiredState);
+				}
+				return ClaimedIdentifier ?? Provider.UserSuppliedIdentifier;
+			}
+		}
+
+		#endregion
 	}
 }

@@ -53,6 +53,9 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 
 		#region IExtensionRequest Members
 		string IExtension.TypeUri { get { return Constants.TypeUri; } }
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
+		}
 
 		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
@@ -84,7 +87,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			return fields;
 		}
 
-		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request) {
+		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request, string typeUri) {
 			if (fields == null) return false;
 			string mode;
 			fields.TryGetValue("mode", out mode);
@@ -106,17 +109,16 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			allAliases.AddRange(requiredAliases);
 			allAliases.AddRange(optionalAliases);
 			if (allAliases.Count == 0) {
-				if (TraceUtil.Switch.TraceError)
-					Trace.TraceError("Attribute Exchange extension did not provide any aliases in the if_available or required lists.");
+				Logger.Error("Attribute Exchange extension did not provide any aliases in the if_available or required lists.");
 				return false;
 			}
 			AliasManager aliasManager = new AliasManager();
 			foreach (var alias in allAliases) {
-				string typeUri;
-				if (fields.TryGetValue("type." + alias, out typeUri)) {
-					aliasManager.SetAlias(alias, typeUri);
+				string attributeTypeUri;
+				if (fields.TryGetValue("type." + alias, out attributeTypeUri)) {
+					aliasManager.SetAlias(alias, attributeTypeUri);
 					AttributeRequest att = new AttributeRequest {
-						TypeUri = typeUri,
+						TypeUri = attributeTypeUri,
 						IsRequired = requiredAliases.Contains(alias),
 					};
 					string countString;
@@ -128,8 +130,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 							if (int.TryParse(countString, out count) && count > 0) {
 								att.Count = count;
 							} else {
-								if (TraceUtil.Switch.TraceError)
-									Trace.TraceError("count." + alias + " could not be parsed into a positive integer.");
+								Logger.Error("count." + alias + " could not be parsed into a positive integer.");
 							}
 						}
 					} else {
@@ -137,8 +138,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 					}
 					AddAttribute(att);
 				} else {
-					if (TraceUtil.Switch.TraceError)
-						Trace.TraceError("Type URI definition of alias " + alias + " is missing.");
+					Logger.Error("Type URI definition of alias " + alias + " is missing.");
 				}
 			}
 
@@ -149,8 +149,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			List<string> result = new List<string>();
 			if (string.IsNullOrEmpty(aliasList)) return result;
 			if (aliasList.Contains(".") || aliasList.Contains("\n")) {
-				if (TraceUtil.Switch.TraceError)
-					Trace.TraceError("Illegal characters found in Attribute Exchange alias list.");
+				Logger.ErrorFormat("Illegal characters found in Attribute Exchange alias list.");
 				return result;
 			}
 			result.AddRange(aliasList.Split(','));

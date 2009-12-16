@@ -16,9 +16,6 @@ namespace DotNetOpenId.RelyingParty {
 		public EncodingType EncodingType { get { return EncodingType.IndirectMessage ; } }
 		public IDictionary<string, string> EncodedFields { get; private set; }
 		public Uri RedirectUrl { get; private set; }
-		public Protocol Protocol {
-			get { throw new NotImplementedException(); }
-		}
 
 		#endregion
 	}

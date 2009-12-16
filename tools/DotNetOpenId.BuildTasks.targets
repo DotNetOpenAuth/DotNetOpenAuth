@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+	<PropertyGroup>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
+	</PropertyGroup>
+	<!-- To avoid VS builds failing because the custom task DLL is already loaded, only build if it doesn't exist. -->
+	<Target Name="BuildCustomTasks" Condition="$(AutomatedBuild) == 'true' or !Exists('$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll')">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.BuildTasks\DotNetOpenId.BuildTasks.csproj" />
+	</Target>
+
+	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="GetBuildVersion" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="ChangeProjectReferenceToAssemblyReference" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="ChangeAssemblyReference" />
+	<UsingTask AssemblyFile="$(ProjectRoot)\bin\$(Configuration)\DotNetOpenId.BuildTasks.dll" TaskName="CompareFiles" />
+
+</Project>

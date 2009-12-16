@@ -5,6 +5,7 @@ using System.Globalization;
 using DotNetOpenId.Yadis;
 using DotNetOpenId.Provider;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace DotNetOpenId {
 	/// <summary>
@@ -225,7 +226,8 @@ namespace DotNetOpenId {
 				}
 			}
 
-			// If path matches or is specified to root ...
+			// If path matches or is specified to root ... 
+			// (deliberately case sensitive to protect security on case sensitive systems)
 			if (PathAndQuery.Equals(url.PathAndQuery, StringComparison.Ordinal)
 				|| PathAndQuery.Equals("/", StringComparison.Ordinal))
 				return true;
@@ -266,7 +268,7 @@ namespace DotNetOpenId {
 		/// <returns>The details of the endpoints if found, otherwise null.</returns>
 		internal IEnumerable<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint> Discover(bool allowRedirects) {
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww);
+			DiscoveryResult yadisResult = Yadis.Yadis.Discover(UriWithWildcardChangedToWww, false);
 			if (yadisResult != null) {
 				if (!allowRedirects && yadisResult.NormalizedUri != yadisResult.RequestUri) {
 					// Redirect occurred when it was not allowed.
@@ -274,11 +276,15 @@ namespace DotNetOpenId {
 						Strings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri));
 				}
 				if (yadisResult.IsXrds) {
-					XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-					return xrds.FindRelyingPartyReceivingEndpoints();
+					try {
+						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
+						return xrds.FindRelyingPartyReceivingEndpoints();
+					} catch (XmlException ex) {
+						throw new OpenIdException(Strings.InvalidXRDSDocument, ex);
+					}
 				}
 			}
-			return new List<DotNetOpenId.Provider.RelyingPartyReceivingEndpoint>(); // empty list
+			return new RelyingPartyReceivingEndpoint[0];
 		}
 
 		/// <summary>

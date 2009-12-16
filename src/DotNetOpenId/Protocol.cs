@@ -75,9 +75,13 @@ namespace DotNetOpenId {
 				SessionType = new QueryArguments.SessionTypes() {
 					NoEncryption = "no-encryption",
 					DH_SHA256 = "DH-SHA256",
+					DH_SHA384 = "DH-SHA384",
+					DH_SHA512 = "DH-SHA512",
 				},
 				SignatureAlgorithm = new QueryArguments.SignatureAlgorithms() {
 					HMAC_SHA256 = "HMAC-SHA256",
+					HMAC_SHA384 = "HMAC-SHA384",
+					HMAC_SHA512 = "HMAC-SHA512",
 				},
 				Mode = new QueryArguments.Modes() {
 					setup_needed = "setup_needed",
@@ -108,17 +112,47 @@ namespace DotNetOpenId {
 		}
 		/// <summary>
 		/// Attempts to detect the right OpenID protocol version based on the contents
-		/// of an incoming query string.
+		/// of an incoming OpenID <i>indirect</i> message or <i>direct request</i>.
 		/// </summary>
 		internal static Protocol Detect(IDictionary<string, string> Query) {
 			if (Query == null) throw new ArgumentNullException("Query");
 			return Query.ContainsKey(v20.openid.ns) ? v20 : v11;
+		}
+		/// <summary>
+		/// Attempts to detect the right OpenID protocol version based on the contents
+		/// of an incoming OpenID <i>direct</i> response message.
+		/// </summary>
+		internal static Protocol DetectFromDirectResponse(IDictionary<string, string> Query) {
+			if (Query == null) throw new ArgumentNullException("Query");
+			return Query.ContainsKey(v20.openidnp.ns) ? v20 : v11;
+		}
+		/// <summary>
+		/// Attemps to detect the highest OpenID protocol version supported given a set
+		/// of XRDS Service Type URIs included for some service.
+		/// </summary>
+		internal static Protocol Detect(string[] serviceTypeURIs) {
+			if (serviceTypeURIs == null) throw new ArgumentNullException("serviceTypeURIs");
+			return Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, serviceTypeURIs) ??
+				   Util.FindBestVersion(p => p.ClaimedIdentifierServiceTypeURI, serviceTypeURIs) ??
+				   Util.FindBestVersion(p => p.RPReturnToTypeURI, serviceTypeURIs);
 		}
 
 		/// <summary>
 		/// The OpenID version that this <see cref="Protocol"/> instance describes.
 		/// </summary>
 		public Version Version;
+		/// <summary>
+		/// Returns the <see cref="ProtocolVersion"/> enum value for the <see cref="Protocol"/> instance.
+		/// </summary>
+		public ProtocolVersion ProtocolVersion {
+			get {
+				switch (Version.Major) {
+					case 1: return ProtocolVersion.V11;
+					case 2: return ProtocolVersion.V20;
+					default: throw new ArgumentException(null); // this should never happen
+				}
+			}
+		}
 		/// <summary>
 		/// The namespace of OpenId 1.x elements in XRDS documents.
 		/// </summary>
@@ -256,19 +290,43 @@ namespace DotNetOpenId {
 				/// <summary>
 				/// A preference order list of all supported session types.
 				/// </summary>
-				public string[] All { get { return new[] { DH_SHA256, DH_SHA1, NoEncryption }; } }
-				public string[] AllDiffieHellman { get { return new[] { DH_SHA256, DH_SHA1 }; } }
+				public string[] All { get { return new[] { DH_SHA512, DH_SHA384, DH_SHA256, DH_SHA1, NoEncryption }; } }
+				public string[] AllDiffieHellman { get { return new[] { DH_SHA512, DH_SHA384, DH_SHA256, DH_SHA1 }; } }
 				public string DH_SHA1 = "DH-SHA1";
 				public string DH_SHA256 = null;
+				public string DH_SHA384 = null;
+				public string DH_SHA512 = null;
 				public string NoEncryption = "";
+				public string Best {
+					get {
+						foreach (string algorithmName in All) {
+							if (algorithmName != null) {
+								return algorithmName;
+							}
+						}
+						throw new OpenIdException(); // really bad... we have no signing algorithms at all
+					}
+				}
 			}
 			internal class SignatureAlgorithms {
 				/// <summary>
 				/// A preference order list of signature algorithms we support.
 				/// </summary>
-				public string[] All { get { return new [] { HMAC_SHA256, HMAC_SHA1 }; } }
+				public string[] All { get { return new[] { HMAC_SHA512, HMAC_SHA384, HMAC_SHA256, HMAC_SHA1 }; } }
 				public string HMAC_SHA1 = "HMAC-SHA1";
 				public string HMAC_SHA256 = null;
+				public string HMAC_SHA384 = null;
+				public string HMAC_SHA512 = null;
+				public string Best {
+					get {
+						foreach (string algorithmName in All) {
+							if (algorithmName != null) {
+								return algorithmName;
+							}
+						}
+						throw new OpenIdException(); // really bad... we have no signing algorithms at all
+					}
+				}
 			}
 			internal class Modes {
 				public string cancel = "cancel";
@@ -292,7 +350,7 @@ namespace DotNetOpenId {
 		/// <remarks>
 		/// This is used to calculate the length of time that nonces are stored.
 		/// This is internal until we can decide whether to leave this static, or make
-		/// it an instance member, or put it inside the IConsumerAppliationStore interface.
+		/// it an instance member, or put it inside the IConsumerApplicationStore interface.
 		/// </remarks>
 		internal static TimeSpan MaximumUserAgentAuthenticationTime = TimeSpan.FromMinutes(5);
 		/// <summary>

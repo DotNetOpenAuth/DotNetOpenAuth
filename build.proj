@@ -1,0 +1,203 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)</ProjectRoot>
+		<OutputPath>$(ProjectRoot)\bin\$(Configuration)</OutputPath>
+		<DocOutputPath>$(ProjectRoot)\doc</DocOutputPath>
+		<IntermediatePath>$(ProjectRoot)\obj\$(Configuration)</IntermediatePath>
+		<ToolsDir>$(ProjectRoot)\tools</ToolsDir>
+		<AutomatedBuild>true</AutomatedBuild>
+	</PropertyGroup>
+
+	<Import Project="$(ProjectRoot)\tools\DotNetOpenId.Versioning.targets"/>
+	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
+
+	<ItemGroup>
+		<SampleDirectories Include="
+		                            $(ProjectRoot)\samples\ProviderPortal;
+		                            $(ProjectRoot)\samples\RelyingPartyMvc;
+		                            $(ProjectRoot)\samples\RelyingPartyPortal;
+		" />
+		<Samples Include="$(ProjectRoot)\samples\**\*.csproj" />
+	</ItemGroup>
+	
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" Targets="Clean" />
+		<ItemGroup>
+			<DirtyDirectories Include="
+			                           $(ProjectRoot)\bin;
+			                           $(ProjectRoot)\**\obj;
+			                           $(ProjectRoot)\doc\api;
+			                           $(ProjectRoot)\drops;
+			                           $(ProjectRoot)\src\PrecompiledWeb;
+			                           $(ProjectRoot)\src\DotNetOpenId.TestWeb\Bin;
+			                           " />
+			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
+			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
+			<DirtyFiles Include="
+			                     $(ProjectRoot)\**\*~;
+			                     $(ProjectRoot)\**\*.log*;
+			                     $(ProjectRoot)\doc\DotNetOpenId.chm;
+			                     " />
+		</ItemGroup>
+		<Delete Files="@(DirtyFiles)" />
+		<RemoveDir Directories="@(DirtyDirectories)" />
+	</Target>
+
+	<Target Name="BuildProduct">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId\DotNetOpenId.csproj" />
+	</Target>
+
+	<Target Name="BuildTests">
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.Test\DotNetOpenId.Test.csproj" />
+	</Target>
+
+	<Target Name="BuildSamples">
+		<!-- poor man's list of samples until we decide to maintain the real list here. -->
+		<MSBuild Projects="@(Samples)" />
+	</Target>
+
+	<Target Name="Build">
+		<!-- We explicitly pass the Sign property in because if properties are set
+		     inside this very .proj file instead of being passed on the command-line, their
+		     values won't propagate automatically. -->
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" Properties="Sign=$(Sign)" />
+	</Target>
+
+	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm">
+	</Target>
+
+	<!-- Test depends on "Build" rather than "BuildTests" until we can figure out how to build the 
+	     no-.csproj file test project (to copy binaries to Bin directory). -->
+	<Target Name="Test" DependsOnTargets="Build"
+	        Inputs="$(OutputPath)\DotNetOpenId.Test.dll"
+	        Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log'>
+		<Exec Command='"$(ToolsDir)\nunit\bin\nunit-console.exe" "$(OutputPath)\DotNetOpenId.Test.dll" /xml="$(OutputPath)\Test-results.xml" /out="$(OutputPath)\Test-output-results.log"'
+		      Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log' />
+	</Target>
+
+	<Target Name="_SetDropProperties">
+		<!-- This target is necessary because PropertyGroups within the same Target as 
+		     where CallTarget is fired do NOT affect those called targets. -->
+		<PropertyGroup>
+			<Sign>true</Sign>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="_EnsureCleanDrop">
+		<!-- This target only does a clean sufficient to guarantee that our dotnetopenid.dll is rebuilt, but
+		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
+		<MSBuild Projects="$(ProjectRoot)\src\DotNetOpenId.sln" Targets="Clean" />
+	</Target>
+
+	<Target Name="Drop" DependsOnTargets="_SetDropProperties;GetBuildVersion;_EnsureCleanDrop;Build;Documentation">
+		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
+
+		<PropertyGroup>
+			<DropDirectory>$(ProjectRoot)\drops\DotNetOpenId-$(BuildVersion)</DropDirectory>
+			<DropZip>$(DropDirectory).zip</DropZip>
+			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
+			<DropSamplesDirectory>$(DropDirectory)\Samples</DropSamplesDirectory>
+			<DropSpecsDirectory>$(DropDirectory)\Specs</DropSpecsDirectory>
+		</PropertyGroup>
+		<ItemGroup>
+			<DropDirectories Include="
+						 $(DropDirectory);
+						 $(DropBinDirectory);
+						 $(DropSamplesDirectory);
+						 $(DropSpecsDirectory);
+										 " />
+
+			<DropSourceFiles Include="
+			                          $(ProjectRoot)\Doc\DotNetOpenId.chm;
+			                          $(ProjectRoot)\Doc\*.htm*;
+			                          " />
+			<DropBinSourceFiles Include="$(OutputPath)\DotNetOpenId.???" />
+			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
+															$(ProjectRoot)\**\obj\**;
+															$(ProjectRoot)\**\log4net.xml;
+															$(ProjectRoot)\**\*.user;
+															$(ProjectRoot)\**\*.sln.cache;
+															$(ProjectRoot)\**\StyleCop.Cache;
+															$(ProjectRoot)\**\*.suo;
+															$(ProjectRoot)\**\*.user;
+															$(ProjectRoot)\**\*.gitignore;
+															$(ProjectRoot)\**\*.ldf;
+															$(ProjectRoot)\**\*.log*;
+															$(ProjectRoot)\**\*~;
+															" />
+			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
+
+			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
+
+			<AllDropSources Include="
+										@(DropSourceFiles);
+										@(DropBinSourceFiles);
+										@(DropSamplesSourceFiles);
+										@(DropDocSourceFiles);
+										@(DropSpecsSourceFiles);
+										" />
+
+			<AllDropTargets Include="
+										@(DropFiles);
+										@(DropBinFiles);
+										@(DropSamplesFiles);
+										@(DropDocFiles);
+										@(DropSpecsFiles)
+										" />
+		</ItemGroup>
+
+		<MakeDir Directories="@(DropDirectories)" />
+		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
+		<!-- fix up the samples so that they will compile right out of the drop -->
+		<ItemGroup>
+			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
+			<SampleMvcProjectTargets Include="$(DropSamplesDirectory)\**\*Mvc*.csproj" />
+		</ItemGroup>
+		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
+		  ProjectReference="..\..\src\DotNetOpenId\DotNetOpenId.csproj" Reference="..\..\Bin\DotNetOpenId.dll" />
+		<ChangeAssemblyReference Projects="@(SampleMvcProjectTargets)"
+		  OldReference="..\..\lib\System.Web.Abstractions.dll" NewReference="Bin\System.Web.Abstractions.dll" />
+		<ChangeAssemblyReference Projects="@(SampleMvcProjectTargets)"
+		  OldReference="..\..\lib\System.Web.Mvc.dll" NewReference="Bin\System.Web.Mvc.dll" />
+		<ChangeAssemblyReference Projects="@(SampleMvcProjectTargets)"
+		  OldReference="..\..\lib\System.Web.Routing.dll" NewReference="Bin\System.Web.Routing.dll" />
+		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
+	</Target>
+
+	<Target Name="Nightly" DependsOnTargets="Drop;Test">
+
+	</Target>
+
+	<!-- the following targets are a work in development and are not yet reliable -->
+	
+	<Target Name="TagVersion" DependsOnTargets="GetBuildVersion">
+		<!-- Tag this version -->
+		<Exec Command='git tag -s -m "Tagged v$(BuildVersion)" v$(BuildVersion)' />
+	</Target>
+	
+	<Target Name="Release" DependsOnTargets="Nightly;GetBuildVersion;TagVersion">
+		<!-- Detect whether any unit tests failed during the test run 
+		     and abort if we're not running clean. -->
+		<!-- TODO: Set the UnitTestFailureCount property somehow -->
+		<PropertyGroup>
+			<UnitTestFailureCount>0</UnitTestFailureCount>
+		</PropertyGroup>
+		<Error Condition=" $(UnitTestFailureCount) &gt; 0 " Text="$(UnitTestFailureCount) unit tests failed.  Release aborted." />
+		
+		<!-- Publish the drop as a release -->
+	</Target>
+
+	<Target Name="PublishLiveSamplesToWebSite" DependsOnTargets="BuildSamples">
+		<Error Text="This target is not implemented yet." />
+	</Target>
+
+	<Target Name="PublishDropToWebSite" DependsOnTargets="Drop">
+		<Error Condition=" '$(WebDropDirectory)' == '' " Text="The WebDropDireectory property is mandatory for this target." />
+		<Copy SourceFiles="$(DropZip)" DestinationFolder="$(WebDropDirectory)" SkipUnchangedFiles="true" />
+	</Target>
+</Project>

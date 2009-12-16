@@ -6,13 +6,12 @@
  ********************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Mail;
-using DotNetOpenId.Extensions;
+using System.Text;
 using System.Xml.Serialization;
 using DotNetOpenId.RelyingParty;
-using DotNetOpenId.Provider;
-using System.Collections.Generic;
 
 namespace DotNetOpenId.Extensions.SimpleRegistration
 {
@@ -22,8 +21,22 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 	/// authenticating user.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2218:OverrideGetHashCodeOnOverridingEquals"), Serializable()]
-	public sealed class ClaimsResponse : IExtensionResponse
+	public sealed class ClaimsResponse : IExtensionResponse, IClientScriptExtensionResponse
 	{
+		string typeUriToUse;
+
+		/// <summary>
+		/// Creates an instance of the <see cref="ClaimsResponse"/> class.
+		/// </summary>
+		[Obsolete("Use ClaimsRequest.CreateResponse() instead.")]
+		public ClaimsResponse() : this(Constants.sreg_ns) {
+		}
+
+		internal ClaimsResponse(string typeUriToUse) {
+			if (string.IsNullOrEmpty(typeUriToUse)) throw new ArgumentNullException("typeUriToUse");
+			this.typeUriToUse = typeUriToUse;
+		}
+
 		/// <summary>
 		/// The nickname the user goes by.
 		/// </summary>
@@ -39,7 +52,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		{
 			get
 			{
-				if (Email == null) return null;
+				if (string.IsNullOrEmpty(Email)) return null;
 				if (string.IsNullOrEmpty(FullName))
 					return new MailAddress(Email);
 				else
@@ -104,7 +117,10 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 		public string TimeZone { get; set; }
 
 		#region IExtensionResponse Members
-		string IExtension.TypeUri { get { return Constants.sreg_ns; } }
+		string IExtension.TypeUri { get { return typeUriToUse; } }
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
+		}
 
 		/// <summary>
 		/// Adds the values of this struct to an authentication response being prepared
@@ -148,7 +164,7 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 			return fields;
 		}
 
-		bool IExtensionResponse.Deserialize(IDictionary<string, string> sreg, IAuthenticationResponse response) {
+		bool IExtensionResponse.Deserialize(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
 			if (sreg == null) return false;
 			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
 			BirthDate = null;
@@ -180,6 +196,52 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 			TimeZone = timeZone;
 
 			return true;
+		}
+
+		#endregion
+
+		#region IClientScriptExtension Members
+
+		static string createAddFieldJS(string propertyName, string value) {
+			return string.Format(CultureInfo.InvariantCulture, "{0}: {1},",
+				propertyName, Util.GetSafeJavascriptValue(value));
+		}
+
+		string IClientScriptExtensionResponse.InitializeJavaScriptData(IDictionary<string, string> sreg, IAuthenticationResponse response, string typeUri) {
+			StringBuilder builder = new StringBuilder();
+			builder.Append("{ ");
+			
+			string nickname, email, fullName, dob, genderString, postalCode, country, language, timeZone;
+			if (sreg.TryGetValue(Constants.nickname, out nickname)) {
+				builder.Append(createAddFieldJS(Constants.nickname, nickname));
+			}
+			if (sreg.TryGetValue(Constants.email, out email)) {
+				builder.Append(createAddFieldJS(Constants.email, email));
+			}
+			if (sreg.TryGetValue(Constants.fullname, out fullName)) {
+				builder.Append(createAddFieldJS(Constants.fullname, fullName));
+			}
+			if (sreg.TryGetValue(Constants.dob, out dob)) {
+				builder.Append(createAddFieldJS(Constants.dob, dob));
+			}
+			if (sreg.TryGetValue(Constants.gender, out genderString)) {
+				builder.Append(createAddFieldJS(Constants.gender, genderString));
+			}
+			if (sreg.TryGetValue(Constants.postcode, out postalCode)) {
+				builder.Append(createAddFieldJS(Constants.postcode, postalCode));
+			}
+			if (sreg.TryGetValue(Constants.country, out country)) {
+				builder.Append(createAddFieldJS(Constants.country, country));
+			}
+			if (sreg.TryGetValue(Constants.language, out language)) {
+				builder.Append(createAddFieldJS(Constants.language, language));
+			}
+			if (sreg.TryGetValue(Constants.timezone, out timeZone)) {
+				builder.Append(createAddFieldJS(Constants.timezone, timeZone));
+			}
+			if (builder[builder.Length - 1] == ',') builder.Length -= 1;
+			builder.Append("}");
+			return builder.ToString();
 		}
 
 		#endregion
@@ -223,6 +285,5 @@ namespace DotNetOpenId.Extensions.SimpleRegistration
 			if (one == null ^ other == null) return false;
 			return one.Equals(other);
 		}
-
 	}
 }

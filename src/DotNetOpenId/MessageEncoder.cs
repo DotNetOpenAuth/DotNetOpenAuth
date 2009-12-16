@@ -14,12 +14,22 @@ namespace DotNetOpenId {
 	/// </summary>
 	internal class MessageEncoder {
 		/// <summary>
+		/// The HTTP Content-Type to use in Key-Value Form responses.
+		/// </summary>
+		/// <remarks>
+		/// OpenID 2.0 section 5.1.2 says this SHOULD be text/plain.  But this value 
+		/// does not prevent free hosters like GoDaddy from tacking on their ads
+		/// to the end of the direct response, corrupting the data.  So we deviate
+		/// from the spec a bit here to improve the story for free Providers.
+		/// </remarks>
+		const string KeyValueFormContentType = "application/x-openid-kvf";
+		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
 		/// a 200 OK response with a scripted form POST with the parameters instead
 		/// in order to ensure successfully sending a large payload to another server
 		/// that might have a maximum allowable size restriction on its GET request.
 		/// </summary>
-		internal static int GetToPostThreshold = 2 * 1024; // 2KB, recommended by OpenID group
+		internal static int GetToPostThreshold = 2 * 1024; // 2KB, per OpenID group and http://support.microsoft.com/kb/q208427/
 		// We are intentionally using " instead of the html single quote ' below because
 		// the HtmlEncode'd values that we inject will only escape the double quote, so
 		// only the double-quote used around these values is safe.
@@ -37,17 +47,28 @@ namespace DotNetOpenId {
 		/// Encodes messages into <see cref="Response"/> instances.
 		/// </summary>
 		public virtual Response Encode(IEncodable message) {
+			if (message == null) throw new ArgumentNullException("message");
+
 			EncodingType encode_as = message.EncodingType;
 			Response wr;
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			switch (encode_as) {
 				case EncodingType.DirectResponse:
+					Logger.DebugFormat("Sending direct message response:{0}{1}",
+						Environment.NewLine, Util.ToString(message.EncodedFields));
 					HttpStatusCode code = (message is Exception) ?
 						HttpStatusCode.BadRequest : HttpStatusCode.OK;
+					// Key-Value Encoding is how response bodies are sent.
+					// Setting the content-type to something other than text/html or text/plain
+					// prevents free hosted sites like GoDaddy's from automatically appending
+					// the <script/> at the end that adds a banner, and invalidating our response.
+					headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);
 					wr = new Response(code, headers, ProtocolMessages.KeyValueForm.GetBytes(message.EncodedFields), message);
 					break;
 				case EncodingType.IndirectMessage:
+					Logger.DebugFormat("Sending indirect message:{0}{1}",
+						Environment.NewLine, Util.ToString(message.EncodedFields));
 					// TODO: either redirect or do a form POST depending on payload size.
 					Debug.Assert(message.RedirectUrl != null);
 					if (getSizeOfPayload(message) <= GetToPostThreshold)
@@ -56,29 +77,31 @@ namespace DotNetOpenId {
 						wr = CreateFormPostResponse(message);
 					break;
 				default:
-					if (TraceUtil.Switch.TraceError) {
-						Trace.TraceError("Cannot encode response: {0}", message);
-					}
+					Logger.ErrorFormat("Cannot encode response: {0}", message);
 					wr = new Response(HttpStatusCode.BadRequest, headers, new byte[0], message);
 					break;
 			}
 			return wr;
 		}
 
+		/// <summary>
+		/// Gets the length of the URL that would be used for a simple redirect to carry
+		/// this indirect message to its recipient.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <returns>The number of characters in the redirect URL.</returns>
 		static int getSizeOfPayload(IEncodable message) {
 			Debug.Assert(message != null);
-			int size = 0;
-			foreach (var field in message.EncodedFields) {
-				size += field.Key.Length;
-				size += field.Value.Length;
-			}
-			return size;
+			UriBuilder redirect = new UriBuilder(message.RedirectUrl);
+			UriUtil.AppendQueryArgs(redirect, message.EncodedFields);
+			return redirect.Uri.AbsoluteUri.Length;
 		}
 		protected virtual Response Create301RedirectResponse(IEncodable message) {
 			WebHeaderCollection headers = new WebHeaderCollection();
 			UriBuilder builder = new UriBuilder(message.RedirectUrl);
 			UriUtil.AppendQueryArgs(builder, message.EncodedFields);
 			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
+			Logger.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
 			return new Response(HttpStatusCode.Redirect, headers, new byte[0], message);
 		}
 		protected virtual Response CreateFormPostResponse(IEncodable message) {

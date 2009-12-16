@@ -28,7 +28,7 @@ namespace DotNetOpenId.Provider {
 		}
 
 		/// <summary>
-		/// Used to throw a carefully crafted exception that will end up getting
+		/// This method is used to throw a carefully crafted exception that will end up getting
 		/// encoded as a response to the RP, given hints as to what 
 		/// assoc_type and session_type args we support.
 		/// </summary>
@@ -74,13 +74,12 @@ namespace DotNetOpenId.Provider {
 				response.Fields[pair.Key] = nvc[pair.Key];
 			}
 
-			if (TraceUtil.Switch.TraceInfo)
-				Trace.TraceInformation("Association {0} created.", assoc.Handle);
+			Logger.InfoFormat("Association {0} created.", assoc.Handle);
 
 			return response;
 		}
 
-		internal override IEncodable CreateResponse() {
+		protected override IEncodable CreateResponse() {
 			return Answer();
 		}
 

@@ -17,7 +17,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
 	<title>Identity page</title>
-	<openid:IdentityEndpoint ID="IdentityEndpoint1" runat="server" 
+	<openid:IdentityEndpoint ID="IdentityEndpoint1" runat="server" EnableViewState="false"
 		ProviderEndpointUrl="~/ProviderEndpoint.aspx" />
 </head>
 <body>

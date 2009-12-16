@@ -32,9 +32,9 @@ namespace DotNetOpenId.RelyingParty
 	/// control, but requires more work to be done by the hosting web site to 
 	/// assemble a complete login experience.
 	/// </remarks>
-	[DefaultProperty("Text")]
-	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\"></{0}:OpenIdTextBox>")]
-	public class OpenIdTextBox : CompositeControl
+	[DefaultProperty("Text"), ValidationProperty("Text")]
+	[ToolboxData("<{0}:OpenIdTextBox runat=\"server\" />")]
+	public class OpenIdTextBox : CompositeControl, IEditableTextControl, ITextControl
 	{
 		/// <summary>
 		/// Instantiates an <see cref="OpenIdTextBox"/> instance.
@@ -124,7 +124,7 @@ namespace DotNetOpenId.RelyingParty
 		/// <summary>
 		/// The OpenID <see cref="Realm"/> of the relying party web site.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
 		[Bindable(true)]
 		[Category(behaviorCategory)]
 		[DefaultValue(realmUrlDefault)]
@@ -137,7 +137,7 @@ namespace DotNetOpenId.RelyingParty
 				if (Page != null && !DesignMode)
 				{
 					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(getResolvedRealm(value)); // throws an exception on failure.
+					new Realm(Util.GetResolvedRealm(Page, value)); // throws an exception on failure.
 				}
 				else
 				{
@@ -154,6 +154,36 @@ namespace DotNetOpenId.RelyingParty
 						throw new UriFormatException();
 				}
 				ViewState[realmUrlViewStateKey] = value; 
+			}
+		}
+
+		const string returnToUrlViewStateKey = "ReturnToUrl";
+		const string returnToUrlDefault = "";
+		/// <summary>
+		/// The OpenID ReturnTo of the relying party web site.
+		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.ReturnTo"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings")]
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(returnToUrlDefault)]
+		[Description("The OpenID ReturnTo of the relying party web site.")]
+		public string ReturnToUrl {
+			get { return (string)(ViewState[returnToUrlViewStateKey] ?? returnToUrlDefault); }
+			set {
+				if (Page != null && !DesignMode) {
+					// Validate new value by trying to construct a Uri based on it.
+					new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(value)); // throws an exception on failure.
+				} else {
+					// We can't fully test it, but it should start with either ~/ or a protocol.
+					if (Regex.IsMatch(value, @"^https?://")) {
+						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+						// this is valid too
+					} else {
+						throw new UriFormatException();
+					}
+				}
+				ViewState[returnToUrlViewStateKey] = value;
 			}
 		}
 
@@ -177,6 +207,20 @@ namespace DotNetOpenId.RelyingParty
 		public bool ImmediateMode {
 			get { return (bool)(ViewState[immediateModeViewStateKey] ?? immediateModeDefault); }
 			set { ViewState[immediateModeViewStateKey] = value; }
+		}
+
+		const string statelessViewStateKey = "Stateless";
+		const bool statelessDefault = false;
+		/// <summary>
+		/// Controls whether stateless mode is used.
+		/// </summary>
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(statelessDefault)]
+		[Description("Controls whether stateless mode is used.")]
+		public bool Stateless {
+			get { return (bool)(ViewState[statelessViewStateKey] ?? statelessDefault); }
+			set { ViewState[statelessViewStateKey] = value; }
 		}
 
 		const string cssClassDefault = "openid";
@@ -207,6 +251,7 @@ namespace DotNetOpenId.RelyingParty
 			set { ViewState[showLogoViewStateKey] = value; }
 		}
 
+		const string usePersistentCookieCallbackKey = "OpenIdTextBox_UsePersistentCookie";
 		const string usePersistentCookieViewStateKey = "UsePersistentCookie";
 		/// <summary>
 		/// Default value of <see cref="UsePersistentCookie"/>.
@@ -239,6 +284,19 @@ namespace DotNetOpenId.RelyingParty
 		{
 			get { return WrappedTextBox.Columns; }
 			set { WrappedTextBox.Columns = value; }
+		}
+
+		const int maxLengthDefault = 40;
+		/// <summary>
+		/// Gets or sets the maximum number of characters the browser should allow
+		/// </summary>
+		[Bindable(true)]
+		[Category(appearanceCategory)]
+		[DefaultValue(maxLengthDefault)]
+		[Description("The maximum number of characters the browser should allow.")]
+		public int MaxLength {
+			get { return WrappedTextBox.MaxLength; }
+			set { WrappedTextBox.MaxLength = value; }
 		}
 
 		/// <summary>
@@ -443,6 +501,30 @@ namespace DotNetOpenId.RelyingParty
 			get { return (bool)(ViewState[enableRequestProfileViewStateKey] ?? enableRequestProfileDefault); }
 			set { ViewState[enableRequestProfileViewStateKey] = value; }
 		}
+
+		const string requireSslViewStateKey = "RequireSsl";
+		const bool requireSslDefault = false;
+		/// <summary>
+		/// Turns on high security mode, requiring the full authentication pipeline to be protected by SSL.
+		/// </summary>
+		[Bindable(true)]
+		[Category(behaviorCategory)]
+		[DefaultValue(requireSslDefault)]
+		[Description("Turns on high security mode, requiring the full authentication pipeline to be protected by SSL.")]
+		public bool RequireSsl {
+			get { return (bool)(ViewState[requireSslViewStateKey] ?? requireSslDefault); }
+			set { ViewState[requireSslViewStateKey] = value; }
+		}
+
+		/// <summary>
+		/// A custom application store to use, or null to use the default.
+		/// </summary>
+		/// <remarks>
+		/// If set, this property must be set in each Page Load event
+		/// as it is not persisted across postbacks.
+		/// </remarks>
+		public IRelyingPartyApplicationStore CustomApplicationStore { get; set; }
+
 		#endregion
 
 		#region Properties to hide
@@ -553,8 +635,14 @@ namespace DotNetOpenId.RelyingParty
 			base.OnLoad(e);
 
 			if (!Enabled || Page.IsPostBack) return;
-			var consumer = new OpenIdRelyingParty();
+			var consumer = createRelyingParty();
 			if (consumer.Response != null) {
+				string persistentString = consumer.Response.GetCallbackArgument(usePersistentCookieCallbackKey);
+				bool persistentBool;
+				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
+					UsePersistentCookie = persistentBool;
+				}
+
 				switch (consumer.Response.Status) {
 					case AuthenticationStatus.Canceled:
 						OnCanceled(consumer.Response);
@@ -574,6 +662,23 @@ namespace DotNetOpenId.RelyingParty
 			}
 		}
 
+		private OpenIdRelyingParty createRelyingParty() {
+			// If we're in stateful mode, first use the explicitly given one on this control if there
+			// is one.  Then try the configuration file specified one.  Finally, use the default
+			// in-memory one that's built into OpenIdRelyingParty.
+			IRelyingPartyApplicationStore store = Stateless ? null :
+				(CustomApplicationStore ?? OpenIdRelyingParty.Configuration.Store.CreateInstanceOfStore(OpenIdRelyingParty.HttpApplicationStore));
+			Uri request = OpenIdRelyingParty.DefaultRequestUrl;
+			NameValueCollection query = OpenIdRelyingParty.DefaultQuery;
+			var rp = new OpenIdRelyingParty(store, request, query);
+			// Only set RequireSsl to true, as we don't want to override 
+			// a .config setting of true with false.
+			if (RequireSsl) {
+				rp.Settings.RequireSsl = true;
+			}
+			return rp;
+		}
+
 		/// <summary>
 		/// Prepares the text box to be rendered.
 		/// </summary>
@@ -585,7 +690,7 @@ namespace DotNetOpenId.RelyingParty
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
 					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
 				WrappedTextBox.Style["background"] = string.Format(CultureInfo.InvariantCulture,
-					"url({0}) no-repeat", logoUrl);
+					"#fff url({0}) no-repeat", HttpUtility.HtmlEncode(logoUrl));
 				WrappedTextBox.Style["background-position"] = "0 50%";
 				WrappedTextBox.Style[HtmlTextWriterStyle.PaddingLeft] = "18px";
 				WrappedTextBox.Style[HtmlTextWriterStyle.BorderStyle] = "solid";
@@ -599,32 +704,64 @@ namespace DotNetOpenId.RelyingParty
 		/// </summary>
 		protected IAuthenticationRequest Request;
 		/// <summary>
-		/// Constructs the authentication request and adds the Simple Registration extension arguments.
+		/// Constructs the authentication request and returns it.
 		/// </summary>
+		/// <remarks>
+		/// <para>This method need not be called before calling the <see cref="LogOn"/> method,
+		/// but is offered in the event that adding extensions to the request is desired.</para>
+		/// <para>The Simple Registration extension arguments are added to the request 
+		/// before returning if <see cref="EnableRequestProfile"/> is set to true.</para>
+		/// </remarks>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings")]
-		protected void PrepareAuthenticationRequest() {
+		public IAuthenticationRequest CreateRequest() {
+			if (Request != null)
+				throw new InvalidOperationException(Strings.CreateRequestAlreadyCalled);
 			if (string.IsNullOrEmpty(Text))
 				throw new InvalidOperationException(DotNetOpenId.Strings.OpenIdTextBoxEmpty);
 
 			try {
-				var consumer = new OpenIdRelyingParty();
+				var consumer = createRelyingParty();
+
+				// Approximate the returnTo (either based on the customize property or the page URL)
+				// so we can use it to help with Realm resolution.
+				Uri returnToApproximation = ReturnToUrl != null ? new Uri(Util.GetRequestUrlFromContext(), ReturnToUrl) : Page.Request.Url;
 
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
 				// return_to URL, since this match is required by OpenId, and the consumer app
 				// may be using HTTP at some times and HTTPS at others.
-				UriBuilder realm = getResolvedRealm(RealmUrl);
-				realm.Scheme = Page.Request.Url.Scheme;
-				realm.Port = Page.Request.Url.Port;
+				UriBuilder realm = Util.GetResolvedRealm(Page, RealmUrl);
+				realm.Scheme = returnToApproximation.Scheme;
+				realm.Port = returnToApproximation.Port;
 
 				// Initiate openid request
-				Request = consumer.CreateRequest(Text, new Realm(realm));
-				Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
-				if (EnableRequestProfile) addProfileArgs(Request);
+				// We use TryParse here to avoid throwing an exception which 
+				// might slip through our validator control if it is disabled.
+				Identifier userSuppliedIdentifier;
+				if (Identifier.TryParse(Text, out userSuppliedIdentifier)) {
+					Realm typedRealm = new Realm(realm);
+					if (string.IsNullOrEmpty(ReturnToUrl)) {
+						Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm);
+					} else {
+						// Since the user actually gave us a return_to value,
+						// the "approximation" is exactly what we want.
+						Request = consumer.CreateRequest(userSuppliedIdentifier, typedRealm, returnToApproximation);
+					}
+					Request.Mode = ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+					if (EnableRequestProfile) addProfileArgs(Request);
+
+					// Add state that needs to survive across the redirect.
+					Request.AddCallbackArguments(usePersistentCookieCallbackKey, UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+				} else {
+					Logger.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", Text);
+					Request = null;
+				}
 			} catch (WebException ex) {
 				OnFailed(new FailedAuthenticationResponse(ex));
 			} catch (OpenIdException ex) {
 				OnFailed(new FailedAuthenticationResponse(ex));
 			}
+
+			return Request;
 		}
 
 		/// <summary>
@@ -635,7 +772,7 @@ namespace DotNetOpenId.RelyingParty
 		public void LogOn()
 		{
 			if (Request == null)
-				PrepareAuthenticationRequest();
+				CreateRequest();
 			if (Request != null)
 				Request.RedirectToProvider();
 		}
@@ -653,39 +790,8 @@ namespace DotNetOpenId.RelyingParty
 				Language = RequestLanguage,
 				TimeZone = RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(PolicyUrl) ?
-					null : new Uri(Page.Request.Url, Page.ResolveUrl(PolicyUrl)),
+					null : new Uri(Util.GetRequestUrlFromContext(), Page.ResolveUrl(PolicyUrl)),
 			});
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenId.Realm")]
-		UriBuilder getResolvedRealm(string realm)
-		{
-			Debug.Assert(Page != null, "Current HttpContext required to resolve URLs.");
-			// Allow for *. realm notation, as well as ASP.NET ~/ shortcuts.
-
-			// We have to temporarily remove the *. notation if it's there so that
-			// the rest of our URL manipulation will succeed.
-			bool foundWildcard = false;
-			// Note: we don't just use string.Replace because poorly written URLs
-			// could potentially have multiple :// sequences in them.
-			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.",
-				delegate(Match m) {
-					foundWildcard = true;
-					return m.Groups[1].Value;
-				});
-
-			UriBuilder fullyQualifiedRealm = new UriBuilder(
-				new Uri(Page.Request.Url, Page.ResolveUrl(realmNoWildcard)));
-
-			if (foundWildcard)
-			{
-				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;
-			}
-
-			// Is it valid?
-			new Realm(fullyQualifiedRealm); // throws if not valid
-
-			return fullyQualifiedRealm;
 		}
 
 		#region Events
@@ -764,6 +870,18 @@ namespace DotNetOpenId.RelyingParty
 		}
 
 		#endregion
+
+		#region IEditableTextControl Members
+
+		/// <summary>
+		/// Occurs when the content of the text box changes between posts to the server.
+		/// </summary>
+		public event EventHandler TextChanged {
+			add { WrappedTextBox.TextChanged += value; }
+			remove { WrappedTextBox.TextChanged -= value; }
+		}
+
+		#endregion
 	}
 
 	/// <summary>
@@ -774,8 +892,11 @@ namespace DotNetOpenId.RelyingParty
 		/// Constructs an object with minimal information of an incomplete or failed
 		/// authentication attempt.
 		/// </summary>
-		internal OpenIdEventArgs(Identifier claimedIdentifier) {
-			ClaimedIdentifier = claimedIdentifier;
+		internal OpenIdEventArgs(IAuthenticationRequest request) {
+			if (request == null) throw new ArgumentNullException("request");
+			Request = request;
+			ClaimedIdentifier = request.ClaimedIdentifier;
+			IsDirectedIdentity = request.IsDirectedIdentity;
 		}
 		/// <summary>
 		/// Constructs an object with information on a completed authentication attempt
@@ -785,25 +906,30 @@ namespace DotNetOpenId.RelyingParty
 			if (response == null) throw new ArgumentNullException("response");
 			Response = response;
 			ClaimedIdentifier = response.ClaimedIdentifier;
-			ProfileFields = response.GetExtension<ClaimsResponse>();
 		}
 		/// <summary>
 		/// Cancels the OpenID authentication and/or login process.
 		/// </summary>
 		public bool Cancel { get; set; }
 		/// <summary>
-		/// The Identifier the user is claiming to own.
+		/// The Identifier the user is claiming to own.  Or null if the user
+		/// is using Directed Identity.
 		/// </summary>
 		public Identifier ClaimedIdentifier { get; private set; }
+		/// <summary>
+		/// Whether the user has selected to let his Provider determine 
+		/// the ClaimedIdentifier to use as part of successful authentication.
+		/// </summary>
+		public bool IsDirectedIdentity { get; private set; }
 
 		/// <summary>
-		/// Gets the details of the OpenId authentication response.
+		/// Gets the details of the OpenID authentication request,
+		/// and allows for adding extensions.
+		/// </summary>
+		public IAuthenticationRequest Request { get; private set; }
+		/// <summary>
+		/// Gets the details of the OpenID authentication response.
 		/// </summary>
 		public IAuthenticationResponse Response { get; private set; }
-		/// <summary>
-		/// Gets the simple registration (sreg) extension fields given
-		/// by the provider, if any.
-		/// </summary>
-		public ClaimsResponse ProfileFields { get; private set; }
 	}
 }

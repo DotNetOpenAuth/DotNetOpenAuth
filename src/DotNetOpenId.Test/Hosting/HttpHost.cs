@@ -67,9 +67,18 @@ namespace DotNetOpenId.Test.Hosting {
 				using (StreamWriter sw = new StreamWriter(request.GetRequestStream()))
 					sw.Write(body);
 			}
-			using (WebResponse response = request.GetResponse()) {
-				using (StreamReader sr = new StreamReader(response.GetResponseStream()))
-					return sr.ReadToEnd();
+			try {
+				using (WebResponse response = request.GetResponse()) {
+					using (StreamReader sr = new StreamReader(response.GetResponseStream()))
+						return sr.ReadToEnd();
+				}
+			} catch (WebException ex) {
+				TestSupport.Logger.Error("Exception in HttpHost", ex);
+				using (StreamReader sr = new StreamReader(ex.Response.GetResponseStream())) {
+					string streamContent = sr.ReadToEnd();
+					TestSupport.Logger.ErrorFormat("Error content stream follows: {0}", streamContent);
+				}
+				throw;
 			}
 		}
 

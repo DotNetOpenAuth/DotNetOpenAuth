@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<!-- Standard Head Part -->
+<head>
+<title>NUnit - UtilityAsserts</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-US">
+<link rel="stylesheet" type="text/css" href="nunit.css">
+<link rel="shortcut icon" href="favicon.ico">
+</head>
+<!-- End Standard Head Part -->
+
+<body>
+
+<!-- Standard Header for NUnit.org -->
+<div id="header">
+  <a id="logo" href="http://www.nunit.org"><img src="img/logo.gif" alt="NUnit.org" title="NUnit.org"></a>
+  <div id="nav">
+    <a href="http://www.nunit.org">NUnit</a>
+    <a class="active" href="index.html">Documentation</a>
+  </div>
+</div>
+<!-- End of Header -->
+
+<div id="content">
+
+<h2>Utility Methods</h2>
+<p>Two utility methods, Fail() and Ignore() are provided in order to allow more 
+	direct control of the test process:</p>
+<div class="code" style="width: 36em">
+	<pre>Assert.Fail();
+Assert.Fail( string message );
+Assert.Fail( string message, object[] parms );
+
+Assert.Ignore();
+Assert.Ignore( string message );
+Assert.Ignore( string message, object[] parms );</pre>
+</div>
+<p>The Assert.Fail method provides you with the ability to generate a failure based 
+	on tests that are not encapsulated by the other methods. It is also useful in 
+	developing your own project-specific assertions.</p>
+<p>Here's an example of its use to create a private assertion that tests whether a 
+	string contains an expected value.</p>
+<div class="code" style="width: 36em">
+	<pre>public void AssertStringContains( string expected, string actual )
+{
+    AssertStringContains( expected, actual, string.Empty );
+}
+
+public void AssertStringContains( string expected, string actual,
+    string message )
+{
+    if ( actual.IndexOf( expected ) < 0 )
+        Assert.Fail( message );
+}</pre>
+</div>
+<p>The Assert.Ignore method provides you with the ability to dynamically cause a 
+	test or suite to be ignored at runtime. It may be called in a test, setup or 
+	fixture setup method. We recommend that you use this only in isolated cases. 
+	The category facility is provided for more extensive inclusion or exclusion of 
+	tests or you may elect to simply divide tests run on different occasions into 
+	different assemblies.</p>
+
+</div>
+
+<!-- Submenu -->
+<div id="subnav">
+<ul>
+<li><a href="index.html">NUnit 2.4.7</a></li>
+<ul>
+<li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="assertions.html">Assertions</a></li>
+<ul>
+<li><a href="classicModel.html">Classic&nbsp;Model</a></li>
+<ul>
+<li><a href="equalityAsserts.html">Equality&nbsp;Asserts</a></li>
+<li><a href="identityAsserts.html">Identity&nbsp;Asserts</a></li>
+<li><a href="conditionAsserts.html">Condition&nbsp;Tests</a></li>
+<li><a href="comparisonAsserts.html">Comparison&nbsp;Asserts</a></li>
+<li><a href="typeAsserts.html">Type&nbsp;Asserts</a></li>
+<li id="current"><a href="utilityAsserts.html">Utility&nbsp;Methods</a></li>
+<li><a href="stringAssert.html">String&nbsp;Assert</a></li>
+<li><a href="collectionAssert.html">Collection&nbsp;Assert</a></li>
+<li><a href="fileAssert.html">File&nbsp;Assert</a></li>
+</ul>
+<li><a href="constraintModel.html">Constraint&nbsp;Model</a></li>
+</ul>
+<li><a href="attributes.html">Attributes</a></li>
+<li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
+<li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
+<li><a href="features.html">Other&nbsp;Features</a></li>
+<li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
+<li><a href="samples.html">Samples</a></li>
+<li><a href="license.html">License</a></li>
+</ul>
+</ul>
+</div>
+<!-- End of Submenu -->
+
+
+<!-- Standard Footer for NUnit.org -->
+<div id="footer">
+  Copyright &copy; 2008 Charlie Poole. All Rights Reserved.
+</div>
+<!-- End of Footer -->
+
+</body>
+</html>

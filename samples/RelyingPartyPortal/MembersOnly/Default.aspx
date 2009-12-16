@@ -1,22 +1,27 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-	<title>Welcome OpenID User!</title>
-</head>
-<body>
-	<form id="form1" runat="server">
-	<h1>
+<asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
+	<h2>
 		Members Only Area
-	</h1>
+	</h2>
 	<p>
-		Congratulations, <b>
-			<asp:LoginName ID="LoginName1" runat="server" />
-		</b>. You have completed the OpenID login process.
+		Congratulations, <b><asp:LoginName ID="LoginName1" runat="server" /></b>. 
+		You have completed the OpenID login process.
 	</p>
-	<asp:LoginStatus ID="LoginStatus1" runat="server" />
 
+<% if (State.PapePolicies != null) { %>
+	<p>A PAPE extension was included in the authentication with this content: </p>
+	<ul>
+	<% if (State.PapePolicies.NistAssuranceLevel != null) {%>
+		<li>Nist: <%=HttpUtility.HtmlEncode(State.PapePolicies.NistAssuranceLevel.Value.ToString())%></li>
+	<% }
+	foreach (string policy in State.PapePolicies.ActualPolicies) { %>
+		<li><%=HttpUtility.HtmlEncode(policy) %></li>
+	<% } %>
+	</ul>
+<% } %>
+
+<% if (State.ProfileFields != null) { %>
 	<p>
 		In addition to authenticating you, your OpenID Provider may
 		have told us something about you using the 
@@ -96,6 +101,5 @@
 			</td>
 		</tr>
 	</table>
-	</form>
-</body>
-</html>
+<% } %>
+</asp:Content>

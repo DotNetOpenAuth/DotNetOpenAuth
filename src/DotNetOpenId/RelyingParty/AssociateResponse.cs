@@ -7,8 +7,8 @@ using System.Diagnostics;
 
 namespace DotNetOpenId.RelyingParty {
 	class AssociateResponse : DirectResponse {
-		public AssociateResponse(ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
-			: base(provider, args) {
+		public AssociateResponse(OpenIdRelyingParty relyingParty, ServiceEndpoint provider, IDictionary<string, string> args, DiffieHellman dh)
+			: base(relyingParty, provider, args) {
 			DH = dh;
 
 			if (Args.ContainsKey(Protocol.openidnp.assoc_handle)) {
@@ -21,8 +21,9 @@ namespace DotNetOpenId.RelyingParty {
 						string session_type = Util.GetRequiredArg(Args, Protocol.openidnp.session_type);
 						// If the suggested options are among those we support...
 						if (Array.IndexOf(Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0 &&
-							Array.IndexOf(Protocol.Args.SessionType.All, session_type) >= 0) {
-							SecondAttempt = AssociateRequest.Create(Provider, assoc_type, session_type);
+							Array.IndexOf(Protocol.Args.SessionType.All, session_type) >= 0 &&
+							RelyingParty.Settings.IsAssociationInPermittedRange(Protocol, assoc_type)) {
+							SecondAttempt = AssociateRequest.Create(RelyingParty, Provider, assoc_type, session_type, false);
 						}
 					}
 				}
@@ -31,39 +32,35 @@ namespace DotNetOpenId.RelyingParty {
 
 		void initializeAssociation() {
 			string assoc_type = Util.GetRequiredArg(Args, Protocol.openidnp.assoc_type);
-			if (Protocol.Args.SignatureAlgorithm.HMAC_SHA1.Equals(assoc_type, StringComparison.Ordinal) ||
-				Protocol.Args.SignatureAlgorithm.HMAC_SHA256.Equals(assoc_type, StringComparison.Ordinal)) {
+			if (Array.IndexOf(Protocol.Args.SignatureAlgorithm.All, assoc_type) >= 0) {
 				byte[] secret;
 
 				string session_type;
 				if (!Args.TryGetValue(Protocol.openidnp.session_type, out session_type) ||
 					Protocol.Args.SessionType.NoEncryption.Equals(session_type, StringComparison.Ordinal)) {
 					secret = getDecoded(Protocol.openidnp.mac_key);
-				} else if (Protocol.Args.SessionType.DH_SHA1.Equals(session_type, StringComparison.Ordinal)) {
-					byte[] dh_server_public = getDecoded(Protocol.openidnp.dh_server_public);
-					byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
-					secret = CryptUtil.SHAHashXorSecret(CryptUtil.Sha1, DH, dh_server_public, enc_mac_key);
-				} else if (Protocol.Args.SessionType.DH_SHA256.Equals(session_type, StringComparison.Ordinal)) {
-					byte[] dh_server_public = getDecoded(Protocol.openidnp.dh_server_public);
-					byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
-					secret = CryptUtil.SHAHashXorSecret(CryptUtil.Sha256, DH, dh_server_public, enc_mac_key);
 				} else {
-					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
-						Strings.InvalidOpenIdQueryParameterValue,
-						Protocol.openid.session_type, session_type));
+					try {
+						byte[] dh_server_public = getDecoded(Protocol.openidnp.dh_server_public);
+						byte[] enc_mac_key = getDecoded(Protocol.openidnp.enc_mac_key);
+						secret = DiffieHellmanUtil.SHAHashXorSecret(DiffieHellmanUtil.Lookup(Protocol, session_type), DH, dh_server_public, enc_mac_key);
+					} catch (ArgumentException ex) {
+						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+							Strings.InvalidOpenIdQueryParameterValue,
+							Protocol.openid.session_type, session_type), ex);
+					}
 				}
 
 				string assocHandle = Util.GetRequiredArg(Args, Protocol.openidnp.assoc_handle);
 				TimeSpan expiresIn = new TimeSpan(0, 0, Convert.ToInt32(Util.GetRequiredArg(Args, Protocol.openidnp.expires_in), CultureInfo.InvariantCulture));
 
-				if (assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA1) {
-					Association = new HmacSha1Association(assocHandle, secret, expiresIn);
-				} else if (assoc_type == Protocol.Args.SignatureAlgorithm.HMAC_SHA256) {
-					Association = new HmacSha256Association(assocHandle, secret, expiresIn);
-				} else {
+				try {
+					Association = HmacShaAssociation.Create(Protocol, assoc_type,
+						assocHandle, secret, expiresIn);
+				} catch (ArgumentException ex) {
 					throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 						Strings.InvalidOpenIdQueryParameterValue,
-						Protocol.openid.assoc_type, assoc_type));
+						Protocol.openid.assoc_type, assoc_type), ex);
 				}
 			} else {
 				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,

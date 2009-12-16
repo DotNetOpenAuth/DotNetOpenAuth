@@ -126,6 +126,24 @@
   <data name="BadAssociationPrivateData" xml:space="preserve">
     <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
   </data>
+  <data name="CallDeserializeBeforeCreateResponse" xml:space="preserve">
+    <value>A Simple Registration request must be deserialized before CreateResponse can be called.</value>
+  </data>
+  <data name="CIDVerificationFailed" xml:space="preserve">
+    <value>XRI CanonicalID verification failed.</value>
+  </data>
+  <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
+    <value>The ClaimedIdentifier property must be set first.</value>
+  </data>
+  <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
+    <value>An extension with this property name ('{0}') has already been registered.</value>
+  </data>
+  <data name="ClientScriptExtensionTypeCollision" xml:space="preserve">
+    <value>The extension '{0}' has already been registered.</value>
+  </data>
+  <data name="CreateRequestAlreadyCalled" xml:space="preserve">
+    <value>An authentication request has already been created using CreateRequest().</value>
+  </data>
   <data name="CurrentHttpContextRequired" xml:space="preserve">
     <value>HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed.</value>
   </data>
@@ -136,7 +154,10 @@
     <value>OpenID parameter '{0}' was expected to be base64 encoded but is not.</value>
   </data>
   <data name="ExpiredNonce" xml:space="preserve">
-    <value>The nonce has expired.</value>
+    <value>The nonce has expired.  It was good until {0} (UTC), and it is now {1} (UTC).  If this looks wrong, check the server's clock, time zone and daylight savings settings.</value>
+  </data>
+  <data name="ExplicitHttpUriSuppliedWithSslRequirement" xml:space="preserve">
+    <value>URI is not SSL yet requireSslDiscovery is set to true.</value>
   </data>
   <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
     <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
@@ -147,23 +168,32 @@
   <data name="FieldMustBeSigned" xml:space="preserve">
     <value>The OpenID parameter '{0}' must be signed by the OpenID Provider, but was not.</value>
   </data>
+  <data name="FragmentNotAllowedOnXRIs" xml:space="preserve">
+    <value>Fragment segments do not apply to XRI identifiers.</value>
+  </data>
   <data name="HttpContextRequiredForThisOverload" xml:space="preserve">
     <value>No current ASP.NET HttpContext was detected.  Use an overload that does not require one.</value>
   </data>
   <data name="IAssociationStoreRequiredWhenNoHttpContextAvailable" xml:space="preserve">
     <value>No current HttpContext was detected, so an IAssociationStore must be explicitly provided. Call the Server constructor overload that takes an IAssociationStore.</value>
   </data>
-  <data name="IdentifierSelectModeOnly" xml:space="preserve">
-    <value>This operation is only allowed when IsIdentifierSelect is true.</value>
-  </data>
   <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
     <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
   </data>
+  <data name="IncompatibleAssociationAndSessionTypes" xml:space="preserve">
+    <value>The Provider requested association type '{0}' and session type '{1}', which are not compatible with each other.</value>
+  </data>
+  <data name="InconsistentAppState" xml:space="preserve">
+    <value>Inconsistent setting of application state.  Authentication request was sent with application state available, but authentication response was received without it available.  This makes it impossible to validate the token's signature and will cause assertion verification failure.</value>
+  </data>
+  <data name="InsecureWebRequestWithSslRequired" xml:space="preserve">
+    <value>Insecure web request for '{0}' aborted due to security requirements demanding HTTPS.</value>
+  </data>
   <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
-    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.</value>
+    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
   </data>
   <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
-    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.</value>
+    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.  (line {1}: '{2}')</value>
   </data>
   <data name="InvalidNonce" xml:space="preserve">
     <value>The nonce was not in the expected format.</value>
@@ -186,11 +216,18 @@
   <data name="InvalidUri" xml:space="preserve">
     <value>The value '{0}' is not a valid URI.</value>
   </data>
+  <data name="InvalidXRDSDocument" xml:space="preserve">
+    <value>Failure parsing XRDS document.</value>
+  </data>
   <data name="InvalidXri" xml:space="preserve">
     <value>Not a recognized XRI format: '{0}'.</value>
   </data>
   <data name="IssuedAssertionFailsIdentifierDiscovery" xml:space="preserve">
-    <value>The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.</value>
+    <value>The OpenId Provider issued an assertion for an Identifier whose discovery information did not match.  
+Assertion endpoint info: 
+{0}
+Discovered endpoint info:
+{1}</value>
   </data>
   <data name="KeyAlreadyExists" xml:space="preserve">
     <value>The given key '{0}' already exists.</value>
@@ -201,8 +238,11 @@
   <data name="MatchingArgumentsExpected" xml:space="preserve">
     <value>The '{0}' and '{1}' parameters must both be or not be '{2}'.</value>
   </data>
+  <data name="MinimumOPVersionRequirementNotMet" xml:space="preserve">
+    <value>This Relying Party requires a Provider that supports at least OpenID version {0}, but Provider is detected to only support OpenID version {1}.</value>
+  </data>
   <data name="MissingCanonicalIDElement" xml:space="preserve">
-    <value>The XRDS document is missing the required CanonicalID element.</value>
+    <value>The XRDS document for XRI {0} is missing the required CanonicalID element.</value>
   </data>
   <data name="MissingInternalQueryParameter" xml:space="preserve">
     <value>Query parameter '{0}' was missing from the query.</value>
@@ -216,11 +256,17 @@
   <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
     <value>No XRDS document containing OpenId relying party endpoint information could be found at {0}.</value>
   </data>
+  <data name="NotSupportedByAuthenticationSnapshot" xml:space="preserve">
+    <value>This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler.</value>
+  </data>
   <data name="OpenIdEndpointNotFound" xml:space="preserve">
     <value>No OpenId endpoint found.</value>
   </data>
   <data name="OpenIdTextBoxEmpty" xml:space="preserve">
     <value>No OpenId url is provided.</value>
+  </data>
+  <data name="OperationOnlyValidForSetupRequiredState" xml:space="preserve">
+    <value>This operation is only allowed when IAuthenticationResponse.State == AuthenticationStatus.SetupRequired.</value>
   </data>
   <data name="PrefixWithoutPeriodsExpected" xml:space="preserve">
     <value>Prefix should not begin or end with a period.</value>
@@ -250,10 +296,13 @@
     <value>return_to '{0}' not under realm '{1}'.</value>
   </data>
   <data name="ReturnToParamDoesNotMatchRequestUrl" xml:space="preserve">
-    <value>The {0} parameter does not match the actual URL the request was made with.</value>
+    <value>The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with.</value>
   </data>
   <data name="TamperingDetected" xml:space="preserve">
     <value>The '{0}' parameter was expected to have the value '{1}' but had '{2}' instead.</value>
+  </data>
+  <data name="TooManyRedirects" xml:space="preserve">
+    <value>The maximum allowable number of redirects were exceeded while requesting '{0}'.</value>
   </data>
   <data name="TypeMustImplementX" xml:space="preserve">
     <value>The type must implement {0}.</value>
@@ -263,5 +312,20 @@
   </data>
   <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
     <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
+  </data>
+  <data name="WebRequestFailed" xml:space="preserve">
+    <value>Web request to '{0}' failed.</value>
+  </data>
+  <data name="XriResolutionFailed" xml:space="preserve">
+    <value>XRI resolution failed.</value>
+  </data>
+  <data name="XriResolutionStatusMissing" xml:space="preserve">
+    <value>Could not find XRI resolution Status tag or code attribute was invalid.</value>
+  </data>
+  <data name="ClaimedIdentifierCannotBeSetOnDelegatedAuthentication" xml:space="preserve">
+    <value>The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation.</value>
+  </data>
+  <data name="OpenIdDiscoveredAndActualVersionMismatch" xml:space="preserve">
+    <value>Positive assertion sent with OpenID version {0} but Identifier discovery suggested it would be {1}.</value>
   </data>
 </root>

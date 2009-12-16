@@ -80,3 +80,4 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Scope = "member", Target = "DotNetOpenId.UntrustedWebRequest.#WhitelistHostsRegEx")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Scope = "member", Target = "DotNetOpenId.UntrustedWebRequest.#WhitelistHostsRegex")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Whitelist", Scope = "member", Target = "DotNetOpenId.UntrustedWebRequest.#WhitelistHosts")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xri", Scope = "type", Target = "DotNetOpenId.XriIdentifier")]

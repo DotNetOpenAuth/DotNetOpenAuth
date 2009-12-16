@@ -1,10 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
-using System.Collections.Generic;
-using DotNetOpenId.RelyingParty;
 using DotNetOpenId.Provider;
+using DotNetOpenId.RelyingParty;
 
 namespace DotNetOpenId.Yadis {
 	class XrdsDocument : XrdsNode {
@@ -21,44 +21,91 @@ namespace DotNetOpenId.Yadis {
 
 		public IEnumerable<XrdElement> XrdElements {
 			get {
-				foreach (XPathNavigator node in Node.Select("/xrds:XRDS/xrd:XRD", XmlNamespaceResolver)) {
-					yield return new XrdElement(node, this);
+				// We may be looking at a full XRDS document (in the case of YADIS discovery)
+				// or we may be looking at just an individual XRD element from a larger document
+				// if we asked xri.net for just one.
+				if (Node.SelectSingleNode("/xrds:XRDS", XmlNamespaceResolver) != null) {
+					foreach (XPathNavigator node in Node.Select("/xrds:XRDS/xrd:XRD", XmlNamespaceResolver)) {
+						yield return new XrdElement(node, this);
+					}
+				} else {
+					XPathNavigator node = Node.SelectSingleNode("/xrd:XRD", XmlNamespaceResolver);
+					if (node != null) {
+						yield return new XrdElement(node, this);
+					}
 				}
 			}
 		}
 
-		internal ServiceEndpoint CreateServiceEndpoint(UriIdentifier claimedIdentifier) {
-			return createServiceEndpoint(claimedIdentifier);
+		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(UriIdentifier claimedIdentifier) {
+			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
+			endpoints.AddRange(generateOPIdentifierServiceEndpoints(claimedIdentifier));
+			// If any OP Identifier service elements were found, we must not proceed
+			// to return any Claimed Identifier services.
+			if (endpoints.Count == 0) {
+				endpoints.AddRange(generateClaimedIdentifierServiceEndpoints(claimedIdentifier));
+			}
+			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
+			Logger.Debug(Util.ToString(endpoints, true));
+			return endpoints;
 		}
 
-		internal ServiceEndpoint CreateServiceEndpoint(XriIdentifier userSuppliedIdentifier) {
-			return createServiceEndpoint(userSuppliedIdentifier);
+		internal IEnumerable<ServiceEndpoint> CreateServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
+			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
+			endpoints.AddRange(generateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
+			// If any OP Identifier service elements were found, we must not proceed
+			// to return any Claimed Identifier services.
+			if (endpoints.Count == 0) {
+				endpoints.AddRange(generateClaimedIdentifierServiceEndpoints(userSuppliedIdentifier));
+			}
+			Logger.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
+			Logger.Debug(Util.ToString(endpoints, true));
+			return endpoints;
 		}
 
-		ServiceEndpoint createServiceEndpoint(Identifier claimedIdentifier) {
-			// First search for OP Identifier service elements
+		IEnumerable<ServiceEndpoint> generateOPIdentifierServiceEndpoints(Identifier opIdentifier) {
 			foreach (var service in findOPIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					var protocol = Util.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris);
-					return new ServiceEndpoint(protocol.ClaimedIdentifierForOPIdentifier, uri.Uri, 
-						protocol.ClaimedIdentifierForOPIdentifier, service.TypeElementUris);
+					yield return ServiceEndpoint.CreateForProviderIdentifier(
+						opIdentifier, uri.Uri, service.TypeElementUris,
+						service.Priority, uri.Priority);
 				}
 			}
-			// Since we could not find an OP Identifier service element,
-			// search for a Claimed Identifier element.
+		}
+
+		IEnumerable<ServiceEndpoint> generateClaimedIdentifierServiceEndpoints(UriIdentifier claimedIdentifier) {
+			foreach (var service in findClaimedIdentifierServices()) {
+				foreach (var uri in service.UriElements) {
+					if (uri.Uri == null) {
+						continue;
+					}
+
+					yield return ServiceEndpoint.CreateForClaimedIdentifier(
+						claimedIdentifier, service.ProviderLocalIdentifier,
+						uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
+				}
+			}
+		}
+
+		IEnumerable<ServiceEndpoint> generateClaimedIdentifierServiceEndpoints(XriIdentifier userSuppliedIdentifier) {
 			foreach (var service in findClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
 					// spec section 7.3.2.3 on Claimed Id -> CanonicalID substitution
-					if (claimedIdentifier is XriIdentifier) {
-						if (service.Xrd.CanonicalID == null)
-							throw new OpenIdException(Strings.MissingCanonicalIDElement, claimedIdentifier);
-						claimedIdentifier = service.Xrd.CanonicalID;
+					if (service.Xrd.CanonicalID == null) {
+						Logger.WarnFormat(Strings.MissingCanonicalIDElement, userSuppliedIdentifier);
+						break; // skip on to next service
 					}
-					return new ServiceEndpoint(claimedIdentifier, uri.Uri, 
-						service.ProviderLocalIdentifier, service.TypeElementUris);
+					if (!service.Xrd.IsCanonicalIdVerified) {
+						throw new OpenIdException(Strings.CIDVerificationFailed, userSuppliedIdentifier);
+					}
+					// In the case of XRI names, the ClaimedId is actually the CanonicalID.
+					var claimedIdentifier = new XriIdentifier(service.Xrd.CanonicalID);
+					yield return ServiceEndpoint.CreateForClaimedIdentifier(
+						claimedIdentifier, userSuppliedIdentifier, service.ProviderLocalIdentifier,
+						uri.Uri, service.TypeElementUris, service.Priority, uri.Priority);
 				}
 			}
-			return null;
 		}
 
 		internal IEnumerable<RelyingPartyReceivingEndpoint> FindRelyingPartyReceivingEndpoints() {
@@ -91,9 +138,20 @@ namespace DotNetOpenId.Yadis {
 
 		IEnumerable<ServiceElement> findReturnToServices() {
 			foreach (var xrd in XrdElements) {
-				foreach( var service in xrd.OpenIdRelyingPartyReturnToServices) {
+				foreach (var service in xrd.OpenIdRelyingPartyReturnToServices) {
 					yield return service;
 				}
+			}
+		}
+
+		internal bool IsXrdResolutionSuccessful {
+			get {
+				foreach (var xrd in XrdElements) {
+					if (!xrd.IsXriResolutionSuccessful) {
+						return false;
+					}
+				}
+				return true;
 			}
 		}
 	}

@@ -11,7 +11,7 @@ namespace DotNetOpenId.Test.Extensions {
 		[Test]
 		public void None() {
 			var response = ParameterizedTest<ClaimsResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), null);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, null);
 			Assert.IsNull(response);
 		}
 
@@ -21,7 +21,7 @@ namespace DotNetOpenId.Test.Extensions {
 			request.FullName = DemandLevel.Request;
 			request.Email = DemandLevel.Require;
 			var response = ParameterizedTest<ClaimsResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionFullCooperation, Version), request);
+				TestSupport.Scenarios.ExtensionFullCooperation, Version, request);
 			Assert.AreEqual("Andrew Arnott", response.FullName);
 			Assert.AreEqual("andrewarnott@gmail.com", response.Email);
 		}
@@ -31,7 +31,7 @@ namespace DotNetOpenId.Test.Extensions {
 			request.FullName = DemandLevel.Request;
 			request.Email = DemandLevel.Require;
 			var response = ParameterizedTest<ClaimsResponse>(
-				TestSupport.GetIdentityUrl(TestSupport.Scenarios.ExtensionPartialCooperation, Version), request);
+				TestSupport.Scenarios.ExtensionPartialCooperation, Version, request);
 			Assert.IsNull(response.FullName);
 			Assert.AreEqual("andrewarnott@gmail.com", response.Email);
 		}

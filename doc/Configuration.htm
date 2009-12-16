@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Web.config file configuration of DotNetOpenId</title>
+<style>
+#id_text_to_colorize{width:600px;height:120px}
+.linenos {padding-right: 5px;background: #ccc}
+.code {padding-left: 5px;}
+.highlight  { background: #ffffff; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+
+	<p>DotNetOpenId can be configured in some aspects inside your web project&#39;s 
+		web.config file.&nbsp; To do this, add the below &lt;sectionGroup&gt; within the 
+		&lt;configSections&gt; of your Web.config file:</p>
+	<div class="highlight"><pre><span class="nt">&lt;configSections&gt;</span>
+    <span class="nt">&lt;sectionGroup</span> <span class="na">name=</span><span 
+        class="s">&quot;dotNetOpenId&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;section</span> <span class="na">name=</span><span 
+        class="s">&quot;relyingParty&quot;</span> <span class="na">type=</span><span 
+        class="s">&quot;DotNetOpenId.Configuration.RelyingPartySection&quot;</span> <span 
+        class="na">requirePermission=</span><span class="s">&quot;false&quot;</span> <span 
+        class="na">allowLocation=</span><span class="s">&quot;true&quot;</span><span 
+        class="nt">/&gt;</span>
+        <span class="nt">&lt;section</span> <span class="na">name=</span><span 
+        class="s">&quot;provider&quot;</span> <span class="na">type=</span><span class="s">&quot;DotNetOpenId.Configuration.ProviderSection&quot;</span> <span 
+        class="na">requirePermission=</span><span class="s">&quot;false&quot;</span> <span 
+        class="na">allowLocation=</span><span class="s">&quot;true&quot;</span><span 
+        class="nt">/&gt;</span>
+        <span class="nt">&lt;section</span> <span class="na">name=</span><span 
+        class="s">&quot;untrustedWebRequest&quot;</span> <span class="na">type=</span><span 
+        class="s">&quot;DotNetOpenId.Configuration.UntrustedWebRequestSection&quot;</span> <span 
+        class="na">requirePermission=</span><span class="s">&quot;false&quot;</span> <span 
+        class="na">allowLocation=</span><span class="s">&quot;false&quot;</span><span 
+        class="nt">/&gt;</span>
+    <span class="nt">&lt;/sectionGroup&gt;</span>
+<span class="nt">&lt;/configSections&gt;</span></pre></div>
+	<p>If you do not already have a configSections element in your Web.config file, add 
+		it at the very top, as the first child of the root &lt;configuration&gt; tag.</p>
+	<p>Following is an example of every possible configuration setting, where each 
+		demonstrate value happens to be the default that would be used if it wasn&#39;t set 
+		in the .config file.&nbsp; Keep in mind that every setting below is optional, so 
+		you need only include those elements that you wish to change in your own copy of 
+		Web.config.&nbsp; The &lt;dotNetOpenId&gt; node below should show up as a peer node to 
+		system.web in your Web.config file.</p>
+	<div class="highlight"><pre><span class="nt">&lt;dotNetOpenId&gt;</span>
+    <span class="nt">&lt;relyingParty&gt;</span>
+        <span class="nt">&lt;security</span> <span class="na">minimumHashBitLength=</span><span 
+        class="s">&quot;160&quot;</span> <span class="na">maximumHashBitLength=</span><span 
+        class="s">&quot;256&quot;</span>
+                  <span class="na">requireSsl=</span><span class="s">&quot;false&quot;</span> <span 
+        class="na">minimumRequiredOpenIdVersion=</span><span class="s">&quot;V10&quot;</span> <span 
+        class="nt">/&gt;</span>
+        <span class="nt">&lt;store</span> <span class="na">type=</span><span class="s">&quot;SomeSite.CustomRPStore, SomeSite&quot;</span> <span 
+        class="nt">/&gt;</span>
+    <span class="nt">&lt;/relyingParty&gt;</span>
+    <span class="nt">&lt;provider&gt;</span>
+        <span class="nt">&lt;security</span> <span class="na">minimumHashBitLength=</span><span 
+        class="s">&quot;160&quot;</span> <span class="na">maximumHashBitLength=</span><span 
+        class="s">&quot;256&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;store</span> <span class="na">type=</span><span class="s">&quot;SomeSite.CustomProviderStore, SomeSite&quot;</span> <span 
+        class="nt">/&gt;</span>
+    <span class="nt">&lt;/provider&gt;</span>
+    <span class="nt">&lt;untrustedWebRequest</span> <span class="na">readWriteTimeout=</span><span 
+        class="s">&quot;00:00:00.800&quot;</span> <span class="na">timeout=</span><span 
+        class="s">&quot;00:00:10&quot;</span> <span class="na">maximumBytesToRead=</span><span 
+        class="s">&quot;1048576&quot;</span> <span class="na">maximumRedirections=</span><span 
+        class="s">&quot;10&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;whitelistHosts&gt;</span>
+            <span class="nt">&lt;add</span> <span class="na">name=</span><span 
+        class="s">&quot;localhost&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;add</span> <span class="na">name=</span><span 
+        class="s">&quot;127.0.0.1&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/whitelistHosts&gt;</span>
+        <span class="nt">&lt;whitelistHostsRegex&gt;</span>
+            <span class="nt">&lt;add</span> <span class="na">name=</span><span 
+        class="s">&quot;^(.*\.)?goodsite.com&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/whitelistHostsRegex&gt;</span>
+        <span class="nt">&lt;blacklistHosts&gt;</span>
+            <span class="nt">&lt;add</span> <span class="na">name=</span><span 
+        class="s">&quot;internalfinancialserver&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;add</span> <span class="na">name=</span><span 
+        class="s">&quot;www.evilsite.com&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/blacklistHosts&gt;</span>
+        <span class="nt">&lt;blacklistHostsRegex&gt;</span>
+            <span class="nt">&lt;add</span> <span class="na">name=</span><span 
+        class="s">&quot;^(.*\.)?evilsite.com&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/blacklistHostsRegex&gt;</span>
+    <span class="nt">&lt;/untrustedWebRequest&gt;</span>
+<span class="nt">&lt;/dotNetOpenId&gt;</span>
+</pre></div>
+
+	<p>All these configuration values are also configurable at runtime using the object 
+		model of the library.&nbsp; Using the Web.config file allows changes to be made 
+		without recompiling the web site.&nbsp; In the case of OpenIdRelyingParty and 
+		OpenIdProvider, it also allows you to setup your configuration just once, in 
+		your .config file, and have it apply to every instance of OpenIdRelyingParty or 
+		OpenIdProvider instead of you having to set up that configuration everywhere you 
+		instantiate these types.</p>
+	<p>By using the ASP.NET &lt;location&gt; element, you can set some configuration settings 
+		for OpenIdRelyingParty or OpenIdProvider based on which directory or web page in 
+		your project is instantiating them.&nbsp; This would allow you to, for example, 
+		use enhanced SSL security requirements at just the administrator log in screen 
+		while allowing non-SSL OpenIDs for ordinary users.</p>
+
+</body>
+</html>

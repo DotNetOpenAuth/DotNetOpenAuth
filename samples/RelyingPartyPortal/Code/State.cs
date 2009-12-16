@@ -1,34 +1,27 @@
-using System;
-using System.Data;
-using System.Configuration;
 using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
 using DotNetOpenId.Extensions.SimpleRegistration;
+using System.Collections.Generic;
+using DotNetOpenId.Extensions.ProviderAuthenticationPolicy;
 
 /// <summary>
-/// Summary description for State
+/// Strong-typed bag of session state.
 /// </summary>
-public class State
-{
-    public State()
-    {
-    }
-
-    public static ClaimsResponse ProfileFields
-    {
-        get
-        {
-            if (HttpContext.Current .Session["ProfileFields"] == null)
-            {
-                HttpContext.Current .Session["ProfileFields"] = new ClaimsResponse();
-            }
-            return (ClaimsResponse)HttpContext.Current .Session["ProfileFields"];
-        }
-        set { HttpContext.Current .Session["ProfileFields"] = value; }
-    }
-    
+public class State {
+	public static void Clear() {
+		ProfileFields = null;
+		FriendlyLoginName = null;
+		PapePolicies = null;
+	}
+	public static ClaimsResponse ProfileFields {
+		get { return HttpContext.Current.Session["ProfileFields"] as ClaimsResponse; }
+		set { HttpContext.Current.Session["ProfileFields"] = value; }
+	}
+	public static string FriendlyLoginName {
+		get { return HttpContext.Current.Session["FriendlyUsername"] as string; }
+		set { HttpContext.Current.Session["FriendlyUsername"] = value; }
+	}
+	public static PolicyResponse PapePolicies {
+		get { return HttpContext.Current.Session["PapePolicies"] as PolicyResponse; }
+		set { HttpContext.Current.Session["PapePolicies"] = value; }
+	}
 }

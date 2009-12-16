@@ -4,16 +4,22 @@
 // it will fail before doing much damage.
 // But a partially trusted assembly's events, handled by the hosting
 // web site, will also be under the partial trust restriction.
+// Also note that http://support.microsoft.com/kb/839300 states a 
+// strong-name signed assembly must use AllowPartiallyTrustedCallers 
+// to be called from a web page, but defining PARTIAL_TRUST below also
+// accomplishes this.
 //#define PARTIAL_TRUST
 
+// We DON'T put an AssemblyVersionAttribute in here because it is generated in the build.
+
+using System;
+using System.Net;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Permissions;
-using System.Web;
-using System.Net;
-using System.Resources;
-using System;
 using System.Web.UI;
 
 [assembly: TagPrefix("DotNetOpenId", "openid")]
@@ -28,7 +34,7 @@ using System.Web.UI;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DotNetOpenId")]
-[assembly: AssemblyCopyright("Copyright ©  2007")]
+[assembly: AssemblyCopyright("Copyright ©  2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
@@ -41,19 +47,11 @@ using System.Web.UI;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("7d73990c-47c0-4256-9f20-a893add9e289")]
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-[assembly: AssemblyVersion("2.3.0.0")]
-[assembly: AssemblyFileVersion("2.3.0.0")]
-
 #if StrongNameSigned
+// See comment at top of this file.  We need this so that strong-naming doesn't
+// keep this assembly from being useful to shared host (medium trust) web sites.
+[assembly: AllowPartiallyTrustedCallers]
+
 [assembly: InternalsVisibleTo("DotNetOpenId.Test, PublicKey=0024000004800000940000000602000000240000525341310004000001000100AD093C3765257C89A7010E853F2C7C741FF92FA8ACE06D7B8254702CAD5CF99104447F63AB05F8BB6F51CE0D81C8C93D2FCE8C20AAFF7042E721CBA16EAAE98778611DED11C0ABC8900DC5667F99B50A9DADEC24DBD8F2C91E3E8AD300EF64F1B4B9536CEB16FB440AF939F57624A9B486F867807C649AE4830EAB88C6C03998")]
 #else
 [assembly: InternalsVisibleTo("DotNetOpenId.Test")]
@@ -73,22 +71,15 @@ using System.Web.UI;
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"http://.*")]
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"https://.*")]
 #endif
+
+#if PARTIAL_TRUST
 // Allows hosting this assembly in an ASP.NET setting.  Not all applications
 // will host this using ASP.NET, so this is optional.  Besides, we need at least
 // one optional permission to activate CAS permission shrinking.
-#if PARTIAL_TRUST
 [assembly: AspNetHostingPermission(SecurityAction.RequestOptional, Level = AspNetHostingPermissionLevel.Medium)]
-#endif
 
 // The following are only required for diagnostic logging (Trace.Write, Debug.Assert, etc.).
-#if TRACE
-[assembly: KeyContainerPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
-[assembly: ReflectionPermission(SecurityAction.RequestMinimum, MemberAccess = true)]
-[assembly: RegistryPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, ControlEvidence = true, UnmanagedCode = true, ControlThread = true)]
-[assembly: FileIOPermission(SecurityAction.RequestMinimum, AllFiles = FileIOPermissionAccess.PathDiscovery | FileIOPermissionAccess.Read)]
-#else
-#if PARTIAL_TRUST
+#if TRACE || DEBUG
 [assembly: KeyContainerPermission(SecurityAction.RequestOptional, Unrestricted = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestOptional, MemberAccess = true)]
 [assembly: RegistryPermission(SecurityAction.RequestOptional, Unrestricted = true)]

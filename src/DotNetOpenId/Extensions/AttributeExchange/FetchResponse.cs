@@ -55,6 +55,9 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 
 		#region IExtensionResponse Members
 		string IExtension.TypeUri { get { return Constants.TypeUri; } }
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
+		}
 
 		IDictionary<string, string> IExtensionResponse.Serialize(Provider.IRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
@@ -87,7 +90,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			}
 		}
 
-		bool IExtensionResponse.Deserialize(IDictionary<string, string> fields, IAuthenticationResponse response) {
+		bool IExtensionResponse.Deserialize(IDictionary<string, string> fields, IAuthenticationResponse response, string typeUri) {
 			if (fields == null) return false;
 			string mode;
 			fields.TryGetValue("mode", out mode);
@@ -113,9 +116,8 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				bool countSent = false;
 				string countString;
 				if (fields.TryGetValue("count." + alias, out countString)) {
-					if (!int.TryParse(countString, out count) || count <= 0) {
-						if (TraceUtil.Switch.TraceError)
-							Trace.TraceError("Failed to parse count.{0} value to a positive integer.");
+					if (!int.TryParse(countString, out count) || count < 0) {
+						Logger.ErrorFormat("Failed to parse count.{0} value to a non-negative integer.", alias);
 						continue;
 					}
 					countSent = true;
@@ -126,8 +128,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 						if (fields.TryGetValue(string.Format(CultureInfo.InvariantCulture, "value.{0}.{1}", alias, i), out value)) {
 							att.Values.Add(value);
 						} else {
-							if (TraceUtil.Switch.TraceError)
-								Trace.TraceError("Missing value for attribute '{0}'.", att.TypeUri);
+							Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
 							continue;
 						}
 					}
@@ -136,8 +137,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 					if (fields.TryGetValue("value." + alias, out value))
 						att.Values.Add(value);
 					else {
-						if (TraceUtil.Switch.TraceError)
-							Trace.TraceError("Missing value for attribute '{0}'.", att.TypeUri);
+						Logger.ErrorFormat("Missing value for attribute '{0}'.", att.TypeUri);
 						continue;
 					}
 				}
@@ -152,8 +152,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 				if (!pair.Key.StartsWith("type.", StringComparison.Ordinal)) continue;
 				string alias = pair.Key.Substring(5);
 				if (alias.IndexOfAny(new[] { '.', ',', ':' }) >= 0) {
-					if (TraceUtil.Switch.TraceError)
-						Trace.TraceError("Illegal characters in alias name '{0}'.", alias);
+					Logger.ErrorFormat("Illegal characters in alias name '{0}'.", alias);
 					continue;
 				}
 				aliasManager.SetAlias(alias, pair.Value);

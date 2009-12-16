@@ -30,6 +30,13 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			attributesProvided.Add(attribute);
 		}
 		/// <summary>
+		/// Used by the Relying Party to add a given attribute with one or more values 
+		/// to the request for storage.
+		/// </summary>
+		public void AddAttribute(string typeUri, params string[] values) {
+			AddAttribute(new AttributeValues(typeUri, values));
+		}
+		/// <summary>
 		/// Used by the Provider to gets the value(s) associated with a given attribute
 		/// that should be stored.
 		/// </summary>
@@ -46,6 +53,9 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 
 		#region IExtensionRequest Members
 		string IExtension.TypeUri { get { return Constants.TypeUri; } }
+		IEnumerable<string> IExtension.AdditionalSupportedTypeUris {
+			get { return new string[0]; }
+		}
 
 		IDictionary<string, string> IExtensionRequest.Serialize(RelyingParty.IAuthenticationRequest authenticationRequest) {
 			var fields = new Dictionary<string, string> {
@@ -57,7 +67,7 @@ namespace DotNetOpenId.Extensions.AttributeExchange {
 			return fields;
 		}
 
-		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request) {
+		bool IExtensionRequest.Deserialize(IDictionary<string, string> fields, DotNetOpenId.Provider.IRequest request, string typeUri) {
 			if (fields == null) return false;
 			string mode;
 			fields.TryGetValue("mode", out mode);

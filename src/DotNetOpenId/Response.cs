@@ -42,8 +42,7 @@ namespace DotNetOpenId {
 			if (HttpContext.Current == null) throw new InvalidOperationException(Strings.CurrentHttpContextRequired);
 			HttpContext.Current.Response.Clear();
 			HttpContext.Current.Response.StatusCode = (int)Code;
-			foreach (string headerName in Headers)
-				HttpContext.Current.Response.AddHeader(headerName, Headers[headerName]);
+			Util.ApplyHeadersToResponse(Headers, HttpContext.Current.Response);
 			if (Body != null && Body.Length > 0) {
 				HttpContext.Current.Response.OutputStream.Write(Body, 0, Body.Length);
 				HttpContext.Current.Response.OutputStream.Flush();
