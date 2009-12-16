@@ -18,15 +18,6 @@ namespace DotNetOpenAuth.BuildTasks {
 	/// </summary>
 	public class CopyWithTokenSubstitution : Task {
 		/// <summary>
-		/// Gets or sets a value indicating whether the task should
-		/// skip the copying of files that are unchanged between the source and destination.
-		/// </summary>
-		/// <value>
-		/// 	<c>true</c> to skip copying files where the destination files are newer than the source files; otherwise, <c>false</c> to copy all files.
-		/// </value>
-		public bool SkipUnchangedFiles { get; set; }
-
-		/// <summary>
 		/// Gets or sets the files to copy.
 		/// </summary>
 		/// <value>The files to copy.</value>
@@ -65,8 +56,11 @@ namespace DotNetOpenAuth.BuildTasks {
 			for (int i = 0; i < this.SourceFiles.Length; i++) {
 				string sourcePath = this.SourceFiles[i].ItemSpec;
 				string destPath = this.DestinationFiles[i].ItemSpec;
+				bool skipUnchangedFiles = bool.Parse(this.SourceFiles[i].GetMetadata("SkipUnchangedFiles"));
 
-				if (this.SkipUnchangedFiles && File.GetLastWriteTimeUtc(sourcePath) < File.GetLastWriteTimeUtc(destPath)) {
+				// We deliberably consider newer destination files to be up-to-date rather than
+				// requiring equality because this task modifies the destination file while copying.
+				if (skipUnchangedFiles && File.GetLastWriteTimeUtc(sourcePath) < File.GetLastWriteTimeUtc(destPath)) {
 					Log.LogMessage(MessageImportance.Low, "Skipping \"{0}\" -> \"{1}\" because the destination is up to date.", sourcePath, destPath);
 					continue;
 				}
