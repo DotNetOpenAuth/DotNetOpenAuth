@@ -39,8 +39,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.FriendlyIdentifierForDisplay = copyFrom.FriendlyIdentifierForDisplay;
 			this.Status = copyFrom.Status;
 			this.Provider = copyFrom.Provider;
-			this.callbackArguments = copyFrom.GetCallbackArguments();
 			this.untrustedCallbackArguments = copyFrom.GetUntrustedCallbackArguments();
+
+			// Do this special check to avoid logging a warning for trying to clone a dictionary.
+			var anonResponse = copyFrom as PositiveAnonymousResponse;
+			if (anonResponse == null || anonResponse.TrustedCallbackArgumentsAvailable) {
+				this.callbackArguments = copyFrom.GetCallbackArguments();
+			} else {
+				this.callbackArguments = EmptyDictionary<string, string>.Instance;
+			}
 		}
 
 		#region IAuthenticationResponse Members

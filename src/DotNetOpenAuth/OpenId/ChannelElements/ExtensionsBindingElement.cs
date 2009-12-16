@@ -219,7 +219,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						yield return extension;
 					}
 				} else {
-					Logger.OpenId.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
+					Logger.OpenId.DebugFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
 				}
 			}
 		}

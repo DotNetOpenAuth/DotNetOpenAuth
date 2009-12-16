@@ -416,7 +416,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
 		protected override void ScriptClosingPopupOrIFrame() {
-			Logger.OpenId.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
+			Logger.OpenId.DebugFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
 			string extensionsJson = null;
 
 			var authResponse = RelyingPartyNonVerifying.GetResponse();
@@ -613,7 +613,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		private void CallbackUserAgentMethod(string methodCall) {
-			Logger.OpenId.InfoFormat("Sending Javascript callback: {0}", methodCall);
+			Logger.OpenId.DebugFormat("Sending Javascript callback: {0}", methodCall);
 			Page.Response.Write(@"<html><body><script language='javascript'>
 	var inPopup = !window.frameElement;
 	var objSrc = inPopup ? window.opener : window.frameElement;
