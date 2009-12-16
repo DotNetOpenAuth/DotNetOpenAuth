@@ -1,29 +1,29 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <DefineSolutionProperties>false</DefineSolutionProperties>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.0</ProductVersion>
     <ProjectGuid>{46aa1735-4d3f-4999-b191-59d5bf0626a8}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>$(MSIOutputName)</OutputName>
     <OutputType>Package</OutputType>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.0\Wix.targets</WixTargetsPath>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\Wix.targets</WixTargetsPath>
+    <WixToolPath>..\..\Tools\wix</WixToolPath>
+    <WixTargetsPath>$(WixToolPath)\Wix.targets</WixTargetsPath>
+    <WixTasksPath>wixtasks.dll</WixTasksPath>
+    <OutputPath Condition=" '$(OutputPath)' == ''">..\..\</OutputPath>
+    <OutputName Condition=" '$(OutputName)' == ''">DotNetOpenAuth</OutputName>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>$(DefineConstants);OutputPath=$(OutputPath);ProjectRoot=$(ProjectRoot);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>$(MSIOutputPath)</OutputPath>
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
-    <Cultures>
-    </Cultures>
     <SuppressValidation>True</SuppressValidation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>$(MSIOutputPath)</OutputPath>
     <DefineConstants>Release;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>$(DefineConstants);ProjectRoot=$(ProjectRoot);DropDir=$(DropDir);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
@@ -49,13 +49,5 @@
       <HintPath>$(WixToolPath)\WixIIsExtension.dll</HintPath>
     </WixExtension>
   </ItemGroup>
-  <PropertyGroup>
-    <WixToolPath>..\..\Tools\wix</WixToolPath>
-    <WixTargetsPath>$(WixToolPath)\Wix.targets</WixTargetsPath>
-    <WixTasksPath>wixtasks.dll</WixTasksPath>
-  </PropertyGroup>
   <Import Project="$(WixTargetsPath)" />
-  <Target Name="BeforeBuild">
-    <Message Text="$(DropDir)" />
-  </Target>
 </Project>
