@@ -21,7 +21,7 @@ namespace DotNetOpenId.Yadis {
 			get {
 				List<UriElement> uris = new List<UriElement>();
 				foreach (XPathNavigator node in Node.Select("xrd:URI", XmlNamespaceResolver)) {
-					uris.Add(new UriElement(node, this));
+					uris.Add(new UriElement(node.Clone(), this));
 				}
 				uris.Sort();
 				return uris;
@@ -31,7 +31,7 @@ namespace DotNetOpenId.Yadis {
 		public IEnumerable<TypeElement> TypeElements {
 			get {
 				foreach (XPathNavigator node in Node.Select("xrd:Type", XmlNamespaceResolver)) {
-					yield return new TypeElement(node, this);
+					yield return new TypeElement(node.Clone(), this);
 				}
 			}
 		}
