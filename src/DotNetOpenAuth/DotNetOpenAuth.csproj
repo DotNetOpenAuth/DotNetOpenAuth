@@ -17,8 +17,6 @@ Copyright (c) 2009, Andrew Arnott. All rights reserved.
 Code licensed under the Ms-PL License:
 http://opensource.org/licenses/ms-pl.html
 </StandardCopyright>
-    <ApplicationIcon>
-    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
