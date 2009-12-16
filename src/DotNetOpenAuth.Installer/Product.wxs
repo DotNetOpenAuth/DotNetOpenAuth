@@ -176,13 +176,6 @@
         <File Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Name="DotNetOpenAuth_Starter_Kits.vsi" KeyPath="yes" Source="$(var.DropDir)/Project Templates/DotNetOpenAuth Starter Kits.vsi"/>
       </Component>
     </DirectoryRef>
-    <CloseApplication xmlns="http://schemas.microsoft.com/wix/UtilExtension"
-                      Id="CloseVisualStudio2008"
-                      Description="Please close all open instances of Visual Studio 2008"
-                      CloseMessage="yes"
-                      ElevatedCloseMessage="no"
-                      RebootPrompt="no"
-                      Target="devenv.exe" Sequence="10"/>
 
     <!-- Installable Features -->
     <Feature Id="ProductFeature" Title="Assembly File Library" Level="1" ConfigurableDirectory="INSTALLLOCATION"
