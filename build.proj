@@ -170,6 +170,7 @@
 																			 or '%(Extension)' == '.Master'
 																			 or '%(Extension)' == '.aspx'
 																			 or '%(Extension)' == '.asax'
+																			 or '%(Extension)' == '.ashx'
 																			 ">
 				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
 				<AfterTokens>$safeprojectname$</AfterTokens>
