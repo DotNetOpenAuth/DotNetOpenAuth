@@ -246,6 +246,9 @@
     <Build Include="Schema Objects\Schemas\dbo\Tables\Keys\PK_UserRole.pkey.sql">
       <SubType>Code</SubType>
     </Build>
+    <Build Include="Schema Objects\Schemas\dbo\Tables\Log.table.sql">
+      <SubType>Code</SubType>
+    </Build>
     <Build Include="Schema Objects\Schemas\dbo\Tables\Nonce.table.sql">
       <SubType>Code</SubType>
       <AnsiNulls>On</AnsiNulls>
