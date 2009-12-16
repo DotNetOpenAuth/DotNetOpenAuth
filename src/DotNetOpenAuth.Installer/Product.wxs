@@ -3,15 +3,59 @@
        xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension"
        xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
       >
-  <Product Id="3b97d707-5a7a-4cdf-bab4-f8f1a93e5881" Name="$(var.ProductName)"
-           Language="1033" Version="$(var.BuildVersion)"
-           Manufacturer="$(var.ProductName)"
-           UpgradeCode="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">
 
-    <Package InstallerVersion="200" Compressed="yes"
-             Description="$(var.ProductName) Installer"
-             Comments="This installer database contains the logic and data required to install the DotNetOpenAuth library setup."/>
+  <?define UpgradeCode="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7"?>
+  
+  
+  <Product  Id="*"
+            Name="$(var.ProductName)"
+            Language="1033"
+            Version="$(var.BuildVersion)"
+            Manufacturer="$(var.ProductName)"
+            UpgradeCode="$(var.UpgradeCode)">
+
+    <!--  
+          ** NOTE ** 
+          NEVER EVER CHANGE THE UPGRADECODE
+    -->
+    
+    <Package  
+              Id="*"
+              InstallerVersion="200"
+              Compressed="yes"
+              Description="$(var.ProductName) Installer"
+              Comments="This installer database contains the logic and data required to install the DotNetOpenAuth library setup."
+              />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+    
+    <!--  /** Version Control **/ -->
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion
+          Minimum="$(var.BuildVersion)"
+          IncludeMinimum="no"
+          OnlyDetect="yes"
+          Language="1033"
+          Property="NEWERVERSIONDETECTED" />
+      <UpgradeVersion 
+          Maximum="$(var.BuildVersion)"
+          IncludeMaximum="yes"
+          OnlyDetect="yes"
+          Language="1033"
+          Property="OLDERVERSIONBEINGUPGRADED" />
+    </Upgrade>
+    <CustomAction Id="PreventDowngrading" 
+                  Error="A never version of [ProductName] is already installed. Setup will now exit." />
+    <InstallExecuteSequence>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">
+        <![CDATA[NEWERVERSIONDETECTED]]>
+      </Custom>
+      <RemoveExistingProducts After="InstallFinalize" />
+    </InstallExecuteSequence>
+    <InstallUISequence>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">
+        <![CDATA[NEWERVERSIONDETECTED]]>
+      </Custom>
+    </InstallUISequence>
 
     <PropertyRef Id="IISMAJORVERSION"/>
     <PropertyRef Id="IISMINORVERSION"/>
@@ -26,10 +70,6 @@
     <Icon Id="DotNetOpenAuthIcon.exe" SourceFile="$(var.ProjectRoot)\doc\logo\dnoa-icon-colour.ico"/>
     <Property Id="ARPPRODUCTICON" Value="DotNetOpenAuthIcon.exe" />
     <!-- Upgrade information used for major upgrades -->
-    <Upgrade Id="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7">
-      <UpgradeVersion Minimum="$(var.BuildVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
-      <UpgradeVersion Minimum="1.0.0" IncludeMinimum="yes" Maximum="$(var.BuildVersion)" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
-    </Upgrade>
     <Condition Message="You must have Administrative rights on this machine to install [ProductName]. Setup will now exit.">
       <![CDATA[Privileged]]>
     </Condition>
@@ -38,21 +78,7 @@
     <UI>
       <ProgressText Action="VS90Setup" Template="[1]">Updating Visual Studio 2008 registration (May take a while)</ProgressText>
     </UI>
-    <!--  /** Version Control **/ -->
-    <CustomAction Id="CA_BlockOlderVersionInstall" Error="A later version of [ProductName] is already installed. Setup will now exit." />
-    <InstallExecuteSequence>
-      <Custom Action="WixCloseApplications" Before="InstallValidate" />
-      <Custom Action="CA_BlockOlderVersionInstall" After="FindRelatedProducts">
-        <![CDATA[NEWERVERSIONDETECTED]]>
-      </Custom>
-      <RemoveExistingProducts After="InstallInitialize" />
-      <LaunchConditions After="AppSearch"/>
-    </InstallExecuteSequence>
-    <InstallUISequence>
-      <Custom Action="CA_BlockOlderVersionInstall" After="FindRelatedProducts">
-        <![CDATA[NEWERVERSIONDETECTED]]>
-      </Custom>
-    </InstallUISequence>
+    
 
     <UIRef Id="WixUI_FeatureTree"/>
     <UIRef Id="WixUI_Common" />
@@ -67,17 +93,20 @@
         <Directory Id="INSTALLLOCATION" Name="DotNetOpenAuth">
           <Directory Id="LIBRARYFOLDER" Name="Bin">
             <Component Id="ProductComponent" Guid="47ef004e-517c-4ae3-96b0-7e41e94875cc">
-              <File Id="DotNetOpenAuth.dll" Source="$(var.DropDir)\bin\DotNetOpenAuth.dll"></File>
-              <File Id="DotNetOpenAuth.pdb" Source="$(var.DropDir)\bin\DotNetOpenAuth.pdb"></File>
-              <File Id="DotNetOpenAuth.xml" Source="$(var.DropDir)\bin\DotNetOpenAuth.xml"></File>
-              <File Id="DotNetOpenAuth.resources.dll" Source="$(var.DropDir)\bin\sr\DotNetOpenAuth.resources.dll"></File>
+              <File Id="DotNetOpenAuth.dll" Source="$(var.OutputPath)\bin\DotNetOpenAuth.dll"></File>
+              <File Id="DotNetOpenAuth.pdb" Source="$(var.OutputPath)\bin\DotNetOpenAuth.pdb"></File>
+              <File Id="DotNetOpenAuth.xml" Source="$(var.OutputPath)\bin\DotNetOpenAuth.xml"></File>
             </Component>
-            
+            <Directory Id="SATLIBRARYFOLDER" Name="sr">
+				<Component Id="LocalisedAssemblies" Guid="4a3e9d9f-89af-456e-b998-3b949f106ee5">
+					<File Id="DotNetOpenAuth.resources.dll" Source="$(var.OutputPath)\bin\sr\DotNetOpenAuth.resources.dll"></File>
+				</Component>
+			</Directory>
           </Directory>
-			<Component Id="Documentation" Guid="f716a056-eb0c-4bc1-bd92-37b704befac9">
-				<File Id="DotNetOpenAuth.chm" Source="$(var.DropDir)\DotNetOpenAuth.chm"></File>
-            </Component>
-			<Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
+          <Component Id="Documentation" Guid="f716a056-eb0c-4bc1-bd92-37b704befac9">
+            <File Id="DotNetOpenAuth.chm" Source="$(var.OutputPath)\DotNetOpenAuth.chm"></File>
+          </Component>
+          <Directory Id="TEMPLATESINSTALLFOLDER" Name="DotNetOpenAuth Project Templates">
             <Component Id="IntellisenseFile" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
               <util:XmlConfig
                  Id="Schemas_catalog"
@@ -114,9 +143,10 @@
                       Sequence="2">
               </util:XmlConfig>
               <CreateFolder/>
+              <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="SchemasInstalled" Type="integer" Value="1" KeyPath="yes"/>
             </Component>
             <Component Id="ProjectTemplates" Guid="{c6537664-e497-4983-bb27-54ff1210c0c2}">
-              <File Id="VSI" Source="$(var.DropDir)/Project Templates/DotNetOpenAuth Starter Kits.vsi"></File>
+              <File Id="VSI" Source="$(var.OutputPath)/Project Templates/DotNetOpenAuth Starter Kits.vsi"></File>
             </Component>
           </Directory>
         </Directory>
@@ -158,7 +188,7 @@
         <util:InternetShortcut Id="OnlineDocumentationShortcut"
                       Name="Online Documentation"
                       Target="http://www.dotnetopenauth.net/"  Type="link">
-		</util:InternetShortcut>
+        </util:InternetShortcut>
         <Shortcut Id="UninstallProduct"
           Name="Uninstall DotNetOpenAuth"
           Target="[System64Folder]msiexec.exe"
@@ -173,21 +203,15 @@
     <DirectoryRef Id="DotNetOpenAuth_Starter_Kits">
       <Component Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Guid="{70AE985D-706A-4C39-9417-20303DA605AC}" DiskId="1" Transitive="yes">
         <Condition>(VS90_ROOT_FOLDER AND VS90DEVENV AND VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED)</Condition>
-        <File Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Name="DotNetOpenAuth_Starter_Kits.vsi" KeyPath="yes" Source="$(var.DropDir)/Project Templates/DotNetOpenAuth Starter Kits.vsi"/>
+        <File Id="DotNetOpenAuth_Starter_Kits.zip_VS_2008" Name="DotNetOpenAuth_Starter_Kits.vsi" KeyPath="yes" Source="$(var.OutputPath)/Project Templates/DotNetOpenAuth Starter Kits.vsi"/>
       </Component>
     </DirectoryRef>
-    <CloseApplication xmlns="http://schemas.microsoft.com/wix/UtilExtension"
-                      Id="CloseVisualStudio2008"
-                      Description="Please close all open instances of Visual Studio 2008"
-                      CloseMessage="yes"
-                      ElevatedCloseMessage="no"
-                      RebootPrompt="no"
-                      Target="devenv.exe" Sequence="10"/>
 
     <!-- Installable Features -->
     <Feature Id="ProductFeature" Title="Assembly File Library" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Installs the compiled library DLLs">
       <ComponentRef Id="ProductComponent" />
+      <ComponentRef Id="LocalisedAssemblies" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
     <Feature Id="DocumentationFeature" Title="Documentation" Level="1" ConfigurableDirectory="INSTALLLOCATION"
