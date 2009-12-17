@@ -110,6 +110,7 @@ GO
 			}
 
 			DbCommand cmd = connection.CreateCommand();
+			cmd.Transaction = (DbTransaction)Database.DataContextTransaction;
 			cmd.CommandText = command;
 			cmd.CommandType = CommandType.StoredProcedure;
 			try {
