@@ -5,8 +5,7 @@
   xmlns:VS="http://schemas.microsoft.com/wix/VSExtension"
 >
   <Fragment>
-    <!-- Pick up Visual Studio properties from WixVSExtension -->
-    <PropertyRef Id="VS90_ITEMTEMPLATES_DIR" />
+    <PropertyRef Id="VS90_ROOT_FOLDER" />
 
     <DirectoryRef Id="DotNetOpenAuth.BinFolder">
       <Directory Id="DotNetOpenAuth.Intellisense" Name="VS">
