@@ -18,7 +18,7 @@
     <Feature Id="dnoa.Templates.VS2008" Title="Visual Studio 2008 Templates" Level="0" AllowAdvertise="no"
              Description="Take a shortcut to bringing OpenID, OAuth and InfoCards to your project by using this Project Template">
       <Condition Level="1">
-        VS90_ITEMTEMPLATES_DIR and VS90_PROJECTTEMPLATES_DIR
+        VS90_PROJECTTEMPLATES_DIR
       </Condition>
       <ComponentRef Id="VS2008.WebFormsRelyingParty.ProjectTemplate.CSharp.zip" />
     </Feature>

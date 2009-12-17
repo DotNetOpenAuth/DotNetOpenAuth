@@ -26,7 +26,7 @@
               Manufacturer="www.dotnetopenauth.net"
  	            InstallPrivileges="elevated"
 	            InstallScope="perMachine"
-              Comments="This installer database contains the logic and data required to install the DotNetOpenAuth library setup."
+              Comments="DotNetOpenAuth is a C# library that adds OpenID 2.0 Provider and Relying Party, OAuth Consumer and Service Provider, and InfoCard Selector support to your web site both programmatically and through convenient drop-in ASP.NET controls."
               />
 
     <Media Id="1" Cabinet="dnoa.cab" EmbedCab="yes" />
@@ -139,16 +139,7 @@
       </Component>
     </DirectoryRef>
 
-    <DirectoryRef Id="DNOASamplesMenuFolder">
-      <!-- Component to remove the DNOA Samples menu folder on uninstall (if empty) -->
-      <Component Id="dnoa.SamplesMenuFolder.RemoveFolder" Guid="{EE479FBC-6C56-47c7-9502-2BF5A4A74965}">
-        <RemoveFolder Id="dnoa.SamplesMenuFolder.RemoveFolder" On="uninstall" />
-        <RegistryKey Action="none" Root="HKCU" Key="Software\dotnetopenauth.net\$(var.ProductName)\$(var.BuildVersion)">
-          <RegistryValue Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
-        </RegistryKey>
-      </Component>
-    </DirectoryRef>
-
+ 
     <!-- Installable Features -->
     <Feature Id="ProductFeature" Title="Assembly File Library" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Installs the compiled library DLLs">
@@ -164,8 +155,7 @@
     <FeatureRef Id="DotNetOpenAuth.Samples" />
     <Feature Id="IntegrationFeature" Title="Visual Studio 2008 Integration" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Automagically installs the selected components into your Visual Studio environment">
-      <Condition Level="0">NOT VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED</Condition>
-      <ComponentRef Id="dnoa.SamplesMenuFolder.RemoveFolder"/>
+      <Condition Level="0">VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED</Condition>
       <FeatureRef Id="dnoa.Intellisense.VS2008" />
       <FeatureRef Id="dnoa.Templates.VS2008"/>
     </Feature>
