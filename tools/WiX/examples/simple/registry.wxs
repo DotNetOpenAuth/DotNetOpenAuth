@@ -1,0 +1,31 @@
+<?xml version='1.0'?>
+<!--
+    Copyright (c) Microsoft Corporation.  All rights reserved.
+
+    The use and distribution terms for this software are covered by the
+    Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
+    which can be found in the file CPL.TXT at the root of this distribution.
+    By using this software in any fashion, you are agreeing to be bound by
+    the terms of this license.
+
+    You must not remove this notice, or any other, from this software.
+
+    registry.wxs - small example that installs a single registry key.
+-->
+<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>
+   <Product Id='????????-????-????-????-????????????' Name='WixRegistryExample' Language='1033' Version='0.0.0.0' Manufacturer='Microsoft Corporation'>
+      <Package Id='????????-????-????-????-????????????' Description='Installs a test registry key.' Comments='Tests installation of a single registry key.' InstallerVersion='200' Compressed='yes' />
+
+      <Media Id='1' Cabinet='product.cab' EmbedCab='yes' />
+
+      <Directory Id='TARGETDIR' Name='SourceDir'>
+         <Component Id='WixExampleProductKey' Guid='PUT-GUID-HERE'>
+            <Registry Id='WixExampleProductRegistryKey' Root='HKLM' Key='SOFTWARE\WixExample' Name='ExampleKey' Type='integer' Value='1' Action='write' />
+         </Component>
+      </Directory>
+
+      <Feature Id='WixExampleProductKeyFeature' Title='Wix Example Product Key' Level='1'>
+         <ComponentRef Id='WixExampleProductKey' />
+      </Feature>
+   </Product>
+</Wix>

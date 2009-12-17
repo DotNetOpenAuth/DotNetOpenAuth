@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+****************************************************************************************************
+burn.targets
+
+This file defines the steps in the standard build process for Burn projects (.burnproj), inheriting
+and overriding those of WiX projects (.wixproj).
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+****************************************************************************************************
+-->
+<Project
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+  InitialTargets="_CheckRequiredProperties;
+                  _SetDefaultPathValues">
+
+  <!-- Extension point: Define CustomBeforeBurnTargets to a custom .targets file that you want to include after this file. -->
+  <Import Project="$(CustomBeforeBurnTargets)" Condition=" '$(CustomBeforeBurnTargets)' != '' and Exists('$(CustomBeforeBurnTargets)')" />
+  
+  <!-- These properties can be overridden to support non-default installations. -->
+  <PropertyGroup>
+    <OutputName Condition=" '$(OutputName)' == '' ">$(MSBuildProjectName)</OutputName>
+    <OutputType>Bundle</OutputType>
+    <IntermediateExt Condition=" '$(IntermediateExt)' == '' ">.burnmanifest.xml</IntermediateExt>
+    <BaseInputPaths Condition=" '$(WixToolPath)' != '' ">$(BaseInputPaths);$(WixToolPath)</BaseInputPaths>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.5\Wix.targets</WixTargetsPath>
+    <BurnTargetsPath Condition=" '$(BurnTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.5\Burn.targets</BurnTargetsPath>
+    <BurnTasksPath Condition=" '$(BurnTasksPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.5\BurnTasks.dll</BurnTasksPath>
+  </PropertyGroup>
+
+  <!-- Let wix.targets do all the heavy lifting of project references and MSBuild voodoogoo -->
+  <Import Project="$(WixTargetsPath)" />
+  
+  <!-- This makes the project files a dependency of all targets so that things rebuild if they change -->
+  <PropertyGroup> 
+    <MSBuildAllProjects Condition="Exists('$(BurnTargetsPath)')">$(MSBuildAllProjects);$(BurnTargetsPath)</MSBuildAllProjects>
+    <MSBuildAllProjects Condition="Exists('$(CustomBeforeBurnTargets)')">$(MSBuildAllProjects);$(CustomBeforeBurnTargets)</MSBuildAllProjects>
+    <MSBuildAllProjects Condition="Exists('$(CustomAfterBurnTargets)')">$(MSBuildAllProjects);$(CustomAfterBurnTargets)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <!-- These tasks can be used as general-purpose build tasks. -->
+  <UsingTask TaskName="BurnBundleBuilder" AssemblyFile="$(BurnTasksPath)" />
+  <UsingTask TaskName="BurnTask" AssemblyFile="$(BurnTasksPath)" />
+
+
+  <!--
+  ==================================================================================================
+  _CheckRequiredProperties
+
+    Checks properties that must be set in the main project file or on the command line before
+    using this .TARGETS file.
+
+  ==================================================================================================
+  -->
+  <Target Name="_CheckRequiredProperties">
+    <Error
+      Code="BURNTARGETS100"
+      Condition=" '@(BurnManifest)' != '' And '@(Chain)' != '' "
+      Text="Both BurnManifest and Chain item groups are specified; at most one can be specified in one project." />
+  </Target>
+
+  <!--
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  Build Targets
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+
+  <PropertyGroup>
+    <CompileAndLinkDependsOn>
+      ResolveReferences;
+      BeforeCompileAndLink;
+      _TimeStampBeforeCompileAndLink;
+      GenerateManifest;
+      BuildBurnBundle;
+      _TimeStampAfterCompileAndLink;
+      AfterCompileAndLink
+    </CompileAndLinkDependsOn>
+  </PropertyGroup>
+
+  <!--
+  ================================================================================================
+  GenerateManifest
+
+    Builds a Burn bundle by generating a chainer manifest and calling burn.exe 
+
+    [IN]
+    @(Chain) - The list of packages to bundle.
+    @(UX) - Files that the bundle uses for the UI/UX.
+
+    [OUT]
+    $(GeneratedManifest) - The manifest generated from Chain and UX.
+  ================================================================================================
+  -->
+  <PropertyGroup>
+    <GenerateManifestDependsOn>
+      PrepareForBuild;
+    </GenerateManifestDependsOn>
+  </PropertyGroup>
+  <Target
+    Name="GenerateManifest"
+    Inputs="@(Chain);
+            @(UX);
+            @(_ResolvedProjectReferencePaths);
+            $(MSBuildAllProjects)"
+    Outputs="$(IntermediateOutputPath)$(OutputName)$(IntermediateExt)"
+    DependsOnTargets="$(GenerateManifestDependsOn)"
+    Condition=" '@(Chain)' != '' ">
+
+    <BurnBundleBuilder
+      Chain="@(Chain)"
+      LogLevel="$(LogLevel)"
+      LogMode="$(LogMode)"
+      LogPath="$(LogPath)"
+      Manifest="$(IntermediateOutputPath)$(OutputName)$(IntermediateExt)"
+      StubPath="$(StubPath)"
+      UX="@(UX)">
+        
+      <Output TaskParameter="Manifest" ItemName="BurnManifest" />
+    </BurnBundleBuilder>
+  </Target>
+
+  <!--
+  ================================================================================================
+  BuildBurnBundle
+
+    Builds a Burn bundle by generating a chainer manifest and calling burn.exe 
+
+    [IN]
+    @(Chain) - The list of packages to bundle.
+    @(UX) - Files that the bundle uses for the UI/UX.
+
+    [OUT]
+    $(TargetPath) - The compiled .exe bundle.
+    TODO: Multiple outputs, including external resources.
+  ================================================================================================
+  -->
+  <PropertyGroup>
+    <BuildBurnBundleDependsOn>
+      PrepareForBuild;
+    </BuildBurnBundleDependsOn>
+  </PropertyGroup>
+  <Target
+    Name="BuildBurnBundle"
+    Inputs="@(BurnManifest);
+            @(_ResolvedProjectReferencePaths);
+            $(MSBuildAllProjects)"
+    Outputs="$(TargetPath)"
+    DependsOnTargets="$(BuildBurnBundleDependsOn)"
+    Condition=" '@(BurnManifest)' != '' ">
+
+    <BurnTask
+      BaseInputPaths="$(BaseInputPaths)"
+      DefaultCompressionLevel="$(DefaultCompressionLevel)"
+      DefineConstants="$(DefineConstants);$(SolutionDefineConstants);$(ProjectDefineConstants);$(ProjectReferenceDefineConstants)"
+      IncludeSearchPaths="$(IncludeSearchPaths)"
+      Manifest="@(BurnManifest)"
+      NoLogo="$(NoLogo)"
+      OutputFile="$(TargetPath)"
+      ToolPath="$(WixToolPath)"
+      VerboseOutput="$(CompilerVerboseOutput)"
+      />
+  </Target>
+
+  <!-- Extension point: Define CustomAfterBurnTargets to a custom .targets file that you want to include after this file. -->
+  <Import Project="$(CustomAfterBurnTargets)" Condition=" '$(CustomAfterBurnTargets)' != '' and Exists('$(CustomAfterBurnTargets)')" />
+</Project>

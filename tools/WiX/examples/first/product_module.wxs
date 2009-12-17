@@ -1,0 +1,41 @@
+<?xml version='1.0'?>
+<!--
+    Copyright (c) Microsoft Corporation.  All rights reserved.
+
+    The use and distribution terms for this software are covered by the
+    Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
+    which can be found in the file CPL.TXT at the root of this distribution.
+    By using this software in any fashion, you are agreeing to be bound by
+    the terms of this license.
+
+    You must not remove this notice, or any other, from this software.
+
+    Product_Module.MSI - example source code for Product with merged Module from "Getting Started" in help
+-->
+<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>
+   <Product Id='22345678-1234-1234-1234-123456789012' Name='Test Package' Language='1033'
+             Version='1.0.0.0' Manufacturer='Microsoft Corporation'>
+      <Package Id='12345678-1234-1234-1234-123456789012' Description='My first Windows Installer package'
+               Comments='This is my first attempt at creating a Windows Installer database'
+               InstallerVersion='200' Compressed='yes' />
+ 
+      <Media Id='1' Cabinet='product.cab' EmbedCab='yes' />
+ 
+      <Directory Id='TARGETDIR' Name='SourceDir'>
+         <Directory Id='ProgramFilesFolder' Name='PFiles'>
+            <Directory Id='MyDir' Name='TestProg' LongName='Test Program'>
+               <Component Id='MyComponent' Guid='12345678-1234-1234-1234-123456789012'>
+                  <File Id='readme' Name='readme.txt' DiskId='1' src='readme.txt' />
+               </Component>
+ 
+               <Merge Id='MyModule' Language='1033' src='module.msm' DiskId='1' />
+            </Directory>
+         </Directory>
+      </Directory>
+ 
+      <Feature Id='MyFeature' Title='My 1st Feature' Level='1'>
+         <ComponentRef Id='MyComponent' />
+         <MergeRef Id='MyModule' />
+      </Feature>
+   </Product>
+</Wix>
