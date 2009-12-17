@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:VS="http://schemas.microsoft.com/wix/VSExtension">
+  <Fragment>
+    <!-- Pick up Visual Studio properties from WixVSExtension -->
+    <PropertyRef Id="VS90_ITEMTEMPLATES_DIR" />
+    <PropertyRef Id="VS90_PROJECTTEMPLATES_DIR" />
+
+    <DirectoryRef Id="TARGETDIR">
+      <Directory Id="VS90_PROJECTTEMPLATES_DIR" Name="ProjectTemplates.VS2008">
+        <Directory Id="VS2008.ProjectTemplates.CS" Name="CSharp">
+          <Component Id="VS2008.WebFormsRelyingParty.ProjectTemplate.CSharp.zip" Guid="{00EB4409-61A2-4065-B019-7B97AA240825}" Win64="no">
+            <File Id="VS2008.WebFormsRelyingParty.ProjectTemplate.CSharp.zip" Source="$(var.OutputPath)\Project Templates\DotNetOpenAuth Starter Kits.vsi" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </DirectoryRef>
+
+    <Feature Id="dnoa.Templates.VS2008" Title="Visual Studio 2008 Templates" Level="0" AllowAdvertise="no"
+             Description="Take a shortcut to bringing OpenID, OAuth and InfoCards to your project by using this Project Template">
+      <Condition Level="1">
+        VS90_ITEMTEMPLATES_DIR and VS90_PROJECTTEMPLATES_DIR
+      </Condition>
+      <ComponentRef Id="VS2008.WebFormsRelyingParty.ProjectTemplate.CSharp.zip" />
+    </Feature>
+  </Fragment>
+</Wix>
