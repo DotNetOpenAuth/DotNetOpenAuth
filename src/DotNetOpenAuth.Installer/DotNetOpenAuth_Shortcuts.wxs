@@ -6,14 +6,6 @@
 	<Fragment>
     <DirectoryRef Id="DNOAMenuFolder">
       <Component Id="dnoa.ApplicationShortcuts" Guid="1f67dced-97f2-4486-80c0-ef21e797fe0a">
-        <Shortcut Id="ApplicationStartMenuShortcut"
-                Name="Compiled Library"
-                Description="OpenID, OAuth and InfoCard Library"
-                Icon="DotNetOpenAuthIcon.exe"
-                Target="[SYSTEMFOLDER]\explorer.exe "
-                   Arguments="INSTALLLOCATION"
-                WorkingDirectory="WindowsFolder">
-        </Shortcut>
         <Shortcut Id="ApplicationDocumentationShortcut"
                 Name="Documentation"
                 Description="OpenID, OAuth and InfoCard Library Documentation"

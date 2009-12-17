@@ -109,7 +109,7 @@
               </Component>
             </Directory>
           </Directory>
-          <Directory Id="DocsFolder" Name="Docs">
+          <Directory Id="DotNetOpenAuth.DocsFolder" Name="Docs">
             <Component Id="dnoa.Documentation" Guid="{48F5DE8D-E17B-4167-856F-C2938F386279}">
               <File Id="DotNetOpenAuth.chm" Source="$(var.OutputPath)\DotNetOpenAuth.chm" />
             </Component>

@@ -7,8 +7,8 @@
   <Fragment>
     <PropertyRef Id="VS90_ROOT_FOLDER" />
 
-    <DirectoryRef Id="DotNetOpenAuth.BinFolder">
-      <Directory Id="DotNetOpenAuth.Intellisense" Name="VS">
+    <DirectoryRef Id="DotNetOpenAuth.DocsFolder">
+      <Directory Id="DotNetOpenAuth.Intellisense" Name=".">
         <Component Id="dnoa.Intellisense" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
           <util:XmlConfig
              Id="Schemas_catalog"
