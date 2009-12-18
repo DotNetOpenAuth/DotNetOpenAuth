@@ -398,7 +398,7 @@ namespace DotNetOpenAuth {
 
 				// Write a unique header to the file so the report collector can match duplicates.
 				if (fileCreated) {
-					this.writer.WriteLine(Guid.NewGuid());
+					this.writer.WriteLine(Guid.NewGuid().ToString("B"));
 				}
 			}
 
