@@ -16,7 +16,11 @@ public partial class XP_Selector : System.Web.UI.Page {
 				MultiView1.SetActiveView(View2);
 			} else {
 				MultiView1.SetActiveView(View3);
-				errorDetails.Text = HttpUtility.HtmlEncode(response.Exception.Message);
+				if (response.Status == AuthenticationStatus.Failed) {
+					errorDetails.Text = HttpUtility.HtmlEncode(response.Exception.Message);
+				} else {
+					errorDetails.Text = "Authentication status: " + response.Status.ToString();
+				}
 			}
 		}
 	}
