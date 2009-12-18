@@ -15,6 +15,7 @@ namespace DotNetOpenAuth {
 	using System.Linq;
 	using System.Net;
 	using System.Reflection;
+	using System.Security;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
@@ -91,7 +92,7 @@ namespace DotNetOpenAuth {
 			Enabled = DotNetOpenAuthSection.Configuration.Reporting.Enabled;
 			if (Enabled) {
 				try {
-					file = IsolatedStorageFile.GetUserStoreForDomain();
+					file = GetIsolatedStorage();
 					assemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
 					webRequestHandler = new StandardWebRequestHandler();
 					observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
@@ -289,6 +290,34 @@ namespace DotNetOpenAuth {
 					ThreadPool.QueueUserWorkItem(state => SendStats());
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the isolated storage to use for reporting.
+		/// </summary>
+		/// <returns>An isolated storage location appropriate for our host.</returns>
+		private static IsolatedStorageFile GetIsolatedStorage() {
+			Contract.Ensures(Contract.Result<IsolatedStorageFile>() != null);
+
+			IsolatedStorageFile result = null;
+
+			// We'll try for whatever storage location we can get,
+			// and not catch exceptions from the last attempt so that
+			// the overall failure is caught by our caller.
+			try {
+				// This works on Personal Web Server
+				result = IsolatedStorageFile.GetUserStoreForDomain();
+			} catch (SecurityException) {
+			} catch (IsolatedStorageException) {
+			}
+
+			// This works on IIS when full trust is granted.
+			if (result == null) {
+				result = IsolatedStorageFile.GetMachineStoreForDomain();
+			}
+
+			Logger.Library.InfoFormat("Reporting will use isolated storage with scope: {0}", result.Scope);
+			return result;
 		}
 
 		/// <summary>
