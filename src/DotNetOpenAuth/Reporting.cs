@@ -50,9 +50,9 @@ namespace DotNetOpenAuth {
 		private static IsolatedStorageFile file;
 
 		/// <summary>
-		/// The name of this assembly.
+		/// The GUID that shows up at the top of all reports from this user/machine/domain.
 		/// </summary>
-		private static AssemblyName assemblyName;
+		private static Guid reportOriginIdentity;
 
 		/// <summary>
 		/// The recipient of collected reports.
@@ -107,7 +107,8 @@ namespace DotNetOpenAuth {
 			if (Enabled) {
 				try {
 					file = GetIsolatedStorage();
-					assemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
+					reportOriginIdentity = GetOrCreateOriginIdentity();
+
 					webRequestHandler = new StandardWebRequestHandler();
 					observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
 					observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
@@ -266,6 +267,7 @@ namespace DotNetOpenAuth {
 		private static Stream GetReport() {
 			var stream = new MemoryStream();
 			var writer = new StreamWriter(stream, Encoding.UTF8);
+			writer.WriteLine(reportOriginIdentity.ToString("B"));
 			writer.WriteLine(Util.LibraryVersion);
 
 			foreach (var observation in observations) {
@@ -372,6 +374,39 @@ namespace DotNetOpenAuth {
 
 			Logger.Library.InfoFormat("Reporting will use isolated storage with scope: {0}", result.Scope);
 			return result;
+		}
+
+		/// <summary>
+		/// Gets a unique, pseudonymous identifier for this particular web site or application.  
+		/// </summary>
+		/// <returns>A GUID that will serve as the identifier.</returns>
+		/// <remarks>
+		/// The identifier is made persistent by storing the identifier in isolated storage.
+		/// If an existing identifier is not found, a new one is created, persisted, and returned.
+		/// </remarks>
+		private static Guid GetOrCreateOriginIdentity() {
+			Contract.Requires<InvalidOperationException>(file != null);
+			Contract.Ensures(Contract.Result<Guid>() != Guid.Empty);
+
+			Guid identityGuid = Guid.Empty;
+			const int GuidLength = 16;
+			using (var identityFileStream = new IsolatedStorageFileStream("identity.txt", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, file)) {
+				if (identityFileStream.Length == GuidLength) {
+					byte[] guidBytes = new byte[GuidLength];
+					if (identityFileStream.Read(guidBytes, 0, GuidLength) == GuidLength) {
+						identityGuid = new Guid(guidBytes);
+					}
+				}
+
+				if (identityGuid == Guid.Empty) {
+					identityGuid = Guid.NewGuid();
+					byte[] guidBytes = identityGuid.ToByteArray();
+					identityFileStream.SetLength(0);
+					identityFileStream.Write(guidBytes, 0, guidBytes.Length);
+				}
+
+				return identityGuid;
+			}
 		}
 
 		/// <summary>
