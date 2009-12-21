@@ -31,6 +31,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentNullException>(exception != null);
 
 			this.Exception = exception;
+			Reporting.RecordEventOccurrence(this);
 		}
 
 		#region IAuthenticationResponse Members

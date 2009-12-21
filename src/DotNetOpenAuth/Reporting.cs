@@ -36,6 +36,15 @@ namespace DotNetOpenAuth {
 		private static readonly TimeSpan minimumReportingInterval = TimeSpan.FromDays(1);
 
 		/// <summary>
+		/// The maximum frequency the set can be flushed to disk.
+		/// </summary>
+#if DEBUG
+		private static readonly TimeSpan minimumFlushInterval = TimeSpan.Zero;
+#else
+		private static readonly TimeSpan minimumFlushInterval = TimeSpan.FromMinutes(15);
+#endif
+
+		/// <summary>
 		/// The isolated storage to use for collecting data in between published reports.
 		/// </summary>
 		private static IsolatedStorageFile file;
@@ -74,6 +83,11 @@ namespace DotNetOpenAuth {
 		/// A collection of all the observations to include in the report.
 		/// </summary>
 		private static List<PersistentHashSet> observations = new List<PersistentHashSet>();
+
+		/// <summary>
+		/// The named events that we have counters for.
+		/// </summary>
+		private static Dictionary<string, PersistentCounter> events = new Dictionary<string, PersistentCounter>(StringComparer.OrdinalIgnoreCase);
 
 		/// <summary>
 		/// The lock acquired while considering whether to publish a report.
@@ -120,6 +134,32 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		private static bool Enabled { get; set; }
+
+		/// <summary>
+		/// Records an event occurrence.
+		/// </summary>
+		/// <param name="eventName">Name of the event.</param>
+		internal static void RecordEventOccurrence(string eventName) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(eventName));
+
+			PersistentCounter counter;
+			lock (events) {
+				if (!events.TryGetValue(eventName, out counter)) {
+					events[eventName] = counter = new PersistentCounter(file, "event-" + SanitizeFileName(eventName) + ".txt");
+				}
+			}
+
+			counter.Increment();
+		}
+
+		/// <summary>
+		/// Records an event occurence.
+		/// </summary>
+		/// <param name="eventNameByObjectType">The object whose type name is the event name to record.</param>
+		internal static void RecordEventOccurrence(object eventNameByObjectType) {
+			Contract.Requires<ArgumentNullException>(eventNameByObjectType != null);
+			RecordEventOccurrence(eventNameByObjectType.GetType().Name);
+		}
 
 		/// <summary>
 		/// Records the use of a feature by name.
@@ -229,6 +269,7 @@ namespace DotNetOpenAuth {
 			writer.WriteLine(Util.LibraryVersion);
 
 			foreach (var observation in observations) {
+				observation.Flush();
 				writer.WriteLine("====================================");
 				writer.WriteLine(observation.FileName);
 				try {
@@ -238,6 +279,19 @@ namespace DotNetOpenAuth {
 					}
 				} catch (FileNotFoundException) {
 					writer.WriteLine("(missing)");
+				}
+			}
+
+			foreach (var counter in events.Values) {
+				counter.Flush();
+			}
+
+			foreach (string eventFile in file.GetFileNames("event-*.txt")) {
+				writer.WriteLine("====================================");
+				writer.WriteLine(eventFile);
+				using (var fileStream = new IsolatedStorageFileStream(eventFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, file)) {
+					writer.Flush();
+					fileStream.CopyTo(writer.BaseStream);
 				}
 			}
 
@@ -321,6 +375,28 @@ namespace DotNetOpenAuth {
 		}
 
 		/// <summary>
+		/// Sanitizes the name of the file so it only includes valid filename characters.
+		/// </summary>
+		/// <param name="fileName">The filename to sanitize.</param>
+		/// <returns>The filename, with any and all invalid filename characters replaced with the hyphen (-) character.</returns>
+		private static string SanitizeFileName(string fileName) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(fileName));
+			char[] invalidCharacters = Path.GetInvalidFileNameChars();
+			if (fileName.IndexOfAny(invalidCharacters) < 0) {
+				return fileName; // nothing invalid about this filename.
+			}
+
+			// Use a stringbuilder since we may be replacing several characters
+			// and we don't want to instantiate a new string buffer for each new version.
+			StringBuilder sanitized = new StringBuilder(fileName);
+			foreach (char invalidChar in invalidCharacters) {
+				sanitized.Replace(invalidChar, '-');
+			}
+
+			return sanitized.ToString();
+		}
+
+		/// <summary>
 		/// A set of values that persist the set to disk.
 		/// </summary>
 		private class PersistentHashSet : IDisposable {
@@ -343,15 +419,6 @@ namespace DotNetOpenAuth {
 			/// The total set of elements.
 			/// </summary>
 			private readonly HashSet<string> memorySet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-			/// <summary>
-			/// The maximum frequency the set can be flushed to disk.
-			/// </summary>
-#if DEBUG
-			private static readonly TimeSpan minimumFlushInterval = TimeSpan.Zero;
-#else
-			private static readonly TimeSpan minimumFlushInterval = TimeSpan.FromMinutes(15);
-#endif
 
 			/// <summary>
 			/// The maximum number of elements to track before not storing new elements.
@@ -467,6 +534,122 @@ namespace DotNetOpenAuth {
 					// Assign a whole new list since future lists might be smaller in order to
 					// decrease demand on memory.
 					this.newElements = new List<string>();
+					this.dirty = false;
+					this.lastFlushed = DateTime.Now;
+				}
+			}
+
+			/// <summary>
+			/// Releases unmanaged and - optionally - managed resources
+			/// </summary>
+			/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+			protected virtual void Dispose(bool disposing) {
+				if (disposing) {
+					this.writer.Dispose();
+					this.reader.Dispose();
+					this.fileStream.Dispose();
+				}
+			}
+		}
+
+		/// <summary>
+		/// A feature usage counter.
+		/// </summary>
+		private class PersistentCounter : IDisposable {
+			/// <summary>
+			/// The isolated persistent storage.
+			/// </summary>
+			private readonly FileStream fileStream;
+
+			/// <summary>
+			/// The persistent reader.
+			/// </summary>
+			private readonly StreamReader reader;
+
+			/// <summary>
+			/// The persistent writer.
+			/// </summary>
+			private readonly StreamWriter writer;
+
+			/// <summary>
+			/// The time the last flush occurred.
+			/// </summary>
+			private DateTime lastFlushed;
+
+			/// <summary>
+			/// The in-memory copy of the counter.
+			/// </summary>
+			private int counter;
+
+			/// <summary>
+			/// A flag indicating whether the set has changed since it was last flushed.
+			/// </summary>
+			private bool dirty;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="PersistentCounter"/> class.
+			/// </summary>
+			/// <param name="storage">The storage location.</param>
+			/// <param name="fileName">Name of the file.</param>
+			internal PersistentCounter(IsolatedStorageFile storage, string fileName) {
+				Contract.Requires<ArgumentNullException>(storage != null);
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(fileName));
+				this.FileName = fileName;
+
+				// Load the file into memory.
+				bool fileCreated = storage.GetFileNames(fileName).Length == 0;
+				this.fileStream = new IsolatedStorageFileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, storage);
+				this.reader = new StreamReader(this.fileStream, Encoding.UTF8);
+				int.TryParse(this.reader.ReadLine(), out this.counter);
+
+				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
+				this.writer.AutoFlush = true;
+				this.lastFlushed = DateTime.Now;
+
+				// Write a unique header to the file so the report collector can match duplicates.
+				if (fileCreated) {
+					this.writer.WriteLine(Guid.NewGuid().ToString("B"));
+				}
+			}
+
+			/// <summary>
+			/// Gets the name of the file.
+			/// </summary>
+			/// <value>The name of the file.</value>
+			internal string FileName { get; private set; }
+
+			#region IDisposable Members
+
+			/// <summary>
+			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+			/// </summary>
+			public void Dispose() {
+				this.Dispose(true);
+			}
+
+			#endregion
+
+			/// <summary>
+			/// Increments the counter.
+			/// </summary>
+			internal void Increment() {
+				lock (this) {
+					this.counter++;
+					this.dirty = true;
+					if (this.dirty && DateTime.Now - this.lastFlushed > minimumFlushInterval) {
+						this.Flush();
+					}
+				}
+			}
+
+			/// <summary>
+			/// Flushes any newly added values to disk.
+			/// </summary>
+			internal void Flush() {
+				lock (this) {
+					this.writer.BaseStream.Position = 0;
+					this.writer.BaseStream.SetLength(0); // truncate file
+					this.writer.Write(this.counter);
 					this.dirty = false;
 					this.lastFlushed = DateTime.Now;
 				}

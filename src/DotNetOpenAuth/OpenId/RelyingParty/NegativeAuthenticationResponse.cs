@@ -30,6 +30,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal NegativeAuthenticationResponse(NegativeAssertionResponse response) {
 			Contract.Requires<ArgumentNullException>(response != null);
 			this.response = response;
+
+			Reporting.RecordEventOccurrence(this);
 		}
 
 		#region IAuthenticationResponse Properties

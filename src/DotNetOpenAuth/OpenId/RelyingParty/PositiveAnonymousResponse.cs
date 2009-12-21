@@ -39,6 +39,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (response.ProviderEndpoint != null && response.Version != null) {
 				this.provider = new ProviderEndpointDescription(response.ProviderEndpoint, response.Version);
 			}
+
+			Reporting.RecordEventOccurrence(this);
 		}
 
 		#region IAuthenticationResponse Properties
