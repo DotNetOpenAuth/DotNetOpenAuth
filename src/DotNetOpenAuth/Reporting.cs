@@ -134,13 +134,14 @@ namespace DotNetOpenAuth {
 		/// Gets or sets a value indicating whether this reporting is enabled.
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		private static bool Enabled { get; set; }
+		internal static bool Enabled { get; set; }
 
 		/// <summary>
 		/// Records an event occurrence.
 		/// </summary>
 		/// <param name="eventName">Name of the event.</param>
-		internal static void RecordEventOccurrence(string eventName) {
+		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
+		internal static void RecordEventOccurrence(string eventName, string category) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(eventName));
 
 			PersistentCounter counter;
@@ -150,16 +151,17 @@ namespace DotNetOpenAuth {
 				}
 			}
 
-			counter.Increment();
+			counter.Increment(category);
 		}
 
 		/// <summary>
 		/// Records an event occurence.
 		/// </summary>
 		/// <param name="eventNameByObjectType">The object whose type name is the event name to record.</param>
-		internal static void RecordEventOccurrence(object eventNameByObjectType) {
+		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
+		internal static void RecordEventOccurrence(object eventNameByObjectType, string category) {
 			Contract.Requires<ArgumentNullException>(eventNameByObjectType != null);
-			RecordEventOccurrence(eventNameByObjectType.GetType().Name);
+			RecordEventOccurrence(eventNameByObjectType.GetType().Name, category);
 		}
 
 		/// <summary>
@@ -592,6 +594,11 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		private class PersistentCounter : IDisposable {
 			/// <summary>
+			/// The separator to use between category names and their individual counters.
+			/// </summary>
+			private static readonly char[] separator = new char[] { '\t' };
+
+			/// <summary>
 			/// The isolated persistent storage.
 			/// </summary>
 			private readonly FileStream fileStream;
@@ -614,7 +621,7 @@ namespace DotNetOpenAuth {
 			/// <summary>
 			/// The in-memory copy of the counter.
 			/// </summary>
-			private int counter;
+			private Dictionary<string, int> counters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 			/// <summary>
 			/// A flag indicating whether the set has changed since it was last flushed.
@@ -635,15 +642,26 @@ namespace DotNetOpenAuth {
 				bool fileCreated = storage.GetFileNames(fileName).Length == 0;
 				this.fileStream = new IsolatedStorageFileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, storage);
 				this.reader = new StreamReader(this.fileStream, Encoding.UTF8);
-				int.TryParse(this.reader.ReadLine(), out this.counter);
+				while (!this.reader.EndOfStream) {
+					string line = this.reader.ReadLine();
+					string[] parts = line.Split(separator, 2);
+					int counter;
+					if (int.TryParse(parts[0], out counter)) {
+						string category = string.Empty;
+						if (parts.Length > 1) {
+							category = parts[1];
+						}
+						this.counters[category] = counter;
+					}
+				}
 
 				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
-				this.writer.AutoFlush = true;
 				this.lastFlushed = DateTime.Now;
 
 				// Write a unique header to the file so the report collector can match duplicates.
 				if (fileCreated) {
 					this.writer.WriteLine(Guid.NewGuid().ToString("B"));
+					this.writer.Flush();
 				}
 			}
 
@@ -667,9 +685,15 @@ namespace DotNetOpenAuth {
 			/// <summary>
 			/// Increments the counter.
 			/// </summary>
-			internal void Increment() {
+			/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
+			internal void Increment(string category) {
+				if (category == null) {
+					category = string.Empty;
+				}
 				lock (this) {
-					this.counter++;
+					int counter;
+					this.counters.TryGetValue(category, out counter);
+					this.counters[category] = counter + 1;
 					this.dirty = true;
 					if (this.dirty && DateTime.Now - this.lastFlushed > minimumFlushInterval) {
 						this.Flush();
@@ -684,7 +708,12 @@ namespace DotNetOpenAuth {
 				lock (this) {
 					this.writer.BaseStream.Position = 0;
 					this.writer.BaseStream.SetLength(0); // truncate file
-					this.writer.Write(this.counter);
+					foreach (var pair in this.counters) {
+						this.writer.Write(pair.Value);
+						this.writer.Write(separator[0]);
+						this.writer.WriteLine(pair.Key);
+					}
+					this.writer.Flush();
 					this.dirty = false;
 					this.lastFlushed = DateTime.Now;
 				}

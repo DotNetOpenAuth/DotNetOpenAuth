@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.provider = new ProviderEndpointDescription(response.ProviderEndpoint, response.Version);
 			}
 
-			Reporting.RecordEventOccurrence(this);
+			Reporting.RecordEventOccurrence(this, response.ProviderEndpoint.AbsoluteUri);
 		}
 
 		#region IAuthenticationResponse Properties
