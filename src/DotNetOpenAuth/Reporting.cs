@@ -317,6 +317,7 @@ namespace DotNetOpenAuth {
 				request.UserAgent = Util.LibraryVersion;
 				request.AllowAutoRedirect = false;
 				request.Method = "POST";
+				request.ContentType = "text/dnoa-report1";
 				Stream report = GetReport();
 				request.ContentLength = report.Length;
 				using (var requestStream = webRequestHandler.GetRequestStream(request)) {
