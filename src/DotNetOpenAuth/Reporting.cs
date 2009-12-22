@@ -57,7 +57,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// The recipient of collected reports.
 		/// </summary>
-		private static Uri wellKnownPostLocation = new Uri("http://reports.dotnetopenauth.net/ReportingPost.aspx");
+		private static Uri wellKnownPostLocation = new Uri("http://reports.dotnetopenauth.net/ReportingPost.ashx");
 
 		/// <summary>
 		/// The outgoing HTTP request handler to use for publishing reports.
@@ -315,14 +315,24 @@ namespace DotNetOpenAuth {
 				request.UserAgent = Util.LibraryVersion;
 				request.AllowAutoRedirect = false;
 				request.Method = "POST";
-				var report = GetReport();
+				Stream report = GetReport();
 				request.ContentLength = report.Length;
 				using (var requestStream = webRequestHandler.GetRequestStream(request)) {
 					report.CopyTo(requestStream);
 				}
 
-				var response = webRequestHandler.GetResponse(request);
-				response.Dispose();
+				using (var response = webRequestHandler.GetResponse(request)) {
+					// Currently we have no interest in the response stream content.
+				}
+
+				// Report submission was successful.  Reset all counters.
+				lock (events) {
+					foreach (PersistentCounter counter in events.Values) {
+						counter.Reset();
+						counter.Flush();
+					}
+				}
+
 				return true;
 			} catch (ProtocolException ex) {
 				Logger.Library.Error("Unable to submit report due to an HTTP error.", ex);
@@ -342,12 +352,26 @@ namespace DotNetOpenAuth {
 			lock (publishingConsiderationLock) {
 				if (DateTime.Now - lastPublished > minimumReportingInterval) {
 					lastPublished = DateTime.Now;
-
-					// Do it on a background thread since it could take a while and we
-					// don't want to slow down this request we're borrowing.
-					ThreadPool.QueueUserWorkItem(state => SendStats());
+					SendStatsAsync();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Sends the stats report asynchronously, and careful to not throw any unhandled exceptions.
+		/// </summary>
+		private static void SendStatsAsync() {
+			// Do it on a background thread since it could take a while and we
+			// don't want to slow down this request we're borrowing.
+			ThreadPool.QueueUserWorkItem(state => {
+				try {
+					SendStats();
+				} catch (Exception ex) {
+					// Something bad and unexpected happened.  Just deactivate to avoid more trouble.
+					Logger.Library.Error("Error while trying to submit statistical report.", ex);
+					Enabled = false;
+				}
+			});
 		}
 
 		/// <summary>
@@ -716,6 +740,15 @@ namespace DotNetOpenAuth {
 					this.writer.Flush();
 					this.dirty = false;
 					this.lastFlushed = DateTime.Now;
+				}
+			}
+
+			/// <summary>
+			/// Resets all counters.
+			/// </summary>
+			internal void Reset() {
+				lock (this) {
+					this.counters.Clear();
 				}
 			}
 
