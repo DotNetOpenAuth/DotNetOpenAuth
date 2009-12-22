@@ -286,6 +286,8 @@ namespace DotNetOpenAuth {
 				}
 			}
 
+			// Not all event counters may have even loaded in this app instance.
+			// We flush the ones in memory, and then read all of them off disk.
 			foreach (var counter in events.Values) {
 				counter.Flush();
 			}
@@ -514,7 +516,6 @@ namespace DotNetOpenAuth {
 				this.maximumElements = maximumElements;
 
 				// Load the file into memory.
-				bool fileCreated = storage.GetFileNames(fileName).Length == 0;
 				this.fileStream = new IsolatedStorageFileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, storage);
 				this.reader = new StreamReader(this.fileStream, Encoding.UTF8);
 				while (!this.reader.EndOfStream) {
@@ -523,11 +524,6 @@ namespace DotNetOpenAuth {
 
 				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
 				this.lastFlushed = DateTime.Now;
-
-				// Write a unique header to the file so the report collector can match duplicates.
-				if (fileCreated) {
-					this.writer.WriteLine(Guid.NewGuid().ToString("B"));
-				}
 			}
 
 			/// <summary>
@@ -663,7 +659,6 @@ namespace DotNetOpenAuth {
 				this.FileName = fileName;
 
 				// Load the file into memory.
-				bool fileCreated = storage.GetFileNames(fileName).Length == 0;
 				this.fileStream = new IsolatedStorageFileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, storage);
 				this.reader = new StreamReader(this.fileStream, Encoding.UTF8);
 				while (!this.reader.EndOfStream) {
@@ -681,12 +676,6 @@ namespace DotNetOpenAuth {
 
 				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
 				this.lastFlushed = DateTime.Now;
-
-				// Write a unique header to the file so the report collector can match duplicates.
-				if (fileCreated) {
-					this.writer.WriteLine(Guid.NewGuid().ToString("B"));
-					this.writer.Flush();
-				}
 			}
 
 			/// <summary>
