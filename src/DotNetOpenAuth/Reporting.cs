@@ -333,15 +333,7 @@ namespace DotNetOpenAuth {
 					using (var responseReader = response.GetResponseReader()) {
 						string line = responseReader.ReadLine();
 						if (line != null) {
-							if (line.StartsWith("INFO ")) {
-								Logger.Library.Info(line.Substring(5));
-							} if (line.StartsWith("WARN ")) {
-								Logger.Library.Warn(line.Substring(5));
-							} else if (line.StartsWith("ERROR ")) {
-								Logger.Library.Warn(line.Substring(6));
-							} else if (line.StartsWith("FATAL ")) {
-								Logger.Library.Fatal(line.Substring(6));
-							}
+							DemuxLogMessage(line);
 						}
 					}
 				}
@@ -362,6 +354,34 @@ namespace DotNetOpenAuth {
 			}
 
 			return false;
+		}
+
+		/// <summary>
+		/// Interprets the reporting response as a log message if possible.
+		/// </summary>
+		/// <param name="line">The line from the HTTP response to interpret as a log message.</param>
+		private static void DemuxLogMessage(string line) {
+			if (line != null) {
+				string[] parts = line.Split(new char[] { ' ' }, 2);
+				if (parts.Length == 2) {
+					string level = parts[0];
+					string message = parts[1];
+					switch (level) {
+						case "INFO":
+							Logger.Library.Info(message);
+							break;
+						case "WARN":
+							Logger.Library.Warn(message);
+							break;
+						case "ERROR":
+							Logger.Library.Error(message);
+							break;
+						case "FATAL":
+							Logger.Library.Fatal(message);
+							break;
+					}
+				}
+			}
 		}
 
 		/// <summary>
