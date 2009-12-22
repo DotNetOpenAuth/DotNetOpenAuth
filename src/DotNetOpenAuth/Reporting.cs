@@ -324,7 +324,26 @@ namespace DotNetOpenAuth {
 				}
 
 				using (var response = webRequestHandler.GetResponse(request)) {
-					// Currently we have no interest in the response stream content.
+					Logger.Library.Info("Statistical report submitted successfully.");
+
+					// The response stream may contain a message for the webmaster.
+					// Since as part of the report we submit the library version number,
+					// the report receiving service may have alerts such as:
+					// "You're using an obsolete version with exploitable security vulnerabilities."
+					using (var responseReader = response.GetResponseReader()) {
+						string line = responseReader.ReadLine();
+						if (line != null) {
+							if (line.StartsWith("INFO ")) {
+								Logger.Library.Info(line.Substring(5));
+							} if (line.StartsWith("WARN ")) {
+								Logger.Library.Warn(line.Substring(5));
+							} else if (line.StartsWith("ERROR ")) {
+								Logger.Library.Warn(line.Substring(6));
+							} else if (line.StartsWith("FATAL ")) {
+								Logger.Library.Fatal(line.Substring(6));
+							}
+						}
+					}
 				}
 
 				// Report submission was successful.  Reset all counters.
@@ -337,9 +356,9 @@ namespace DotNetOpenAuth {
 
 				return true;
 			} catch (ProtocolException ex) {
-				Logger.Library.Error("Unable to submit report due to an HTTP error.", ex);
+				Logger.Library.Error("Unable to submit statistical report due to an HTTP error.", ex);
 			} catch (FileNotFoundException ex) {
-				Logger.Library.Error("Unable to submit report because the report file is missing.", ex);
+				Logger.Library.Error("Unable to submit statistical report because the report file is missing.", ex);
 			}
 
 			return false;
