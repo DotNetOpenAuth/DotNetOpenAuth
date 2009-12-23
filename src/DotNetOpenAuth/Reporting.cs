@@ -271,6 +271,7 @@ namespace DotNetOpenAuth {
 			var writer = new StreamWriter(stream, Encoding.UTF8);
 			writer.WriteLine(reportOriginIdentity.ToString("B"));
 			writer.WriteLine(Util.LibraryVersion);
+			writer.WriteLine(".NET Framework {0}", Environment.Version);
 
 			foreach (var observation in observations) {
 				observation.Flush();
