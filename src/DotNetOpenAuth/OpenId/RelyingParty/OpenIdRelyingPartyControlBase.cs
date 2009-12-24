@@ -612,6 +612,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId] ?? this.Page.Request.Form[ReturnToReceivingControlId];
 			if (receiver == null || receiver == this.ClientID) {
 				var response = this.RelyingParty.GetResponse();
+				Logger.Controls.DebugFormat(
+					"The {0} control checked for an authentication response and found: {1}",
+					this.ID,
+					response != null ? response.Status.ToString() : "nothing");
 				this.ProcessResponse(response);
 			}
 		}

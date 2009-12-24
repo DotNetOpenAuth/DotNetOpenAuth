@@ -60,6 +60,11 @@ namespace DotNetOpenAuth {
 		private static readonly ILog http = Create("DotNetOpenAuth.Http");
 
 		/// <summary>
+		/// Backing field for the <see cref="Controls"/> property.
+		/// </summary>
+		private static readonly ILog controls = Create("DotNetOpenAuth.Controls");
+
+		/// <summary>
 		/// Backing field for the <see cref="OpenId"/> property.
 		/// </summary>
 		private static readonly ILog openId = Create("DotNetOpenAuth.OpenId");
@@ -108,6 +113,11 @@ namespace DotNetOpenAuth {
 		/// Gets the logger for HTTP-level events.
 		/// </summary>
 		internal static ILog Http { get { return http; } }
+
+		/// <summary>
+		/// Gets the logger for events logged by ASP.NET controls.
+		/// </summary>
+		internal static ILog Controls { get { return controls; } }
 
 		/// <summary>
 		/// Gets the logger for high-level OpenID events.

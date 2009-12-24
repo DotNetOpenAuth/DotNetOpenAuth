@@ -174,6 +174,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						};
 
 						this.authenticationResponse = this.RelyingParty.GetResponse(clientResponseInfo);
+						Logger.Controls.DebugFormat(
+							"The {0} control checked for an authentication response and found: {1}",
+							this.ID,
+							this.authenticationResponse.Status);
 						this.AuthenticationProcessedAlready = false;
 
 						// Save out the authentication response to viewstate so we can find it on
@@ -420,6 +424,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			string extensionsJson = null;
 
 			var authResponse = RelyingPartyNonVerifying.GetResponse();
+			Logger.Controls.DebugFormat(
+				"The {0} control checked for an authentication response from a popup window or iframe using a non-verifying RP and found: {1}",
+				this.ID,
+				authResponse.Status);
 			if (authResponse.Status == AuthenticationStatus.Authenticated) {
 				this.OnUnconfirmedPositiveAssertion(); // event handler will fill the clientScriptExtensions collection.
 				var extensionsDictionary = new Dictionary<string, string>();
