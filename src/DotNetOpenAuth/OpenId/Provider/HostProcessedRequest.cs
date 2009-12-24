@@ -39,6 +39,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires<ArgumentNullException>(provider != null);
 
 			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
+			Reporting.RecordEventOccurrence(this, request.Realm);
 		}
 
 		#region IHostProcessedRequest Properties

@@ -403,6 +403,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				}
 			}
 
+			Reporting.RecordEventOccurrence(this, "PrepareUnsolicitedAssertion");
 			return this.Channel.PrepareResponse(positiveAssertion);
 		}
 
@@ -515,6 +516,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			foreach (IProviderBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
+				Reporting.RecordFeatureUse(profile);
 			}
 		}
 	}

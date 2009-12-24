@@ -73,6 +73,7 @@ namespace DotNetOpenAuth.Yadis {
 			CachedDirectWebResponse response2 = null;
 			if (IsXrdsDocument(response)) {
 				Logger.Yadis.Debug("An XRDS response was received from GET at user-supplied identifier.");
+				Reporting.RecordEventOccurrence("Yadis", "XRDS in initial response");
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(HeaderName);
@@ -80,12 +81,14 @@ namespace DotNetOpenAuth.Yadis {
 				if (uriString != null) {
 					if (Uri.TryCreate(uriString, UriKind.Absolute, out url)) {
 						Logger.Yadis.DebugFormat("{0} found in HTTP header.  Preparing to pull XRDS from {1}", HeaderName, url);
+						Reporting.RecordEventOccurrence("Yadis", "XRDS referenced in HTTP header");
 					}
 				}
 				if (url == null && response.ContentType != null && (response.ContentType.MediaType == ContentTypes.Html || response.ContentType.MediaType == ContentTypes.XHtml)) {
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.GetResponseString());
 					if (url != null) {
 						Logger.Yadis.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
+						Reporting.RecordEventOccurrence("Yadis", "XRDS referenced in HTML");
 					}
 				}
 				if (url != null) {
