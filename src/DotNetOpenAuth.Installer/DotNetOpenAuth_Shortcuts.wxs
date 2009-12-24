@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix 
+  xmlns="http://schemas.microsoft.com/wix/2006/wi"
+  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+>
+	<Fragment>
+    <DirectoryRef Id="DNOAMenuFolder">
+      <Component Id="dnoa.ApplicationShortcuts" Guid="1f67dced-97f2-4486-80c0-ef21e797fe0a">
+        <Shortcut Id="ApplicationDocumentationShortcut"
+                Name="Documentation"
+                Description="OpenID, OAuth and InfoCard Library Documentation"
+                Target="[INSTALLLOCATION]\DotNetOpenAuth.chm"
+                WorkingDirectory="INSTALLLOCATION"
+                  Icon="DotNetOpenAuthIcon.exe">
+        </Shortcut>
+        <util:InternetShortcut Id="OnlineDocumentationShortcut"
+                      Name="Online Documentation"
+                      Target="http://www.dotnetopenauth.net/"  Type="link">
+        </util:InternetShortcut>
+        <Shortcut Id="UninstallProduct"
+          Name="Uninstall DotNetOpenAuth"
+          Target="[System64Folder]msiexec.exe"
+          Arguments="/x [ProductCode]"
+          Description="Uninstalls DotNetOpenAuth"
+                  Icon="DotNetOpenAuthIcon.exe"
+                  />
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

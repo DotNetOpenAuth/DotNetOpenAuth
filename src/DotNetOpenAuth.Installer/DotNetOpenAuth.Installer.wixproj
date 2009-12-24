@@ -1,32 +1,40 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <DefineSolutionProperties>false</DefineSolutionProperties>
-	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.0</ProductVersion>
+    <ProductVersion>0.0</ProductVersion>
     <ProjectGuid>{46aa1735-4d3f-4999-b191-59d5bf0626a8}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>$(MSIOutputName)</OutputName>
+    <OutputName>$(OutputName)</OutputName>
     <OutputType>Package</OutputType>
     <WixToolPath>..\..\Tools\wix</WixToolPath>
     <WixTargetsPath>$(WixToolPath)\Wix.targets</WixTargetsPath>
     <WixTasksPath>wixtasks.dll</WixTasksPath>
     <OutputPath Condition=" '$(OutputPath)' == ''">..\..\</OutputPath>
     <OutputName Condition=" '$(OutputName)' == ''">DotNetOpenAuth</OutputName>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>$(DefineConstants);OutputPath=$(OutputPath);ProjectRoot=$(ProjectRoot);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
+    <SetMsiAssemblyNameFileVersion>true</SetMsiAssemblyNameFileVersion>
+    <ExactAssemblyVersions>true</ExactAssemblyVersions>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
-    <SuppressValidation>True</SuppressValidation>
+    <SuppressIces>ICE69;ICE61;ICE30</SuppressIces>
+    <SuppressPdbOutput>true</SuppressPdbOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DefineConstants>Release;$(DefineConstants)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+    <SuppressIces>ICE69;ICE61;ICE30</SuppressIces>
+    <SuppressPdbOutput>true</SuppressPdbOutput>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Product.wxs" />
+    <Compile Include="DotNetOpenAuth_Intellisense_VS2008.wxs" />
+    <Compile Include="DotNetOpenAuth_Samples.wxs" />
+    <Compile Include="DotNetOpenAuth_Shortcuts.wxs" />
+    <Compile Include="DotNetOpenAuth_UI.wxs" />
+    <Compile Include="DotNetOpenAuth.wxs" />
+    <Compile Include="DotNetOpenAuth_Templates_VS2008.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Bitmaps\bannrbmp.bmp" />
@@ -36,6 +44,9 @@
     <Folder Include="Bitmaps\" />
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
+    </WixExtension>
     <WixExtension Include="WixUtilExtension">
       <HintPath>$(WixToolPath)\WixUtilExtension.dll</HintPath>
     </WixExtension>
@@ -45,9 +56,10 @@
     <WixExtension Include="WixUIExtension">
       <HintPath>$(WixToolPath)\WixUIExtension.dll</HintPath>
     </WixExtension>
-    <WixExtension Include="WixIIsExtension">
-      <HintPath>$(WixToolPath)\WixIIsExtension.dll</HintPath>
-    </WixExtension>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
+  <Target Name="CheckWxs">
+    <!-- Run WixCop on all the source files to check for issues. -->
+    <Exec Command="&quot;$(WixToolPath)\WixCop.exe&quot; -set1WixCop.settings @(Compile, ' ')" ContinueOnError="true" />
+  </Target>
 </Project>

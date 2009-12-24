@@ -57,10 +57,10 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
   <!-- These properties can be overridden to support non-default installations. -->
   <PropertyGroup>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.0\Wix.targets</WixTargetsPath>
-    <WixTasksPath Condition=" '$(WixTasksPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.0\WixTasks.dll</WixTasksPath>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\Wix.targets</WixTargetsPath>
-    <WixTasksPath Condition=" '$(WixTasksPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\WixTasks.dll</WixTasksPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.5\Wix.targets</WixTargetsPath>
+    <WixTasksPath Condition=" '$(WixTasksPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.5\WixTasks.dll</WixTasksPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.5\Wix.targets</WixTargetsPath>
+    <WixTasksPath Condition=" '$(WixTasksPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.5\WixTasks.dll</WixTasksPath>
   </PropertyGroup>
 
   <!-- This makes the project files a dependency of all targets so that things rebuild if they change -->
@@ -351,8 +351,8 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   ==================================================================================================
   -->
   <PropertyGroup>
-    <WixInstallRegKey>SOFTWARE\Microsoft\Windows Installer XML\3.0</WixInstallRegKey>
-    <WixInstallRegKeyWow64>SOFTWARE\Wow6432Node\Microsoft\Windows Installer XML\3.0</WixInstallRegKeyWow64>
+    <WixInstallRegKey>SOFTWARE\Microsoft\Windows Installer XML\3.5</WixInstallRegKey>
+    <WixInstallRegKeyWow64>SOFTWARE\Wow6432Node\Microsoft\Windows Installer XML\3.5</WixInstallRegKeyWow64>
   </PropertyGroup>
   <Target
     Name="_SetDefaultPathValues">
@@ -1193,13 +1193,12 @@ Copyright (c) Microsoft Corporation. All rights reserved.
   ==================================================================================================
   _TimeStampBeforeCompileAndLink
 
-    If post-build events are set to fire "OnOutputUpdated", then take before and after timestamps
-    so that we can compare them.
+    Record a timestamp so that we can compare it to a new timestamp during PostBuildEvent if
+    necessary.
   ==================================================================================================
   -->
   <Target
-    Name="_TimeStampBeforeCompileAndLink"
-    Condition=" '$(RunPostBuildEvent)' == 'OnOutputUpdated' ">
+    Name="_TimeStampBeforeCompileAndLink" >
 
     <CreateItem Include="$(TargetPath)">
       <Output TaskParameter="Include" ItemName="TargetOutput" />
@@ -1293,7 +1292,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
             @(_ResolvedWixExtensionPaths);
             @(_ResolvedProjectReferencePaths);
             $(MSBuildAllProjects)"
-    Outputs="$(IntermediateOutputPath)%(Compile.Filename)$(IntermediateExt)"
+    Outputs="@(Compile -> '$(IntermediateOutputPath)%(Filename)$(IntermediateExt)')"
     DependsOnTargets="$(CompileDependsOn)"
     Condition=" '@(Compile)' != '' ">
 
@@ -1311,7 +1310,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
       InstallerPlatform="$(InstallerPlatform)"
       NoLogo="$(CompilerNoLogo)"
       OnlyValidateDocuments="$(OnlyValidateDocuments)" 
-      OutputFile="$(IntermediateOutputPath)%(Compile.Filename)$(IntermediateExt)"
+      OutputFile="$(IntermediateOutputPath)"
       Pedantic="$(Pedantic)"
       ReferencePaths="$(ReferencePaths)"
       RunAsSeparateProcess="$(RunWixToolsOutOfProc)"
@@ -1323,9 +1322,11 @@ Copyright (c) Microsoft Corporation. All rights reserved.
       TreatWarningsAsErrors="$(CompilerTreatWarningsAsErrors)"
       TreatSpecificWarningsAsErrors="$(CompilerTreatSpecificWarningsAsErrors)" 
       VerboseOutput="$(CompilerVerboseOutput)">
-
-      <Output TaskParameter="OutputFile" ItemName="CompileObjOutput" />
     </Candle>
+
+    <CreateItem Include="@(Compile -> '$(IntermediateOutputPath)%(Filename)$(IntermediateExt)')">
+      <Output TaskParameter="Include" ItemName="CompileObjOutput" />
+    </CreateItem>
   </Target>
 
   <!--
@@ -1518,6 +1519,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
       Cultures="%(CultureGroup.Identity)"
       DefaultCompressionLevel="$(DefaultCompressionLevel)"
       DropUnrealTables="$(DropUnrealTables)"
+      ExactAssemblyVersions="$(ExactAssemblyVersions)"
       ExtensionDirectory="$(WixExtDir)"
       Extensions="@(_ResolvedWixExtensionPaths)"
       Ices="$(Ices)"

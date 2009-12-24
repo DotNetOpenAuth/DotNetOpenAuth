@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix  xmlns="http://schemas.microsoft.com/wix/2006/wi"
+      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+      xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
+>
+
+  <!--  
+          ** NOTE ** 
+          NEVER EVER CHANGE THE UPGRADECODE
+    -->
+  <?define UpgradeCode="55e69523-dfd5-4c5d-bbe2-3ca4d453f0b7"?>
+
+
+  <Product  Id="*"
+          Name="$(var.ProductName) $(var.BuildVersion)"
+          Language="1033"
+          Version="$(var.BuildVersion)"
+          Manufacturer="www.dotnetopenauth.net"
+          UpgradeCode="$(var.UpgradeCode)">
+
+    <Package
+              Id="*"
+              InstallerVersion="200"
+              Compressed="yes"
+              Description="$(var.ProductName) - OpenID, OAuth, ICard Library for .NET"
+              Manufacturer="www.dotnetopenauth.net"
+ 	            InstallPrivileges="elevated"
+	            InstallScope="perMachine"
+              Comments="DotNetOpenAuth is a C# library that adds OpenID 2.0 Provider and Relying Party, OAuth Consumer and Service Provider, and InfoCard Selector support to your web site both programmatically and through convenient drop-in ASP.NET controls."
+              />
+
+    <Media Id="1" Cabinet="dnoa.cab" EmbedCab="yes" />
+
+    <!--  Version Control -->
+    <Property Id="NEWERVERSIONDETECTED" Secure="yes" />
+    <Property Id="OLDERVERSIONBEINGUPGRADED" Secure="yes" />
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion
+          Minimum="$(var.BuildVersion)"
+          IncludeMinimum="no"
+          OnlyDetect="yes"
+          Property="NEWERVERSIONDETECTED" />
+      <?if $(var.BuildVersion) = "0.0.0.0" ?>
+      <UpgradeVersion OnlyDetect="no" Maximum="$(var.BuildVersion)" IncludeMaximum="yes" Property="OLDERVERSIONBEINGUPGRADED" />
+      <?else ?>
+      <UpgradeVersion OnlyDetect="no" Maximum="$(var.BuildVersion)" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
+      <?endif ?>
+    </Upgrade>
+    <Condition Message="A newer version of [ProductName] is already installed.  It must be removed before this version can be installed.">NOT NEWERVERSIONDETECTED</Condition>
+    <Condition Message="An administrator must approve or install [ProductName].">Privileged</Condition>
+    <!--  End -->
+
+    <!--  Check that Microsoft .NET Framework is installed (WinNetFxExtension) -->
+    <PropertyRef Id="NETFRAMEWORK35"/>
+    <Condition Message="This application requires .NET Framework 3.5. Please install .NET Framework v3.5 then run the DotNetOpenAuth installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK35]]>
+    </Condition>
+    <!--  End -->
+
+    <PropertyRef Id="VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED" />
+  
+  <!-- Icons and Add/Remove Programs Info -->
+    <Icon Id="DotNetOpenAuthIcon.exe" SourceFile="$(var.ProjectRoot)\doc\logo\dnoa-icon-colour.ico"/>
+    <Property Id="ARPHELPLINK" Value="http://dotnetopenauth.net" />
+    <Property Id="ARPURLINFOABOUT" Value="http://dotnetopenauth.net" />
+    <Property Id="ARPPRODUCTICON" Value="DotNetOpenAuthIcon.exe" />
+    <!--  End -->
+
+    <!-- Define which type of Wix UI we are going to use -->
+    <UIRef Id="WixUI_DotNetOpenAuth" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <!--  End -->
+
+    <!--  Start | UI Customisation ========================================================================================= -->
+    <CustomActionRef Id="VS90Setup" />
+    <UI>
+      <ProgressText Action="VS90Setup" Template="[1]">Updating Visual Studio 2008 registration (May take a while)</ProgressText>
+    </UI>
+
+    <InstallExecuteSequence>
+      <FindRelatedProducts Before="LaunchConditions" />
+      <RemoveExistingProducts After="InstallInitialize" />
+      <Custom Action="VS90Setup" Before="InstallFinalize"><![CDATA[(&dnoa.Intellisense.VS2008 > 1 OR &dnoa.Templates.VS2008 > 1) AND VS90DEVENV <> ""]]></Custom>
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <FindRelatedProducts Before="LaunchConditions" />
+    </InstallUISequence>
+
+    <!--  End -->
+
+    <!--  Start | Installation Components and Directory Structure ========================================================== 
+	
+		This is where we specify what to install and where.
+	
+	-->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="DotNetOpenAuth">
+          <Directory Id="DotNetOpenAuth.BinFolder" Name="Bin">
+            <Component Id="dnoa.ProductComponent" Guid="47ef004e-517c-4ae3-96b0-7e41e94875cc">
+              <File Id="DotNetOpenAuth.dll" Source="$(var.OutputPath)\bin\DotNetOpenAuth.dll"></File>
+              <File Id="DotNetOpenAuth.pdb" Source="$(var.OutputPath)\bin\DotNetOpenAuth.pdb"></File>
+              <File Id="DotNetOpenAuth.xml" Source="$(var.OutputPath)\bin\DotNetOpenAuth.xml"></File>
+            </Component>
+            <Directory Id="SATLIBRARYFOLDER" Name="sr">
+              <Component Id="dnoa.LocalisedAssemblies" Guid="4a3e9d9f-89af-456e-b998-3b949f106ee5">
+                <File Id="DotNetOpenAuth.resources.dll" Source="$(var.OutputPath)\bin\sr\DotNetOpenAuth.resources.dll"></File>
+              </Component>
+            </Directory>
+          </Directory>
+          <Directory Id="DotNetOpenAuth.DocsFolder" Name="Docs">
+            <Component Id="dnoa.Documentation" Guid="{48F5DE8D-E17B-4167-856F-C2938F386279}">
+              <File Id="DotNetOpenAuth.chm" Source="$(var.OutputPath)\DotNetOpenAuth.chm" />
+            </Component>
+          </Directory>
+          <Directory Id="DotNetOpenAuth.SamplesFolder" Name="Samples"/>
+        </Directory>
+      </Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+      <Directory Id="ProgramMenuFolder" Name=".">
+        <Directory Id="DNOAMenuFolder" Name="DotNetOpenAuth">
+          <Directory Id="DNOASamplesMenuFolder" Name="Samples" />
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="DNOAMenuFolder">
+      <!-- Component to remove the DNOA menu folder on uninstall (if empty) -->
+      <Component Id="dnoa.MenuFolder.RemoveFolder" Guid="{C0717993-5448-4671-B850-A6EFD4EA34FF}">
+        <RemoveFolder Id="dnoa.MenuFolder.RemoveFolder" On="uninstall" />
+        <RegistryKey Action="none" Root="HKCU" Key="Software\dotnetopenauth.net\$(var.ProductName)\$(var.BuildVersion)">
+          <RegistryValue Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
+
+ 
+    <!-- Installable Features -->
+    <Feature Id="ProductFeature" Title="Assembly File Library" Level="1" ConfigurableDirectory="INSTALLLOCATION"
+             Description="Installs the compiled library DLLs">
+      <ComponentRef Id="dnoa.ProductComponent" />
+      <ComponentRef Id="dnoa.LocalisedAssemblies" />
+      <ComponentRef Id="dnoa.ApplicationShortcuts" />
+	  <ComponentRef Id="dnoa.MenuFolder.RemoveFolder" />
+    </Feature>
+    <Feature Id="DocumentationFeature" Title="Documentation" Level="1" ConfigurableDirectory="INSTALLLOCATION"
+             Description="Installs the library documentation">
+      <ComponentRef Id="dnoa.Documentation" />
+    </Feature>
+    <FeatureRef Id="DotNetOpenAuth.Samples" />
+    <Feature Id="IntegrationFeature" Title="Visual Studio 2008 Integration" Level="1" ConfigurableDirectory="INSTALLLOCATION"
+             Description="Automagically installs the selected components into your Visual Studio environment">
+      <Condition Level="0">NOT VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED</Condition>
+      <FeatureRef Id="dnoa.Intellisense.VS2008" />
+      <FeatureRef Id="dnoa.Templates.VS2008"/>
+    </Feature>
+  </Product>
+</Wix>

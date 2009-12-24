@@ -1,0 +1,36 @@
+<t if="wixux.jpg" s="100a0000">
+  <a w="500" h="383" f="0">!(loc.WixUX)</a>
+  <f id="0" h="-11" w="500" f="0" b="eeeeee">Tahoma</f>
+  <f id="1" h="-13" w="700" f="0" b="ffffff">Tahoma</f>
+  <f id="2" h="-11" w="500" f="0" b="ffffff">Tahoma</f>
+  <i id="0" x="0" y="0" w="493" h="60" sx="0" sy="0" s="10000000"/>
+  <t id="1" x="20" y="11" w="112" h="16" f="1" s="10000000">Welcome</t>
+  <t id="2" x="33" y="31" w="388" h="26" f="2" s="10000000">Please read the Windows Installer XML Toolset 3.5 License Agreement</t>
+  <rt id="3" x="26" y="73" w="439" h="160" f="0" s="4000"/>
+  <cb id="4" x="26" y="245" w="290" h="14" f="0" t="1">!(loc.WixUIAccept)</cb>
+  <t id="5" x="32" y="150" w="320" h="20" f="0">TOP_MESSAGE</t>
+  <t id="6" x="26" y="272" w="403" h="26" f="0">Click Install to install the product with default options for all users. Click Advanced to change installation options.</t>
+
+  <b id="7" x="118" y="325" w="71" h="22" f="0" t="1">!(loc.WixUIPrint)</b>
+  <b id="8" x="209" y="325" w="71" h="22" f="0" t="1" s="8000000">!(loc.WixUIAdvanced)</b>
+  <b id="9" x="283" y="325" w="71" h="22" f="0" t="1" s="8000000">!(loc.WixUIInstall)</b>
+  <b id="10" x="209" y="325" w="71" h="22" f="0">!(loc.WixUIBack)</b>
+  <b id="11" x="283" y="325" w="71" h="22" f="0">!(loc.WixUINext)</b>
+  <b id="12" x="406" y="325" w="71" h="22" f="0">!(loc.WixUIClose)</b>
+  <b id="13" x="380" y="130" w="58" h="22" f="0">!(loc.WixUIRepair)</b>
+  <b id="14" x="440" y="130" w="58" h="22" f="0">!(loc.WixUIUninstall)</b>
+  <pb id="15" x="32" y="130" w="400" h="22" f="0">!(loc.WixUIProgress)</pb>
+  <t id="16" x="32" y="160" w="380" h="20" f="0">!(loc.WixUIMessage)</t>
+  <b id="17" x="410" y="325" w="71" h="22" f="0" t="1">!(loc.WixUICancel)</b>
+
+  <t id="18" x="20" y="11" w="112" h="16" f="1">Install Location</t>
+  <t id="19" x="33" y="31" w="388" h="26" f="2">Select the location to install</t>
+  <t id="20" x="20" y="11" w="112" h="16" f="1">Select Features</t>
+  <t id="21" x="33" y="31" w="388" h="26" f="2">Select the features to install</t>
+  <t id="22" x="20" y="11" w="112" h="16" f="1">Maintenance Mode</t>
+  <t id="23" x="33" y="31" w="388" h="26" f="2">Select how you'd like to change Windows Installer XML 3.5</t>
+  <t id="24" x="20" y="11" w="112" h="16" f="1">Configuring</t>
+  <t id="25" x="33" y="31" w="388" h="26" f="2">Configuring the Windows Installer XML 3.5</t>
+  <t id="26" x="20" y="11" w="112" h="16" f="1">Complete</t>
+  <t id="27" x="33" y="31" w="388" h="26" f="2">The Windows Installer XML 3.5 has been successfully configured</t>
+</t>

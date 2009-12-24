@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix 
+  xmlns="http://schemas.microsoft.com/wix/2006/wi"
+  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+  xmlns:VS="http://schemas.microsoft.com/wix/VSExtension"
+>
+  <Fragment>
+    <PropertyRef Id="VS90_ROOT_FOLDER" />
+
+    <DirectoryRef Id="DotNetOpenAuth.DocsFolder">
+      <Directory Id="DotNetOpenAuth.Intellisense" Name=".">
+        <Component Id="dnoa.Intellisense" Guid="{8943581F-D07B-49f4-AF09-23541F7EB2F7}">
+          <util:XmlConfig
+             Id="Schemas_catalog"
+             File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+             Action="create"
+             On="install"
+             ElementPath="//SchemaCatalog"
+             Name="Association"
+             Node="element"
+             VerifyPath="//SchemaCatalog/Association[\[]@schema='[INSTALLLOCATION]bin\DotNetOpenAuth.xsd'[\]]"
+             Sequence="1">
+          </util:XmlConfig>
+		  <util:XmlConfig
+                    Id="DNOA_Removenode"
+                    File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                    Action="delete"
+                    Node="element"
+                    VerifyPath="//SchemaCatalog/Association[\[]@schema='[INSTALLLOCATION]bin\DotNetOpenAuth.xsd'[\]]"
+                    ElementPath="//SchemaCatalog"
+                    On="uninstall"
+                    Sequence="1" />
+          <util:XmlConfig
+                  Id="Schemas_catalog_2"
+                  File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                  ElementId="Schemas_catalog"
+                  Name="extension"
+                  Value="config"
+                  Sequence="2">
+          </util:XmlConfig>
+          <util:XmlConfig
+                  Id="Schemas_catalog_3"
+                  File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                  ElementId="Schemas_catalog"
+                  Name="schema"
+                  Value="[INSTALLLOCATION]bin\DotNetOpenAuth.xsd"
+                  Sequence="3"
+                  >
+          </util:XmlConfig>
+          <util:XmlConfig
+                  Id="Schemas_catalog_4"
+                  File="[VS90_ROOT_FOLDER]\Xml\Schemas\catalog.xml"
+                  ElementId="Schemas_catalog"
+                  Name="condition"
+                  Value="%TargetFrameworkVersion% != 2.0 and %TargetFrameworkVersion% != 3.0"
+                  Sequence="4"
+                  >
+          </util:XmlConfig>
+          <CreateFolder/>
+          <RegistryValue Root="HKCU" Key="Software\Microsoft\DotNetOpenAuth" Name="SchemasInstalled" Type="integer" Value="1" KeyPath="yes"/>
+        </Component>
+      </Directory>
+    </DirectoryRef>
+
+    
+    <DirectoryRef Id="DotNetOpenAuth.Intellisense">
+      <Component Id="dnoa.Intellisense.RemoveFolder" Guid="{4FD31F4E-F9C5-4ca8-BA55-93A80660B728}">
+        <RemoveFolder Id="DotNetOpenAuth.Intellisense.RemoveFolder" On="uninstall" />
+        <RegistryKey Action="none" Root="HKCU" Key="Software\dotnetopenauth.net\$(var.ProductName)\$(var.BuildVersion)">
+          <RegistryValue Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="dnoa.Intellisense.VS2008" Title="Config File Intellisense" Level="1" AllowAdvertise="no"
+             Description="Easy management of your .config files is made possible by this Intellisense file for DotNetOpenAuth">
+      <Condition Level="1">
+        VS90_ITEMTEMPLATES_DIR and VS90_PROJECTTEMPLATES_DIR
+      </Condition>
+      <ComponentRef Id="dnoa.Intellisense"/>
+      <ComponentRef Id="dnoa.Intellisense.RemoveFolder"/>
+    </Feature>
+  </Fragment>
+</Wix>
