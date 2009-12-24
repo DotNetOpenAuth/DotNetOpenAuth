@@ -434,7 +434,7 @@
 		         ProjectRoot=$(ProjectRoot);
 		         BuildVersion=$(BuildVersion);
 		         ProductName=$(ProductName);
-		         OutputPath=$(DropDirectoryNoSlash);
+		         OutputPath=$(DropsRoot);
 		         OutputName=$(ProductName)-$(BuildVersion);
 		         " />
   </Target>
