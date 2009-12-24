@@ -187,6 +187,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				IReplayProtectedProtocolMessage replayResponse = response;
 				if (!this.nonceStore.StoreNonce(replayResponse.NonceContext, nonce.RandomPartAsString, nonce.CreationDateUtc)) {
+					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", replayResponse.Nonce, replayResponse.UtcCreationDate);
 					throw new ReplayedMessageException(message);
 				}
 
