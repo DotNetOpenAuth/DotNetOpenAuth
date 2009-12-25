@@ -146,6 +146,7 @@ namespace DotNetOpenAuth {
 				}
 
 				counter.Increment(category);
+				Touch();
 			}
 		}
 
