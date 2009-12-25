@@ -31,20 +31,6 @@ namespace DotNetOpenAuth {
 	/// </summary>
 	internal static class Reporting {
 		/// <summary>
-		/// The maximum frequency that reports will be published.
-		/// </summary>
-		private static readonly TimeSpan minimumReportingInterval = TimeSpan.FromDays(1);
-
-		/// <summary>
-		/// The maximum frequency the set can be flushed to disk.
-		/// </summary>
-#if DEBUG
-		private static readonly TimeSpan minimumFlushInterval = TimeSpan.Zero;
-#else
-		private static readonly TimeSpan minimumFlushInterval = TimeSpan.FromMinutes(15);
-#endif
-
-		/// <summary>
 		/// The isolated storage to use for collecting data in between published reports.
 		/// </summary>
 		private static IsolatedStorageFile file;
@@ -137,6 +123,13 @@ namespace DotNetOpenAuth {
 		internal static bool Enabled { get; set; }
 
 		/// <summary>
+		/// Gets the configuration to use for reporting.
+		/// </summary>
+		private static ReportingElement Configuration {
+			get { return DotNetOpenAuthSection.Configuration.Reporting; }
+		}
+
+		/// <summary>
 		/// Records an event occurrence.
 		/// </summary>
 		/// <param name="eventName">Name of the event.</param>
@@ -144,14 +137,16 @@ namespace DotNetOpenAuth {
 		internal static void RecordEventOccurrence(string eventName, string category) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(eventName));
 
-			PersistentCounter counter;
-			lock (events) {
-				if (!events.TryGetValue(eventName, out counter)) {
-					events[eventName] = counter = new PersistentCounter(file, "event-" + SanitizeFileName(eventName) + ".txt");
+			if (Enabled && Configuration.IncludeEventStatistics) {
+				PersistentCounter counter;
+				lock (events) {
+					if (!events.TryGetValue(eventName, out counter)) {
+						events[eventName] = counter = new PersistentCounter(file, "event-" + SanitizeFileName(eventName) + ".txt");
+					}
 				}
-			}
 
-			counter.Increment(category);
+				counter.Increment(category);
+			}
 		}
 
 		/// <summary>
@@ -161,7 +156,10 @@ namespace DotNetOpenAuth {
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		internal static void RecordEventOccurrence(object eventNameByObjectType, string category) {
 			Contract.Requires<ArgumentNullException>(eventNameByObjectType != null);
-			RecordEventOccurrence(eventNameByObjectType.GetType().Name, category);
+
+			if (Enabled && Configuration.IncludeEventStatistics) {
+				RecordEventOccurrence(eventNameByObjectType.GetType().Name, category);
+			}
 		}
 
 		/// <summary>
@@ -171,7 +169,7 @@ namespace DotNetOpenAuth {
 		internal static void RecordFeatureUse(string feature) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(feature));
 
-			if (Enabled) {
+			if (Enabled && Configuration.IncludeFeatureUsage) {
 				observedFeatures.Add(feature);
 				Touch();
 			}
@@ -184,7 +182,7 @@ namespace DotNetOpenAuth {
 		internal static void RecordFeatureUse(object value) {
 			Contract.Requires<ArgumentNullException>(value != null);
 
-			if (Enabled) {
+			if (Enabled && Configuration.IncludeFeatureUsage) {
 				observedFeatures.Add(value.GetType().Name);
 				Touch();
 			}
@@ -199,7 +197,7 @@ namespace DotNetOpenAuth {
 		internal static void RecordFeatureAndDependencyUse(object value, object dependency1, object dependency2) {
 			Contract.Requires<ArgumentNullException>(value != null);
 
-			if (Enabled) {
+			if (Enabled && Configuration.IncludeFeatureUsage) {
 				StringBuilder builder = new StringBuilder();
 				builder.Append(value.GetType().Name);
 				builder.Append(" ");
@@ -223,7 +221,7 @@ namespace DotNetOpenAuth {
 			Contract.Requires<ArgumentNullException>(service != null);
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
 
-			if (Enabled) {
+			if (Enabled && Configuration.IncludeFeatureUsage) {
 				StringBuilder builder = new StringBuilder();
 				builder.Append(value.GetType().Name);
 				builder.Append(" ");
@@ -393,7 +391,7 @@ namespace DotNetOpenAuth {
 		private static void Touch() {
 			// Publish stats if it's time to do so.
 			lock (publishingConsiderationLock) {
-				if (DateTime.Now - lastPublished > minimumReportingInterval) {
+				if (DateTime.Now - lastPublished > Configuration.MinimumReportingInterval) {
 					lastPublished = DateTime.Now;
 					SendStatsAsync();
 				}
@@ -612,7 +610,7 @@ namespace DotNetOpenAuth {
 							}
 						}
 
-						if (this.dirty && DateTime.Now - this.lastFlushed > minimumFlushInterval) {
+						if (this.dirty && DateTime.Now - this.lastFlushed > Configuration.MinimumFlushInterval) {
 							this.Flush();
 						}
 					}
@@ -749,7 +747,7 @@ namespace DotNetOpenAuth {
 					this.counters.TryGetValue(category, out counter);
 					this.counters[category] = counter + 1;
 					this.dirty = true;
-					if (this.dirty && DateTime.Now - this.lastFlushed > minimumFlushInterval) {
+					if (this.dirty && DateTime.Now - this.lastFlushed > Configuration.MinimumFlushInterval) {
 						this.Flush();
 					}
 				}
