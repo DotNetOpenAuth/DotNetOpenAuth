@@ -43,7 +43,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// The recipient of collected reports.
 		/// </summary>
-		private static Uri wellKnownPostLocation = new Uri("http://reports.dotnetopenauth.net/ReportingPost.ashx");
+		private static Uri wellKnownPostLocation = new Uri("https://reports.dotnetopenauth.net/ReportingPost.ashx");
 
 		/// <summary>
 		/// The outgoing HTTP request handler to use for publishing reports.
