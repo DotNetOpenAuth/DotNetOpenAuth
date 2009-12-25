@@ -41,6 +41,16 @@ namespace DotNetOpenAuth.Configuration {
 		private const string IncludeEventStatisticsAttributeName = "includeEventStatistics";
 
 		/// <summary>
+		/// The name of the @includeLocalRequestUris attribute.
+		/// </summary>
+		private const string IncludeLocalRequestUrisAttributeName = "includeLocalRequestUris";
+
+		/// <summary>
+		/// The name of the @includeCultures attribute.
+		/// </summary>
+		private const string IncludeCulturesAttributeName = "includeCultures";
+
+		/// <summary>
 		/// The default value for the @minimumFlushInterval attribute.
 		/// </summary>
 #if DEBUG
@@ -104,6 +114,26 @@ namespace DotNetOpenAuth.Configuration {
 		internal bool IncludeEventStatistics {
 			get { return (bool)this[IncludeEventStatisticsAttributeName]; }
 			set { this[IncludeEventStatisticsAttributeName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to include a few URLs to pages on the hosting
+		/// web site that host DotNetOpenAuth components.
+		/// </summary>
+		[ConfigurationProperty(IncludeLocalRequestUrisAttributeName, DefaultValue = true)]
+		internal bool IncludeLocalRequestUris {
+			get { return (bool)this[IncludeLocalRequestUrisAttributeName]; }
+			set { this[IncludeLocalRequestUrisAttributeName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to include the cultures requested by the user agent
+		/// on pages that host DotNetOpenAuth components.
+		/// </summary>
+		[ConfigurationProperty(IncludeCulturesAttributeName, DefaultValue = true)]
+		internal bool IncludeCultures {
+			get { return (bool)this[IncludeCulturesAttributeName]; }
+			set { this[IncludeCulturesAttributeName] = value; }
 		}
 	}
 }

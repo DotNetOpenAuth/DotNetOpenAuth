@@ -247,9 +247,11 @@ namespace DotNetOpenAuth {
 			Contract.Requires<ArgumentNullException>(request != null);
 
 			if (Enabled) {
-				observedCultures.Add(Thread.CurrentThread.CurrentCulture.Name);
+				if (Configuration.IncludeCultures) {
+					observedCultures.Add(Thread.CurrentThread.CurrentCulture.Name);
+				}
 
-				if (!observedRequests.IsFull) {
+				if (Configuration.IncludeLocalRequestUris && !observedRequests.IsFull) {
 					var requestBuilder = new UriBuilder(request.UrlBeforeRewriting);
 					requestBuilder.Query = null;
 					requestBuilder.Fragment = null;

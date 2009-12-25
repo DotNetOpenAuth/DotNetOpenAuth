@@ -320,6 +320,8 @@
 						<xs:attribute name="minimumFlushInterval" type="xs:string" />
 						<xs:attribute name="includeFeatureUsage" type="xs:boolean" default="true" />
 						<xs:attribute name="includeEventStatistics" type="xs:boolean" default="true" />
+						<xs:attribute name="includeLocalRequestUris" type="xs:boolean" default="true" />
+						<xs:attribute name="includeCultures" type="xs:boolean" default="true" />
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>
