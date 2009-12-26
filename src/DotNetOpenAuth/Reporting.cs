@@ -135,7 +135,12 @@ namespace DotNetOpenAuth {
 		/// <param name="eventName">Name of the event.</param>
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		internal static void RecordEventOccurrence(string eventName, string category) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(eventName));
+			Contract.Requires(!String.IsNullOrEmpty(eventName));
+
+			// In release builds, just quietly return.
+			if (string.IsNullOrEmpty(eventName)) {
+				return;
+			}
 
 			if (Enabled && Configuration.IncludeEventStatistics) {
 				PersistentCounter counter;
@@ -156,7 +161,12 @@ namespace DotNetOpenAuth {
 		/// <param name="eventNameByObjectType">The object whose type name is the event name to record.</param>
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		internal static void RecordEventOccurrence(object eventNameByObjectType, string category) {
-			Contract.Requires<ArgumentNullException>(eventNameByObjectType != null);
+			Contract.Requires(eventNameByObjectType != null);
+
+			// In release builds, just quietly return.
+			if (eventNameByObjectType == null) {
+				return;
+			}
 
 			if (Enabled && Configuration.IncludeEventStatistics) {
 				RecordEventOccurrence(eventNameByObjectType.GetType().Name, category);
@@ -168,7 +178,12 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="feature">The feature.</param>
 		internal static void RecordFeatureUse(string feature) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(feature));
+			Contract.Requires(!String.IsNullOrEmpty(feature));
+
+			// In release builds, just quietly return.
+			if (string.IsNullOrEmpty(feature)) {
+				return;
+			}
 
 			if (Enabled && Configuration.IncludeFeatureUsage) {
 				observedFeatures.Add(feature);
@@ -181,7 +196,12 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="value">The object whose type is the feature to set as used.</param>
 		internal static void RecordFeatureUse(object value) {
-			Contract.Requires<ArgumentNullException>(value != null);
+			Contract.Requires(value != null);
+
+			// In release builds, just quietly return.
+			if (value == null) {
+				return;
+			}
 
 			if (Enabled && Configuration.IncludeFeatureUsage) {
 				observedFeatures.Add(value.GetType().Name);
@@ -196,7 +216,12 @@ namespace DotNetOpenAuth {
 		/// <param name="dependency1">Some dependency used by <paramref name="value"/>.</param>
 		/// <param name="dependency2">Some dependency used by <paramref name="value"/>.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, object dependency1, object dependency2) {
-			Contract.Requires<ArgumentNullException>(value != null);
+			Contract.Requires(value != null);
+
+			// In release builds, just quietly return.
+			if (value == null) {
+				return;
+			}
 
 			if (Enabled && Configuration.IncludeFeatureUsage) {
 				StringBuilder builder = new StringBuilder();
@@ -218,9 +243,14 @@ namespace DotNetOpenAuth {
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="nonceStore">The nonce store.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, ServiceProviderDescription service, ITokenManager tokenManager, INonceStore nonceStore) {
-			Contract.Requires<ArgumentNullException>(value != null);
-			Contract.Requires<ArgumentNullException>(service != null);
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires(value != null);
+			Contract.Requires(service != null);
+			Contract.Requires(tokenManager != null);
+
+			// In release builds, just quietly return.
+			if (value == null || service == null || tokenManager == null) {
+				return;
+			}
 
 			if (Enabled && Configuration.IncludeFeatureUsage) {
 				StringBuilder builder = new StringBuilder();
@@ -245,7 +275,12 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		internal static void RecordRequestStatistics(HttpRequestInfo request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires(request != null);
+
+			// In release builds, just quietly return.
+			if (request == null) {
+				return;
+			}
 
 			if (Enabled) {
 				if (Configuration.IncludeCultures) {
