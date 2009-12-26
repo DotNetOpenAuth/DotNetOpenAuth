@@ -347,6 +347,13 @@ namespace DotNetOpenAuth {
 						counter.Reset();
 						counter.Flush();
 					}
+
+					// We can just delete the files for counters that are not currently loaded.
+					foreach (string eventFile in file.GetFileNames("event-*.txt")) {
+						if (!events.Values.Any(e => string.Equals(e.FileName, eventFile, StringComparison.OrdinalIgnoreCase))) {
+							file.DeleteFile(eventFile);
+						}
+					}
 				}
 
 				return true;
