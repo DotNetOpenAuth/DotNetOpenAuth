@@ -26,6 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="SelectorInfoCardButton"/> class.
 		/// </summary>
 		public SelectorInfoCardButton() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		/// <summary>

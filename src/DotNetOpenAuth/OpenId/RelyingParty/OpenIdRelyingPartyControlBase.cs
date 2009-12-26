@@ -244,6 +244,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyControlBase"/> class.
 		/// </summary>
 		protected OpenIdRelyingPartyControlBase() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		#region Events

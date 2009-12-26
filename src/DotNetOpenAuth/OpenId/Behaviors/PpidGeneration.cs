@@ -108,6 +108,8 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 					if (!papeResponse.ActualPolicies.Contains(AuthenticationPolicies.PrivatePersonalIdentifier)) {
 						papeResponse.ActualPolicies.Add(AuthenticationPolicies.PrivatePersonalIdentifier);
 					}
+
+					Reporting.RecordEventOccurrence(this, string.Empty);
 				}
 			}
 

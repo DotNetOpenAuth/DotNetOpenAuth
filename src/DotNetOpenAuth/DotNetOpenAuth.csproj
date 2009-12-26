@@ -229,6 +229,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
+    <Compile Include="Configuration\ReportingElement.cs" />
     <Compile Include="Configuration\TypeConfigurationCollection.cs" />
     <Compile Include="Configuration\TypeConfigurationElement.cs" />
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
@@ -556,6 +557,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth\ChannelElements\RsaSha1SigningBindingElement.cs" />
     <Compile Include="Messaging\StandardWebRequestHandler.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
+    <Compile Include="Reporting.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="OAuth\Protocol.cs" />
     <Compile Include="OAuth\ServiceProvider.cs" />

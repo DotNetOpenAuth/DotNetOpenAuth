@@ -45,6 +45,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// If the openid.claimed_id is present, and if it's different than the openid.identity argument, then
 			// the RP has discovered a claimed identifier that has delegated authentication to this Provider.
 			this.IsDelegatedIdentifier = this.ClaimedIdentifier != null && this.ClaimedIdentifier != this.LocalIdentifier;
+
+			Reporting.RecordEventOccurrence("AuthenticationRequest.IsDelegatedIdentifier", this.IsDelegatedIdentifier.ToString());
 		}
 
 		#region HostProcessedRequest members

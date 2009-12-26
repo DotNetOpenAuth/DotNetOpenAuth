@@ -100,6 +100,13 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyShim"/> class.
+		/// </summary>
+		public OpenIdRelyingPartyShim() {
+			Reporting.RecordFeatureUse(this);
+		}
+
+		/// <summary>
 		/// Creates an authentication request to verify that a user controls
 		/// some given Identifier.
 		/// </summary>
