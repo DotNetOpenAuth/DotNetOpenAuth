@@ -45,7 +45,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Logger.OpenId.Info("Received anonymous (identity-less) positive assertion.");
 			}
 
-			Reporting.RecordEventOccurrence(this, response.ProviderEndpoint.AbsoluteUri);
+			if (response.ProviderEndpoint != null) {
+				Reporting.RecordEventOccurrence(this, response.ProviderEndpoint.AbsoluteUri);
+			}
 		}
 
 		#region IAuthenticationResponse Properties
