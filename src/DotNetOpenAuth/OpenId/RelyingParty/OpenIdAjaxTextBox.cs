@@ -704,6 +704,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
+			if (!this.Visible) {
+				return;
+			}
+
 			if (this.DownloadYahooUILibrary) {
 				// Although we'll add the <script> tag to download the YAHOO component,
 				// a download failure may have occurred, so protect ourselves from a 

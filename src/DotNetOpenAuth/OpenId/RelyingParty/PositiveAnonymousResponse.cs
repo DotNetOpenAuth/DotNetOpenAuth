@@ -40,6 +40,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.provider = new ProviderEndpointDescription(response.ProviderEndpoint, response.Version);
 			}
 
+			// Derived types of this are responsible to log an appropriate message for themselves.
+			if (Logger.OpenId.IsInfoEnabled && this.GetType() == typeof(PositiveAnonymousResponse)) {
+				Logger.OpenId.Info("Received anonymous (identity-less) positive assertion.");
+			}
+
 			Reporting.RecordEventOccurrence(this, response.ProviderEndpoint.AbsoluteUri);
 		}
 
@@ -128,6 +133,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets a value indicating whether trusted callback arguments are available.
+		/// </summary>
+		/// <remarks>
+		/// We use this internally to avoid logging a warning during a standard snapshot creation.
+		/// </remarks>
+		internal bool TrustedCallbackArgumentsAvailable {
+			get { return this.response.ReturnToParametersSignatureValidated; }
+		}
 
 		/// <summary>
 		/// Gets the positive extension-only message the Relying Party received that this instance wraps.

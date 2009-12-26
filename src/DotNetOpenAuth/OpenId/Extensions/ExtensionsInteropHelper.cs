@@ -47,12 +47,12 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			var req = (RelyingParty.AuthenticationRequest)request;
 			var sreg = req.AppliedExtensions.OfType<ClaimsRequest>().SingleOrDefault();
 			if (sreg == null) {
-				Logger.OpenId.Warn("No Simple Registration (ClaimsRequest) extension present in the request to spread to AX.");
+				Logger.OpenId.Debug("No Simple Registration (ClaimsRequest) extension present in the request to spread to AX.");
 				return;
 			}
 
 			if (req.Provider.IsExtensionSupported<ClaimsRequest>()) {
-				Logger.OpenId.Info("Skipping generation of AX request because the Identifier advertises the Provider supports the Sreg extension.");
+				Logger.OpenId.Debug("Skipping generation of AX request because the Identifier advertises the Provider supports the Sreg extension.");
 				return;
 			}
 
@@ -65,11 +65,11 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			// Try to use just one AX Type URI format if we can figure out which type the OP accepts.
 			AXAttributeFormats detectedFormat;
 			if (TryDetectOPAttributeFormat(request, out detectedFormat)) {
-				Logger.OpenId.Info("Detected OP support for AX but not for Sreg.  Removing Sreg extension request and using AX instead.");
+				Logger.OpenId.Debug("Detected OP support for AX but not for Sreg.  Removing Sreg extension request and using AX instead.");
 				attributeFormats = detectedFormat;
 				req.Extensions.Remove(sreg);
 			} else {
-				Logger.OpenId.Info("Could not determine whether OP supported Sreg or AX.  Using both extensions.");
+				Logger.OpenId.Debug("Could not determine whether OP supported Sreg or AX.  Using both extensions.");
 			}
 
 			foreach (AXAttributeFormats format in ForEachFormat(attributeFormats)) {

@@ -125,6 +125,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce, MessagingStrings.InvalidNonceReceived);
 
 				if (!this.nonceStore.StoreNonce(nonceMessage.NonceContext, nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
+					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", nonceMessage.Nonce, nonceMessage.UtcCreationDate);
 					throw new ReplayedMessageException(message);
 				}
 

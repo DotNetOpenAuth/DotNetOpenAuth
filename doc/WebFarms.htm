@@ -7,21 +7,26 @@
 	<h3>
 		Non-ASP.NET web servers</h3>
 	<p>
-		DotNetOpenId works without being a part of an ASP.NET web site.&nbsp; The 
-		ASP.NET controls may not be used in this context, but the programmatic access to 
-		the OpenIdProvider and OpenIdRelyingParty classes will work correctly if you 
-		call the method overloads that do not require a current ASP.NET context.&nbsp; 
-		The xml doc comments indicate which methods require an ASP.NET context and which 
-		methods may be used without one.</p>
+		DotNetOpenAuth works without being a part of an ASP.NET web site.&nbsp; The ASP.NET
+		controls may not be used in this context, but the programmatic access to the OpenIdProvider
+		and OpenIdRelyingParty classes will work correctly if you call the method overloads
+		that do not require a current ASP.NET context.&nbsp; The xml doc comments indicate
+		which methods require an ASP.NET context and which methods may be used without one.</p>
 	<h3>
 		Proxy servers</h3>
 	<p>
-		If your web servers need to use proxy servers to make outbound requests, you 
-		will need to configure your .NET AppDomain to default to the proxy server you 
-		require so that DotNetOpenId will use it.&nbsp;
+		If your web servers need to use proxy servers to make outbound requests, you will
+		need to configure your .NET AppDomain to default to the proxy server you require
+		so that DotNetOpenAuth will use it.&nbsp;
 	</p>
 	<p>
-		To set the default web proxy, set the System.Net.WebRequest.DefaultWebProxy 
+		To set the default web proxy programmatically, set the System.Net.WebRequest.DefaultWebProxy
 		property.</p>
+	<p>
+		To use the default proxy using your web.config file, add this section:<br />
+		<pre>&lt;system.net&gt;
+	&lt;defaultProxy enabled=&quot;true&quot; /&gt;
+&lt;/system.net&gt;</pre>
+	</p>
 </body>
 </html>

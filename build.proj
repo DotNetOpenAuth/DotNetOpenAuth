@@ -34,7 +34,6 @@
 			<DirtyDirectories Include="
 			                           $(ProjectRoot)bin;
 			                           $(ProjectRoot)**\obj;
-			                           $(ProjectRoot)doc\api;
 			                           $(DropsRoot);
 			                           $(ProjectRoot)src\PrecompiledWeb;
 			                           $(ProjectTemplatesLayoutPath);
@@ -140,6 +139,9 @@
 	</Target>
 
 	<Target Name="BuildProjectTemplates">
+		<!-- Deploy the latest SQL script first, so that the class library can embed the latest version. -->
+		<MSBuild Projects="$(ProjectRoot)projecttemplates\RelyingPartyDatabase\RelyingPartyDatabase.dbproj" Targets="Build;Deploy" />
+
 		<MSBuild Projects="@(ProjectTemplates)" />
 	</Target>
 
@@ -168,9 +170,13 @@
 																			 or '%(Extension)' == '.Master'
 																			 or '%(Extension)' == '.aspx'
 																			 or '%(Extension)' == '.asax'
+																			 or '%(Extension)' == '.ashx'
 																			 ">
 				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
 				<AfterTokens>$safeprojectname$</AfterTokens>
+				<!-- Projects can get changed after the transform+copy operation, so don't skip copying them. -->
+				<SkipUnchangedFiles Condition="'%(Extension)' != '.csproj'">true</SkipUnchangedFiles>
+				<SkipUnchangedFiles Condition="'%(Extension)' == '.csproj'">false</SkipUnchangedFiles>
 			</_ProjectTemplatesTransformSource>
 			<ProjectTemplatesSource Remove="@(_ProjectTemplatesTransformSource)" />
 
@@ -188,6 +194,7 @@
 			<!-- Include the unified, signed version of the library -->
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb" />
+			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).xml" />
 			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
@@ -207,7 +214,7 @@
 		</Trim>
 		<MSBuild Projects="@(ProjectTemplates)" />
 		<Copy SourceFiles="@(ProjectTemplatesSource)" DestinationFiles="@(ProjectTemplatesLayout)" SkipUnchangedFiles="true" />
-		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)" SkipUnchangedFiles="true">
+		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)">
 			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
 		</CopyWithTokenSubstitution>
 		<Purge Directories="$(ProjectTemplatesLayoutPath)"
