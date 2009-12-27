@@ -27,9 +27,9 @@
 		<asp:LoginStatus ID="LoginStatus1" runat="server" OnLoggedOut="LoginStatus1_LoggedOut" />
 	</span>
 	<div>
-		<a href="http://dotnetopenid.googlecode.com">
+		<a href="http://dotnetopenauth.net">
 			<img runat="server" src="~/images/dotnetopenid_tiny.gif" title="Jump to the project web site."
-				alt="DotNetOpenId" border='0' /></a>
+				alt="DotNetOpenAuth" border='0' /></a>
 	</div>
 	<div>
 		<asp:ContentPlaceHolder ID="Main" runat="server" />
