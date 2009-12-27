@@ -741,14 +741,67 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="reporting">
+					<xs:annotation>
+						<xs:documentation>
+							Adjusts statistical reports DotNetOpenAuth may send to the library authors to
+							assist with future development of the library.
+						</xs:documentation>
+					</xs:annotation>
 					<xs:complexType>
-						<xs:attribute name="enabled" type="xs:boolean" />
-						<xs:attribute name="minimumReportingInterval" type="xs:string" />
-						<xs:attribute name="minimumFlushInterval" type="xs:string" />
-						<xs:attribute name="includeFeatureUsage" type="xs:boolean" default="true" />
-						<xs:attribute name="includeEventStatistics" type="xs:boolean" default="true" />
-						<xs:attribute name="includeLocalRequestUris" type="xs:boolean" default="true" />
-						<xs:attribute name="includeCultures" type="xs:boolean" default="true" />
+						<xs:attribute name="enabled" type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>
+									Controls whether reporting is active at all or entirely inactive.
+									Note that even if active, the reports may be more or less empty based
+									on other settings.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="minimumReportingInterval" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>
+									Controls how frequently reports are collected and transmitted.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="minimumFlushInterval" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>
+									Controls how frequently the statistics that are collected in memory are persisted to disk.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeFeatureUsage" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether a list of features in DotNetOpenAuth that are actually used by this host
+									are included in the report.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeEventStatistics" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether a set of counters that track how often certain events (such as an 
+									successful or failed authentication) is included in the report.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeLocalRequestUris" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether to include a few of this host's URLs that contain DotNetOpenAuth components.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeCultures" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether to include the cultures as set on the user agents of incoming requests to pages
+									that contain DotNetOpenAuth components.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>
