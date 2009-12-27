@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------
 
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName, "text/javascript")]
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedDotNetOpenIdLogoResourceName, "image/gif")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName, "image/gif")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName, "image/png")]
 [assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName, "image/png")]
@@ -43,11 +42,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the manifest stream containing the OpenIdAjaxTextBox.js file.
 		/// </summary>
 		internal const string EmbeddedScriptResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdAjaxTextBox.js";
-
-		/// <summary>
-		/// The name of the manifest stream containing the dotnetopenid_16x16.gif file.
-		/// </summary>
-		internal const string EmbeddedDotNetOpenIdLogoResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.dotnetopenid_16x16.gif";
 
 		/// <summary>
 		/// The name of the manifest stream containing the spinner.gif file.
@@ -1191,9 +1185,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
-				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, function({18}, {19}, {20}) {{{21}}});{22}",
+				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, function({17}, {18}, {19}) {{{20}}});{21}",
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedDotNetOpenIdLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginSuccessResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginFailureResourceName)),

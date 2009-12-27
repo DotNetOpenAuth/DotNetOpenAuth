@@ -25,7 +25,7 @@
 	<table>
 		<tr>
 			<td>
-				<a href="http://dotnetopenid.googlecode.com/">http://dotnetopenid.googlecode.com/</a>
+				<a href="http://dotnetopenauth.net/">http://dotnetopenauth.net/</a>
 			</td>
 			<td>
 				Home of this library
