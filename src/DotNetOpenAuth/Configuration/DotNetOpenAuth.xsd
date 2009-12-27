@@ -277,25 +277,80 @@
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>
-												<xs:attribute name="requireDirectedIdentity" type="xs:boolean" />
-												<xs:attribute name="requireAssociation" type="xs:boolean" />
-												<xs:attribute name="rejectUnsolicitedAssertions" type="xs:boolean" />
-												<xs:attribute name="rejectDelegatingIdentifiers" type="xs:boolean" />
-												<xs:attribute name="ignoreUnsignedExtensions" type="xs:boolean" />
+												<xs:attribute name="requireDirectedIdentity" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Requires that OpenID identifiers upon which authentication requests are created
+															are to be OP Identifiers.  Claimed Identifiers are not allowed.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="requireAssociation" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Requires that the relying party can form a shared association with an
+															OpenID Provider before creating an authentication request for it.
+															Note that this does not require that the Provider actually use a
+															shared association in its response.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="rejectUnsolicitedAssertions" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Requires that users begin their login experience at the relying party
+															rather than at a Provider or using other forms of unsolicited assertions.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="rejectDelegatingIdentifiers" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Requires that the claimed identifiers used to log into the relying party
+															be the same ones that are originally issued by the Provider.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="ignoreUnsignedExtensions" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Makes it impossible for the relying party to read authentication response
+															extensions that are not signed by the Provider.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="behaviors">
+											<xs:annotation>
+												<xs:documentation>
+													Manipulates the set of custom behaviors that are automatically applied
+													to incoming and outgoing OpenID messages.
+												</xs:documentation>
+											</xs:annotation>
 											<xs:complexType>
 												<xs:choice minOccurs="0" maxOccurs="unbounded">
 													<xs:element name="add">
 														<xs:complexType>
-															<xs:attribute name="type" type="xs:string" use="optional" />
+															<xs:attribute name="type" type="xs:string" use="optional">
+																<xs:annotation>
+																	<xs:documentation>
+																		The fully-qualified name of the type that implements the IRelyingPartyBehavior interface.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
 															<xs:attribute name="xaml" type="xs:string" use="optional" />
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="remove">
 														<xs:complexType>
-															<xs:attribute name="type" type="xs:string" use="required" />
+															<xs:attribute name="type" type="xs:string" use="required">
+																<xs:annotation>
+																	<xs:documentation>
+																		The fully-qualified name of the type that implements the IRelyingPartyBehavior interface.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="clear">
@@ -388,7 +443,14 @@
 														</xs:complexType>
 													</xs:element>
 												</xs:choice>
-												<xs:attribute name="requireSsl" type="xs:boolean" default="false" />
+												<xs:attribute name="requireSsl" type="xs:boolean" default="false">
+													<xs:annotation>
+														<xs:documentation>
+															Requires that relying parties' realm URLs be protected by HTTPS,
+															ensuring that the RP discovery step is not vulnerable to DNS poisoning attacks.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 												<xs:attribute name="protectDownlevelReplayAttacks" type="xs:boolean">
 													<xs:annotation>
 														<xs:documentation>
@@ -398,11 +460,38 @@
 													</xs:annotation>
 												</xs:attribute>	
 												<xs:attribute name="unsolicitedAssertionVerification">
+													<xs:annotation>
+														<xs:documentation>
+															The level of verification done on a claimed identifier before an unsolicited
+															assertion for that identifier is issued by this Provider.
+														</xs:documentation>
+													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:NMTOKEN">
-															<xs:enumeration value="RequireSuccess" />
-															<xs:enumeration value="LogWarningOnFailure" />
-															<xs:enumeration value="NeverVerify" />
+															<xs:enumeration value="RequireSuccess">
+																<xs:annotation>
+																	<xs:documentation>
+																		The claimed identifier being asserted must delegate to this Provider
+																		and this must be verifiable by the Provider to send the assertion.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:enumeration>
+															<xs:enumeration value="LogWarningOnFailure">
+																<xs:annotation>
+																	<xs:documentation>
+																		The claimed identifier being asserted is checked for delegation to this Provider
+																		and an warning is logged, but the assertion is allowed to go through.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:enumeration>
+															<xs:enumeration value="NeverVerify">
+																<xs:annotation>
+																	<xs:documentation>
+																		The claimed identifier being asserted is not checked to see that this Provider
+																		has authority to assert its identity.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:enumeration>
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:attribute>
@@ -423,11 +512,23 @@
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="behaviors">
+											<xs:annotation>
+												<xs:documentation>
+													Manipulates the set of custom behaviors that are automatically applied
+													to incoming and outgoing OpenID messages.
+												</xs:documentation>
+											</xs:annotation>
 											<xs:complexType>
 												<xs:choice minOccurs="0" maxOccurs="unbounded">
 													<xs:element name="add">
 														<xs:complexType>
-															<xs:attribute name="type" type="xs:string" use="optional" />
+															<xs:attribute name="type" type="xs:string" use="optional">
+																<xs:annotation>
+																	<xs:documentation>
+																		The fully-qualified name of the type that implements the IRelyingPartyBehavior interface.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
 															<xs:attribute name="xaml" type="xs:string" use="optional" />
 														</xs:complexType>
 													</xs:element>
@@ -504,9 +605,26 @@
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="xriResolver">
+								<xs:annotation>
+									<xs:documentation>
+										Controls XRI resolution to XRDS documents.
+									</xs:documentation>
+								</xs:annotation>
 								<xs:complexType>
-									<xs:attribute name="enabled" type="xs:boolean" />
-									<xs:attribute name="proxy" type="xs:string" />
+									<xs:attribute name="enabled" type="xs:boolean">
+										<xs:annotation>
+											<xs:documentation>
+												Controls whether XRI identifiers are allowed at all.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="proxy" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>
+												The XRI proxy resolver to use for obtaining XRDS documents from an XRI.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
 						</xs:choice>
