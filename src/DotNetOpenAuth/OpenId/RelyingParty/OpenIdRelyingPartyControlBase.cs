@@ -244,6 +244,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyControlBase"/> class.
 		/// </summary>
 		protected OpenIdRelyingPartyControlBase() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		#region Events
@@ -481,6 +482,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether this control is a child control of a composite OpenID control.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this instance is embedded in parent OpenID control; otherwise, <c>false</c>.
+		/// </value>
+		protected bool IsEmbeddedInParentOpenIdControl {
+			get { return this.ParentControls.OfType<OpenIdRelyingPartyControlBase>().Any(); }
+		}
+
+		/// <summary>
 		/// Clears any cookie set by this control to help the user on a returning visit next time.
 		/// </summary>
 		public static void LogOff() {
@@ -607,11 +618,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return; // don't do any more processing on it now
 			}
 
-			// Only sniff for an OpenID response if it is targeted at this control.  Note that
-			// Stateless mode causes no receiver to be indicated.
+			// Only sniff for an OpenID response if it is targeted at this control.
+			// Note that Stateless mode causes no receiver to be indicated, and
+			// we want to handle that, but only if there isn't a parent control that
+			// will be handling that.
 			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId] ?? this.Page.Request.Form[ReturnToReceivingControlId];
-			if (receiver == null || receiver == this.ClientID) {
+			if (receiver == this.ClientID || (receiver == null && !this.IsEmbeddedInParentOpenIdControl)) {
 				var response = this.RelyingParty.GetResponse();
+				Logger.Controls.DebugFormat(
+					"The {0} control checked for an authentication response and found: {1}",
+					this.ID,
+					response != null ? response.Status.ToString() : "nothing");
 				this.ProcessResponse(response);
 			}
 		}

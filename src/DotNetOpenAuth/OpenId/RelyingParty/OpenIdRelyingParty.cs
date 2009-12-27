@@ -114,6 +114,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
 		}
 
 		/// <summary>
@@ -646,6 +648,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			foreach (IRelyingPartyBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
+				Reporting.RecordFeatureUse(profile);
 			}
 		}
 

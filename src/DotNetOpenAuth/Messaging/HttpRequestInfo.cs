@@ -73,6 +73,8 @@ namespace DotNetOpenAuth.Messaging {
 			// these as well.
 			this.form = request.Form;
 			this.queryString = request.QueryString;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -96,6 +98,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = rawUrl;
 			this.Headers = headers;
 			this.InputStream = inputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -115,6 +119,8 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			this.InputStream = listenerRequest.InputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -131,6 +137,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.Url = requestUri;
 			this.UrlBeforeRewriting = requestUri;
 			this.RawUrl = MakeUpRawUrlFromUrl(requestUri);
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -157,6 +165,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = MakeUpRawUrlFromUrl(request.RequestUri);
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = null;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>

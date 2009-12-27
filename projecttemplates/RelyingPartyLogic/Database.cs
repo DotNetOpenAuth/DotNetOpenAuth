@@ -51,11 +51,38 @@ namespace RelyingPartyLogic {
 						throw;
 					}
 
-					DataContextTransactionSimple = dataContext.Connection.BeginTransaction();
+					DataContextTransaction = dataContext.Connection.BeginTransaction();
 					DataContextSimple = dataContext;
 				}
 
 				return dataContext;
+			}
+		}
+
+		internal static IDbTransaction DataContextTransaction {
+			get {
+				if (HttpContext.Current != null) {
+					return HttpContext.Current.Items[DataContextTransactionKey] as IDbTransaction;
+				} else if (OperationContext.Current != null) {
+					object data;
+					if (OperationContext.Current.IncomingMessageProperties.TryGetValue(DataContextTransactionKey, out data)) {
+						return data as IDbTransaction;
+					} else {
+						return null;
+					}
+				} else {
+					throw new InvalidOperationException();
+				}
+			}
+
+			private set {
+				if (HttpContext.Current != null) {
+					HttpContext.Current.Items[DataContextTransactionKey] = value;
+				} else if (OperationContext.Current != null) {
+					OperationContext.Current.IncomingMessageProperties[DataContextTransactionKey] = value;
+				} else {
+					throw new InvalidOperationException();
+				}
 			}
 		}
 
@@ -86,33 +113,6 @@ namespace RelyingPartyLogic {
 			}
 		}
 
-		private static IDbTransaction DataContextTransactionSimple {
-			get {
-				if (HttpContext.Current != null) {
-					return HttpContext.Current.Items[DataContextTransactionKey] as IDbTransaction;
-				} else if (OperationContext.Current != null) {
-					object data;
-					if (OperationContext.Current.IncomingMessageProperties.TryGetValue(DataContextTransactionKey, out data)) {
-						return data as IDbTransaction;
-					} else {
-						return null;
-					}
-				} else {
-					throw new InvalidOperationException();
-				}
-			}
-
-			set {
-				if (HttpContext.Current != null) {
-					HttpContext.Current.Items[DataContextTransactionKey] = value;
-				} else if (OperationContext.Current != null) {
-					OperationContext.Current.IncomingMessageProperties[DataContextTransactionKey] = value;
-				} else {
-					throw new InvalidOperationException();
-				}
-			}
-		}
-
 		public void Dispose() {
 		}
 
@@ -126,10 +126,10 @@ namespace RelyingPartyLogic {
 		}
 
 		protected void Application_Error(object sender, EventArgs e) {
-			if (DataContextTransactionSimple != null) {
-				DataContextTransactionSimple.Rollback();
-				DataContextTransactionSimple.Dispose();
-				DataContextTransactionSimple = null;
+			if (DataContextTransaction != null) {
+				DataContextTransaction.Rollback();
+				DataContextTransaction.Dispose();
+				DataContextTransaction = null;
 			}
 		}
 
@@ -137,9 +137,9 @@ namespace RelyingPartyLogic {
 			var dataContext = DataContextSimple;
 			if (dataContext != null) {
 				dataContext.SaveChanges();
-				if (DataContextTransactionSimple != null) {
-					DataContextTransactionSimple.Commit();
-					DataContextTransactionSimple.Dispose();
+				if (DataContextTransaction != null) {
+					DataContextTransaction.Commit();
+					DataContextTransaction.Dispose();
 				}
 
 				dataContext.Dispose();

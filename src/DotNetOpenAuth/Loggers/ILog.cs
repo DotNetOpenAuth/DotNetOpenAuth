@@ -21,7 +21,7 @@
 // This interface is designed to look like log4net's ILog interface.
 // We have this as a facade in front of it to avoid crashing if the
 // hosting web site chooses not to deploy log4net.dll along with
-// dotnetopenid.dll.
+// DotNetOpenAuth.dll.
 
 namespace DotNetOpenAuth.Loggers
 {

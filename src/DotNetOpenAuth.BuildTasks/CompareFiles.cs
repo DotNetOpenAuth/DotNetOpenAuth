@@ -81,5 +81,32 @@ namespace DotNetOpenAuth.BuildTasks {
 
 			return true;
 		}
+
+		/// <summary>
+		/// Tests whether a file is up to date with respect to another,
+		/// based on existence, last write time and file size.
+		/// </summary>
+		/// <param name="sourcePath">The source path.</param>
+		/// <param name="destPath">The dest path.</param>
+		/// <returns><c>true</c> if the files are the same; <c>false</c> if the files are different</returns>
+		internal static bool FastFileEqualityCheck(string sourcePath, string destPath) {
+			FileInfo sourceInfo = new FileInfo(sourcePath);
+			FileInfo destInfo = new FileInfo(destPath);
+			
+			if (sourceInfo.Exists ^ destInfo.Exists) {
+				// Either the source file or the destination file is missing.
+				return false;
+			}
+
+			if (!sourceInfo.Exists) {
+				// Neither file exists.
+				return true;
+			}
+
+			// We'll say the files are the same if their modification date and length are the same.
+			return
+				sourceInfo.LastWriteTimeUtc == destInfo.LastWriteTimeUtc &&
+				sourceInfo.Length == destInfo.Length;
+		}
 	}
 }

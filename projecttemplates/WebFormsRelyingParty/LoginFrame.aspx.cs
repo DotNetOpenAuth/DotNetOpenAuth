@@ -25,6 +25,11 @@
 					"getTopWindowUrl",
 					"document.getElementById('topWindowUrl').value = window.parent.location.href;");
 			}
+
+			// We set the privacy policy URL here instead of in the ASPX page with the rest of the
+			// Simple Registration extension so that we can construct the absolute URL rather than
+			// hard-coding it.
+			this.openIdSelector.Extensions.OfType<ClaimsRequest>().Single().PolicyUrl = new Uri(Request.Url, Page.ResolveUrl("~/PrivacyPolicy.aspx"));
 		}
 
 		protected void openIdSelector_LoggedIn(object sender, OpenIdEventArgs e) {

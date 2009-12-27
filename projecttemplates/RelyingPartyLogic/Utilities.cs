@@ -68,7 +68,8 @@ CREATE ROUTE [AutoCreatedLocal]
 
 
 GO
-"};
+" };
+			string databasePath = HttpContext.Current.Server.MapPath("~/App_Data/" + databaseName + ".mdf");
 			StringBuilder schemaSqlBuilder = new StringBuilder();
 			using (var sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(DefaultNamespace + ".CreateDatabase.sql"))) {
 				schemaSqlBuilder.Append(sr.ReadToEnd());
@@ -77,9 +78,9 @@ GO
 				schemaSqlBuilder.Replace(remove, string.Empty);
 			}
 			schemaSqlBuilder.Replace("$(Path1)", HttpContext.Current.Server.MapPath("~/App_Data/"));
+			schemaSqlBuilder.Replace("WEBROOT", databasePath);
 			schemaSqlBuilder.Replace("$(DatabaseName)", databaseName);
 
-			string databasePath = HttpContext.Current.Server.MapPath("~/App_Data/" + databaseName + ".mdf");
 			string sql = string.Format(CultureInfo.InvariantCulture, SqlFormat, schemaSqlBuilder, claimedId, "Admin");
 
 			var serverConnection = new ServerConnection(".\\sqlexpress");
@@ -89,7 +90,7 @@ GO
 				try {
 					var server = new Server(serverConnection);
 					server.DetachDatabase(databaseName, true);
-				} catch (SqlException) {
+				} catch (FailedOperationException) {
 				}
 				serverConnection.Disconnect();
 			}
@@ -109,6 +110,7 @@ GO
 			}
 
 			DbCommand cmd = connection.CreateCommand();
+			cmd.Transaction = (DbTransaction)Database.DataContextTransaction;
 			cmd.CommandText = command;
 			cmd.CommandType = CommandType.StoredProcedure;
 			try {

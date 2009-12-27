@@ -199,6 +199,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		public InfoCardSelector() {
 			this.ToolTip = InfoCardStrings.SelectorClickPrompt;
+			Reporting.RecordFeatureUse(this);
 		}
 
 		/// <summary>

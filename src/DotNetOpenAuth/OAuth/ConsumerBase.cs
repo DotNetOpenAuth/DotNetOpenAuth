@@ -34,6 +34,8 @@ namespace DotNetOpenAuth.OAuth {
 			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager);
 			this.ServiceProvider = serviceDescription;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+
+			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, null);
 		}
 
 		/// <summary>

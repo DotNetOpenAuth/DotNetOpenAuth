@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="SelectorOpenIdButton"/> class.
 		/// </summary>
 		public SelectorOpenIdButton() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		/// <summary>

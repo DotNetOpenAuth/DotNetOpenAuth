@@ -31,6 +31,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentNullException>(exception != null);
 
 			this.Exception = exception;
+
+			string category = string.Empty;
+			if (Reporting.Enabled) {
+				var pe = exception as ProtocolException;
+				if (pe != null) {
+					var responseMessage = pe.FaultedMessage as IndirectSignedResponse;
+					if (responseMessage != null && responseMessage.ProviderEndpoint != null) { // check "required" parts because this is a failure after all
+						category = responseMessage.ProviderEndpoint.AbsoluteUri;
+					}
+				}
+
+				Reporting.RecordEventOccurrence(this, category);
+			}
 		}
 
 		#region IAuthenticationResponse Members
