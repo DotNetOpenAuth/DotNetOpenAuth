@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
+    <Content Include="GettingStarted.htm" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Content\Site.css" />
