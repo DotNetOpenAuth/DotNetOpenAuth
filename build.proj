@@ -12,6 +12,7 @@
 	<Import Project="$(ProjectRoot)tools\$(ProductName).Versioning.targets"/>
 	<Import Project="$(ProjectRoot)tools\Documentation.targets"/>
 	<Import Project="$(ProjectRoot)tools\Publish.targets"/>
+	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
