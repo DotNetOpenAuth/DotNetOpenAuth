@@ -1,0 +1,39 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<ExportedTxtResourcesIntermediateDir>$(IntermediatePath)ExportedTxtResources</ExportedTxtResourcesIntermediateDir>
+		<ExportedTxtResourcesIntermediateDir Condition=" '$(Culture)' != '' ">$(ExportedTxtResourcesIntermediateDir).$(Culture)</ExportedTxtResourcesIntermediateDir>
+		<ExportedTxtResourcesIntermediateDir>$(ExportedTxtResourcesIntermediateDir)\</ExportedTxtResourcesIntermediateDir>
+
+		<ExportedTxtResourcesZip>$(IntermediatePath)$(ProductName) resources</ExportedTxtResourcesZip>
+		<ExportedTxtResourcesZip Condition=" '$(Culture)' != '' ">$(ExportedTxtResourcesZip).$(Culture)</ExportedTxtResourcesZip>
+		<ExportedTxtResourcesZip>$(ExportedTxtResourcesZip).zip</ExportedTxtResourcesZip>
+	</PropertyGroup>
+	<Target Name="ExportResX">
+		<ItemGroup Condition=" '$(Culture)' != '' " >
+			<ResXFilesToExport Include="$(ProjectRoot)src\$(ProductName)\**\*.$(Culture).resx" />
+		</ItemGroup>
+		<PropertyGroup>
+			<ResXNewCulture Condition=" '@(ResXFilesToExport)' == '' ">.$(Culture)</ResXNewCulture>
+		</PropertyGroup>
+		<ItemGroup Condition=" '$(Culture)' == '' or '$(ResXNewCulture)' != '' ">
+			<ResXFilesToExport Include="$(ProjectRoot)src\$(ProductName)\**\*.resx" />
+			<ResXFilesToExport Remove="$(ProjectRoot)src\$(ProductName)\**\*.*.resx" />
+		</ItemGroup>
+		<ItemGroup>
+			<ResXFilesToExport>
+				<ExportedFullPath>$(ExportedTxtResourcesIntermediateDir)%(RecursiveDir)%(FileName)$(ResXNewCulture).txt</ExportedFullPath>
+				<ExportedDirectory>$(ExportedTxtResourcesIntermediateDir)%(RecursiveDir)</ExportedDirectory>
+			</ResXFilesToExport>
+			<ExportedTxtDirectories Include="@(ResXFilesToExport->'%(ExportedDirectory)')" />
+			<ExportedTxtFiles Include="@(ResXFilesToExport->'%(ExportedFullPath)')" />
+		</ItemGroup>
+		<Warning Condition=" '$(ResXNewCulture)' != '' " Text="No culture '$(Culture)' exists in the source project.  Synthesizing new one from default culture." />
+		<MakeDir Directories="%(ResXFilesToExport.ExportedDirectory)" Condition="!Exists('%(ResXFilesToExport.ExportedDirectory)')" />
+		<Exec Command="resgen.exe %(ResXFilesToExport.Identity) %(ResXFilesToExport.ExportedFullPath)" />
+		<Purge Directories="@(ExportedTxtDirectories)" IntendedFiles="@(ExportedTxtFiles)" />
+		<Delete Files="$(ExportedTxtResourcesZip)" />
+		<Zip ZipFileName="$(ExportedTxtResourcesZip)"
+				 WorkingDirectory="$(ExportedTxtResourcesIntermediateDir)"
+				 Files="@(ExportedTxtFiles)" />
+	</Target>
+</Project>
