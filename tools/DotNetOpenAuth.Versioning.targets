@@ -25,7 +25,13 @@
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 			<Output TaskParameter="GitCommitId" PropertyName="AssemblyInformationalVersion" />
 		</GetBuildVersion>
-		<Message Text="Building version $(BuildVersion) from commit $(AssemblyInformationalVersion)"/>
+		<PropertyGroup>
+			<!-- In TeamCity, the build agent doesn't get the .git directory, but the commit id is available by other means. -->
+			<AssemblyInformationalVersion Condition=" '$(AssemblyInformationalVersion)' == '' ">$(BUILD_VCS_NUMBER)</AssemblyInformationalVersion>
+		</PropertyGroup>
+		<Warning Condition=" '$(AssemblyInformationalVersion)' == '' " Text="Unable to determine the git HEAD commit ID to use for informational version number." />
+		<Message Condition=" '$(AssemblyInformationalVersion)' != '' " Text="Building version $(BuildVersion) from commit $(AssemblyInformationalVersion)"/>
+		<Message Condition=" '$(AssemblyInformationalVersion)' == '' " Text="Building version $(BuildVersion)"/>
 	</Target>
 	
 	<Target Name="BeforeBuild" DependsOnTargets="GetBuildVersion">
