@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		}
 
 		private int CalculateJDate(DateTime date) {
-			int yearLastDigit = date.Year % 10;
+			int yearLastDigit = date.Year - 2000; // can actually be two digits in or after 2010
 			DateTime firstOfYear = new DateTime(date.Year, 1, 1);
 			int dayOfYear = (date - firstOfYear).Days + 1;
 			int jdate = yearLastDigit * 1000 + dayOfYear;
