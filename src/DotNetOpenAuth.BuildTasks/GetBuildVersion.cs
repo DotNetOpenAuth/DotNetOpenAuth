@@ -63,10 +63,6 @@ namespace DotNetOpenAuth.BuildTasks {
 			} catch (DirectoryNotFoundException) {
 			}
 
-			if (string.IsNullOrEmpty(headContent)) {
-				Log.LogWarning("Unable to determine the git HEAD commit ID to use for informational version number.");
-			}
-
 			return headContent.Trim();
 		}
 
