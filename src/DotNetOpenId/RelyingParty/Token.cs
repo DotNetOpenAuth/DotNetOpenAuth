@@ -79,7 +79,13 @@ namespace DotNetOpenId.RelyingParty {
 		/// by discovery (slow but secure).
 		/// </remarks>
 		public static Token Deserialize(string token, INonceStore store) {
-			byte[] tok = Convert.FromBase64String(token);
+			byte[] tok;
+			try {
+				tok = Convert.FromBase64String(token);
+			} catch (FormatException ex) {
+				throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
+					Strings.ExpectedBase64OpenIdQueryParameter, token), null, ex);
+			}
 			if (tok.Length < 1) throw new OpenIdException(Strings.InvalidSignature);
 			bool signaturePresent = tok[0] == 1;
 			bool signatureVerified = false;

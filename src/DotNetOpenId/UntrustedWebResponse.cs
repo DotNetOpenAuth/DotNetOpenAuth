@@ -21,18 +21,24 @@ namespace DotNetOpenId {
 		public Uri RequestUri { get; private set; }
 		public Uri FinalUri { get; private set; }
 
-		public UntrustedWebResponse(Uri requestUri, HttpWebResponse response, Stream responseStream) {
+		public UntrustedWebResponse(Uri requestUri, Uri finalRequestUri, HttpWebResponse response, Stream responseStream) {
 			if (requestUri == null) throw new ArgumentNullException("requestUri");
+			if (finalRequestUri == null) throw new ArgumentNullException("finalRequestUri");
 			if (response == null) throw new ArgumentNullException("response");
 			if (responseStream == null) throw new ArgumentNullException("responseStream");
 			this.RequestUri = requestUri;
 			this.ResponseStream = responseStream;
 			StatusCode = response.StatusCode;
-			if (!string.IsNullOrEmpty(response.ContentType))
-				ContentType = new ContentType(response.ContentType);
+			if (!string.IsNullOrEmpty(response.ContentType)) {
+				try {
+					ContentType = new ContentType(response.ContentType);
+				} catch (FormatException) {
+					Logger.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", response.ResponseUri.AbsoluteUri, response.ContentType);
+				}
+			}
 			ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
 			Headers = response.Headers;
-			FinalUri = response.ResponseUri;
+			FinalUri = finalRequestUri;
 		}
 
 		/// <summary>
@@ -45,8 +51,13 @@ namespace DotNetOpenId {
 			RequestUri = requestUri;
 			ResponseStream = responseStream;
 			StatusCode = statusCode;
-			if (!string.IsNullOrEmpty(contentType))
-				ContentType = new ContentType(contentType);
+			if (!string.IsNullOrEmpty(contentType)) {
+				try {
+					ContentType = new ContentType(contentType);
+				} catch (FormatException) {
+					Logger.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", responseUri.AbsoluteUri, contentType);
+				}
+			}
 			ContentEncoding = string.IsNullOrEmpty(contentEncoding) ? DefaultContentEncoding : contentEncoding;
 			Headers = headers;
 			FinalUri = responseUri;

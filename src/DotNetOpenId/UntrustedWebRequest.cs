@@ -224,11 +224,11 @@ namespace DotNetOpenId {
 			}
 		}
 
-		static UntrustedWebResponse getResponse(Uri requestUri, HttpWebResponse resp) {
+		static UntrustedWebResponse getResponse(Uri requestUri, Uri finalRequestUri, HttpWebResponse resp) {
 			byte[] data;
 			int length;
 			readData(resp, out data, out length);
-			return new UntrustedWebResponse(requestUri, resp, new MemoryStream(data, 0, length));
+			return new UntrustedWebResponse(requestUri, finalRequestUri, resp, new MemoryStream(data, 0, length));
 		}
 
 		internal static UntrustedWebResponse Request(Uri uri) {
@@ -283,6 +283,8 @@ namespace DotNetOpenId {
 			// If SSL is required throughout, we cannot allow auto redirects because
 			// it may include a pass through an unprotected HTTP request.
 			// We have to follow redirects manually, and our caller will be responsible for that.
+			// It also allows us to ignore HttpWebResponse.FinalUri since that can be affected by
+			// the Content-Location header and open security holes.
 			request.AllowAutoRedirect = false;
 			request.ReadWriteTimeout = (int)ReadWriteTimeout.TotalMilliseconds;
 			request.Timeout = (int)Timeout.TotalMilliseconds;
@@ -316,7 +318,7 @@ namespace DotNetOpenId {
 				}
 
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-					return getResponse(originalRequestUri, response);
+					return getResponse(originalRequestUri, request.RequestUri, response);
 				}
 			} catch (WebException e) {
 				using (HttpWebResponse response = (HttpWebResponse)e.Response) {
@@ -326,7 +328,7 @@ namespace DotNetOpenId {
 								return RequestInternal(uri, body, acceptTypes, requireSsl, true, originalRequestUri, cachePolicy);
 							}
 						}
-						return getResponse(originalRequestUri, response);
+						return getResponse(originalRequestUri, request.RequestUri, response);
 					} else {
 						throw new OpenIdException(string.Format(CultureInfo.CurrentCulture,
 							Strings.WebRequestFailed, originalRequestUri), e);
