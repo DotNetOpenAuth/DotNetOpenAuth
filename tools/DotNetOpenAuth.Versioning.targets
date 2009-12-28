@@ -25,6 +25,10 @@
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 			<Output TaskParameter="GitCommitId" PropertyName="AssemblyInformationalVersion" />
 		</GetBuildVersion>
+		<PropertyGroup>
+			<!-- In TeamCity, the build agent doesn't get the .git directory, but the commit id is available by other means. -->
+			<AssemblyInformationalVersion Condition=" '$(AssemblyInformationalVersion)' == '' ">$(BUILD_VCS_NUMBER)</AssemblyInformationalVersion>
+		</PropertyGroup>
 		<Message Text="Building version $(BuildVersion) from commit $(AssemblyInformationalVersion)"/>
 	</Target>
 	

@@ -59,7 +59,9 @@ namespace DotNetOpenAuth.BuildTasks {
 					string refName = headContent.Substring(5).Trim();
 					headContent = File.ReadAllText(Path.Combine(this.GitRepoRoot, @".git/" + refName)).Trim();
 				}
-			} catch (FileNotFoundException) { }
+			} catch (FileNotFoundException) {
+			} catch (DirectoryNotFoundException) {
+			}
 
 			if (string.IsNullOrEmpty(headContent)) {
 				Log.LogWarning("Unable to determine the git HEAD commit ID to use for informational version number.");
