@@ -64,14 +64,6 @@
 		}
 
 		/// <summary>
-		/// Gets the URL that the Provider should return the user to after authenticating.
-		/// </summary>
-		/// <value>An absolute URL.</value>
-		public Uri ReturnTo {
-			get { return new Uri(Request.Url, Url.Action("LogOnReturnTo")); }
-		}
-
-		/// <summary>
 		/// Prepares a web page to help the user supply his login information.
 		/// </summary>
 		/// <returns>The action result.</returns>
@@ -92,7 +84,7 @@
 			Identifier userSuppliedIdentifier;
 			if (Identifier.TryParse(openid_identifier, out userSuppliedIdentifier)) {
 				try {
-					var request = this.RelyingParty.CreateRequest(openid_identifier, this.Realm, this.ReturnTo);
+					var request = this.RelyingParty.CreateRequest(openid_identifier, this.Realm, Url.ActionFull("LogOnReturnTo"));
 					request.SetUntrustedCallbackArgument("rememberMe", rememberMe ? "1" : "0");
 
 					// This might be signed so the OP can't send the user to a dangerous URL.
@@ -107,6 +99,7 @@
 					request.AddExtension(new ClaimsRequest {
 						Email = DemandLevel.Require,
 						FullName = DemandLevel.Request,
+						PolicyUrl = Url.ActionFull("PrivacyPolicy", "Home"),
 					});
 
 					return request.RedirectingResponse.AsActionResult();

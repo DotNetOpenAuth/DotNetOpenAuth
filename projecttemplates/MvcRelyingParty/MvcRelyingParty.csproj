@@ -59,6 +59,7 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Extensions.cs" />
     <Compile Include="Code\FormsAuthenticationService.cs" />
     <Compile Include="Code\OpenIdRelyingPartyService.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -84,6 +85,7 @@
     <Content Include="GettingStarted.htm" />
     <Content Include="Global.asax" />
     <Content Include="Setup.aspx" />
+    <Content Include="Views\Home\PrivacyPolicy.aspx" />
     <Content Include="Web.config" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\jquery-1.3.2.js" />
