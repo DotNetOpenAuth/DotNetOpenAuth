@@ -128,8 +128,9 @@
 			if (response != null) {
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
+						var token = RelyingPartyLogic.User.ProcessUserLogin(response);
 						bool rememberMe = response.GetUntrustedCallbackArgument("rememberMe") == "1";
-						this.FormsAuth.SignIn(response.ClaimedIdentifier, rememberMe);
+						this.FormsAuth.SignIn(token.ClaimedIdentifier, rememberMe);
 						string returnUrl = response.GetCallbackArgument("returnUrl");
 						if (!String.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
