@@ -17,36 +17,39 @@
 	[HandleError]
 	public class AccountController : Controller {
 		/// <summary>
-		/// The OpenID relying party to use for logging users in.
-		/// </summary>
-		/// <remarks>
-		/// This is static because it is thread-safe and is more expensive
-		/// to create than we want to run through for every single page request.
-		/// </remarks>
-		internal static OpenIdRelyingParty relyingParty = new OpenIdRelyingParty();
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="AccountController"/> class.
 		/// </summary>
 		/// <remarks>
 		/// This constructor is used by the MVC framework to instantiate the controller using
-		/// the default forms authentication and membership providers.
+		/// the default forms authentication and OpenID services.
 		/// </remarks>
 		public AccountController()
-			: this(null) {
-		}
-
-		// This constructor is not used by the MVC framework but is instead provided for ease
-		// of unit testing this type. See the comments at the end of this file for more
-		// information.
-		public AccountController(IFormsAuthentication formsAuth) {
-			FormsAuth = formsAuth ?? new FormsAuthenticationService();
+			: this(null, null) {
 		}
 
 		/// <summary>
-		/// Gets or sets the forms authentication module to use.
+		/// Initializes a new instance of the <see cref="AccountController"/> class.
+		/// </summary>
+		/// <param name="formsAuth">The forms auth.</param>
+		/// <param name="relyingParty">The relying party.</param>
+		/// <remarks>
+		/// This constructor is not used by the MVC framework but is instead provided for ease
+		/// of unit testing this type. 
+		/// </remarks>
+		public AccountController(IFormsAuthentication formsAuth, IOpenIdRelyingParty relyingParty) {
+			this.FormsAuth = formsAuth ?? new FormsAuthenticationService();
+			this.RelyingParty = relyingParty ?? new OpenIdRelyingPartyService();
+		}
+
+		/// <summary>
+		/// Gets the forms authentication module to use.
 		/// </summary>
 		public IFormsAuthentication FormsAuth { get; private set; }
+
+		/// <summary>
+		/// Gets the OpenID relying party to use for logging users in.
+		/// </summary>
+		public IOpenIdRelyingParty RelyingParty { get; private set; }
 
 		/// <summary>
 		/// Gets the realm to report to the Provider for authentication.
@@ -89,7 +92,7 @@
 			Identifier userSuppliedIdentifier;
 			if (Identifier.TryParse(openid_identifier, out userSuppliedIdentifier)) {
 				try {
-					var request = relyingParty.CreateRequest(openid_identifier, this.Realm, this.ReturnTo);
+					var request = this.RelyingParty.CreateRequest(openid_identifier, this.Realm, this.ReturnTo);
 					request.SetUntrustedCallbackArgument("rememberMe", rememberMe ? "1" : "0");
 
 					// This might be signed so the OP can't send the user to a dangerous URL.
@@ -128,12 +131,12 @@
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
 		public ActionResult LogOnReturnTo() {
-			var response = relyingParty.GetResponse();
+			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
 						bool rememberMe = response.GetUntrustedCallbackArgument("rememberMe") == "1";
-						FormsAuth.SignIn(response.ClaimedIdentifier, rememberMe);
+						this.FormsAuth.SignIn(response.ClaimedIdentifier, rememberMe);
 						string returnUrl = response.GetCallbackArgument("returnUrl");
 						if (!String.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
@@ -160,35 +163,8 @@
 		/// </summary>
 		/// <returns>The action result.</returns>
 		public ActionResult LogOff() {
-			FormsAuth.SignOut();
+			this.FormsAuth.SignOut();
 			return RedirectToAction("Index", "Home");
-		}
-	}
-
-	/// <summary>
-	/// Forms authentication interface to facilitate login/logout functionality.
-	/// </summary>
-	/// <remarks>
-	/// The FormsAuthentication type is sealed and contains static members, so it is difficult to
-	/// unit test code that calls its members. The interface and helper class below demonstrate
-	/// how to create an abstract wrapper around such a type in order to make the AccountController
-	/// code unit testable.
-	/// </remarks>
-	public interface IFormsAuthentication {
-		void SignIn(Identifier claimedIdentifier, bool createPersistentCookie);
-		void SignOut();
-	}
-
-	/// <summary>
-	/// The standard FormsAuthentication behavior to use for the live site.
-	/// </summary>
-	public class FormsAuthenticationService : IFormsAuthentication {
-		public void SignIn(Identifier claimedIdentifier, bool createPersistentCookie) {
-			FormsAuthentication.SetAuthCookie(claimedIdentifier, createPersistentCookie);
-		}
-
-		public void SignOut() {
-			FormsAuthentication.SignOut();
 		}
 	}
 }
