@@ -49,7 +49,7 @@
 			return View();
 		}
 
-		[AcceptVerbs(HttpVerbs.Post)]
+		[AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
 		public ActionResult LogOn(string openid_identifier, bool rememberMe, string returnUrl) {
 			try {
 				var request = relyingParty.CreateRequest(openid_identifier, this.Realm, this.ReturnTo);
@@ -71,7 +71,7 @@
 
 				return request.RedirectingResponse.AsActionResult();
 			} catch (ProtocolException ex) {
-				ModelState.AddModelError("OpenID", ex);
+				ModelState.AddModelError("OpenID", ex.Message);
 				return View();
 			}
 		}
@@ -95,7 +95,7 @@
 						ModelState.AddModelError("OpenID", "It looks like you canceled login at your OpenID Provider.");
 						break;
 					case AuthenticationStatus.Failed:
-						ModelState.AddModelError("OpenID", response.Exception);
+						ModelState.AddModelError("OpenID", response.Exception.Message);
 						break;
 				}
 			}

@@ -10,6 +10,7 @@
 	<%= Html.ValidationSummary("Login was unsuccessful. Please correct the errors and try again.") %>
 
 	<% using (Html.BeginForm("LogOn", "Account")) { %>
+	<%= Html.AntiForgeryToken() %>
 	<div>
 		<fieldset>
 			<legend>Account Information</legend>
