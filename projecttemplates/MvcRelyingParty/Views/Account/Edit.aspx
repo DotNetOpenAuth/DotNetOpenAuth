@@ -6,44 +6,22 @@
 	Edit
 </asp:Content>
 <asp:Content ContentPlaceHolderID="ScriptsArea" runat="server">
+
 	<script src="../../Scripts/MicrosoftAjax.js" type="text/javascript"></script>
+
 	<script src="../../Scripts/MicrosoftMvcAjax.js" type="text/javascript"></script>
+
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 	<h2>
 		Edit Account Information
 	</h2>
-	<% using (Ajax.BeginForm("Update", new AjaxOptions { HttpMethod = "PUT", UpdateTargetId = "postResult" })) { %>
+	<% using (Ajax.BeginForm("Update", new AjaxOptions { HttpMethod = "PUT", UpdateTargetId = "editPartial", LoadingElementId = "updatingMessage" })) { %>
 	<%= Html.AntiForgeryToken()%>
-	<table>
-		<tr>
-			<td>
-				First name
-			</td>
-			<td>
-				<input name="firstName" value="<%= Html.Encode(Model.FirstName) %>" />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Last name
-			</td>
-			<td>
-				<input name="lastName" value="<%= Html.Encode(Model.LastName) %>" />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Email
-			</td>
-			<td>
-				<input name="emailAddress" value="<%= Html.Encode(Model.EmailAddress) %>" />
-			</td>
-		</tr>
-	</table>
-	<div>
-		<input type="submit" value="Save" />
-		<div id="postResult" />
+	<div id="editPartial">
+		<% Html.RenderPartial("EditFields"); %>
 	</div>
+	<input type="submit" value="Save" />
+	<span id="updatingMessage" style="display: none">Saving...</span>
 	<% } %>
 </asp:Content>

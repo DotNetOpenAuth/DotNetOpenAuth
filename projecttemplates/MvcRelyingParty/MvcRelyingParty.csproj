@@ -89,6 +89,7 @@
     <Content Include="GettingStarted.htm" />
     <Content Include="Global.asax" />
     <Content Include="Setup.aspx" />
+    <Content Include="Views\Account\EditFields.ascx" />
     <Content Include="Views\Account\Edit.aspx" />
     <Content Include="Views\Home\PrivacyPolicy.aspx" />
     <Content Include="Web.config" />

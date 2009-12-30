@@ -150,13 +150,9 @@
 			return RedirectToAction("Index", "Home");
 		}
 
+		[Authorize]
 		public ActionResult Edit() {
-			var model = new AccountInfoModel {
-				FirstName = Database.LoggedInUser.FirstName,
-				LastName = Database.LoggedInUser.LastName,
-				EmailAddress = Database.LoggedInUser.EmailAddress,
-			};
-			return View(model);
+			return View(GetModel());
 		}
 
 		/// <summary>
@@ -169,7 +165,7 @@
 		/// <remarks>
 		/// This action accepts PUT because this operation is idempotent in nature.
 		/// </remarks>
-		[AcceptVerbs(HttpVerbs.Put), ValidateAntiForgeryToken]
+		[Authorize, AcceptVerbs(HttpVerbs.Put), ValidateAntiForgeryToken]
 		public ActionResult Update(string firstName, string lastName, string emailAddress) {
 			Database.LoggedInUser.FirstName = firstName;
 			Database.LoggedInUser.LastName = lastName;
@@ -179,7 +175,16 @@
 				Database.LoggedInUser.EmailAddressVerified = false;
 			}
 
-			return new EmptyResult();
+			return PartialView("EditFields", GetModel());
+		}
+
+		private static AccountInfoModel GetModel() {
+			var model = new AccountInfoModel {
+				FirstName = Database.LoggedInUser.FirstName,
+				LastName = Database.LoggedInUser.LastName,
+				EmailAddress = Database.LoggedInUser.EmailAddress,
+			};
+			return model;
 		}
 	}
 }
