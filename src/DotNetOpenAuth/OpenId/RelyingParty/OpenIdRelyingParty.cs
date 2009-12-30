@@ -473,21 +473,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 
-			// Build the realm URL
-			UriBuilder realmUrl = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
-			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
-			realmUrl.Query = null;
-			realmUrl.Fragment = null;
-
-			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
-			// virtual directory hosted apps, we need to make sure that the realm path ends
-			// in a slash (since our calculation above guarantees it doesn't end in a specific
-			// page like default.aspx).
-			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal)) {
-				realmUrl.Path += "/";
-			}
-
-			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+			return this.CreateRequests(userSuppliedIdentifier, Realm.AutoDetect);
 		}
 
 		/// <summary>

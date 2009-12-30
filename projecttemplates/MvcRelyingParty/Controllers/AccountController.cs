@@ -52,18 +52,6 @@
 		public IOpenIdRelyingParty RelyingParty { get; private set; }
 
 		/// <summary>
-		/// Gets the realm to report to the Provider for authentication.
-		/// </summary>
-		/// <value>The URL of this web application's root.</value>
-		public Realm Realm {
-			get {
-				UriBuilder builder = new UriBuilder(Request.Url);
-				builder.Path = Request.ApplicationPath;
-				return builder.Uri;
-			}
-		}
-
-		/// <summary>
 		/// Prepares a web page to help the user supply his login information.
 		/// </summary>
 		/// <returns>The action result.</returns>
@@ -84,7 +72,7 @@
 			Identifier userSuppliedIdentifier;
 			if (Identifier.TryParse(openid_identifier, out userSuppliedIdentifier)) {
 				try {
-					var request = this.RelyingParty.CreateRequest(openid_identifier, this.Realm, Url.ActionFull("LogOnReturnTo"));
+					var request = this.RelyingParty.CreateRequest(openid_identifier, Realm.AutoDetect, Url.ActionFull("LogOnReturnTo"));
 					request.SetUntrustedCallbackArgument("rememberMe", rememberMe ? "1" : "0");
 
 					// This might be signed so the OP can't send the user to a dangerous URL.
