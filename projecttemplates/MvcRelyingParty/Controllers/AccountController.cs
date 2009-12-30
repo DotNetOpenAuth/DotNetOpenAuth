@@ -12,6 +12,7 @@
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using MvcRelyingParty.Models;
 	using RelyingPartyLogic;
 
 	[HandleError]
@@ -147,6 +148,38 @@
 		public ActionResult LogOff() {
 			this.FormsAuth.SignOut();
 			return RedirectToAction("Index", "Home");
+		}
+
+		public ActionResult Edit() {
+			var model = new AccountInfoModel {
+				FirstName = Database.LoggedInUser.FirstName,
+				LastName = Database.LoggedInUser.LastName,
+				EmailAddress = Database.LoggedInUser.EmailAddress,
+			};
+			return View(model);
+		}
+
+		/// <summary>
+		/// Updates the user's account information.
+		/// </summary>
+		/// <param name="firstName">The first name.</param>
+		/// <param name="lastName">The last name.</param>
+		/// <param name="emailAddress">The email address.</param>
+		/// <returns>An updated view showing the new profile.</returns>
+		/// <remarks>
+		/// This action accepts PUT because this operation is idempotent in nature.
+		/// </remarks>
+		[AcceptVerbs(HttpVerbs.Put), ValidateAntiForgeryToken]
+		public ActionResult Update(string firstName, string lastName, string emailAddress) {
+			Database.LoggedInUser.FirstName = firstName;
+			Database.LoggedInUser.LastName = lastName;
+
+			if (Database.LoggedInUser.EmailAddress != emailAddress) {
+				Database.LoggedInUser.EmailAddress = emailAddress;
+				Database.LoggedInUser.EmailAddressVerified = false;
+			}
+
+			return new EmptyResult();
 		}
 	}
 }
