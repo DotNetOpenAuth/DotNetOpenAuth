@@ -9,6 +9,8 @@
 	using System.Web.Security;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
+	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -152,7 +154,7 @@
 
 		[Authorize]
 		public ActionResult Edit() {
-			return View(GetModel());
+			return View(GetAccountInfoModel());
 		}
 
 		/// <summary>
@@ -175,10 +177,56 @@
 				Database.LoggedInUser.EmailAddressVerified = false;
 			}
 
-			return PartialView("EditFields", GetModel());
+			return PartialView("EditFields", GetAccountInfoModel());
 		}
 
-		private static AccountInfoModel GetModel() {
+		[Authorize]
+		public ActionResult Authorize() {
+			if (OAuthServiceProvider.PendingAuthorizationRequest == null) {
+				return RedirectToAction("Edit");
+			}
+
+			var model = new AccountAuthorizeModel {
+				ConsumerApp = OAuthServiceProvider.PendingAuthorizationConsumer.Name,
+				IsUnsafeRequest = OAuthServiceProvider.PendingAuthorizationRequest.IsUnsafeRequest,
+			};
+
+			return View(model);
+		}
+
+		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
+		public ActionResult Authorize(bool isApproved) {
+			if (isApproved) {
+				var consumer = OAuthServiceProvider.PendingAuthorizationConsumer;
+				var tokenManager = OAuthServiceProvider.ServiceProvider.TokenManager;
+				var pendingRequest = OAuthServiceProvider.PendingAuthorizationRequest;
+				ITokenContainingMessage requestTokenMessage = pendingRequest;
+				var requestToken = tokenManager.GetRequestToken(requestTokenMessage.Token);
+
+				var response = OAuthServiceProvider.AuthorizePendingRequestTokenAsWebResponse();
+				if (response != null) {
+					// The consumer provided a callback URL that can take care of everything else.
+					return response.AsActionResult();
+				}
+
+				var model = new AccountAuthorizeModel {
+					ConsumerApp = consumer.Name,
+				};
+
+				if (!pendingRequest.IsUnsafeRequest) {
+					model.VerificationCode = ServiceProvider.CreateVerificationCode(consumer.VerificationCodeFormat, consumer.VerificationCodeLength);
+					requestToken.VerificationCode = model.VerificationCode;
+					tokenManager.UpdateToken(requestToken);
+				}
+
+				return View("AuthorizeApproved");
+			} else {
+				OAuthServiceProvider.PendingAuthorizationRequest = null;
+				return View("AuthorizeDenied");
+			}
+		}
+
+		private static AccountInfoModel GetAccountInfoModel() {
 			var model = new AccountInfoModel {
 				FirstName = Database.LoggedInUser.FirstName,
 				LastName = Database.LoggedInUser.LastName,
