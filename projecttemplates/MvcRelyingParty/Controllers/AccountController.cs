@@ -120,7 +120,7 @@
 						var token = RelyingPartyLogic.User.ProcessUserLogin(response);
 						bool rememberMe = response.GetUntrustedCallbackArgument("rememberMe") == "1";
 						this.FormsAuth.SignIn(token.ClaimedIdentifier, rememberMe);
-						string returnUrl = response.GetCallbackArgument("returnUrl");
+						string returnUrl = response.GetUntrustedCallbackArgument("returnUrl");
 						if (!String.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
 						} else {

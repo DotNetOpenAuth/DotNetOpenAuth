@@ -11,6 +11,7 @@
 
 	<% using (Html.BeginForm("LogOn", "Account")) { %>
 	<%= Html.AntiForgeryToken() %>
+	<%= Html.Hidden("ReturnUrl", Request.QueryString["ReturnUrl"]) %>
 	<div>
 		<fieldset>
 			<legend>Account Information</legend>
