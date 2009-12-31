@@ -9,9 +9,12 @@ namespace OpenIdWebRingSsoProvider.Code {
 	using System.Configuration;
 	using System.Web;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	public class Util {
+		private const string RolesAttribute = "http://samples.dotnetopenauth.net/sso/roles";
+
 		public static string ExtractUserName(Uri url) {
 			return url.Segments[url.Segments.Length - 1];
 		}
@@ -68,6 +71,16 @@ namespace OpenIdWebRingSsoProvider.Code {
 
 			if (idrequest.IsAuthenticated.Value) {
 				// add extension responses here.
+				var fetchRequest = idrequest.GetExtension<FetchRequest>();
+				if (fetchRequest != null) {
+					var fetchResponse = new FetchResponse();
+					if (fetchRequest.Attributes.Contains(RolesAttribute)) {
+						// Inform the RP what roles this user should fill
+						// These roles would normally come out of the user database.
+						fetchResponse.Attributes.Add(RolesAttribute, "Member", "Admin");
+					}
+					idrequest.AddResponseExtension(fetchResponse);
+				}
 			}
 		}
 	}
