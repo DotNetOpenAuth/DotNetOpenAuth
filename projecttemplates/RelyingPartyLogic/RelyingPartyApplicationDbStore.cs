@@ -134,7 +134,7 @@ namespace RelyingPartyLogic {
 		/// </remarks>
 		public void ClearExpiredAssociations() {
 			using (var dataContext = new TransactedDatabaseEntities(IsolationLevel.ReadCommitted)) {
-				dataContext.ClearExpiredAssociations();
+				dataContext.ClearExpiredAssociations(dataContext.Transaction);
 			}
 		}
 

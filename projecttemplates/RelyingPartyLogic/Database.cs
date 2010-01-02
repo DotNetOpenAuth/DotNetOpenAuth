@@ -8,6 +8,7 @@ namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Data.EntityClient;
 	using System.Data.SqlClient;
 	using System.Linq;
 	using System.ServiceModel;
@@ -51,7 +52,7 @@ namespace RelyingPartyLogic {
 						throw;
 					}
 
-					DataContextTransaction = dataContext.Connection.BeginTransaction();
+					DataContextTransaction = (EntityTransaction)dataContext.Connection.BeginTransaction();
 					DataContextSimple = dataContext;
 				}
 
@@ -59,14 +60,21 @@ namespace RelyingPartyLogic {
 			}
 		}
 
-		internal static IDbTransaction DataContextTransaction {
+		/// <summary>
+		/// Gets a value indicating whether the data context is already initialized.
+		/// </summary>
+		internal static bool IsDataContextInitialized {
+			get { return DataContextSimple != null; }
+		}
+
+		internal static EntityTransaction DataContextTransaction {
 			get {
 				if (HttpContext.Current != null) {
-					return HttpContext.Current.Items[DataContextTransactionKey] as IDbTransaction;
+					return HttpContext.Current.Items[DataContextTransactionKey] as EntityTransaction;
 				} else if (OperationContext.Current != null) {
 					object data;
 					if (OperationContext.Current.IncomingMessageProperties.TryGetValue(DataContextTransactionKey, out data)) {
-						return data as IDbTransaction;
+						return data as EntityTransaction;
 					} else {
 						return null;
 					}
