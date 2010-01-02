@@ -219,7 +219,7 @@
 					tokenManager.UpdateToken(requestToken);
 				}
 
-				return View("AuthorizeApproved");
+				return View("AuthorizeApproved", model);
 			} else {
 				OAuthServiceProvider.PendingAuthorizationRequest = null;
 				return View("AuthorizeDenied");
