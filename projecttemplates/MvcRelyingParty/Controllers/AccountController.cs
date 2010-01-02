@@ -226,11 +226,32 @@
 			}
 		}
 
+		[Authorize, AcceptVerbs(HttpVerbs.Delete)] // ValidateAntiForgeryToken would be GREAT here, but it's not a FORM POST operation so that doesn't work.
+		public ActionResult RevokeToken(string token) {
+			if (String.IsNullOrEmpty(token)) {
+				throw new ArgumentNullException("token");
+			}
+
+			var tokenEntity = Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>().Where(t => t.User.UserId == Database.LoggedInUser.UserId && t.Token == token).FirstOrDefault();
+			if (tokenEntity == null) {
+				throw new ArgumentOutOfRangeException("id", "The logged in user does not have a token with this name to revoke.");
+			}
+
+			Database.DataContext.DeleteObject(tokenEntity);
+			Database.DataContext.SaveChanges(); // make changes now so the model we fill up reflects the change
+
+			return PartialView("AuthorizedApps", GetAccountInfoModel());
+		}
+
 		private static AccountInfoModel GetAccountInfoModel() {
+			var authorizedApps = from token in Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>()
+			                     where token.User.UserId == Database.LoggedInUser.UserId
+			                     select new AccountInfoModel.AuthorizedApp { AppName = token.Consumer.Name, Token = token.Token };
 			var model = new AccountInfoModel {
 				FirstName = Database.LoggedInUser.FirstName,
 				LastName = Database.LoggedInUser.LastName,
 				EmailAddress = Database.LoggedInUser.EmailAddress,
+				AuthorizedApps = authorizedApps.ToList(),
 			};
 			return model;
 		}

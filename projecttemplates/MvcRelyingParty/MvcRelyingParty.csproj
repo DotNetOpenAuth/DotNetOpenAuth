@@ -128,6 +128,7 @@
     <Content Include="OAuth.ashx" />
     <Content Include="Views\Account\Authorize.aspx" />
     <Content Include="Views\Account\AuthorizeApproved.aspx" />
+    <Content Include="Views\Account\AuthorizedApps.ascx" />
     <Content Include="Views\Account\AuthorizeDenied.aspx" />
   </ItemGroup>
   <ItemGroup>

@@ -23,5 +23,9 @@
 	</div>
 	<input type="submit" value="Save" />
 	<span id="updatingMessage" style="display: none">Saving...</span>
+
+	<div id="authorizedApps">
+		<% Html.RenderPartial("AuthorizedApps"); %>
+	</div>
 	<% } %>
 </asp:Content>
