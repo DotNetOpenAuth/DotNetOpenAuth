@@ -23,9 +23,13 @@
 	</div>
 	<input type="submit" value="Save" />
 	<span id="updatingMessage" style="display: none">Saving...</span>
+	<% } %>
 
 	<div id="authorizedApps">
 		<% Html.RenderPartial("AuthorizedApps"); %>
 	</div>
-	<% } %>
+
+	<div id="authenticationTokens">
+		<% Html.RenderPartial("AuthenticationTokens"); %>
+	</div>
 </asp:Content>

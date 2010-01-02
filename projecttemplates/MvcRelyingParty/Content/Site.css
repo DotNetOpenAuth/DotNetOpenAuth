@@ -315,3 +315,13 @@ div#title
     font-weight: bold;
     color: #ff0000;
 }
+
+ul.AuthTokens li.OpenID
+{
+	list-style-image: url(../../content/images/openid_login.gif);
+}
+
+ul.AuthTokens li.InfoCard
+{
+	list-style-image: url(../../content/images/infocard_23x16.png);
+}

@@ -98,7 +98,7 @@
 					ModelState.AddModelError("OpenID", ex.Message);
 				}
 			} else {
-				ModelState.AddModelError("OpenID", "This doesn't look like a valid OpenID.");
+				ModelState.AddModelError("openid_identifier", "This doesn't look like a valid OpenID.");
 			}
 
 			return View();
@@ -243,15 +243,54 @@
 			return PartialView("AuthorizedApps", GetAccountInfoModel());
 		}
 
+		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
+		public ActionResult AddAuthenticationTokenReturnTo(string openid_identifier) {
+			var response = this.RelyingParty.GetResponse();
+			if (response != null) {
+				switch (response.Status) {
+					case AuthenticationStatus.Authenticated:
+						Database.LoggedInUser.AuthenticationTokens.Add(new AuthenticationToken {
+							ClaimedIdentifier = response.ClaimedIdentifier,
+							FriendlyIdentifier = response.FriendlyIdentifierForDisplay,
+						});
+						Database.DataContext.SaveChanges();
+						break;
+					default:
+						break;
+				}
+			}
+
+			return RedirectToAction("Edit");
+		}
+
+		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
+		public ActionResult AddAuthenticationToken(string openid_identifier) {
+			Identifier userSuppliedIdentifier;
+			if (Identifier.TryParse(openid_identifier, out userSuppliedIdentifier)) {
+				try {
+					var request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, Realm.AutoDetect, Url.ActionFull("AddAuthenticationTokenReturnTo"));
+					return request.RedirectingResponse.AsActionResult();
+				} catch (ProtocolException ex) {
+					ModelState.AddModelError("openid_identifier", ex);
+				}
+			} else {
+				ModelState.AddModelError("openid_identifier", "This doesn't look like a valid OpenID.");
+			}
+
+			return View("Edit", GetAccountInfoModel());
+		}
+
 		private static AccountInfoModel GetAccountInfoModel() {
 			var authorizedApps = from token in Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>()
 			                     where token.User.UserId == Database.LoggedInUser.UserId
 			                     select new AccountInfoModel.AuthorizedApp { AppName = token.Consumer.Name, Token = token.Token };
+			Database.LoggedInUser.AuthenticationTokens.Load();
 			var model = new AccountInfoModel {
 				FirstName = Database.LoggedInUser.FirstName,
 				LastName = Database.LoggedInUser.LastName,
 				EmailAddress = Database.LoggedInUser.EmailAddress,
 				AuthorizedApps = authorizedApps.ToList(),
+				AuthenticationTokens = Database.LoggedInUser.AuthenticationTokens.ToList(),
 			};
 			return model;
 		}

@@ -125,7 +125,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\images\infocard_23x16.png" />
+    <Content Include="Content\images\openid_login.gif" />
     <Content Include="OAuth.ashx" />
+    <Content Include="Views\Account\AuthenticationTokens.ascx" />
     <Content Include="Views\Account\Authorize.aspx" />
     <Content Include="Views\Account\AuthorizeApproved.aspx" />
     <Content Include="Views\Account\AuthorizedApps.ascx" />
