@@ -96,21 +96,38 @@ GO
 			}
 		}
 
+		public static int ExecuteCommand(this ObjectContext objectContext, string command) {
+			// Try to automatically add the appropriate transaction if one is known.
+			EntityTransaction transaction = null;
+			if (Database.IsDataContextInitialized && Database.DataContext == objectContext) {
+				transaction = Database.DataContextTransaction;
+			}
+			return ExecuteCommand(objectContext, transaction, command);
+		}
+
 		/// <summary>
 		/// Executes a SQL command against the SQL connection.
 		/// </summary>
 		/// <param name="objectContext">The object context.</param>
+		/// <param name="transaction">The transaction to use, if any.</param>
 		/// <param name="command">The command to execute.</param>
 		/// <returns>The result of executing the command.</returns>
-		public static int ExecuteCommand(this ObjectContext objectContext, string command) {
-			DbConnection connection = ((EntityConnection)objectContext.Connection).StoreConnection;
+		public static int ExecuteCommand(this ObjectContext objectContext, EntityTransaction transaction, string command) {
+			if (objectContext == null) {
+				throw new ArgumentNullException("objectContext");
+			}
+			if (String.IsNullOrEmpty(command)) {
+				throw new ArgumentNullException("command");
+			}
+
+			DbConnection connection = (EntityConnection)objectContext.Connection;
 			bool opening = (connection.State == ConnectionState.Closed);
 			if (opening) {
 				connection.Open();
 			}
 
 			DbCommand cmd = connection.CreateCommand();
-			cmd.Transaction = (DbTransaction)Database.DataContextTransaction;
+			cmd.Transaction = transaction;
 			cmd.CommandText = command;
 			cmd.CommandType = CommandType.StoredProcedure;
 			try {
