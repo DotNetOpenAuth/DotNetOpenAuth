@@ -170,6 +170,7 @@
 																			 or '%(Extension)' == '.config'
 																			 or '%(Extension)' == '.Master'
 																			 or '%(Extension)' == '.aspx'
+																			 or '%(Extension)' == '.ascx'
 																			 or '%(Extension)' == '.asax'
 																			 or '%(Extension)' == '.ashx'
 																			 ">
