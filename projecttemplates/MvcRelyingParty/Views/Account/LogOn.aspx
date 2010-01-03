@@ -30,3 +30,10 @@
 	</div>
 	<% } %>
 </asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="ScriptsArea" runat="server">
+	<script type="text/javascript" src="../../Scripts/MicrosoftAjax.js"></script>
+	<script type="text/javascript" src="../../Scripts/MicrosoftMvcAjax.js"></script>
+	<script type="text/javascript" language="javascript"><!--//<![CDATA[
+	$addHandler(window, 'load', function() { document.getElementsByName("openid_identifier")[0].focus(); });
+	//]]>--></script>
+</asp:Content>
