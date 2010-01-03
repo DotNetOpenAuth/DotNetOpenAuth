@@ -38,20 +38,7 @@ namespace RelyingPartyLogic {
 				DatabaseEntities dataContext = DataContextSimple;
 				if (dataContext == null) {
 					dataContext = new DatabaseEntities();
-					try {
-						dataContext.Connection.Open();
-					} catch (EntityException entityEx) {
-						var sqlEx = entityEx.InnerException as SqlException;
-						if (sqlEx != null) {
-							if (sqlEx.Class == 14 && sqlEx.Number == 15350) {
-								// Most likely the database schema hasn't been created yet.
-								HttpContext.Current.Response.Redirect("~/Setup.aspx");
-							}
-						}
-
-						throw;
-					}
-
+					dataContext.Connection.Open();
 					DataContextTransaction = (EntityTransaction)dataContext.Connection.BeginTransaction();
 					DataContextSimple = dataContext;
 				}
