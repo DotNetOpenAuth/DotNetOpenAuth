@@ -954,11 +954,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					req.AddExtension(extension);
 				}
 
-				// Add state that needs to survive across the redirect.
-				if (!this.Stateless) {
-					req.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
-					req.SetUntrustedCallbackArgument(ReturnToReceivingControlId, this.ClientID);
-				}
+				// Add state that needs to survive across the redirect, but at this point
+				// only save those properties that are not expected to be changed by a
+				// LoggingIn event handler.
+				req.SetUntrustedCallbackArgument(ReturnToReceivingControlId, this.ClientID);
 
 				// Apply the control's association preference to this auth request, but only if
 				// it is less demanding (greater ordinal value) than the existing one.
@@ -969,6 +968,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				}
 
 				if (this.OnLoggingIn(req)) {
+					// We save this property after firing OnLoggingIn so that the host page can
+					// change its value and have that value saved.
+					req.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
+
 					yield return req;
 				}
 			}
