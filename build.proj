@@ -427,13 +427,20 @@
 
 	</Target>
 
-	<Target Name="MSI" DependsOnTargets="GetBuildVersion;_SetDropProperties;">
-		<Message Text="Creating MSI for $(ProductName)-$(BuildVersion) - and placing it in $(DropDirectoryNoSlash)" Importance="High" />
+	<Target Name="MSI" DependsOnTargets="DropLayout">
+		<Message Text="Creating MSI :: - 
+             ProjectRoot          - $(ProjectRoot)
+             BuildVersion         - $(BuildVersion)
+             ProductName          - $(ProductName)
+             DropPath             - $(DropsRoot)
+             OutputPath           - $(DropDirectoryNoSlash)
+             OutputName           - $(ProductName)-$(BuildVersion)" Importance="High" />
 		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj" 
 		         Properties="
 		         ProjectRoot=$(ProjectRoot);
 		         BuildVersion=$(BuildVersion);
 		         ProductName=$(ProductName);
+		         DropPath=$(DropDirectoryNoSlash);
 		         OutputPath=$(DropsRoot);
 		         OutputName=$(ProductName)-$(BuildVersion);
 		         " />

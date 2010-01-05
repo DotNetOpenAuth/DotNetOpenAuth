@@ -11,9 +11,9 @@
     <WixToolPath>..\..\Tools\wix</WixToolPath>
     <WixTargetsPath>$(WixToolPath)\Wix.targets</WixTargetsPath>
     <WixTasksPath>wixtasks.dll</WixTasksPath>
-    <OutputPath Condition=" '$(OutputPath)' == ''">..\..\</OutputPath>
+    <OutputPath Condition=" '$(OutputPath)' == ''"></OutputPath>
     <OutputName Condition=" '$(OutputName)' == ''">DotNetOpenAuth</OutputName>
-    <DefineConstants>$(DefineConstants);OutputPath=$(OutputPath);ProjectRoot=$(ProjectRoot);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
+    <DefineConstants>$(DefineConstants);OutputPath=$(OutputPath);ProjectRoot=$(ProjectRoot);DropPath=$(DropPath);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
     <SetMsiAssemblyNameFileVersion>true</SetMsiAssemblyNameFileVersion>
     <ExactAssemblyVersions>true</ExactAssemblyVersions>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
@@ -57,6 +57,7 @@
       <HintPath>$(WixToolPath)\WixUIExtension.dll</HintPath>
     </WixExtension>
   </ItemGroup>
+  
   <Import Project="$(WixTargetsPath)" />
   <Target Name="CheckWxs">
     <!-- Run WixCop on all the source files to check for issues. -->

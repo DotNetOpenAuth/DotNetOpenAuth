@@ -99,19 +99,19 @@
         <Directory Id="INSTALLLOCATION" Name="DotNetOpenAuth">
           <Directory Id="DotNetOpenAuth.BinFolder" Name="Bin">
             <Component Id="dnoa.ProductComponent" Guid="47ef004e-517c-4ae3-96b0-7e41e94875cc">
-              <File Id="DotNetOpenAuth.dll" Source="$(var.OutputPath)\bin\DotNetOpenAuth.dll"></File>
-              <File Id="DotNetOpenAuth.pdb" Source="$(var.OutputPath)\bin\DotNetOpenAuth.pdb"></File>
-              <File Id="DotNetOpenAuth.xml" Source="$(var.OutputPath)\bin\DotNetOpenAuth.xml"></File>
+              <File Id="DotNetOpenAuth.dll" Source="$(var.DropPath)\bin\DotNetOpenAuth.dll"></File>
+              <File Id="DotNetOpenAuth.pdb" Source="$(var.DropPath)\bin\DotNetOpenAuth.pdb"></File>
+              <File Id="DotNetOpenAuth.xml" Source="$(var.DropPath)\bin\DotNetOpenAuth.xml"></File>
             </Component>
             <Directory Id="SATLIBRARYFOLDER" Name="sr">
               <Component Id="dnoa.LocalisedAssemblies" Guid="4a3e9d9f-89af-456e-b998-3b949f106ee5">
-                <File Id="DotNetOpenAuth.resources.dll" Source="$(var.OutputPath)\bin\sr\DotNetOpenAuth.resources.dll"></File>
+                <File Id="DotNetOpenAuth.resources.dll" Source="$(var.DropPath)\bin\sr\DotNetOpenAuth.resources.dll"></File>
               </Component>
             </Directory>
           </Directory>
           <Directory Id="DotNetOpenAuth.DocsFolder" Name="Docs">
             <Component Id="dnoa.Documentation" Guid="{48F5DE8D-E17B-4167-856F-C2938F386279}">
-              <File Id="DotNetOpenAuth.chm" Source="$(var.OutputPath)\DotNetOpenAuth.chm" />
+              <File Id="DotNetOpenAuth.chm" Source="$(var.DropPath)\DotNetOpenAuth.chm" />
             </Component>
           </Directory>
           <Directory Id="DotNetOpenAuth.SamplesFolder" Name="Samples"/>

@@ -6,7 +6,7 @@
       <Directory Id="DotNetOpenAuth.samplesFolder" Name="DotNetOpenAuth" />
     </DirectoryRef>
 
-    <DirectoryRef Id="DotNetOpenAuth.samplesFolder" FileSource="$(var.OutputPath)\Samples\">
+    <DirectoryRef Id="DotNetOpenAuth.samplesFolder" FileSource="$(var.DropPath)\Samples\">
       <!-- Add samples here -->
     </DirectoryRef>
 
