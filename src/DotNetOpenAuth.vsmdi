@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<TestLists xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2006">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestLists xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <TestList name="Hosted ASP.NET tests" id="5a637793-05cb-476f-9f0c-18e7e7a4b205" parentListId="8c43106b-9dc1-4907-a29f-aa66a61bf5b6">
     <Description>Tests that require hosting the test ASP.NET web site to run.  These tests tend to be a bit slower than the rest due to the overhead of loading ASP.NET.</Description>
     <TestLinks>
