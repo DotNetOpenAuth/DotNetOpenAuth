@@ -321,31 +321,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
 		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
-		/// <returns>The total number of bytes copied.</returns>
-		/// <remarks>
-		/// Copying begins at the streams' current positions.
-		/// The positions are NOT reset after copying is complete.
-		/// </remarks>
-		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
-			Contract.Requires<ArgumentNullException>(copyFrom != null);
-			Contract.Requires<ArgumentNullException>(copyTo != null);
-			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
-			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
-			return CopyTo(copyFrom, copyTo, int.MaxValue);
-		}
-
-		/// <summary>
-		/// Copies the contents of one stream to another.
-		/// </summary>
-		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
-		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
 		/// <param name="maximumBytesToCopy">The maximum bytes to copy.</param>
 		/// <returns>The total number of bytes copied.</returns>
 		/// <remarks>
 		/// Copying begins at the streams' current positions.
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
-		internal static int CopyTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
+		internal static int CopyUpTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
 			Contract.Requires<ArgumentNullException>(copyFrom != null);
 			Contract.Requires<ArgumentNullException>(copyTo != null);
 			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
