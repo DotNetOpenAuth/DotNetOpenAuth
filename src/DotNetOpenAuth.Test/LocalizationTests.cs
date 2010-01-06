@@ -9,17 +9,17 @@ namespace DotNetOpenAuth.Test {
 	using System.Globalization;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// Tests various localized resources work as expected.
 	/// </summary>
-	[TestClass]
+	[TestFixture]
 	public class LocalizationTests {
 		/// <summary>
 		/// Tests that Serbian localized strings are correctly installed.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(InvalidOperationException), "Ovaj metod zahteva tekući HttpContext. Kao alternativa, koristite preklopljeni metod koji dozvoljava da se prosledi informacija bez HttpContext-a.")]
+		[TestCase, ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Ovaj metod zahteva tekući HttpContext. Kao alternativa, koristite preklopljeni metod koji dozvoljava da se prosledi informacija bez HttpContext-a.")]
 		public void Serbian() {
 			Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("sr");
 			ErrorUtilities.VerifyHttpContext();
