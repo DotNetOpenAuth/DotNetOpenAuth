@@ -1069,8 +1069,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="protection1">The first protection type to compare.</param>
 		/// <param name="protection2">The second protection type to compare.</param>
 		/// <returns>
-		/// -1 if <paramref name="element1"/> should be applied to an outgoing message before <paramref name="element2"/>.
-		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
+		/// -1 if <paramref name="protection1"/> should be applied to an outgoing message before <paramref name="protection2"/>.
+		/// 1 if <paramref name="protection2"/> should be applied to an outgoing message before <paramref name="protection1"/>.
 		/// 0 if it doesn't matter.
 		/// </returns>
 		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtections protection1, MessageProtections protection2) {

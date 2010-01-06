@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <remarks>
 		/// 	<para>If discovery on the user-supplied identifier yields hints regarding which
 		/// extensions and attribute formats the Provider supports, this method MAY ignore the
-		/// <paramref name="attributeFormat"/> argument and accomodate the Provider to minimize
+		/// <paramref name="attributeFormats"/> argument and accomodate the Provider to minimize
 		/// the size of the request.</para>
 		/// 	<para>If the request does not carry an sreg extension, the method logs a warning but
 		/// otherwise quietly returns doing nothing.</para>
