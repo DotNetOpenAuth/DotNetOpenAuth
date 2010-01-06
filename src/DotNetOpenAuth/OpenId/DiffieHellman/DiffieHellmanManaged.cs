@@ -162,7 +162,7 @@ namespace Org.Mentalis.Security.Cryptography {
 		/// Imports the specified <see cref="DHParameters"/>.
 		/// </summary>
 		/// <param name="parameters">The parameters for <see cref="DiffieHellman"/>.</param>
-		/// <exception cref="CryptographicException"><paramref name="P"/> or <paramref name="G"/> is a null reference (<b>Nothing</b> in Visual Basic) -or- <paramref name="P"/> is not a prime number.</exception>
+		/// <exception cref="CryptographicException"><see cref="DHParameters.P">parameters.P</see> or <see cref="DHParameters.G">parameters.G</see> is a null reference (<b>Nothing</b> in Visual Basic) -or- <see cref="DHParameters.P">parameters.P</see> is not a prime number.</exception>
 		public override void ImportParameters(DHParameters parameters) {
 			if (parameters.P == null)
 				throw new CryptographicException("Missing P value.");
