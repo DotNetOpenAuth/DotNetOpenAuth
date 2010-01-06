@@ -125,6 +125,7 @@ http://opensource.org/licenses/ms-pl.html
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
+    <DefineConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">$(DefineConstants);CLR4</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
