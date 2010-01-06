@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			}
 		}
 
-		internal void RegisterMockXrdsResponse(ServiceEndpoint endpoint) {
+		internal void RegisterMockXrdsResponse(IdentifierDiscoveryResult endpoint) {
 			Contract.Requires<ArgumentNullException>(endpoint != null);
 
 			string identityUri;
@@ -92,10 +92,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 			} else {
 				identityUri = endpoint.UserSuppliedIdentifier ?? endpoint.ClaimedIdentifier;
 			}
-			this.RegisterMockXrdsResponse(new Uri(identityUri), new ServiceEndpoint[] { endpoint });
+			this.RegisterMockXrdsResponse(new Uri(identityUri), new IdentifierDiscoveryResult[] { endpoint });
 		}
 
-		internal void RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<ServiceEndpoint> endpoints) {
+		internal void RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<IdentifierDiscoveryResult> endpoints) {
 			Contract.Requires<ArgumentNullException>(endpoints != null);
 
 			StringBuilder xrds = new StringBuilder();
@@ -130,12 +130,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.RegisterMockResponse(respondingUri, ContentTypes.Xrds, xrds.ToString());
 		}
 
-		internal void RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, ServiceEndpoint providerEndpoint) {
-			ServiceEndpoint identityEndpoint = ServiceEndpoint.CreateForClaimedIdentifier(
+		internal void RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, IdentifierDiscoveryResult providerEndpoint) {
+			IdentifierDiscoveryResult identityEndpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				directedIdentityAssignedIdentifier,
 				directedIdentityAssignedIdentifier,
-				providerEndpoint.ProviderEndpoint,
-				providerEndpoint.ProviderDescription,
+				providerEndpoint.ProviderLocalIdentifier,
+				new ProviderEndpointDescription(providerEndpoint.ProviderEndpoint, providerEndpoint.Capabilities),
 				10,
 				10);
 			this.RegisterMockXrdsResponse(identityEndpoint);

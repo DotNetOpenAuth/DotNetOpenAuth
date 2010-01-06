@@ -97,6 +97,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		IProviderEndpoint Provider { get; }
 
 		/// <summary>
+		/// Gets the discovery result leading to the formulation of this request.
+		/// </summary>
+		/// <value>The discovery result.</value>
+		IdentifierDiscoveryResult DiscoveryResult { get; }
+
+		/// <summary>
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
 		/// </summary>
 		/// <param name="arguments">The arguments to add to the request's return_to URI.  Values must not be null.</param>

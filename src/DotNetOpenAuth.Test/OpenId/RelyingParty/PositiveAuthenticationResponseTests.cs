@@ -46,6 +46,32 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Verifies that discovery verification of a positive assertion can match a dual identifier.
+		/// </summary>
+		[TestMethod]
+		public void DualIdentifierMatchesInAssertionVerification() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
+			var rp = CreateRelyingParty();
+			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
+			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+		}
+
+		/// <summary>
+		/// Verifies that discovery verification of a positive assertion cannot match a dual identifier
+		/// if the default settings are in place.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void DualIdentifierNoMatchInAssertionVerificationByDefault() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
+			var rp = CreateRelyingParty();
+			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+		}
+
+		/// <summary>
 		/// Verifies that the RP rejects signed solicited assertions by an OP that
 		/// makes up a claimed Id that was not part of the original request, and 
 		/// that the OP has no authority to assert positively regarding.
@@ -95,9 +121,13 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		private PositiveAssertionResponse GetPositiveAssertion() {
+			return this.GetPositiveAssertion(false);
+		}
+
+		private PositiveAssertionResponse GetPositiveAssertion(bool dualIdentifier) {
 			Protocol protocol = Protocol.Default;
 			PositiveAssertionResponse assertion = new PositiveAssertionResponse(protocol.Version, this.returnTo);
-			assertion.ClaimedIdentifier = this.GetMockIdentifier(protocol.ProtocolVersion, false);
+			assertion.ClaimedIdentifier = dualIdentifier ? this.GetMockDualIdentifier() : this.GetMockIdentifier(protocol.ProtocolVersion, false);
 			assertion.LocalIdentifier = OPLocalIdentifiers[0];
 			assertion.ReturnTo = this.returnTo;
 			assertion.ProviderEndpoint = OPUri;

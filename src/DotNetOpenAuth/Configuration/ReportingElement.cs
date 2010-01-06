@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets a value indicating whether this reporting is enabled.
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		[ConfigurationProperty(EnabledAttributeName, DefaultValue = false)]
+		[ConfigurationProperty(EnabledAttributeName, DefaultValue = true)]
 		internal bool Enabled {
 			get { return (bool)this[EnabledAttributeName]; }
 			set { this[EnabledAttributeName] = value; }

@@ -204,6 +204,7 @@
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
+    <Compile Include="Mocks\MockIdentifierDiscoveryService.cs" />
     <Compile Include="Mocks\MockOpenIdExtension.cs" />
     <Compile Include="Mocks\MockRealm.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
@@ -238,6 +239,8 @@
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElementTests.cs" />
     <Compile Include="OpenId\DiffieHellmanTests.cs" />
+    <Compile Include="OpenId\DiscoveryServices\UriDiscoveryServiceTests.cs" />
+    <Compile Include="OpenId\DiscoveryServices\XriDiscoveryProxyServiceTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchRequestTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchResponseTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeExchangeRoundtripTests.cs" />
@@ -274,6 +277,7 @@
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
+    <Compile Include="OpenId\OpenIdUtilitiesTests.cs" />
     <Compile Include="OpenId\Provider\PerformanceTests.cs" />
     <Compile Include="OpenId\ProviderEndpointDescriptionTests.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequestTests.cs" />
@@ -289,7 +293,7 @@
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyTests.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettingsTests.cs" />
-    <Compile Include="OpenId\RelyingParty\ServiceEndpointTests.cs" />
+    <Compile Include="OpenId\RelyingParty\IdentifierDiscoveryResultTests.cs" />
     <Compile Include="OpenId\UriIdentifierTests.cs" />
     <Compile Include="OpenId\XriIdentifierTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -342,6 +346,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\xrds20dual.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OpenId\UI\" />

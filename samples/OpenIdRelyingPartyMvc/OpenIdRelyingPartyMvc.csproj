@@ -117,6 +117,7 @@
     <Content Include="Content\theme\ui.tabs.css" />
     <Content Include="Content\theme\ui.theme.css" />
     <Content Include="Default.aspx" />
+    <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Views\User\Index.aspx" />
     <Content Include="Views\User\Login.aspx" />

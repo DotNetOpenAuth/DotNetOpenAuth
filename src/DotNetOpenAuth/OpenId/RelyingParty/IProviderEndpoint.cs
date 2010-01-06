@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
@@ -30,6 +31,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the URL that the OpenID Provider receives authentication requests at.
 		/// </summary>
+		/// <value>
+		/// This value MUST be an absolute HTTP or HTTPS URL.
+		/// </value>
 		Uri Uri { get; }
 
 		/// <summary>
@@ -45,6 +49,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "No parameter at all.")]
+		[Obsolete("Use IAuthenticationRequest.DiscoveryResult.IsExtensionSupported instead.")]
 		bool IsExtensionSupported<T>() where T : IOpenIdMessageExtension, new();
 
 		/// <summary>
@@ -59,6 +64,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The only way to be sure of support for a given extension is to include
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
+		[Obsolete("Use IAuthenticationRequest.DiscoveryResult.IsExtensionSupported instead.")]
 		bool IsExtensionSupported(Type extensionType);
 	}
 
@@ -67,20 +73,32 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[ContractClassFor(typeof(IProviderEndpoint))]
 	internal abstract class IProviderEndpointContract : IProviderEndpoint {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IProviderEndpointContract"/> class from being created.
+		/// </summary>
+		private IProviderEndpointContract() {
+		}
+
 		#region IProviderEndpoint Members
 
 		/// <summary>
 		/// Gets the detected version of OpenID implemented by the Provider.
 		/// </summary>
 		Version IProviderEndpoint.Version {
-			get { throw new NotImplementedException(); }
+			get {
+				Contract.Ensures(Contract.Result<Version>() != null);
+				throw new System.NotImplementedException();
+			}
 		}
 
 		/// <summary>
 		/// Gets the URL that the OpenID Provider receives authentication requests at.
 		/// </summary>
 		Uri IProviderEndpoint.Uri {
-			get { throw new NotImplementedException(); }
+			get {
+				Contract.Ensures(Contract.Result<Uri>() != null);
+				throw new System.NotImplementedException();
+			}
 		}
 
 		/// <summary>
@@ -118,7 +136,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		bool IProviderEndpoint.IsExtensionSupported(Type extensionType) {
 			Contract.Requires<ArgumentNullException>(extensionType != null);
 			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
-			////ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), string.Format(CultureInfo.CurrentCulture, OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName));
 			throw new NotImplementedException();
 		}
 

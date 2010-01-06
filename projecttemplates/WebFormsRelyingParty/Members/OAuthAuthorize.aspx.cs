@@ -14,7 +14,6 @@ namespace WebFormsRelyingParty.Members {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using RelyingPartyLogic;
-	using WebFormsRelyingParty.Code;
 
 	public partial class OAuthAuthorize : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {

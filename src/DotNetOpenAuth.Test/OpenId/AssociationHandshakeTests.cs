@@ -318,9 +318,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void ParameterizedAssociationTest(
 			ProviderEndpointDescription opDescription,
 			string expectedAssociationType) {
-			Protocol protocol = Protocol.Lookup(opDescription.ProtocolVersion);
+			Protocol protocol = Protocol.Lookup(Protocol.Lookup(opDescription.Version).ProtocolVersion);
 			bool expectSuccess = expectedAssociationType != null;
-			bool expectDiffieHellman = !opDescription.Endpoint.IsTransportSecure();
+			bool expectDiffieHellman = !opDescription.Uri.IsTransportSecure();
 			Association rpAssociation = null, opAssociation;
 			AssociateSuccessfulResponse associateSuccessfulResponse = null;
 			AssociateUnsuccessfulResponse associateUnsuccessfulResponse = null;
@@ -337,7 +337,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SendResponse(req);
 				});
 			coordinator.IncomingMessageFilter = message => {
-				Assert.AreSame(opDescription.ProtocolVersion, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, opDescription.ProtocolVersion);
+				Assert.AreSame(opDescription.Version, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);
 				var associateSuccess = message as AssociateSuccessfulResponse;
 				var associateFailed = message as AssociateUnsuccessfulResponse;
 				if (associateSuccess != null) {
@@ -348,7 +348,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				}
 			};
 			coordinator.OutgoingMessageFilter = message => {
-				Assert.AreSame(opDescription.ProtocolVersion, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, opDescription.ProtocolVersion);
+				Assert.AreEqual(opDescription.Version, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, opDescription.Version);
 			};
 			coordinator.Run();
 
@@ -356,7 +356,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 			if (expectSuccess) {
 				Assert.IsNotNull(rpAssociation);
-				Assert.AreSame(rpAssociation, associationManagerAccessor.associationStore.GetAssociation(opDescription.Endpoint, rpAssociation.Handle));
+				Assert.AreSame(rpAssociation, associationManagerAccessor.associationStore.GetAssociation(opDescription.Uri, rpAssociation.Handle));
 				opAssociation = coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, rpAssociation.Handle);
 				Assert.IsNotNull(opAssociation, "The Provider should have stored the association.");
 
@@ -375,7 +375,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var unencryptedResponse = (AssociateUnencryptedResponse)associateSuccessfulResponse;
 				}
 			} else {
-				Assert.IsNull(associationManagerAccessor.associationStore.GetAssociation(opDescription.Endpoint, new RelyingPartySecuritySettings()));
+				Assert.IsNull(associationManagerAccessor.associationStore.GetAssociation(opDescription.Uri, new RelyingPartySecuritySettings()));
 				Assert.IsNull(coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, new ProviderSecuritySettings()));
 			}
 		}

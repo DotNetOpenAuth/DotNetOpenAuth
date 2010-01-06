@@ -23,7 +23,7 @@ is default.aspx.
 		</Service>
 		<Service>
 			<Type>http://specs.openid.net/extensions/ui/icon</Type>
-			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/images/dotnetopenid_tiny.gif"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/images/DotNetOpenAuth.png"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>
