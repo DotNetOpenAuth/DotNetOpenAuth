@@ -155,13 +155,6 @@
     <Compile Include="MembersOnly\ProfileFieldsDisplay.ascx.designer.cs">
       <DependentUpon>ProfileFieldsDisplay.ascx</DependentUpon>
     </Compile>
-    <Compile Include="m\Login.aspx.cs">
-      <DependentUpon>Login.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="m\Login.aspx.designer.cs">
-      <DependentUpon>Login.aspx</DependentUpon>
-    </Compile>
     <Compile Include="NoIdentityOpenId.aspx.cs">
       <DependentUpon>NoIdentityOpenId.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -194,7 +187,6 @@
     <Content Include="MembersOnly\DisplayGoogleContacts.aspx" />
     <Content Include="MembersOnly\ProfileFieldsDisplay.ascx" />
     <Content Include="MembersOnly\Web.config" />
-    <Content Include="m\Login.aspx" />
     <Content Include="NoIdentityOpenId.aspx" />
   </ItemGroup>
   <ItemGroup>
