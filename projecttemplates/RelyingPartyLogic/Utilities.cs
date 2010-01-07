@@ -121,7 +121,7 @@ GO
 			}
 
 			DbConnection connection = (EntityConnection)objectContext.Connection;
-			bool opening = (connection.State == ConnectionState.Closed);
+			bool opening = connection.State == ConnectionState.Closed;
 			if (opening) {
 				connection.Open();
 			}

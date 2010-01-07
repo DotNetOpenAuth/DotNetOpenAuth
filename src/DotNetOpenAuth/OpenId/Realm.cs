@@ -418,18 +418,6 @@ namespace DotNetOpenAuth.OpenId {
 			return null;
 		}
 
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.uri != null);
-			Contract.Invariant(this.uri.AbsoluteUri != null);
-		}
-#endif
-
 		/// <summary>
 		/// Calls <see cref="UriBuilder.ToString"/> if the argument is non-null.
 		/// Otherwise throws <see cref="ArgumentNullException"/>.
@@ -450,5 +438,17 @@ namespace DotNetOpenAuth.OpenId {
 			// is safe: http://blog.nerdbank.net/2008/04/uriabsoluteuri-and-uritostring-are-not.html
 			return realmUriBuilder.ToString();
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.uri != null);
+			Contract.Invariant(this.uri.AbsoluteUri != null);
+		}
+#endif
 	}
 }
