@@ -6,10 +6,6 @@
       <Directory Id="DotNetOpenAuth.samplesFolder" Name="DotNetOpenAuth" />
     </DirectoryRef>
 
-    <DirectoryRef Id="DotNetOpenAuth.samplesFolder" FileSource="$(var.DropPath)\Samples\">
-      <!-- Add samples here -->
-    </DirectoryRef>
-
     <DirectoryRef Id="DNOASamplesMenuFolder">
       <Directory Id="DotNetOpenAuth.SamplesManuFolder" Name="DotNetOpenAuth"/>
     </DirectoryRef>
@@ -19,7 +15,7 @@
       <Component Id="dnoa.MainSamplesMenuFolder.RemoveFolder" Guid="{EE479FBC-6C56-47c7-9502-2BF5A4A74965}">
         <RemoveFolder Id="dnoa.MainSamplesMenuFolder.RemoveFolder" On="uninstall" />
         <RegistryKey Action="none" Root="HKCU" Key="Software\dotnetopenauth.net\$(var.ProductName)\$(var.BuildVersion)">
-          <RegistryValue Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
+          <RegistryValue Type="string" Value="[INSTALLDIR]\Samples" KeyPath="yes" />
         </RegistryKey>
       </Component>
     </DirectoryRef>
@@ -28,7 +24,7 @@
       <Component Id="dnoa.SamplesManuFolder.RemoveFolder" Guid="{844F5E76-BC51-4ff7-8DEB-F18EB004E955}">
         <RemoveFolder Id="dnoa.SamplesManuFolder.RemoveFolder" On="uninstall" />
         <RegistryKey Action="none" Root="HKCU" Key="Software\dotnetopenauth.net\$(var.ProductName)\$(var.BuildVersion)">
-          <RegistryValue Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
+          <RegistryValue Type="string" Value="[INSTALLDIR]\Samples" KeyPath="yes" />
         </RegistryKey>
       </Component>
     </DirectoryRef>
@@ -37,6 +33,7 @@
              Description="Installs DotNetOpenAuth code samples.">
       <ComponentRef Id="dnoa.MainSamplesMenuFolder.RemoveFolder"/>
       <ComponentRef Id="dnoa.SamplesManuFolder.RemoveFolder"/>
+      <ComponentGroupRef Id="group_dnoa_samples"/>
     </Feature>
   </Fragment>
 </Wix>

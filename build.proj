@@ -427,7 +427,7 @@
 
 	</Target>
 
-	<Target Name="MSI" DependsOnTargets="DropLayout">
+	<Target Name="MSI" DependsOnTargets="GetBuildVersion;_SetDropProperties;">
 		<Message Text="Creating MSI :: - 
              ProjectRoot          - $(ProjectRoot)
              BuildVersion         - $(BuildVersion)
@@ -435,6 +435,8 @@
              DropPath             - $(DropsRoot)
              OutputPath           - $(DropDirectoryNoSlash)
              OutputName           - $(ProductName)-$(BuildVersion)" Importance="High" />
+		<Delete Files="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth_Samples_Files.wxs" />
+		<Exec Command="$(ProjectRoot)\tools\wix\Paraffin.exe $(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth_Samples_Files.wxs -dir $(DropDirectoryNoSlash)\samples -custom dnoa_samples -alias &quot;%24(var.DropPath)\samples&quot; -guids -multiple -ext .gitignore -dirref DotNetOpenAuth.samplesFolder"/>	 
 		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj" 
 		         Properties="
 		         ProjectRoot=$(ProjectRoot);
