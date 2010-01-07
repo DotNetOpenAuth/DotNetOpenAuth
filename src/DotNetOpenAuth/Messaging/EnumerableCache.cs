@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.Messaging {
 				private int cachePosition = -1;
 
 				/// <summary>
-				/// Initializes a new instance of the <see cref="EnumerableCache&lt;T&gt;.EnumeratorCache"/> class.
+				/// Initializes a new instance of the <see cref="EnumeratorCache"/> class.
 				/// </summary>
 				/// <param name="parent">The parent cached enumerable whose GetEnumerator method is calling this constructor.</param>
 				internal EnumeratorCache(EnumerableCache<T> parent) {
