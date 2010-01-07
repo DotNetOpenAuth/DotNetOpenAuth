@@ -16,6 +16,12 @@
 	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />
 
 	<Target Name="InitializeProps">
+		<ItemGroup>
+			<NUnitCandidates Include="$(ProgramFiles)\NUnit *\bin\net-2.0\nunit-console.exe" />
+		</ItemGroup>
+		<PropertyGroup>
+			<NUnitToolPath Condition=" '$(NUnitToolPath)' == '' ">@(NUnitCandidates->'%(RootDir)%(Directory)')</NUnitToolPath>
+		</PropertyGroup>
 		<CheckAdminRights>
 			<Output TaskParameter="IsElevated" PropertyName="IsElevated" />
 		</CheckAdminRights>
