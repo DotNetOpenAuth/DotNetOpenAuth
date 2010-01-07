@@ -18,7 +18,7 @@
 		}
 
 		protected void OpenIdAjaxTextBox1_LoggedIn(object sender, OpenIdEventArgs e) {
-			Label label = ((Label)this.commentSubmitted.FindControl("emailLabel"));
+			Label label = (Label)this.commentSubmitted.FindControl("emailLabel");
 			label.Text = e.Response.FriendlyIdentifierForDisplay;
 
 			// We COULD get the sreg extension response here for the email, but since we let the user
