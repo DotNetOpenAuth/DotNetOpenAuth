@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.Box != null);
 		}
 

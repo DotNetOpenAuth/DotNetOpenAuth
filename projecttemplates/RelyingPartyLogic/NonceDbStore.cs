@@ -9,6 +9,7 @@ namespace RelyingPartyLogic {
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Data.Common;
+	using System.Data.EntityClient;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Configuration;
@@ -90,7 +91,7 @@ namespace RelyingPartyLogic {
 		private static void ClearNoncesIfAppropriate() {
 			if (++nonceClearingCounter % NonceClearingInterval == 0) {
 				using (var dataContext = new TransactedDatabaseEntities(IsolationLevel.ReadCommitted)) {
-					dataContext.ClearExpiredNonces();
+					dataContext.ClearExpiredNonces(dataContext.Transaction);
 				}
 			}
 		}
@@ -100,18 +101,18 @@ namespace RelyingPartyLogic {
 		/// </summary>
 		protected class TransactedDatabaseEntities : DatabaseEntities {
 			/// <summary>
-			/// The transaction for this data context.
-			/// </summary>
-			private DbTransaction transaction;
-
-			/// <summary>
 			/// Initializes a new instance of the <see cref="TransactedDatabaseEntities"/> class.
 			/// </summary>
 			/// <param name="isolationLevel">The isolation level.</param>
 			public TransactedDatabaseEntities(IsolationLevel isolationLevel) {
 				this.Connection.Open();
-				this.transaction = this.Connection.BeginTransaction(isolationLevel);
+				this.Transaction = (EntityTransaction)this.Connection.BeginTransaction(isolationLevel);
 			}
+
+			/// <summary>
+			/// Gets the transaction for this data context.
+			/// </summary>
+			public EntityTransaction Transaction { get; private set; }
 
 			/// <summary>
 			/// Releases the resources used by the object context.
@@ -120,7 +121,7 @@ namespace RelyingPartyLogic {
 			protected override void Dispose(bool disposing) {
 				try {
 					this.SaveChanges();
-					this.transaction.Commit();
+					this.Transaction.Commit();
 				} finally {
 					this.Connection.Close();
 				}

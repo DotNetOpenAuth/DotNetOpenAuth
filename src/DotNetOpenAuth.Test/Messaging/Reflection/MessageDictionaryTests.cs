@@ -300,7 +300,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		[TestMethod]
 		public void CopyTo() {
 			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
-			IDictionary<string, string> targetAsDictionary = ((IDictionary<string, string>)target);
+			IDictionary<string, string> targetAsDictionary = (IDictionary<string, string>)target;
 			KeyValuePair<string, string>[] array = new KeyValuePair<string, string>[target.Count + 1];
 			int arrayIndex = 1;
 			target.CopyTo(array, arrayIndex);
@@ -317,7 +317,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		[TestMethod]
 		public void ContainsKeyValuePair() {
 			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
-			IDictionary<string, string> targetAsDictionary = ((IDictionary<string, string>)target);
+			IDictionary<string, string> targetAsDictionary = (IDictionary<string, string>)target;
 			Assert.IsFalse(target.Contains(new KeyValuePair<string, string>("age", "1")));
 			Assert.IsTrue(target.Contains(new KeyValuePair<string, string>("age", "0")));
 
@@ -333,7 +333,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		[TestMethod]
 		public void ClearValues() {
 			MessageDictionary target = this.MessageDescriptions.GetAccessor(this.message);
-			IDictionary<string, string> targetAsDictionary = ((IDictionary<string, string>)target);
+			IDictionary<string, string> targetAsDictionary = (IDictionary<string, string>)target;
 			this.message.Name = "Andrew";
 			this.message.Age = 15;
 			targetAsDictionary["extra"] = "value";

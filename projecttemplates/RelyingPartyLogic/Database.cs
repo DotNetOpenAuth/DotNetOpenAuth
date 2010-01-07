@@ -8,6 +8,7 @@ namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Data.EntityClient;
 	using System.Data.SqlClient;
 	using System.Linq;
 	using System.ServiceModel;
@@ -37,21 +38,8 @@ namespace RelyingPartyLogic {
 				DatabaseEntities dataContext = DataContextSimple;
 				if (dataContext == null) {
 					dataContext = new DatabaseEntities();
-					try {
-						dataContext.Connection.Open();
-					} catch (EntityException entityEx) {
-						var sqlEx = entityEx.InnerException as SqlException;
-						if (sqlEx != null) {
-							if (sqlEx.Class == 14 && sqlEx.Number == 15350) {
-								// Most likely the database schema hasn't been created yet.
-								HttpContext.Current.Response.Redirect("~/Setup.aspx");
-							}
-						}
-
-						throw;
-					}
-
-					DataContextTransaction = dataContext.Connection.BeginTransaction();
+					dataContext.Connection.Open();
+					DataContextTransaction = (EntityTransaction)dataContext.Connection.BeginTransaction();
 					DataContextSimple = dataContext;
 				}
 
@@ -59,14 +47,21 @@ namespace RelyingPartyLogic {
 			}
 		}
 
-		internal static IDbTransaction DataContextTransaction {
+		/// <summary>
+		/// Gets a value indicating whether the data context is already initialized.
+		/// </summary>
+		internal static bool IsDataContextInitialized {
+			get { return DataContextSimple != null; }
+		}
+
+		internal static EntityTransaction DataContextTransaction {
 			get {
 				if (HttpContext.Current != null) {
-					return HttpContext.Current.Items[DataContextTransactionKey] as IDbTransaction;
+					return HttpContext.Current.Items[DataContextTransactionKey] as EntityTransaction;
 				} else if (OperationContext.Current != null) {
 					object data;
 					if (OperationContext.Current.IncomingMessageProperties.TryGetValue(DataContextTransactionKey, out data)) {
-						return data as IDbTransaction;
+						return data as EntityTransaction;
 					} else {
 						return null;
 					}
