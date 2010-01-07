@@ -34,8 +34,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var request = new StoreRequest();
 			var newAttribute = new AttributeValues(
 				IncrementingAttribute,
-				"val" + (incrementingAttributeValue++).ToString(),
-				"val" + (incrementingAttributeValue++).ToString());
+				"val" + (this.incrementingAttributeValue++).ToString(),
+				"val" + (this.incrementingAttributeValue++).ToString());
 			request.Attributes.Add(newAttribute);
 
 			var successResponse = new StoreResponse();

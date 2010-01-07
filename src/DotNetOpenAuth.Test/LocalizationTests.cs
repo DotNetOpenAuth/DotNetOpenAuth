@@ -8,9 +8,9 @@ namespace DotNetOpenAuth.Test {
 	using System;
 	using System.Globalization;
 	using System.Threading;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using NUnit.Framework;
-	using System.Web;
 
 	/// <summary>
 	/// Tests various localized resources work as expected.

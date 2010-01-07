@@ -104,7 +104,7 @@ GO
 		/// <returns>The result of executing the command.</returns>
 		public static int ExecuteCommand(this ObjectContext objectContext, string command) {
 			DbConnection connection = ((EntityConnection)objectContext.Connection).StoreConnection;
-			bool opening = (connection.State == ConnectionState.Closed);
+			bool opening = connection.State == ConnectionState.Closed;
 			if (opening) {
 				connection.Open();
 			}
