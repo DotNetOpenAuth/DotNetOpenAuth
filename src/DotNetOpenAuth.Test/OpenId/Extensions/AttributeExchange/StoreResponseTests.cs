@@ -7,14 +7,14 @@
 namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 	using System.IO;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class StoreResponseTests {
 		/// <summary>
 		/// Verifies the constructor's behavior.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			var response = new StoreResponse();
 			Assert.IsTrue(response.Succeeded, "The default status should be Succeeded.");
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the Equals method.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void EqualityTests() {
 			var response1 = new StoreResponse();
 			var response2 = new StoreResponse();
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Serializable() {
 			var store = new StoreResponse();
 			store.Succeeded = false;

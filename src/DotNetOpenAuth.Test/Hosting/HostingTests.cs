@@ -12,11 +12,11 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Test.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class HostingTests : TestBase {
-		[TestMethod]
+		[TestCase]
 		public void AspHostBasicTest() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {

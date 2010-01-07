@@ -12,16 +12,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AssociationTests : OpenIdTestBase {
 		private static readonly TimeSpan deltaDateTime = TimeSpan.FromSeconds(2);
 		private static readonly HashAlgorithm sha1 = DiffieHellmanUtilities.Lookup(Protocol.Default, Protocol.Default.Args.SessionType.DH_SHA1);
 		private byte[] sha1Secret;
 		private byte[] sha1Secret2;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.sha1Secret2[1] = 0xcc;
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Properties() {
 			string handle = "somehandle";
 			TimeSpan lifetime = TimeSpan.FromMinutes(2);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(0, assoc.Issued.Millisecond, "No milliseconds because this can be cut off in conversions.");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Sign() {
 			Association assoc1 = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, "h1", this.sha1Secret, TimeSpan.FromMinutes(2));
 			Association assoc2 = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, "h2", this.sha1Secret2, TimeSpan.FromMinutes(2));

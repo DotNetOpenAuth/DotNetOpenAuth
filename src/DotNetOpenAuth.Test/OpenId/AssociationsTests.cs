@@ -11,31 +11,31 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AssociationsTests : OpenIdTestBase {
 		private static readonly HashAlgorithm sha1 = DiffieHellmanUtilities.Lookup(Protocol.Default, Protocol.Default.Args.SessionType.DH_SHA1);
 		private byte[] sha1Secret;
 		private Associations assocs;
 
-		[TestInitialize]
+		[TestFixtureSetUp]
 		public override void SetUp() {
 			this.sha1Secret = new byte[sha1.HashSize / 8];
 			this.assocs = new Associations();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GetNonexistentHandle() {
 			Assert.IsNull(this.assocs.Get("someinvalidhandle"));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RemoveNonexistentHandle() {
 			Assert.IsFalse(this.assocs.Remove("someinvalidhandle"));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void HandleLifecycle() {
 			Association a = HmacShaAssociation.Create(
 				Protocol.Default,
@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsFalse(this.assocs.Remove(a.Handle));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Best() {
 			Association a = HmacShaAssociation.Create(
 				Protocol.Default,

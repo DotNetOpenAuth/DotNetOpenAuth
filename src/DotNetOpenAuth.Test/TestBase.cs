@@ -11,7 +11,8 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
 	using log4net;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// The base class that all test classes inherit from.
@@ -23,12 +24,6 @@ namespace DotNetOpenAuth.Test {
 		internal static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\src\DotNetOpenAuth.TestWeb"));
 
 		private MessageDescriptionCollection messageDescriptions = new MessageDescriptionCollection();
-
-		/// <summary>
-		/// Gets or sets the test context which provides
-		/// information about and functionality for the current test run.
-		/// </summary>
-		public TestContext TestContext { get; set; }
 
 		/// <summary>
 		/// Gets the logger that tests should use.
@@ -44,7 +39,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// The TestInitialize method for the test cases.
 		/// </summary>
-		[TestInitialize]
+		[SetUp]
 		public virtual void SetUp() {
 			log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
 			MessageBase.LowSecurityMode = true;
@@ -55,7 +50,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// The TestCleanup method for the test cases.
 		/// </summary>
-		[TestCleanup]
+		[TearDown]
 		public virtual void Cleanup() {
 			log4net.LogManager.Shutdown();
 		}

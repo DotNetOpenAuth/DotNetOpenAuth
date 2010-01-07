@@ -13,11 +13,11 @@ namespace DotNetOpenAuth.Test.Messaging
 	using System.Net;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class MessagingUtilitiesTests : TestBase {
-		[TestMethod]
+		[TestCase]
 		public void CreateQueryString() {
 			var args = new Dictionary<string, string>();
 			args.Add("a", "b");
@@ -25,17 +25,17 @@ namespace DotNetOpenAuth.Test.Messaging
 			Assert.AreEqual("a=b&c%2Fd=e%2Ff", MessagingUtilities.CreateQueryString(args));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CreateQueryStringEmptyCollection() {
 			Assert.AreEqual(0, MessagingUtilities.CreateQueryString(new Dictionary<string, string>()).Length);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CreateQueryStringNullDictionary() {
 			MessagingUtilities.CreateQueryString(null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AppendQueryArgs() {
 			UriBuilder uri = new UriBuilder("http://baseline.org/page");
 			var args = new Dictionary<string, string>();
@@ -49,17 +49,17 @@ namespace DotNetOpenAuth.Test.Messaging
 			Assert.AreEqual("http://baseline.org/page?a=b&c%2Fd=e%2Ff&g=h", uri.Uri.AbsoluteUri);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void AppendQueryArgsNullUriBuilder() {
 			MessagingUtilities.AppendQueryArgs(null, new Dictionary<string, string>());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AppendQueryArgsNullDictionary() {
 			MessagingUtilities.AppendQueryArgs(new UriBuilder(), null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ToDictionary() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc["a"] = "b";
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Test.Messaging
 			Assert.AreEqual(nvc["c"], actual["c"]);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void ToDictionaryWithNullKey() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc[null] = "a";
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Test.Messaging
 			nvc.ToDictionary(true);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ToDictionaryWithSkippedNullKey() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc[null] = "a";
@@ -89,27 +89,27 @@ namespace DotNetOpenAuth.Test.Messaging
 			Assert.AreEqual(nvc["b"], dictionary["b"]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ToDictionaryNull() {
 			Assert.IsNull(MessagingUtilities.ToDictionary(null));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullAspNetResponse() {
 			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpResponse)null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullListenerResponse() {
 			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpListenerResponse)null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullHeaders() {
 			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponse(new StringWriter()));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ApplyHeadersToResponse() {
 			var headers = new WebHeaderCollection();
 			headers[HttpResponseHeader.ContentType] = "application/binary";
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Test.Messaging
 		/// <remarks>
 		/// The tests in this method come from http://wiki.oauth.net/TestCases
 		/// </remarks>
-		[TestMethod]
+		[TestCase]
 		public void EscapeUriDataStringRfc3986Tests() {
 			Assert.AreEqual("abcABC123", MessagingUtilities.EscapeUriDataStringRfc3986("abcABC123"));
 			Assert.AreEqual("-._~", MessagingUtilities.EscapeUriDataStringRfc3986("-._~"));

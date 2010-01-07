@@ -7,16 +7,16 @@
 namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AttributeExchangeRoundtripTests : OpenIdTestBase {
 		private const string NicknameTypeUri = WellKnownAttributes.Name.Alias;
 		private const string EmailTypeUri = WellKnownAttributes.Contact.Email;
 		private const string IncrementingAttribute = "http://incatt";
 		private int incrementingAttributeValue = 1;
 
-		[TestMethod]
+		[TestCase]
 		public void Fetch() {
 			var request = new FetchRequest();
 			request.Attributes.Add(new AttributeRequest(NicknameTypeUri));
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Store() {
 			var request = new StoreRequest();
 			var newAttribute = new AttributeValues(

@@ -7,31 +7,31 @@
 namespace DotNetOpenAuth.Test.Messaging {
 	using System;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ErrorUtilitiesTests {
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void VerifyArgumentNotNullThrows() {
 			ErrorUtilities.VerifyArgumentNotNull(null, "someArg");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void VerifyArgumentNotNullDoesNotThrow() {
 			ErrorUtilities.VerifyArgumentNotNull("hi", "someArg");
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void VerifyNonZeroLengthOnNull() {
 			ErrorUtilities.VerifyNonZeroLength(null, "someArg");
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void VerifyNonZeroLengthOnEmpty() {
 			ErrorUtilities.VerifyNonZeroLength(string.Empty, "someArg");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void VerifyNonZeroLengthOnNonEmpty() {
 			ErrorUtilities.VerifyNonZeroLength("some Value", "someArg");
 		}

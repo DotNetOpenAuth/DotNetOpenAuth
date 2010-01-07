@@ -8,11 +8,11 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class UIRequestTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void Defaults() {
 			UIRequest request = new UIRequest();
 			Assert.AreEqual("popup", request.Mode);
@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 			Assert.AreEqual(CultureInfo.CurrentUICulture, request.LanguagePreference[0]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void LanguagePreferenceEncodingDecoding() {
 			var request = new UIRequest();
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(request);
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 			Assert.AreEqual(new CultureInfo("es-ES"), request.LanguagePreference[1]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ModeEncoding() {
 			var request = new UIRequest();
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(request);

@@ -10,17 +10,19 @@ namespace DotNetOpenAuth.Test {
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
 	using NUnit.Framework;
+	using System.Web;
 
 	/// <summary>
 	/// Tests various localized resources work as expected.
 	/// </summary>
 	[TestFixture]
-	public class LocalizationTests {
+	public class LocalizationTests : TestBase {
 		/// <summary>
 		/// Tests that Serbian localized strings are correctly installed.
 		/// </summary>
 		[TestCase, ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Ovaj metod zahteva tekući HttpContext. Kao alternativa, koristite preklopljeni metod koji dozvoljava da se prosledi informacija bez HttpContext-a.")]
 		public void Serbian() {
+			HttpContext.Current = null; // our testbase initializes this, but it must be null to throw
 			Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("sr");
 			ErrorUtilities.VerifyHttpContext();
 		}

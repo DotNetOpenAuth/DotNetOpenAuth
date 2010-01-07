@@ -10,17 +10,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ProviderEndpointDescriptionTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void NonNullCapabilities() {
 			var epd = new ProviderEndpointDescription(OPUri, Protocol.Default.Version);
 			Assert.IsNotNull(epd.Capabilities);
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void ProtocolDetectionWithoutClues() {
 			new ProviderEndpointDescription(OPUri, new[] { Protocol.V20.HtmlDiscoveryLocalIdKey }); // random type URI irrelevant to detection
 		}

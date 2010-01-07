@@ -10,7 +10,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	internal class MockTransformationBindingElement : IChannelBindingElement {
 		private string transform;
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
 			var testMessage = message as TestMessage;
 			if (testMessage != null) {
-				StringAssert.StartsWith(testMessage.Name, this.transform);
+				StringAssert.StartsWith(this.transform, testMessage.Name);
 				testMessage.Name = testMessage.Name.Substring(this.transform.Length);
 				return MessageProtections.None;
 			}

@@ -12,14 +12,14 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class SigningBindingElementTests : OpenIdTestBase {
 		/// <summary>
 		/// Verifies that the signatures generated match Known Good signatures.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void SignaturesMatchKnownGood() {
 			Protocol protocol = Protocol.Default;
 			var settings = new ProviderSecuritySettings();
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that all parameters in ExtraData in signed responses are signed.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void SignedResponsesIncludeExtraDataInSignature() {
 			Protocol protocol = Protocol.Default;
 			SigningBindingElement sbe = new SigningBindingElement(new AssociationMemoryStore<AssociationRelyingPartyType>(), new ProviderSecuritySettings());

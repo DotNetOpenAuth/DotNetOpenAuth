@@ -15,16 +15,16 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class StandardReplayProtectionBindingElementTests : MessagingTestBase {
 		private Protocol protocol;
 		private StandardReplayProtectionBindingElement nonceElement;
 		private IReplayProtectedProtocolMessage message;
 		private INonceStore nonceStore;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that the generated nonce includes random characters.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void RandomCharactersTest() {
 			Assert.IsNotNull(this.nonceElement.ProcessOutgoingMessage(this.message));
 			Assert.IsNotNull(this.message.Nonce, "No nonce was set on the message.");
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that a message is received correctly.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ValidMessageReceivedTest() {
 			this.message.Nonce = "a";
 			Assert.IsNotNull(this.nonceElement.ProcessIncomingMessage(this.message));
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that a message that doesn't have a string of random characters is received correctly.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ValidMessageNoNonceReceivedTest() {
 			this.message.Nonce = string.Empty;
 			this.nonceElement.AllowZeroLengthNonce = true;
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that a message that doesn't have a string of random characters is received correctly.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void InvalidMessageNoNonceReceivedTest() {
 			this.message.Nonce = string.Empty;
 			this.nonceElement.AllowZeroLengthNonce = false;
@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that a replayed message is rejected.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ReplayedMessageException))]
+		[TestCase, ExpectedException(typeof(ReplayedMessageException))]
 		public void ReplayDetectionTest() {
 			this.message.Nonce = "a";
 			Assert.IsNotNull(this.nonceElement.ProcessIncomingMessage(this.message));

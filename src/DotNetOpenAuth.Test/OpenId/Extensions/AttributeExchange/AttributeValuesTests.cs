@@ -10,11 +10,11 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AttributeValuesTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			var att = new AttributeValues();
 			Assert.IsNull(att.TypeUri);
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the Equals method.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void EqualityTests() {
 			var att1 = new AttributeValues();
 			var att2 = new AttributeValues();

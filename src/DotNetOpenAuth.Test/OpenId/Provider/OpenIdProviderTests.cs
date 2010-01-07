@@ -15,13 +15,13 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Hosting;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class OpenIdProviderTests : OpenIdTestBase {
 		private OpenIdProvider provider;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that the constructor throws an exception if the app store is null.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			new OpenIdProvider(null);
 		}
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that the SecuritySettings property throws when set to null.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
 			this.provider.SecuritySettings = null;
 		}
@@ -47,25 +47,25 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies the SecuritySettings property can be set to a new instance.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void SecuritySettings() {
 			var newSettings = new ProviderSecuritySettings();
 			this.provider.SecuritySettings = newSettings;
 			Assert.AreSame(newSettings, this.provider.SecuritySettings);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ExtensionFactories() {
 			var factories = this.provider.ExtensionFactories;
 			Assert.IsNotNull(factories);
 			Assert.AreEqual(1, factories.Count);
-			Assert.IsInstanceOfType(factories[0], typeof(StandardOpenIdExtensionFactory));
+			Assert.IsInstanceOfType(typeof(StandardOpenIdExtensionFactory), factories[0]);
 		}
 
 		/// <summary>
 		/// Verifies the Channel property.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ChannelGetter() {
 			Assert.IsNotNull(this.provider.Channel);
 		}
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies the GetRequest method throws outside an HttpContext.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
+		[TestCase, ExpectedException(typeof(InvalidOperationException))]
 		public void GetRequestNoContext() {
 			HttpContext.Current = null;
 			this.provider.GetRequest();
@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies GetRequest throws on null input.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void GetRequestNull() {
 			this.provider.GetRequest(null);
 		}
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that GetRequest correctly returns the right messages.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void GetRequest() {
 			HttpRequestInfo httpInfo = new HttpRequestInfo();
 			httpInfo.UrlBeforeRewriting = new Uri("http://someUri");
@@ -104,13 +104,13 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				},
 				op => {
 					IRequest request = op.GetRequest();
-					Assert.IsInstanceOfType(request, typeof(AutoResponsiveRequest));
+					Assert.IsInstanceOfType(typeof(AutoResponsiveRequest), request);
 					op.SendResponse(request);
 				});
 			coordinator.Run();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void BadRequestsGenerateValidErrorResponses() {
 			var coordinator = new OpenIdCoordinator(
 				rp => {
@@ -127,7 +127,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			coordinator.Run();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void BadRequestsGenerateValidErrorResponsesHosted() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {

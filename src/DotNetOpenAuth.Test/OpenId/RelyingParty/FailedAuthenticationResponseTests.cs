@@ -12,14 +12,14 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class FailedAuthenticationResponseTests : OpenIdTestBase {
 		private FailedAuthenticationResponse response;
 		private ProtocolException exception;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -27,12 +27,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.response = new FailedAuthenticationResponse(this.exception);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			new FailedAuthenticationResponse(null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CommonProperties() {
 			Assert.AreEqual(AuthenticationStatus.Failed, this.response.Status);
 			Assert.AreSame(this.exception, this.response.Exception);
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsNull(this.response.FriendlyIdentifierForDisplay);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CommonMethods() {
 			Assert.IsNull(this.response.GetExtension<ClaimsRequest>());
 			Assert.IsNull(this.response.GetExtension(typeof(ClaimsRequest)));
