@@ -731,4 +731,11 @@ http://opensource.org/licenses/ms-pl.html
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
   <Import Project="..\..\tools\JavascriptPacker.targets" />
+  <PropertyGroup>
+    <CompileDependsOn>$(CompileDependsOn);CheckForCodeContracts</CompileDependsOn>
+  </PropertyGroup>
+  <Target Name="CheckForCodeContracts">
+      <Error Condition=" '$(CodeContractsImported)' != 'true' "
+             Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx"/>
+  </Target>
 </Project>

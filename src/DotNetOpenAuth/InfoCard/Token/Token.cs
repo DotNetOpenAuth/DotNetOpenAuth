@@ -199,18 +199,6 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 		}
 
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.AuthorizationContext != null);
-		}
-#endif
-
 		/// <summary>
 		/// Determines whether the specified token XML is encrypted.
 		/// </summary>
@@ -222,6 +210,18 @@ namespace DotNetOpenAuth.InfoCard {
 			Contract.Requires<ArgumentNullException>(tokenXmlReader != null);
 			return tokenXmlReader.IsStartElement(TokenDecryptor.XmlEncryptionStrings.EncryptedData, TokenDecryptor.XmlEncryptionStrings.Namespace);
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.AuthorizationContext != null);
+		}
+#endif
 
 		/// <summary>
 		/// Flattens the claims into a dictionary
