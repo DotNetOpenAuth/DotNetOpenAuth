@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+
+    <Property Id="dnoa.InstallURL"><![CDATA[http://www.dotnetopenauth.net/install/]]></Property>
+    <Property Id="dnoa.UninstallURL"><![CDATA[http://www.dotnetopenauth.net/uninstall/]]></Property>
+    <CustomAction Id="SetOpenURL" Property="WixShellExecTarget" Value="[dnoa.InstallURL]" />
+    <CustomAction Id="SetUninstallURL" Property="WixShellExecTarget" Value="[dnoa.UninstallURL]" />
+    <CustomAction Id="OpenURL" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" Return="ignore" />
+    <CustomAction Id="OpenUninstallURL" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" Return="ignore" />
+
+    <InstallExecuteSequence>
+      <Custom Action="SetOpenURL" After="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="SetUninstallURL" After="InstallFinalize">(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
+      <Custom Action="OpenURL" After="SetOpenURL">NOT Installed</Custom>
+      <Custom Action="OpenUninstallURL" After="SetUninstallURL">(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
+    </InstallExecuteSequence>
+  
+  </Fragment>
+</Wix>

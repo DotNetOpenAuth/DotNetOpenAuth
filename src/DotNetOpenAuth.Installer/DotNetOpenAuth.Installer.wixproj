@@ -33,6 +33,7 @@
     <Compile Include="DotNetOpenAuth_Intellisense_VS2008.wxs" />
     <Compile Include="DotNetOpenAuth_Registry.wxs" />
     <Compile Include="DotNetOpenAuth_Samples.wxs" />
+    <Compile Include="DotNetOpenAuth_Samples_Files.wxs" />
     <Compile Include="DotNetOpenAuth_Shortcuts.wxs" />
     <Compile Include="DotNetOpenAuth_UI.wxs" />
     <Compile Include="DotNetOpenAuth.wxs" />
