@@ -35,7 +35,7 @@
 				if (Request.QueryString["ReturnUrl"] != null && User.Identity.IsAuthenticated) {
 					// The user must have been directed here because he has insufficient
 					// permissions to access something.
-					MultiView1.ActiveViewIndex = 1;
+					this.MultiView1.ActiveViewIndex = 1;
 				} else {
 					// Because this is a sample of a controlled SSO environment,
 					// we don't ask the user which Provider to use... we just send
