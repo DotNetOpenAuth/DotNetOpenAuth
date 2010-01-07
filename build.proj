@@ -427,7 +427,7 @@
 
 	</Target>
 
-	<Target Name="MSI" DependsOnTargets="GetBuildVersion;_SetDropProperties;">
+	<Target Name="MSI" DependsOnTargets="DropLayout">
 		<Message Text="Creating MSI :: - 
              ProjectRoot          - $(ProjectRoot)
              BuildVersion         - $(BuildVersion)
