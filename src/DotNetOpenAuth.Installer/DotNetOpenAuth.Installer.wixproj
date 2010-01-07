@@ -37,6 +37,7 @@
     <Compile Include="DotNetOpenAuth_UI.wxs" />
     <Compile Include="DotNetOpenAuth.wxs" />
     <Compile Include="DotNetOpenAuth_Templates_VS2008.wxs" />
+    <Compile Include="DotNetOpenAuth_Webpages.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Bitmaps\bannrbmp.bmp" />

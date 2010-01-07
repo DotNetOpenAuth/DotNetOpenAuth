@@ -33,7 +33,7 @@
       </Component>
     </DirectoryRef>
 
-    <Feature Id="DotNetOpenAuth.Samples" Title="DotNetOpenAuth Samples" Level="1" AllowAdvertise="no"
+    <Feature Id="DotNetOpenAuth.Samples" Title="Samples" Level="1" AllowAdvertise="no"
              Description="Installs DotNetOpenAuth code samples.">
       <ComponentRef Id="dnoa.MainSamplesMenuFolder.RemoveFolder"/>
       <ComponentRef Id="dnoa.SamplesManuFolder.RemoveFolder"/>

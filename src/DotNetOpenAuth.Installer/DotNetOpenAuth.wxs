@@ -58,8 +58,8 @@
     <!--  End -->
 
     <PropertyRef Id="VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED" />
-  
-  <!-- Icons and Add/Remove Programs Info -->
+
+    <!-- Icons and Add/Remove Programs Info -->
     <Icon Id="DotNetOpenAuthIcon.exe" SourceFile="$(var.ProjectRoot)\doc\logo\dnoa-icon-colour.ico"/>
     <Property Id="ARPHELPLINK" Value="http://dotnetopenauth.net" />
     <Property Id="ARPURLINFOABOUT" Value="http://dotnetopenauth.net" />
@@ -72,7 +72,9 @@
     <!--  End -->
 
     <!--  Start | UI Customisation ========================================================================================= -->
-    <CustomActionRef Id="VS90Setup" />
+    <CustomActionRef Id="SetOpenURL" />
+	<CustomActionRef Id="SetUninstallURL" />
+	<CustomActionRef Id="VS90Setup" />
     <UI>
       <ProgressText Action="VS90Setup" Template="[1]">Updating Visual Studio 2008 registration (May take a while)</ProgressText>
     </UI>
@@ -135,26 +137,28 @@
       </Component>
     </DirectoryRef>
 
- 
+
     <!-- Installable Features -->
     <Feature Id="ProductFeature" Title="Assembly File Library" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Installs the compiled library DLLs">
       <ComponentRef Id="dnoa.ProductComponent" />
       <ComponentRef Id="dnoa.LocalisedAssemblies" />
       <ComponentRef Id="dnoa.ApplicationShortcuts" />
-	  <ComponentRef Id="dnoa.MenuFolder.RemoveFolder" />
+      <ComponentRef Id="dnoa.MenuFolder.RemoveFolder" />
     </Feature>
     <Feature Id="DocumentationFeature" Title="Documentation" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Installs the library documentation">
       <ComponentRef Id="dnoa.Documentation" />
     </Feature>
     <FeatureRef Id="DotNetOpenAuth.Samples" />
-    <Feature Id="IntegrationFeature" Title="Visual Studio 2008 Integration" Level="1" ConfigurableDirectory="INSTALLLOCATION"
+    <Feature Id="IntegrationFeature" Title="Visual Studio Integration" Level="1" ConfigurableDirectory="INSTALLLOCATION"
              Description="Automagically installs the selected components into your Visual Studio environment">
       <Condition Level="0">NOT VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED</Condition>
-      <FeatureRef Id="dnoa.Intellisense.VS2008" />
-      <FeatureRef Id="dnoa.Templates.VS2008"/>
-      <FeatureRef Id="dnoa.Registry.VS2008"/>
+      <Feature Id="VSIntegration.2008" Title="Visual Studio 2008" ConfigurableDirectory="INSTALLLOCATION" Level="1">
+        <FeatureRef Id="dnoa.Intellisense.VS2008" />
+        <FeatureRef Id="dnoa.Templates.VS2008"/>
+        <FeatureRef Id="dnoa.Registry.VS2008"/>
+      </Feature>
     </Feature>
   </Product>
 </Wix>
