@@ -76,15 +76,15 @@ namespace OpenIdProviderWebForms {
 				this.privacyLink.Visible = false;
 			}
 
-			this.dobRequiredLabel.Visible = (requestFields.BirthDate == DemandLevel.Require);
-			this.countryRequiredLabel.Visible = (requestFields.Country == DemandLevel.Require);
-			this.emailRequiredLabel.Visible = (requestFields.Email == DemandLevel.Require);
-			this.fullnameRequiredLabel.Visible = (requestFields.FullName == DemandLevel.Require);
-			this.genderRequiredLabel.Visible = (requestFields.Gender == DemandLevel.Require);
-			this.languageRequiredLabel.Visible = (requestFields.Language == DemandLevel.Require);
-			this.nicknameRequiredLabel.Visible = (requestFields.Nickname == DemandLevel.Require);
-			this.postcodeRequiredLabel.Visible = (requestFields.PostalCode == DemandLevel.Require);
-			this.timezoneRequiredLabel.Visible = (requestFields.TimeZone == DemandLevel.Require);
+			this.dobRequiredLabel.Visible = requestFields.BirthDate == DemandLevel.Require;
+			this.countryRequiredLabel.Visible = requestFields.Country == DemandLevel.Require;
+			this.emailRequiredLabel.Visible = requestFields.Email == DemandLevel.Require;
+			this.fullnameRequiredLabel.Visible = requestFields.FullName == DemandLevel.Require;
+			this.genderRequiredLabel.Visible = requestFields.Gender == DemandLevel.Require;
+			this.languageRequiredLabel.Visible = requestFields.Language == DemandLevel.Require;
+			this.nicknameRequiredLabel.Visible = requestFields.Nickname == DemandLevel.Require;
+			this.postcodeRequiredLabel.Visible = requestFields.PostalCode == DemandLevel.Require;
+			this.timezoneRequiredLabel.Visible = requestFields.TimeZone == DemandLevel.Require;
 
 			this.dateOfBirthRow.Visible = !(requestFields.BirthDate == DemandLevel.NoRequest);
 			this.countryRow.Visible = !(requestFields.Country == DemandLevel.NoRequest);

@@ -290,7 +290,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(!string.IsNullOrEmpty(this.Handle));
 			Contract.Invariant(this.TotalLifeLength > TimeSpan.Zero);
 			Contract.Invariant(this.SecretKey != null);

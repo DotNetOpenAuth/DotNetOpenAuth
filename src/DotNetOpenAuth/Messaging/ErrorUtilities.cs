@@ -118,7 +118,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="condition">The condition to check.</param>
 		/// <param name="errorMessage">The message to include in the exception, if created.</param>
-		/// <param name="args">The string formatting arguments for <paramref name="message"/>.</param>
+		/// <param name="args">The string formatting arguments for <paramref name="errorMessage"/>.</param>
 		/// <exception cref="NotSupportedException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		[Pure]
 		internal static void VerifySupported(bool condition, string errorMessage, params object[] args) {
@@ -307,13 +307,12 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Verifies something about the argument supplied to a method.
+		/// Throws an <see cref="ArgumentException"/>.
 		/// </summary>
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="message">The message to use in the exception if the condition is false.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
 		/// <returns>Never returns anything.  It always throws.</returns>
-		/// <exception cref="ArgumentException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		[Pure]
 		internal static Exception ThrowArgumentNamed(string parameterName, string message, params object[] args) {
 			Contract.Requires<ArgumentNullException>(args != null);
