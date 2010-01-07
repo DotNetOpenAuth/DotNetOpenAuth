@@ -127,7 +127,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[TestCase, Category("HostASPNET")]
 		public void BadRequestsGenerateValidErrorResponsesHosted() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {

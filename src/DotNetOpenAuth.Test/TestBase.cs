@@ -5,13 +5,13 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test {
+	using System;
 	using System.IO;
 	using System.Reflection;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
 	using log4net;
-	using NUnit.Framework;
 	using NUnit.Framework;
 
 	/// <summary>
@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// The full path to the directory that contains the test ASP.NET site.
 		/// </summary>
-		internal static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\src\DotNetOpenAuth.TestWeb"));
+		internal static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\src\DotNetOpenAuth.TestWeb"));
 
 		private MessageDescriptionCollection messageDescriptions = new MessageDescriptionCollection();
 

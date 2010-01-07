@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using DotNetOpenAuth.Test.OpenId;
 	using NUnit.Framework;
 
-	[TestFixture]
+	[TestFixture, Category("HostASPNET")]
 	public class HostingTests : TestBase {
 		[TestCase]
 		public void AspHostBasicTest() {
@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 						Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 						using (StreamReader sr = new StreamReader(response.GetResponseStream())) {
 							string content = sr.ReadToEnd();
-							StringAssert.Contains(content, "Test home page");
+							StringAssert.Contains("Test home page", content);
 						}
 					}
 				}
