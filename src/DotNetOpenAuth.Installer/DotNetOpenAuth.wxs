@@ -116,7 +116,6 @@
               <File Id="DotNetOpenAuth.chm" Source="$(var.DropPath)\DotNetOpenAuth.chm" />
             </Component>
           </Directory>
-          <Directory Id="DotNetOpenAuth.SamplesFolder" Name="Samples"/>
         </Directory>
       </Directory>
       <Directory Id="DesktopFolder" Name="Desktop" />
