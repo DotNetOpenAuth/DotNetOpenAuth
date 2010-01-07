@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<!-- TODO: Put your code here. -->
+
+
+    <DirectoryRef Id="INSTALLLOCATION">
+      <Component Id="dnoa.Registry" Guid="{1AE1AC98-1FF2-4913-9ACA-EB8018E40508}" Win64="no">
+        <RegistryKey Id="dnoa.RegistryKey1" Action="createAndRemoveOnUninstall"
+                     Root="HKLM" Key="SOFTWARE\DotNetOpenAuth">
+          <RegistryValue Type="string" Name="CurrentVersion" Value="$(var.BuildVersion)"/>
+          <RegistryKey Key="$(var.BuildVersion)" Action="createAndRemoveOnUninstall">
+            <RegistryValue Type="string" Name="Version" Value="[ProductVersion]"/>
+            <RegistryValue Type="string" Name="InstallationFolder" Value="[INSTALLLOCATION]"/>
+            <RegistryKey Key="AdditionalPluginDirectories" Action="createAndRemoveOnUninstall"/>
+          </RegistryKey>
+        </RegistryKey>
+
+        <!-- Register the folder so that Visual Studio Add References can find it -->
+        <RegistryKey Id="dnoa.RegistryKey2" Action="createAndRemoveOnUninstall"
+                     Root="HKLM" Key="SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\DotNetOpenAuth">
+          <RegistryValue Type="string" Value="[INSTALLLOCATION]bin"/>
+        </RegistryKey>
+
+        <!-- Add the DotNetOpenAuth bin folder to the path -->
+        <Environment Id="dnoa.Path" Name="Path" Value="[INSTALLLOCATION]bin" Action="set" Part="last" Separator=";" />
+      </Component>
+    </DirectoryRef>
+    
+	<Feature Id="dnoa.Registry.VS2008" Title="Register in 'Add Reference' dialog" Level="1" AllowAdvertise="no"
+             Description="Allow DotNetOpenAuth to appear in the Registered Assemblies list within the Add Reference dialog window">
+      <ComponentRef Id="dnoa.Registry"/>
+    </Feature>
+	
+	</Fragment>
+</Wix>

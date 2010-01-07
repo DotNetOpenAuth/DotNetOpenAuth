@@ -12,7 +12,7 @@
 
 
   <Product  Id="*"
-          Name="$(var.ProductName) $(var.BuildVersion)"
+          Name="$(var.ProductName)"
           Language="1033"
           Version="$(var.BuildVersion)"
           Manufacturer="www.dotnetopenauth.net"
@@ -154,6 +154,7 @@
       <Condition Level="0">NOT VS90_IDE_VCSHARP_PROJECTSYSTEM_INSTALLED</Condition>
       <FeatureRef Id="dnoa.Intellisense.VS2008" />
       <FeatureRef Id="dnoa.Templates.VS2008"/>
+      <FeatureRef Id="dnoa.Registry.VS2008"/>
     </Feature>
   </Product>
 </Wix>
