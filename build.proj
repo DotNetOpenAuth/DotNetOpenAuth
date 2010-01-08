@@ -1,5 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.Common.Settings.targets"/>
+	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.props"/>
 	<PropertyGroup>
 		<AutomatedBuild>true</AutomatedBuild>
 		<SolutionPath>$(ProjectRoot)src\$(ProductName).sln</SolutionPath>
@@ -418,7 +418,7 @@
 		<ItemGroup>
 			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.csproj" />
 		</ItemGroup>
-		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" />
+		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" RemoveImportsStartingWith="%24(ProjectRoot)tools\" />
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
 	</Target>
