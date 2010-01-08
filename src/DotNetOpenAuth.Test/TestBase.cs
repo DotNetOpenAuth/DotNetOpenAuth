@@ -21,7 +21,17 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// The full path to the directory that contains the test ASP.NET site.
 		/// </summary>
-		internal static readonly string TestWebDirectory = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\src\DotNetOpenAuth.TestWeb"));
+		internal string TestWebDirectory {
+			get {
+				// System.IO.Path.GetDirectoryName(new System.Uri(basePath).LocalPath)
+				string basePath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+				string relativePath = @"src\DotNetOpenAuth.TestWeb";
+				for (int i = 0; !Directory.Exists(Path.Combine(basePath, relativePath)) && i < 4; i++) {
+					relativePath = "..\\" + relativePath;
+				}
+				return Path.GetFullPath(relativePath);
+			}
+		}
 
 		private MessageDescriptionCollection messageDescriptions = new MessageDescriptionCollection();
 
