@@ -9,17 +9,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Collections.Specialized;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class HttpRequestInfoTests : TestBase {
-		[TestMethod]
+		[TestCase]
 		public void CtorDefault() {
 			HttpRequestInfo info = new HttpRequestInfo();
 			Assert.AreEqual("GET", info.HttpMethod);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorRequest() {
 			HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
 			////request.Headers["headername"] = "headervalue"; // PlatformNotSupportedException prevents us mocking this up
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		// All these tests are ineffective because ServerVariables[] cannot be set.
-		////[TestMethod]
+		////[TestCase]
 		////public void CtorRequestWithDifferentPublicHttpHost() {
 		////    HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
 		////    request.ServerVariables["HTTP_HOST"] = "publichost";
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		////    Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
 		////}
 
-		////[TestMethod]
+		////[TestCase]
 		////public void CtorRequestWithDifferentPublicHttpsHost() {
 		////    HttpRequest request = new HttpRequest("file", "https://someserver?a=b", "a=b");
 		////    request.ServerVariables["HTTP_HOST"] = "publichost";
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		////    Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
 		////}
 
-		////[TestMethod]
+		////[TestCase]
 		////public void CtorRequestWithDifferentPublicHostNonstandardPort() {
 		////    HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
 		////    request.ServerVariables["HTTP_HOST"] = "publichost:550";
@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		////    Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
 		////}
 
-		////[TestMethod]
+		////[TestCase]
 		////public void CtorRequestWithDifferentPublicIPv6Host() {
 		////    HttpRequest request = new HttpRequest("file", "http://[fe80::587e:c6e5:d3aa:657a]:8089/v3.1/", "");
 		////    request.ServerVariables["HTTP_HOST"] = "[fe80::587e:c6e5:d3aa:657b]:8089";
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// Checks that a property dependent on another null property
 		/// doesn't generate a NullReferenceException.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void QueryBeforeSettingUrl() {
 			HttpRequestInfo info = new HttpRequestInfo();
 			Assert.IsNull(info.Query);
@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that looking up a querystring variable is gracefully handled without a query in the URL.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void QueryStringLookupWithoutQuery() {
 			HttpRequestInfo info = new HttpRequestInfo();
 			Assert.IsNull(info.QueryString["hi"]);
@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies SSL forwarders are correctly handled when they supply X_FORWARDED_PROTO and HOST
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void GetPublicFacingUrlSSLForwarder1() {
 			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
 			var serverVariables = new NameValueCollection();
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies SSL forwarders are correctly handled when they supply X_FORWARDED_PROTO and HOST:port
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void GetPublicFacingUrlSSLForwarder2() {
 			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
 			var serverVariables = new NameValueCollection();
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies SSL forwarders are correctly handled when they supply just HOST
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void GetPublicFacingUrlSSLForwarder3() {
 			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
 			var serverVariables = new NameValueCollection();
@@ -139,7 +139,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies SSL forwarders are correctly handled when they supply just HOST:port
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void GetPublicFacingUrlSSLForwarder4() {
 			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
 			var serverVariables = new NameValueCollection();

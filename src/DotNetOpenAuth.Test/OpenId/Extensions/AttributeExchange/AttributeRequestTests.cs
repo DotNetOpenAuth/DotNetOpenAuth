@@ -8,11 +8,11 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.Test.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AttributeRequestTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void CtorDefault() {
 			AttributeRequest req = new AttributeRequest();
 			Assert.AreEqual(1, req.Count);
@@ -20,27 +20,27 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsFalse(req.IsRequired);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void CtorEmptyTypeUri() {
 			new AttributeRequest(string.Empty);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void CtorNullTypeUri() {
 			new AttributeRequest(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void CtorCountZero() {
 			new AttributeRequest(WellKnownAttributes.Contact.Email, false, 0);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void CtorCountNegative() {
 			new AttributeRequest(WellKnownAttributes.Contact.Email, false, -1);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorFull() {
 			var req = new AttributeRequest(WellKnownAttributes.Contact.Email, true, 5);
 			Assert.AreEqual(WellKnownAttributes.Contact.Email, req.TypeUri);
@@ -48,19 +48,19 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(5, req.Count);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void SetCountZero() {
 			var req = new AttributeRequest();
 			req.Count = 0;
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void SetCountNegative() {
 			var req = new AttributeRequest();
 			req.Count = -1;
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EqualityTests() {
 			var req1 = new AttributeRequest();
 			var req2 = new AttributeRequest();

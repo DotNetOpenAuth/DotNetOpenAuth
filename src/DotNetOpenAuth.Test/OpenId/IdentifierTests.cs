@@ -9,23 +9,23 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Collections.Generic;
 	using System.Linq;
 	using DotNetOpenAuth.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class IdentifierTests {
 		private string uri = "http://www.yahoo.com/";
 		private string uriNoScheme = "www.yahoo.com";
 		private string uriHttps = "https://www.yahoo.com/";
 		private string xri = "=arnott*andrew";
 
-		[TestMethod]
+		[TestCase]
 		public void TryParseNoThrow() {
 			Identifier id;
 			Assert.IsFalse(Identifier.TryParse(null, out id));
 			Assert.IsFalse(Identifier.TryParse(string.Empty, out id));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void TryParse() {
 			Identifier id;
 			Assert.IsTrue(Identifier.TryParse("http://host/path", out id));
@@ -34,16 +34,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual("=arnott", id.ToString());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Parse() {
-			Assert.IsInstanceOfType(Identifier.Parse(this.uri), typeof(UriIdentifier));
-			Assert.IsInstanceOfType(Identifier.Parse(this.xri), typeof(XriIdentifier));
+			Assert.IsInstanceOfType(typeof(UriIdentifier), Identifier.Parse(this.uri));
+			Assert.IsInstanceOfType(typeof(XriIdentifier), Identifier.Parse(this.xri));
 		}
 
 		/// <summary>
 		/// Tests conformance with 2.0 spec section 7.2#2
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ParseEndUserSuppliedXriIdentifer() {
 			List<char> symbols = new List<char>(XriIdentifier.GlobalContextSymbols);
 			symbols.Add('(');
@@ -52,35 +52,35 @@ namespace DotNetOpenAuth.Test.OpenId {
 			prefixes.AddRange(symbols.Select(s => "xri://" + s.ToString()));
 			foreach (string prefix in prefixes) {
 				var id = Identifier.Parse(prefix + "andrew");
-				Assert.IsInstanceOfType(id, typeof(XriIdentifier));
+				Assert.IsInstanceOfType(typeof(XriIdentifier), id);
 			}
 		}
 
 		/// <summary>
 		/// Verifies conformance with 2.0 spec section 7.2#3
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ParseEndUserSuppliedUriIdentifier() {
 			// verify a fully-qualified Uri
 			var id = Identifier.Parse(this.uri);
-			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
+			Assert.IsInstanceOfType(typeof(UriIdentifier), id);
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 			// verify an HTTPS Uri
 			id = Identifier.Parse(this.uriHttps);
-			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
+			Assert.IsInstanceOfType(typeof(UriIdentifier), id);
 			Assert.AreEqual(this.uriHttps, ((UriIdentifier)id).Uri.AbsoluteUri);
 			// verify that if the scheme is missing it is added automatically
 			id = Identifier.Parse(this.uriNoScheme);
-			Assert.IsInstanceOfType(id, typeof(UriIdentifier));
+			Assert.IsInstanceOfType(typeof(UriIdentifier), id);
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void ParseNull() {
 			Identifier.Parse(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void ParseEmpty() {
 			Identifier.Parse(string.Empty);
 		}

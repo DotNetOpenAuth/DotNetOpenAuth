@@ -10,9 +10,9 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class SignedResponseRequestTests : OpenIdTestBase {
 		private Uri providerEndpoint;
 		private SignedResponseRequest immediatev1;
@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		private SignedResponseRequest immediatev2;
 		private SignedResponseRequest setupv2;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// This test does not test all the realm-return_to matching rules as that is done in the Realm tests.
 		/// This test merely checks that the compatibility match occurs at all.
 		/// </remarks>
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void RealmReturnToMismatchV2() {
 			this.setupv2.Realm = "http://somehost/";
 			this.setupv2.ReturnTo = new Uri("http://someotherhost/");
@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// Verifies that the validation check throws if the return_to and the realm
 		/// values are not compatible.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void RealmReturnToMismatchV1() {
 			this.setupv1.Realm = "http://somehost/";
 			this.setupv1.ReturnTo = new Uri("http://someotherhost/");

@@ -9,20 +9,20 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AssociateUnsuccessfulResponseTests : OpenIdTestBase {
 		private AssociateUnsuccessfulResponse response;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 			var request = new AssociateUnencryptedRequest(Protocol.V20.Version, new Uri("http://host"));
 			this.response = new AssociateUnsuccessfulResponse(request.Version, request);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ParameterNames() {
 			this.response.ErrorMessage = "Some Error";
 			this.response.AssociationType = "HMAC-SHA1";

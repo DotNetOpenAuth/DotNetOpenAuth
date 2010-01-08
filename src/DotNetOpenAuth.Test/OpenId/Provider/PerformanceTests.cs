@@ -18,28 +18,28 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture, Category("Performance")]
 	public class PerformanceTests : OpenIdTestBase {
 		private const string SharedAssociationHandle = "handle";
 		private static readonly TimeSpan TestRunTime = TimeSpan.FromSeconds(3);
 		private OpenIdProvider provider;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 			SuspendLogging();
 			this.provider = CreateProvider();
 		}
 
-		[TestCleanup]
+		[TearDown]
 		public override void Cleanup() {
 			ResumeLogging();
 			base.Cleanup();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AssociateDH() {
 			var associateRequest = this.CreateAssociateRequest(OPUri);
 			Stopwatch timer = new Stopwatch();
@@ -48,15 +48,15 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			for (iterations = 0; timer.ElapsedMilliseconds < TestRunTime.TotalMilliseconds; iterations++) {
 				IRequest request = this.provider.GetRequest(associateRequest);
 				var response = this.provider.PrepareResponse(request);
-				Assert.IsInstanceOfType(response.OriginalMessage, typeof(AssociateSuccessfulResponse));
+				Assert.IsInstanceOfType(typeof(AssociateSuccessfulResponse), response.OriginalMessage);
 			}
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);
-			TestContext.WriteLine("Created {0} associations in {1}, or {2} per second.", iterations, timer.Elapsed, executionsPerSecond);
+			TestUtilities.TestLogger.InfoFormat("Created {0} associations in {1}, or {2} per second.", iterations, timer.Elapsed, executionsPerSecond);
 			Assert.IsTrue(executionsPerSecond >= 2, "Too slow ({0} >= 2 executions per second required.)", executionsPerSecond);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AssociateClearText() {
 			var associateRequest = this.CreateAssociateRequest(OPUriSsl); // SSL will cause a plaintext association
 			Stopwatch timer = new Stopwatch();
@@ -65,29 +65,29 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			for (iterations = 0; timer.ElapsedMilliseconds < TestRunTime.TotalMilliseconds; iterations++) {
 				IRequest request = this.provider.GetRequest(associateRequest);
 				var response = this.provider.PrepareResponse(request);
-				Assert.IsInstanceOfType(response.OriginalMessage, typeof(AssociateSuccessfulResponse));
+				Assert.IsInstanceOfType(typeof(AssociateSuccessfulResponse), response.OriginalMessage);
 			}
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);
-			TestContext.WriteLine("Created {0} associations in {1}, or {2} per second.", iterations, timer.Elapsed, executionsPerSecond);
+			TestUtilities.TestLogger.InfoFormat("Created {0} associations in {1}, or {2} per second.", iterations, timer.Elapsed, executionsPerSecond);
 			Assert.IsTrue(executionsPerSecond > 1000, "Too slow ({0} > 1000 executions per second required.)", executionsPerSecond);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CheckIdSharedHmacSha1Association() {
 			Protocol protocol = Protocol.Default;
 			string assocType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			double executionsPerSecond = this.ParameterizedCheckIdTest(protocol, assocType);
-			TestContext.WriteLine("{0} executions per second.", executionsPerSecond);
+			TestUtilities.TestLogger.InfoFormat("{0} executions per second.", executionsPerSecond);
 			Assert.IsTrue(executionsPerSecond > 500, "Too slow ({0} > 500 executions per second required.)", executionsPerSecond);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CheckIdSharedHmacSha256Association() {
 			Protocol protocol = Protocol.Default;
 			string assocType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 			double executionsPerSecond = this.ParameterizedCheckIdTest(protocol, assocType);
-			TestContext.WriteLine("{0} executions per second.", executionsPerSecond);
+			TestUtilities.TestLogger.InfoFormat("{0} executions per second.", executionsPerSecond);
 			Assert.IsTrue(executionsPerSecond > 400, "Too slow ({0} > 400 executions per second required.)", executionsPerSecond);
 		}
 
@@ -110,11 +110,11 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				var request = (IAuthenticationRequest)this.provider.GetRequest(checkidRequest);
 				request.IsAuthenticated = true;
 				var response = this.provider.PrepareResponse(request);
-				Assert.IsInstanceOfType(response.OriginalMessage, typeof(PositiveAssertionResponse));
+				Assert.IsInstanceOfType(typeof(PositiveAssertionResponse), response.OriginalMessage);
 			}
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);
-			TestContext.WriteLine("Responded to {0} checkid messages in {1}; or {2} authentications per second.", iterations, timer.Elapsed, executionsPerSecond);
+			TestUtilities.TestLogger.InfoFormat("Responded to {0} checkid messages in {1}; or {2} authentications per second.", iterations, timer.Elapsed, executionsPerSecond);
 			return executionsPerSecond;
 		}
 

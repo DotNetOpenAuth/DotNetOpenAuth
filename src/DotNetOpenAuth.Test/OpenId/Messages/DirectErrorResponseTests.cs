@@ -10,13 +10,13 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class DirectErrorResponseTests : OpenIdTestBase {
 		private DirectErrorResponse response;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response = new DirectErrorResponse(request.Version, request);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ParameterNames() {
 			this.response.ErrorMessage = "Some Error";
 			this.response.Contact = "Andrew Arnott";
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// Verifies that error messages are created as HTTP 400 errors,
 		/// per OpenID 2.0 section 5.1.2.2.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ErrorMessagesAsHttp400() {
 			var httpStatusMessage = (IHttpDirectResponse)this.response;
 			Assert.AreEqual(HttpStatusCode.BadRequest, httpStatusMessage.HttpStatusCode);

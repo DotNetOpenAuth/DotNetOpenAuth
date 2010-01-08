@@ -9,13 +9,9 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class CheckAuthenticationRequestTests : OpenIdTestBase {
-		[TestInitialize]
-		public override void SetUp() {
-			base.SetUp();
-		}
 	}
 }

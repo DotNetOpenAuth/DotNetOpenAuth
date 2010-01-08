@@ -9,20 +9,20 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AssociateUnencryptedResponseTests : OpenIdTestBase {
 		private AssociateUnencryptedResponse response;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 			var request = new AssociateUnencryptedRequest(Protocol.V20.Version, new Uri("http://host"));
 			this.response = new AssociateUnencryptedResponse(request.Version, request);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ParameterNames() {
 			this.response.AssociationHandle = "HANDLE";
 			this.response.AssociationType = "HMAC-SHA1";
@@ -38,12 +38,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual("50", fields["expires_in"]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequiredProtection() {
 			Assert.AreEqual(MessageProtections.None, this.response.RequiredProtection);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Transport() {
 			Assert.AreEqual(MessageTransport.Direct, this.response.Transport);
 		}

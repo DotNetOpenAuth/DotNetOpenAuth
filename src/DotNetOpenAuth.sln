@@ -4,9 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20B5E173-C3C4-49F8-BD25-E69044075B4D}"
 	ProjectSection(SolutionItems) = preProject
 		..\build.proj = ..\build.proj
-		DotNetOpenAuth.vsmdi = DotNetOpenAuth.vsmdi
 		..\LICENSE.txt = ..\LICENSE.txt
-		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		..\doc\README.Bin.html = ..\doc\README.Bin.html
 		..\doc\README.html = ..\doc\README.html
 		..\samples\README.html = ..\samples\README.html
@@ -181,9 +179,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdWebRingSsoProvider", "..\samples\OpenIdWebRingSsoProvider\OpenIdWebRingSsoProvider.csproj", "{0B4EB2A8-283D-48FB-BCD0-85B8DFFE05E4}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = DotNetOpenAuth.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CodeAnalysis|Any CPU = CodeAnalysis|Any CPU
 		Debug|Any CPU = Debug|Any CPU
