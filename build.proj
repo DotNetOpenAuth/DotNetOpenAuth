@@ -61,7 +61,7 @@
 	</Target>
 
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="$(SolutionPath)" Targets="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb" />
+		<MSBuild Projects="$(SolutionPath)" /> <!-- broken in Dev10 RC: Targets="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb" -->
 	</Target>
 
 	<Target Name="BuildSamples" DependsOnTargets="SkipVerification">
