@@ -5,6 +5,7 @@
 
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
+		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
 	</PropertyGroup>
 
 	<!-- This forces a build break when Code Contracts are not installed. -->
@@ -27,7 +28,7 @@
 	<Target Name="CreatePublicAccessors">
 		<PropertyGroup>
 			<VSVersionForTargetFramework>v10.0</VSVersionForTargetFramework>
-			<VSVersionForTargetFramework Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">v9.0</VSVersionForTargetFramework>
+			<VSVersionForTargetFramework Condition=" '$(ClrVersion)' != '4' ">v9.0</VSVersionForTargetFramework>
 		</PropertyGroup>
 		<Publicize
 			Condition=" '%(ReferencePath.Shadow)' == 'true' "
