@@ -17,7 +17,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
-	using NUnit.Framework;
 
 	public class OpenIdTestBase : TestBase {
 		internal IDirectWebRequestHandler RequestHandler;
