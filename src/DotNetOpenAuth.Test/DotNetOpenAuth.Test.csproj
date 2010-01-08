@@ -310,13 +310,11 @@
     <ProjectReference Include="..\DotNetOpenAuth\DotNetOpenAuth.csproj">
       <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
       <Name>DotNetOpenAuth</Name>
+      <Shadow>true</Shadow>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Logging.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Shadow Include="Test References\DotNetOpenAuth.accessor" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html1020.html" />
