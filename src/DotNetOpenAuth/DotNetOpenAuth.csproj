@@ -77,7 +77,7 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -735,7 +735,6 @@ http://opensource.org/licenses/ms-pl.html
     <CompileDependsOn>$(CompileDependsOn);CheckForCodeContracts</CompileDependsOn>
   </PropertyGroup>
   <Target Name="CheckForCodeContracts">
-      <Error Condition=" '$(CodeContractsImported)' != 'true' "
-             Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx"/>
+    <Error Condition=" '$(CodeContractsImported)' != 'true' " Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx" />
   </Target>
 </Project>
