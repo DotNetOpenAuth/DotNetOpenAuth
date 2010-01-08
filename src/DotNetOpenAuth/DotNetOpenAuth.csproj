@@ -215,7 +215,7 @@ http://opensource.org/licenses/ms-pl.html
       <HintPath>..\..\lib\System.Web.Routing.dll</HintPath>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xaml" Condition=" '$(ClrVersion)' == '4' " />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
