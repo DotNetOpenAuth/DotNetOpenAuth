@@ -30,7 +30,7 @@
 		<PropertyGroup>
 			<NewVersionCsFile>$(VersionCsFile).new</NewVersionCsFile>
 		</PropertyGroup>
-		<MakeDir Directories="$(ProjectRoot)obj\$(Configuration)"/>
+		<MakeDir Directories="$(IntermediatePath)"/>
 		<AssemblyInfo OutputFile="$(NewVersionCsFile)" CodeLanguage="C#"
 		              AssemblyVersion="$(BuildVersion)"
 		              AssemblyInformationalVersion="$(AssemblyInformationalVersion)" />

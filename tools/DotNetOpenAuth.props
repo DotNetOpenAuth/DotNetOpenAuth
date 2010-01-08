@@ -3,12 +3,13 @@
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\</ProjectRoot>
 		<DropsRoot>$(ProjectRoot)drops\$(Configuration)\</DropsRoot>
-		<OutputPath>$(ProjectRoot)bin\$(Configuration)\</OutputPath>
+		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
-		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)\</IntermediatePath>
-		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\</BaseIntermediateOutputPath>
+		<IntermediatePath>$(ProjectRoot)obj\$(TargetFrameworkVersion)\$(Configuration)\</IntermediatePath>
+		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
