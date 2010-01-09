@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 					new IOpenIdMessageExtension[0]);
 				Assert.Fail("Expected ProtocolException not thrown.");
 			} catch (AssertionException ex) {
-				Assert.IsInstanceOfType(typeof(ProtocolException), ex.InnerException);
+				Assert.IsInstanceOf<ProtocolException>(ex.InnerException);
 			}
 		}
 

@@ -156,7 +156,7 @@ namespace DotNetOpenAuth.Test {
 
 			IDirectedProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(typeof(TestMessage), requestMessage);
+			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage actualMessage = (TestMessage)requestMessage;
 			Assert.AreEqual(expectedMessage.Age, actualMessage.Age);
 			Assert.AreEqual(expectedMessage.Name, actualMessage.Name);
@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.Test {
 			}
 			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(typeof(TestSignedDirectedMessage), requestMessage);
+			Assert.IsInstanceOf<TestSignedDirectedMessage>(requestMessage);
 			TestSignedDirectedMessage actualMessage = (TestSignedDirectedMessage)requestMessage;
 			Assert.AreEqual(expectedMessage.Age, actualMessage.Age);
 			Assert.AreEqual(expectedMessage.Name, actualMessage.Name);

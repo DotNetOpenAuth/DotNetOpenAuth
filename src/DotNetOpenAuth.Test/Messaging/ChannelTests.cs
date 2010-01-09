@@ -195,7 +195,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
 			IProtocolMessage message = this.Channel.ReadFromRequest();
 			Assert.IsNotNull(message);
-			Assert.IsInstanceOfType(typeof(TestMessage), message);
+			Assert.IsInstanceOf<TestMessage>(message);
 			Assert.AreEqual(expectedMessage.Age, ((TestMessage)message).Age);
 		}
 

@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			for (iterations = 0; timer.ElapsedMilliseconds < TestRunTime.TotalMilliseconds; iterations++) {
 				IRequest request = this.provider.GetRequest(associateRequest);
 				var response = this.provider.PrepareResponse(request);
-				Assert.IsInstanceOfType(typeof(AssociateSuccessfulResponse), response.OriginalMessage);
+				Assert.IsInstanceOf<AssociateSuccessfulResponse>(response.OriginalMessage);
 			}
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			for (iterations = 0; timer.ElapsedMilliseconds < TestRunTime.TotalMilliseconds; iterations++) {
 				IRequest request = this.provider.GetRequest(associateRequest);
 				var response = this.provider.PrepareResponse(request);
-				Assert.IsInstanceOfType(typeof(AssociateSuccessfulResponse), response.OriginalMessage);
+				Assert.IsInstanceOf<AssociateSuccessfulResponse>(response.OriginalMessage);
 			}
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);
@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				var request = (IAuthenticationRequest)this.provider.GetRequest(checkidRequest);
 				request.IsAuthenticated = true;
 				var response = this.provider.PrepareResponse(request);
-				Assert.IsInstanceOfType(typeof(PositiveAssertionResponse), response.OriginalMessage);
+				Assert.IsInstanceOf<PositiveAssertionResponse>(response.OriginalMessage);
 			}
 			timer.Stop();
 			double executionsPerSecond = GetExecutionsPerSecond(iterations, timer);

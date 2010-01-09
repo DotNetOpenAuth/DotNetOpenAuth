@@ -27,11 +27,11 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.IsFalse(anonReq.IsApproved.HasValue);
 
 			anonReq.IsApproved = false;
-			Assert.IsInstanceOfType(typeof(NegativeAssertionResponse), anonReq.Response);
+			Assert.IsInstanceOf<NegativeAssertionResponse>(anonReq.Response);
 
 			anonReq.IsApproved = true;
-			Assert.IsInstanceOfType(typeof(IndirectSignedResponse), anonReq.Response);
-			Assert.IsNotInstanceOfType(typeof(PositiveAssertionResponse), anonReq.Response);
+			Assert.IsInstanceOf<IndirectSignedResponse>(anonReq.Response);
+			Assert.IsNotInstanceOf<PositiveAssertionResponse>(anonReq.Response);
 		}
 	}
 }

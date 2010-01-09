@@ -367,11 +367,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 				Assert.IsTrue(MessagingUtilities.AreEquivalent(opAssociation.SecretKey, rpAssociation.SecretKey));
 
 				if (expectDiffieHellman) {
-					Assert.IsInstanceOfType(typeof(AssociateDiffieHellmanResponse), associateSuccessfulResponse);
+					Assert.IsInstanceOf<AssociateDiffieHellmanResponse>(associateSuccessfulResponse);
 					var diffieHellmanResponse = (AssociateDiffieHellmanResponse)associateSuccessfulResponse;
 					Assert.IsFalse(MessagingUtilities.AreEquivalent(diffieHellmanResponse.EncodedMacKey, rpAssociation.SecretKey), "Key should have been encrypted.");
 				} else {
-					Assert.IsInstanceOfType(typeof(AssociateUnencryptedResponse), associateSuccessfulResponse);
+					Assert.IsInstanceOf<AssociateUnencryptedResponse>(associateSuccessfulResponse);
 					var unencryptedResponse = (AssociateUnencryptedResponse)associateSuccessfulResponse;
 				}
 			} else {
