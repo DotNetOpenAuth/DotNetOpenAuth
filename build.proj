@@ -65,8 +65,9 @@
 	</Target>
 
 	<Target Name="BuildSamples" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="@(SampleProjects)" />
-		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" />
+		<!--<MSBuild Projects="@(SampleProjects)" />
+		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" /> BROKEN IN DEV10 RC -->
+		<MSBuild Projects="$(SolutionPath)" />
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="SkipVerification">
