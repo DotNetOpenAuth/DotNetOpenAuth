@@ -423,13 +423,15 @@
 		<Purge Directories="$(DropDirectory)" IntendedFiles="@(AllDropTargets)" />
 		<!-- fix up the samples so that they will compile right out of the drop -->
 		<ItemGroup>
-			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.csproj" />
+			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.*proj" />
+			<SampleSolutionTargets Include="$(DropSamplesDirectory)**\*.sln" />
 		</ItemGroup>
 		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)"
 		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\"
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
+		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" />
 	</Target>
 
 	<Target Name="Drop" DependsOnTargets="DropLayout">

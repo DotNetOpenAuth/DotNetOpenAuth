@@ -104,6 +104,7 @@
     <Compile Include="CreateWebApplication.cs" />
     <Compile Include="DeleteWebApplication.cs" />
     <Compile Include="DiscoverProjectTemplates.cs" />
+    <Compile Include="DowngradeProjects.cs" />
     <Compile Include="ECMAScriptPacker.cs" />
     <Compile Include="FilterItems.cs" />
     <Compile Include="FixupReferenceHintPaths.cs" />
