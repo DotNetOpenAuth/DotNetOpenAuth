@@ -1008,18 +1008,6 @@ namespace DotNetOpenAuth.Messaging {
 			this.incomingBindingElements.AddRange(incomingOrder);
 		}
 
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
-			Contract.Invariant(this.MessageDescriptions != null);
-		}
-#endif
-
 		/// <summary>
 		/// Ensures a consistent and secure set of binding elements and 
 		/// sorts them as necessary for a valid sequence of operations.
@@ -1069,8 +1057,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="protection1">The first protection type to compare.</param>
 		/// <param name="protection2">The second protection type to compare.</param>
 		/// <returns>
-		/// -1 if <paramref name="element1"/> should be applied to an outgoing message before <paramref name="element2"/>.
-		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
+		/// -1 if <paramref name="protection1"/> should be applied to an outgoing message before <paramref name="protection2"/>.
+		/// 1 if <paramref name="protection2"/> should be applied to an outgoing message before <paramref name="protection1"/>.
 		/// 0 if it doesn't matter.
 		/// </returns>
 		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtections protection1, MessageProtections protection2) {
@@ -1079,6 +1067,18 @@ namespace DotNetOpenAuth.Messaging {
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.MessageDescriptions != null);
+		}
+#endif
 
 		/// <summary>
 		/// Verifies that all required message parts are initialized to values

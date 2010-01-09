@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.BuildTasks {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.Build.Utilities;
-	using Microsoft.Build.Framework;
-	using System.IO;
 	using Microsoft.Build.BuildEngine;
+	using Microsoft.Build.Framework;
+	using Microsoft.Build.Utilities;
 
 	/// <summary>
 	/// Removes imports that only apply when a shipping tool sample builds as part of
@@ -21,6 +21,8 @@ namespace DotNetOpenAuth.BuildTasks {
 	public class FixupShippingToolSamples : Task {
 		[Required]
 		public ITaskItem[] Projects { get; set; }
+
+		public string[] RemoveImportsStartingWith { get; set; }
 
 		/// <summary>
 		/// Executes this instance.
@@ -34,10 +36,12 @@ namespace DotNetOpenAuth.BuildTasks {
 				Uri projectUri = new Uri(projectTaskItem.GetMetadata("FullPath"));
 				project.Load(projectTaskItem.ItemSpec, ProjectLoadSettings.IgnoreMissingImports);
 
-				project.Imports.Cast<Import>()
-					.Where(import => import.ProjectPath.StartsWith(@"..\..\tools\", StringComparison.OrdinalIgnoreCase))
-					.ToList()
-					.ForEach(import => project.Imports.RemoveImport(import));
+				if (this.RemoveImportsStartingWith != null && this.RemoveImportsStartingWith.Length > 0) {
+					project.Imports.Cast<Import>()
+						.Where(import => this.RemoveImportsStartingWith.Any(start => import.ProjectPath.StartsWith(start, StringComparison.OrdinalIgnoreCase)))
+						.ToList()
+						.ForEach(import => project.Imports.RemoveImport(import));
+				}
 
 				project.Save(projectTaskItem.ItemSpec);
 			}

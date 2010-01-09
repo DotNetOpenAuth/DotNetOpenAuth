@@ -1,5 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.Common.Settings.targets"/>
+	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.props"/>
 	<PropertyGroup>
 		<AutomatedBuild>true</AutomatedBuild>
 		<SolutionPath>$(ProjectRoot)src\$(ProductName).sln</SolutionPath>
@@ -60,7 +60,7 @@
 	</Target>
 
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="$(ProjectRoot)src\$(ProductName).Test\$(ProductName).Test.csproj" />
+		<MSBuild Projects="$(SolutionPath)" Targets="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb" />
 	</Target>
 
 	<Target Name="BuildSamples" DependsOnTargets="SkipVerification">
@@ -301,9 +301,7 @@
 	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
 	</Target>
 
-	<!-- Test depends on "Build" rather than "BuildTests" until we can figure out how to build the 
-	     no-.csproj file test project (to copy binaries to Bin directory). -->
-	<Target Name="Test" DependsOnTargets="Build"
+	<Target Name="Test" DependsOnTargets="BuildTests"
 	        Inputs="$(OutputPath)$(ProductName).Test.dll"
 	        Outputs='$(OutputPath)Test-results.xml;$(OutputPath)Test-output-results.log'>
 		<Exec Command='"mstest.exe" /testcontainer:"$(OutputPath)$(ProductName).Test.dll"' />
@@ -418,7 +416,7 @@
 		<ItemGroup>
 			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.csproj" />
 		</ItemGroup>
-		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" />
+		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" RemoveImportsStartingWith="%24(ProjectRoot)tools\" />
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
 	</Target>
