@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			authRequest.IsExtensionOnly = true;
 			Assert.IsTrue(authRequest.IsExtensionOnly);
 			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
-			Assert.IsNotInstanceOfType(typeof(CheckIdRequest), req, "An unexpected SignedResponseRequest derived type was generated.");
+			Assert.IsNotInstanceOf<CheckIdRequest>(req, "An unexpected SignedResponseRequest derived type was generated.");
 		}
 
 		/// <summary>

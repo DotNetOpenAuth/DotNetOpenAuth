@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			IDirectedProtocolMessage requestMessage = this.channel.ReadFromRequest(requestInfo);
 
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(typeof(TestMessage), requestMessage);
+			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage testMessage = (TestMessage)requestMessage;
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);
@@ -344,7 +344,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 			IProtocolMessage response = this.channel.Request(request);
 			Assert.IsNotNull(response);
-			Assert.IsInstanceOfType(typeof(TestMessage), response);
+			Assert.IsInstanceOf<TestMessage>(response);
 			TestMessage responseMessage = (TestMessage)response;
 			Assert.AreEqual(request.Age, responseMessage.Age);
 			Assert.AreEqual(request.Name, responseMessage.Name);
@@ -360,7 +360,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			};
 			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(scheme, fields));
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(typeof(TestMessage), requestMessage);
+			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage testMessage = (TestMessage)requestMessage;
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);

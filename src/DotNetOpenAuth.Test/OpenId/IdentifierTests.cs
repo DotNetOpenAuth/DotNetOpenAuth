@@ -36,8 +36,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestCase]
 		public void Parse() {
-			Assert.IsInstanceOfType(typeof(UriIdentifier), Identifier.Parse(this.uri));
-			Assert.IsInstanceOfType(typeof(XriIdentifier), Identifier.Parse(this.xri));
+			Assert.IsInstanceOf<UriIdentifier>(Identifier.Parse(this.uri));
+			Assert.IsInstanceOf<XriIdentifier>(Identifier.Parse(this.xri));
 		}
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			prefixes.AddRange(symbols.Select(s => "xri://" + s.ToString()));
 			foreach (string prefix in prefixes) {
 				var id = Identifier.Parse(prefix + "andrew");
-				Assert.IsInstanceOfType(typeof(XriIdentifier), id);
+				Assert.IsInstanceOf<XriIdentifier>(id);
 			}
 		}
 
@@ -63,15 +63,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public void ParseEndUserSuppliedUriIdentifier() {
 			// verify a fully-qualified Uri
 			var id = Identifier.Parse(this.uri);
-			Assert.IsInstanceOfType(typeof(UriIdentifier), id);
+			Assert.IsInstanceOf<UriIdentifier>(id);
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 			// verify an HTTPS Uri
 			id = Identifier.Parse(this.uriHttps);
-			Assert.IsInstanceOfType(typeof(UriIdentifier), id);
+			Assert.IsInstanceOf<UriIdentifier>(id);
 			Assert.AreEqual(this.uriHttps, ((UriIdentifier)id).Uri.AbsoluteUri);
 			// verify that if the scheme is missing it is added automatically
 			id = Identifier.Parse(this.uriNoScheme);
-			Assert.IsInstanceOfType(typeof(UriIdentifier), id);
+			Assert.IsInstanceOf<UriIdentifier>(id);
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}
 

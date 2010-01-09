@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var factories = rp.ExtensionFactories;
 			Assert.IsNotNull(factories);
 			Assert.AreEqual(1, factories.Count);
-			Assert.IsInstanceOfType(typeof(StandardOpenIdExtensionFactory), factories[0]);
+			Assert.IsInstanceOf<StandardOpenIdExtensionFactory>(factories[0]);
 		}
 
 		[TestCase]

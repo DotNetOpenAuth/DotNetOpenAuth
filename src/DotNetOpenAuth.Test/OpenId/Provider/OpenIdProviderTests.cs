@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			var factories = this.provider.ExtensionFactories;
 			Assert.IsNotNull(factories);
 			Assert.AreEqual(1, factories.Count);
-			Assert.IsInstanceOfType(typeof(StandardOpenIdExtensionFactory), factories[0]);
+			Assert.IsInstanceOf<StandardOpenIdExtensionFactory>(factories[0]);
 		}
 
 		/// <summary>
@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				},
 				op => {
 					IRequest request = op.GetRequest();
-					Assert.IsInstanceOfType(typeof(AutoResponsiveRequest), request);
+					Assert.IsInstanceOf<AutoResponsiveRequest>(request);
 					op.SendResponse(request);
 				});
 			coordinator.Run();

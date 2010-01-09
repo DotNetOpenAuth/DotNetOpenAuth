@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				},
 				op => {
 					var request = op.Channel.ReadFromRequest<SignedResponseRequest>();
-					Assert.IsNotInstanceOfType(typeof(CheckIdRequest), request);
+					Assert.IsNotInstanceOf<CheckIdRequest>(request);
 				});
 			coordinator.Run();
 		}
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 					var request = (IAnonymousRequest)op.GetRequest();
 					request.IsApproved = true;
-					Assert.IsNotInstanceOfType(typeof(CheckIdRequest), request);
+					Assert.IsNotInstanceOf<CheckIdRequest>(request);
 					op.SendResponse(request);
 				});
 			coordinator.Run();
