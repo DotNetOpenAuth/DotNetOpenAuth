@@ -39,7 +39,7 @@
 				<rp:SelectorProviderButton OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
 				<rp:SelectorProviderButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
 				<rp:SelectorInfoCardButton>
-					<InfoCardSelector>
+					<InfoCardSelector Issuer="">
 						<ClaimsRequested>
 							<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" IsOptional="false" />
 							<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" IsOptional="true" />

@@ -133,7 +133,9 @@
 			<Buttons>
 				<rp:SelectorProviderButton OPIdentifier="https://me.yahoo.com/" Image="~/images/yahoo.gif" />
 				<rp:SelectorProviderButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="~/images/google.gif" />
-				<rp:SelectorInfoCardButton />
+				<rp:SelectorInfoCardButton>
+					<InfoCardSelector Issuer="" />
+				</rp:SelectorInfoCardButton>
 				<rp:SelectorOpenIdButton Image="~/images/openid.gif" />
 			</Buttons>
 		</rp:OpenIdSelector>
