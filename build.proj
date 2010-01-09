@@ -108,11 +108,11 @@
 		<ItemGroup>
 			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
 			<OfflineProvider Include="
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\**\*.dll;
+											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(TargetFrameworkVersion)\$(Configuration)\**\*.dll;
 											 $(ILMergeOutputAssembly).*;
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe"
+											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(TargetFrameworkVersion)\$(Configuration)\OpenIdOfflineProvider.exe"
 											 Exclude="
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\$(ProductName).*;
+											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(TargetFrameworkVersion)\$(Configuration)\$(ProductName).*;
 											 "/>
 			<OfflineProviderTargets Include="
 											 @(OfflineProvider->'$(ToolsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
