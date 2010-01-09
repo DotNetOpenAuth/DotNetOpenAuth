@@ -90,6 +90,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "59719"
 		DefaultWebSiteLanguage = "Visual Basic"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdRelyingPartyMvc", "..\samples\OpenIdRelyingPartyMvc\OpenIdRelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"
@@ -114,6 +115,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIdRelyingPartyClassicAs
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "10318"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthConsumerWpf", "..\samples\OAuthConsumerWpf\OAuthConsumerWpf.csproj", "{6EC36418-DBC5-4AD1-A402-413604AA7A08}"
@@ -140,6 +142,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthConsumer", "..\samples
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "59721"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthServiceProvider", "..\samples\OAuthServiceProvider\", "{7ADCCD5C-AC2B-4340-9410-FE3A31A48191}"
@@ -162,6 +165,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthServiceProvider", "..\
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "65169"
 		VWDDynamicPort = "false"
+		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdOfflineProvider", "..\samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj", "{5C65603B-235F-47E6-B536-06385C60DE7F}"
