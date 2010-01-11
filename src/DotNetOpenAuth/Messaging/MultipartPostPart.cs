@@ -134,7 +134,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(contentType != null);
 			Contract.Requires<ArgumentException>(content != null);
 
-			var part = new MultipartPostPart("form-data");
+			var part = new MultipartPostPart("file");
 			part.ContentAttributes["name"] = name;
 			part.ContentAttributes["filename"] = fileName;
 			part.PartHeaders[HttpRequestHeader.ContentType] = contentType;
