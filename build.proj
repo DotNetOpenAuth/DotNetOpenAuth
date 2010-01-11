@@ -181,7 +181,7 @@
 			<TopLevelVSProjectTemplates Include="@(VSProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(ProjectTemplatesLayoutPath)'" />
 
 			<!-- Include the template icon -->
-			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\DotNetOpenAuth.ico" />
+			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\dnoa-icon-colour.ico" />
 			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
 
 			<!-- Add external libraries -->
@@ -427,31 +427,33 @@
 
 	</Target>
 
-	<Target Name="MSI" DependsOnTargets="GetBuildVersion;_SetDropProperties;ProjectTemplates">
+	<Target Name="MSI" DependsOnTargets="DropLayout">
     <ItemGroup>
-      <ProjectTemplateZip Include="$(ProjectTemplatesLayoutPath)*.zip" />
+      <ProjectTemplateZip Include="$(ProjectTemplatesLayoutPath)*.zip;"/>
     </ItemGroup>
+    <PropertyGroup>
+      <ProjectTemplates>@(ProjectTemplateZip)</ProjectTemplates>
+    </PropertyGroup>
 
-
-    <Message Text="Creating MSI :: - 
+      <Message Text="Creating MSI :: - 
              ProjectRoot          - $(ProjectRoot)
              BuildVersion         - $(BuildVersion)
              ProductName          - $(ProductName)
              DropPath             - $(DropsRoot)
-             ProjectTemplateZip   - @(ProjectTemplateZip)
+             ProjectTemplateZip   - $(ProjectTemplates)
              OutputPath           - $(DropDirectoryNoSlash)
              OutputName           - $(ProductName)-$(BuildVersion)" Importance="High" />
 		<Delete Files="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth_Samples_Files.wxs" />
 		<Exec Command="$(ProjectRoot)\tools\wix\Paraffin.exe $(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth_Samples_Files.wxs -dir $(DropDirectoryNoSlash)\Samples -custom dnoa_samples -alias &quot;%24(var.DropPath)\Samples&quot; -guids -multiple -ext .gitignore -dirref INSTALLLOCATION"/>	 
 		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj" 
 		         Properties="
-		         ProjectRoot=$(ProjectRoot);
-		         BuildVersion=$(BuildVersion);
-		         ProductName=$(ProductName);
-		         DropPath=$(DropDirectoryNoSlash);
-             ProjectTemplateZip=@(ProjectTemplateZip);
-		         OutputPath=$(DropsRoot);
-		         OutputName=$(ProductName)-$(BuildVersion);
+					ProjectRoot=$(ProjectRoot);
+					BuildVersion=$(BuildVersion);
+					ProductName=$(ProductName);
+					DropPath=$(DropDirectoryNoSlash);
+					ProjectTemplateZip=$(ProjectTemplates);
+					OutputPath=$(DropsRoot);
+					OutputName=$(ProductName)-$(BuildVersion);
 		         " />
   </Target>
 </Project>
