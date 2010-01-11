@@ -26,7 +26,7 @@
     </DirectoryRef>
 
     <Feature Id="DotNetOpenAuth.Samples" Title="Samples" Level="1" AllowAdvertise="no"
-             Description="Installs DotNetOpenAuth code samples.">
+             Description="Installs DotNetOpenAuth code samples." ConfigurableDirectory="INSTALLLOCATION">
       <ComponentRef Id="dnoa.MainSamplesMenuFolder.RemoveFolder"/>
       <ComponentRef Id="dnoa.SamplesMenuFolder.RemoveFolder"/>
       <ComponentGroupRef Id="group_dnoa_samples"/>
