@@ -11,8 +11,10 @@ namespace DotNetOpenAuth.Test.Messaging
 	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
+	using System.Text.RegularExpressions;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -138,6 +140,34 @@ namespace DotNetOpenAuth.Test.Messaging
 			Assert.AreEqual("%7F", MessagingUtilities.EscapeUriDataStringRfc3986("\u007f"));
 			Assert.AreEqual("%C2%80", MessagingUtilities.EscapeUriDataStringRfc3986("\u0080"));
 			Assert.AreEqual("%E3%80%81", MessagingUtilities.EscapeUriDataStringRfc3986("\u3001"));
+		}
+
+		/// <summary>
+		/// Verifies the overall format of the multipart POST is correct.
+		/// </summary>
+		[TestMethod]
+		public void PostMultipart() {
+			var httpHandler = new TestWebRequestHandler();
+			bool callbackTriggered = false;
+			httpHandler.Callback = req => {
+				Match m = Regex.Match(req.ContentType, "multipart/form-data; boundary=(.+)");
+				Assert.IsTrue(m.Success, "Content-Type HTTP header not set correctly.");
+				string boundary = m.Groups[1].Value;
+				string expectedEntity = "--{0}\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\r\n--{0}--\r\n";
+				expectedEntity = string.Format(expectedEntity, boundary);
+				string actualEntity = httpHandler.RequestEntityAsString;
+				Assert.AreEqual(expectedEntity, actualEntity);
+				callbackTriggered = true;
+				Assert.AreEqual(req.ContentLength, actualEntity.Length);
+				IncomingWebResponse resp = new CachedDirectWebResponse();
+				return resp;
+			};
+			var request = (HttpWebRequest)WebRequest.Create("http://someserver");
+			var parts = new [] {
+				MultipartPostPart.CreateFormPart("a", "b"),
+			};
+			request.PostMultipart(httpHandler, parts);
+			Assert.IsTrue(callbackTriggered);
 		}
 	}
 }
