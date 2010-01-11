@@ -14,7 +14,7 @@
     <OutputPath Condition=" '$(OutputPath)' == ''">
     </OutputPath>
     <OutputName Condition=" '$(OutputName)' == ''">DotNetOpenAuth</OutputName>
-    <DefineConstants>$(DefineConstants);OutputPath=$(OutputPath);ProjectRoot=$(ProjectRoot);DropPath=$(DropPath);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
+    <DefineConstants>$(DefineConstants);OutputPath=$(OutputPath);ProjectRoot=$(ProjectRoot);DropPath=$(DropPath);ProjectTemplateZip=$(ProjectTemplateZip);configuration=$(Configuration);BuildVersion=$(BuildVersion);ProductName=$(ProductName)</DefineConstants>
     <SetMsiAssemblyNameFileVersion>true</SetMsiAssemblyNameFileVersion>
     <ExactAssemblyVersions>true</ExactAssemblyVersions>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>

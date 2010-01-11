@@ -11,7 +11,7 @@
       <Directory Id="VS90_PROJECTTEMPLATES_DIR" Name="ProjectTemplates.VS2008">
         <Directory Id="VS2008.ProjectTemplates.CS" Name="CSharp">
           <Component Id="VS2008.WebFormsRelyingParty.ProjectTemplate.CSharp.zip" Guid="{00EB4409-61A2-4065-B019-7B97AA240825}" Win64="no">
-            <File Id="VS2008.WebFormsRelyingParty.ProjectTemplate.CSharp.zip" Source="$(var.DropPath)\Project Templates\DotNetOpenAuth Starter Kits.vsi" KeyPath="yes" />
+            <File Id="VS2008.WebFormsRelyingParty.ProjectTemplate.CSharp.zip" Source="$(var.ProjectTemplateZip)" KeyPath="yes" />
           </Component>
         </Directory>
       </Directory>
