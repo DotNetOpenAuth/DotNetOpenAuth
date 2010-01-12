@@ -163,7 +163,7 @@ namespace DotNetOpenAuth.Test.Messaging
 				return resp;
 			};
 			var request = (HttpWebRequest)WebRequest.Create("http://someserver");
-			var parts = new [] {
+			var parts = new[] {
 				MultipartPostPart.CreateFormPart("a", "b"),
 			};
 			request.PostMultipart(httpHandler, parts);

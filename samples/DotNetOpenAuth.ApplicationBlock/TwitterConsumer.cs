@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		private static readonly MessageReceivingEndpoint UpdateProfileImageEndpoint = new MessageReceivingEndpoint("http://twitter.com/account/update_profile_image.xml", HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest);
 
 		/// <summary>
-		/// Initializes the <see cref="TwitterConsumer"/> class.
+		/// Initializes static members of the <see cref="TwitterConsumer"/> class.
 		/// </summary>
 		static TwitterConsumer() {
 			// Twitter can't handle the Expect 100 Continue HTTP header. 
@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		public static XDocument UpdateProfileBackgroundImage(ConsumerBase twitter, string accessToken, string image, bool tile) {
 			HttpWebRequest request = twitter.PrepareAuthorizedRequest(UpdateProfileBackgroundImageEndpoint, accessToken);
 			request.ServicePoint.Expect100Continue = false;
-			var parts = new [] {
+			var parts = new[] {
 				MultipartPostPart.CreateFormFilePart("image", image, "image/" + Path.GetExtension(image).Substring(1).ToLowerInvariant()),
 				MultipartPostPart.CreateFormPart("tile", tile.ToString().ToLowerInvariant()),
 			};
