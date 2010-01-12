@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -76,6 +77,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "It doesn't look too bad to me. :)")]
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {

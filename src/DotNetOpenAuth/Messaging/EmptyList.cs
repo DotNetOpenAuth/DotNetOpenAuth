@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		/// </exception>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts generates the code FxCop is complaining about.")]
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts ccrewrite does this.")]
 		public void RemoveAt(int index) {
 			throw new ArgumentOutOfRangeException("index");
 		}
@@ -115,7 +115,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		/// </exception>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts generates the code FxCop is complaining about.")]
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts ccrewrite does this.")]
 		public void Add(T item) {
 			throw new NotSupportedException();
 		}
