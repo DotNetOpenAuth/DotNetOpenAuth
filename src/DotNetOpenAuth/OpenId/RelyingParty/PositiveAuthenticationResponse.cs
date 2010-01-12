@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.VerifyDiscoveryMatchesAssertion(relyingParty);
 
-			Logger.OpenId.InfoFormat("Received identity assertion for {0} via {1}.", this.ClaimedIdentifier, this.Provider.Uri);
+			Logger.OpenId.InfoFormat("Received identity assertion for {0} via {1}.", this.Response.ClaimedIdentifier, this.Provider.Uri);
 		}
 
 		#region IAuthenticationResponse Properties
