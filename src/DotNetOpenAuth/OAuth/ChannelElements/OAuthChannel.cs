@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message with data to encode.</param>
 		/// <returns>A dictionary of name-value pairs with their strings encoded.</returns>
-		internal static IDictionary<string, string> GetUriEscapedParameters(MessageDictionary message) {
+		internal static IDictionary<string, string> GetUriEscapedParameters(IEnumerable<KeyValuePair<string, string>> message) {
 			var encodedDictionary = new Dictionary<string, string>();
 			UriEscapeParameters(message, encodedDictionary);
 			return encodedDictionary;
@@ -195,6 +195,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				httpRequest = this.InitializeRequestAsAuthHeader(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
+				var requestMessageWithBinaryData = request as IMessageWithBinaryData;
+				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || !requestMessageWithBinaryData.SendAsMultipart, OAuthStrings.MultipartPostMustBeUsedWithAuthHeader);
 				httpRequest = this.InitializeRequestAsPost(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
@@ -265,7 +267,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="source">The dictionary with names and values to encode.</param>
 		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
-		private static void UriEscapeParameters(IDictionary<string, string> source, IDictionary<string, string> destination) {
+		private static void UriEscapeParameters(IEnumerable<KeyValuePair<string, string>> source, IDictionary<string, string> destination) {
 			Contract.Requires<ArgumentNullException>(source != null);
 			Contract.Requires<ArgumentNullException>(destination != null);
 
@@ -344,13 +346,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				// extra data.  If there isn't any extra data, the caller must do this themselves.
 				var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
 				if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+					// Include the binary data in the multipart entity, and any standard text extra message data.
+					// The standard declared message parts are included in the authorization header.
 					var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
-
-					// When sending multi-part, all data gets send as multi-part -- even the non-binary data
-					// unless we're using the HTTP authorization header.
-					if ((requestMessage.HttpMethods & HttpDeliveryMethods.AuthorizationHeaderRequest) == 0) {
-						multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
-					}
+					multiPartFields.AddRange(requestMessage.ExtraData.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
 					this.SendParametersInEntityAsMultiPart(httpRequest, multiPartFields);
 				} else {
 					ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);

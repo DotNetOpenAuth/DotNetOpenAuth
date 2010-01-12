@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Gets a value indicating whether this message should be sent as multi-part POST.
 		/// </summary>
 		public bool SendAsMultipart {
-			get { return this.BinaryData.Count > 0; }
+			get { return this.HttpMethod == "POST" && this.BinaryData.Count > 0; }
 		}
 
 		#endregion

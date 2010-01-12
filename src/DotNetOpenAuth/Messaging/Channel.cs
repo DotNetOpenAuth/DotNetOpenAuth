@@ -841,10 +841,10 @@ namespace DotNetOpenAuth.Messaging {
 
 			var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
 			if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+				var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
+
 				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.
-				var multiPartFields = new List<MultipartPostPart>(
-					fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
-				multiPartFields.AddRange(requestMessageWithBinaryData.BinaryData);
+				multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
 				this.SendParametersInEntityAsMultiPart(httpRequest, multiPartFields);
 			} else {
 				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
