@@ -157,6 +157,31 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
+		/// </summary>
+		/// <param name="exception">The exception.</param>
+		/// <returns>The assembled message.</returns>
+		public static string ToStringDescriptive(this Exception exception) {
+			// The input being null is probably bad, but since this method is called
+			// from a catch block, we don't really want to throw a new exception and
+			// hide the details of this one.  
+			if (exception == null) {
+				Logger.Messaging.Error("MessagingUtilities.GetAllMessages called with null input.");
+			}
+
+			StringBuilder message = new StringBuilder();
+			while (exception != null) {
+				message.Append(exception.Message);
+				exception = exception.InnerException;
+				if (exception != null) {
+					message.Append("  ");
+				}
+			}
+
+			return message.ToString();
+		}
+
+		/// <summary>
 		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
@@ -200,31 +225,6 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
-		/// </summary>
-		/// <param name="exception">The exception.</param>
-		/// <returns>The assembled message.</returns>
-		public static string ToStringDescriptive(this Exception exception) {
-			// The input being null is probably bad, but since this method is called
-			// from a catch block, we don't really want to throw a new exception and
-			// hide the details of this one.  
-			if (exception == null) {
-				Logger.Messaging.Error("MessagingUtilities.GetAllMessages called with null input.");
-			}
-
-			StringBuilder message = new StringBuilder();
-			while (exception != null) {
-				message.Append(exception.Message);
-				exception = exception.InnerException;
-				if (exception != null) {
-					message.Append("  ");
-				}
-			}
-
-			return message.ToString();
 		}
 
 		/// <summary>
