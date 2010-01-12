@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.Token != null);
 		}
 #endif
