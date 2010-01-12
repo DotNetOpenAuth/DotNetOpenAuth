@@ -9,7 +9,7 @@
         <Shortcut Id="ApplicationDocumentationShortcut"
                 Name="Documentation"
                 Description="OpenID, OAuth and InfoCard Library Documentation"
-                Target="[INSTALLLOCATION]\DotNetOpenAuth.chm"
+                Target="[INSTALLLOCATION]\Docs\DotNetOpenAuth.chm"
                 WorkingDirectory="INSTALLLOCATION"
                   Icon="DotNetOpenAuthIcon.exe">
         </Shortcut>
