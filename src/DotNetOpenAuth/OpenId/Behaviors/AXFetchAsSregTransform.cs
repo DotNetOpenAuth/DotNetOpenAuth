@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// to the originally requested extension and format.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
-	public class AXFetchAsSregTransform : IRelyingPartyBehavior, IProviderBehavior {
+	public sealed class AXFetchAsSregTransform : IRelyingPartyBehavior, IProviderBehavior {
 		/// <summary>
 		/// Initializes static members of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>
