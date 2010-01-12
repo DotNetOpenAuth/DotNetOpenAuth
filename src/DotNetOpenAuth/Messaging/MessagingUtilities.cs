@@ -152,6 +152,46 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Requires<ArgumentNullException>(parts != null);
 
+			PostMultipartNoGetResponse(request, requestHandler, parts);
+			return requestHandler.GetResponse(request);
+		}
+
+		/// <summary>
+		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
+		/// </summary>
+		/// <param name="exception">The exception.</param>
+		/// <returns>The assembled message.</returns>
+		public static string ToStringDescriptive(this Exception exception) {
+			// The input being null is probably bad, but since this method is called
+			// from a catch block, we don't really want to throw a new exception and
+			// hide the details of this one.  
+			if (exception == null) {
+				Logger.Messaging.Error("MessagingUtilities.GetAllMessages called with null input.");
+			}
+
+			StringBuilder message = new StringBuilder();
+			while (exception != null) {
+				message.Append(exception.Message);
+				exception = exception.InnerException;
+				if (exception != null) {
+					message.Append("  ");
+				}
+			}
+
+			return message.ToString();
+		}
+
+		/// <summary>
+		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="parts">The parts to include in the POST entity.</param>
+		internal static void PostMultipartNoGetResponse(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(parts != null);
+
 			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
 			string boundary = Guid.NewGuid().ToString();
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
@@ -185,33 +225,6 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
-
-			return requestHandler.GetResponse(request);
-		}
-
-		/// <summary>
-		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
-		/// </summary>
-		/// <param name="exception">The exception.</param>
-		/// <returns>The assembled message.</returns>
-		public static string ToStringDescriptive(this Exception exception) {
-			// The input being null is probably bad, but since this method is called
-			// from a catch block, we don't really want to throw a new exception and
-			// hide the details of this one.  
-			if (exception == null) {
-				Logger.Messaging.Error("MessagingUtilities.GetAllMessages called with null input.");
-			}
-
-			StringBuilder message = new StringBuilder();
-			while (exception != null) {
-				message.Append(exception.Message);
-				exception = exception.InnerException;
-				if (exception != null) {
-					message.Append("  ");
-				}
-			}
-
-			return message.ToString();
 		}
 
 		/// <summary>

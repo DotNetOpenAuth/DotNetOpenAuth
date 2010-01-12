@@ -838,7 +838,18 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
-			this.SendParametersInEntity(httpRequest, fields);
+
+			var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
+			if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+				var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
+
+				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.
+				multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
+				this.SendParametersInEntityAsMultiPart(httpRequest, multiPartFields);
+			} else {
+				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
+				this.SendParametersInEntity(httpRequest, fields);
+			}
 
 			return httpRequest;
 		}
@@ -911,6 +922,19 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Sends the given parameters in the entity stream of an HTTP request in multi-part format.
+		/// </summary>
+		/// <param name="httpRequest">The HTTP request.</param>
+		/// <param name="fields">The parameters to send.</param>
+		/// <remarks>
+		/// This method calls <see cref="HttpWebRequest.GetRequestStream()"/> and closes
+		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
+		/// </remarks>
+		protected void SendParametersInEntityAsMultiPart(HttpWebRequest httpRequest, IEnumerable<MultipartPostPart> fields) {
+			httpRequest.PostMultipartNoGetResponse(this.WebRequestHandler, fields);
 		}
 
 		/// <summary>

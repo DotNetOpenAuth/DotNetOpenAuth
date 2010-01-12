@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.Linq;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -157,7 +158,26 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
 
-			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
+			// For multipart POST messages, only include the message parts that are NOT
+			// in the POST entity (those parts that may appear in an OAuth authorization header).
+			var encodedDictionary = new Dictionary<string, string>();
+			IEnumerable<KeyValuePair<string, string>> partsToInclude = Enumerable.Empty<KeyValuePair<string, string>>();
+			var binaryMessage = message as IMessageWithBinaryData;
+			if (binaryMessage != null && binaryMessage.SendAsMultipart) {
+				HttpDeliveryMethods authHeaderInUseFlags = HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest;
+				ErrorUtilities.VerifyProtocol((binaryMessage.HttpMethods & authHeaderInUseFlags) == authHeaderInUseFlags, OAuthStrings.MultipartPostMustBeUsedWithAuthHeader);
+
+				// Include the declared keys in the signature as those will be signable.
+				// Cache in local variable to avoid recalculating DeclaredKeys in the delegate.
+				ICollection<string> declaredKeys = messageDictionary.DeclaredKeys;
+				partsToInclude = messageDictionary.Where(pair => declaredKeys.Contains(pair.Key));
+			} else {
+				partsToInclude = messageDictionary;
+			}
+
+			foreach (var pair in OAuthChannel.GetUriEscapedParameters(partsToInclude)) {
+				encodedDictionary[pair.Key] = pair.Value;
+			}
 
 			// An incoming message will already have included the query and form parameters
 			// in the message dictionary, but an outgoing message COULD have SOME parameters

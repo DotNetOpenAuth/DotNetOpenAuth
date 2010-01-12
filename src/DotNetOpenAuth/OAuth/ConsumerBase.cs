@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
 	using System.Net;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -104,6 +105,27 @@ namespace DotNetOpenAuth.OAuth {
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
 			foreach (var pair in extraData) {
 				message.ExtraData.Add(pair);
+			}
+
+			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
+			return wr;
+		}
+
+		/// <summary>
+		/// Prepares an authorized request that carries an HTTP multi-part POST, allowing for binary data.
+		/// </summary>
+		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
+		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
+		/// <param name="binaryData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
+		/// <returns>The initialized WebRequest object.</returns>
+		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken, IEnumerable<MultipartPostPart> binaryData) {
+			Contract.Requires<ArgumentNullException>(endpoint != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
+			Contract.Requires<ArgumentNullException>(binaryData != null);
+
+			AccessProtectedResourceRequest message = this.CreateAuthorizingMessage(endpoint, accessToken);
+			foreach (MultipartPostPart part in binaryData) {
+				message.BinaryData.Add(part);
 			}
 
 			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);

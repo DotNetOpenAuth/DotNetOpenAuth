@@ -70,6 +70,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to send all message data because some of it requires multi-part POST, but IMessageWithBinaryData.SendAsMultipart was false..
+        /// </summary>
+        internal static string BinaryDataRequiresMultipart {
+            get {
+                return ResourceManager.GetString("BinaryDataRequiresMultipart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
         /// </summary>
         internal static string CurrentHttpContextRequired {
