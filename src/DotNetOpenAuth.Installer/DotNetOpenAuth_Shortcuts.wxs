@@ -17,6 +17,10 @@
                       Name="Online Documentation"
                       Target="http://www.dotnetopenauth.net/"  Type="link">
         </util:InternetShortcut>
+        <util:InternetShortcut Id="Donation"
+                      Name="Dontate money to DotNetOpenAuth"
+                      Target="http://pledgie.com/campaigns/2678?canvas=false"  Type="link">
+        </util:InternetShortcut>
         <Shortcut Id="UninstallProduct"
           Name="Uninstall DotNetOpenAuth"
           Target="[System64Folder]msiexec.exe"
