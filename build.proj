@@ -105,21 +105,26 @@
 
 		<ItemGroup>
 			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
+		</ItemGroup>
+
+		<MSBuild Projects="@(ToolProjects)" />
+
+		<ItemGroup>
 			<OfflineProvider Include="
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\**\*.dll;
-											 $(ILMergeOutputAssembly).*;
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe"
-											 Exclude="
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(Configuration)\$(ProductName).*;
+											 $(OutputPath)**\*.dll;
+											 $(OutputPath)OpenIdOfflineProvider.exe"
+				 Exclude="
+											 $(OutputPath)$(ProductName).*;
+											 $(ILMergeOutputAssembly);
 											 "/>
 			<OfflineProviderTargets Include="
 											 @(OfflineProvider->'$(ToolsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<OfflineProvider Include="$(ILMergeOutputAssembly)" />
+			<OfflineProviderTargets Include="$(ToolsDirectory)$(ProductName).dll" />
 
 			<AllToolSources Include="@(OfflineProvider)" />
 			<AllToolTargets Include="@(OfflineProviderTargets)" />
 		</ItemGroup>
-
-		<MSBuild Projects="@(ToolProjects)" />
 
 		<MakeDir Directories="@(ToolsDirectory)" />
 		<Copy SourceFiles="@(AllToolSources)" DestinationFiles="@(AllToolTargets)" SkipUnchangedFiles="true" />
