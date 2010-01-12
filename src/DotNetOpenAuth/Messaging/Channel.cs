@@ -845,7 +845,7 @@ namespace DotNetOpenAuth.Messaging {
 
 				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.
 				multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
-				this.SendParametersInEntityAsMultiPart(httpRequest, multiPartFields);
+				this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
 			} else {
 				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
 				this.SendParametersInEntity(httpRequest, fields);
@@ -933,7 +933,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method calls <see cref="HttpWebRequest.GetRequestStream()"/> and closes
 		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
 		/// </remarks>
-		protected void SendParametersInEntityAsMultiPart(HttpWebRequest httpRequest, IEnumerable<MultipartPostPart> fields) {
+		protected void SendParametersInEntityAsMultipart(HttpWebRequest httpRequest, IEnumerable<MultipartPostPart> fields) {
 			httpRequest.PostMultipartNoGetResponse(this.WebRequestHandler, fields);
 		}
 

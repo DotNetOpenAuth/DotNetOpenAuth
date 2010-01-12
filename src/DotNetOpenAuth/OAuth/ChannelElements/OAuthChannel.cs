@@ -350,7 +350,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					// The standard declared message parts are included in the authorization header.
 					var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
 					multiPartFields.AddRange(requestMessage.ExtraData.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
-					this.SendParametersInEntityAsMultiPart(httpRequest, multiPartFields);
+					this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
 				} else {
 					ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
 					if (requestMessage.ExtraData.Count > 0) {
