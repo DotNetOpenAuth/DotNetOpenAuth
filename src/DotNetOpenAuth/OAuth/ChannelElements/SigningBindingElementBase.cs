@@ -157,7 +157,16 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
 
-			var encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
+			// We only include the message parts in the signature base string if the message is
+			// NOT going out as multi-part (unless the text parts are in the HTTP header).
+			IDictionary<string, string> encodedDictionary;
+			var binaryMessage = message as IMessageWithBinaryData;
+			if (binaryMessage != null && binaryMessage.SendAsMultipart && 
+				(binaryMessage.HttpMethods & (HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest)) == HttpDeliveryMethods.PostRequest) {
+				encodedDictionary = new Dictionary<string, string>();
+			} else {
+				encodedDictionary = OAuthChannel.GetUriEscapedParameters(messageDictionary);
+			}
 
 			// An incoming message will already have included the query and form parameters
 			// in the message dictionary, but an outgoing message COULD have SOME parameters

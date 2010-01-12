@@ -152,6 +152,21 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Requires<ArgumentNullException>(parts != null);
 
+			PostMultipartNoGetResponse(request, requestHandler, parts);
+			return requestHandler.GetResponse(request);
+		}
+
+		/// <summary>
+		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="parts">The parts to include in the POST entity.</param>
+		internal static void PostMultipartNoGetResponse(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(parts != null);
+
 			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
 			string boundary = Guid.NewGuid().ToString();
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
@@ -185,8 +200,6 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
-
-			return requestHandler.GetResponse(request);
 		}
 
 		/// <summary>

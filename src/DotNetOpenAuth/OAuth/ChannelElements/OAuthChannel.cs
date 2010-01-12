@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Text;
 	using System.Web;
@@ -341,12 +342,25 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (hasEntity) {
 				// WARNING: We only set up the request stream for the caller if there is
 				// extra data.  If there isn't any extra data, the caller must do this themselves.
-				if (requestMessage.ExtraData.Count > 0) {
-					SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+				var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
+				if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+					var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
+
+					// When sending multi-part, all data gets send as multi-part -- even the non-binary data
+					// unless we're using the HTTP authorization header.
+					if ((requestMessage.HttpMethods & HttpDeliveryMethods.AuthorizationHeaderRequest) == 0) {
+						multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
+					}
+					this.SendParametersInEntityAsMultiPart(httpRequest, multiPartFields);
 				} else {
-					// We'll assume the content length is zero since the caller may not have
-					// anything.  They're responsible to change it when the add the payload if they have one.
-					httpRequest.ContentLength = 0;
+					ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
+					if (requestMessage.ExtraData.Count > 0) {
+						this.SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+					} else {
+						// We'll assume the content length is zero since the caller may not have
+						// anything.  They're responsible to change it when the add the payload if they have one.
+						httpRequest.ContentLength = 0;
+					}
 				}
 			}
 
