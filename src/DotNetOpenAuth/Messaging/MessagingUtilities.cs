@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Sends an multipart HTTP POST request (useful for posting files).
+		/// Sends a multipart HTTP POST request (useful for posting files).
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
 		/// <param name="requestHandler">The request handler.</param>
@@ -193,13 +193,19 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(parts != null);
 
 			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
+			parts = parts.CacheGeneratedResults();
 			string boundary = Guid.NewGuid().ToString();
+			string initialPartLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "--{0}\r\n", boundary);
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
 			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
 
 			request.Method = "POST";
 			request.ContentType = "multipart/form-data; boundary=" + boundary;
-			request.ContentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
+			long contentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
+			if (parts.Any()) {
+				contentLength -= 2; // the initial part leading boundary has no leading \r\n
+			}
+			request.ContentLength = contentLength;
 
 			// Setting the content-encoding to "utf-8" causes Google to reply
 			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
@@ -209,8 +215,10 @@ namespace DotNetOpenAuth.Messaging {
 			var requestStream = requestHandler.GetRequestStream(request);
 			try {
 				StreamWriter writer = new StreamWriter(requestStream, Channel.PostEntityEncoding);
+				bool firstPart = true;
 				foreach (var part in parts) {
-					writer.Write(partLeadingBoundary);
+					writer.Write(firstPart ? initialPartLeadingBoundary : partLeadingBoundary);
+					firstPart = false;
 					part.Serialize(writer);
 					part.Dispose();
 				}
