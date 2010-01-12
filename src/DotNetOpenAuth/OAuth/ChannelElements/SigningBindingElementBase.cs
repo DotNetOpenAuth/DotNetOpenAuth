@@ -165,7 +165,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var binaryMessage = message as IMessageWithBinaryData;
 			if (binaryMessage != null && binaryMessage.SendAsMultipart) {
 				HttpDeliveryMethods authHeaderInUseFlags = HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest;
-				ErrorUtilities.VerifyInternal((binaryMessage.HttpMethods & authHeaderInUseFlags) == authHeaderInUseFlags, "We should only be sending multipart messages with an authorization header so the critical message parts can be signed.");
+				ErrorUtilities.VerifyProtocol((binaryMessage.HttpMethods & authHeaderInUseFlags) == authHeaderInUseFlags, OAuthStrings.MultipartPostMustBeUsedWithAuthHeader);
 
 				// Include the declared keys in the signature as those will be signable.
 				// Cache in local variable to avoid recalculating DeclaredKeys in the delegate.
