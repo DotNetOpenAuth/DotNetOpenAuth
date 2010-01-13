@@ -32,14 +32,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 #pragma warning restore 0414
 
 		/// <summary>
+		/// Backing store for the <see cref="ExtraData"/> property.
+		/// </summary>
+		private readonly Dictionary<string, string> extraData = new Dictionary<string, string>();
+
+		/// <summary>
 		/// Backing store for the <see cref="Incoming"/> property.
 		/// </summary>
 		private bool incoming;
-
-		/// <summary>
-		/// Backing store for the <see cref="ExtraData"/> property.
-		/// </summary>
-		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RequestBase"/> class.

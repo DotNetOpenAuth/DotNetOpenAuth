@@ -35,6 +35,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// to avoid double-caching.</para>
 		/// </remarks>
 		public static IEnumerable<T> CacheGeneratedResults<T>(this IEnumerable<T> sequence) {
+			Contract.Requires<ArgumentNullException>(sequence != null);
+
 			// Don't create a cache for types that don't need it.
 			if (sequence is IList<T> ||
 			  sequence is ICollection<T> ||

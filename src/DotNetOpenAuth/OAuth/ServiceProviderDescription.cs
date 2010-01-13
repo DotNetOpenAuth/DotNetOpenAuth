@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -94,6 +95,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <returns>The created signing element.</returns>
 		internal ITamperProtectionChannelBindingElement CreateTamperProtectionElement() {
+			Contract.Requires(this.TamperProtectionElements != null);
 			return new SigningBindingElementChain(this.TamperProtectionElements.Select(el => (ITamperProtectionChannelBindingElement)el.Clone()).ToArray());
 		}
 	}
