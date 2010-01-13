@@ -78,10 +78,12 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			}
 
 			// For backwards compatibility, add certain aliases if they aren't defined.
-			foreach (var pair in typeUriToAliasAffinity) {
-				if (!mgr.aliasManager.IsAliasAssignedTo(pair.Key) &&
-					!mgr.aliasManager.IsAliasUsed(pair.Value)) {
-					mgr.aliasManager.SetAlias(pair.Value, pair.Key);
+			if (mgr.protocol.Version.Major < 2) {
+				foreach (var pair in typeUriToAliasAffinity) {
+					if (!mgr.aliasManager.IsAliasAssignedTo(pair.Key) &&
+						!mgr.aliasManager.IsAliasUsed(pair.Value)) {
+						mgr.aliasManager.SetAlias(pair.Value, pair.Key);
+					}
 				}
 			}
 

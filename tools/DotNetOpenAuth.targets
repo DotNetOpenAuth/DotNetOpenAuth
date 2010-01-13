@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+	<Import Project="DotNetOpenAuth.Versioning.targets" />
+	<Import Project="JavascriptPacker.targets" />
+
+	<PropertyGroup>
+		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
+	</PropertyGroup>
+
+	<!-- This forces a build break when Code Contracts are not installed. -->
+	<PropertyGroup>
+		<CompileDependsOn>$(CompileDependsOn);CheckForCodeContracts</CompileDependsOn>
+	</PropertyGroup>
+	<Target Name="CheckForCodeContracts">
+		<Error Condition=" '$(CodeContractsImported)' != 'true' " Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx" />
+	</Target>
+
+	<!-- This is our multi-targeting aware shadow assembly generator. -->
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="Publicize" />
+	<PropertyGroup>
+		<ResolveReferencesDependsOn>
+			$(ResolveReferencesDependsOn);
+			CreatePublicAccessors
+		</ResolveReferencesDependsOn>
+	</PropertyGroup>
+	<!-- Remove the built-in shadow generator, since we do it ourselves to avoid bugs in the Microsoft code. -->
+	<Target Name="CreatePublicAccessors">
+		<PropertyGroup>
+			<VSVersionForTargetFramework>v10.0</VSVersionForTargetFramework>
+			<VSVersionForTargetFramework Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">v9.0</VSVersionForTargetFramework>
+		</PropertyGroup>
+		<Publicize
+			Condition=" '%(ReferencePath.Shadow)' == 'true' "
+			SkipUnchangedFiles="true"
+			MSBuildExtensionsPath="$(MSBuildExtensionsPath)"
+			ToolPath="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\$(VSVersionForTargetFramework)\TeamTest"
+			Assembly="@(ReferencePath)"
+			DelaySign="$(DelaySign)"
+			KeyFile="$(PublicKeyFile)">
+			<Output TaskParameter="AccessorAssembly" ItemName="ReferencePath" />
+		</Publicize>
+	</Target>
+</Project>

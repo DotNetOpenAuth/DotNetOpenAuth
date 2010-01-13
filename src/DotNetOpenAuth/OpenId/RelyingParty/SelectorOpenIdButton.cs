@@ -5,7 +5,9 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
+	using System.ComponentModel;
 	using System.Diagnostics.Contracts;
+	using System.Drawing.Design;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 
@@ -18,12 +20,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="SelectorOpenIdButton"/> class.
 		/// </summary>
 		public SelectorOpenIdButton() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		/// <summary>
 		/// Gets or sets the path to the image to display on the button's surface.
 		/// </summary>
 		/// <value>The virtual path to the image.</value>
+		[Editor("System.Web.UI.Design.ImageUrlEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
+		[UrlProperty]
 		public string Image { get; set; }
 
 		/// <summary>

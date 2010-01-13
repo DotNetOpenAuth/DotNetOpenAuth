@@ -1,0 +1,3 @@
+sql/debug
+sql/release
+*.dbmdl

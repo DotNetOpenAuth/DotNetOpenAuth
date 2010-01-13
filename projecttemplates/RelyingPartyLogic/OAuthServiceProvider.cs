@@ -68,25 +68,39 @@ namespace RelyingPartyLogic {
 					throw new InvalidOperationException();
 				}
 
-				return Database.DataContext.IssuedToken.OfType<IssuedRequestToken>().Include("Consumer").First(t => t.Token == message.Token).Consumer;
+				return Database.DataContext.IssuedTokens.OfType<IssuedRequestToken>().Include("Consumer").First(t => t.Token == message.Token).Consumer;
 			}
 		}
 
 		public static void AuthorizePendingRequestToken() {
+			var response = AuthorizePendingRequestTokenAndGetResponse();
+			if (response != null) {
+				serviceProvider.Channel.Send(response);
+			}
+		}
+
+		public static OutgoingWebResponse AuthorizePendingRequestTokenAsWebResponse() {
+			var response = AuthorizePendingRequestTokenAndGetResponse();
+			if (response != null) {
+				return serviceProvider.Channel.PrepareResponse(response);
+			} else {
+				return null;
+			}
+		}
+
+		private static UserAuthorizationResponse AuthorizePendingRequestTokenAndGetResponse() {
 			var pendingRequest = PendingAuthorizationRequest;
 			if (pendingRequest == null) {
 				throw new InvalidOperationException("No pending authorization request to authorize.");
 			}
 
 			ITokenContainingMessage msg = pendingRequest;
-			var token = Database.DataContext.IssuedToken.OfType<IssuedRequestToken>().First(t => t.Token == msg.Token);
+			var token = Database.DataContext.IssuedTokens.OfType<IssuedRequestToken>().First(t => t.Token == msg.Token);
 			token.Authorize();
 
 			PendingAuthorizationRequest = null;
 			var response = serviceProvider.PrepareAuthorizationResponse(pendingRequest);
-			if (response != null) {
-				serviceProvider.Channel.Send(response);
-			}
+			return response;
 		}
 
 		/// <summary>

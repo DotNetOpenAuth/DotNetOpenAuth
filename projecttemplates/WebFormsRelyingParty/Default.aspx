@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebFormsRelyingParty._Default"
-	MasterPageFile="~/Site.Master" %>
+	MasterPageFile="~/Site.Master" Title="OpenID + InfoCard Relying Party template" %>
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth" TagPrefix="dnoa" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">

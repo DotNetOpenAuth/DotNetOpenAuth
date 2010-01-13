@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.Messaging {
+	using System;
+	using System.Collections.Specialized;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -91,6 +93,60 @@ namespace DotNetOpenAuth.Test.Messaging {
 		public void QueryStringLookupWithoutQuery() {
 			HttpRequestInfo info = new HttpRequestInfo();
 			Assert.IsNull(info.QueryString["hi"]);
+		}
+
+		/// <summary>
+		/// Verifies SSL forwarders are correctly handled when they supply X_FORWARDED_PROTO and HOST
+		/// </summary>
+		[TestMethod]
+		public void GetPublicFacingUrlSSLForwarder1() {
+			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
+			var serverVariables = new NameValueCollection();
+			serverVariables["HTTP_X_FORWARDED_PROTO"] = "https";
+			serverVariables["HTTP_HOST"] = "somehost";
+			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri expected = new Uri("https://somehost/a.aspx?a=b");
+			Assert.AreEqual(expected, actual);
+		}
+
+		/// <summary>
+		/// Verifies SSL forwarders are correctly handled when they supply X_FORWARDED_PROTO and HOST:port
+		/// </summary>
+		[TestMethod]
+		public void GetPublicFacingUrlSSLForwarder2() {
+			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
+			var serverVariables = new NameValueCollection();
+			serverVariables["HTTP_X_FORWARDED_PROTO"] = "https";
+			serverVariables["HTTP_HOST"] = "somehost:999";
+			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri expected = new Uri("https://somehost:999/a.aspx?a=b");
+			Assert.AreEqual(expected, actual);
+		}
+
+		/// <summary>
+		/// Verifies SSL forwarders are correctly handled when they supply just HOST
+		/// </summary>
+		[TestMethod]
+		public void GetPublicFacingUrlSSLForwarder3() {
+			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
+			var serverVariables = new NameValueCollection();
+			serverVariables["HTTP_HOST"] = "somehost";
+			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri expected = new Uri("http://somehost/a.aspx?a=b");
+			Assert.AreEqual(expected, actual);
+		}
+
+		/// <summary>
+		/// Verifies SSL forwarders are correctly handled when they supply just HOST:port
+		/// </summary>
+		[TestMethod]
+		public void GetPublicFacingUrlSSLForwarder4() {
+			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
+			var serverVariables = new NameValueCollection();
+			serverVariables["HTTP_HOST"] = "somehost:79";
+			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri expected = new Uri("http://somehost:79/a.aspx?a=b");
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }

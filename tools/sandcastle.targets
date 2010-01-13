@@ -42,10 +42,31 @@
 	</ItemGroup>
 
 	<Target Name="CleanDocumentation">
-		<Delete Files="$(ReflectionFile);$(ManifestFile);$(ReflectionBaseFile);$(ChmFile)" TreatErrorsAsWarnings="true"/>
-		<RemoveDir Directories="$(DocOutputApiPath);$(DocIntermediatePath);$(ChmDir)" ContinueOnError="true"/>
-		<RemoveDir Directories="$(FxReflectionIntermediatePath)" ContinueOnError="true" />
+		<ItemGroup>
+			<_DirtyFiles Include="
+			                     $(DocOutputApiPath)\**;
+			                     $(ReflectionFile);
+			                     $(ManifestFile);
+			                     $(ReflectionBaseFile);
+			                     $(ChmFile)
+			                     "
+			            Exclude="
+			                     $(DocOutputApiPath)\Web.config;
+			                     $(DocOutputApiPath)\Default.aspx;
+			                    " />
+			<_DirtyDirectories Include="
+												$(DocIntermediatePath);
+												$(ChmDir);
+												$(FxReflectionIntermediatePath)
+												" />
+		</ItemGroup>
+		<Delete Files="@(_DirtyFiles)" TreatErrorsAsWarnings="true"/>
+		<RemoveDir Directories="@(_DirtyDirectories)" ContinueOnError="true"/>
 		<!--<RemoveDir Directories="$(FxReflectionOutputPath)" ContinueOnError="true" />-->
+		<ItemGroup>
+			<_DirtyFiles Remove="@(_DirtyFiles)" />
+			<_DirtyDirectories Remove="@(_DirtyDirectories)" />
+		</ItemGroup>
 	</Target>
 
 	<Target Name="CreateIntermediatePath">

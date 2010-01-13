@@ -114,6 +114,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
 		}
 
 		/// <summary>
@@ -423,7 +425,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			
+
 			// This next code contract is a BAD idea, because it causes each authentication request to be generated
 			// at least an extra time.
 			////Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));
@@ -471,21 +473,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 
-			// Build the realm URL
-			UriBuilder realmUrl = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
-			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
-			realmUrl.Query = null;
-			realmUrl.Fragment = null;
-
-			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
-			// virtual directory hosted apps, we need to make sure that the realm path ends
-			// in a slash (since our calculation above guarantees it doesn't end in a specific
-			// page like default.aspx).
-			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal)) {
-				realmUrl.Path += "/";
-			}
-
-			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+			return this.CreateRequests(userSuppliedIdentifier, Realm.AutoDetect);
 		}
 
 		/// <summary>
@@ -646,6 +634,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			foreach (IRelyingPartyBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
+				Reporting.RecordFeatureUse(profile);
 			}
 		}
 

@@ -174,6 +174,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						};
 
 						this.authenticationResponse = this.RelyingParty.GetResponse(clientResponseInfo);
+						Logger.Controls.DebugFormat(
+							"The {0} control checked for an authentication response and found: {1}",
+							this.ID,
+							this.authenticationResponse.Status);
 						this.AuthenticationProcessedAlready = false;
 
 						// Save out the authentication response to viewstate so we can find it on
@@ -416,10 +420,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
 		protected override void ScriptClosingPopupOrIFrame() {
-			Logger.OpenId.InfoFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
+			Logger.OpenId.DebugFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
 			string extensionsJson = null;
 
 			var authResponse = RelyingPartyNonVerifying.GetResponse();
+			Logger.Controls.DebugFormat(
+				"The {0} control checked for an authentication response from a popup window or iframe using a non-verifying RP and found: {1}",
+				this.ID,
+				authResponse.Status);
 			if (authResponse.Status == AuthenticationStatus.Authenticated) {
 				this.OnUnconfirmedPositiveAssertion(); // event handler will fill the clientScriptExtensions collection.
 				var extensionsDictionary = new Dictionary<string, string>();
@@ -613,7 +621,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		private void CallbackUserAgentMethod(string methodCall) {
-			Logger.OpenId.InfoFormat("Sending Javascript callback: {0}", methodCall);
+			Logger.OpenId.DebugFormat("Sending Javascript callback: {0}", methodCall);
 			Page.Response.Write(@"<html><body><script language='javascript'>
 	var inPopup = !window.frameElement;
 	var objSrc = inPopup ? window.opener : window.frameElement;

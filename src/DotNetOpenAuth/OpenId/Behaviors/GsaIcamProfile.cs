@@ -114,6 +114,8 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 					!requestInternal.AppliedExtensions.OfType<FetchRequest>().Any()),
 					BehaviorStrings.PiiIncludedWithNoPiiPolicy);
 			}
+
+			Reporting.RecordEventOccurrence(this, "RP");
 		}
 
 		/// <summary>
@@ -256,6 +258,8 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 						}
 					}
 				}
+
+				Reporting.RecordEventOccurrence(this, "OP");
 			}
 
 			return result;

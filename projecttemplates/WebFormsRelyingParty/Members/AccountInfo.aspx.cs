@@ -49,7 +49,7 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void deleteOpenId_Command(object sender, CommandEventArgs e) {
 			string claimedId = (string)e.CommandArgument;
-			var token = Database.DataContext.AuthenticationToken.First(t => t.ClaimedIdentifier == claimedId && t.User.UserId == Database.LoggedInUser.UserId);
+			var token = Database.DataContext.AuthenticationTokens.First(t => t.ClaimedIdentifier == claimedId && t.User.UserId == Database.LoggedInUser.UserId);
 			Database.DataContext.DeleteObject(token);
 			Database.DataContext.SaveChanges();
 			this.Repeater1.DataBind();
@@ -72,7 +72,7 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void revokeToken_Command(object sender, CommandEventArgs e) {
 			string token = (string)e.CommandArgument;
-			var tokenToRevoke = Database.DataContext.IssuedToken.FirstOrDefault(t => t.Token == token && t.User.UserId == Database.LoggedInUser.UserId);
+			var tokenToRevoke = Database.DataContext.IssuedTokens.FirstOrDefault(t => t.Token == token && t.User.UserId == Database.LoggedInUser.UserId);
 			if (tokenToRevoke != null) {
 				Database.DataContext.DeleteObject(tokenToRevoke);
 			}
@@ -85,7 +85,7 @@ namespace WebFormsRelyingParty.Members {
 			// Check that this identifier isn't already tied to a user account.
 			// We do this again here in case the LoggingIn event couldn't verify
 			// and in case somehow the OP changed it anyway.
-			var existingToken = Database.DataContext.AuthenticationToken.FirstOrDefault(token => token.ClaimedIdentifier == claimedId);
+			var existingToken = Database.DataContext.AuthenticationTokens.FirstOrDefault(token => token.ClaimedIdentifier == claimedId);
 			if (existingToken == null) {
 				var token = new AuthenticationToken();
 				token.ClaimedIdentifier = claimedId;
