@@ -233,15 +233,10 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\DotNetOpenAuth.dll" />
-    <Content Include="bin\DotNetOpenAuth.pdb" />
-    <Content Include="bin\DotNetOpenAuth.xml" />
-    <Content Include="bin\log4net.xml" />
-    <Content Include="bin\Microsoft.Contracts.dll" />
-    <Content Include="bin\RelyingPartyLogic.dll" />
-    <Content Include="bin\RelyingPartyLogic.pdb" />
+    <Content Include="images\verisign.gif" />
     <Content Include="Members\OAuthAuthorize.aspx" />
     <Content Include="OAuth.ashx" />
+    <Content Include="PrivacyPolicy.aspx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
@@ -255,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="bin\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />

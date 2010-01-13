@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		public override bool Execute() {
 			HashSet<string> intendedFiles = new HashSet<string>(this.IntendedFiles.Select(file => file.GetMetadata("FullPath")), StringComparer.OrdinalIgnoreCase);
 
-			foreach (string directory in this.Directories.Select(dir => NormalizePath(dir))) {
+			foreach (string directory in this.Directories.Select(dir => NormalizePath(dir)).Where(dir => Directory.Exists(dir))) {
 				foreach (string existingFile in Directory.GetFiles(directory, "*", SearchOption.AllDirectories)) {
 					if (!intendedFiles.Contains(existingFile)) {
 						this.Log.LogWarning("Purging file \"{0}\".", existingFile);

@@ -143,8 +143,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="userSuppliedIdentifier">The i-name supplied by the user.</param>
 		/// <returns>A sequence of the providers that can assert ownership of the given identifier.</returns>
 		private static IEnumerable<IdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this IEnumerable<XrdElement> xrds, XriIdentifier userSuppliedIdentifier) {
-			Contract.Requires<ArgumentNullException>(xrds != null);
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
+			// Cannot use code contracts because this method uses yield return.
+			////Contract.Requires<ArgumentNullException>(xrds != null);
+			////Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
+			ErrorUtilities.VerifyArgumentNotNull(xrds, "xrds");
 
 			foreach (var service in xrds.FindClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {

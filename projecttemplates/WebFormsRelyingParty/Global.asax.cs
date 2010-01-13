@@ -14,9 +14,9 @@ namespace WebFormsRelyingParty {
 
 	public class Global : System.Web.HttpApplication {
 		/// <summary>
-		/// The logger for this sample to use.
+		/// The logger for this web site to use.
 		/// </summary>
-		private static log4net.ILog logger = log4net.LogManager.GetLogger("DotNetOpenAuth.ConsumerSample");
+		private static log4net.ILog logger = log4net.LogManager.GetLogger("WebFormsRelyingParty");
 
 		public static log4net.ILog Logger {
 			get { return logger; }
@@ -40,7 +40,7 @@ namespace WebFormsRelyingParty {
 		}
 
 		protected void Application_Error(object sender, EventArgs e) {
-			Logger.Error("An unhandled exception occurred in ASP.NET processing: " + Server.GetLastError(), Server.GetLastError());
+			Logger.Error("An unhandled exception occurred in ASP.NET processing for page " + HttpContext.Current.Request.Path, Server.GetLastError());
 		}
 
 		protected void Session_End(object sender, EventArgs e) {

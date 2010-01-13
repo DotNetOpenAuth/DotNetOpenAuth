@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User1", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(RelyingPartyLogic.User), "IssuedToken", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.IssuedToken))]
 
 // Original file name:
-// Generation date: 11/18/2009 9:09:23 AM
+// Generation date: 12/9/2009 8:19:16 AM
 namespace RelyingPartyLogic
 {
     
@@ -50,80 +50,80 @@ namespace RelyingPartyLogic
         }
         partial void OnContextCreated();
         /// <summary>
-        /// There are no comments for Role in the schema.
+        /// There are no comments for Roles in the schema.
         /// </summary>
-        public global::System.Data.Objects.ObjectQuery<Role> Role
+        public global::System.Data.Objects.ObjectQuery<Role> Roles
         {
             get
             {
-                if ((this._Role == null))
+                if ((this._Roles == null))
                 {
-                    this._Role = base.CreateQuery<Role>("[Role]");
+                    this._Roles = base.CreateQuery<Role>("[Roles]");
                 }
-                return this._Role;
+                return this._Roles;
             }
         }
-        private global::System.Data.Objects.ObjectQuery<Role> _Role;
+        private global::System.Data.Objects.ObjectQuery<Role> _Roles;
         /// <summary>
-        /// There are no comments for User in the schema.
+        /// There are no comments for Users in the schema.
         /// </summary>
-        public global::System.Data.Objects.ObjectQuery<User> User
+        public global::System.Data.Objects.ObjectQuery<User> Users
         {
             get
             {
-                if ((this._User == null))
+                if ((this._Users == null))
                 {
-                    this._User = base.CreateQuery<User>("[User]");
+                    this._Users = base.CreateQuery<User>("[Users]");
                 }
-                return this._User;
+                return this._Users;
             }
         }
-        private global::System.Data.Objects.ObjectQuery<User> _User;
+        private global::System.Data.Objects.ObjectQuery<User> _Users;
         /// <summary>
-        /// There are no comments for AuthenticationToken in the schema.
+        /// There are no comments for AuthenticationTokens in the schema.
         /// </summary>
-        public global::System.Data.Objects.ObjectQuery<AuthenticationToken> AuthenticationToken
+        public global::System.Data.Objects.ObjectQuery<AuthenticationToken> AuthenticationTokens
         {
             get
             {
-                if ((this._AuthenticationToken == null))
+                if ((this._AuthenticationTokens == null))
                 {
-                    this._AuthenticationToken = base.CreateQuery<AuthenticationToken>("[AuthenticationToken]");
+                    this._AuthenticationTokens = base.CreateQuery<AuthenticationToken>("[AuthenticationTokens]");
                 }
-                return this._AuthenticationToken;
+                return this._AuthenticationTokens;
             }
         }
-        private global::System.Data.Objects.ObjectQuery<AuthenticationToken> _AuthenticationToken;
+        private global::System.Data.Objects.ObjectQuery<AuthenticationToken> _AuthenticationTokens;
         /// <summary>
-        /// There are no comments for Consumer in the schema.
+        /// There are no comments for Consumers in the schema.
         /// </summary>
-        public global::System.Data.Objects.ObjectQuery<Consumer> Consumer
+        public global::System.Data.Objects.ObjectQuery<Consumer> Consumers
         {
             get
             {
-                if ((this._Consumer == null))
+                if ((this._Consumers == null))
                 {
-                    this._Consumer = base.CreateQuery<Consumer>("[Consumer]");
+                    this._Consumers = base.CreateQuery<Consumer>("[Consumers]");
                 }
-                return this._Consumer;
+                return this._Consumers;
             }
         }
-        private global::System.Data.Objects.ObjectQuery<Consumer> _Consumer;
+        private global::System.Data.Objects.ObjectQuery<Consumer> _Consumers;
         /// <summary>
-        /// There are no comments for IssuedToken in the schema.
+        /// There are no comments for IssuedTokens in the schema.
         /// </summary>
-        public global::System.Data.Objects.ObjectQuery<IssuedToken> IssuedToken
+        public global::System.Data.Objects.ObjectQuery<IssuedToken> IssuedTokens
         {
             get
             {
-                if ((this._IssuedToken == null))
+                if ((this._IssuedTokens == null))
                 {
-                    this._IssuedToken = base.CreateQuery<IssuedToken>("[IssuedToken]");
+                    this._IssuedTokens = base.CreateQuery<IssuedToken>("[IssuedTokens]");
                 }
-                return this._IssuedToken;
+                return this._IssuedTokens;
             }
         }
-        private global::System.Data.Objects.ObjectQuery<IssuedToken> _IssuedToken;
+        private global::System.Data.Objects.ObjectQuery<IssuedToken> _IssuedTokens;
         /// <summary>
         /// There are no comments for Nonces in the schema.
         /// </summary>
@@ -155,39 +155,39 @@ namespace RelyingPartyLogic
         }
         private global::System.Data.Objects.ObjectQuery<OpenIdAssociation> _OpenIdAssociations;
         /// <summary>
-        /// There are no comments for Role in the schema.
+        /// There are no comments for Roles in the schema.
         /// </summary>
-        public void AddToRole(Role role)
+        public void AddToRoles(Role role)
         {
-            base.AddObject("Role", role);
+            base.AddObject("Roles", role);
         }
         /// <summary>
-        /// There are no comments for User in the schema.
+        /// There are no comments for Users in the schema.
         /// </summary>
-        public void AddToUser(User user)
+        public void AddToUsers(User user)
         {
-            base.AddObject("User", user);
+            base.AddObject("Users", user);
         }
         /// <summary>
-        /// There are no comments for AuthenticationToken in the schema.
+        /// There are no comments for AuthenticationTokens in the schema.
         /// </summary>
-        public void AddToAuthenticationToken(AuthenticationToken authenticationToken)
+        public void AddToAuthenticationTokens(AuthenticationToken authenticationToken)
         {
-            base.AddObject("AuthenticationToken", authenticationToken);
+            base.AddObject("AuthenticationTokens", authenticationToken);
         }
         /// <summary>
-        /// There are no comments for Consumer in the schema.
+        /// There are no comments for Consumers in the schema.
         /// </summary>
-        public void AddToConsumer(Consumer consumer)
+        public void AddToConsumers(Consumer consumer)
         {
-            base.AddObject("Consumer", consumer);
+            base.AddObject("Consumers", consumer);
         }
         /// <summary>
-        /// There are no comments for IssuedToken in the schema.
+        /// There are no comments for IssuedTokens in the schema.
         /// </summary>
-        public void AddToIssuedToken(IssuedToken issuedToken)
+        public void AddToIssuedTokens(IssuedToken issuedToken)
         {
-            base.AddObject("IssuedToken", issuedToken);
+            base.AddObject("IssuedTokens", issuedToken);
         }
         /// <summary>
         /// There are no comments for Nonces in the schema.

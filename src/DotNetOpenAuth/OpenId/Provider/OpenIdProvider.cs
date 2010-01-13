@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "By design")]
 	[ContractVerification(true)]
 	public sealed class OpenIdProvider : IDisposable {
 		/// <summary>
@@ -91,6 +92,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
 		}
 
 		/// <summary>
@@ -434,6 +437,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				}
 			}
 
+			Reporting.RecordEventOccurrence(this, "PrepareUnsolicitedAssertion");
 			return this.Channel.PrepareResponse(positiveAssertion);
 		}
 
@@ -550,6 +554,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			foreach (IProviderBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
+				Reporting.RecordFeatureUse(profile);
 			}
 		}
 	}

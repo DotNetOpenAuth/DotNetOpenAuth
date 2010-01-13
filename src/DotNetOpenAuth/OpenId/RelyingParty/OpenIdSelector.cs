@@ -81,6 +81,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private HiddenField positiveAssertionField;
 
 		/// <summary>
+		/// A field to store the value to set on the <see cref="textBox"/> control after it's created.
+		/// </summary>
+		private bool downloadYuiLibrary = OpenIdAjaxTextBox.DownloadYahooUILibraryDefault;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdSelector"/> class.
 		/// </summary>
 		public OpenIdSelector() {
@@ -121,13 +126,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Description("Whether a split button will be used for the \"log in\" when the user provides an identifier that delegates to more than one Provider.")]
 		public bool DownloadYahooUILibrary {
 			get {
-				this.EnsureChildControls();
-				return this.textBox.DownloadYahooUILibrary;
+				return this.textBox != null ? this.textBox.DownloadYahooUILibrary : this.downloadYuiLibrary;
 			}
 
 			set {
-				this.EnsureChildControls();
-				this.textBox.DownloadYahooUILibrary = value;
+				// We don't just call EnsureChildControls() and then set the property on
+				// this.textBox itself because (apparently) setting this property in the ASPX
+				// page and thus calling this EnsureID() via EnsureChildControls() this early
+				// results in no ID.
+				if (this.textBox != null) {
+					this.textBox.DownloadYahooUILibrary = value;
+				} else {
+					this.downloadYuiLibrary = value;
+				}
 			}
 		}
 
@@ -171,6 +182,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether some button in the selector will want
+		/// to display the <see cref="OpenIdAjaxTextBox"/> control.
+		/// </summary>
+		protected virtual bool OpenIdTextBoxVisible {
+			get { return this.Buttons.OfType<SelectorOpenIdButton>().Any(); }
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -190,6 +209,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void CreateChildControls() {
 			base.CreateChildControls();
 			this.EnsureID();
+			ErrorUtilities.VerifyInternal(!string.IsNullOrEmpty(this.UniqueID), "Control.EnsureID() failed to give us a unique ID.  Try setting an ID on the OpenIdSelector control.  But please also file this bug with the project owners.");
 
 			var selectorButton = this.Buttons.OfType<SelectorInfoCardButton>().FirstOrDefault();
 			if (selectorButton != null) {
@@ -205,6 +225,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.textBox.ID = "openid_identifier";
 			this.textBox.HookFormSubmit = false;
 			this.textBox.ShowLogOnPostBackButton = true;
+			this.textBox.DownloadYahooUILibrary = this.downloadYuiLibrary;
 			this.Controls.Add(this.textBox);
 
 			this.positiveAssertionField = new HiddenField();
@@ -259,6 +280,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
 
 			this.PreloadDiscovery(this.Buttons.OfType<SelectorProviderButton>().Select(op => op.OPIdentifier).Where(id => id != null));
+			this.textBox.Visible = this.OpenIdTextBoxVisible;
 		}
 
 		/// <summary>
@@ -295,13 +317,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			writer.RenderEndTag(); // </ul>
 
-			writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "none");
-			writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDForm");
-			writer.RenderBeginTag(HtmlTextWriterTag.Div);
+			if (this.textBox.Visible) {
+				writer.AddStyleAttribute(HtmlTextWriterStyle.Display, "none");
+				writer.AddAttribute(HtmlTextWriterAttribute.Id, "OpenIDForm");
+				writer.RenderBeginTag(HtmlTextWriterTag.Div);
 
-			this.textBox.RenderControl(writer);
+				this.textBox.RenderControl(writer);
 
-			writer.RenderEndTag(); // </div>
+				writer.RenderEndTag(); // </div>
+			}
 
 			this.positiveAssertionField.RenderControl(writer);
 		}

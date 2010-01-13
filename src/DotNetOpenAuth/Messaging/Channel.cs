@@ -838,7 +838,18 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
-			this.SendParametersInEntity(httpRequest, fields);
+
+			var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
+			if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+				var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
+
+				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.
+				multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
+				this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
+			} else {
+				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
+				this.SendParametersInEntity(httpRequest, fields);
+			}
 
 			return httpRequest;
 		}
@@ -911,6 +922,19 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Sends the given parameters in the entity stream of an HTTP request in multi-part format.
+		/// </summary>
+		/// <param name="httpRequest">The HTTP request.</param>
+		/// <param name="fields">The parameters to send.</param>
+		/// <remarks>
+		/// This method calls <see cref="HttpWebRequest.GetRequestStream()"/> and closes
+		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
+		/// </remarks>
+		protected void SendParametersInEntityAsMultipart(HttpWebRequest httpRequest, IEnumerable<MultipartPostPart> fields) {
+			httpRequest.PostMultipartNoGetResponse(this.WebRequestHandler, fields);
 		}
 
 		/// <summary>
@@ -1008,18 +1032,6 @@ namespace DotNetOpenAuth.Messaging {
 			this.incomingBindingElements.AddRange(incomingOrder);
 		}
 
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
-			Contract.Invariant(this.MessageDescriptions != null);
-		}
-#endif
-
 		/// <summary>
 		/// Ensures a consistent and secure set of binding elements and 
 		/// sorts them as necessary for a valid sequence of operations.
@@ -1069,8 +1081,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="protection1">The first protection type to compare.</param>
 		/// <param name="protection2">The second protection type to compare.</param>
 		/// <returns>
-		/// -1 if <paramref name="element1"/> should be applied to an outgoing message before <paramref name="element2"/>.
-		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
+		/// -1 if <paramref name="protection1"/> should be applied to an outgoing message before <paramref name="protection2"/>.
+		/// 1 if <paramref name="protection2"/> should be applied to an outgoing message before <paramref name="protection1"/>.
 		/// 0 if it doesn't matter.
 		/// </returns>
 		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtections protection1, MessageProtections protection2) {
@@ -1079,6 +1091,18 @@ namespace DotNetOpenAuth.Messaging {
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.MessageDescriptions != null);
+		}
+#endif
 
 		/// <summary>
 		/// Verifies that all required message parts are initialized to values

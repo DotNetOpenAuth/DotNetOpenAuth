@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Text;
 	using System.Web;
@@ -87,7 +88,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message with data to encode.</param>
 		/// <returns>A dictionary of name-value pairs with their strings encoded.</returns>
-		internal static IDictionary<string, string> GetUriEscapedParameters(MessageDictionary message) {
+		internal static IDictionary<string, string> GetUriEscapedParameters(IEnumerable<KeyValuePair<string, string>> message) {
 			var encodedDictionary = new Dictionary<string, string>();
 			UriEscapeParameters(message, encodedDictionary);
 			return encodedDictionary;
@@ -194,6 +195,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				httpRequest = this.InitializeRequestAsAuthHeader(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
+				var requestMessageWithBinaryData = request as IMessageWithBinaryData;
+				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || !requestMessageWithBinaryData.SendAsMultipart, OAuthStrings.MultipartPostMustBeUsedWithAuthHeader);
 				httpRequest = this.InitializeRequestAsPost(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
@@ -264,7 +267,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="source">The dictionary with names and values to encode.</param>
 		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
-		private static void UriEscapeParameters(IDictionary<string, string> source, IDictionary<string, string> destination) {
+		private static void UriEscapeParameters(IEnumerable<KeyValuePair<string, string>> source, IDictionary<string, string> destination) {
 			Contract.Requires<ArgumentNullException>(source != null);
 			Contract.Requires<ArgumentNullException>(destination != null);
 
@@ -341,12 +344,22 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (hasEntity) {
 				// WARNING: We only set up the request stream for the caller if there is
 				// extra data.  If there isn't any extra data, the caller must do this themselves.
-				if (requestMessage.ExtraData.Count > 0) {
-					SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+				var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
+				if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+					// Include the binary data in the multipart entity, and any standard text extra message data.
+					// The standard declared message parts are included in the authorization header.
+					var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
+					multiPartFields.AddRange(requestMessage.ExtraData.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
+					this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
 				} else {
-					// We'll assume the content length is zero since the caller may not have
-					// anything.  They're responsible to change it when the add the payload if they have one.
-					httpRequest.ContentLength = 0;
+					ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
+					if (requestMessage.ExtraData.Count > 0) {
+						this.SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+					} else {
+						// We'll assume the content length is zero since the caller may not have
+						// anything.  They're responsible to change it when the add the payload if they have one.
+						httpRequest.ContentLength = 0;
+					}
 				}
 			}
 
