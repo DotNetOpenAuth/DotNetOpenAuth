@@ -652,6 +652,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to get recipient information from.</param>
 		/// <returns>The recipient.</returns>
+		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
 			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, GetHttpDeliveryMethod(request.HttpMethod));
 		}
@@ -661,6 +662,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpVerb">The HTTP verb.</param>
 		/// <returns>A <see cref="HttpDeliveryMethods"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
+		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
 		internal static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
 			if (httpVerb == "GET") {
 				return HttpDeliveryMethods.GetRequest;
@@ -670,6 +672,8 @@ namespace DotNetOpenAuth.Messaging {
 				return HttpDeliveryMethods.PutRequest;
 			} else if (httpVerb == "DELETE") {
 				return HttpDeliveryMethods.DeleteRequest;
+			} else if (httpVerb == "HEAD") {
+				return HttpDeliveryMethods.HeadRequest;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
 			}
@@ -681,14 +685,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <returns>An HTTP verb, such as GET, POST, PUT, or DELETE.</returns>
 		internal static string GetHttpVerb(HttpDeliveryMethods httpMethod) {
-			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
+			if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.GetRequest) {
 				return "GET";
-			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PostRequest) {
 				return "POST";
-			} else if ((httpMethod & HttpDeliveryMethods.PutRequest) != 0) {
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PutRequest) {
 				return "PUT";
-			} else if ((httpMethod & HttpDeliveryMethods.DeleteRequest) != 0) {
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.DeleteRequest) {
 				return "DELETE";
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.HeadRequest) {
+				return "HEAD";
 			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
 			} else {
