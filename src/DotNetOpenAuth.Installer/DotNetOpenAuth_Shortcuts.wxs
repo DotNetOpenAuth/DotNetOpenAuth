@@ -19,7 +19,7 @@
         </util:InternetShortcut>
         <util:InternetShortcut Id="Donation"
                       Name="Dontate money to DotNetOpenAuth"
-                      Target="http://pledgie.com/campaigns/2678?canvas=false"  Type="link">
+                      Target="http://www.dotnetopenauth.net/donate"  Type="link">
         </util:InternetShortcut>
         <Shortcut Id="UninstallProduct"
           Name="Uninstall DotNetOpenAuth"
