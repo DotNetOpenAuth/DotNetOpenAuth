@@ -4,7 +4,7 @@
 		<DisplayName>ASP.NET OpenID-InfoCard RP</DisplayName>
 		<Description>An ASP.NET web forms web site that accepts OpenID and InfoCard logins</Description>
 		<FileContentType>VSTemplate</FileContentType>
-		<ContentVersion>2.0</ContentVersion>
+		<ContentVersion>$version$</ContentVersion>
 		<Attributes>
 			<Attribute name="ProjectType" value="Visual C#"/>
 			<Attribute name="ProjectSubType" value="Web"/>
@@ -16,7 +16,7 @@
 		<DisplayName>ASP.NET MVC OpenID-InfoCard RP</DisplayName>
 		<Description>An ASP.NET MVC web site that accepts OpenID and InfoCard logins</Description>
 		<FileContentType>VSTemplate</FileContentType>
-		<ContentVersion>2.0</ContentVersion>
+		<ContentVersion>$version$</ContentVersion>
 		<Attributes>
 			<Attribute name="ProjectType" value="Visual C#"/>
 			<Attribute name="ProjectSubType" value="Web"/>

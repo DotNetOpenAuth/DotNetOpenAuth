@@ -58,36 +58,47 @@ namespace DotNetOpenAuth.BuildTasks {
 				string destPath = this.DestinationFiles[i].ItemSpec;
 				bool skipUnchangedFiles = bool.Parse(this.SourceFiles[i].GetMetadata("SkipUnchangedFiles"));
 
-				// We deliberably consider newer destination files to be up-to-date rather than
-				// requiring equality because this task modifies the destination file while copying.
-				if (skipUnchangedFiles && File.GetLastWriteTimeUtc(sourcePath) < File.GetLastWriteTimeUtc(destPath)) {
-					Log.LogMessage(MessageImportance.Low, "Skipping \"{0}\" -> \"{1}\" because the destination is up to date.", sourcePath, destPath);
-					continue;
-				}
-
-				Log.LogMessage(MessageImportance.Normal, "Transforming \"{0}\" -> \"{1}\"", sourcePath, destPath);
-
-				string[] beforeTokens = this.SourceFiles[i].GetMetadata("BeforeTokens").Split(';');
-				string[] afterTokens = this.SourceFiles[i].GetMetadata("AfterTokens").Split(';');
-				if (beforeTokens.Length != afterTokens.Length) {
-					Log.LogError("Unequal number of before and after tokens.  Before: \"{0}\". After \"{1}\".", beforeTokens, afterTokens);
-					return false;
-				}
-
-				using (StreamReader sr = File.OpenText(sourcePath)) {
-					if (!Directory.Exists(Path.GetDirectoryName(destPath))) {
-						Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+				if (string.IsNullOrEmpty(this.SourceFiles[i].GetMetadata("BeforeTokens"))) {
+					// this is just a standard copy without token substitution
+					if (skipUnchangedFiles && File.GetLastWriteTimeUtc(sourcePath) == File.GetLastWriteTimeUtc(destPath)) {
+						Log.LogMessage(MessageImportance.Low, "Skipping \"{0}\" -> \"{1}\" because the destination is up to date.", sourcePath, destPath);
+						continue;
 					}
-					using (StreamWriter sw = File.CreateText(destPath)) {
-						StringBuilder line = new StringBuilder();
-						while (!sr.EndOfStream) {
-							line.Length = 0;
-							line.Append(sr.ReadLine());
-							for (int j = 0; j < beforeTokens.Length; j++) {
-								line.Replace(beforeTokens[j], afterTokens[j]);
-							}
 
-							sw.WriteLine(line);
+					Log.LogMessage(MessageImportance.Normal, "Copying \"{0}\" -> \"{1}\"", sourcePath, destPath);
+					File.Copy(sourcePath, destPath, true);
+				} else {
+					// We deliberably consider newer destination files to be up-to-date rather than
+					// requiring equality because this task modifies the destination file while copying.
+					if (skipUnchangedFiles && File.GetLastWriteTimeUtc(sourcePath) < File.GetLastWriteTimeUtc(destPath)) {
+						Log.LogMessage(MessageImportance.Low, "Skipping \"{0}\" -> \"{1}\" because the destination is up to date.", sourcePath, destPath);
+						continue;
+					}
+
+					Log.LogMessage(MessageImportance.Normal, "Transforming \"{0}\" -> \"{1}\"", sourcePath, destPath);
+
+					string[] beforeTokens = this.SourceFiles[i].GetMetadata("BeforeTokens").Split(';');
+					string[] afterTokens = this.SourceFiles[i].GetMetadata("AfterTokens").Split(';');
+					if (beforeTokens.Length != afterTokens.Length) {
+						Log.LogError("Unequal number of before and after tokens.  Before: \"{0}\". After \"{1}\".", beforeTokens, afterTokens);
+						return false;
+					}
+
+					using (StreamReader sr = File.OpenText(sourcePath)) {
+						if (!Directory.Exists(Path.GetDirectoryName(destPath))) {
+							Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+						}
+						using (StreamWriter sw = File.CreateText(destPath)) {
+							StringBuilder line = new StringBuilder();
+							while (!sr.EndOfStream) {
+								line.Length = 0;
+								line.Append(sr.ReadLine());
+								for (int j = 0; j < beforeTokens.Length; j++) {
+									line.Replace(beforeTokens[j], afterTokens[j]);
+								}
+
+								sw.WriteLine(line);
+							}
 						}
 					}
 				}
