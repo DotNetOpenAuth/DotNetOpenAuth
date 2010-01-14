@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.BuildTasks {
 				commitId = git.StandardOutput.ReadLine();
 				git.WaitForExit();
 				if (git.ExitCode != 0) {
-					commitId = null;
+					commitId = string.Empty;
 				}
 				if (commitId != null) {
 					commitId = commitId.Trim();
