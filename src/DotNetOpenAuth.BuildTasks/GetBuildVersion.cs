@@ -64,13 +64,16 @@ namespace DotNetOpenAuth.BuildTasks {
 				psi.RedirectStandardOutput = true;
 				psi.UseShellExecute = false;
 				Process git = Process.Start(psi);
-				commitId = git.StandardOutput.ReadLine().Trim();
+				commitId = git.StandardOutput.ReadLine();
 				git.WaitForExit();
 				if (git.ExitCode != 0) {
 					commitId = null;
 				}
-				if (commitId != null && commitId.Length == 40) {
-					return commitId;
+				if (commitId != null) {
+					commitId = commitId.Trim();
+					if (commitId.Length == 40) {
+						return commitId;
+					}
 				}
 			} catch (InvalidOperationException) {
 			} catch (Win32Exception) {
