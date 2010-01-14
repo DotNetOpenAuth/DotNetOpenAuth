@@ -243,6 +243,10 @@
 			Condition="'%(CopiedProjectTemplateFiles.FileName)%(CopiedProjectTemplateFiles.Extension)' == 'RelyingPartyLogic.csproj'"
 			Items="@(InjectedLibraryItems)"
 			/>
+		<DowngradeProjects
+			Projects="@(CopiedProjectTemplateFiles)"
+			Condition="'%(Extension)' == '.csproj'"
+			/>
 		<MergeProjectWithVSTemplate
 			ProjectItemTypes="@(VsTemplateProjectItemTypes)"
 			ReplaceParametersExtensions="@(VsTemplateParameterReplaceExtensions)"
