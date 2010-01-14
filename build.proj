@@ -377,7 +377,7 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;vsi;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;vsi;vsix;Documentation">
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
@@ -414,6 +414,7 @@
 																$(ProjectRoot)Lib\log4net.*;
 																" />
 			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesVsi)" />
+			<DropVsixSourceFiles Include="$(ExtensionVsix)" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
 															$(ProjectRoot)**\obj\**;
 															$(ProjectRoot)**\*.sln.cache;
@@ -440,6 +441,7 @@
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
+			<DropVsixFiles Include="@(DropVsixSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
 			<DropSamplesToolsProjects Include="$(DropSamplesDirectory)OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
@@ -450,6 +452,7 @@
 										@(DropBinSourceFiles);
 										@(DropLibSourceFiles);
 										@(DropProjectTemplatesSourceFiles);
+										@(DropVsixSourceFiles);
 										@(DropSamplesSourceFiles);
 										@(DropSamplesRefreshSourceFiles);
 										@(DropDocSourceFiles);
@@ -461,6 +464,7 @@
 										@(DropBinFiles);
 										@(DropLibFiles);
 										@(DropProjectTemplatesFiles);
+										@(DropVsixFiles);
 										@(DropSamplesFiles);
 										@(DropSamplesRefreshFiles);
 										@(DropDocFiles);
