@@ -286,6 +286,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messagePartEncoder">The message part encoder type.</param>
 		/// <returns>An instance of the desired encoder.</returns>
 		private static IMessagePartEncoder GetEncoder(Type messagePartEncoder) {
+			Contract.Requires<ArgumentNullException>(messagePartEncoder != null);
+			Contract.Ensures(Contract.Result<IMessagePartEncoder>() != null);
+
 			IMessagePartEncoder encoder;
 			if (!encoders.TryGetValue(messagePartEncoder, out encoder)) {
 				encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);

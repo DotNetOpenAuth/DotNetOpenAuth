@@ -187,6 +187,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		IncomingWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>().ResponseStream != null);
 			throw new System.NotImplementedException();
 		}
 
@@ -209,6 +211,9 @@ namespace DotNetOpenAuth.Messaging {
 		IncomingWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<NotSupportedException>(((IDirectWebRequestHandler)this).CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>().ResponseStream != null);
+
 			////ErrorUtilities.VerifySupported(((IDirectWebRequestHandler)this).CanSupport(options), string.Format(MessagingStrings.DirectWebRequestOptionsNotSupported, options, this.GetType().Name));
 			throw new System.NotImplementedException();
 		}

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
@@ -266,6 +267,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// an alternative plan.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if the certificate chain is invalid or unverifiable.</exception>
+		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
 		private static void VerifyCertChain(List<X509Certificate2> certs) {
 			var chain = new X509Chain();
 			foreach (var cert in certs) {
@@ -418,6 +420,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// A description of a web server that hosts host-meta documents.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By design")]
 		public class HostMetaProxy {
 			/// <summary>
 			/// Initializes a new instance of the <see cref="HostMetaProxy"/> class.

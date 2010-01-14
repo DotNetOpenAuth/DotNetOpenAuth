@@ -8,6 +8,7 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
@@ -88,6 +89,8 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Initializes static members of the <see cref="Reporting"/> class.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "We do more than field initialization here.")]
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Reporting MUST NOT cause unhandled exceptions.")]
 		static Reporting() {
 			Enabled = DotNetOpenAuthSection.Configuration.Reporting.Enabled;
 			if (Enabled) {
@@ -446,6 +449,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Sends the stats report asynchronously, and careful to not throw any unhandled exceptions.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Unhandled exceptions MUST NOT be thrown from here.")]
 		private static void SendStatsAsync() {
 			// Do it on a background thread since it could take a while and we
 			// don't want to slow down this request we're borrowing.
@@ -635,6 +639,7 @@ namespace DotNetOpenAuth {
 			/// </summary>
 			public void Dispose() {
 				this.Dispose(true);
+				GC.SuppressFinalize(this);
 			}
 
 			#endregion
@@ -775,6 +780,7 @@ namespace DotNetOpenAuth {
 			/// </summary>
 			public void Dispose() {
 				this.Dispose(true);
+				GC.SuppressFinalize(this);
 			}
 
 			#endregion

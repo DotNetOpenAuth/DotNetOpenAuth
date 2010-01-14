@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Build.Utilities;
 using Microsoft.Build.Framework;
-using System.IO;
+using Microsoft.Build.Utilities;
 
 namespace DotNetOpenAuth.BuildTasks {
 	public class GetBuildVersion : Task {
@@ -52,18 +54,54 @@ namespace DotNetOpenAuth.BuildTasks {
 				return string.Empty;
 			}
 
-			string headContent = string.Empty;
+			string commitId = string.Empty;
+
+			// First try asking Git for the HEAD commit id
 			try {
-				headContent = File.ReadAllText(Path.Combine(this.GitRepoRoot, @".git/HEAD")).Trim();
+				string cmdPath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe");
+				ProcessStartInfo psi = new ProcessStartInfo(cmdPath, "/c git rev-parse HEAD");
+				psi.WindowStyle = ProcessWindowStyle.Hidden;
+				psi.RedirectStandardOutput = true;
+				psi.UseShellExecute = false;
+				Process git = Process.Start(psi);
+				commitId = git.StandardOutput.ReadLine();
+				git.WaitForExit();
+				if (git.ExitCode != 0) {
+					commitId = string.Empty;
+				}
+				if (commitId != null) {
+					commitId = commitId.Trim();
+					if (commitId.Length == 40) {
+						return commitId;
+					}
+				}
+			} catch (InvalidOperationException) {
+			} catch (Win32Exception) {
+			}
+
+			// Failing being able to use the git command to figure out the HEAD commit ID, try the filesystem directly.
+			try {
+				string headContent = File.ReadAllText(Path.Combine(this.GitRepoRoot, @".git/HEAD")).Trim();
 				if (headContent.StartsWith("ref:", StringComparison.Ordinal)) {
 					string refName = headContent.Substring(5).Trim();
-					headContent = File.ReadAllText(Path.Combine(this.GitRepoRoot, @".git/" + refName)).Trim();
+					string refPath = Path.Combine(this.GitRepoRoot, ".git/" + refName);
+					if (File.Exists(refPath)) {
+						commitId = File.ReadAllText(refPath).Trim();
+					} else {
+						string packedRefPath = Path.Combine(this.GitRepoRoot, ".git/packed-refs");
+						string matchingLine = File.ReadAllLines(packedRefPath).FirstOrDefault(line => line.EndsWith(refName));
+						if (matchingLine != null) {
+							commitId = matchingLine.Substring(0, matchingLine.IndexOf(' '));
+						}
+					}
+				} else {
+					commitId = headContent;
 				}
 			} catch (FileNotFoundException) {
 			} catch (DirectoryNotFoundException) {
 			}
 
-			return headContent.Trim();
+			return commitId.Trim();
 		}
 
 		private Version ReadVersionFromFile() {

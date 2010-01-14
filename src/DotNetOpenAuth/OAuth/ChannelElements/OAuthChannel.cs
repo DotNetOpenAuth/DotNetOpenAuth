@@ -156,8 +156,16 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				}
 			}
 
+			MessageReceivingEndpoint recipient;
+			try {
+				recipient = request.GetRecipient();
+			} catch (ArgumentException ex) {
+				Logger.OAuth.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+				return null;
+			}
+
 			// Deserialize the message using all the data we've collected.
-			var message = (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
+			var message = (IDirectedProtocolMessage)this.Receive(fields, recipient);
 
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
@@ -200,6 +208,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				httpRequest = this.InitializeRequestAsPost(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.HeadRequest) != 0) {
+				httpRequest = InitializeRequestAsHead(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.PutRequest) != 0) {
 				httpRequest = this.InitializeRequestAsPut(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.DeleteRequest) != 0) {
@@ -350,7 +360,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					// The standard declared message parts are included in the authorization header.
 					var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
 					multiPartFields.AddRange(requestMessage.ExtraData.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
-					this.SendParametersInEntityAsMultiPart(httpRequest, multiPartFields);
+					this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
 				} else {
 					ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
 					if (requestMessage.ExtraData.Count > 0) {

@@ -138,6 +138,8 @@ namespace DotNetOpenAuth.Yadis {
 		internal static IncomingWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Requires<ArgumentNullException>(uri != null);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>().ResponseStream != null);
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.CachePolicy = IdentifierDiscoveryCachePolicy;

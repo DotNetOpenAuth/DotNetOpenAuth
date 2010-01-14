@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
@@ -21,6 +22,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// The discovery service for XRI identifiers that uses an XRI proxy resolver for discovery.
 	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xri", Justification = "Acronym")]
 	public class XriDiscoveryProxyService : IIdentifierDiscoveryService {
 		/// <summary>
 		/// The magic URL that will provide us an XRDS document for a given XRI identifier.

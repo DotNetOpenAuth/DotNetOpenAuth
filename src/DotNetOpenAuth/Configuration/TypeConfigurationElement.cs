@@ -126,6 +126,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// be present.
 		/// </remarks>
 		private static T CreateInstanceFromXaml(Stream xaml) {
+			Contract.Ensures(Contract.Result<T>() != null);
 			return (T)XamlReader.Load(xaml);
 		}
 	}

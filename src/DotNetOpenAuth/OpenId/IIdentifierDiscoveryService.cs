@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -27,6 +28,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "By design")]
 		[Pure]
 		IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain);
 	}

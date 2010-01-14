@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "By design")]
 	[ContractVerification(true)]
 	public sealed class OpenIdProvider : IDisposable {
 		/// <summary>

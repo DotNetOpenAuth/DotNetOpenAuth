@@ -153,10 +153,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The seekable Stream instance that contains a copy of what was returned in the HTTP response.</returns>
 		private static MemoryStream CacheNetworkStreamAndClose(HttpWebResponse response, int maximumBytesToRead) {
 			Contract.Requires<ArgumentNullException>(response != null);
+			Contract.Ensures(Contract.Result<MemoryStream>() != null);
 
 			// Now read and cache the network stream
 			Stream networkStream = response.GetResponseStream();
 			MemoryStream cachedStream = new MemoryStream(response.ContentLength < 0 ? 4 * 1024 : Math.Min((int)response.ContentLength, maximumBytesToRead));
+			Contract.Assume(networkStream.CanRead, "HttpWebResponse.GetResponseStream() always returns a readable stream."); // CC missing
+			Contract.Assume(cachedStream.CanWrite, "This is a MemoryStream -- it's always writable."); // CC missing
 			networkStream.CopyTo(cachedStream);
 			cachedStream.Seek(0, SeekOrigin.Begin);
 
