@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// The various signing binding elements that may be applicable to a message in preferred use order.
 		/// </summary>
-		private ITamperProtectionChannelBindingElement[] signers;
+		private readonly ITamperProtectionChannelBindingElement[] signers;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SigningBindingElementChain"/> class.
@@ -93,6 +93,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
+				ErrorUtilities.VerifyInternal(signer.Channel != null, "A binding element's Channel property is unexpectedly null.");
 				MessageProtections? result = signer.ProcessOutgoingMessage(message);
 				if (result.HasValue) {
 					return result;
@@ -113,6 +114,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
+				ErrorUtilities.VerifyInternal(signer.Channel != null, "A binding element's Channel property is unexpectedly null.");
 				MessageProtections? result = signer.ProcessIncomingMessage(message);
 				if (result.HasValue) {
 					return result;

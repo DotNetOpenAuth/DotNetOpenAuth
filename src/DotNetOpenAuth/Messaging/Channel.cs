@@ -580,7 +580,15 @@ namespace DotNetOpenAuth.Messaging {
 				fields = request.QueryStringBeforeRewriting.ToDictionary();
 			}
 
-			return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
+			MessageReceivingEndpoint recipient;
+			try {
+				recipient = request.GetRecipient();
+			} catch (ArgumentException ex) {
+				Logger.Messaging.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+				return null;
+			}
+
+			return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 		}
 
 		/// <summary>
@@ -816,6 +824,24 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
 
 			return httpRequest;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a HEAD request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP HEAD request with the message parts serialized to the query string.
+		/// This method satisfies OAuth 1.0 section 5.2, item #3.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsHead(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
+			Contract.Requires<ArgumentException>(requestMessage.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "HEAD";
+			return request;
 		}
 
 		/// <summary>
