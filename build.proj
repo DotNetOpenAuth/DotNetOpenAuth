@@ -357,7 +357,7 @@
 			/>
 	</Target>
 	
-	<Target Name="vsi" DependsOnTargets="ProjectTemplates2008">
+	<Target Name="vsi" DependsOnTargets="ProjectTemplates2008;_SetDropProperties">
 		<PropertyGroup>
 			<ProjectTemplatesVsi>$(DropDirectoryNoSlash).vsi</ProjectTemplatesVsi>
 		</PropertyGroup>
