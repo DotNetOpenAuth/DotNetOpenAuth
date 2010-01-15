@@ -269,6 +269,7 @@
 		<DowngradeProjects
 			Projects="@(ProjectTemplates2008Layout)"
 			Condition="'%(Extension)' == '.csproj'"
+			DowngradeMvc2ToMvc1="true"
 			/>
 
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2008ProjectTemplates)">
@@ -563,7 +564,7 @@
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
-		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" />
+		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" DowngradeMvc2ToMvc1="true" />
 	</Target>
 
 	<Target Name="Drop" DependsOnTargets="DropLayout">

@@ -25,6 +25,11 @@ namespace DotNetOpenAuth.BuildTasks {
 		public ITaskItem[] Projects { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether ASP.NET MVC 2 projects are downgraded to MVC 1.0.
+		/// </summary>
+		public bool DowngradeMvc2ToMvc1 { get; set; }
+
+		/// <summary>
 		/// Executes this instance.
 		/// </summary>
 		public override bool Execute() {
@@ -36,10 +41,12 @@ namespace DotNetOpenAuth.BuildTasks {
 						project.Load(taskItem.ItemSpec);
 						project.DefaultToolsVersion = "3.5";
 
-						string projectTypeGuids = project.GetEvaluatedProperty("ProjectTypeGuids");
-						if (!string.IsNullOrEmpty(projectTypeGuids)) {
-							projectTypeGuids = projectTypeGuids.Replace("{F85E285D-A4E0-4152-9332-AB1D724D3325}", "{603c0e0b-db56-11dc-be95-000d561079b0}");
-							project.SetProperty("ProjectTypeGuids", projectTypeGuids);
+						if (this.DowngradeMvc2ToMvc1) {
+							string projectTypeGuids = project.GetEvaluatedProperty("ProjectTypeGuids");
+							if (!string.IsNullOrEmpty(projectTypeGuids)) {
+								projectTypeGuids = projectTypeGuids.Replace("{F85E285D-A4E0-4152-9332-AB1D724D3325}", "{603c0e0b-db56-11dc-be95-000d561079b0}");
+								project.SetProperty("ProjectTypeGuids", projectTypeGuids);
+							}
 						}
 
 						// Web projects usually have an import that includes these substrings
