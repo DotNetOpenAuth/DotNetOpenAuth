@@ -24,5 +24,6 @@
 	<Content>
 		<ProjectTemplate>WebFormsRelyingParty</ProjectTemplate>
 		<ProjectTemplate>MvcRelyingParty</ProjectTemplate>
+		<VsPackage>DotNetOpenAuthSDK.pkgdef</VsPackage>
 	</Content>
 </Vsix>
