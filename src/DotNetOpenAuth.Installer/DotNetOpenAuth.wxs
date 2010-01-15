@@ -12,7 +12,7 @@
 
 
   <Product  Id="*"
-          Name="$(var.ProductName)"
+          Name="$(var.ProductName) SDK"
           Language="1033"
           Version="$(var.BuildVersion)"
           Manufacturer="www.dotnetopenauth.net"
@@ -52,7 +52,7 @@
 
     <!--  Check that Microsoft .NET Framework is installed (WinNetFxExtension) -->
     <PropertyRef Id="NETFRAMEWORK35"/>
-    <Condition Message="This application requires .NET Framework 3.5. Please install .NET Framework v3.5 then run the DotNetOpenAuth installer again.">
+    <Condition Message="This application requires .NET Framework 3.5. Please install .NET Framework v3.5 then run the [ProductName] installer again.">
       <![CDATA[Installed OR NETFRAMEWORK35]]>
     </Condition>
     <!--  End -->
