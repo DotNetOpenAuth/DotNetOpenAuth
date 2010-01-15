@@ -2,7 +2,7 @@
 	<TemplateData>
 		<Name>ASP.NET MVC OpenID-InfoCard RP</Name>
 		<RequiredFrameworkVersion>3.5</RequiredFrameworkVersion>
-		<Description>An ASP.NET MVC web site that accepts OpenID and InfoCard logins</Description>
+		<Description>An ASP.NET MVC web site that accepts OpenID logins</Description>
 		<ProjectType>CSharp</ProjectType>
 		<ProjectSubType>Web</ProjectSubType>
 		<NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>

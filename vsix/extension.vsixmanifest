@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
 	<Identifier Id="DotNetOpenAuth.d2122791-8de4-4d3b-a414-7563c9a8cd6e">
-		<Name>DotNetOpenAuth Project Templates</Name>
+		<Name>DotNetOpenAuth SDK</Name>
 		<Author>Andrew Arnott</Author>
 		<Version>$version$</Version>
-		<Description>An ASP.NET web forms web site that accepts OpenID and InfoCard logins</Description>
+		<Description>Resources for developing applications that use OpenID, OAuth, and InfoCard.</Description>
 		<Locale>1033</Locale>
 		<License>LICENSE.txt</License>
 		<GettingStartedGuide>http://www.dotnetopenauth.net/ProjectTemplateGettingStarted</GettingStartedGuide>
