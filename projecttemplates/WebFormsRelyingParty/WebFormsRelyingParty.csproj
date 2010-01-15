@@ -188,7 +188,7 @@
     <Content Include="styles\Standard.css" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GettingStarted.htm" />
+    <Content Include="Getting Started.htm" />
     <Content Include="images\infocard_23x16.png" />
     <Content Include="images\myopenid.png" />
     <Content Include="images\openid.gif" />

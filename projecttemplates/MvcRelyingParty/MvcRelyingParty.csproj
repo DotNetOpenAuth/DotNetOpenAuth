@@ -96,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
-    <Content Include="GettingStarted.htm" />
+    <Content Include="Getting Started.htm" />
     <Content Include="Global.asax" />
     <Content Include="Setup.aspx" />
     <Content Include="Views\Account\EditFields.ascx" />

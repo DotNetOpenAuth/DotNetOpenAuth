@@ -7,7 +7,7 @@
 	</TemplateData>
 	<TemplateContent>
 		<Project File="MvcRelyingParty.csproj" ReplaceParameters="true">
-			<ProjectItem OpenInWebBrowser="true">GettingStarted.htm</ProjectItem>
+			<ProjectItem OpenInWebBrowser="true">Getting Started.htm</ProjectItem>
 		</Project>
 	</TemplateContent>
 </VSTemplate>

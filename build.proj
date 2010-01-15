@@ -272,6 +272,8 @@
 			DowngradeMvc2ToMvc1="true"
 			/>
 
+		<Purge Directories="$(VS2008ProjectTemplatesDirectory)" IntendedFiles="@(ProjectTemplates2008Layout)" />
+
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2008ProjectTemplates)">
 			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2008Templates" />
 			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2008TemplateItemContents" />
@@ -303,8 +305,6 @@
 			WorkingDirectory="%(VS2008ProjectTemplateContents.WorkingDirectory)"
 			ZipLevel="$(ZipLevel)"
 			/>
-
-		<Purge Directories="$(VS2008ProjectTemplatesDirectory)" IntendedFiles="@(ProjectTemplates2008Layout)" />
 	</Target>
 
 	<Target Name="ProjectTemplates2010" DependsOnTargets="ProjectTemplatesLayout">
@@ -324,6 +324,8 @@
 		</ItemGroup>
 
 		<HardLinkCopy SourceFiles="@(ProjectTemplates2010Source)" DestinationFiles="@(ProjectTemplates2010Layout)" />
+
+		<Purge Directories="$(VS2010ProjectTemplatesDirectory)" IntendedFiles="@(ProjectTemplates2010Layout)" />
 
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2010ProjectTemplates)">
 			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2010Templates" />
@@ -359,7 +361,7 @@
 			ZipLevel="$(ZipLevel)"
 			/>
 	</Target>
-	
+
 	<Target Name="vsi" DependsOnTargets="ProjectTemplates2008;_SetDropProperties">
 		<PropertyGroup>
 			<ProjectTemplatesVsi>$(DropDirectoryNoSlash).vsi</ProjectTemplatesVsi>
