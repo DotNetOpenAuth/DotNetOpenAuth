@@ -29,7 +29,7 @@
 		                                $(ProjectRoot)samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
 
-	<Target Name="Clean" DependsOnTargets="CleanDocumentation;">
+	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
 		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
 		<ItemGroup>
 			<DirtyDirectories Include="
@@ -288,7 +288,6 @@
 	</Target>
 
 	<Target Name="vsi" DependsOnTargets="ProjectTemplates">
-		<Message Text="Creating VSI in $(ProjectTemplatesLayoutPath)" Importance="High"/>
 		<ItemGroup>
 			<ProjectTemplateVsiContents Include="
 																	$(ProjectTemplatesLayoutPath)*.vscontent;
@@ -442,24 +441,24 @@
 	</Target>
 
 	<Target Name="MSI" DependsOnTargets="DropLayout">
-    <ItemGroup>
-      <ProjectTemplateZip Include="$(ProjectTemplatesLayoutPath)*.zip;"/>
-    </ItemGroup>
-    <PropertyGroup>
-      <ProjectTemplates>@(ProjectTemplateZip)</ProjectTemplates>
-    </PropertyGroup>
+		<ItemGroup>
+			<ProjectTemplateZip Include="$(ProjectTemplatesLayoutPath)*.zip;"/>
+		</ItemGroup>
+		<PropertyGroup>
+			<ProjectTemplates>@(ProjectTemplateZip)</ProjectTemplates>
+		</PropertyGroup>
 
-      <Message Text="Creating MSI :: - 
+		<Message Text="Creating MSI :: - 
              ProjectRoot          - $(ProjectRoot)
              BuildVersion         - $(BuildVersion)
              ProductName          - $(ProductName)
              DropPath             - $(DropsRoot)
              ProjectTemplateZip   - $(ProjectTemplates)
              OutputPath           - $(DropDirectoryNoSlash)
-             OutputName           - $(ProductName)-$(BuildVersion)" Importance="High" />
+             OutputName           - $(ProductName)-$(BuildVersion)" />
 		<Delete Files="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth_Samples_Files.wxs" />
-		<Exec Command="$(ProjectRoot)\tools\wix\Paraffin.exe $(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth_Samples_Files.wxs -dir $(DropDirectoryNoSlash)\Samples -custom dnoa_samples -alias &quot;%24(var.DropPath)\Samples&quot; -guids -multiple -ext .gitignore -dirref INSTALLLOCATION"/>	 
-		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj" 
+		<Exec Command="$(ProjectRoot)\tools\wix\Paraffin.exe $(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth_Samples_Files.wxs -dir $(DropDirectoryNoSlash)\Samples -custom dnoa_samples -alias &quot;%24(var.DropPath)\Samples&quot; -guids -multiple -ext .gitignore -dirref INSTALLLOCATION"/>
+		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth.Installer\DotNetOpenAuth.Installer.wixproj"
 		         Properties="
 					ProjectRoot=$(ProjectRoot);
 					BuildVersion=$(BuildVersion);
@@ -469,5 +468,5 @@
 					OutputPath=$(DropsRoot);
 					OutputName=$(ProductName)-$(BuildVersion);
 		         " />
-  </Target>
+	</Target>
 </Project>
