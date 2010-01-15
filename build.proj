@@ -418,6 +418,8 @@
 
 		<Copy SourceFiles="@(ExtensionVsixSources)" DestinationFiles="@(ExtensionVsixTargets)" SkipUnchangedFiles="true" />
 		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplates2010TransformSource)" DestinationFiles="@(ProjectTemplates2010TransformLayout)" />
+
+		<Purge Directories="$(ExtensionVsixLayoutDirectory)" IntendedFiles="@(ExtensionVsixContents)" />
 	</Target>
 
 	<Target Name="vsix" DependsOnTargets="VsixLayout;_SetDropProperties">
