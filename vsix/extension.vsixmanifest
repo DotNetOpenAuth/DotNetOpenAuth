@@ -22,8 +22,7 @@
 	</Identifier>
 	<References />
 	<Content>
-		<ProjectTemplate>WebFormsRelyingParty</ProjectTemplate>
-		<ProjectTemplate>MvcRelyingParty</ProjectTemplate>
+		<ProjectTemplate>PT</ProjectTemplate>
 		<VsPackage>DotNetOpenAuthSDK.pkgdef</VsPackage>
 	</Content>
 </Vsix>
