@@ -137,7 +137,6 @@
 			<ToolsZip>$(ToolsDirectoryNoSlash).zip</ToolsZip>
 		</PropertyGroup>
 
-		<Delete Files="$(ToolsZip)" />
 		<Zip ZipFileName="$(ToolsZip)" 
 				 Files="@(AllToolTargets)"
 				 WorkingDirectory="$(ToolsDirectory)" />
@@ -289,7 +288,6 @@
 			</VSProjectTemplateContents>
 		</ItemGroup>
 
-		<Delete Files="@(VSProjectTemplateZipFiles)" />
 		<Zip
 			Files="@(VSProjectTemplateContents)"
 			ZipFileName="%(VSProjectTemplateContents.ZipFile)"
@@ -305,7 +303,6 @@
 																	" />
 		</ItemGroup>
 
-		<Delete Files="$(ProjectTemplatesVsi)" />
 		<Zip
 			Files="@(ProjectTemplateVsiContents)"
 			ZipFileName="$(ProjectTemplatesVsi)"
@@ -343,7 +340,6 @@
 	</Target>
 
 	<Target Name="vsix" DependsOnTargets="VsixLayout">
-		<Delete Files="$(ExtensionVsix)" />
 		<Zip
 			Files="@(ExtensionVsixContents)"
 			ZipFileName="$(ExtensionVsix)"
@@ -493,7 +489,6 @@
 		<PropertyGroup>
 			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
 		</PropertyGroup>
-		<Delete Files="$(DropZip)" />
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" />
 	</Target>
 
