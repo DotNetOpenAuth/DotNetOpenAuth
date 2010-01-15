@@ -4,7 +4,6 @@
 		<RequiredFrameworkVersion>3.5</RequiredFrameworkVersion>
 		<Description>An ASP.NET web forms web site that accepts OpenID and InfoCard logins and acts as an OAuth service provider.</Description>
 		<ProjectType>CSharp</ProjectType>
-		<ProjectSubType>Web</ProjectSubType>
 		<NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
 		<SortOrder>1000</SortOrder>
 		<CreateNewFolder>true</CreateNewFolder>
