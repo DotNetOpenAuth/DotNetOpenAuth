@@ -12,5 +12,4 @@
 		Visible="False" />
 	<asp:Label ID="loginCanceledLabel" runat="server" EnableViewState="False" Text="Login canceled"
 		Visible="False" />
-	<asp:CheckBox ID="noLoginCheckBox" runat="server" Text="Extensions only (no login) -- most OPs don't yet support this" />
 </asp:Content>

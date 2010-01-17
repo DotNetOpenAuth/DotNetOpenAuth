@@ -68,13 +68,4 @@ Partial Public Class LoginProgrammatic
 	'''To modify move field declaration from designer file to code-behind file.
 	'''</remarks>
 	Protected WithEvents loginCanceledLabel As Global.System.Web.UI.WebControls.Label
-
-	'''<summary>
-	'''noLoginCheckBox control.
-	'''</summary>
-	'''<remarks>
-	'''Auto-generated field.
-	'''To modify move field declaration from designer file to code-behind file.
-	'''</remarks>
-	Protected WithEvents noLoginCheckBox As Global.System.Web.UI.WebControls.CheckBox
 End Class
