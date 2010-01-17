@@ -1,8 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.IO
-Imports System.Web
-
+﻿Imports System.IO
 
 Public Class TracePageAppender
 	Inherits log4net.Appender.AppenderSkeleton
