@@ -17,7 +17,7 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
 	<ItemGroup>
-		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj" />
+		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj;$(ProjectRoot)samples\**\*.vbproj" />
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
 		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.csproj" />
 		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll;
