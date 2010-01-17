@@ -112,6 +112,13 @@
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+    <Compile Include="LoginProgrammatic.aspx.designer.vb">
+      <DependentUpon>LoginProgrammatic.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="LoginProgrammatic.aspx.vb">
+      <DependentUpon>LoginProgrammatic.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -149,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="LoginProgrammatic.aspx" />
     <Content Include="MembersOnly\ProfileFieldsDisplay.ascx" />
     <Content Include="MembersOnly\Web.config" />
     <None Include="My Project\Application.myapp">
