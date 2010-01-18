@@ -18,8 +18,17 @@ namespace DotNetOpenAuth.Test {
 	/// The base class that all test classes inherit from.
 	/// </summary>
 	public class TestBase {
+		private MessageDescriptionCollection messageDescriptions = new MessageDescriptionCollection();
+
 		/// <summary>
-		/// The full path to the directory that contains the test ASP.NET site.
+		/// Gets the logger that tests should use.
+		/// </summary>
+		internal static ILog TestLogger {
+			get { return TestUtilities.TestLogger; }
+		}
+
+		/// <summary>
+		/// Gets the full path to the directory that contains the test ASP.NET site.
 		/// </summary>
 		internal string TestWebDirectory {
 			get {
@@ -31,15 +40,6 @@ namespace DotNetOpenAuth.Test {
 				}
 				return Path.GetFullPath(relativePath);
 			}
-		}
-
-		private MessageDescriptionCollection messageDescriptions = new MessageDescriptionCollection();
-
-		/// <summary>
-		/// Gets the logger that tests should use.
-		/// </summary>
-		internal static ILog TestLogger {
-			get { return TestUtilities.TestLogger; }
 		}
 
 		internal MessageDescriptionCollection MessageDescriptions {
