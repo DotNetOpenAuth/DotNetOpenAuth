@@ -24,7 +24,7 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="NUnit" />
 
 	<ItemGroup>
-		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj" />
+		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj;$(ProjectRoot)samples\**\*.vbproj" />
 		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
 		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.csproj" />
 		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll;
@@ -113,21 +113,26 @@
 
 		<ItemGroup>
 			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
+		</ItemGroup>
+
+		<MSBuild Projects="@(ToolProjects)" />
+
+		<ItemGroup>
 			<OfflineProvider Include="
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(TargetFrameworkVersion)\$(Configuration)\**\*.dll;
-											 $(ILMergeOutputAssembly).*;
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(TargetFrameworkVersion)\$(Configuration)\OpenIdOfflineProvider.exe"
-											 Exclude="
-											 $(ProjectRoot)Samples\OpenIdOfflineProvider\bin\$(TargetFrameworkVersion)\$(Configuration)\$(ProductName).*;
+											 $(OutputPath)**\*.dll;
+											 $(OutputPath)OpenIdOfflineProvider.exe"
+				 Exclude="
+											 $(OutputPath)$(ProductName).*;
+											 $(ILMergeOutputAssembly);
 											 "/>
 			<OfflineProviderTargets Include="
 											 @(OfflineProvider->'$(ToolsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<OfflineProvider Include="$(ILMergeOutputAssembly)" />
+			<OfflineProviderTargets Include="$(ToolsDirectory)$(ProductName).dll" />
 
 			<AllToolSources Include="@(OfflineProvider)" />
 			<AllToolTargets Include="@(OfflineProviderTargets)" />
 		</ItemGroup>
-
-		<MSBuild Projects="@(ToolProjects)" />
 
 		<MakeDir Directories="@(ToolsDirectory)" />
 		<Copy SourceFiles="@(AllToolSources)" DestinationFiles="@(AllToolTargets)" SkipUnchangedFiles="true" />

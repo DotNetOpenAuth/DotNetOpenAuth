@@ -124,6 +124,15 @@ namespace DotNetOpenAuth.OAuth {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot send OAuth message as multipart POST without an authorization HTTP header because sensitive data would not be signed..
+        /// </summary>
+        internal static string MultipartPostMustBeUsedWithAuthHeader {
+            get {
+                return ResourceManager.GetString("MultipartPostMustBeUsedWithAuthHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use of the OpenID+OAuth extension requires that the token manager in use implement the {0} interface..
         /// </summary>
         internal static string OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface {

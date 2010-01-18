@@ -75,4 +75,20 @@ public partial class Twitter : System.Web.UI.Page {
 		tableBuilder.Append("</table>");
 		resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
 	}
+
+	protected void uploadProfilePhotoButton_Click(object sender, EventArgs e) {
+		if (profilePhoto.PostedFile.ContentType == null) {
+			photoUploadedLabel.Visible = true;
+			photoUploadedLabel.Text = "Select a file first.";
+			return;
+		}
+
+		var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
+		XDocument imageResult = TwitterConsumer.UpdateProfileImage(
+			twitter,
+			this.AccessToken,
+			profilePhoto.PostedFile.InputStream,
+			profilePhoto.PostedFile.ContentType);
+		photoUploadedLabel.Visible = true;
+	}
 }

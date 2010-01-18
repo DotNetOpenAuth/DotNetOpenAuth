@@ -297,4 +297,7 @@
   <data name="StreamMustHaveKnownLength" xml:space="preserve">
     <value>The stream must have a known length.</value>
   </data>
+  <data name="BinaryDataRequiresMultipart" xml:space="preserve">
+    <value>Unable to send all message data because some of it requires multi-part POST, but IMessageWithBinaryData.SendAsMultipart was false.</value>
+  </data>
 </root>

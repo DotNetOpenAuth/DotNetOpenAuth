@@ -24,6 +24,7 @@ namespace DotNetOpenAuth.Messaging {
 			: this(new Uri(locationUri), method) {
 			Contract.Requires<ArgumentNullException>(locationUri != null);
 			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None);
+			Contract.Requires<ArgumentOutOfRangeException>((method & HttpDeliveryMethods.HttpVerbMask) != 0, MessagingStrings.GetOrPostFlagsRequired);
 		}
 
 		/// <summary>

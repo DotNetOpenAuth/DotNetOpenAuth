@@ -38,6 +38,15 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		/// <summary>
+		/// Verifies file multiparts identify themselves as files and not merely form-data.
+		/// </summary>
+		[TestCase]
+		public void FilePartAsFile() {
+			var part = MultipartPostPart.CreateFormFilePart("somename", "somefile", "plain/text", new MemoryStream());
+			Assert.AreEqual("file", part.ContentDisposition);
+		}
+
+		/// <summary>
 		/// Verifies MultiPartPost sends the right number of bytes.
 		/// </summary>
 		[TestCase]
