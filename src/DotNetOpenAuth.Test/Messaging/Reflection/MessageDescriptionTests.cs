@@ -8,26 +8,26 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class MessageDescriptionTests : MessagingTestBase {
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullType() {
 			new MessageDescription(null, new Version(1, 0));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullVersion() {
 			new MessageDescription(typeof(Mocks.TestMessage), null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void CtorNonMessageType() {
 			new MessageDescription(typeof(string), new Version(1, 0));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void MultiVersionedMessageTest() {
 			var v10 = new MessageDescription(typeof(MultiVersionMessage), new Version(1, 0));
 			var v20 = new MessageDescription(typeof(MultiVersionMessage), new Version(2, 0));

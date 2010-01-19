@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.ApplicationBlock", "DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj", "{AA78D112-D889-414B-A7D4-467B34C7B663}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderWebForms", "OpenIdProviderWebForms\OpenIdProviderWebForms.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InfoCard", "InfoCard", "{91
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "InfoCardRelyingParty\", "{BE7016A8-D1B9-471A-AA53-A3D0CB800D35}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
 		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
 		Debug.AspNetCompiler.PhysicalPath = "InfoCardRelyingParty\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
@@ -35,7 +35,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "Inf
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthConsumer", "OAuthConsumer\", "{5100F73C-3082-4B81-95DD-F443F90B8EA7}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
 		Debug.AspNetCompiler.VirtualPath = "/OAuthConsumer"
 		Debug.AspNetCompiler.PhysicalPath = "OAuthConsumer\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OAuthConsumer\"
@@ -55,7 +55,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthConsumer", "OAuthConsu
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OAuthServiceProvider", "OAuthServiceProvider\", "{DD52C0C8-F986-495A-AAA1-090CFE2F801F}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
 		Debug.AspNetCompiler.VirtualPath = "/OAuthServiceProvider"
 		Debug.AspNetCompiler.PhysicalPath = "OAuthServiceProvider\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OAuthServiceProvider\"
@@ -82,7 +82,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdRelyingPartyWebForms"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIdRelyingPartyClassicAsp", "OpenIdRelyingPartyClassicAsp\", "{9F9A83C3-55FC-42F1-A6B6-15A52BD01FC0}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "2.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
 		Debug.AspNetCompiler.VirtualPath = "/OpenIdRelyingPartyClassicAsp"
 		Debug.AspNetCompiler.PhysicalPath = "OpenIdRelyingPartyClassicAsp\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIdRelyingPartyClassicAsp\"

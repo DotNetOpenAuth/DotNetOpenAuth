@@ -13,16 +13,16 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class NegativeAssertionResponseTests : OpenIdTestBase {
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Mode() {
 			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV1.ReturnTo = RPUri;
@@ -45,14 +45,14 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.IsFalse(new NegativeAssertionResponse(setupRequestV2).Immediate);
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void UserSetupUrlRequiredInV1Immediate() {
 			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV1.ReturnTo = RPUri;
 			new NegativeAssertionResponse(immediateRequestV1).EnsureValidMessage();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void UserSetupUrlSetForV1Immediate() {
 			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV1.ReturnTo = RPUri;
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			response.EnsureValidMessage();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void UserSetupUrlNotRequiredInV1SetupOrV2() {
 			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV1.ReturnTo = RPUri;

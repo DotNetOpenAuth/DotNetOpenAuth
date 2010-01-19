@@ -6,7 +6,13 @@
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
-		<ProjectTemplatesVsi>$(ProjectTemplatesLayoutPath)DotNetOpenAuth Starter Kits.vsi</ProjectTemplatesVsi>
+
+		<VS2008ProjectTemplatesDirectory>$(IntermediatePath)VS2008projecttemplates\</VS2008ProjectTemplatesDirectory>
+		<ProjectTemplatesVsiDirectory>$(IntermediatePath)vsi\</ProjectTemplatesVsiDirectory>
+
+		<VS2010ProjectTemplatesDirectory>$(IntermediatePath)VS2010projecttemplates\</VS2010ProjectTemplatesDirectory>
+		<ExtensionVsixLayoutDirectory>$(IntermediatePath)Vsix\</ExtensionVsixLayoutDirectory>
+		<ZipLevel>6</ZipLevel>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)tools\$(ProductName).Versioning.targets"/>
@@ -15,6 +21,7 @@
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="NUnit" />
 
 	<ItemGroup>
 		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj;$(ProjectRoot)samples\**\*.vbproj" />
@@ -138,10 +145,10 @@
 			<ToolsZip>$(ToolsDirectoryNoSlash).zip</ToolsZip>
 		</PropertyGroup>
 
-		<Delete Files="$(ToolsZip)" />
 		<Zip ZipFileName="$(ToolsZip)" 
 				 Files="@(AllToolTargets)"
-				 WorkingDirectory="$(ToolsDirectory)" />
+				 WorkingDirectory="$(ToolsDirectory)"
+				 ZipLevel="$(ZipLevel)" />
 	</Target>
 
 	<Target Name="BuildProjectTemplates">
@@ -151,7 +158,7 @@
 		<MSBuild Projects="@(ProjectTemplates)" />
 	</Target>
 
-	<Target Name="ProjectTemplatesLayout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates">
+	<Target Name="ProjectTemplatesLayout" DependsOnTargets="GetBuildVersion;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates">
 		<ItemGroup>
 			<ProjectTemplatesSource Include="$(ProjectRoot)projecttemplates\**\*"
 			                   Exclude="
@@ -190,9 +197,6 @@
 			<ProjectTemplatesLayout Include="@(ProjectTemplatesSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<ProjectTemplatesTransformLayout Include="@(_ProjectTemplatesTransformSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
-			<VSProjectTemplates Include="@(ProjectTemplatesLayout)" Condition="'%(Extension)' == '.vstemplate'" />
-			<TopLevelVSProjectTemplates Include="@(VSProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(ProjectTemplatesLayoutPath)'" />
-
 			<!-- Include the template icon -->
 			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\favicon.ico" />
 			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
@@ -213,13 +217,13 @@
 			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
 
 			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
-			<VSProjectTemplateZipFiles Include="@(TopLevelVSProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
+			<VSProjectTemplates Include="@(ProjectTemplatesLayout)" Condition="'%(Extension)' == '.vstemplate'" />
 		</ItemGroup>
 
 		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
 			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
 		</Trim>
-		<MSBuild Projects="@(ProjectTemplates)" />
+		<!--<MSBuild Projects="@(ProjectTemplates)" />-->
 		<Copy SourceFiles="@(ProjectTemplatesSource)" DestinationFiles="@(ProjectTemplatesLayout)" SkipUnchangedFiles="true" />
 		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)">
 			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
@@ -228,8 +232,6 @@
 					 IntendedFiles="
 						@(ProjectTemplatesLayout);
 						@(ProjectTemplatesTransformLayout);
-						@(VSProjectTemplateZipFiles);
-						$(ProjectTemplatesVsi);
 						" />
 		<ChangeProjectReferenceToAssemblyReference
 			Projects="@(CopiedProjectTemplateFiles)"
@@ -253,53 +255,188 @@
 			/>
 	</Target>
 
-	<Target Name="ProjectTemplates" DependsOnTargets="ProjectTemplatesLayout">
-		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVSProjectTemplates)">
-			<Output TaskParameter="ProjectTemplates" ItemName="SubVSTemplates" />
-			<Output TaskParameter="ProjectTemplateContents" ItemName="TemplateItemContents" />
+	<Target Name="ProjectTemplates2008" DependsOnTargets="ProjectTemplatesLayout">
+		<ItemGroup>
+			<ProjectTemplates2008Source Include="$(ProjectTemplatesLayoutPath)**" />
+			<ProjectTemplates2008Layout Include="@(ProjectTemplates2008Source->'$(VS2008ProjectTemplatesDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
+			<ProjectTemplates2008Layout>
+				<HardLink Condition=" '%(Extension)' != '.csproj' ">true</HardLink>
+			</ProjectTemplates2008Layout>
+
+			<VS2008ProjectTemplates Include="@(ProjectTemplates2008Layout)" Condition="'%(Extension)' == '.vstemplate'" />
+			<TopLevelVS2008ProjectTemplates Include="@(VS2008ProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(VS2008ProjectTemplatesDirectory)'" />
+			<VS2008ProjectTemplateZipFiles Include="@(TopLevelVS2008ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
+		</ItemGroup>
+
+		<HardLinkCopy SourceFiles="@(ProjectTemplates2008Source)" DestinationFiles="@(ProjectTemplates2008Layout)" />
+
+		<DowngradeProjects
+			Projects="@(ProjectTemplates2008Layout)"
+			Condition="'%(Extension)' == '.csproj'"
+			DowngradeMvc2ToMvc1="true"
+			/>
+
+		<Purge Directories="$(VS2008ProjectTemplatesDirectory)" IntendedFiles="@(ProjectTemplates2008Layout)" />
+
+		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2008ProjectTemplates)">
+			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2008Templates" />
+			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2008TemplateItemContents" />
 		</DiscoverProjectTemplates>
 
 		<ItemGroup>
 			<!-- Include in each template .zip file the top-level .vstemplate file itself. -->
-			<VSProjectTemplateContents Include="@(TopLevelVSProjectTemplates)">
-				<ZipFile>$(ProjectTemplatesLayoutPath)%(FileName).zip</ZipFile>
-				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
-			</VSProjectTemplateContents>
+			<VS2008ProjectTemplateContents Include="@(TopLevelVS2008ProjectTemplates)">
+				<ZipFile>$(ProjectTemplatesVsiDirectory)%(FileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2008ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
 
 			<!-- Now throw in all the files in each of the project-level template's directories and their children. -->
-			<VSProjectTemplateContents Include="@(TemplateItemContents)">
-				<ZipFile>$(ProjectTemplatesLayoutPath)%(TemplateItemContents.TopLevelTemplateFileName).zip</ZipFile>
-				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
-			</VSProjectTemplateContents>
+			<VS2008ProjectTemplateContents Include="@(VS2008TemplateItemContents)">
+				<ZipFile>$(ProjectTemplatesVsiDirectory)%(VS2008TemplateItemContents.TopLevelTemplateFileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2008ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
 
 			<!-- Include the template icon for each .zip file. -->
-			<VSProjectTemplateContents Include="@(TopLevelVSProjectTemplates->'$(ProjectTemplatesLayoutPath)__TemplateIcon.ico')">
-				<ZipFile>$(ProjectTemplatesLayoutPath)%(TopLevelVSProjectTemplates.FileName).zip</ZipFile>
-				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
-			</VSProjectTemplateContents>
+			<VS2008ProjectTemplateContents Include="@(TopLevelVS2008ProjectTemplates->'$(VS2008ProjectTemplatesDirectory)__TemplateIcon.ico')">
+				<ZipFile>$(ProjectTemplatesVsiDirectory)%(TopLevelVS2008ProjectTemplates.FileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2008ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
 		</ItemGroup>
 
-		<Delete Files="@(VSProjectTemplateZipFiles)" />
 		<Zip
-			Files="@(VSProjectTemplateContents)"
-			ZipFileName="%(VSProjectTemplateContents.ZipFile)"
-			WorkingDirectory="%(VSProjectTemplateContents.WorkingDirectory)"
+			Files="@(VS2008ProjectTemplateContents)"
+			ZipFileName="%(VS2008ProjectTemplateContents.ZipFile)"
+			WorkingDirectory="%(VS2008ProjectTemplateContents.WorkingDirectory)"
+			ZipLevel="$(ZipLevel)"
 			/>
 	</Target>
 
-	<Target Name="vsi" DependsOnTargets="ProjectTemplates">
+	<Target Name="ProjectTemplates2010" DependsOnTargets="ProjectTemplatesLayout">
+		<PropertyGroup>
+			<ProjectTemplateSubdirectory>$(ExtensionVsixLayoutDirectory)PT\CSharp\Web\</ProjectTemplateSubdirectory>
+		</PropertyGroup>
 		<ItemGroup>
+			<ProjectTemplates2010Source Include="$(ProjectTemplatesLayoutPath)**" />
+			<ProjectTemplates2010Layout Include="@(ProjectTemplates2010Source->'$(VS2010ProjectTemplatesDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
+			<ProjectTemplates2010Layout>
+				<HardLink Condition=" '%(Extension)' != '.csproj' ">true</HardLink>
+			</ProjectTemplates2010Layout>
+
+			<VS2010ProjectTemplates Include="@(ProjectTemplates2010Layout)" Condition="'%(Extension)' == '.vstemplate'" />
+			<TopLevelVS2010ProjectTemplates Include="@(VS2010ProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(VS2010ProjectTemplatesDirectory)'" />
+			<VS2010ProjectTemplateZipFiles Include="@(TopLevelVS2010ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
+		</ItemGroup>
+
+		<HardLinkCopy SourceFiles="@(ProjectTemplates2010Source)" DestinationFiles="@(ProjectTemplates2010Layout)" />
+
+		<Purge Directories="$(VS2010ProjectTemplatesDirectory)" IntendedFiles="@(ProjectTemplates2010Layout)" />
+
+		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2010ProjectTemplates)">
+			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2010Templates" />
+			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2010TemplateItemContents" />
+		</DiscoverProjectTemplates>
+
+		<ItemGroup>
+			<!-- Include in each template .zip file the top-level .vstemplate file itself. -->
+			<VS2010ProjectTemplateContents Include="@(TopLevelVS2010ProjectTemplates)">
+				<ZipFile>$(ProjectTemplateSubdirectory)%(FileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2010ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2010ProjectTemplateContents>
+
+			<!-- Now throw in all the files in each of the project-level template's directories and their children. -->
+			<VS2010ProjectTemplateContents Include="@(VS2010TemplateItemContents)">
+				<ZipFile>$(ProjectTemplateSubdirectory)%(VS2010TemplateItemContents.TopLevelTemplateFileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2010ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2010ProjectTemplateContents>
+
+			<!-- Include the template icon for each .zip file. -->
+			<VS2010ProjectTemplateContents Include="@(TopLevelVS2010ProjectTemplates->'$(VS2010ProjectTemplatesDirectory)__TemplateIcon.ico')">
+				<ZipFile>$(ProjectTemplateSubdirectory)%(TopLevelVS2010ProjectTemplates.FileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2010ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2010ProjectTemplateContents>
+
+			<ExtensionVsixContents Include="%(VS2010ProjectTemplateContents.ZipFile)" />
+		</ItemGroup>
+
+		<Zip
+			Files="@(VS2010ProjectTemplateContents)"
+			ZipFileName="%(VS2010ProjectTemplateContents.ZipFile)"
+			WorkingDirectory="%(VS2010ProjectTemplateContents.WorkingDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
+	</Target>
+
+	<Target Name="vsi" DependsOnTargets="ProjectTemplates2008;_SetDropProperties">
+		<PropertyGroup>
+			<ProjectTemplatesVsi>$(DropDirectoryNoSlash).vsi</ProjectTemplatesVsi>
+		</PropertyGroup>
+		<ItemGroup>
+			<VsiTransformSource Include="$(ProjectRoot)vsi\*.vscontent">
+				<BeforeTokens>$version$</BeforeTokens>
+				<AfterTokens>$(BuildVersion)</AfterTokens>
+				<SkipUnchangedFiles>false</SkipUnchangedFiles>
+			</VsiTransformSource>
+			<VsiTransformLayout Include="@(VsiTransformSource->'$(ProjectTemplatesVsiDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
+
 			<ProjectTemplateVsiContents Include="
-																	$(ProjectTemplatesLayoutPath)*.vscontent;
-																	$(ProjectTemplatesLayoutPath)*.zip
+																	$(ProjectTemplatesVsiDirectory)*.zip;
+																	@(VsiTransformLayout);
 																	" />
 		</ItemGroup>
 
-		<Delete Files="$(ProjectTemplatesVsi)" />
+		<CopyWithTokenSubstitution SourceFiles="@(VsiTransformSource)" DestinationFiles="@(VsiTransformLayout)" />
+
 		<Zip
 			Files="@(ProjectTemplateVsiContents)"
 			ZipFileName="$(ProjectTemplatesVsi)"
-			WorkingDirectory="$(ProjectTemplatesLayoutPath)"
+			WorkingDirectory="$(ProjectTemplatesVsiDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
+	</Target>
+
+	<Target Name="VsixLayout" DependsOnTargets="ProjectTemplates2010">
+		<ItemGroup>
+			<ProjectTemplates2010TransformSource Include="
+																					 $(ProjectRoot)vsix\extension.vsixmanifest;
+																					 $(ProjectRoot)LICENSE.txt;
+																					 ">
+				<BeforeTokens>$version$</BeforeTokens>
+				<AfterTokens>$(BuildVersion)</AfterTokens>
+				<SkipUnchangedFiles>false</SkipUnchangedFiles>
+			</ProjectTemplates2010TransformSource>
+			<ProjectTemplates2010TransformLayout Include="@(ProjectTemplates2010TransformSource->'$(ExtensionVsixLayoutDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
+
+			<ExtensionVsixSources Include="
+														$(ProjectRoot)vsix\*;
+														" Exclude="
+														$(ProjectRoot)vsix\extension.vsixmanifest;
+														">
+				<SkipUnchangedFiles>true</SkipUnchangedFiles>
+			</ExtensionVsixSources>
+
+			<ExtensionVsixTargets Include="@(ExtensionVsixSources->'$(ExtensionVsixLayoutDirectory)%(FileName)%(Extension)')" />
+
+			<ExtensionVsixContents Include="
+														 @(ExtensionVsixTargets);
+														 @(ProjectTemplates2010TransformLayout);
+														 "/>
+		</ItemGroup>
+
+		<Copy SourceFiles="@(ExtensionVsixSources)" DestinationFiles="@(ExtensionVsixTargets)" SkipUnchangedFiles="true" />
+		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplates2010TransformSource)" DestinationFiles="@(ProjectTemplates2010TransformLayout)" />
+
+		<Purge Directories="$(ExtensionVsixLayoutDirectory)" IntendedFiles="@(ExtensionVsixContents)" />
+	</Target>
+
+	<Target Name="vsix" DependsOnTargets="VsixLayout;_SetDropProperties">
+		<PropertyGroup>
+			<ExtensionVsix>$(DropDirectoryNoSlash).vsix</ExtensionVsix>
+		</PropertyGroup>
+		<Zip
+			Files="@(ExtensionVsixContents)"
+			ZipFileName="$(ExtensionVsix)"
+			WorkingDirectory="$(ExtensionVsixLayoutDirectory)"
+			ZipLevel="$(ZipLevel)"
 			/>
 	</Target>
 
@@ -308,8 +445,15 @@
 
 	<Target Name="Test" DependsOnTargets="BuildTests"
 	        Inputs="$(OutputPath)$(ProductName).Test.dll"
-	        Outputs='$(OutputPath)Test-results.xml;$(OutputPath)Test-output-results.log'>
-		<Exec Command='"mstest.exe" /testcontainer:"$(OutputPath)$(ProductName).Test.dll"' />
+	        Outputs='$(OutputPath)Test-result.xml'>
+		<PropertyGroup>
+			<!-- Performance tests are only expected to pass in optimized builds. -->
+			<NUnitExcludeCategories Condition=" '$(Configuration)' != 'Release' ">Performance</NUnitExcludeCategories>
+		</PropertyGroup>
+		<NUnit Assemblies="$(OutputPath)$(ProductName).Test.dll"
+		       ToolPath="$(NUnitToolPath)"
+		       OutputXmlFile="$(OutputPath)Test-result.xml"
+		       ExcludeCategory="$(NUnitExcludeCategories)"/>
 	</Target>
 
 	<Target Name="_SetDropProperties">
@@ -322,7 +466,7 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;vsi;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;vsi;vsix;Documentation">
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
@@ -359,6 +503,7 @@
 																$(ProjectRoot)Lib\log4net.*;
 																" />
 			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesVsi)" />
+			<DropVsixSourceFiles Include="$(ExtensionVsix)" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
 															$(ProjectRoot)**\obj\**;
 															$(ProjectRoot)**\*.sln.cache;
@@ -385,6 +530,7 @@
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
+			<DropVsixFiles Include="@(DropVsixSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
 			<DropSamplesToolsProjects Include="$(DropSamplesDirectory)OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
@@ -395,6 +541,7 @@
 										@(DropBinSourceFiles);
 										@(DropLibSourceFiles);
 										@(DropProjectTemplatesSourceFiles);
+										@(DropVsixSourceFiles);
 										@(DropSamplesSourceFiles);
 										@(DropSamplesRefreshSourceFiles);
 										@(DropDocSourceFiles);
@@ -406,6 +553,7 @@
 										@(DropBinFiles);
 										@(DropLibFiles);
 										@(DropProjectTemplatesFiles);
+										@(DropVsixFiles);
 										@(DropSamplesFiles);
 										@(DropSamplesRefreshFiles);
 										@(DropDocFiles);
@@ -419,19 +567,22 @@
 		<Purge Directories="$(DropDirectory)" IntendedFiles="@(AllDropTargets)" />
 		<!-- fix up the samples so that they will compile right out of the drop -->
 		<ItemGroup>
-			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.csproj" />
+			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.*proj" />
+			<SampleSolutionTargets Include="$(DropSamplesDirectory)**\*.sln" />
 		</ItemGroup>
-		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" RemoveImportsStartingWith="%24(ProjectRoot)tools\" />
+		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)"
+		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\"
+		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
+		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" DowngradeMvc2ToMvc1="true" />
 	</Target>
 
 	<Target Name="Drop" DependsOnTargets="DropLayout">
 		<PropertyGroup>
 			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
 		</PropertyGroup>
-		<Delete Files="$(DropZip)" />
-		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" />
+		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" ZipLevel="$(ZipLevel)" />
 	</Target>
 
 	<!-- Although Nightly includes publishing samples and docs, those targets are conditioned for

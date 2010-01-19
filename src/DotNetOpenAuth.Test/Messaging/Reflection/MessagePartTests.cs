@@ -12,42 +12,42 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class MessagePartTests : MessagingTestBase {
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void OptionalNonNullableStruct() {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNonNullableOptionalStruct));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequiredNonNullableStruct() {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNonNullableRequiredStruct));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void OptionalNullableStruct() {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNullableOptionalStruct));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequiredNullableStruct() {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNullableRequiredStruct));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullMember() {
 			new MessagePart(null, new MessagePartAttribute());
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullAttribute() {
 			PropertyInfo field = typeof(MessageWithNullableOptionalStruct).GetProperty("OptionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
 			new MessagePart(field, null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void SetValue() {
 			var message = new MessageWithNonNullableRequiredStruct();
 			MessagePart part = this.ParameterizedMessageTypeTest(message.GetType());
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual(5, message.OptionalInt);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GetValue() {
 			var message = new MessageWithNonNullableRequiredStruct();
 			message.OptionalInt = 8;
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("8", part.GetValue(message));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Base64Member() {
 			var message = new MessageWithBase64EncodedString();
 			message.LastName = "andrew";
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("arnott", message.LastName);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ConstantFieldMemberValidValues() {
 			var message = new MessageWithConstantField();
 			MessagePart part = GetMessagePart(message.GetType(), "ConstantField");
@@ -82,20 +82,20 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("abc", part.GetValue(message));
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void ConstantFieldMemberInvalidValues() {
 			var message = new MessageWithConstantField();
 			MessagePart part = GetMessagePart(message.GetType(), "ConstantField");
 			part.SetValue(message, "def");
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void NonFieldOrPropertyMember() {
 			MemberInfo method = typeof(MessageWithNullableOptionalStruct).GetMethod("Equals", BindingFlags.Public | BindingFlags.Instance);
 			new MessagePart(method, new MessagePartAttribute());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequiredMinAndMaxVersions() {
 			Type messageType = typeof(MessageWithMinAndMaxVersionParts);
 			FieldInfo newIn2Field = messageType.GetField("NewIn2", BindingFlags.Public | BindingFlags.Instance);

@@ -10,11 +10,11 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class PlaintextSigningBindingElementTest {
-		[TestMethod]
+		[TestCase]
 		public void HttpsSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual("cs&ts", message.Signature);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void HttpsSignatureVerification() {
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
 			ITamperProtectionChannelBindingElement target = new PlaintextSigningBindingElement();
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.IsNotNull(target.ProcessIncomingMessage(message));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void HttpsSignatureVerificationNotApplicable() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual(MessageProtections.None, target.ProcessIncomingMessage(message), "PLAINTEXT binding element should opt-out where it doesn't understand.");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void HttpSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.IsNull(message.Signature);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void HttpSignatureVerification() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();

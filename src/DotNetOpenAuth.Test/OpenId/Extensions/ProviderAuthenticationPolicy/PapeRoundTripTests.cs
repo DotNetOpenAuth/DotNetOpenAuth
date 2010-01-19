@@ -9,18 +9,18 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.Test.OpenId.Extensions;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class PapeRoundTripTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void Trivial() {
 			var request = new PolicyRequest();
 			var response = new PolicyResponse();
 			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Full() {
 			var request = new PolicyRequest();
 			request.MaximumAuthenticationAge = TimeSpan.FromMinutes(10);

@@ -12,11 +12,11 @@ namespace DotNetOpenAuth.Test.Hosting {
 	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Test.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture, Category("HostASPNET")]
 	public class HostingTests : TestBase {
-		[TestMethod]
+		[TestCase]
 		public void AspHostBasicTest() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 						Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 						using (StreamReader sr = new StreamReader(response.GetResponseStream())) {
 							string content = sr.ReadToEnd();
-							StringAssert.Contains(content, "Test home page");
+							StringAssert.Contains("Test home page", content);
 						}
 					}
 				}

@@ -12,14 +12,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class StoreRequestTests {
 		/// <summary>
 		/// Verifies the constructor behavior.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			var req = new StoreRequest();
 			Assert.IsFalse(req.Attributes.Any());
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the AddAttribute method.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void AddAttributeByValue() {
 			var req = new StoreRequest();
 			AttributeValues value = new AttributeValues();
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the AddAttribute method.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void AddAttributeByPrimitives() {
 			var req = new StoreRequest();
 			req.Attributes.Add("http://att1", "value1", "value2");
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the Equals method.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void EqualityTests() {
 			var req1 = new StoreRequest();
 			var req2 = new StoreRequest();
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Serializable() {
 			var store = new StoreRequest();
 			store.Attributes.Add("http://someAttribute", "val1", "val2");

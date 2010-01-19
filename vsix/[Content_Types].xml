@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+	<Default Extension="png" ContentType="application/octet-stream" />
+	<Default Extension="txt" ContentType="text/plain" />
+	<Default Extension="vsixmanifest" ContentType="text/xml" />
+	<Default Extension="zip" ContentType="application/zip" />
+	<Default Extension="pkgdef" ContentType="text/plain" />
+</Types>

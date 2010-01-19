@@ -16,9 +16,9 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class IdentifierDiscoveryResultTests : OpenIdTestBase {
 		private UriIdentifier claimedId = new UriIdentifier("http://claimedid.justatest.com");
 		private XriIdentifier claimedXri = new XriIdentifier("=!9B72.7DD1.50A9.5CCD");
@@ -30,12 +30,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		private int servicePriority = 10;
 		private int uriPriority = 10;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.AreEqual(this.claimedId, se.ClaimedIdentifier);
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(this.servicePriority, se.ServicePriority);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorImpliedLocalIdentifier() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, null, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.AreEqual(this.claimedId, se.ClaimedIdentifier);
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			CollectionAssert<string>.AreEquivalent(this.v20TypeUris, se.Capabilities);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ProtocolDetection() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.AreSame(Protocol.V20, se.Protocol);
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreSame(Protocol.V11, se.Protocol);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EqualsTests() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			IdentifierDiscoveryResult se2 = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), (int?)null, (int?)null);
@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsTrue(list.Contains(se2));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GetFriendlyIdentifierForDisplay() {
 			Uri providerEndpoint = new Uri("http://someprovider");
 			Identifier localId = "someuser";
@@ -136,50 +136,50 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", se.FriendlyIdentifierForDisplay);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void IsTypeUriPresent() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.IsTrue(se.IsTypeUriPresent(Protocol.Default.ClaimedIdentifierServiceTypeURI));
 			Assert.IsFalse(se.IsTypeUriPresent("http://someother"));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void IsTypeUriPresentNull() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			se.IsTypeUriPresent(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void IsTypeUriPresentEmpty() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			se.IsTypeUriPresent(string.Empty);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void IsExtensionSupportedNullType() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsExtensionSupported((Type)null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void IsTypeUriPresentNullString() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsTypeUriPresent((string)null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void IsTypeUriPresentEmptyString() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsTypeUriPresent(string.Empty);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void IsExtensionSupportedNullExtension() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsExtensionSupported((IOpenIdMessageExtension)null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void IsExtensionSupported() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			Assert.IsFalse(se.IsExtensionSupported<ClaimsRequest>());

@@ -1,15 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5" InitialTargets="InitializeProps">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" InitialTargets="InitializeProps">
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\</ProjectRoot>
 		<DropsRoot>$(ProjectRoot)drops\$(Configuration)\</DropsRoot>
-		<OutputPath>$(ProjectRoot)bin\$(Configuration)\</OutputPath>
+		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
-		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)\</IntermediatePath>
-		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\</BaseIntermediateOutputPath>
+		<IntermediatePath>$(ProjectRoot)obj\$(TargetFrameworkVersion)\$(Configuration)\</IntermediatePath>
+		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
+		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
+		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>

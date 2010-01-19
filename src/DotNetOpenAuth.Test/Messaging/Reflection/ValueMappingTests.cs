@@ -7,16 +7,16 @@
 namespace DotNetOpenAuth.Test.Messaging.Reflection {
 	using System;
 	using DotNetOpenAuth.Messaging.Reflection;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ValueMappingTests {
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullToString() {
 			new ValueMapping(null, str => new object());
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullToObject() {
 			new ValueMapping(obj => obj.ToString(), null);
 		}

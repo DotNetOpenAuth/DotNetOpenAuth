@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	internal class CollectionAssert<T> {
 		internal static void AreEquivalent(ICollection<T> expected, ICollection<T> actual) {

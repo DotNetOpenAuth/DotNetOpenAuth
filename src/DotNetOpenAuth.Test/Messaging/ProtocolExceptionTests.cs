@@ -7,22 +7,22 @@
 namespace DotNetOpenAuth.Test.Messaging {
 	using System;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ProtocolExceptionTests : TestBase {
-		[TestMethod]
+		[TestCase]
 		public void CtorDefault() {
 			ProtocolException ex = new ProtocolException();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorWithTextMessage() {
 			ProtocolException ex = new ProtocolException("message");
 			Assert.AreEqual("message", ex.Message);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorWithTextMessageAndInnerException() {
 			Exception innerException = new Exception();
 			ProtocolException ex = new ProtocolException("message", innerException);
@@ -30,14 +30,14 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreSame(innerException, ex.InnerException);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorWithProtocolMessage() {
 			IProtocolMessage message = new Mocks.TestDirectedMessage();
 			ProtocolException ex = new ProtocolException("message", message);
 			Assert.AreSame(message, ex.FaultedMessage);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorWithNullProtocolMessage() {
 			new ProtocolException("message", (IProtocolMessage)null);
 		}

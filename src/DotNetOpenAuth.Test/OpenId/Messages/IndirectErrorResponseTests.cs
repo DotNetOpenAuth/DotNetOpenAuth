@@ -10,25 +10,25 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class IndirectErrorResponseTests : OpenIdTestBase {
 		private IndirectErrorResponse response;
 
-		[TestInitialize]
+		[SetUp]
 		public void Setup() {
 			CheckIdRequest request = new CheckIdRequest(Protocol.V20.Version, OPUri, AuthenticationRequestMode.Immediate);
 			request.ReturnTo = RPUri;
 			this.response = new IndirectErrorResponse(request);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			Assert.AreEqual(RPUri, this.response.Recipient);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ParameterNames() {
 			this.response.ErrorMessage = "Some Error";
 			this.response.Contact = "Andrew Arnott";

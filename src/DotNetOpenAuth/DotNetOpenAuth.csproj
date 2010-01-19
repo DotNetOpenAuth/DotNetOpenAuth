@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,13 +14,32 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetOpenAuth</RootNamespace>
     <AssemblyName>DotNetOpenAuth</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StandardCopyright>
 Copyright (c) 2009, Andrew Arnott. All rights reserved.
 Code licensed under the Ms-PL License:
 http://opensource.org/licenses/ms-pl.html
 </StandardCopyright>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
     <ApplicationIcon>DotNetOpenAuth.ico</ApplicationIcon>
     <DocumentationFile>$(OutputPath)DotNetOpenAuth.xml</DocumentationFile>
   </PropertyGroup>
@@ -33,7 +52,8 @@ http://opensource.org/licenses/ms-pl.html
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>
     </CodeContractsCustomRewriterAssembly>
@@ -62,6 +82,7 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -71,7 +92,8 @@ http://opensource.org/licenses/ms-pl.html
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>
     </CodeContractsCustomRewriterAssembly>
@@ -100,13 +122,15 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>$(DefineConstants);CONTRACTS_FULL;DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisRules>-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -139,15 +163,12 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -175,8 +196,7 @@ http://opensource.org/licenses/ms-pl.html
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Abstractions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="System.Web.Abstractions">
       <HintPath>..\..\lib\System.Web.Abstractions.dll</HintPath>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -186,16 +206,12 @@ http://opensource.org/licenses/ms-pl.html
     <Reference Include="System.Web.Extensions.Design">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Web.Mobile" />
-    <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Routing, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="System.Web.Mobile" Condition=" '$(ClrVersion)' != '4' " />
+    <Reference Include="System.Web.Routing">
       <HintPath>..\..\lib\System.Web.Routing.dll</HintPath>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xaml" Condition=" '$(ClrVersion)' == '4' " />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -203,6 +219,18 @@ http://opensource.org/licenses/ms-pl.html
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"/>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+    <!-- MVC 2 can run on CLR 2 (it doesn't require CLR 4) but since MVC 2 apps tend to use type forwarding,
+         it's a more broadly consumable idea to bind against MVC 1 for the library unless we're building on CLR 4,
+         which will definitely have MVC 2 available. -->
+    <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
@@ -515,7 +543,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' " />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
@@ -610,6 +638,7 @@ http://opensource.org/licenses/ms-pl.html
   </ItemGroup>
   <ItemGroup>
     <None Include="Configuration\DotNetOpenAuth.xsd" />
+    <None Include="Migrated rules for DotNetOpenAuth.ruleset" />
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />
@@ -710,6 +739,21 @@ http://opensource.org/licenses/ms-pl.html
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.css" />
   </ItemGroup>
   <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
     <Content Include="DotNetOpenAuth.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

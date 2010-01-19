@@ -12,11 +12,11 @@ namespace DotNetOpenAuth.Test.OAuth {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AppendixScenarios : TestBase {
-		[TestMethod]
+		[TestCase]
 		public void SpecAppendixAExample() {
 			ServiceProviderDescription serviceDescription = new ServiceProviderDescription() {
 				RequestTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/request_token", HttpDeliveryMethods.PostRequest),

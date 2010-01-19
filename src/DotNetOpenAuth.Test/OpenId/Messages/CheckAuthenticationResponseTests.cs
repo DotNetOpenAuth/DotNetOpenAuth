@@ -12,16 +12,16 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class CheckAuthenticationResponseTests : OpenIdTestBase {
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void IsValid() {
 			Protocol protocol = Protocol.Default;
 			var request = new CheckAuthenticationRequest(protocol.Version, OPUri);

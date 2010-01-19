@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	internal abstract class CoordinatorBase<T1, T2> {
 		private Action<T1> party1Action;
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test {
 
 			// Use the failing reason of a failing sub-thread as our reason, if anything failed.
 			if (failingException != null) {
-				throw new AssertFailedException("Coordinator thread threw unhandled exception: " + failingException, failingException);
+				throw new AssertionException("Coordinator thread threw unhandled exception: " + failingException, failingException);
 			}
 		}
 	}
