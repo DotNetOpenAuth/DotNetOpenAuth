@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth.Messages {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
 
@@ -13,7 +14,12 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	/// A message attached to a request for protected resources that provides the necessary
 	/// credentials to be granted access to those resources.
 	/// </summary>
-	public class AccessProtectedResourceRequest : SignedMessageBase, ITokenContainingMessage {
+	public class AccessProtectedResourceRequest : SignedMessageBase, ITokenContainingMessage, IMessageWithBinaryData {
+		/// <summary>
+		/// A store for the binary data that is carried in the message.
+		/// </summary>
+		private List<MultipartPostPart> binaryData = new List<MultipartPostPart>();
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
 		/// </summary>
@@ -43,5 +49,24 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </remarks>
 		[MessagePart("oauth_token", IsRequired = true)]
 		public string AccessToken { get; set; }
+
+		#region IMessageWithBinaryData Members
+
+		/// <summary>
+		/// Gets the parts of the message that carry binary data.
+		/// </summary>
+		/// <value>A list of parts.  Never null.</value>
+		public IList<MultipartPostPart> BinaryData {
+			get { return this.binaryData; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this message should be sent as multi-part POST.
+		/// </summary>
+		public bool SendAsMultipart {
+			get { return this.HttpMethod == "POST" && this.BinaryData.Count > 0; }
+		}
+
+		#endregion
 	}
 }

@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId {
+	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -118,11 +119,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <param name="typeUri">The type URI.</param>
 		private void InjectAdvertisedTypeUri(string typeUri) {
-			var serviceEndpoint = ServiceEndpoint_Accessor.AttachShadow(((ServiceEndpoint)this.authReq.Provider));
-			serviceEndpoint.ProviderDescription = ProviderEndpointDescription_Accessor.AttachShadow(
-				new ProviderEndpointDescription(
-					serviceEndpoint.ProviderDescription.Endpoint,
-					serviceEndpoint.ProviderDescription.Capabilities.Concat(new[] { typeUri })));
+			var serviceEndpoint = (IdentifierDiscoveryResult)this.authReq.Provider;
+			serviceEndpoint.SetCapabilitiesForTestHook(
+				new ReadOnlyCollection<string>(serviceEndpoint.Capabilities.Concat(new[] { typeUri }).ToList()));
 		}
 	}
 }

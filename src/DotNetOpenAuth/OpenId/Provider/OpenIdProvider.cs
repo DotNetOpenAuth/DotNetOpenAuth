@@ -20,10 +20,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using RP = DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "By design")]
 	[ContractVerification(true)]
 	public sealed class OpenIdProvider : IDisposable {
 		/// <summary>
@@ -43,6 +45,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private ProviderSecuritySettings securitySettings;
 
 		/// <summary>
+		/// The relying party used to perform discovery on identifiers being sent in
+		/// unsolicited positive assertions.
+		/// </summary>
+		private RP.OpenIdRelyingParty relyingParty;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		public OpenIdProvider()
@@ -58,7 +66,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
 		public OpenIdProvider(IProviderApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
-			Contract.Requires(applicationStore != null);
+			Contract.Requires<ArgumentNullException>(applicationStore != null);
 			Contract.Ensures(this.AssociationStore == applicationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
@@ -70,13 +78,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
 		private OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore) {
-			Contract.Requires(associationStore != null);
-			Contract.Requires(nonceStore != null);
+			Contract.Requires<ArgumentNullException>(associationStore != null);
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
 			Contract.Ensures(this.AssociationStore == associationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
-			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
 
 			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
@@ -86,6 +92,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
 		}
 
 		/// <summary>
@@ -95,8 +103,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static IProviderApplicationStore HttpApplicationStore {
 			get {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<IProviderApplicationStore>() != null);
-				ErrorUtilities.VerifyHttpContext();
 				HttpContext context = HttpContext.Current;
 				var store = (IProviderApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
@@ -130,8 +138,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			internal set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.securitySettings = value;
 			}
 		}
@@ -152,8 +159,19 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets a list of custom behaviors to apply to OpenID actions.
 		/// </summary>
-		internal ICollection<IProviderBehavior> Behaviors {
+		/// <remarks>
+		/// Adding behaviors can impact the security settings of the <see cref="OpenIdProvider"/>
+		/// in ways that subsequently removing the behaviors will not reverse.
+		/// </remarks>
+		public ICollection<IProviderBehavior> Behaviors {
 			get { return this.behaviors; }
+		}
+
+		/// <summary>
+		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
+		/// </summary>
+		internal IList<IIdentifierDiscoveryService> DiscoveryServices {
+			get { return this.RelyingParty.DiscoveryServices; }
 		}
 
 		/// <summary>
@@ -167,6 +185,25 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		internal IDirectWebRequestHandler WebRequestHandler {
 			get { return this.Channel.WebRequestHandler; }
+		}
+
+		/// <summary>
+		/// Gets the relying party used for discovery of identifiers sent in unsolicited assertions.
+		/// </summary>
+		private RP.OpenIdRelyingParty RelyingParty {
+			get {
+				if (this.relyingParty == null) {
+					lock (this) {
+						if (this.relyingParty == null) {
+							// we just need an RP that's capable of discovery, so stateless mode is fine.
+							this.relyingParty = new RP.OpenIdRelyingParty(null);
+						}
+					}
+				}
+
+				this.relyingParty.Channel.WebRequestHandler = this.WebRequestHandler;
+				return this.relyingParty;
+			}
 		}
 
 		/// <summary>
@@ -201,8 +238,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
 		/// but deviates from the protocol specification irrecoverably.</exception>
 		public IRequest GetRequest(HttpRequestInfo httpRequestInfo) {
-			Contract.Requires(httpRequestInfo != null);
-			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
 			IDirectedProtocolMessage incomingMessage = null;
 
 			try {
@@ -281,10 +317,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public void SendResponse(IRequest request) {
-			Contract.Requires(HttpContext.Current != null);
-			Contract.Requires(request != null);
-			Contract.Requires(((Request)request).IsResponseReady);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(((Request)request).IsResponseReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -299,9 +334,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public OutgoingWebResponse PrepareResponse(IRequest request) {
-			Contract.Requires(request != null);
-			Contract.Requires(((Request)request).IsResponseReady);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(((Request)request).IsResponseReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -314,7 +348,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// web site and log him/her in immediately in one uninterrupted step.
 		/// </summary>
 		/// <param name="providerEndpoint">The absolute URL on the Provider site that receives OpenID messages.</param>
-		/// <param name="relyingParty">The URL of the Relying Party web site.
+		/// <param name="relyingPartyRealm">The URL of the Relying Party web site.
 		/// This will typically be the home page, but may be a longer URL if
 		/// that Relying Party considers the scope of its realm to be more specific.
 		/// The URL provided here must allow discovery of the Relying Party's
@@ -323,15 +357,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
 		/// be the same as <paramref name="claimedIdentifier"/>.</param>
 		/// <param name="extensions">The extensions.</param>
-		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
-			Contract.Requires(HttpContext.Current != null);
-			Contract.Requires(providerEndpoint != null);
-			Contract.Requires(providerEndpoint.IsAbsoluteUri);
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(claimedIdentifier != null);
-			Contract.Requires(localIdentifier != null);
+		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentException>(providerEndpoint.IsAbsoluteUri);
+			Contract.Requires<ArgumentNullException>(relyingPartyRealm != null);
+			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(localIdentifier != null);
 
-			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingParty, claimedIdentifier, localIdentifier, extensions).Send();
+			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartyRealm, claimedIdentifier, localIdentifier, extensions).Send();
 		}
 
 		/// <summary>
@@ -340,7 +374,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// web site and log him/her in immediately in one uninterrupted step.
 		/// </summary>
 		/// <param name="providerEndpoint">The absolute URL on the Provider site that receives OpenID messages.</param>
-		/// <param name="relyingParty">The URL of the Relying Party web site.
+		/// <param name="relyingPartyRealm">The URL of the Relying Party web site.
 		/// This will typically be the home page, but may be a longer URL if
 		/// that Relying Party considers the scope of its realm to be more specific.
 		/// The URL provided here must allow discovery of the Relying Party's
@@ -353,41 +387,43 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// A <see cref="OutgoingWebResponse"/> object describing the HTTP response to send
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
-		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingParty, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
-			Contract.Requires(providerEndpoint != null);
-			Contract.Requires(providerEndpoint.IsAbsoluteUri);
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(claimedIdentifier != null);
-			Contract.Requires(localIdentifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(providerEndpoint, "providerEndpoint");
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
-			ErrorUtilities.VerifyArgumentNotNull(claimedIdentifier, "claimedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(localIdentifier, "localIdentifier");
-			ErrorUtilities.VerifyArgumentNamed(providerEndpoint.IsAbsoluteUri, "providerEndpoint", OpenIdStrings.AbsoluteUriRequired);
+		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentException>(providerEndpoint.IsAbsoluteUri);
+			Contract.Requires<ArgumentNullException>(relyingPartyRealm != null);
+			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(localIdentifier != null);
+			Contract.Requires<InvalidOperationException>(this.Channel.WebRequestHandler != null);
 
 			// Although the RP should do their due diligence to make sure that this OP
 			// is authorized to send an assertion for the given claimed identifier,
 			// do due diligence by performing our own discovery on the claimed identifier
 			// and make sure that it is tied to this OP and OP local identifier.
-			var serviceEndpoint = DotNetOpenAuth.OpenId.RelyingParty.ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
-			var discoveredEndpoints = claimedIdentifier.Discover(this.WebRequestHandler);
-			if (!discoveredEndpoints.Contains(serviceEndpoint)) {
-				Logger.OpenId.DebugFormat(
-					"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
-					claimedIdentifier,
-					Environment.NewLine,
-					serviceEndpoint,
-					discoveredEndpoints.ToStringDeferred(true));
-				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
+			if (this.SecuritySettings.UnsolicitedAssertionVerification != ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.NeverVerify) {
+				var serviceEndpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
+				var discoveredEndpoints = this.RelyingParty.Discover(claimedIdentifier);
+				if (!discoveredEndpoints.Contains(serviceEndpoint)) {
+					Logger.OpenId.WarnFormat(
+						"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
+						claimedIdentifier,
+						Environment.NewLine,
+						serviceEndpoint,
+						discoveredEndpoints.ToStringDeferred(true));
+
+					// Only FAIL if the setting is set for it.
+					if (this.securitySettings.UnsolicitedAssertionVerification == ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.RequireSuccess) {
+						ErrorUtilities.ThrowProtocol(OpenIdStrings.UnsolicitedAssertionForUnrelatedClaimedIdentifier, claimedIdentifier);
+					}
+				}
 			}
 
 			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			RelyingPartyEndpointDescription returnToEndpoint = null;
-			var returnToEndpoints = relyingParty.Discover(this.WebRequestHandler, true);
+			var returnToEndpoints = relyingPartyRealm.DiscoverReturnToEndpoints(this.WebRequestHandler, true);
 			if (returnToEndpoints != null) {
 				returnToEndpoint = returnToEndpoints.FirstOrDefault();
 			}
-			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingParty);
+			ErrorUtilities.VerifyProtocol(returnToEndpoint != null, OpenIdStrings.NoRelyingPartyEndpointDiscovered, relyingPartyRealm);
 
 			var positiveAssertion = new PositiveAssertionResponse(returnToEndpoint) {
 				ProviderEndpoint = providerEndpoint,
@@ -401,6 +437,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				}
 			}
 
+			Reporting.RecordEventOccurrence(this, "PrepareUnsolicitedAssertion");
 			return this.Channel.PrepareResponse(positiveAssertion);
 		}
 
@@ -424,6 +461,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				IDisposable channel = this.Channel as IDisposable;
 				if (channel != null) {
 					channel.Dispose();
+				}
+
+				if (this.relyingParty != null) {
+					this.relyingParty.Dispose();
 				}
 			}
 		}
@@ -456,10 +497,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.
 		/// </returns>
 		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestInfo httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
-			Contract.Requires(ex != null);
-			Contract.Requires(httpRequestInfo != null);
-			ErrorUtilities.VerifyArgumentNotNull(ex, "ex");
-			ErrorUtilities.VerifyArgumentNotNull(httpRequestInfo, "httpRequestInfo");
+			Contract.Requires<ArgumentNullException>(ex != null);
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
 
 			Logger.OpenId.Error("An exception was generated while processing an incoming OpenID request.", ex);
 			IErrorMessage errorMessage;
@@ -490,7 +529,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				return null;
 			}
 
-			errorMessage.ErrorMessage = ex.GetAllMessages();
+			errorMessage.ErrorMessage = ex.ToStringDescriptive();
 
 			// Allow host to log this error and issue a ticket #.
 			// We tear off the field to a local var for thread safety.
@@ -515,6 +554,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			foreach (IProviderBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
+				Reporting.RecordFeatureUse(profile);
 			}
 		}
 	}

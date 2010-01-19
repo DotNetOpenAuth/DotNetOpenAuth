@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.ObjectModel;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
@@ -13,7 +15,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// assertions (particularly unsolicited ones) are received from OP endpoints that
 	/// are deemed permissible by the host RP.
 	/// </summary>
-	internal class SimpleXrdsProviderEndpoint : IXrdsProviderEndpoint {
+	internal class SimpleXrdsProviderEndpoint : IProviderEndpoint {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SimpleXrdsProviderEndpoint"/> class.
 		/// </summary>
@@ -22,29 +24,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Uri = positiveAssertion.ProviderEndpoint;
 			this.Version = positiveAssertion.Version;
 		}
-
-		#region IXrdsProviderEndpoint Properties
-
-		/// <summary>
-		/// Gets the priority associated with this service that may have been given
-		/// in the XRDS document.
-		/// </summary>
-		public int? ServicePriority {
-			get { return null; }
-		}
-
-		/// <summary>
-		/// Gets the priority associated with the service endpoint URL.
-		/// </summary>
-		/// <remarks>
-		/// When sorting by priority, this property should be considered second after
-		/// <see cref="ServicePriority"/>.
-		/// </remarks>
-		public int? UriPriority {
-			get { return null; }
-		}
-
-		#endregion
 
 		#region IProviderEndpoint Members
 
@@ -56,7 +35,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the URL that the OpenID Provider receives authentication requests at.
 		/// </summary>
-		/// <value></value>
 		public Uri Uri { get; private set; }
 
 		/// <summary>
@@ -73,8 +51,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The only way to be sure of support for a given extension is to include
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
-		public bool IsExtensionSupported<T>() where T : DotNetOpenAuth.OpenId.Messages.IOpenIdMessageExtension, new() {
-			throw new NotSupportedException();
+		bool IProviderEndpoint.IsExtensionSupported<T>() {
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -91,23 +69,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The only way to be sure of support for a given extension is to include
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
-		public bool IsExtensionSupported(Type extensionType) {
-			throw new NotSupportedException();
-		}
-
-		#endregion
-
-		#region IXrdsProviderEndpoint Methods
-
-		/// <summary>
-		/// Checks for the presence of a given Type URI in an XRDS service.
-		/// </summary>
-		/// <param name="typeUri">The type URI to check for.</param>
-		/// <returns>
-		/// 	<c>true</c> if the service type uri is present; <c>false</c> otherwise.
-		/// </returns>
-		public bool IsTypeUriPresent(string typeUri) {
-			throw new NotSupportedException();
+		bool IProviderEndpoint.IsExtensionSupported(Type extensionType) {
+			throw new NotImplementedException();
 		}
 
 		#endregion

@@ -286,6 +286,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The HTML head tag must include runat=&quot;server&quot;..
+        /// </summary>
+        internal static string HeadTagMustIncludeRunatServer {
+            get {
+                return ResourceManager.GetString("HeadTagMustIncludeRunatServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true..
         /// </summary>
         internal static string IdentifierSelectRequiresMatchingIdentifiers {
@@ -358,7 +367,7 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not a recognized XRI format: &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Not a recognized XRI format..
         /// </summary>
         internal static string InvalidXri {
             get {
@@ -515,6 +524,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} property must be set first..
+        /// </summary>
+        internal static string PropertyNotSet {
+            get {
+                return ResourceManager.GetString("PropertyNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This property value is not supported by this control..
         /// </summary>
         internal static string PropertyValueNotSupported {
@@ -614,15 +632,6 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No current HttpContext was detected, so an {0} instance must be explicitly provided or specified in the .config file.  Call the constructor overload that takes an {0}..
-        /// </summary>
-        internal static string StoreRequiredWhenNoHttpContextAvailable {
-            get {
-                return ResourceManager.GetString("StoreRequiredWhenNoHttpContextAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The type must implement {0}..
         /// </summary>
         internal static string TypeMustImplementX {
@@ -709,6 +718,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string UserSetupUrlRequiredInImmediateNegativeResponse {
             get {
                 return ResourceManager.GetString("UserSetupUrlRequiredInImmediateNegativeResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The X.509 certificate used to sign this document is not trusted..
+        /// </summary>
+        internal static string X509CertificateNotTrusted {
+            get {
+                return ResourceManager.GetString("X509CertificateNotTrusted", resourceCulture);
             }
         }
         

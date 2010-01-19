@@ -35,10 +35,6 @@ namespace OpenIdRelyingPartyWebForms {
 			State.PapePolicies = e.Response.GetExtension<PolicyResponse>();
 		}
 
-		protected void OpenIdLogin1_SetupRequired(object sender, OpenIdEventArgs e) {
-			this.setupRequiredLabel.Visible = true;
-		}
-
 		private void prepareRequest(IAuthenticationRequest request) {
 			// Collect the PAPE policies requested by the user.
 			List<string> policies = new List<string>();

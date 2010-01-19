@@ -83,12 +83,20 @@
     <Content Include="user_xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="access_token.ashx.cs">
+      <DependentUpon>access_token.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Code\InMemoryConsumerDescription.cs" />
+    <Compile Include="Code\InMemoryServiceProviderAccessToken.cs" />
     <Compile Include="Code\CustomStore.cs" />
     <Compile Include="Code\CustomStoreDataSet.Designer.cs">
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Code\InMemoryServiceProviderRequestToken.cs" />
+    <Compile Include="Code\InMemoryTokenManager.cs" />
+    <Compile Include="Code\OAuthHybrid.cs" />
     <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\Util.cs" />
@@ -151,12 +159,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
-    <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="Site.Master" />
     <Content Include="styles.css" />
     <Content Include="TracePage.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="access_token.ashx" />
     <None Include="Code\CustomStoreDataSet.xsc">
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
     </None>
@@ -168,6 +176,7 @@
     <None Include="Code\CustomStoreDataSet.xss">
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
     </None>
+    <Content Include="images\DotNetOpenAuth.png" />
     <Content Include="Provider.ashx" />
   </ItemGroup>
   <ItemGroup>
@@ -190,7 +199,7 @@
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
+          <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>4860</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>

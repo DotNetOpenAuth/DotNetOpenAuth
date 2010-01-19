@@ -6,7 +6,9 @@
 
 namespace DotNetOpenAuth.Test {
 	using System;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
@@ -25,8 +27,8 @@ namespace DotNetOpenAuth.Test {
 		/// <param name="serviceProviderAction">The code path of the Service Provider.</param>
 		internal OAuthCoordinator(ConsumerDescription consumerDescription, ServiceProviderDescription serviceDescription, Action<WebConsumer> consumerAction, Action<ServiceProvider> serviceProviderAction)
 			: base(consumerAction, serviceProviderAction) {
-			ErrorUtilities.VerifyArgumentNotNull(consumerDescription, "consumerDescription");
-			ErrorUtilities.VerifyArgumentNotNull(serviceDescription, "serviceDescription");
+			Contract.Requires<ArgumentNullException>(consumerDescription != null);
+			Contract.Requires<ArgumentNullException>(serviceDescription != null);
 
 			this.consumerDescription = consumerDescription;
 			this.serviceDescription = serviceDescription;
@@ -57,7 +59,7 @@ namespace DotNetOpenAuth.Test {
 			WebConsumer consumer = new WebConsumer(this.serviceDescription, consumerTokenManager) {
 				OAuthChannel = consumerChannel,
 			};
-			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager) {
+			ServiceProvider serviceProvider = new ServiceProvider(this.serviceDescription, serviceTokenManager, new NonceMemoryStore()) {
 				OAuthChannel = serviceProviderChannel,
 			};
 

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Reflection;
 	using System.Web;
@@ -18,7 +19,8 @@ namespace DotNetOpenAuth.Configuration {
 	/// the full type that provides some service used by this library.
 	/// </summary>
 	/// <typeparam name="T">A constraint on the type the user may provide.</typeparam>
-	internal class TypeConfigurationElement<T> : ConfigurationElement {
+	internal class TypeConfigurationElement<T> : ConfigurationElement
+		where T : class {
 		/// <summary>
 		/// The name of the attribute whose value is the full name of the type the user is specifying.
 		/// </summary>
@@ -75,6 +77,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
 		/// <returns>The newly instantiated type.</returns>
 		public T CreateInstance(T defaultValue) {
+			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
+
 			return this.CreateInstance(defaultValue, false);
 		}
 
@@ -85,6 +89,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
 		/// <returns>The newly instantiated type.</returns>
 		public T CreateInstance(T defaultValue, bool allowInternals) {
+			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
+
 			if (this.CustomType != null) {
 				if (!allowInternals) {
 					// Although .NET will usually prevent our instantiating non-public types,
@@ -100,7 +106,7 @@ namespace DotNetOpenAuth.Configuration {
 					source = HttpContext.Current.Server.MapPath(source);
 				}
 				using (Stream xamlFile = File.OpenRead(source)) {
-					return this.CreateInstanceFromXaml(xamlFile);
+					return CreateInstanceFromXaml(xamlFile);
 				}
 			} else {
 				return defaultValue;
@@ -119,7 +125,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// XamlSource attribute is never used, the PresentationFramework.dll never need
 		/// be present.
 		/// </remarks>
-		private T CreateInstanceFromXaml(Stream xaml) {
+		private static T CreateInstanceFromXaml(Stream xaml) {
+			Contract.Ensures(Contract.Result<T>() != null);
 			return (T)XamlReader.Load(xaml);
 		}
 	}

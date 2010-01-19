@@ -26,9 +26,9 @@
 		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
 
 		<ItemGroup>
-			<_SampleWebConfigs Include="$(ProjectRoot)\samples\*\web.config" />
+			<_SampleWebConfigs Include="$(ProjectRoot)samples\*\web.config" />
 			<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
-			<SampleSources Include="$(ProjectRoot)\samples\**\*" />
+			<SampleSources Include="$(ProjectRoot)samples\**\*" />
 			<SampleSources>
 				<PublishedLocation>$(SampleWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)</PublishedLocation>
 			</SampleSources>
@@ -67,9 +67,14 @@
 		<Copy SourceFiles="@(PublishableWebSampleSources)" DestinationFiles="@(PublishableWebSampleTargets)" SkipUnchangedFiles="true" />
 	</Target>
 
+	<Target Name="UnpublishSamples"
+					DependsOnTargets="DeleteSampleSitesOnIis"
+					Condition=" '$(SampleWebRoot)' != '' ">
+	</Target>
+	
 	<Target Name="PrepareForPublishDocumentation" DependsOnTargets="Documentation">
 		<ItemGroup>
-			<DocSources Include="$(ProjectRoot)\doc\api\**\*" />
+			<DocSources Include="$(ProjectRoot)doc\api\**\*" />
 			<DocTargets Include="@(DocSources->'$(DocWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)')" />
 		</ItemGroup>
 	</Target>
@@ -82,6 +87,11 @@
 		<RemoveDir Directories="$(DocWebRoot)\$(BranchName)" />
 		<MakeDir Directories="$(DocWebRoot)\$(BranchName)" />
 		<Copy SourceFiles="@(DocSources)" DestinationFiles="@(DocTargets)" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="UnpublishDocumentation"
+					DependsOnTargets="DeleteDocumentationSiteOnIis"
+					Condition=" '$(DocWebRoot)' != '' ">
 	</Target>
 
 	<Target Name="CreateSampleSitesOnIis" DependsOnTargets="PrepareForIIS;PrepareForPublishSamples">

@@ -38,11 +38,37 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.IsNull(authResponse.Exception);
 			Assert.AreEqual<string>(assertion.ClaimedIdentifier, authResponse.ClaimedIdentifier);
-			Assert.AreEqual<string>(authResponseAccessor.endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
+			Assert.AreEqual<string>(authResponse.Endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension(typeof(ClaimsResponse)));
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension<ClaimsResponse>());
 			Assert.IsNull(authResponse.GetCallbackArgument("a"));
 			Assert.AreEqual(0, authResponse.GetCallbackArguments().Count);
+		}
+
+		/// <summary>
+		/// Verifies that discovery verification of a positive assertion can match a dual identifier.
+		/// </summary>
+		[TestMethod]
+		public void DualIdentifierMatchesInAssertionVerification() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
+			var rp = CreateRelyingParty();
+			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
+			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+		}
+
+		/// <summary>
+		/// Verifies that discovery verification of a positive assertion cannot match a dual identifier
+		/// if the default settings are in place.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		public void DualIdentifierNoMatchInAssertionVerificationByDefault() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
+			var rp = CreateRelyingParty();
+			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
 		}
 
 		/// <summary>
@@ -95,9 +121,13 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		private PositiveAssertionResponse GetPositiveAssertion() {
+			return this.GetPositiveAssertion(false);
+		}
+
+		private PositiveAssertionResponse GetPositiveAssertion(bool dualIdentifier) {
 			Protocol protocol = Protocol.Default;
 			PositiveAssertionResponse assertion = new PositiveAssertionResponse(protocol.Version, this.returnTo);
-			assertion.ClaimedIdentifier = this.GetMockIdentifier(protocol.ProtocolVersion, false);
+			assertion.ClaimedIdentifier = dualIdentifier ? this.GetMockDualIdentifier() : this.GetMockIdentifier(protocol.ProtocolVersion, false);
 			assertion.LocalIdentifier = OPLocalIdentifiers[0];
 			assertion.ReturnTo = this.returnTo;
 			assertion.ProviderEndpoint = OPUri;

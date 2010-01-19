@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text.RegularExpressions;
 	using System.Web.Security;
@@ -243,6 +244,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdMobileTextBox"/> class.
 		/// </summary>
 		public OpenIdMobileTextBox() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		#region Events
@@ -581,8 +583,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IAuthenticationRequest CreateRequest() {
-			ErrorUtilities.VerifyOperation(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
-			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
+			Contract.Requires<InvalidOperationException>(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
+			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
@@ -610,7 +612,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 
 					// Add state that needs to survive across the redirect.
-					this.Request.AddCallbackArguments(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
+					this.Request.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString(CultureInfo.InvariantCulture));
 				} else {
 					Logger.OpenId.WarnFormat("An invalid identifier was entered ({0}), but not caught by any validation routine.", this.Text);
 					this.Request = null;
@@ -635,7 +637,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
-				string persistentString = response.GetCallbackArgument(UsePersistentCookieCallbackKey);
+				string persistentString = response.GetUntrustedCallbackArgument(UsePersistentCookieCallbackKey);
 				bool persistentBool;
 				if (persistentString != null && bool.TryParse(persistentString, out persistentBool)) {
 					this.UsePersistentCookie = persistentBool;
@@ -667,7 +669,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Authenticated, "Firing OnLoggedIn event without an authenticated response.");
 
 			var loggedIn = this.LoggedIn;
@@ -686,7 +688,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnFailed(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Failed, "Firing Failed event for the wrong response type.");
 
 			var failed = this.Failed;
@@ -700,7 +702,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnCanceled(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Canceled, "Firing Canceled event for the wrong response type.");
 
 			var canceled = this.Canceled;
@@ -714,7 +716,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnSetupRequired(IAuthenticationResponse response) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.SetupRequired, "Firing SetupRequired event for the wrong response type.");
 
 			// Why are we firing Failed when we're OnSetupRequired?  Backward compatibility.
@@ -732,7 +734,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The authentication request to add the extensions to.</param>
 		private void AddProfileArgs(IAuthenticationRequest request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			request.AddExtension(new ClaimsRequest() {
 				Nickname = this.RequestNickname,

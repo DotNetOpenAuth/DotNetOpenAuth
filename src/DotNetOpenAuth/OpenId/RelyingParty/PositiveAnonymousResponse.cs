@@ -26,19 +26,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Information about the OP endpoint that issued this assertion.
 		/// </summary>
-		private readonly ProviderEndpointDescription provider;
+		private readonly IProviderEndpoint provider;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAnonymousResponse"/> class.
 		/// </summary>
 		/// <param name="response">The response message.</param>
 		protected internal PositiveAnonymousResponse(IndirectSignedResponse response) {
-			Contract.Requires(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
 			if (response.ProviderEndpoint != null && response.Version != null) {
 				this.provider = new ProviderEndpointDescription(response.ProviderEndpoint, response.Version);
+			}
+
+			// Derived types of this are responsible to log an appropriate message for themselves.
+			if (Logger.OpenId.IsInfoEnabled && this.GetType() == typeof(PositiveAnonymousResponse)) {
+				Logger.OpenId.Info("Received anonymous (identity-less) positive assertion.");
+			}
+
+			if (response.ProviderEndpoint != null) {
+				Reporting.RecordEventOccurrence(this, response.ProviderEndpoint.AbsoluteUri);
 			}
 		}
 
@@ -129,6 +137,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
+		/// Gets a value indicating whether trusted callback arguments are available.
+		/// </summary>
+		/// <remarks>
+		/// We use this internally to avoid logging a warning during a standard snapshot creation.
+		/// </remarks>
+		internal bool TrustedCallbackArgumentsAvailable {
+			get { return this.response.ReturnToParametersSignatureValidated; }
+		}
+
+		/// <summary>
 		/// Gets the positive extension-only message the Relying Party received that this instance wraps.
 		/// </summary>
 		protected internal IndirectSignedResponse Response {
@@ -154,10 +172,29 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public string GetCallbackArgument(string key) {
 			if (this.response.ReturnToParametersSignatureValidated) {
-				return this.response.GetReturnToArgument(key);
+				return this.GetUntrustedCallbackArgument(key);
 			} else {
+				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Gets a callback argument's value that was previously added using
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
+		/// </summary>
+		/// <param name="key">The name of the parameter whose value is sought.</param>
+		/// <returns>
+		/// The value of the argument, or null if the named parameter could not be found.
+		/// </returns>
+		/// <remarks>
+		/// Callback parameters are only available even if the RP is in stateless mode,
+		/// or the callback parameters are otherwise unverifiable as untampered with.
+		/// Therefore, use this method only when the callback argument is not to be
+		/// used to make a security-sensitive decision.
+		/// </remarks>
+		public string GetUntrustedCallbackArgument(string key) {
+			return this.response.GetReturnToArgument(key);
 		}
 
 		/// <summary>
@@ -175,19 +212,37 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public IDictionary<string, string> GetCallbackArguments() {
 			if (this.response.ReturnToParametersSignatureValidated) {
-				var args = new Dictionary<string, string>();
-
-				// Return all the return_to arguments, except for the OpenID-supporting ones.
-				// The only arguments that should be returned here are the ones that the host
-				// web site adds explicitly.
-				foreach (string key in this.response.GetReturnToParameterNames().Where(key => !OpenIdRelyingParty.IsOpenIdSupportingParameter(key))) {
-					args[key] = this.response.GetReturnToArgument(key);
-				}
-
-				return args;
+				return this.GetUntrustedCallbackArguments();
 			} else {
+				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore<Uri>).Name, typeof(OpenIdRelyingParty).Name);
 				return EmptyDictionary<string, string>.Instance;
 			}
+		}
+
+		/// <summary>
+		/// Gets all the callback arguments that were previously added using
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/> or as a natural part
+		/// of the return_to URL.
+		/// </summary>
+		/// <returns>A name-value dictionary.  Never null.</returns>
+		/// <remarks>
+		/// Callback parameters are only available if they are complete and untampered with
+		/// since the original request message (as proven by a signature).
+		/// If the relying party is operating in stateless mode an empty dictionary is always
+		/// returned since the callback arguments could not be signed to protect against
+		/// tampering.
+		/// </remarks>
+		public IDictionary<string, string> GetUntrustedCallbackArguments() {
+			var args = new Dictionary<string, string>();
+
+			// Return all the return_to arguments, except for the OpenID-supporting ones.
+			// The only arguments that should be returned here are the ones that the host
+			// web site adds explicitly.
+			foreach (string key in this.response.GetReturnToParameterNames().Where(key => !OpenIdRelyingParty.IsOpenIdSupportingParameter(key))) {
+				args[key] = this.response.GetReturnToArgument(key);
+			}
+
+			return args;
 		}
 
 		/// <summary>
@@ -235,7 +290,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public IOpenIdMessageExtension GetExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			return this.response.SignedExtensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).FirstOrDefault();
 		}
 
@@ -285,7 +339,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public IOpenIdMessageExtension GetUntrustedExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			return this.response.Extensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).FirstOrDefault();
 		}
 

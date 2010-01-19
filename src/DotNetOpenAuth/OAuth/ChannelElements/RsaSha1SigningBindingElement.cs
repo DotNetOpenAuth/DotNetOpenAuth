@@ -33,8 +33,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingCertificate">The certificate used to sign outgoing messages.</param>
 		public RsaSha1SigningBindingElement(X509Certificate2 signingCertificate)
 			: base(HashAlgorithmName) {
-			Contract.Requires(signingCertificate != null);
-			ErrorUtilities.VerifyArgumentNotNull(signingCertificate, "signingCertificate");
+			Contract.Requires<ArgumentNullException>(signingCertificate != null);
 
 			this.SigningCertificate = signingCertificate;
 		}
@@ -46,8 +45,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="tokenManager">The token manager.</param>
 		public RsaSha1SigningBindingElement(IServiceProviderTokenManager tokenManager)
 			: base(HashAlgorithmName) {
-			Contract.Requires(tokenManager != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
 
 			this.tokenManager = tokenManager;
 		}
@@ -66,7 +64,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// This method signs the message per OAuth 1.0 section 9.3.
 		/// </remarks>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			ErrorUtilities.VerifyOperation(this.SigningCertificate != null, OAuthStrings.X509CertificateNotProvidedForSigning);
 
 			string signatureBaseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));

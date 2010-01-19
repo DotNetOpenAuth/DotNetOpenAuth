@@ -35,6 +35,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		internal UriIdentifier(string uri)
 			: this(uri, false) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 		}
 
 		/// <summary>
@@ -43,8 +44,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(string uri, bool requireSslDiscovery)
-			: base(requireSslDiscovery) {
-			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
+			: base(uri, requireSslDiscovery) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
 			Uri canonicalUri;
 			bool schemePrepended;
 			if (!TryCanonicalize(uri, out canonicalUri, requireSslDiscovery, out schemePrepended)) {
@@ -70,8 +71,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
-			: base(requireSslDiscovery) {
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			: base(uri != null ? uri.OriginalString : null, requireSslDiscovery) {
+			Contract.Requires<ArgumentNullException>(uri != null);
 			if (!TryCanonicalize(new UriBuilder(uri), out uri)) {
 				throw new UriFormatException();
 			}
@@ -206,54 +207,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Performs discovery on the Identifier.
-		/// </summary>
-		/// <param name="requestHandler">The web request handler to use for discovery.</param>
-		/// <returns>
-		/// An initialized structure containing the discovered provider endpoint information.
-		/// </returns>
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			List<ServiceEndpoint> endpoints = new List<ServiceEndpoint>();
-
-			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this, IsDiscoverySecureEndToEnd);
-			if (yadisResult != null) {
-				if (yadisResult.IsXrds) {
-					try {
-						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);
-						var xrdsEndpoints = xrds.CreateServiceEndpoints(yadisResult.NormalizedUri, this);
-
-						// Filter out insecure endpoints if high security is required.
-						if (IsDiscoverySecureEndToEnd) {
-							xrdsEndpoints = xrdsEndpoints.Where(se => se.IsSecure);
-						}
-						endpoints.AddRange(xrdsEndpoints);
-					} catch (XmlException ex) {
-						Logger.Yadis.Error("Error while parsing the XRDS document.  Falling back to HTML discovery.", ex);
-					}
-				}
-
-				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
-				if (endpoints.Count == 0) {
-					var htmlEndpoints = new List<ServiceEndpoint>(DiscoverFromHtml(yadisResult.NormalizedUri, this, yadisResult.ResponseText));
-					if (htmlEndpoints.Any()) {
-						Logger.Yadis.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);
-						Logger.Yadis.Debug(htmlEndpoints.ToStringDeferred(true));
-						endpoints.AddRange(htmlEndpoints.Where(ep => !IsDiscoverySecureEndToEnd || ep.IsSecure));
-						if (endpoints.Count == 0) {
-							Logger.Yadis.Info("No HTML discovered endpoints met the security requirements.");
-						}
-					} else {
-						Logger.Yadis.Debug("HTML discovery failed to find any endpoints.");
-					}
-				} else {
-					Logger.Yadis.Debug("Skipping HTML discovery because XRDS contained service endpoints.");
-				}
-			}
-			return endpoints;
-		}
-
-		/// <summary>
 		/// Returns an <see cref="Identifier"/> that has no URI fragment.
 		/// Quietly returns the original <see cref="Identifier"/> if it is not
 		/// a <see cref="UriIdentifier"/> or no fragment exists.
@@ -317,54 +270,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Searches HTML for the HEAD META tags that describe OpenID provider services.
-		/// </summary>
-		/// <param name="claimedIdentifier">The final URL that provided this HTML document.
-		/// This may not be the same as (this) userSuppliedIdentifier if the
-		/// userSuppliedIdentifier pointed to a 301 Redirect.</param>
-		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
-		/// <param name="html">The HTML that was downloaded and should be searched.</param>
-		/// <returns>
-		/// A sequence of any discovered ServiceEndpoints.
-		/// </returns>
-		private static IEnumerable<ServiceEndpoint> DiscoverFromHtml(Uri claimedIdentifier, UriIdentifier userSuppliedIdentifier, string html) {
-			var linkTags = new List<HtmlLink>(HtmlParser.HeadTags<HtmlLink>(html));
-			foreach (var protocol in Protocol.AllPracticalVersions) {
-				// rel attributes are supposed to be interpreted with case INsensitivity, 
-				// and is a space-delimited list of values. (http://www.htmlhelp.com/reference/html40/values.html#linktypes)
-				var serverLinkTag = linkTags.WithAttribute("rel").FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryProviderKey) + @"\b", RegexOptions.IgnoreCase));
-				if (serverLinkTag == null) {
-					continue;
-				}
-
-				Uri providerEndpoint = null;
-				if (Uri.TryCreate(serverLinkTag.Href, UriKind.Absolute, out providerEndpoint)) {
-					// See if a LocalId tag of the discovered version exists
-					Identifier providerLocalIdentifier = null;
-					var delegateLinkTag = linkTags.WithAttribute("rel").FirstOrDefault(tag => Regex.IsMatch(tag.Attributes["rel"], @"\b" + Regex.Escape(protocol.HtmlDiscoveryLocalIdKey) + @"\b", RegexOptions.IgnoreCase));
-					if (delegateLinkTag != null) {
-						if (Identifier.IsValid(delegateLinkTag.Href)) {
-							providerLocalIdentifier = delegateLinkTag.Href;
-						} else {
-							Logger.Yadis.WarnFormat("Skipping endpoint data because local id is badly formed ({0}).", delegateLinkTag.Href);
-							continue; // skip to next version
-						}
-					}
-
-					// Choose the TypeURI to match the OpenID version detected.
-					string[] typeURIs = { protocol.ClaimedIdentifierServiceTypeURI };
-					yield return ServiceEndpoint.CreateForClaimedIdentifier(
-						claimedIdentifier,
-						userSuppliedIdentifier,
-						providerLocalIdentifier,
-						new ProviderEndpointDescription(providerEndpoint, typeURIs),
-						(int?)null,
-						(int?)null);
-				}
-			}
-		}
-
-		/// <summary>
 		/// Determines whether the given URI is using a scheme in the list of allowed schemes.
 		/// </summary>
 		/// <param name="uri">The URI whose scheme is to be checked.</param>
@@ -416,8 +321,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// require network access are also done, such as lower-casing the hostname in the URI.
 		/// </remarks>
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
-			Contract.Requires(!string.IsNullOrEmpty(uri));
-			ErrorUtilities.VerifyNonZeroLength(uri, "uri");
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(uri));
 
 			uri = uri.Trim();
 			canonicalUri = null;
@@ -462,6 +366,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		private void ObjectInvariant() {

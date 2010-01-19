@@ -23,7 +23,7 @@
       <p><include item="hostProtectionAttributeLong" /></p>
     </xsl:if>
 		<!-- summary -->
-    <span data="authoredSummary">
+    <span sdata="authoredSummary">
 		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:summary" />
     </span>
 		<!-- syntax -->
@@ -37,7 +37,7 @@
 		<xsl:apply-templates select="/document/reference/returns" />
 		<!-- members -->
 		<xsl:choose>
-			<xsl:when test="$tgroup='list' and $tsubgroup='namespaces'">
+			<xsl:when test="$tgroup='root'">
 				<xsl:apply-templates select="/document/reference/elements" mode="root" />
 			</xsl:when>
 			<xsl:when test="$group='namespace'">
@@ -124,7 +124,7 @@
 
 	<xsl:template name="getParameterDescription">
 		<xsl:param name="name" />
-    <span data="authoredParameterSummary">
+    <span sdata="authoredParameterSummary">
 		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:parameters/ddue:parameter[string(ddue:parameterReference)=$name]/ddue:content" />
     </span>
 	</xsl:template>
@@ -150,13 +150,13 @@
 	</xsl:template>
 
 	<xsl:template name="getReturnsDescription">
-    <span data="authoredValueSummary">
+    <span sdata="authoredValueSummary">
 		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:returnValue" />
     </span>
 	</xsl:template>
 
 	<xsl:template name="getElementDescription">
-    <span data="memberAuthoredSummary">
+    <span sdata="memberAuthoredSummary">
 		<xsl:apply-templates select="ddue:summary/ddue:para/node()" />
     </span>
 	</xsl:template>

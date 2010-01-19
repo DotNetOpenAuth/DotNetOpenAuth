@@ -2,14 +2,13 @@
 	<PropertyGroup>
 		<NetfxVer>2.0</NetfxVer>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<OutputAssembly>DotNetOpenAuth</OutputAssembly>
-		<OutputPath>$(ProjectRoot)\bin\$(Configuration)</OutputPath>
-		<DocOutputPath>$(ProjectRoot)\doc</DocOutputPath>
-		<IntermediatePath>$(ProjectRoot)\obj\$(Configuration)</IntermediatePath>
-		<DocumentationFile>$(OutputPath)\$(OutputAssembly).xml</DocumentationFile>
+		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
+		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)\</IntermediatePath>
+		<DocumentationFile>$(OutputPath)$(OutputAssembly).xml</DocumentationFile>
 	</PropertyGroup>
 
-	<Import Project="$(ProjectRoot)\Tools\sandcastle.targets" />
+	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />
 
 </Project>

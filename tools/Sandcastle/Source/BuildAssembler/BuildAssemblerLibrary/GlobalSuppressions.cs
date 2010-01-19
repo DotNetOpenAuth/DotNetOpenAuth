@@ -1,0 +1,45 @@
+// Copyright © Microsoft Corporation.
+// This source file is subject to the Microsoft Permissive License.
+// See http://www.microsoft.com/resources/sharedsource/licensingbasics/sharedsourcelicenses.mspx.
+// All other rights reserved.
+
+// This file is used by Code Analysis to maintain SuppressMessage 
+// attributes that are applied to this project. 
+// Project-level suppressions either have no target or are given 
+// a specific target and scoped to a namespace, type, member, etc. 
+//
+// To add a suppression to this file, right-click the message in the 
+// Error List, point to "Suppress Message(s)", and click 
+// "In Project Suppression File". 
+// You do not need to add suppressions to this file manually. 
+
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ddue", Scope = "namespace", Target = "Microsoft.Ddue.Tools")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#Apply(System.Collections.Generic.IEnumerable`1<System.String>)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#BuildComponents")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "Filename", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#GetFileManifestBuildContextEnumerator(System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Reflection.Assembly.LoadFrom", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#LoadComponent(System.Xml.XPath.XPathNavigator)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#LoadComponent(System.Xml.XPath.XPathNavigator)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object,System.Object)", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#LoadComponent(System.Xml.XPath.XPathNavigator)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "components", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#LoadComponents(System.Xml.XPath.XPathNavigator)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildAssembler.#WriteComponentMessageToConsole(System.Type,Microsoft.Ddue.Tools.MessageLevel,System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "configuration", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponent.#.ctor(Microsoft.Ddue.Tools.BuildAssembler,System.Xml.XPath.XPathNavigator)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponent.#Apply(System.Xml.XmlDocument)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponent.#Apply(System.Xml.XmlDocument,System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#GetExceptionMessage(System.Exception)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#GetExceptionMessage(System.Exception)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object[])", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#GetExceptionMessage(System.Exception)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "s", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#GetRelativePath(System.String,System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "1#", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildContext.#AddNamespace(System.String,System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildContext.#ClearNamespaces()")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1010:CollectionsShouldImplementGenericInterface", Scope = "type", Target = "Microsoft.Ddue.Tools.CustomContext")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Scope = "type", Target = "Microsoft.Ddue.Tools.CustomContext")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration", MessageId = "1#", Scope = "member", Target = "Microsoft.Ddue.Tools.CustomContext.#CompareDocument(System.String,System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration", MessageId = "2#", Scope = "member", Target = "Microsoft.Ddue.Tools.CustomContext.#ResolveFunction(System.String,System.String,System.Xml.XPath.XPathResultType[])")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Eval", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#EvalXPathExpr(System.Xml.XPath.IXPathNavigable,System.Xml.XPath.XPathExpression,Microsoft.Ddue.Tools.CustomContext)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Expr", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#EvalXPathExpr(System.Xml.XPath.IXPathNavigable,System.Xml.XPath.XPathExpression,Microsoft.Ddue.Tools.CustomContext)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "c", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#EvalXPathExpr(System.Xml.XPath.IXPathNavigable,System.Xml.XPath.XPathExpression,Microsoft.Ddue.Tools.CustomContext)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "xpe", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#EvalXPathExpr(System.Xml.XPath.IXPathNavigable,System.Xml.XPath.XPathExpression,Microsoft.Ddue.Tools.CustomContext)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Eval", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#EvalXPathExpr(System.Xml.XPath.IXPathNavigable,System.Xml.XPath.XPathExpression,System.String[])")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Expr", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#EvalXPathExpr(System.Xml.XPath.IXPathNavigable,System.Xml.XPath.XPathExpression,System.String[])")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "xpe", Scope = "member", Target = "Microsoft.Ddue.Tools.BuildComponentUtilities.#EvalXPathExpr(System.Xml.XPath.IXPathNavigable,System.Xml.XPath.XPathExpression,System.String[])")]

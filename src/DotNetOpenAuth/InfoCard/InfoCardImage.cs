@@ -23,6 +23,7 @@
 namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 
 	/// <summary>
@@ -129,6 +130,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The manifest resource stream name.</returns>
 		internal static string GetImageManifestResourceStreamName(InfoCardImageSize size) {
 			string imageSize = size.ToString();
+			Contract.Assume(imageSize.Length >= 6);
 			imageSize = imageSize.Substring(4);
 			return String.Format(CultureInfo.InvariantCulture, UrlFormatString, imageSize);
 		}

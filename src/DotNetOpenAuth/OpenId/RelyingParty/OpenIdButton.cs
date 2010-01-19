@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An ASP.NET control that renders a button that initiates an
 	/// authentication when clicked.
 	/// </summary>
-	public class OpenIdButton : OpenIdRelyingPartyControlBase, IPostBackEventHandler {
+	public class OpenIdButton : OpenIdRelyingPartyControlBase {
 		#region Property defaults
 
 		/// <summary>
@@ -110,20 +110,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set { ErrorUtilities.VerifySupported(value == base.Popup, OpenIdStrings.PropertyValueNotSupported); }
 		}
 
-		#region IPostBackEventHandler Members
-
 		/// <summary>
 		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
 		/// </summary>
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
-		public void RaisePostBackEvent(string eventArgument) {
+		protected override void RaisePostBackEvent(string eventArgument) {
 			if (!this.PrecreateRequest) {
-				IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
-				request.RedirectToProvider();
+				try {
+					IAuthenticationRequest request = this.CreateRequests().First();
+					request.RedirectToProvider();
+				} catch (InvalidOperationException ex) {
+					throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
+				}
 			}
 		}
-
-		#endregion
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Web.UI.Control.PreRender"/> event.

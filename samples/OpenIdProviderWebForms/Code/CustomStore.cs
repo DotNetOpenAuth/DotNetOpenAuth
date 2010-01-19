@@ -109,13 +109,14 @@ namespace OpenIdProviderWebForms.Code {
 			// at you in the result of a race condition somewhere in your web site UI code
 			// and display some message to have the user try to log in again, and possibly
 			// warn them about a replay attack.
+			timestamp = timestamp.ToLocalTime();
 			lock (this) {
-				if (dataSet.Nonce.FindByCodeContext(nonce, context) != null) {
+				if (dataSet.Nonce.FindByIssuedCodeContext(timestamp, nonce, context) != null) {
 					return false;
 				}
 
 				TimeSpan maxMessageAge = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
-				dataSet.Nonce.AddNonceRow(context, nonce, timestamp.ToLocalTime(), (timestamp + maxMessageAge).ToLocalTime());
+				dataSet.Nonce.AddNonceRow(context, nonce, timestamp, timestamp + maxMessageAge);
 				return true;
 			}
 		}

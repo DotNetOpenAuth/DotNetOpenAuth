@@ -1,0 +1,38 @@
+<Project MSBuildVersion="1.0" DefaultTargets="System.Compiler">
+    <ItemGroup>
+        <Item Type="CCISource" Include="CCI\System.Compiler\*.cs"/>
+        <Item Type="CCISource" Include="AssemblyKey.cs"/>
+    </ItemGroup>
+    <Target Name="System.Compiler" DependsOnTargets="PreBuild_CCI">
+        <Task Name="VersionTask" BuiltDir="$(builtdir)" TargetFiles="System.Compiler.dll">
+            <OutputItem TaskParameter="VersionedFiles" Type="CompilerTarget"/>
+        </Task>
+        <Task Name="VersionTask" BuiltDir="$(builtdir)" TargetFiles="@(CCIReference)">
+            <OutputItem TaskParameter="VersionedFiles" Type="CCI_ReferencePath"/>
+	</Task>
+        <Task Name="Net10Task" BuiltDir="$(builtdir)">
+            <OutputItem TaskParameter="CompilerConstant" Type="FrameworkConstant"/>
+        </Task>
+        <Task Name="Csc" 
+              Sources="@(CCISource)"
+              References="@(CCI_ReferencePath)"
+              OutputAssembly="@(CompilerTarget)"
+              TargetType="library"
+	      AllowUnsafeBlocks="true"
+	      ToolPath="@(FrameworkLocation)"
+	      EmitDebugInformation="true"
+	      DefineConstants="TRACE;@(FrameworkConstant)"
+        />
+    </Target>
+    <Target Name="PreBuild_CCI" DependsOnTargets="FrameworkVersion">
+        <Task Name="VersionTask" BuiltDir="$(builtdir)">
+            <OutputItem TaskParameter="VersionedFiles" Type="TargetDir"/>
+        </Task>
+        <Task Name="Exec" 
+              Command="if not exist @(TargetDir) md @(TargetDir)" />
+        <Task Name="Exec" 
+              Command="if exist @(TargetDir)System.Compiler.dll sd edit @(TargetDir)System.Compiler.*" 
+        />
+    </Target>
+
+</Project>

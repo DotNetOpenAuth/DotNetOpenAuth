@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// An empty, read-only list.
@@ -98,6 +99,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
 		/// </exception>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts ccrewrite does this.")]
 		public void RemoveAt(int index) {
 			throw new ArgumentOutOfRangeException("index");
 		}
@@ -113,6 +115,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="T:System.NotSupportedException">
 		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
 		/// </exception>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts ccrewrite does this.")]
 		public void Add(T item) {
 			throw new NotSupportedException();
 		}
@@ -156,7 +159,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// -or-
 		/// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
 		/// -or-
-		/// Type <paramref name="T"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
+		/// Type <typeparamref name="T"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
 		/// </exception>
 		public void CopyTo(T[] array, int arrayIndex) {
 		}

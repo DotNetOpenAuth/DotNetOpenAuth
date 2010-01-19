@@ -237,6 +237,8 @@
 		}
 
 		internal string GetSalt(string userName) {
+			// This is just a sample with no database... a real web app MUST return 
+			// a reasonable salt here and have that salt be persistent for each user.
 			this.ReadMembershipDataStore();
 			return this.users[userName].Email;
 		}

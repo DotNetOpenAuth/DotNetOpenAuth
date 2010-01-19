@@ -101,6 +101,20 @@
     <Compile Include="Code\InMemoryTokenManager.cs" />
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
+    <Compile Include="loginGoogleApps.aspx.cs">
+      <DependentUpon>loginGoogleApps.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="loginGoogleApps.aspx.designer.cs">
+      <DependentUpon>loginGoogleApps.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="loginPlusOAuthSampleOP.aspx.cs">
+      <DependentUpon>loginPlusOAuthSampleOP.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="loginPlusOAuthSampleOP.aspx.designer.cs">
+      <DependentUpon>loginPlusOAuthSampleOP.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -169,8 +183,11 @@
     <Content Include="xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="favicon.ico" />
+    <Content Include="images\DotNetOpenAuth.png" />
+    <Content Include="loginGoogleApps.aspx" />
+    <Content Include="loginPlusOAuthSampleOP.aspx" />
     <Content Include="images\attention.png" />
-    <Content Include="images\dotnetopenid_tiny.gif" />
     <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo.png" />
     <Content Include="loginPlusOAuth.aspx" />

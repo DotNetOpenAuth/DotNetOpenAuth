@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -34,13 +35,13 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
-			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
+			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
 			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 			this.accessor = OAuthChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullSigner() {
 			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 		}
@@ -226,6 +227,11 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.PostRequest);
 		}
 
+		[TestMethod]
+		public void RequestUsingHead() {
+			this.ParameterizedRequestTest(HttpDeliveryMethods.HeadRequest);
+		}
+
 		/// <summary>
 		/// Verifies that messages asking for special HTTP status codes get them.
 		/// </summary>
@@ -243,7 +249,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		}
 
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+			Contract.Requires<ArgumentNullException>(fields != null);
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append("OAuth ");
@@ -322,7 +328,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.webRequestHandler.Callback = (req) => {
 				Assert.IsNotNull(req);
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
-				Assert.AreEqual(scheme == HttpDeliveryMethods.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
+				Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), reqInfo.HttpMethod);
 				var incomingMessage = this.channel.ReadFromRequest(reqInfo) as TestMessage;
 				Assert.IsNotNull(incomingMessage);
 				Assert.AreEqual(request.Age, incomingMessage.Age);

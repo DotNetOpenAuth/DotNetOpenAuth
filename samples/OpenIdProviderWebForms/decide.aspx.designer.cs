@@ -50,6 +50,24 @@ namespace OpenIdProviderWebForms {
         protected global::System.Web.UI.WebControls.Label realmLabel;
         
         /// <summary>
+        /// OAuthPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel OAuthPanel;
+        
+        /// <summary>
+        /// oauthPermission control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox oauthPermission;
+        
+        /// <summary>
         /// profileFields control.
         /// </summary>
         /// <remarks>

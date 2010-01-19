@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 
@@ -43,8 +44,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="store">The association store.</param>
 		internal PrivateSecretManager(RelyingPartySecuritySettings securitySettings, IAssociationStore<Uri> store) {
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
-			ErrorUtilities.VerifyArgumentNotNull(store, "store");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(store != null);
 
 			this.securitySettings = securitySettings;
 			this.store = store;
@@ -74,8 +75,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="ProtocolException">Thrown when an association with the given handle could not be found.
 		/// This most likely happens if the association was near the end of its life and the user took too long to log in.</exception>
 		internal byte[] Sign(byte[] buffer, string handle) {
-			ErrorUtilities.VerifyArgumentNotNull(buffer, "buffer");
-			ErrorUtilities.VerifyNonZeroLength(handle, "handle");
+			Contract.Requires<ArgumentNullException>(buffer != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
 
 			Association association = this.store.GetAssociation(SecretUri, handle);
 			ErrorUtilities.VerifyProtocol(association != null, OpenIdStrings.PrivateRPSecretNotFound, handle);

@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	public class ResponseTests : TestBase {
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
 		public void SendWithoutAspNetContext() {
+			HttpContext.Current = null;
 			new OutgoingWebResponse().Send();
 		}
 

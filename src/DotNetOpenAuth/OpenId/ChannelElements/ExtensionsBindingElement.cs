@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -33,8 +34,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="extensionFactory">The extension factory.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionFactory, "extensionFactory");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(extensionFactory != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.ExtensionFactory = extensionFactory;
 			this.relyingPartySecuritySettings = securitySettings as RelyingPartySecuritySettings;
@@ -76,10 +77,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "It doesn't look too bad to me. :)")]
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
-
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				Protocol protocol = Protocol.Lookup(message.Version);
@@ -91,6 +90,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				foreach (IExtensionMessage protocolExtension in extendableMessage.Extensions) {
 					var extension = protocolExtension as IOpenIdMessageExtension;
 					if (extension != null) {
+						Reporting.RecordFeatureUse(protocolExtension);
+
 						// Give extensions that require custom serialization a chance to do their work.
 						var customSerializingExtension = extension as IMessageWithEvents;
 						if (customSerializingExtension != null) {
@@ -100,7 +101,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						// OpenID 2.0 Section 12 forbids two extensions with the same TypeURI in the same message.
 						ErrorUtilities.VerifyProtocol(!extensionManager.ContainsExtension(extension.TypeUri), OpenIdStrings.ExtensionAlreadyAddedWithSameTypeURI, extension.TypeUri);
 
-						var extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension).Serialize();
+						// Ensure that we're sending out a valid extension.
+						var extensionDescription = this.Channel.MessageDescriptions.Get(extension);
+						var extensionDictionary = extensionDescription.GetDictionary(extension).Serialize();
+						extensionDescription.EnsureMessagePartsPassBasicValidation(extensionDictionary);
+
+						// Add the extension to the outgoing message payload.
 						extensionManager.AddExtensionArguments(extension.TypeUri, extensionDictionary);
 					} else {
 						Logger.OpenId.WarnFormat("Unexpected extension type {0} did not implement {1}.", protocolExtension.GetType(), typeof(IOpenIdMessageExtension).Name);
@@ -143,6 +149,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (extendableMessage != null) {
 				// First add the extensions that are signed by the Provider.
 				foreach (IOpenIdMessageExtension signedExtension in this.GetExtensions(extendableMessage, true, null)) {
+					Reporting.RecordFeatureUse(signedExtension);
 					signedExtension.IsSignedByRemoteParty = true;
 					extendableMessage.Extensions.Add(signedExtension);
 				}
@@ -152,6 +159,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				if (this.relyingPartySecuritySettings == null || !this.relyingPartySecuritySettings.IgnoreUnsignedExtensions) {
 					Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
 					foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
+						Reporting.RecordFeatureUse(unsignedExtension);
 						unsignedExtension.IsSignedByRemoteParty = false;
 						extendableMessage.Extensions.Add(unsignedExtension);
 					}
@@ -193,7 +201,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				IOpenIdMessageExtension extension = this.ExtensionFactory.Create(typeUri, extensionData, message, isAtProvider);
 				if (extension != null) {
 					try {
-						MessageDictionary extensionDictionary = this.Channel.MessageDescriptions.GetAccessor(extension);
+						// Make sure the extension fulfills spec requirements before deserializing it.
+						MessageDescription messageDescription = this.Channel.MessageDescriptions.Get(extension);
+						messageDescription.EnsureMessagePartsPassBasicValidation(extensionData);
+
+						// Deserialize the extension.
+						MessageDictionary extensionDictionary = messageDescription.GetDictionary(extension);
 						foreach (var pair in extensionData) {
 							extensionDictionary[pair.Key] = pair.Value;
 						}
@@ -212,7 +225,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						yield return extension;
 					}
 				} else {
-					Logger.OpenId.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
+					Logger.OpenId.DebugFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
 				}
 			}
 		}
@@ -226,8 +239,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A dictionary of message parts, including only signed parts when appropriate.
 		/// </returns>
 		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message, bool ignoreUnsigned) {
-			Contract.Requires(this.Channel != null);
-			ErrorUtilities.VerifyOperation(this.Channel != null, "Channel property has not been set.");
+			Contract.Requires<InvalidOperationException>(this.Channel != null);
 
 			IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
 			if (signedResponse != null && ignoreUnsigned) {

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using System.Web;
@@ -27,9 +28,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="exception">The exception that resulted in the failed authentication.</param>
 		internal FailedAuthenticationResponse(Exception exception) {
-			ErrorUtilities.VerifyArgumentNotNull(exception, "exception");
+			Contract.Requires<ArgumentNullException>(exception != null);
 
 			this.Exception = exception;
+
+			string category = string.Empty;
+			if (Reporting.Enabled) {
+				var pe = exception as ProtocolException;
+				if (pe != null) {
+					var responseMessage = pe.FaultedMessage as IndirectSignedResponse;
+					if (responseMessage != null && responseMessage.ProviderEndpoint != null) { // check "required" parts because this is a failure after all
+						category = responseMessage.ProviderEndpoint.AbsoluteUri;
+					}
+				}
+
+				Reporting.RecordEventOccurrence(this, category);
+			}
 		}
 
 		#region IAuthenticationResponse Members
@@ -128,7 +142,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
 		public IDictionary<string, string> GetCallbackArguments() {
-			return new Dictionary<string, string>();
+			return EmptyDictionary<string, string>.Instance;
+		}
+
+		/// <summary>
+		/// Gets all the callback arguments that were previously added using
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/> or as a natural part
+		/// of the return_to URL.
+		/// </summary>
+		/// <returns>A name-value dictionary.  Never null.</returns>
+		/// <remarks>
+		/// Callback parameters are only available even if the RP is in stateless mode,
+		/// or the callback parameters are otherwise unverifiable as untampered with.
+		/// Therefore, use this method only when the callback argument is not to be
+		/// used to make a security-sensitive decision.
+		/// </remarks>
+		public IDictionary<string, string> GetUntrustedCallbackArguments() {
+			return EmptyDictionary<string, string>.Instance;
 		}
 
 		/// <summary>
@@ -146,6 +176,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
 		public string GetCallbackArgument(string key) {
+			return null;
+		}
+
+		/// <summary>
+		/// Gets a callback argument's value that was previously added using
+		/// <see cref="IAuthenticationRequest.AddCallbackArguments(string, string)"/>.
+		/// </summary>
+		/// <param name="key">The name of the parameter whose value is sought.</param>
+		/// <returns>
+		/// The value of the argument, or null if the named parameter could not be found.
+		/// </returns>
+		/// <remarks>
+		/// Callback parameters are only available even if the RP is in stateless mode,
+		/// or the callback parameters are otherwise unverifiable as untampered with.
+		/// Therefore, use this method only when the callback argument is not to be
+		/// used to make a security-sensitive decision.
+		/// </remarks>
+		public string GetUntrustedCallbackArgument(string key) {
 			return null;
 		}
 

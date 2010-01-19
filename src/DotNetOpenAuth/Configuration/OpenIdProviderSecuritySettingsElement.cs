@@ -41,6 +41,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RequireSslConfigName = "requireSsl";
 
 		/// <summary>
+		/// Gets the name of the @unsolicitedAssertionVerification attribute.
+		/// </summary>
+		private const string UnsolicitedAssertionVerificationConfigName = "unsolicitedAssertionVerification";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProviderSecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdProviderSecuritySettingsElement() {
@@ -84,6 +89,17 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets the level of verification a Provider performs on an identifier before
+		/// sending an unsolicited assertion for it.
+		/// </summary>
+		/// <value>The default value is <see cref="ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.RequireSuccess"/>.</value>
+		[ConfigurationProperty(UnsolicitedAssertionVerificationConfigName, DefaultValue = ProviderSecuritySettings.UnsolicitedAssertionVerificationDefault)]
+		public ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel UnsolicitedAssertionVerification {
+			get { return (ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel)this[UnsolicitedAssertionVerificationConfigName]; }
+			set { this[UnsolicitedAssertionVerificationConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the configured lifetimes of the various association types.
 		/// </summary>
 		[ConfigurationProperty(AssociationsConfigName, IsDefaultCollection = false)]
@@ -109,6 +125,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
+			settings.UnsolicitedAssertionVerification = this.UnsolicitedAssertionVerification;
 			foreach (AssociationTypeElement element in this.AssociationLifetimes) {
 				Contract.Assume(element != null);
 				settings.AssociationLifetimes.Add(element.AssociationType, element.MaximumLifetime);

@@ -17,7 +17,13 @@ is default.aspx.
 			<URI priority="1"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/login.aspx"))%></URI>
 			<URI priority="2"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/loginProgrammatic.aspx"))%></URI>
 			<URI priority="3"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/ajaxlogin.aspx"))%></URI>
-			<URI priority="3"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/NoIdentityOpenId.aspx"))%></URI>
+			<URI priority="4"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/NoIdentityOpenId.aspx"))%></URI>
+			<URI priority="5"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/loginPlusOAuth.aspx"))%></URI>
+			<URI priority="6"><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/loginPlusOAuthSampleOP.aspx"))%></URI>
+		</Service>
+		<Service>
+			<Type>http://specs.openid.net/extensions/ui/icon</Type>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/images/DotNetOpenAuth.png"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>

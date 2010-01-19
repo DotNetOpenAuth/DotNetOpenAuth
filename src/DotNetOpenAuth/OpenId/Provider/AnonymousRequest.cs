@@ -30,12 +30,26 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts require it.")]
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
-			Contract.Requires(provider != null);
-			Contract.Requires(!(request is CheckIdRequest), "Instantiate " + typeof(AuthenticationRequest).Name + " to handle this kind of message.");
-			ErrorUtilities.VerifyInternal(!(request is CheckIdRequest), "Instantiate {0} to handle this kind of message.", typeof(AuthenticationRequest).Name);
+			Contract.Requires<ArgumentNullException>(provider != null);
+			Contract.Requires<ArgumentException>(!(request is CheckIdRequest), "Instantiate " + typeof(AuthenticationRequest).Name + " to handle this kind of message.");
 
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}
+
+		#region HostProcessedRequest members
+
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		public override Uri ProviderEndpoint {
+			get { return this.positiveResponse.ProviderEndpoint; }
+			set { this.positiveResponse.ProviderEndpoint = value; }
+		}
+
+		#endregion
 
 		#region IAnonymousRequest Members
 

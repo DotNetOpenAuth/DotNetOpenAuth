@@ -2,11 +2,15 @@
 function LanguageFilterController() {
         this.tabCollections = new Array();
         this.blockCollections = new Array();
+        this.tabCollectionIds = new Array();
+        this.blockCollectionIds = new Array();
 }
 
-LanguageFilterController.prototype.registerTabbedArea = function(tabCollection, blockCollection) {
+LanguageFilterController.prototype.registerTabbedArea = function(tabCollection, blockCollection, tabCollectionId, blockCollectionId) {
         this.tabCollections.push(tabCollection);
         this.blockCollections.push(blockCollection);
+        this.tabCollectionIds.push(tabCollectionId);
+        this.blockCollectionIds.push(blockCollectionId);
 }
 
 LanguageFilterController.prototype.switchLanguage = function(languageId) {

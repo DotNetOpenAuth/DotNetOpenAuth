@@ -79,8 +79,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
 		/// <param name="scope">The scope of access that is requested of the service provider.</param>
 		public void AttachAuthorizationRequest(IAuthenticationRequest openIdAuthenticationRequest, string scope) {
-			Contract.Requires(openIdAuthenticationRequest != null);
-			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
+			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
 
 			var authorizationRequest = new AuthorizationRequest {
 				Consumer = this.ConsumerKey,
@@ -102,9 +101,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager"/>.
 		/// </remarks>
 		public AuthorizedTokenResponse ProcessUserAuthorization(IAuthenticationResponse openIdAuthenticationResponse) {
-			Contract.Requires(openIdAuthenticationResponse != null);
-			Contract.Requires(this.TokenManager is IOpenIdOAuthTokenManager);
-			ErrorUtilities.VerifyArgumentNotNull(openIdAuthenticationResponse, "openIdAuthenticationResponse");
+			Contract.Requires<ArgumentNullException>(openIdAuthenticationResponse != null);
+			Contract.Requires<InvalidOperationException>(this.TokenManager is IOpenIdOAuthTokenManager);
 			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 
@@ -120,7 +118,8 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			// Prepare a message to exchange the request token for an access token.
-			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {
+			// We are careful to use a v1.0 message version so that the oauth_verifier is not required.
+			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, Protocol.V10.Version) {
 				RequestToken = positiveAuthorization.RequestToken,
 				ConsumerKey = this.ConsumerKey,
 			};
@@ -141,8 +140,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
 		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestInfo request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			UserAuthorizationResponse authorizationMessage;
 			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {

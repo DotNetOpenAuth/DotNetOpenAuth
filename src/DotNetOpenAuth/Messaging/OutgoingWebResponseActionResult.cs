@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Messaging {
+	using System;
 	using System.Diagnostics.Contracts;
 	using System.Web.Mvc;
 	using DotNetOpenAuth.Messaging;
@@ -24,8 +25,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		internal OutgoingWebResponseActionResult(OutgoingWebResponse response) {
-			Contract.Requires(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 			this.response = response;
 		}
 

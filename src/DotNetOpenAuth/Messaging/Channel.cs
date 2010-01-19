@@ -28,15 +28,15 @@ namespace DotNetOpenAuth.Messaging {
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
 		/// <summary>
+		/// The encoding to use when writing out POST entity strings.
+		/// </summary>
+		internal static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
+
+		/// <summary>
 		/// The content-type used on HTTP POST requests where the POST entity is a
 		/// URL-encoded series of key=value pairs.
 		/// </summary>
 		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
-
-		/// <summary>
-		/// The encoding to use when writing out POST entity strings.
-		/// </summary>
-		private static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
 
 		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
@@ -112,8 +112,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
 		protected Channel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements) {
-			Contract.Requires(messageTypeProvider != null);
-			ErrorUtilities.VerifyArgumentNotNull(messageTypeProvider, "messageTypeProvider");
+			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
@@ -146,13 +145,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal MessageDescriptionCollection MessageDescriptions {
 			get {
-				Contract.Ensures(Contract.Result<MessageDescriptionCollection>() != null);
 				return this.messageDescriptions;
 			}
 
 			set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.messageDescriptions = value;
 			}
 		}
@@ -180,7 +177,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the binding elements used by this channel, in the order applied to incoming messages.
 		/// </summary>
 		protected internal ReadOnlyCollection<IChannelBindingElement> IncomingBindingElements {
-			get { return this.incomingBindingElements.AsReadOnly(); }
+			get {
+				Contract.Ensures(Contract.Result<ReadOnlyCollection<IChannelBindingElement>>().All(be => be.Channel != null));
+				Contract.Ensures(Contract.Result<ReadOnlyCollection<IChannelBindingElement>>().All(be => be != null));
+				return this.incomingBindingElements.AsReadOnly();
+			}
 		}
 
 		/// <summary>
@@ -209,8 +210,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.cachePolicy = value;
 			}
 		}
@@ -226,8 +226,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		public void Send(IProtocolMessage message) {
-			Contract.Requires(HttpContext.Current != null);
-			Contract.Requires(message != null);
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
+			Contract.Requires<ArgumentNullException>(message != null);
 			this.PrepareResponse(message).Send();
 		}
 
@@ -238,9 +238,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The one-way message to send</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		public OutgoingWebResponse PrepareResponse(IProtocolMessage message) {
-			Contract.Requires(message != null);
+			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
 			this.ProcessOutgoingMessage(message);
 			Logger.Channel.DebugFormat("Sending message: {0}", message.GetType().Name);
@@ -309,7 +308,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
 		public bool TryReadFromRequest<TRequest>(HttpRequestInfo httpRequest, out TRequest request)
 			where TRequest : class, IProtocolMessage {
-			Contract.Requires(httpRequest != null);
+			Contract.Requires<ArgumentNullException>(httpRequest != null);
 			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<TRequest>(out request) != null));
 
 			IProtocolMessage untypedRequest = this.ReadFromRequest(httpRequest);
@@ -350,7 +349,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
 		public TRequest ReadFromRequest<TRequest>(HttpRequestInfo httpRequest)
 			where TRequest : class, IProtocolMessage {
-			Contract.Requires(httpRequest != null);
+			Contract.Requires<ArgumentNullException>(httpRequest != null);
 			TRequest request;
 			if (this.TryReadFromRequest<TRequest>(httpRequest, out request)) {
 				return request;
@@ -365,8 +364,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		public IDirectedProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
-			Contract.Requires(httpRequest != null);
-			ErrorUtilities.VerifyArgumentNotNull(httpRequest, "httpRequest");
+			Contract.Requires<ArgumentNullException>(httpRequest != null);
 
 			if (Logger.Channel.IsInfoEnabled && httpRequest.UrlBeforeRewriting != null) {
 				Logger.Channel.InfoFormat("Scanning incoming request for messages: {0}", httpRequest.UrlBeforeRewriting.AbsoluteUri);
@@ -393,7 +391,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
 		public TResponse Request<TResponse>(IDirectedProtocolMessage requestMessage)
 			where TResponse : class, IProtocolMessage {
-			Contract.Requires(requestMessage != null);
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
 			Contract.Ensures(Contract.Result<TResponse>() != null);
 
 			IProtocolMessage response = this.Request(requestMessage);
@@ -412,8 +410,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The remote party's response.  Guaranteed to never be null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the response does not include a protocol message.</exception>
 		public IProtocolMessage Request(IDirectedProtocolMessage requestMessage) {
-			Contract.Requires(requestMessage != null);
-			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
 
 			this.ProcessOutgoingMessage(requestMessage);
 			Logger.Channel.DebugFormat("Sending {0} request.", requestMessage.GetType().Name);
@@ -448,9 +445,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
 		protected internal virtual HttpRequestInfo GetRequestFromContext() {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Contract.Ensures(Contract.Result<HttpRequestInfo>() != null);
-			ErrorUtilities.VerifyHttpContext();
+			Contract.Ensures(Contract.Result<HttpRequestInfo>().Url != null);
+			Contract.Ensures(Contract.Result<HttpRequestInfo>().RawUrl != null);
+			Contract.Ensures(Contract.Result<HttpRequestInfo>().UrlBeforeRewriting != null);
 
+			Contract.Assume(HttpContext.Current.Request.Url != null);
+			Contract.Assume(HttpContext.Current.Request.RawUrl != null);
 			return new HttpRequestInfo(HttpContext.Current.Request);
 		}
 
@@ -492,8 +494,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message about to be encoded and sent.</param>
 		protected virtual void OnSending(IProtocolMessage message) {
-			Contract.Requires(message != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			var sending = this.Sending;
 			if (sending != null) {
@@ -508,8 +509,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The response to the web request.</returns>
 		/// <exception cref="ProtocolException">Thrown on network or protocol errors.</exception>
 		protected virtual IncomingWebResponse GetDirectResponse(HttpWebRequest webRequest) {
-			Contract.Requires(webRequest != null);
-			ErrorUtilities.VerifyArgumentNotNull(webRequest, "webRequest");
+			Contract.Requires<ArgumentNullException>(webRequest != null);
 			return this.WebRequestHandler.GetResponse(webRequest);
 		}
 
@@ -524,7 +524,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// this method to eliminate all use of an HTTP transport.
 		/// </remarks>
 		protected virtual IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
-			Contract.Requires(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(request.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+
 			HttpWebRequest webRequest = this.CreateHttpRequest(request);
 			IDictionary<string, string> responseFields;
 			IDirectResponseProtocolMessage responseMessage;
@@ -535,6 +537,9 @@ namespace DotNetOpenAuth.Messaging {
 				}
 
 				responseFields = this.ReadFromResponseCore(response);
+				if (responseFields == null) {
+					return null;
+				}
 
 				responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
 				if (responseMessage == null) {
@@ -564,8 +569,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.UrlBeforeRewriting.AbsoluteUri);
 
@@ -576,7 +580,15 @@ namespace DotNetOpenAuth.Messaging {
 				fields = request.QueryStringBeforeRewriting.ToDictionary();
 			}
 
-			return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
+			MessageReceivingEndpoint recipient;
+			try {
+				recipient = request.GetRecipient();
+			} catch (ArgumentException ex) {
+				Logger.Messaging.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+				return null;
+			}
+
+			return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 		}
 
 		/// <summary>
@@ -586,8 +598,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="recipient">Information about where the message was directed.  Null for direct response messages.</param>
 		/// <returns>The deserialized message, or null if no message could be recognized in the provided data.</returns>
 		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
-			Contract.Requires(fields != null);
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+			Contract.Requires<ArgumentNullException>(fields != null);
 
 			IProtocolMessage message = this.MessageFactory.GetNewRequestMessage(recipient, fields);
 
@@ -613,11 +624,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to send.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		protected virtual OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
-			Contract.Requires(message != null && message.Recipient != null);
+			Contract.Requires<ArgumentNullException>(message != null);
+			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 
+			Contract.Assert(message != null && message.Recipient != null);
 			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+			Contract.Assert(message != null && message.Recipient != null);
 			var fields = messageAccessor.Serialize();
 
 			// First try creating a 301 redirect, and fallback to a form POST
@@ -637,14 +650,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to forward.</param>
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
+		[Pure]
 		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
-			Contract.Requires(message != null && message.Recipient != null);
-			Contract.Requires(fields != null);
+			Contract.Requires<ArgumentNullException>(message != null);
+			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+			Contract.Requires<ArgumentNullException>(fields != null);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
-
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-			ErrorUtilities.VerifyArgumentNamed(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			UriBuilder builder = new UriBuilder(message.Recipient);
@@ -669,12 +680,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		protected virtual OutgoingWebResponse CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
-			Contract.Requires(message != null && message.Recipient != null);
-			Contract.Requires(fields != null);
+			Contract.Requires<ArgumentNullException>(message != null);
+			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+			Contract.Requires<ArgumentNullException>(fields != null);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-			ErrorUtilities.VerifyArgumentNamed(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			headers.Add(HttpResponseHeader.ContentType, "text/html");
@@ -719,7 +728,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// is overridden and does not require this method.
 		/// </remarks>
 		protected virtual HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
-			Contract.Requires(request != null);
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(request.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
 			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
 			throw new NotImplementedException();
 		}
@@ -744,8 +754,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// except when sending ONE WAY request messages.
 		/// </remarks>
 		protected void ProcessOutgoingMessage(IProtocolMessage message) {
-			Contract.Requires(message != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			Logger.Channel.DebugFormat("Preparing to send {0} ({1}) message.", message.GetType().Name, message.Version);
 			this.OnSending(message);
@@ -758,6 +767,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
+				Contract.Assume(bindingElement.Channel != null);
 				MessageProtections? elementProtection = bindingElement.ProcessOutgoingMessage(message);
 				if (elementProtection.HasValue) {
 					Logger.Bindings.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
@@ -803,8 +813,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method satisfies OAuth 1.0 section 5.2, item #3.
 		/// </remarks>
 		protected virtual HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
-			Contract.Requires(requestMessage != null);
-			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
+			Contract.Requires<ArgumentException>(requestMessage.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
 			var fields = messageAccessor.Serialize();
@@ -814,6 +824,24 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
 
 			return httpRequest;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a HEAD request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP HEAD request with the message parts serialized to the query string.
+		/// This method satisfies OAuth 1.0 section 5.2, item #3.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsHead(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
+			Contract.Requires<ArgumentException>(requestMessage.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "HEAD";
+			return request;
 		}
 
 		/// <summary>
@@ -827,9 +855,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method satisfies OAuth 1.0 section 5.2, item #2 and OpenID 2.0 section 4.1.2.
 		/// </remarks>
 		protected virtual HttpWebRequest InitializeRequestAsPost(IDirectedProtocolMessage requestMessage) {
-			Contract.Requires(requestMessage != null);
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
 			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(requestMessage, "requestMessage");
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
 			var fields = messageAccessor.Serialize();
@@ -837,9 +864,54 @@ namespace DotNetOpenAuth.Messaging {
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
-			this.SendParametersInEntity(httpRequest, fields);
+
+			var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
+			if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+				var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
+
+				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.
+				multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
+				this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
+			} else {
+				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
+				this.SendParametersInEntity(httpRequest, fields);
+			}
 
 			return httpRequest;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a PUT request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP PUT request with the message parts serialized to the query string.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsPut(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
+			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "PUT";
+			return request;
+		}
+
+		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a DELETE request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP DELETE request with the message parts serialized to the query string.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsDelete(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
+			Contract.Ensures(Contract.Result<HttpWebRequest>() != null);
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "DELETE";
+			return request;
 		}
 
 		/// <summary>
@@ -852,10 +924,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
 		/// </remarks>
 		protected void SendParametersInEntity(HttpWebRequest httpRequest, IDictionary<string, string> fields) {
-			Contract.Requires(httpRequest != null);
-			Contract.Requires(fields != null);
-			ErrorUtilities.VerifyArgumentNotNull(httpRequest, "httpRequest");
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+			Contract.Requires<ArgumentNullException>(httpRequest != null);
+			Contract.Requires<ArgumentNullException>(fields != null);
 
 			httpRequest.ContentType = HttpFormUrlEncoded;
 
@@ -881,6 +951,19 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Sends the given parameters in the entity stream of an HTTP request in multi-part format.
+		/// </summary>
+		/// <param name="httpRequest">The HTTP request.</param>
+		/// <param name="fields">The parameters to send.</param>
+		/// <remarks>
+		/// This method calls <see cref="HttpWebRequest.GetRequestStream()"/> and closes
+		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
+		/// </remarks>
+		protected void SendParametersInEntityAsMultipart(HttpWebRequest httpRequest, IEnumerable<MultipartPostPart> fields) {
+			httpRequest.PostMultipartNoGetResponse(this.WebRequestHandler, fields);
+		}
+
+		/// <summary>
 		/// Verifies the integrity and applicability of an incoming message.
 		/// </summary>
 		/// <param name="message">The message just received.</param>
@@ -889,7 +972,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
 		protected virtual void ProcessIncomingMessage(IProtocolMessage message) {
-			Contract.Requires(message != null);
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			if (Logger.Channel.IsInfoEnabled) {
 				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
@@ -902,7 +985,8 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			MessageProtections appliedProtection = MessageProtections.None;
-			foreach (IChannelBindingElement bindingElement in this.incomingBindingElements) {
+			foreach (IChannelBindingElement bindingElement in this.IncomingBindingElements) {
+				Contract.Assume(bindingElement.Channel != null); // CC bug: this.IncomingBindingElements ensures this... why must we assume it here?
 				MessageProtections? elementProtection = bindingElement.ProcessIncomingMessage(message);
 				if (elementProtection.HasValue) {
 					Logger.Bindings.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
@@ -963,10 +1047,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		/// <exception cref="ArgumentException">Thrown if a binding element is new or missing in one of the ordered lists.</exception>
 		protected void CustomizeBindingElementOrder(IEnumerable<IChannelBindingElement> outgoingOrder, IEnumerable<IChannelBindingElement> incomingOrder) {
-			Contract.Requires(outgoingOrder != null);
-			Contract.Requires(incomingOrder != null);
-			ErrorUtilities.VerifyArgumentNotNull(outgoingOrder, "outgoingOrder");
-			ErrorUtilities.VerifyArgumentNotNull(incomingOrder, "incomingOrder");
+			Contract.Requires<ArgumentNullException>(outgoingOrder != null);
+			Contract.Requires<ArgumentNullException>(incomingOrder != null);
 			ErrorUtilities.VerifyArgument(this.IsBindingElementOrderValid(outgoingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
 			ErrorUtilities.VerifyArgument(this.IsBindingElementOrderValid(incomingOrder), MessagingStrings.InvalidCustomBindingElementOrder);
 
@@ -984,13 +1066,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The properly ordered list of elements.</returns>
 		/// <exception cref="ProtocolException">Thrown when the binding elements are incomplete or inconsistent with each other.</exception>
 		private static IEnumerable<IChannelBindingElement> ValidateAndPrepareBindingElements(IEnumerable<IChannelBindingElement> elements) {
-			Contract.Requires(elements == null || elements.All(e => e != null));
+			Contract.Requires<ArgumentException>(elements == null || elements.All(e => e != null));
 			Contract.Ensures(Contract.Result<IEnumerable<IChannelBindingElement>>() != null);
 			if (elements == null) {
 				return new IChannelBindingElement[0];
 			}
-
-			ErrorUtilities.VerifyArgumentNamed(!elements.Contains(null), "elements", MessagingStrings.SequenceContainsNullElement);
 
 			// Filter the elements between the mere transforming ones and the protection ones.
 			var transformationElements = new List<IChannelBindingElement>(
@@ -1027,8 +1107,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="protection1">The first protection type to compare.</param>
 		/// <param name="protection2">The second protection type to compare.</param>
 		/// <returns>
-		/// -1 if <paramref name="element1"/> should be applied to an outgoing message before <paramref name="element2"/>.
-		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
+		/// -1 if <paramref name="protection1"/> should be applied to an outgoing message before <paramref name="protection2"/>.
+		/// 1 if <paramref name="protection2"/> should be applied to an outgoing message before <paramref name="protection1"/>.
 		/// 0 if it doesn't matter.
 		/// </returns>
 		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtections protection1, MessageProtections protection2) {
@@ -1037,6 +1117,18 @@ namespace DotNetOpenAuth.Messaging {
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.MessageDescriptions != null);
+		}
+#endif
 
 		/// <summary>
 		/// Verifies that all required message parts are initialized to values
@@ -1047,7 +1139,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Thrown when any required message part does not have a value.
 		/// </exception>
 		private void EnsureValidMessageParts(IProtocolMessage message) {
-			Contract.Requires(message != null);
+			Contract.Requires<ArgumentNullException>(message != null);
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(message);
 			MessageDescription description = this.MessageDescriptions.Get(message);
 			description.EnsureMessagePartsPassBasicValidation(dictionary);
@@ -1063,8 +1155,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		[Pure]
 		private bool IsBindingElementOrderValid(IEnumerable<IChannelBindingElement> order) {
-			Contract.Requires(order != null);
-			ErrorUtilities.VerifyArgumentNotNull(order, "order");
+			Contract.Requires<ArgumentNullException>(order != null);
 
 			// Check that the same number of binding elements are defined.
 			if (order.Count() != this.OutgoingBindingElements.Count) {

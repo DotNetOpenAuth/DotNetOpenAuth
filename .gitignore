@@ -17,3 +17,5 @@ PrecompiledWeb
 *.mdf
 *.swx
 .dotest
+*.Publish.xml
+*.dbproj.schemaview

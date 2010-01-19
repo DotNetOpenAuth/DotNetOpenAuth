@@ -70,6 +70,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to send all message data because some of it requires multi-part POST, but IMessageWithBinaryData.SendAsMultipart was false..
+        /// </summary>
+        internal static string BinaryDataRequiresMultipart {
+            get {
+                return ResourceManager.GetString("BinaryDataRequiresMultipart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed..
         /// </summary>
         internal static string CurrentHttpContextRequired {
@@ -115,7 +124,7 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The given set of options ({0}) is not supported by {1}..
+        ///   Looks up a localized string similar to The given set of options is not supported by this web request handler..
         /// </summary>
         internal static string DirectWebRequestOptionsNotSupported {
             get {
@@ -304,6 +313,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A non-empty string was expected..
+        /// </summary>
+        internal static string NonEmptyStringExpected {
+            get {
+                return ResourceManager.GetString("NonEmptyStringExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A message response is already queued for sending in the response stream..
         /// </summary>
         internal static string QueuedMessageResponseAlreadyExists {
@@ -390,6 +408,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string SigningNotSupported {
             get {
                 return ResourceManager.GetString("SigningNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream must have a known length..
+        /// </summary>
+        internal static string StreamMustHaveKnownLength {
+            get {
+                return ResourceManager.GetString("StreamMustHaveKnownLength", resourceCulture);
             }
         }
         

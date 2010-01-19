@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <c>True</c> if the endpoint should be considered.  
 	/// <c>False</c> to remove it from the pool of acceptable providers.
 	/// </returns>
-	public delegate bool EndpointSelector(IXrdsProviderEndpoint endpoint);
+	public delegate bool EndpointSelector(IProviderEndpoint endpoint);
 
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
@@ -41,12 +41,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
 		/// </summary>
-		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.ApplicationStore";
+		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.HttpApplicationStore";
 
 		/// <summary>
 		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
 		private readonly ObservableCollection<IRelyingPartyBehavior> behaviors = new ObservableCollection<IRelyingPartyBehavior>();
+
+		/// <summary>
+		/// Backing field for the <see cref="DiscoveryServices"/> property.
+		/// </summary>
+		private readonly IList<IIdentifierDiscoveryService> discoveryServices = new List<IIdentifierDiscoveryService>(2);
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -56,7 +61,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Backing store for the <see cref="EndpointOrder"/> property.
 		/// </summary>
-		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
+		private Comparison<IdentifierDiscoveryResult> endpointOrder = DefaultEndpointOrder;
 
 		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
@@ -87,10 +92,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
-			Contract.Requires(associationStore == null || nonceStore != null);
-			ErrorUtilities.VerifyArgument(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
+			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
+
+			foreach (var discoveryService in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.DiscoveryServices.CreateInstances(true)) {
+				this.discoveryServices.Add(discoveryService);
+			}
+
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
@@ -105,6 +114,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
 		}
 
 		/// <summary>
@@ -115,8 +126,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Endpoints lacking any priority value are sorted to the end of the list.
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
-			get { return ServiceEndpoint.EndpointOrder; }
+		public static Comparison<IdentifierDiscoveryResult> DefaultEndpointOrder {
+			get { return IdentifierDiscoveryResult.EndpointOrder; }
 		}
 
 		/// <summary>
@@ -129,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Contract.Ensures(Contract.Result<IRelyingPartyApplicationStore>() != null);
 
 				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, OpenIdStrings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
+				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
 				var store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
@@ -155,8 +166,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.channel = value;
 				this.AssociationManager.Channel = value;
 			}
@@ -172,8 +182,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			internal set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.securitySettings = value;
 				this.AssociationManager.SecuritySettings = value;
 			}
@@ -200,14 +209,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// can be set to the value of <see cref="DefaultEndpointOrder"/>.
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public Comparison<IXrdsProviderEndpoint> EndpointOrder {
+		public Comparison<IdentifierDiscoveryResult> EndpointOrder {
 			get {
 				return this.endpointOrder;
 			}
 
 			set {
-				Contract.Requires(value != null);
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.endpointOrder = value;
 			}
 		}
@@ -222,8 +230,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets a list of custom behaviors to apply to OpenID actions.
 		/// </summary>
-		internal ICollection<IRelyingPartyBehavior> Behaviors {
+		/// <remarks>
+		/// Adding behaviors can impact the security settings of this <see cref="OpenIdRelyingParty"/>
+		/// instance in ways that subsequently removing the behaviors will not reverse.
+		/// </remarks>
+		public ICollection<IRelyingPartyBehavior> Behaviors {
 			get { return this.behaviors; }
+		}
+
+		/// <summary>
+		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
+		/// </summary>
+		public IList<IIdentifierDiscoveryService> DiscoveryServices {
+			get { return this.discoveryServices; }
 		}
 
 		/// <summary>
@@ -269,9 +288,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
-			Contract.Requires(returnToUrl != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
+			Contract.Requires<ArgumentNullException>(returnToUrl != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
@@ -302,11 +321,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
-				return this.CreateRequests(userSuppliedIdentifier, realm).First();
+				var result = this.CreateRequests(userSuppliedIdentifier, realm).First();
+				Contract.Assume(result != null);
+				return result;
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}
@@ -329,7 +350,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
-			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
 			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				return this.CreateRequests(userSuppliedIdentifier).First();
@@ -366,12 +387,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
-			Contract.Requires(returnToUrl != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
+			Contract.Requires<ArgumentNullException>(returnToUrl != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-			ErrorUtilities.VerifyArgumentNotNull(returnToUrl, "returnToUrl");
 
 			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>();
 		}
@@ -402,10 +421,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
-			Contract.Requires(userSuppliedIdentifier != null);
-			Contract.Requires(realm != null);
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			ErrorUtilities.VerifyHttpContext();
+
+			// This next code contract is a BAD idea, because it causes each authentication request to be generated
+			// at least an extra time.
+			////Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));
 
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
@@ -446,25 +469,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
-			Contract.Requires(userSuppliedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
-			ErrorUtilities.VerifyHttpContext();
 
-			// Build the realm URL
-			UriBuilder realmUrl = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
-			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
-			realmUrl.Query = null;
-			realmUrl.Fragment = null;
-
-			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
-			// virtual directory hosted apps, we need to make sure that the realm path ends
-			// in a slash (since our calculation above guarantees it doesn't end in a specific
-			// page like default.aspx).
-			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal)) {
-				realmUrl.Path += "/";
-			}
-
-			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+			return this.CreateRequests(userSuppliedIdentifier, Realm.AutoDetect);
 		}
 
 		/// <summary>
@@ -484,7 +493,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="httpRequestInfo">The HTTP request that may be carrying an authentication response from the Provider.</param>
 		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
 		public IAuthenticationResponse GetResponse(HttpRequestInfo httpRequestInfo) {
-			Contract.Requires(httpRequestInfo != null);
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
 			try {
 				var message = this.Channel.ReadFromRequest(httpRequestInfo);
 				PositiveAssertionResponse positiveAssertion;
@@ -567,17 +576,41 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return rp;
 		}
 
-#if CONTRACTS_FULL
 		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
+		/// Performs discovery on the specified identifier.
 		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.SecuritySettings != null);
-			Contract.Invariant(this.Channel != null);
+		/// <param name="identifier">The identifier to discover services for.</param>
+		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
+		internal IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
+			Contract.Requires<ArgumentNullException>(identifier != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
+
+			IEnumerable<IdentifierDiscoveryResult> results = Enumerable.Empty<IdentifierDiscoveryResult>();
+			foreach (var discoverer in this.DiscoveryServices) {
+				bool abortDiscoveryChain;
+				var discoveryResults = discoverer.Discover(identifier, this.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();
+				results = results.Concat(discoveryResults);
+				if (abortDiscoveryChain) {
+					Logger.OpenId.InfoFormat("Further discovery on '{0}' was stopped by the {1} discovery service.", identifier, discoverer.GetType().Name);
+					break;
+				}
+			}
+
+			// If any OP Identifier service elements were found, we must not proceed
+			// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.
+			// For a discussion on this topic, see
+			// http://groups.google.com/group/dotnetopenid/browse_thread/thread/4b5a8c6b2210f387/5e25910e4d2252c8
+			// Sometimes the IIdentifierDiscoveryService will automatically filter this for us, but
+			// just to be sure, we'll do it here as well.
+			if (!this.SecuritySettings.AllowDualPurposeIdentifiers) {
+				results = results.CacheGeneratedResults(); // avoid performing discovery repeatedly
+				var opIdentifiers = results.Where(result => result.ClaimedIdentifier == result.Protocol.ClaimedIdentifierForOPIdentifier);
+				var claimedIdentifiers = results.Where(result => result.ClaimedIdentifier != result.Protocol.ClaimedIdentifierForOPIdentifier);
+				results = opIdentifiers.Any() ? opIdentifiers : claimedIdentifiers;
+			}
+
+			return results;
 		}
-#endif
 
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
@@ -601,7 +634,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			foreach (IRelyingPartyBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
+				Reporting.RecordFeatureUse(profile);
 			}
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.SecuritySettings != null);
+			Contract.Invariant(this.Channel != null);
+			Contract.Invariant(this.EndpointOrder != null);
+		}
+#endif
 	}
 }

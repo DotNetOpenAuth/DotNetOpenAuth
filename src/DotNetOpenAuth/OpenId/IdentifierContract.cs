@@ -20,20 +20,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Prevents a default instance of the IdentifierContract class from being created.
 		/// </summary>
 		private IdentifierContract()
-			: base(false) {
-		}
-
-		/// <summary>
-		/// Performs discovery on the Identifier.
-		/// </summary>
-		/// <param name="requestHandler">The web request handler to use for discovery.</param>
-		/// <returns>
-		/// An initialized structure containing the discovered provider endpoint information.
-		/// </returns>
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			Contract.Requires(requestHandler != null);
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceEndpoint>>() != null);
-			throw new NotImplementedException();
+			: base(null, false) {
 		}
 
 		/// <summary>

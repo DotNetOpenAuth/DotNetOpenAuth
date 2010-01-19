@@ -95,6 +95,13 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		private const string EnabledViewStateKey = "Enabled";
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XrdsPublisher"/> class.
+		/// </summary>
+		public XrdsPublisher() {
+			Reporting.RecordFeatureUse(this);
+		}
+
 		#region Properties
 
 		/// <summary>

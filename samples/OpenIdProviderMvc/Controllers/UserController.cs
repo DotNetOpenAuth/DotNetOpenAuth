@@ -7,25 +7,28 @@ namespace OpenIdProviderMvc.Controllers {
 	using System.Web.Mvc.Ajax;
 
 	public class UserController : Controller {
-		public ActionResult PpidIdentity() {
-			if (Request.AcceptTypes.Contains("application/xrds+xml")) {
-				return View("Xrds");
-			}
-
-			return View();
-		}
-
-		public ActionResult Identity(string id) {
-			var redirect = this.RedirectIfNotNormalizedRequestUri();
-			if (redirect != null) {
-				return redirect;
+		/// <summary>
+		/// Identities the specified id.
+		/// </summary>
+		/// <param name="id">The username or anonymous identifier.</param>
+		/// <param name="anon">if set to <c>true</c> then <paramref name="id"/> represents an anonymous identifier rather than a username.</param>
+		/// <returns>The view to display.</returns>
+		public ActionResult Identity(string id, bool anon) {
+			if (!anon) {
+				var redirect = this.RedirectIfNotNormalizedRequestUri(id);
+				if (redirect != null) {
+					return redirect;
+				}
 			}
 
 			if (Request.AcceptTypes != null && Request.AcceptTypes.Contains("application/xrds+xml")) {
 				return View("Xrds");
 			}
 
-			this.ViewData["username"] = id;
+			if (!anon) {
+				this.ViewData["username"] = id;
+			}
+
 			return View();
 		}
 
@@ -33,8 +36,8 @@ namespace OpenIdProviderMvc.Controllers {
 			return View();
 		}
 
-		private ActionResult RedirectIfNotNormalizedRequestUri() {
-			Uri normalized = Models.User.GetNormalizedClaimedIdentifier(Request.Url);
+		private ActionResult RedirectIfNotNormalizedRequestUri(string user) {
+			Uri normalized = Models.User.GetClaimedIdentifierForUser(user);
 			if (Request.Url != normalized) {
 				return Redirect(normalized.AbsoluteUri);
 			}

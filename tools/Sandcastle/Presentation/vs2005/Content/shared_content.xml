@@ -19,19 +19,29 @@
   	<!-- header -->
 	<item id="header"><font color="DarkGray"></font><p/> </item>
   
+  <!-- freshness date -->
+  <item id="UpdateTitle"><font color="DarkGray">Updated: {0}</font></item>
+  <!-- if the TransformComponent of the BuildAssembler config file has the argument: 
+             argument key="changeHistoryOptions" value="showDefaultFreshnessDate"
+       the "defaultFreshnessDate" item is used as the default freshness date for topics that don't have a Change History table. -->
+  <item id="defaultFreshnessDate"/>
+  
+  <!-- change history table section-->
+  <item id="changeHistory">Change History</item>
+  
   <!-- topic title -->
   <item id="nsrTitle">{0}</item>
 
 	<!-- alert titles -->
-	<item id="tipTitle"><b>Tip:</b></item>
-	<item id="cautionTitle"><b>Caution:</b></item>
-	<item id="securityTitle"><b>Security Note:</b></item>
-	<item id="noteTitle"><b>Note:</b></item>
-	<item id="importantTitle"><b>Important Note:</b></item>
-	<item id="visualBasicTitle"><b>Visual Basic Note:</b></item>
-	<item id="visualC#Title"><b>C# Note:</b></item>
-	<item id="visualC++Title"><b>C++ Note:</b></item>
-	<item id="visualJ#Title"><b>J# Note:</b></item>
+	<item id="tipTitle"><b>Tip</b></item>
+	<item id="cautionTitle"><b>Caution</b></item>
+	<item id="securityTitle"><b>Security Note</b></item>
+	<item id="noteTitle"><b>Note</b></item>
+	<item id="importantTitle"><b>Important</b></item>
+	<item id="visualBasicTitle"><b>Visual Basic Note</b></item>
+	<item id="visualC#Title"><b>C# Note</b></item>
+	<item id="visualC++Title"><b>C++ Note</b></item>
+	<item id="visualJ#Title"><b>J# Note</b></item>
 
 	<!-- alert alt text -->
 	<item id="tipAltText">Tip</item>
@@ -50,9 +60,14 @@
 	<item id="ManagedCPlusPlusLabel">Visual C++</item>
 	<item id="JSharpLabel">J#</item>
 	<item id="JScriptLabel">JScript</item>
+  <item id="JavaScriptLabel">JavaScript</item>
+  <item id="XAMLLabel">XAML</item>
 
   <!-- section titles -->
   <item id="exceptionsTitle">Exceptions</item>
+  <item id="contractsTitle">Contracts</item>
+  <item id="setterTitle">Set</item>
+  <item id="getterTitle">Get</item>
   <item id="SeeAlso">See&#160;Also</item>
   <item id="SeeAlsoTasks">Tasks</item>
   <item id="SeeAlsoReference">Reference</item>
@@ -100,6 +115,7 @@
   <item id="JScript">JScript</item>
   <item id="xmlLang">Xml</item>
   <item id="JavaScript">JavaScript</item>
+  <item id="FSharp">F#</item>
   <item id="html">Html</item>
   <item id="visualbasicANDcsharp"><include item="VisualBasic"/> and <include item="CSharp"/></item>
   <item id="other"></item>
@@ -196,7 +212,7 @@
       </a>
 	</span>
 </item> 
-<item id="MailToLink">javascript:SubmitFeedback('<include item="fb_alias" />','<include item="fb_product" />','<include item="fb_deliverable" />','{0}','{1}','<include item="fb_body" />');</item>  
+<item id="MailToLink">javascript:SubmitFeedback('<include item="fb_alias" />','<include item="fb_product" />','<include item="fb_deliverable" />','{0}','{1}','<include item="fb_body" />','<include item="fb_subject" />');</item>  
  
 <!-- 5 star rating feedback control in sandcastle scenario--> 
 <!--
@@ -235,7 +251,7 @@
 	</span>
 </item>
 
-<item id="MailToLink">javascript:SubmitFeedback('<include item="feedback_alias" />','<include item="feedback_product" />','<include item="feedback_deliverable" />','<include item="feedback_fileVersion" />','<include item="feedback_topicVersion" />','<include item="feedback_body" />');</item> 
+<item id="MailToLink">javascript:SubmitFeedback('<include item="feedback_alias" />','<include item="feedback_product" />','<include item="feedback_deliverable" />','<include item="feedback_fileVersion" />','<include item="feedback_topicVersion" />','<include item="feedback_body" />','<include item="feedback_subject" />');</item> 
 -->
   
 <item id="copyrightStatement"><include item="copyrightText"/></item>

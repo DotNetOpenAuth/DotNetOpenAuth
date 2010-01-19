@@ -16,9 +16,19 @@
 		</asp:View>
 		<asp:View runat="server">
 			<h2>Updates</h2>
-			<p>Ok, Twitter has authorized us to download your feeds. Click 'Get updates' to download
-				updates to this sample. Notice how we never asked you for your Twitter username
-				or password. </p>
+			<p>Ok, Twitter has authorized us to download your feeds. Notice how we never asked 
+				you for your Twitter username or password. </p>
+			<p>
+				Upload a new profile photo:
+				<asp:FileUpload ID="profilePhoto" runat="server" />
+				&nbsp;<asp:Button ID="uploadProfilePhotoButton" runat="server" 
+					onclick="uploadProfilePhotoButton_Click" Text="Upload photo" />
+				&nbsp;<asp:Label ID="photoUploadedLabel" runat="server" EnableViewState="False" 
+					Text="Done!" Visible="False"></asp:Label>
+			</p>
+			<p>
+				Click &#39;Get updates&#39; to download updates to this sample.
+			</p>
 			<asp:Button ID="downloadUpdates" runat="server" Text="Get updates" OnClick="downloadUpdates_Click" />
 			<asp:PlaceHolder runat="server" ID="resultsPlaceholder" />
 		</asp:View>

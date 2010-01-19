@@ -89,9 +89,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="reader">The encrypted token XML reader.</param>
 		/// <returns>A byte array of the contents of the encrypted token</returns>
 		internal byte[] DecryptToken(XmlReader reader) {
-			Contract.Requires(reader != null);
+			Contract.Requires<ArgumentNullException>(reader != null);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(reader, "reader");
 
 			byte[] securityTokenData;
 			string encryptionAlgorithm;
@@ -148,9 +147,10 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.Tokens != null);
 		}
 #endif

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
@@ -40,8 +41,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="associationStore">The association store.  May be null for dumb mode relying parties.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal AssociationManager(Channel channel, IAssociationStore<Uri> associationStore, RelyingPartySecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(channel != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.channel = channel;
 			this.associationStore = associationStore;
@@ -58,7 +59,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.channel = value;
 			}
 		}
@@ -72,7 +73,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				ErrorUtilities.VerifyArgumentNotNull(value, "value");
+				Contract.Requires<ArgumentNullException>(value != null);
 				this.securitySettings = value;
 			}
 		}
@@ -94,15 +95,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="provider">The provider to create an association with.</param>
 		/// <returns>The association if one exists and has useful life remaining.  Otherwise <c>null</c>.</returns>
-		internal Association GetExistingAssociation(ProviderEndpointDescription provider) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		internal Association GetExistingAssociation(IProviderEndpoint provider) {
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			// If the RP has no application store for associations, there's no point in creating one.
 			if (this.associationStore == null) {
 				return null;
 			}
 
-			Association association = this.associationStore.GetAssociation(provider.Endpoint, this.SecuritySettings);
+			Association association = this.associationStore.GetAssociation(provider.Uri, this.SecuritySettings);
 
 			// If the returned association does not fulfill security requirements, ignore it.
 			if (association != null && !this.SecuritySettings.IsAssociationInPermittedRange(association)) {
@@ -122,7 +123,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="provider">The provider to get an association for.</param>
 		/// <returns>The existing or new association; <c>null</c> if none existed and one could not be created.</returns>
-		internal Association GetOrCreateAssociation(ProviderEndpointDescription provider) {
+		internal Association GetOrCreateAssociation(IProviderEndpoint provider) {
 			return this.GetExistingAssociation(provider) ?? this.CreateNewAssociation(provider);
 		}
 
@@ -139,8 +140,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// association store.
 		/// Any new association is automatically added to the <see cref="associationStore"/>.
 		/// </remarks>
-		private Association CreateNewAssociation(ProviderEndpointDescription provider) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		private Association CreateNewAssociation(IProviderEndpoint provider) {
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			// If there is no association store, there is no point in creating an association.
 			if (this.associationStore == null) {
@@ -163,8 +164,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The newly created association, or null if no association can be created with
 		/// the given Provider given the current security settings.
 		/// </returns>
-		private Association CreateNewAssociation(ProviderEndpointDescription provider, AssociateRequest associateRequest, int retriesRemaining) {
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		private Association CreateNewAssociation(IProviderEndpoint provider, AssociateRequest associateRequest, int retriesRemaining) {
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			if (associateRequest == null || retriesRemaining < 0) {
 				// this can happen if security requirements and protocol conflict
@@ -178,7 +179,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
 				if (associateSuccessfulResponse != null) {
 					Association association = associateSuccessfulResponse.CreateAssociation(associateRequest, null);
-					this.associationStore.StoreAssociation(provider.Endpoint, association);
+					this.associationStore.StoreAssociation(provider.Uri, association);
 					return association;
 				} else if (associateUnsuccessfulResponse != null) {
 					if (string.IsNullOrEmpty(associateUnsuccessfulResponse.AssociationType)) {
@@ -186,7 +187,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						return null;
 					}
 
-					if (!this.securitySettings.IsAssociationInPermittedRange(Protocol.Lookup(provider.ProtocolVersion), associateUnsuccessfulResponse.AssociationType)) {
+					if (!this.securitySettings.IsAssociationInPermittedRange(Protocol.Lookup(provider.Version), associateUnsuccessfulResponse.AssociationType)) {
 						Logger.OpenId.DebugFormat("Provider rejected an association request and suggested '{0}' as an association to try, which this Relying Party does not support.  Giving up.", associateUnsuccessfulResponse.AssociationType);
 						return null;
 					}
@@ -197,7 +198,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					}
 
 					// Make sure the Provider isn't suggesting an incompatible pair of association/session types.
-					Protocol protocol = Protocol.Lookup(provider.ProtocolVersion);
+					Protocol protocol = Protocol.Lookup(provider.Version);
 					ErrorUtilities.VerifyProtocol(
 						HmacShaAssociation.IsDHSessionCompatible(protocol, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType),
 						OpenIdStrings.IncompatibleAssociationAndSessionTypes,
@@ -219,7 +220,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				// Since having associations with OPs is not totally critical, we'll log and eat
 				// the exception so that auth may continue in dumb mode.
-				Logger.OpenId.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Endpoint, ex);
+				Logger.OpenId.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Uri, ex);
 				return null;
 			}
 		}

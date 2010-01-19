@@ -201,6 +201,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
 		public void ReadFromRequestNoContext() {
+			HttpContext.Current = null;
 			TestBadChannel badChannel = new TestBadChannel(false);
 			badChannel.ReadFromRequest();
 		}

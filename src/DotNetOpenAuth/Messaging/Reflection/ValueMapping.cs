@@ -6,10 +6,12 @@
 
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A pair of conversion functions to map some type to a string and back again.
 	/// </summary>
+	[ContractVerification(true)]
 	internal struct ValueMapping {
 		/// <summary>
 		/// The mapping function that converts some custom type to a string.
@@ -27,8 +29,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toString">The mapping function that converts some custom type to a string.</param>
 		/// <param name="toValue">The mapping function that converts a string to some custom type.</param>
 		internal ValueMapping(Func<object, string> toString, Func<string, object> toValue) {
-			ErrorUtilities.VerifyArgumentNotNull(toString, "toString");
-			ErrorUtilities.VerifyArgumentNotNull(toValue, "toValue");
+			Contract.Requires<ArgumentNullException>(toString != null);
+			Contract.Requires<ArgumentNullException>(toValue != null);
 
 			this.ValueToString = toString;
 			this.StringToValue = toValue;
@@ -39,7 +41,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="encoder">The encoder.</param>
 		internal ValueMapping(IMessagePartEncoder encoder) {
-			ErrorUtilities.VerifyArgumentNotNull(encoder, "encoder");
+			Contract.Requires<ArgumentNullException>(encoder != null);
 			var nullEncoder = encoder as IMessagePartNullEncoder;
 			string nullString = nullEncoder != null ? nullEncoder.EncodedNullValue : null;
 

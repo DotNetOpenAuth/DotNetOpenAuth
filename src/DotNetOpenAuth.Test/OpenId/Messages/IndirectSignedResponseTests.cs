@@ -127,7 +127,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
 		public void GetReturnToArgumentNullKey() {
 			this.response.GetReturnToArgument(null);
 		}

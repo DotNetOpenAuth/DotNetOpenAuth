@@ -35,8 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="baseIdentifier">The base URI on which to append the anonymous part.</param>
 		protected PrivatePersonalIdentifierProviderBase(Uri baseIdentifier) {
-			Contract.Requires(baseIdentifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(baseIdentifier, "baseIdentifier");
+			Contract.Requires<ArgumentNullException>(baseIdentifier != null);
 
 			this.Hasher = HashAlgorithm.Create(HashAlgorithmName);
 			this.Encoder = Encoding.UTF8;
@@ -103,8 +102,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				Contract.Requires(value > 0);
-				ErrorUtilities.VerifyArgumentInRange(value > 0, "value");
+				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
 				this.newSaltLength = value;
 			}
 		}
@@ -122,10 +120,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// openid.claimed_id and openid.local_id parameters.  Must not be null.
 		/// </returns>
 		public Uri GetIdentifier(Identifier localIdentifier, Realm relyingPartyRealm) {
-			ErrorUtilities.VerifyArgumentNotNull(localIdentifier, "localIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(relyingPartyRealm, "relyingPartyRealm");
-			ErrorUtilities.VerifyArgumentNamed(this.IsUserLocalIdentifier(localIdentifier), "localIdentifier", OpenIdStrings.ArgumentIsPpidIdentifier);
-
 			byte[] salt = this.GetHashSaltForLocalIdentifier(localIdentifier);
 			string valueToHash = localIdentifier + "#";
 			switch (this.PairwiseUnique) {
@@ -187,8 +181,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>The full PPID Identifier.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "NOT equivalent overload.  The recommended one breaks on relative URIs.")]
 		protected virtual Uri AppendIdentifiers(string uriHash) {
-			Contract.Requires(!String.IsNullOrEmpty(uriHash));
-			ErrorUtilities.VerifyNonZeroLength(uriHash, "uriHash");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uriHash));
 
 			if (string.IsNullOrEmpty(this.BaseIdentifier.Query)) {
 				// The uriHash will appear on the path itself.
@@ -220,7 +213,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.Hasher != null);
 			Contract.Invariant(this.Encoder != null);
 			Contract.Invariant(this.BaseIdentifier != null);

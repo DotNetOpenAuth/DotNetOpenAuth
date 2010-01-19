@@ -101,9 +101,13 @@ namespace DotNetOpenAuth.ComponentModel {
 		protected override ICollection GetStandardValuesForCache() {
 			if (this.WellKnownValuesType != null) {
 				var fields = from field in this.WellKnownValuesType.GetFields(BindingFlags.Static | BindingFlags.Public)
-							 select new Uri((string)field.GetValue(null));
+							 let value = (string)field.GetValue(null)
+							 where value != null
+							 select new Uri(value);
 				var properties = from prop in this.WellKnownValuesType.GetProperties(BindingFlags.Static | BindingFlags.Public)
-								 select new Uri((string)prop.GetValue(null, null));
+								 let value = (string)prop.GetValue(null, null)
+								 where value != null
+								 select new Uri(value);
 				return (fields.Concat(properties)).ToArray();
 			} else {
 				return new Uri[0];

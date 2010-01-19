@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
 	/// Interface exposing incoming messages to the OpenID Provider that
@@ -33,6 +34,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		bool Immediate { get; }
 
 		/// <summary>
+		/// Gets or sets the provider endpoint claimed in the positive assertion.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// This value MUST match the value for the OP Endpoint in the discovery results for the
+		/// claimed identifier being asserted in a positive response.
+		/// </value>
+		Uri ProviderEndpoint { get; set; }
+
+		/// <summary>
 		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
 		/// </summary>
 		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
@@ -47,10 +58,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	}
 
 	/// <summary>
-	/// Contract class for the <see cref="IHostProcessedRequest"/> type.
+	/// Code contract for the <see cref="IHostProcessedRequest"/> type.
 	/// </summary>
 	[ContractClassFor(typeof(IHostProcessedRequest))]
 	internal abstract class IHostProcessedRequestContract : IHostProcessedRequest {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IHostProcessedRequestContract"/> class.
+		/// </summary>
+		protected IHostProcessedRequestContract() {
+		}
+
 		#region IHostProcessedRequest Properties
 
 		/// <summary>
@@ -74,6 +91,24 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		bool IHostProcessedRequest.Immediate {
 			get { throw new System.NotImplementedException(); }
+		}
+
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		Uri IHostProcessedRequest.ProviderEndpoint {
+			get {
+				Contract.Ensures(Contract.Result<Uri>() != null);
+				throw new NotImplementedException();
+			}
+
+			set {
+				Contract.Requires(value != null);
+				throw new NotImplementedException();
+			}
 		}
 
 		#endregion
@@ -148,7 +183,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
 		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(OpenIdProvider provider) {
-			Contract.Requires(provider != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 			throw new System.NotImplementedException();
 		}
 

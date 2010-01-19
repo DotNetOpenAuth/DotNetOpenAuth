@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -75,16 +76,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Null if no association could be created that meet the security requirements
 		/// and the provider OpenID version.
 		/// </returns>
-		internal static AssociateRequest Create(SecuritySettings securityRequirements, ProviderEndpointDescription provider) {
-			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+		internal static AssociateRequest Create(SecuritySettings securityRequirements, IProviderEndpoint provider) {
+			Contract.Requires<ArgumentNullException>(securityRequirements != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			// Apply our knowledge of the endpoint's transport, OpenID version, and
 			// security requirements to decide the best association.
-			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
+			bool unencryptedAllowed = provider.Uri.IsTransportSecure();
 			bool useDiffieHellman = !unencryptedAllowed;
 			string associationType, sessionType;
-			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.ProtocolVersion), true, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
+			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.Version), true, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
 				// There are no associations that meet all requirements.
 				Logger.OpenId.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
 				return null;
@@ -105,19 +106,19 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Null if no association could be created that meet the security requirements
 		/// and the provider OpenID version.
 		/// </returns>
-		internal static AssociateRequest Create(SecuritySettings securityRequirements, ProviderEndpointDescription provider, string associationType, string sessionType) {
-			ErrorUtilities.VerifyArgumentNotNull(securityRequirements, "securityRequirements");
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
-			ErrorUtilities.VerifyNonZeroLength(associationType, "associationType");
-			ErrorUtilities.VerifyArgumentNotNull(sessionType, "sessionType");
+		internal static AssociateRequest Create(SecuritySettings securityRequirements, IProviderEndpoint provider, string associationType, string sessionType) {
+			Contract.Requires<ArgumentNullException>(securityRequirements != null);
+			Contract.Requires<ArgumentNullException>(provider != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
+			Contract.Requires<ArgumentNullException>(sessionType != null);
 
-			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
+			bool unencryptedAllowed = provider.Uri.IsTransportSecure();
 			if (unencryptedAllowed) {
-				var associateRequest = new AssociateUnencryptedRequest(provider.ProtocolVersion, provider.Endpoint);
+				var associateRequest = new AssociateUnencryptedRequest(provider.Version, provider.Uri);
 				associateRequest.AssociationType = associationType;
 				return associateRequest;
 			} else {
-				var associateRequest = new AssociateDiffieHellmanRequest(provider.ProtocolVersion, provider.Endpoint);
+				var associateRequest = new AssociateDiffieHellmanRequest(provider.Version, provider.Uri);
 				associateRequest.AssociationType = associationType;
 				associateRequest.SessionType = sessionType;
 				associateRequest.InitializeRequest();
@@ -140,8 +141,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
 		internal IProtocolMessage CreateResponse(IAssociationStore<AssociationRelyingPartyType> associationStore, ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(associationStore, "associationStore");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(associationStore != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			IProtocolMessage response;
 			if (securitySettings.IsAssociationInPermittedRange(Protocol, this.AssociationType) &&
@@ -184,7 +185,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="securitySettings">The security settings that apply to this Provider.</param>
 		/// <returns>The response to send to the Relying Party.</returns>
 		private AssociateUnsuccessfulResponse CreateUnsuccessfulResponse(ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			var unsuccessfulResponse = new AssociateUnsuccessfulResponse(this.Version, this);
 

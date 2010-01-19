@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 
 	/// <summary>
@@ -20,6 +21,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="faultedMessage">The expired message.</param>
 		public ExpiredMessageException(DateTime utcExpirationDate, IProtocolMessage faultedMessage)
 			: base(string.Format(CultureInfo.CurrentCulture, MessagingStrings.ExpiredMessage, utcExpirationDate.ToLocalTime(), DateTime.Now), faultedMessage) {
+			Contract.Requires<ArgumentException>(utcExpirationDate.Kind == DateTimeKind.Utc);
 		}
 
 		/// <summary>

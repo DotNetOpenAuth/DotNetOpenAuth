@@ -5,7 +5,9 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.Mocks {
+	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 
@@ -19,7 +21,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="relyingPartyDescriptions">The relying party descriptions.</param>
 		internal MockRealm(Realm wrappedRealm, params RelyingPartyEndpointDescription[] relyingPartyDescriptions)
 			: base(wrappedRealm) {
-			ErrorUtilities.VerifyArgumentNotNull(relyingPartyDescriptions, "relyingPartyDescriptions");
+			Contract.Requires<ArgumentNullException>(relyingPartyDescriptions != null);
 
 			this.relyingPartyDescriptions = relyingPartyDescriptions;
 		}
@@ -35,7 +37,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <returns>
 		/// The details of the endpoints if found, otherwise null.
 		/// </returns>
-		internal override IEnumerable<RelyingPartyEndpointDescription> Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+		internal override IEnumerable<RelyingPartyEndpointDescription> DiscoverReturnToEndpoints(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
 			return this.relyingPartyDescriptions;
 		}
 	}

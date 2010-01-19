@@ -29,8 +29,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The incoming authentication request message.</param>
 		internal AuthenticationRequest(OpenIdProvider provider, CheckIdRequest request)
 			: base(provider, request) {
-			Contract.Requires(provider != null);
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			Contract.Requires<ArgumentNullException>(provider != null);
 
 			this.positiveResponse = new PositiveAssertionResponse(request);
 
@@ -46,7 +45,24 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// If the openid.claimed_id is present, and if it's different than the openid.identity argument, then
 			// the RP has discovered a claimed identifier that has delegated authentication to this Provider.
 			this.IsDelegatedIdentifier = this.ClaimedIdentifier != null && this.ClaimedIdentifier != this.LocalIdentifier;
+
+			Reporting.RecordEventOccurrence("AuthenticationRequest.IsDelegatedIdentifier", this.IsDelegatedIdentifier.ToString());
 		}
+
+		#region HostProcessedRequest members
+
+		/// <summary>
+		/// Gets or sets the provider endpoint.
+		/// </summary>
+		/// <value>
+		/// The default value is the URL that the request came in on from the relying party.
+		/// </value>
+		public override Uri ProviderEndpoint {
+			get { return this.positiveResponse.ProviderEndpoint; }
+			set { this.positiveResponse.ProviderEndpoint = value; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets a value indicating whether the response is ready to be created and sent.
@@ -135,11 +151,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			set {
 				// Keep LocalIdentifier and ClaimedIdentifier in sync for directed identity.
 				if (this.IsDirectedIdentity) {
-					ErrorUtilities.VerifyOperation(!(this.LocalIdentifier != null && this.LocalIdentifier != value), OpenIdStrings.IdentifierSelectRequiresMatchingIdentifiers);
 					this.positiveResponse.LocalIdentifier = value;
 				}
 
-				ErrorUtilities.VerifyOperation(!this.IsDelegatedIdentifier, OpenIdStrings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
 				this.positiveResponse.ClaimedIdentifier = value;
 			}
 		}
@@ -192,9 +206,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// request before the <see cref="ClaimedIdentifier"/> property is set.
 		/// </exception>
 		public void SetClaimedIdentifierFragment(string fragment) {
-			ErrorUtilities.VerifyOperation(!(this.IsDirectedIdentity && this.ClaimedIdentifier == null), OpenIdStrings.ClaimedIdentifierMustBeSetFirst);
-			ErrorUtilities.VerifyOperation(!(this.ClaimedIdentifier is XriIdentifier), OpenIdStrings.FragmentNotAllowedOnXRIs);
-
 			UriBuilder builder = new UriBuilder(this.ClaimedIdentifier);
 			builder.Fragment = fragment;
 			this.positiveResponse.ClaimedIdentifier = builder.Uri;
@@ -205,8 +216,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="identifier">The value to set to the <see cref="ClaimedIdentifier"/> and <see cref="LocalIdentifier"/> properties.</param>
 		internal void ResetClaimedAndLocalIdentifiers(Identifier identifier) {
-			Contract.Requires(identifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
+			Contract.Requires<ArgumentNullException>(identifier != null);
 
 			this.positiveResponse.ClaimedIdentifier = identifier;
 			this.positiveResponse.LocalIdentifier = identifier;

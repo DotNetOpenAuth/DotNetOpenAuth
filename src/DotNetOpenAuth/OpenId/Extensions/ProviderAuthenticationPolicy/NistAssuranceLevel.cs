@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	/// <remarks>
 	/// <para>One using this enum should review the following publication for details
 	/// before asserting or interpreting what these levels signify, notwithstanding
-	/// the brief summaries attached to each level in DotNetOpenId documentation.
+	/// the brief summaries attached to each level in DotNetOpenAuth documentation.
 	/// http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf</para>
 	/// <para>
 	/// See PAPE spec Appendix A.1.2 (NIST Assurance Levels) for high-level example classifications of authentication methods within the defined levels.

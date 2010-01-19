@@ -63,8 +63,17 @@ namespace DotNetOpenAuth.Configuration {
 		[ConfigurationProperty(MaxAuthenticationTimePropertyName, DefaultValue = "0:05")] // 5 minutes
 		[PositiveTimeSpanValidator]
 		internal TimeSpan MaxAuthenticationTime {
-			get { return (TimeSpan)this[MaxAuthenticationTimePropertyName]; }
-			set { this[MaxAuthenticationTimePropertyName] = value; }
+			get {
+				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
+				TimeSpan result = (TimeSpan)this[MaxAuthenticationTimePropertyName];
+				Contract.Assume(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
+				return result;
+			}
+
+			set {
+				Contract.Requires<ArgumentOutOfRangeException>(value > TimeSpan.Zero);
+				this[MaxAuthenticationTimePropertyName] = value;
+			}
 		}
 
 		/// <summary>
@@ -104,10 +113,10 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the registered OpenID extensions.
+		/// Gets or sets the registered OpenID extension factories.
 		/// </summary>
 		[ConfigurationProperty(ExtensionFactoriesElementName, IsDefaultCollection = false)]
-		[ConfigurationCollection(typeof(TypeConfigurationCollection<IOpenIdMessageExtension>))]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IOpenIdExtensionFactory>))]
 		internal TypeConfigurationCollection<IOpenIdExtensionFactory> ExtensionFactories {
 			get { return (TypeConfigurationCollection<IOpenIdExtensionFactory>)this[ExtensionFactoriesElementName] ?? new TypeConfigurationCollection<IOpenIdExtensionFactory>(); }
 			set { this[ExtensionFactoriesElementName] = value; }

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -20,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// Association response messages are described in OpenID 2.0 section 8.2.  This type covers section 8.2.1.
 	/// </remarks>
 	[DebuggerDisplay("OpenID {Version} associate response {AssociationHandle} {AssociationType} {SessionType}")]
+	[ContractClass(typeof(AssociateSuccessfulResponseContract))]
 	internal abstract class AssociateSuccessfulResponse : DirectResponseBase {
 		/// <summary>
 		/// A flag indicating whether an association has already been created.
@@ -106,7 +108,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// quite different operations in either scenario.</para>
 		/// </remarks>
 		internal Association CreateAssociation(AssociateRequest request, ProviderSecuritySettings securitySettings) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 			ErrorUtilities.VerifyInternal(!this.associationCreated, "The association has already been created.");
 
 			Association association;

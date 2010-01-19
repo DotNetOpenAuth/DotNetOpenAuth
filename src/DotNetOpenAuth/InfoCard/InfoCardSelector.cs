@@ -5,7 +5,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource("DotNetOpenAuth.InfoCard.SupportingScript.js", "text/javascript")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.InfoCard.InfoCardSelector.ScriptResourceName, "text/javascript")]
 
 namespace DotNetOpenAuth.InfoCard {
 	using System;
@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Linq;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.UI;
@@ -48,6 +49,11 @@ namespace DotNetOpenAuth.InfoCard {
 	[ToolboxData("<{0}:InfoCardSelector runat=\"server\"><ClaimsRequested><{0}:ClaimType Name=\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier\" /></ClaimsRequested><UnsupportedTemplate><p>Your browser does not support Information Cards.</p></UnsupportedTemplate></{0}:InfoCardSelector>")]
 	[ContractVerification(true)]
 	public class InfoCardSelector : CompositeControl, IPostBackEventHandler {
+		/// <summary>
+		/// The resource name for getting at the SupportingScript.js embedded manifest stream.
+		/// </summary>
+		internal const string ScriptResourceName = "DotNetOpenAuth.InfoCard.SupportingScript.js";
+
 		#region Property constants
 
 		/// <summary>
@@ -172,11 +178,6 @@ namespace DotNetOpenAuth.InfoCard {
 		#endregion
 
 		/// <summary>
-		/// The resource name for getting at the SupportingScript.js embedded manifest stream.
-		/// </summary>
-		private const string ScriptResourceName = "DotNetOpenAuth.InfoCard.SupportingScript.js";
-
-		/// <summary>
 		/// The panel containing the controls to display if InfoCard is supported in the user agent.
 		/// </summary>
 		private Panel infoCardSupportedPanel;
@@ -192,6 +193,14 @@ namespace DotNetOpenAuth.InfoCard {
 		/// an intentional value.
 		/// </summary>
 		private bool audienceSet;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="InfoCardSelector"/> class.
+		/// </summary>
+		public InfoCardSelector() {
+			this.ToolTip = InfoCardStrings.SelectorClickPrompt;
+			Reporting.RecordFeatureUse(this);
+		}
 
 		/// <summary>
 		/// Occurs when an InfoCard has been submitted but not decoded yet.
@@ -214,7 +223,7 @@ namespace DotNetOpenAuth.InfoCard {
 		#region Properties
 
 		/// <summary>
-		/// Gets the set of claims that are requested from the Information Card..
+		/// Gets the set of claims that are requested from the Information Card.
 		/// </summary>
 		[Description("Specifies the required and optional claims.")]
 		[PersistenceMode(PersistenceMode.InnerProperty), Category(InfoCardCategory)]
@@ -257,23 +266,28 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		[Description("The URL to this site's privacy policy.")]
 		[Category(InfoCardCategory), DefaultValue(PrivacyUrlDefault)]
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "We construct a Uri to validate the format of the string.")]
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "That overload is NOT the same.")]
 		public string PrivacyUrl {
 			get {
 				return (string)this.ViewState[PrivacyUrlViewStateKey] ?? PrivacyUrlDefault;
 			}
 
 			set {
-				if (this.Page != null && !this.DesignMode) {
-					// Validate new value by trying to construct a Uri based on it.
-					new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
-				} else {
-					// We can't fully test it, but it should start with either ~/ or a protocol.
-					if (Regex.IsMatch(value, @"^https?://")) {
-						new Uri(value); // make sure it's fully-qualified, but ignore wildcards
-					} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
-						// this is valid too
+				ErrorUtilities.VerifyOperation(string.IsNullOrEmpty(value) || this.Page == null || this.DesignMode || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
+				if (!string.IsNullOrEmpty(value)) {
+					if (this.Page != null && !this.DesignMode) {
+						// Validate new value by trying to construct a Uri based on it.
+						new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
 					} else {
-						throw new UriFormatException();
+						// We can't fully test it, but it should start with either ~/ or a protocol.
+						if (Regex.IsMatch(value, @"^https?://")) {
+							new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+						} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+							// this is valid too
+						} else {
+							throw new UriFormatException();
+						}
 					}
 				}
 
@@ -404,7 +418,16 @@ namespace DotNetOpenAuth.InfoCard {
 		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
 		/// </summary>
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
-		public void RaisePostBackEvent(string eventArgument) {
+		void IPostBackEventHandler.RaisePostBackEvent(string eventArgument) {
+			this.RaisePostBackEvent(eventArgument);
+		}
+
+		/// <summary>
+		/// When implemented by a class, enables a server control to process an event raised when a form is posted to the server.
+		/// </summary>
+		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Predefined signature.")]
+		protected virtual void RaisePostBackEvent(string eventArgument) {
 			if (!string.IsNullOrEmpty(this.TokenXml)) {
 				try {
 					ReceivingTokenEventArgs receivingArgs = this.OnReceivingToken(this.TokenXml);
@@ -430,8 +453,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The event arguments sent to the event handlers.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "decryptor", Justification = "By design")]
 		protected virtual ReceivingTokenEventArgs OnReceivingToken(string tokenXml) {
-			Contract.Requires(tokenXml != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenXml, "tokenXml");
+			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
 			var args = new ReceivingTokenEventArgs(tokenXml);
 			var receivingToken = this.ReceivingToken;
@@ -447,8 +469,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="token">The token, if it was decrypted.</param>
 		protected virtual void OnReceivedToken(Token token) {
-			Contract.Requires(token != null);
-			ErrorUtilities.VerifyArgumentNotNull(token, "token");
+			Contract.Requires<ArgumentNullException>(token != null);
 
 			var receivedInfoCard = this.ReceivedToken;
 			if (receivedInfoCard != null) {
@@ -462,8 +483,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="unprocessedToken">The unprocessed token.</param>
 		/// <param name="ex">The exception generated while processing the token.</param>
 		protected virtual void OnTokenProcessingError(string unprocessedToken, Exception ex) {
-			Contract.Requires(unprocessedToken != null);
-			Contract.Requires(ex != null);
+			Contract.Requires<ArgumentNullException>(unprocessedToken != null);
+			Contract.Requires<ArgumentNullException>(ex != null);
 
 			var tokenProcessingError = this.TokenProcessingError;
 			if (tokenProcessingError != null) {
@@ -514,6 +535,8 @@ namespace DotNetOpenAuth.InfoCard {
 				// the privacy URL is present but the privacy version is not.
 				ErrorUtilities.VerifyOperation(string.IsNullOrEmpty(this.PrivacyUrl) || !string.IsNullOrEmpty(this.PrivacyVersion), InfoCardStrings.PrivacyVersionRequiredWithPrivacyUrl);
 			}
+
+			this.RegisterInfoCardSelectorObjectScript();
 		}
 
 		/// <summary>
@@ -522,12 +545,18 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="name">The parameter name.</param>
 		/// <param name="value">The parameter value.</param>
 		/// <returns>The control that renders to the Param tag.</returns>
-		private static Control CreateParam(string name, string value) {
-			Contract.Ensures(Contract.Result<Control>() != null);
-			HtmlGenericControl control = new HtmlGenericControl(HtmlTextWriterTag.Param.ToString());
-			control.Attributes.Add(HtmlTextWriterAttribute.Name.ToString(), name);
-			control.Attributes.Add(HtmlTextWriterAttribute.Value.ToString(), value);
-			return control;
+		private static string CreateParamJs(string name, string value) {
+			Contract.Ensures(Contract.Result<string>() != null);
+			string scriptFormat = @"	objp = document.createElement('param');
+	objp.name = {0};
+	objp.value = {1};
+	obj.appendChild(objp);
+";
+			return string.Format(
+				CultureInfo.InvariantCulture,
+				scriptFormat,
+			MessagingUtilities.GetSafeJavascriptValue(name),
+			MessagingUtilities.GetSafeJavascriptValue(value));
 		}
 
 		/// <summary>
@@ -547,17 +576,7 @@ namespace DotNetOpenAuth.InfoCard {
 				supportedPanel.Style[HtmlTextWriterStyle.Display] = "none";
 			}
 
-			supportedPanel.Controls.Add(this.CreateInfoCardSelectorObject());
-
-			// add clickable image
-			Image image = new Image();
-			image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
-			image.AlternateText = InfoCardStrings.SelectorClickPrompt;
-			image.ToolTip = InfoCardStrings.SelectorClickPrompt;
-			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
-
-			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
-			supportedPanel.Controls.Add(image);
+			supportedPanel.Controls.Add(this.CreateInfoCardImage());
 
 			// trigger the selector at page load?
 			if (this.AutoPopup && !this.Page.IsPostBack) {
@@ -612,47 +631,74 @@ namespace DotNetOpenAuth.InfoCard {
 		}
 
 		/// <summary>
-		/// Creates the info card selector &lt;object&gt; HTML tag.
+		/// Adds the javascript that adds the info card selector &lt;object&gt; HTML tag to the page.
 		/// </summary>
-		/// <returns>A control that renders to the &lt;object&gt; tag.</returns>
 		[Pure]
-		private Control CreateInfoCardSelectorObject() {
-			HtmlGenericControl cardSpaceControl = new HtmlGenericControl(HtmlTextWriterTag.Object.ToString());
-			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Type.ToString(), "application/x-informationcard");
-			cardSpaceControl.Attributes.Add(HtmlTextWriterAttribute.Id.ToString(), this.ClientID + "_cs");
+		private void RegisterInfoCardSelectorObjectScript() {
+			string scriptFormat = @"{{
+	var obj = document.createElement('object');
+	obj.type = 'application/x-informationcard';
+	obj.id = {0};
+	obj.style.display = 'none';
+";
+			StringBuilder script = new StringBuilder();
+			script.AppendFormat(
+				CultureInfo.InvariantCulture,
+				scriptFormat,
+				MessagingUtilities.GetSafeJavascriptValue(this.ClientID + "_cs"));
 
 			if (!string.IsNullOrEmpty(this.Issuer)) {
-				cardSpaceControl.Controls.Add(CreateParam("issuer", this.Issuer));
+				script.AppendLine(CreateParamJs("issuer", this.Issuer));
 			}
 
 			if (!string.IsNullOrEmpty(this.IssuerPolicy)) {
-				cardSpaceControl.Controls.Add(CreateParam("issuerPolicy", this.IssuerPolicy));
+				script.AppendLine(CreateParamJs("issuerPolicy", this.IssuerPolicy));
 			}
 
 			if (!string.IsNullOrEmpty(this.TokenType)) {
-				cardSpaceControl.Controls.Add(CreateParam("tokenType", this.TokenType));
+				script.AppendLine(CreateParamJs("tokenType", this.TokenType));
 			}
 
 			string requiredClaims, optionalClaims;
 			this.GetRequestedClaims(out requiredClaims, out optionalClaims);
 			ErrorUtilities.VerifyArgument(!string.IsNullOrEmpty(requiredClaims) || !string.IsNullOrEmpty(optionalClaims), InfoCardStrings.EmptyClaimListNotAllowed);
 			if (!string.IsNullOrEmpty(requiredClaims)) {
-				cardSpaceControl.Controls.Add(CreateParam("requiredClaims", requiredClaims));
+				script.AppendLine(CreateParamJs("requiredClaims", requiredClaims));
 			}
 			if (!string.IsNullOrEmpty(optionalClaims)) {
-				cardSpaceControl.Controls.Add(CreateParam("optionalClaims", optionalClaims));
+				script.AppendLine(CreateParamJs("optionalClaims", optionalClaims));
 			}
 
 			if (!string.IsNullOrEmpty(this.PrivacyUrl)) {
 				string privacyUrl = this.DesignMode ? this.PrivacyUrl : new Uri(Page.Request.Url, Page.ResolveUrl(this.PrivacyUrl)).AbsoluteUri;
-				cardSpaceControl.Controls.Add(CreateParam("privacyUrl", privacyUrl));
+				script.AppendLine(CreateParamJs("privacyUrl", privacyUrl));
 			}
 
 			if (!string.IsNullOrEmpty(this.PrivacyVersion)) {
-				cardSpaceControl.Controls.Add(CreateParam("privacyVersion", this.PrivacyVersion));
+				script.AppendLine(CreateParamJs("privacyVersion", this.PrivacyVersion));
 			}
 
-			return cardSpaceControl;
+			script.AppendLine(@"if (document.infoCard.isSupported()) { document.write(obj.outerHTML); }
+}");
+
+			this.Page.ClientScript.RegisterClientScriptBlock(typeof(InfoCardSelector), this.ClientID + "tag", script.ToString(), true);
+		}
+
+		/// <summary>
+		/// Creates the info card clickable image.
+		/// </summary>
+		/// <returns>An Image object.</returns>
+		[Pure]
+		private Image CreateInfoCardImage() {
+			// add clickable image
+			Image image = new Image();
+			image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
+			image.AlternateText = InfoCardStrings.SelectorClickPrompt;
+			image.ToolTip = this.ToolTip;
+			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
+
+			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
+			return image;
 		}
 
 		/// <summary>
@@ -663,7 +709,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="optional">A space-delimited list of claim type URIs for claims that may optionally be included in a submitted Information Card.</param>
 		[Pure]
 		private void GetRequestedClaims(out string required, out string optional) {
-			Contract.Requires(this.ClaimsRequested != null);
+			Contract.Requires<InvalidOperationException>(this.ClaimsRequested != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out required) != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out optional) != null);
 
@@ -678,10 +724,10 @@ namespace DotNetOpenAuth.InfoCard {
 
 			string[] requiredClaimsArray = requiredClaims.ToArray();
 			string[] optionalClaimsArray = optionalClaims.ToArray();
-			Contract.Assume(requiredClaimsArray != null);
-			Contract.Assume(optionalClaimsArray != null);
 			required = string.Join(" ", requiredClaimsArray);
 			optional = string.Join(" ", optionalClaimsArray);
+			Contract.Assume(required != null);
+			Contract.Assume(optional != null);
 		}
 
 		/// <summary>
@@ -689,7 +735,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// or to downgrade gracefully if the user agent lacks an Information Card selector.
 		/// </summary>
 		private void RenderSupportingScript() {
-			Contract.Requires(this.infoCardSupportedPanel != null);
+			Contract.Requires<InvalidOperationException>(this.infoCardSupportedPanel != null);
 
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(InfoCardSelector), ScriptResourceName);
 

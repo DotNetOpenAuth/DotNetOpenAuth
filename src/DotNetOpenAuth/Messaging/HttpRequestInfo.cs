@@ -50,8 +50,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The ASP.NET structure to copy from.</param>
 		public HttpRequestInfo(HttpRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Ensures(this.HttpMethod == request.HttpMethod);
+			Contract.Ensures(this.Url == request.Url);
+			Contract.Ensures(this.RawUrl == request.RawUrl);
+			Contract.Ensures(this.UrlBeforeRewriting != null);
+			Contract.Ensures(this.Headers != null);
+			Contract.Ensures(this.InputStream == request.InputStream);
+			Contract.Ensures(this.form == request.Form);
+			Contract.Ensures(this.queryString == request.QueryString);
 
 			this.HttpMethod = request.HttpMethod;
 			this.Url = request.Url;
@@ -66,6 +73,8 @@ namespace DotNetOpenAuth.Messaging {
 			// these as well.
 			this.form = request.Form;
 			this.queryString = request.QueryString;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -78,14 +87,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">Headers in the HTTP request.</param>
 		/// <param name="inputStream">The entity stream, if any.  (POST requests typically have these).  Use <c>null</c> for GET requests.</param>
 		public HttpRequestInfo(string httpMethod, Uri requestUrl, string rawUrl, WebHeaderCollection headers, Stream inputStream) {
-			Contract.Requires(!string.IsNullOrEmpty(httpMethod));
-			Contract.Requires(requestUrl != null);
-			Contract.Requires(rawUrl != null);
-			Contract.Requires(headers != null);
-			ErrorUtilities.VerifyNonZeroLength(httpMethod, "httpMethod");
-			ErrorUtilities.VerifyArgumentNotNull(requestUrl, "requestUrl");
-			ErrorUtilities.VerifyArgumentNotNull(rawUrl, "rawUrl");
-			ErrorUtilities.VerifyArgumentNotNull(headers, "headers");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(httpMethod));
+			Contract.Requires<ArgumentNullException>(requestUrl != null);
+			Contract.Requires<ArgumentNullException>(rawUrl != null);
+			Contract.Requires<ArgumentNullException>(headers != null);
 
 			this.HttpMethod = httpMethod;
 			this.Url = requestUrl;
@@ -93,6 +98,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = rawUrl;
 			this.Headers = headers;
 			this.InputStream = inputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -100,8 +107,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="listenerRequest">Details on the incoming HTTP request.</param>
 		public HttpRequestInfo(HttpListenerRequest listenerRequest) {
-			Contract.Requires(listenerRequest != null);
-			ErrorUtilities.VerifyArgumentNotNull(listenerRequest, "listenerRequest");
+			Contract.Requires<ArgumentNullException>(listenerRequest != null);
 
 			this.HttpMethod = listenerRequest.HttpMethod;
 			this.Url = listenerRequest.Url;
@@ -113,6 +119,8 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			this.InputStream = listenerRequest.InputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -121,22 +129,25 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The WCF incoming request structure to get the HTTP information from.</param>
 		/// <param name="requestUri">The URI of the service endpoint.</param>
 		public HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
-			Contract.Requires(request != null);
-			Contract.Requires(requestUri != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestUri != null);
 
 			this.HttpMethod = request.Method;
 			this.Headers = request.Headers;
 			this.Url = requestUri;
 			this.UrlBeforeRewriting = requestUri;
 			this.RawUrl = MakeUpRawUrlFromUrl(requestUri);
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
 		internal HttpRequestInfo() {
+			Contract.Ensures(this.HttpMethod == "GET");
+			Contract.Ensures(this.Headers != null);
+
 			this.HttpMethod = "GET";
 			this.Headers = new WebHeaderCollection();
 		}
@@ -146,8 +157,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The HttpWebRequest (that was never used) to copy from.</param>
 		internal HttpRequestInfo(WebRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			this.HttpMethod = request.Method;
 			this.Url = request.RequestUri;
@@ -155,6 +165,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = MakeUpRawUrlFromUrl(request.RequestUri);
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = null;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -164,11 +176,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="httpMethod">The HTTP method that the incoming request came in on, whether or not <paramref name="message"/> is null.</param>
 		internal HttpRequestInfo(IDirectedProtocolMessage message, HttpDeliveryMethods httpMethod) {
 			this.message = message;
-			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
-				this.HttpMethod = "GET";
-			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
-				this.HttpMethod = "POST";
-			}
+			this.HttpMethod = MessagingUtilities.GetHttpVerb(httpMethod);
 		}
 
 		/// <summary>
@@ -293,6 +301,53 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="serverVariables">The server variables to consider part of the request.</param>
+		/// <returns>
+		/// The URI that the outside world used to create this request.
+		/// </returns>
+		/// <remarks>
+		/// Although the <paramref name="serverVariables"/> value can be obtained from
+		/// <see cref="HttpRequest.ServerVariables"/>, it's useful to be able to pass them
+		/// in so we can simulate injected values from our unit tests since the actual property
+		/// is a read-only kind of <see cref="NameValueCollection"/>.
+		/// </remarks>
+		internal static Uri GetPublicFacingUrl(HttpRequest request, NameValueCollection serverVariables) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(serverVariables != null);
+
+			// Due to URL rewriting, cloud computing (i.e. Azure)
+			// and web farms, etc., we have to be VERY careful about what
+			// we consider the incoming URL.  We want to see the URL as it would
+			// appear on the public-facing side of the hosting web site.
+			// HttpRequest.Url gives us the internal URL in a cloud environment,
+			// So we use a variable that (at least from what I can tell) gives us
+			// the public URL:
+			if (serverVariables["HTTP_HOST"] != null) {
+				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
+				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ?? request.Url.Scheme;
+				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + serverVariables["HTTP_HOST"]);
+				UriBuilder publicRequestUri = new UriBuilder(request.Url);
+				publicRequestUri.Scheme = scheme;
+				publicRequestUri.Host = hostAndPort.Host;
+				publicRequestUri.Port = hostAndPort.Port; // CC missing Uri.Port contract that's on UriBuilder.Port
+				return publicRequestUri.Uri;
+			} else {
+				// Failover to the method that works for non-web farm enviroments.
+				// We use Request.Url for the full path to the server, and modify it
+				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
+				// and the original path in case URL rewriting is going on.  We don't want to be
+				// fooled by URL rewriting because we're comparing the actual URL with what's in
+				// the return_to parameter in some cases.
+				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
+				// session, but not the URL rewriting problem.
+				return new Uri(request.Url, request.RawUrl);
+			}
+		}
+
+		/// <summary>
 		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
 		/// </summary>
 		/// <returns>A set of name=value pairs.</returns>
@@ -313,37 +368,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request.</param>
 		/// <returns>The URI that the outside world used to create this request.</returns>
 		private static Uri GetPublicFacingUrl(HttpRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-
-			// Due to URL rewriting, cloud computing (i.e. Azure)
-			// and web farms, etc., we have to be VERY careful about what
-			// we consider the incoming URL.  We want to see the URL as it would
-			// appear on the public-facing side of the hosting web site.
-			// HttpRequest.Url gives us the internal URL in a cloud environment,
-			// So we use a variable that (at least from what I can tell) gives us
-			// the public URL:
-			if (request.ServerVariables["HTTP_HOST"] != null) {
-				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
-				UriBuilder publicRequestUri = new UriBuilder(request.Url);
-				Uri hostAndPort = new Uri(request.Url.Scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
-				publicRequestUri.Host = hostAndPort.Host;
-				publicRequestUri.Port = hostAndPort.Port;
-				if (request.ServerVariables["HTTP_X_FORWARDED_PROTO"] != null) {
-					publicRequestUri.Scheme = request.ServerVariables["HTTP_X_FORWARDED_PROTO"];
-				}
-				return publicRequestUri.Uri;
-			} else {
-				// Failover to the method that works for non-web farm enviroments.
-				// We use Request.Url for the full path to the server, and modify it
-				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
-				// and the original path in case URL rewriting is going on.  We don't want to be
-				// fooled by URL rewriting because we're comparing the actual URL with what's in
-				// the return_to parameter in some cases.
-				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
-				// session, but not the URL rewriting problem.
-				return new Uri(request.Url, request.RawUrl);
-			}
+			Contract.Requires<ArgumentNullException>(request != null);
+			return GetPublicFacingUrl(request, request.ServerVariables);
 		}
 
 		/// <summary>
@@ -352,7 +378,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="url">A full URL.</param>
 		/// <returns>A raw URL that might have come in on the HTTP verb.</returns>
 		private static string MakeUpRawUrlFromUrl(Uri url) {
-			Contract.Requires(url != null);
+			Contract.Requires<ArgumentNullException>(url != null);
 			return url.AbsolutePath + url.Query + url.Fragment;
 		}
 
@@ -362,14 +388,34 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="pairs">The collection a HTTP headers.</param>
 		/// <returns>A new collection of the given headers.</returns>
 		private static WebHeaderCollection GetHeaderCollection(NameValueCollection pairs) {
-			Debug.Assert(pairs != null, "pairs == null");
+			Contract.Requires<ArgumentNullException>(pairs != null);
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			foreach (string key in pairs) {
-				headers.Add(key, pairs[key]);
+				try {
+					headers.Add(key, pairs[key]);
+				} catch (ArgumentException ex) {
+					Logger.Messaging.WarnFormat(
+						"{0} thrown when trying to add web header \"{1}: {2}\".  {3}",
+						ex.GetType().Name,
+						key,
+						pairs[key],
+						ex.Message);
+				}
 			}
 
 			return headers;
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+		}
+#endif
 	}
 }

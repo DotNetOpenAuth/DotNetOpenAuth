@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -17,17 +18,17 @@ namespace DotNetOpenAuth.Test.Mocks {
 	/// having a dependency on a hosted web site to actually perform discovery on.
 	/// </summary>
 	internal class MockIdentifier : Identifier {
-		private IEnumerable<ServiceEndpoint> endpoints;
+		private IEnumerable<IdentifierDiscoveryResult> endpoints;
 
 		private MockHttpRequest mockHttpRequest;
 
 		private Identifier wrappedIdentifier;
 
-		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<ServiceEndpoint> endpoints)
-			: base(false) {
-			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(mockHttpRequest, "mockHttpRequest");
-			ErrorUtilities.VerifyArgumentNotNull(endpoints, "endpoints");
+		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<IdentifierDiscoveryResult> endpoints)
+			: base(wrappedIdentifier.OriginalString, false) {
+			Contract.Requires<ArgumentNullException>(wrappedIdentifier != null);
+			Contract.Requires<ArgumentNullException>(mockHttpRequest != null);
+			Contract.Requires<ArgumentNullException>(endpoints != null);
 
 			this.wrappedIdentifier = wrappedIdentifier;
 			this.endpoints = endpoints;
@@ -36,6 +37,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 			// Register a mock HTTP response to enable discovery of this identifier within the RP
 			// without having to host an ASP.NET site within the test.
 			mockHttpRequest.RegisterMockXrdsResponse(new Uri(wrappedIdentifier.ToString()), endpoints);
+		}
+
+		internal IEnumerable<IdentifierDiscoveryResult> DiscoveryEndpoints {
+			get { return this.endpoints; }
 		}
 
 		public override string ToString() {
@@ -48,10 +53,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		public override int GetHashCode() {
 			return this.wrappedIdentifier.GetHashCode();
-		}
-
-		internal override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			return this.endpoints;
 		}
 
 		internal override Identifier TrimFragment() {

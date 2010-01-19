@@ -35,6 +35,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string OAuthElementName = "oauth";
 
 		/// <summary>
+		/// The name of the &lt;reporting&gt; sub-element.
+		/// </summary>
+		private const string ReportingElementName = "reporting";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
@@ -74,6 +79,15 @@ namespace DotNetOpenAuth.Configuration {
 		internal OAuthElement OAuth {
 			get { return (OAuthElement)this[OAuthElementName] ?? new OAuthElement(); }
 			set { this[OAuthElementName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the configuration for reporting.
+		/// </summary>
+		[ConfigurationProperty(ReportingElementName)]
+		internal ReportingElement Reporting {
+			get { return (ReportingElement)this[ReportingElementName] ?? new ReportingElement(); }
+			set { this[ReportingElementName] = value; }
 		}
 	}
 }

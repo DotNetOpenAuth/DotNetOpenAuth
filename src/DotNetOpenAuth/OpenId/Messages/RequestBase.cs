@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -31,14 +32,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 #pragma warning restore 0414
 
 		/// <summary>
+		/// Backing store for the <see cref="ExtraData"/> property.
+		/// </summary>
+		private readonly Dictionary<string, string> extraData = new Dictionary<string, string>();
+
+		/// <summary>
 		/// Backing store for the <see cref="Incoming"/> property.
 		/// </summary>
 		private bool incoming;
-
-		/// <summary>
-		/// Backing store for the <see cref="ExtraData"/> property.
-		/// </summary>
-		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RequestBase"/> class.
@@ -48,12 +49,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="mode">The value for the openid.mode parameter.</param>
 		/// <param name="transport">A value indicating whether the message will be transmitted directly or indirectly.</param>
 		protected RequestBase(Version version, Uri providerEndpoint, string mode, MessageTransport transport) {
-			if (providerEndpoint == null) {
-				throw new ArgumentNullException("providerEndpoint");
-			}
-			if (String.IsNullOrEmpty(mode)) {
-				throw new ArgumentNullException("mode");
-			}
+			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(mode));
 
 			this.Recipient = providerEndpoint;
 			this.Mode = mode;
@@ -181,7 +178,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
 		protected static string GetProtocolConstant(Version protocolVersion, Func<Protocol, string> mode) {
-			ErrorUtilities.VerifyArgumentNotNull(protocolVersion, "protocolVersion");
+			Contract.Requires<ArgumentNullException>(protocolVersion != null);
 			return mode(Protocol.Lookup(protocolVersion));
 		}
 	}

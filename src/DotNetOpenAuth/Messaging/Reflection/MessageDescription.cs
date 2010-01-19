@@ -40,17 +40,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageType">Type of the message.</param>
 		/// <param name="messageVersion">The message version.</param>
 		internal MessageDescription(Type messageType, Version messageVersion) {
-			Contract.Requires(messageType != null && typeof(IMessage).IsAssignableFrom(messageType));
-			Contract.Requires(messageVersion != null);
-			ErrorUtilities.VerifyArgumentNotNull(messageType, "messageType");
-			ErrorUtilities.VerifyArgumentNotNull(messageVersion, "messageVersion");
-			if (!typeof(IMessage).IsAssignableFrom(messageType)) {
-				throw new ArgumentException(string.Format(
-					CultureInfo.CurrentCulture,
-					MessagingStrings.UnexpectedType,
-					typeof(IMessage),
-					messageType));
-			}
+			Contract.Requires<ArgumentNullException>(messageType != null);
+			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
+			Contract.Requires<ArgumentNullException>(messageVersion != null);
 
 			this.messageType = messageType;
 			this.messageVersion = messageVersion;
@@ -70,10 +62,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message the dictionary should provide access to.</param>
 		/// <returns>The dictionary accessor to the message</returns>
+		[Pure]
 		internal MessageDictionary GetDictionary(IMessage message) {
-			Contract.Requires(message != null);
+			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			return new MessageDictionary(message, this);
 		}
 
@@ -114,10 +106,19 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Ensures the message parts pass basic validation.
 		/// </summary>
-		/// <param name="parts">The key/value pairs of the serialzied message.</param>
+		/// <param name="parts">The key/value pairs of the serialized message.</param>
 		internal void EnsureMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
-			this.EnsureRequiredMessagePartsArePresent(parts.Keys);
-			this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
+			try {
+				this.EnsureRequiredMessagePartsArePresent(parts.Keys);
+				this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
+			} catch (ProtocolException) {
+				Logger.Messaging.ErrorFormat(
+					"Error while performing basic validation of {0} with these message parts:{1}{2}",
+					this.messageType.Name,
+					Environment.NewLine,
+					parts.ToStringDeferred());
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -127,7 +128,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="keys">The names of all parameters included in a message.</param>
 		/// <exception cref="ProtocolException">Thrown when required parts of a message are not in <paramref name="keys"/></exception>
 		private void EnsureRequiredMessagePartsArePresent(IEnumerable<string> keys) {
-			var missingKeys = (from part in Mapping.Values
+			var missingKeys = (from part in this.Mapping.Values
 							   where part.IsRequired && !keys.Contains(part.Name)
 							   select part.Name).ToArray();
 			if (missingKeys.Length > 0) {
@@ -146,7 +147,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="partValues">A dictionary of key/value pairs that make up the serialized message.</param>
 		private void EnsureRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues) {
 			string value;
-			var emptyValuedKeys = (from part in Mapping.Values
+			var emptyValuedKeys = (from part in this.Mapping.Values
 								   where !part.AllowEmpty && partValues.TryGetValue(part.Name, out value) && value != null && value.Length == 0
 								   select part.Name).ToArray();
 			if (emptyValuedKeys.Length > 0) {

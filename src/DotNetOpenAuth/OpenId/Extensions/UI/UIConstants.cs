@@ -24,5 +24,11 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// specifying the user's preferred language through the UI extension.
 		/// </summary>
 		internal const string LangPrefSupported = "http://specs.openid.net/extensions/ui/1.0/lang-pref";
+
+		/// <summary>
+		/// The Type URI that appears in the XRDS document when the OP supports the RP
+		/// specifying the icon for the OP to display during authentication through the UI extension.
+		/// </summary>
+		internal const string IconSupported = "http://specs.openid.net/extensions/ui/1.0/icon";
 	}
 }

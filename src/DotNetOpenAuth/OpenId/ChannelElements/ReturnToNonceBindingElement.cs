@@ -78,10 +78,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings of the RP.</param>
 		internal ReturnToNonceBindingElement(INonceStore nonceStore, RelyingPartySecuritySettings securitySettings) {
-			Contract.Requires(nonceStore != null);
-			Contract.Requires(securitySettings != null);
-			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.nonceStore = nonceStore;
 			this.securitySettings = securitySettings;
@@ -144,6 +142,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (this.UseRequestNonce(request)) {
 				request.AddReturnToArguments(NonceParameter, CustomNonce.NewNonce().Serialize());
+				request.SignReturnTo = true; // a nonce without a signature is completely pointless
 
 				return MessageProtections.ReplayProtection;
 			}
@@ -171,9 +170,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (this.UseRequestNonce(response)) {
+				if (!response.ReturnToParametersSignatureValidated) {
+					Logger.OpenId.Error("Incoming message is expected to have a nonce, but the return_to parameter is not signed.");
+				}
+
 				string nonceValue = response.GetReturnToArgument(NonceParameter);
 				ErrorUtilities.VerifyProtocol(
-					nonceValue != null,
+					nonceValue != null && response.ReturnToParametersSignatureValidated,
 					this.securitySettings.RejectUnsolicitedAssertions ? OpenIdStrings.UnsolicitedAssertionsNotAllowed : OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);
 
 				CustomNonce nonce = CustomNonce.Deserialize(nonceValue);
@@ -184,6 +187,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				IReplayProtectedProtocolMessage replayResponse = response;
 				if (!this.nonceStore.StoreNonce(replayResponse.NonceContext, nonce.RandomPartAsString, nonce.CreationDateUtc)) {
+					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", replayResponse.Nonce, replayResponse.UtcCreationDate);
 					throw new ReplayedMessageException(message);
 				}
 
@@ -209,7 +213,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
-		/// A special DotNetOpenId-only nonce used by the RP when talking to 1.0 OPs in order
+		/// A special DotNetOpenAuth-only nonce used by the RP when talking to 1.0 OPs in order
 		/// to protect against replay attacks.
 		/// </summary>
 		private class CustomNonce {
@@ -254,7 +258,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			/// <param name="value">The base64-encoded value of the nonce.</param>
 			/// <returns>The instantiated and initialized nonce.</returns>
 			internal static CustomNonce Deserialize(string value) {
-				ErrorUtilities.VerifyNonZeroLength(value, "value");
+				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 
 				byte[] nonce = Convert.FromBase64String(value);
 				Contract.Assume(nonce != null);

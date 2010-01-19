@@ -1,0 +1,107 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{74F5EB3F-DC99-4FBE-9495-EE378FC60F65}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Reflection</RootNamespace>
+    <AssemblyName>Reflection</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>../../key.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WebDocsDebug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\WebDocsDebug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Sandcastle|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Sandcastle\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AllDocumentedFilter.cs" />
+    <Compile Include="AllTopicFilter.cs" />
+    <Compile Include="ApiFilter.cs" />
+    <Compile Include="ApiNamer.cs" />
+    <Compile Include="ApiVisitor.cs" />
+    <Compile Include="AssemblyReferenceEventArgs.cs" />
+    <Compile Include="AssemblyResolver.cs" />
+    <Compile Include="ExternalDocumentedFilter.cs" />
+    <Compile Include="ExternalFilter.cs" />
+    <Compile Include="ExternalTopicFilter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MemberFilter.cs" />
+    <Compile Include="NamespaceFilter.cs" />
+    <Compile Include="NoFilter.cs" />
+    <Compile Include="OrcasNamer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection.cs" />
+    <Compile Include="RootFilter.cs" />
+    <Compile Include="TestResolver.cs" />
+    <Compile Include="TypeFilter.cs" />
+    <Compile Include="WhidbeyNamer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CCI\CCI.csproj">
+      <Project>{4CB332D6-976E-44F6-A320-A515A9D1D1D3}</Project>
+      <Name>CCI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- Copy the output assemblies to a common binaries directory (ProductionTools). -->
+  <Target Name="AfterBuild">
+    <CreateItem Include="$(OutputPath)\$(AssemblyName).*">
+      <Output TaskParameter="Include" ItemName="ProductionFiles" />
+    </CreateItem>
+    <Copy SourceFiles="@(ProductionFiles)" DestinationFolder="..\..\ProductionTools" />
+  </Target>
+</Project>

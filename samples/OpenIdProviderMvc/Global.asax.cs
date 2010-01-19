@@ -14,17 +14,19 @@
 	/// visit http://go.microsoft.com/?LinkId=9394801
 	/// </remarks>
 	public class MvcApplication : System.Web.HttpApplication {
+		private static object behaviorInitializationSyncObject = new object();
+
 		public static void RegisterRoutes(RouteCollection routes) {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 			routes.MapRoute(
 				"User identities",
 				"user/{id}/{action}",
-				new { controller = "User", action = "Identity", id = string.Empty });
+				new { controller = "User", action = "Identity", id = string.Empty, anon = false });
 			routes.MapRoute(
 				"PPID identifiers",
 				"anon",
-				new { controller = "User", action = "PpidIdentity", id = string.Empty });
+				new { controller = "User", action = "Identity", id = string.Empty, anon = true });
 			routes.MapRoute(
 				"Default",                                              // Route name
 				"{controller}/{action}/{id}",                           // URL with parameters
@@ -33,7 +35,21 @@
 
 		protected void Application_Start() {
 			RegisterRoutes(RouteTable.Routes);
-			DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+		}
+
+		protected void Application_BeginRequest(object sender, EventArgs e) {
+			InitializeBehaviors();
+		}
+
+		private static void InitializeBehaviors() {
+			if (DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
+				lock (behaviorInitializationSyncObject) {
+					if (DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
+						DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+						DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+					}
+				}
+			}
 		}
 	}
 }

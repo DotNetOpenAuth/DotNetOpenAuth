@@ -16,8 +16,8 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
-	/// The COM interface describing the DotNetOpenId functionality available to
-	/// COM client relying parties.
+	/// The COM interface describing the DotNetOpenAuth functionality available to
+	/// COM client OpenID relying parties.
 	/// </summary>
 	[Guid("56BD3DB0-EE0D-4191-ADFC-1F3705CD2636")]
 	[InterfaceType(ComInterfaceType.InterfaceIsDual)]
@@ -97,6 +97,13 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		static OpenIdRelyingPartyShim() {
 			relyingParty = new OpenIdRelyingParty(null);
 			relyingParty.Behaviors.Add(new Behaviors.AXFetchAsSregTransform());
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyShim"/> class.
+		/// </summary>
+		public OpenIdRelyingPartyShim() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		/// <summary>

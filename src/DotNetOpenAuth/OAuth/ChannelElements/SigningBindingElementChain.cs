@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -19,7 +20,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// The various signing binding elements that may be applicable to a message in preferred use order.
 		/// </summary>
-		private ITamperProtectionChannelBindingElement[] signers;
+		private readonly ITamperProtectionChannelBindingElement[] signers;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SigningBindingElementChain"/> class.
@@ -29,19 +30,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// in preferred use order.
 		/// </param>
 		internal SigningBindingElementChain(ITamperProtectionChannelBindingElement[] signers) {
-			if (signers == null) {
-				throw new ArgumentNullException("signers");
-			}
-			if (signers.Length == 0) {
-				throw new ArgumentException(MessagingStrings.SequenceContainsNoElements, "signers");
-			}
-			if (signers.Contains(null)) {
-				throw new ArgumentException(MessagingStrings.SequenceContainsNullElement, "signers");
-			}
-			MessageProtections protection = signers[0].Protection;
-			if (signers.Any(element => element.Protection != protection)) {
-				throw new ArgumentException(OAuthStrings.SigningElementsMustShareSameProtection, "signers");
-			}
+			Contract.Requires<ArgumentNullException>(signers != null);
+			Contract.Requires<ArgumentException>(signers.Length > 0);
+			Contract.Requires<ArgumentException>(!signers.Contains(null), MessagingStrings.SequenceContainsNullElement);
+			Contract.Requires<ArgumentException>(signers.Select(s => s.Protection).Distinct().Count() == 1, OAuthStrings.SigningElementsMustShareSameProtection);
 
 			this.signers = signers;
 		}
@@ -101,6 +93,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
+				ErrorUtilities.VerifyInternal(signer.Channel != null, "A binding element's Channel property is unexpectedly null.");
 				MessageProtections? result = signer.ProcessOutgoingMessage(message);
 				if (result.HasValue) {
 					return result;
@@ -121,6 +114,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			foreach (IChannelBindingElement signer in this.signers) {
+				ErrorUtilities.VerifyInternal(signer.Channel != null, "A binding element's Channel property is unexpectedly null.");
 				MessageProtections? result = signer.ProcessIncomingMessage(message);
 				if (result.HasValue) {
 					return result;

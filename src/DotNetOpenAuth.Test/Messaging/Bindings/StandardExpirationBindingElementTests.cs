@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		[TestMethod, ExpectedException(typeof(ExpiredMessageException))]
 		public void VerifyBadTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - StandardExpirationBindingElement.DefaultMaximumMessageAge - TimeSpan.FromSeconds(1), false);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - StandardExpirationBindingElement.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
 		}
 	}
 }

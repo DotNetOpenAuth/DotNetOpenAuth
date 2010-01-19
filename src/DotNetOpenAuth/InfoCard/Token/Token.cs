@@ -42,19 +42,20 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="decryptor">The decryptor to use to decrypt the token, if necessary..</param>
 		/// <exception cref="InformationCardException">Thrown for any problem decoding or decrypting the token.</exception>
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
-			Contract.Requires(tokenXml != null && tokenXml.Length > 0);
-			Contract.Requires(decryptor != null || !IsEncrypted(tokenXml));
-			ErrorUtilities.VerifyNonZeroLength(tokenXml, "tokenXml");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(decryptor != null || !IsEncrypted(tokenXml));
+			Contract.Ensures(this.AuthorizationContext != null);
 
 			byte[] decryptedBytes;
 			string decryptedString;
 
 			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
+				Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
 				if (IsEncrypted(tokenReader)) {
 					Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
-					ErrorUtilities.VerifyArgumentNotNull(decryptor, "decryptor");
 					decryptedBytes = decryptor.DecryptToken(tokenReader);
 					decryptedString = Encoding.UTF8.GetString(decryptedBytes);
+					Contract.Assume(decryptedString != null); // BCL contracts should be enhanced here
 				} else {
 					decryptedBytes = Encoding.UTF8.GetBytes(tokenXml);
 					decryptedString = tokenXml;
@@ -106,7 +107,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		public string SiteSpecificId {
 			get {
-				Contract.Requires(this.Claims.ContainsKey(ClaimTypes.PPID));
+				Contract.Requires<InvalidOperationException>(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
 				string ppidValue;
 				ErrorUtilities.VerifyOperation(this.Claims.TryGetValue(ClaimTypes.PPID, out ppidValue) && ppidValue != null, InfoCardStrings.PpidClaimRequired);
 				return TokenUtility.CalculateSiteSpecificID(ppidValue);
@@ -132,7 +133,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="tokenXml">The token XML.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			return Read(tokenXml, (Uri)null);
 		}
 
@@ -143,7 +144,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="audience">The URI that this token must have been crafted to be sent to.  Use <c>null</c> to accept any intended audience.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, Uri audience) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			return Read(tokenXml, audience, Enumerable.Empty<SecurityToken>());
 		}
 
@@ -154,8 +155,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="decryptionTokens">Any X.509 certificates that may be used to decrypt the token, if necessary.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, IEnumerable<SecurityToken> decryptionTokens) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
-			Contract.Requires(decryptionTokens != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentNullException>(decryptionTokens != null);
 			return Read(tokenXml, null, decryptionTokens);
 		}
 
@@ -167,8 +168,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="decryptionTokens">Any X.509 certificates that may be used to decrypt the token, if necessary.</param>
 		/// <returns>The deserialized token.</returns>
 		public static Token Read(string tokenXml, Uri audience, IEnumerable<SecurityToken> decryptionTokens) {
-			Contract.Requires(!String.IsNullOrEmpty(tokenXml));
-			Contract.Requires(decryptionTokens != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
+			Contract.Requires<ArgumentNullException>(decryptionTokens != null);
 			Contract.Ensures(Contract.Result<Token>() != null);
 
 			TokenDecryptor decryptor = null;
@@ -190,10 +191,10 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </returns>
 		[Pure]
 		internal static bool IsEncrypted(string tokenXml) {
-			Contract.Requires(tokenXml != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenXml, "tokenXml");
+			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
 			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
+				Contract.Assume(tokenReader != null); // CC missing for XmlReader.Create
 				return IsEncrypted(tokenReader);
 			}
 		}
@@ -206,10 +207,21 @@ namespace DotNetOpenAuth.InfoCard {
 		/// 	<c>true</c> if the specified token XML is encrypted; otherwise, <c>false</c>.
 		/// </returns>
 		private static bool IsEncrypted(XmlReader tokenXmlReader) {
-			Contract.Requires(tokenXmlReader != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenXmlReader, "tokenXmlReader");
+			Contract.Requires<ArgumentNullException>(tokenXmlReader != null);
 			return tokenXmlReader.IsStartElement(TokenDecryptor.XmlEncryptionStrings.EncryptedData, TokenDecryptor.XmlEncryptionStrings.Namespace);
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.AuthorizationContext != null);
+		}
+#endif
 
 		/// <summary>
 		/// Flattens the claims into a dictionary
