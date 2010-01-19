@@ -4,13 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth.Messages {
+namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A common message base class for Simple API Auth messages.
+	/// A common message base class for OAuth WRAP messages.
 	/// </summary>
 	public class MessageBase : IDirectedProtocolMessage, IDirectResponseProtocolMessage {
 		/// <summary>

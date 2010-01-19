@@ -1,25 +1,25 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SimpleAuthMessageFactory.cs" company="Andrew Arnott">
+// <copyright file="OAuthWrapMessageFactory.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth.ChannelElements {
+namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.SimpleApiAuth.Messages;
+	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	/// <summary>
-	/// The message factory for Simple API Auth messages.
+	/// The message factory for OAuth WRAP messages.
 	/// </summary>
-	internal class SimpleAuthMessageFactory : IMessageFactory {
+	internal class OAuthWrapMessageFactory : IMessageFactory {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SimpleAuthMessageFactory"/> class.
+		/// Initializes a new instance of the <see cref="OAuthWrapMessageFactory"/> class.
 		/// </summary>
-		internal SimpleAuthMessageFactory() {
+		internal OAuthWrapMessageFactory() {
 		}
 
 		#region IMessageFactory Members

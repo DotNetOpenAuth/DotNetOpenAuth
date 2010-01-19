@@ -1,10 +1,10 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SimpleAuthChannel.cs" company="Andrew Arnott">
+// <copyright file="OAuthWrapChannel.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth.ChannelElements {
+namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -12,14 +12,14 @@ namespace DotNetOpenAuth.SimpleApiAuth.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The channel for the Simple API Auth protocol.
+	/// The channel for the OAuth WRAP protocol.
 	/// </summary>
-	internal class SimpleAuthChannel : Channel {
+	internal class OAuthWrapChannel : Channel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SimpleAuthChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuthWrapChannel"/> class.
 		/// </summary>
-		internal SimpleAuthChannel()
-			: base(new SimpleAuthMessageFactory()) {
+		internal OAuthWrapChannel()
+			: base(new OAuthWrapMessageFactory()) {
 		}
 
 		/// <summary>

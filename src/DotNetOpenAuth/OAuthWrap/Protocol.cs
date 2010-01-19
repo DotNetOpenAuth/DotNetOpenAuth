@@ -5,20 +5,20 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth {
+namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 
 	/// <summary>
-	/// Protocol constants for Simple API Auth.
+	/// Protocol constants for OAuth WRAP.
 	/// </summary>
 	internal class Protocol {
 		/// <summary>
-		/// The default (latest) version of the Simple API Auth protocol.
+		/// The default (latest) version of the OAuth WRAP protocol.
 		/// </summary>
 		internal static readonly Version DefaultVersion = V10;
 
 		/// <summary>
-		/// The initial (1.0) version of Simple API Auth.
+		/// The initial (1.0) version of OAuth WRAP.
 		/// </summary>
 		internal static readonly Version V10 = new Version(1, 0);
 

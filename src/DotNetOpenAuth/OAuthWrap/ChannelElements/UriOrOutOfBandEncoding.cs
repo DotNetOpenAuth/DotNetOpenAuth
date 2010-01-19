@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth.ChannelElements {
+namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;

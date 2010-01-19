@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth {
+namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;

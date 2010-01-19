@@ -4,10 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth.Messages {
+namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.SimpleApiAuth.ChannelElements;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	/// <summary>
 	/// A message sent by the Consumer to the Token Issuer via the user agent

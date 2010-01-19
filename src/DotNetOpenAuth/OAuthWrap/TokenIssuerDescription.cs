@@ -4,14 +4,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth {
+namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 
 	/// <summary>
-	/// A description of a Simple API Auth Token Issuer.
+	/// A description of a OAuth WRAP Token Issuer.
 	/// </summary>
 	public class TokenIssuerDescription {
 		/// <summary>
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.SimpleApiAuth {
 		public Uri EndpointUrl { get; set; }
 
 		/// <summary>
-		/// Gets or sets the version of the Simple API Auth protocol to use with this Token Issuer.
+		/// Gets or sets the version of the OAuth WRAP protocol to use with this Token Issuer.
 		/// </summary>
 		/// <value>The version.</value>
 		public Version Version { get; set; }

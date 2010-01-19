@@ -4,13 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth {
+namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.SimpleApiAuth.Messages;
+	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	public class WebConsumer : ConsumerBase {
 		public WebConsumer(TokenIssuerDescription tokenIssuer)

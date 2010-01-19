@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.SimpleApiAuth.Messages {
+namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
 
