@@ -12,15 +12,30 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.Messages;
 
+	/// <summary>
+	/// An OAuth WRAP consumer designed for web applications.
+	/// </summary>
 	public class WebConsumer : ConsumerBase {
-		public WebConsumer(TokenIssuerDescription tokenIssuer)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebConsumer"/> class.
+		/// </summary>
+		/// <param name="tokenIssuer">The token issuer.</param>
+		public WebConsumer(AuthorizationServerDescription tokenIssuer)
 			: base(tokenIssuer) {
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebConsumer"/> class.
+		/// </summary>
+		/// <param name="tokenIssuerEndpoint">The token issuer endpoint.</param>
 		public WebConsumer(Uri tokenIssuerEndpoint)
 			: base(tokenIssuerEndpoint) {
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebConsumer"/> class.
+		/// </summary>
+		/// <param name="tokenIssuerEndpoint">The token issuer endpoint.</param>
 		public WebConsumer(string tokenIssuerEndpoint)
 			: base(tokenIssuerEndpoint) {
 		}

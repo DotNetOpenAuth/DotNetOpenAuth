@@ -13,14 +13,14 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A base class for common Consumer behaviors.
+	/// A base class for common OAuth WRAP Consumer behaviors.
 	/// </summary>
 	public class ConsumerBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
 		/// </summary>
 		/// <param name="tokenIssuer">The token issuer.</param>
-		protected ConsumerBase(TokenIssuerDescription tokenIssuer) {
+		protected ConsumerBase(AuthorizationServerDescription tokenIssuer) {
 			ErrorUtilities.VerifyArgumentNotNull(tokenIssuer, "tokenIssuer");
 			this.TokenIssuer = tokenIssuer;
 		}
@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// </summary>
 		/// <param name="tokenIssuerEndpoint">The token issuer endpoint.</param>
 		protected ConsumerBase(Uri tokenIssuerEndpoint)
-			: this(new TokenIssuerDescription(tokenIssuerEndpoint)) {
+			: this(new AuthorizationServerDescription(tokenIssuerEndpoint)) {
 		}
 
 		/// <summary>
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// Gets the token issuer.
 		/// </summary>
 		/// <value>The token issuer.</value>
-		public TokenIssuerDescription TokenIssuer { get; private set; }
+		public AuthorizationServerDescription TokenIssuer { get; private set; }
 
 		/// <summary>
 		/// Gets the channel.

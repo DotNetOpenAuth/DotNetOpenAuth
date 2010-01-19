@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// instead of an empty/missing argument.
 	/// </summary>
 	/// <remarks>
-	/// This class is functionality equivalent to the <see cref="DotNetOpenAuth.OAuth.UriOrOobEncoding"/>
+	/// This class is functionality equivalent to the <see cref="DotNetOpenAuth.OAuth.ChannelElements.UriOrOobEncoding"/>
 	/// encoding element, except that instead of using "oob" for null Uri values,
 	/// "out_of_band" is used.
 	/// </remarks>

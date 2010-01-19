@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="TokenIssuerDescription.cs" company="Andrew Arnott">
+// <copyright file="AuthorizationServerDescription.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,21 +11,21 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using System.Text;
 
 	/// <summary>
-	/// A description of a OAuth WRAP Token Issuer.
+	/// A description of an OAuth WRAP Authorization Server.
 	/// </summary>
-	public class TokenIssuerDescription {
+	public class AuthorizationServerDescription {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TokenIssuerDescription"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizationServerDescription"/> class.
 		/// </summary>
-		public TokenIssuerDescription() {
+		public AuthorizationServerDescription() {
 			this.Version = Protocol.DefaultVersion;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="TokenIssuerDescription"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizationServerDescription"/> class.
 		/// </summary>
 		/// <param name="endpointUrl">The endpoint URL of the Token Issuer.</param>
-		public TokenIssuerDescription(Uri endpointUrl)
+		public AuthorizationServerDescription(Uri endpointUrl)
 			: this() {
 			this.EndpointUrl = endpointUrl;
 		}

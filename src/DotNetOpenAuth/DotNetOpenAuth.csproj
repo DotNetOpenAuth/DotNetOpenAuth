@@ -580,7 +580,7 @@ http://opensource.org/licenses/ms-pl.html
       <DesignTime>True</DesignTime>
       <DependentUpon>SimpleAuthStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="OAuthWrap\TokenIssuerDescription.cs" />
+    <Compile Include="OAuthWrap\AuthorizationServerDescription.cs" />
     <Compile Include="OAuthWrap\WebConsumer.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="OAuth\Protocol.cs" />
