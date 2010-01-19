@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F
 		..\doc\specs\ICAM_OpenID20Profile.pdf = ..\doc\specs\ICAM_OpenID20Profile.pdf
 		..\doc\specs\OAuth Core 1.0.htm = ..\doc\specs\OAuth Core 1.0.htm
 		..\doc\specs\OAuth Core 1.0a (Draft 3).htm = ..\doc\specs\OAuth Core 1.0a (Draft 3).htm
+		..\doc\specs\OAuthWRAP-v0.9.7.2.pdf = ..\doc\specs\OAuthWRAP-v0.9.7.2.pdf
 		..\doc\specs\OpenID OAuth Extension.htm = ..\doc\specs\OpenID OAuth Extension.htm
 		..\doc\specs\openid-attribute-exchange-1_0.html = ..\doc\specs\openid-attribute-exchange-1_0.html
 		..\doc\specs\openid-authentication-1_1.html = ..\doc\specs\openid-authentication-1_1.html
@@ -29,7 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F
 		..\doc\specs\openid-provider-authentication-policy-extension-1_0-02.html = ..\doc\specs\openid-provider-authentication-policy-extension-1_0-02.html
 		..\doc\specs\openid-simple-registration-extension-1_0.html = ..\doc\specs\openid-simple-registration-extension-1_0.html
 		..\doc\specs\openid_ui_extension_draft01.html = ..\doc\specs\openid_ui_extension_draft01.html
-		..\doc\specs\SimpleAuth-v4.doc = ..\doc\specs\SimpleAuth-v4.doc
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{B4C6F647-C046-4B54-BE12-7701C4119EE7}"
