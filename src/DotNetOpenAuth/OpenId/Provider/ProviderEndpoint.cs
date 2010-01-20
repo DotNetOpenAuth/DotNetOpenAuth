@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Diagnostics.Contracts;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -82,8 +83,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// before responding to the relying party's authentication request.
 		/// </remarks>
 		public static IAuthenticationRequest PendingAuthenticationRequest {
-			get { return HttpContext.Current.Session[PendingRequestKey] as IAuthenticationRequest; }
-			set { HttpContext.Current.Session[PendingRequestKey] = value; }
+			get {
+				Contract.Ensures(Contract.Result<IAuthenticationRequest>() == null || PendingRequest != null);
+				return HttpContext.Current.Session[PendingRequestKey] as IAuthenticationRequest;
+			}
+
+			set {
+				HttpContext.Current.Session[PendingRequestKey] = value;
+			}
 		}
 
 		/// <summary>
@@ -96,8 +103,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// before responding to the relying party's request.
 		/// </remarks>
 		public static IAnonymousRequest PendingAnonymousRequest {
-			get { return HttpContext.Current.Session[PendingRequestKey] as IAnonymousRequest; }
-			set { HttpContext.Current.Session[PendingRequestKey] = value; }
+			get {
+				Contract.Ensures(Contract.Result<IAnonymousRequest>() == null || PendingRequest != null);
+				return HttpContext.Current.Session[PendingRequestKey] as IAnonymousRequest;
+			}
+
+			set {
+				HttpContext.Current.Session[PendingRequestKey] = value;
+			}
 		}
 
 		/// <summary>
