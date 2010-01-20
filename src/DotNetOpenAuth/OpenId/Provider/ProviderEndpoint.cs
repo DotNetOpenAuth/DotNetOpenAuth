@@ -42,7 +42,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Backing field for the <see cref="Provider"/> property.
 		/// </summary>
-		private static OpenIdProvider provider = CreateProvider();
+		private static OpenIdProvider provider;
+
+		/// <summary>
+		/// The lock that must be obtained when initializing the provider field.
+		/// </summary>
+		private static object providerInitializerLock = new object();
 
 		/// <summary>
 		/// Fired when an incoming OpenID request is an authentication challenge
@@ -57,6 +62,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
 		public static OpenIdProvider Provider {
 			get {
+				if (provider == null) {
+					lock (providerInitializerLock) {
+						if (provider == null) {
+							provider = CreateProvider();
+						}
+					}
+				}
+
 				return provider;
 			}
 
@@ -119,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				// Then try the configuration file specified one.  Finally, use the default
 				// in-memory one that's built into OpenIdProvider.
 				// determine what incoming message was received
-				IRequest request = provider.GetRequest();
+				IRequest request = Provider.GetRequest();
 				if (request != null) {
 					// process the incoming message appropriately and send the response
 					if (!request.IsResponseReady) {
@@ -130,7 +143,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 						PendingAuthenticationRequest = null;
 					}
 					if (request.IsResponseReady) {
-						provider.SendResponse(request);
+						Provider.SendResponse(request);
 						Page.Response.End();
 						PendingAuthenticationRequest = null;
 					}
