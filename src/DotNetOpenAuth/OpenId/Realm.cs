@@ -112,6 +112,8 @@ namespace DotNetOpenAuth.OpenId {
 		public static Realm AutoDetect {
 			get {
 				Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+				Contract.Ensures(Contract.Result<Realm>() != null);
+
 				HttpRequestInfo requestInfo = new HttpRequestInfo(HttpContext.Current.Request);
 				UriBuilder realmUrl = new UriBuilder(requestInfo.UrlBeforeRewriting);
 				realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
@@ -252,6 +254,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Not all Realms are valid URLs.")]
 		[DebuggerStepThrough]
 		public static implicit operator Realm(string uri) {
+			Contract.Ensures((Contract.Result<Realm>() != null) == (uri != null));
 			return uri != null ? new Realm(uri) : null;
 		}
 
@@ -262,6 +265,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The result of the conversion.</returns>
 		[DebuggerStepThrough]
 		public static implicit operator Realm(Uri uri) {
+			Contract.Ensures((Contract.Result<Realm>() != null) == (uri != null));
 			return uri != null ? new Realm(uri) : null;
 		}
 
@@ -272,6 +276,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The result of the conversion.</returns>
 		[DebuggerStepThrough]
 		public static implicit operator string(Realm realm) {
+			Contract.Ensures((Contract.Result<string>() != null) == (realm != null));
 			return realm != null ? realm.ToString() : null;
 		}
 
