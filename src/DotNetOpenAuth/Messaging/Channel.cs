@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Cache;
+	using System.Net.Mime;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
@@ -37,6 +38,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// URL-encoded series of key=value pairs.
 		/// </summary>
 		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
+
+		/// <summary>
+		/// The content-type used on HTTP POST requests where the POST entity is a
+		/// URL-encoded series of key=value pairs.
+		/// This includes the <see cref="PostEntityEncoding"/> character encoding.
+		/// </summary>
+		protected internal static readonly ContentType HttpFormUrlEncodedContentType = new ContentType(HttpFormUrlEncoded) { CharSet = PostEntityEncoding.WebName };
 
 		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
@@ -916,15 +924,9 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(httpRequest != null);
 			Contract.Requires<ArgumentNullException>(fields != null);
 
-			httpRequest.ContentType = HttpFormUrlEncoded;
-
-			// Setting the content-encoding to "utf-8" causes Google to reply
-			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
-			// anything specific, so we disable it until we know how to get it right.
-			////httpRequest.Headers[HttpRequestHeader.ContentEncoding] = PostEntityEncoding.WebName;
-
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
+			httpRequest.ContentType = HttpFormUrlEncodedContentType.ToString();
 			httpRequest.ContentLength = requestBytes.Length;
 			Stream requestStream = this.WebRequestHandler.GetRequestStream(httpRequest);
 			try {

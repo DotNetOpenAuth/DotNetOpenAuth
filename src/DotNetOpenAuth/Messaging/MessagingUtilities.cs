@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -158,19 +159,18 @@ namespace DotNetOpenAuth.Messaging {
 			string initialPartLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "--{0}\r\n", boundary);
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
 			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
+			var contentType = new ContentType("multipart/form-data") {
+				Boundary = boundary,
+				CharSet = Channel.PostEntityEncoding.WebName,
+			};
 
 			request.Method = "POST";
-			request.ContentType = "multipart/form-data; boundary=" + boundary;
+			request.ContentType = contentType.ToString();
 			long contentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
 			if (parts.Any()) {
 				contentLength -= 2; // the initial part leading boundary has no leading \r\n
 			}
 			request.ContentLength = contentLength;
-
-			// Setting the content-encoding to "utf-8" causes Google to reply
-			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
-			// anything specific, so we disable it until we know how to get it right.
-			////request.Headers[HttpRequestHeader.ContentEncoding] = Channel.PostEntityEncoding.WebName;
 
 			var requestStream = requestHandler.GetRequestStream(request);
 			try {
