@@ -12,26 +12,51 @@
 					<ic:ClaimType Name="http://idmanagement.gov/icam/2009/09/imi_1.0_profile#assuranclevel1" />
 				</ClaimsRequested>
 				<UnsupportedTemplate>
-					<p>This test includes an InfoCard component, but it doesn't look like your browser
+					<p>
+						This test includes an InfoCard component, but it doesn't look like your browser
 						has an InfoCard Selector.</p>
 				</UnsupportedTemplate>
 			</ic:InfoCardSelector>
 		</asp:View>
 		<asp:View ID="View2" runat="server">
-			<p>We have received your InfoCard.</p>
+			<p>
+				We have received your InfoCard.
+			</p>
+			<asp:DataList runat="server" ID="missingClaimsList">
+				<HeaderTemplate>
+					<h4 style="color: Red">
+						Missing required claims:
+					</h4>
+					<ul>
+				</HeaderTemplate>
+				<ItemTemplate>
+					<li>
+						<%# Eval("Name") %>
+					</li>
+				</ItemTemplate>
+				<FooterTemplate>
+					</ul>
+				</FooterTemplate>
+			</asp:DataList>
 			<table>
 				<tr>
-					<td>Site specific ID </td>
-					<td><asp:Label ID="siteSpecificIdLabel" runat="server" Font-Bold="true" /> </td>
+					<td>
+						Site specific ID
+					</td>
+					<td>
+						<asp:Label ID="siteSpecificIdLabel" runat="server" Font-Bold="true" />
+					</td>
 				</tr>
 			</table>
 		</asp:View>
 	</asp:MultiView>
-	<h3>Instructions</h3>
+	<h3>
+		Instructions</h3>
 	<ol>
-		<li>Click the InfoCard button and select a managed card that is issued by the IdP
-			you are testing. </li>
+		<li>Click the InfoCard button and select a managed card that is issued by the IdP you
+			are testing. </li>
 	</ol>
-	<p>One possible InfoCard issuer to try is <a href="https://cardpress.azigo.net/azigo-cardpress/register.do">
-		Azigo</a></p>
+	<p>
+		One possible InfoCard issuer to try is <a href="https://cardpress.azigo.net/azigo-cardpress/register.do">
+			Azigo</a></p>
 </asp:Content>
