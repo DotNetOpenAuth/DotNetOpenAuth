@@ -106,14 +106,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			HttpContext context = HttpContext.Current;
 
-			// We use Request.Url for the full path to the server, and modify it
-			// with Request.RawUrl to capture both the cookieless session "directory" if it exists
-			// and the original path in case URL rewriting is going on.  We don't want to be
-			// fooled by URL rewriting because we're comparing the actual URL with what's in
-			// the return_to parameter in some cases.
-			// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
-			// session, but not the URL rewriting problem.
-			return new Uri(context.Request.Url, context.Request.RawUrl);
+			return HttpRequestInfo.GetPublicFacingUrl(context.Request, context.Request.ServerVariables);
 		}
 
 		/// <summary>
