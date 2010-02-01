@@ -7,7 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	internal class MockReplayProtectionBindingElement : IChannelBindingElement {
 		private bool messageReceived;

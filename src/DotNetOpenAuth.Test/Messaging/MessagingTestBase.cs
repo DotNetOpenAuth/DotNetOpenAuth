@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// The base class that all messaging test classes inherit from.
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test {
 
 		internal Channel Channel { get; set; }
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -156,7 +156,7 @@ namespace DotNetOpenAuth.Test {
 
 			IDirectedProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
+			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage actualMessage = (TestMessage)requestMessage;
 			Assert.AreEqual(expectedMessage.Age, actualMessage.Age);
 			Assert.AreEqual(expectedMessage.Name, actualMessage.Name);
@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.Test {
 			}
 			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestSignedDirectedMessage));
+			Assert.IsInstanceOf<TestSignedDirectedMessage>(requestMessage);
 			TestSignedDirectedMessage actualMessage = (TestSignedDirectedMessage)requestMessage;
 			Assert.AreEqual(expectedMessage.Age, actualMessage.Age);
 			Assert.AreEqual(expectedMessage.Name, actualMessage.Name);

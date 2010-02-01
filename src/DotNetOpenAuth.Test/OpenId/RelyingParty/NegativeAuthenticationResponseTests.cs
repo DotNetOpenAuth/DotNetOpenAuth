@@ -13,16 +13,16 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class NegativeAuthenticationResponseTests : OpenIdTestBase {
 		private const string UserSuppliedIdentifier = "=arnott";
 		private Protocol protocol;
 		private NegativeAssertionResponse responseMessage;
 		private NegativeAuthenticationResponse response;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.response = new NegativeAuthenticationResponse(this.responseMessage);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			new NegativeAuthenticationResponse(null);
 		}
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that immediate/setup modes are correctly detected.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ImmediateVsSetupModes() {
 			this.responseMessage = new NegativeAssertionResponse(this.protocol.Version, RPUri, this.protocol.Args.Mode.cancel);
 			this.response = new NegativeAuthenticationResponse(this.responseMessage);
@@ -55,17 +55,17 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.responseMessage.ExtraData[AuthenticationRequest.UserSuppliedIdentifierParameterName] = UserSuppliedIdentifier;
 			this.response = new NegativeAuthenticationResponse(this.responseMessage);
 			Assert.AreEqual(AuthenticationStatus.SetupRequired, this.response.Status);
-			Assert.AreEqual<string>(UserSuppliedIdentifier, this.response.UserSuppliedIdentifier);
+			Assert.AreEqual(UserSuppliedIdentifier, (string)this.response.UserSuppliedIdentifier);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CommonProperties() {
 			Assert.IsNull(this.response.Exception);
 			Assert.IsNull(this.response.ClaimedIdentifier);
 			Assert.IsNull(this.response.FriendlyIdentifierForDisplay);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CommonMethods() {
 			Assert.IsNull(this.response.GetExtension<ClaimsRequest>());
 			Assert.IsNull(this.response.GetExtension(typeof(ClaimsRequest)));

@@ -1,11 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
 	<Import Project="DotNetOpenAuth.Versioning.targets" />
 	<Import Project="JavascriptPacker.targets" />
 
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
+		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
 	</PropertyGroup>
+
+	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+		<Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
 	<!-- This forces a build break when Code Contracts are not installed. -->
 	<PropertyGroup>
@@ -27,7 +35,7 @@
 	<Target Name="CreatePublicAccessors">
 		<PropertyGroup>
 			<VSVersionForTargetFramework>v10.0</VSVersionForTargetFramework>
-			<VSVersionForTargetFramework Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">v9.0</VSVersionForTargetFramework>
+			<VSVersionForTargetFramework Condition=" '$(ClrVersion)' != '4' ">v9.0</VSVersionForTargetFramework>
 		</PropertyGroup>
 		<Publicize
 			Condition=" '%(ReferencePath.Shadow)' == 'true' "

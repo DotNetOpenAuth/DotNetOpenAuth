@@ -10,11 +10,11 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class SigningBindingElementBaseTests : MessagingTestBase {
-		[TestMethod]
+		[TestCase]
 		public void BaseSignatureStringTest() {
 			// Tests a message sent by HTTP GET, with no query string included in the endpoint.
 			UnauthorizedTokenRequest message = CreateTestRequestTokenMessage(
