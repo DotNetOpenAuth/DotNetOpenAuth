@@ -9,17 +9,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.IO;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ResponseTests : TestBase {
-		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
+		[TestCase, ExpectedException(typeof(InvalidOperationException))]
 		public void SendWithoutAspNetContext() {
 			HttpContext.Current = null;
 			new OutgoingWebResponse().Send();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Send() {
 			StringWriter writer = new StringWriter();
 			HttpRequest httpRequest = new HttpRequest("file", "http://server", string.Empty);

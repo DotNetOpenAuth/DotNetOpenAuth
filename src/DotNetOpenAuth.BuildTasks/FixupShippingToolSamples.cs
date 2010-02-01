@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.BuildTasks {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
@@ -24,6 +25,8 @@ namespace DotNetOpenAuth.BuildTasks {
 
 		public string[] RemoveImportsStartingWith { get; set; }
 
+		public ITaskItem[] AddReferences { get; set; }
+
 		/// <summary>
 		/// Executes this instance.
 		/// </summary>
@@ -41,6 +44,15 @@ namespace DotNetOpenAuth.BuildTasks {
 						.Where(import => this.RemoveImportsStartingWith.Any(start => import.ProjectPath.StartsWith(start, StringComparison.OrdinalIgnoreCase)))
 						.ToList()
 						.ForEach(import => project.Imports.RemoveImport(import));
+				}
+
+				if (this.AddReferences != null) {
+					foreach (var reference in this.AddReferences) {
+						BuildItem item = project.AddNewItem("Reference", reference.ItemSpec);
+						foreach (DictionaryEntry metadata in reference.CloneCustomMetadata()) {
+							item.SetMetadata((string)metadata.Key, (string)metadata.Value);
+						}
+					}
 				}
 
 				project.Save(projectTaskItem.ItemSpec);

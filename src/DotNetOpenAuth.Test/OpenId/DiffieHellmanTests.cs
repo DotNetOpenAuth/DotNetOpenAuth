@@ -9,12 +9,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.IO;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 	using Org.Mentalis.Security.Cryptography;
 
-	[TestClass]
+	[TestFixture]
 	public class DiffieHellmanTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void Test() {
 			string s1 = Test1();
 			string s2 = Test1();
@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreNotEqual(s1, s2, "Secret keys should NOT be the same.");
 		}
 
-		[TestMethod, Timeout(15000)]
+		[TestCase, Timeout(15000), Category("Slow"), Category("Performance")]
 		public void TestPublic() {
 			TextReader reader = new StringReader(OpenIdTestBase.LoadEmbeddedFile("dhpriv.txt"));
 
@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				string line;
 				int lineNumber = 0;
 				while ((line = reader.ReadLine()) != null) {
-					TestContext.WriteLine("\tLine {0}", ++lineNumber);
+					TestUtilities.TestLogger.InfoFormat("\tLine {0}", ++lineNumber);
 					string[] parts = line.Trim().Split(' ');
 					byte[] x = Convert.FromBase64String(parts[0]);
 					DiffieHellmanManaged dh = new DiffieHellmanManaged(AssociateDiffieHellmanRequest.DefaultMod, AssociateDiffieHellmanRequest.DefaultGen, x);

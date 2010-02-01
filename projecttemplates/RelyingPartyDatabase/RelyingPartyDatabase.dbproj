@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Name>"DatabaseProject"</Name>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectVersion>3.5</ProjectVersion>
+    <ProjectVersion>4.0</ProjectVersion>
     <ProjectGuid>{2b4261ac-25ac-4b8d-b459-1c42b6b1401d}</ProjectGuid>
-    <DSP>Microsoft.Data.Schema.Sql.SqlDsp.Sql100DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Schema.Sql.Sql100DatabaseSchemaProvider</DSP>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ShowWizard>True</ShowWizard>
     <OutputType>Database</OutputType>
@@ -22,10 +22,10 @@
     </ServerPropertiesFile>
     <RootNamespace>RelyingPartyDatabase</RootNamespace>
     <DefaultSchema>dbo</DefaultSchema>
-    <PreviousProjectVersion>3.5</PreviousProjectVersion>
     <AllowServerObjects>False</AllowServerObjects>
     <AllowDatabaseObjects>True</AllowDatabaseObjects>
     <DeployScriptFileName>..\..\..\RelyingPartyLogic\CreateDatabase.sql</DeployScriptFileName>
+    <PreviousProjectVersion>4.0</PreviousProjectVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>.\sql\release\</OutputPath>
@@ -54,7 +54,7 @@
     <DeployToDatabase>False</DeployToDatabase>
   </PropertyGroup>
   <!--Import the settings-->
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\TeamData\Microsoft.Data.Schema.SqlTasks.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\TeamData\Microsoft.Data.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties\" />
     <Folder Include="Schema Objects\" />
@@ -282,8 +282,6 @@
     </PostDeploy>
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Include="$(VSTSDBDirectory)\Extensions\SqlServer\2008\DBSchemas\Microsoft.SqlTypes.dbschema">
-      <HintPath>..\..\..\..\..\..\Program Files\Microsoft Visual Studio 9.0\VSTSDB\Extensions\SqlServer\2008\DBSchemas\Microsoft.SqlTypes.dbschema</HintPath>
-    </ArtifactReference>
+    <BuildContributorArgument Include="OutDir=$(OutDir)" />
   </ItemGroup>
 </Project>

@@ -10,13 +10,13 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth.ChannelElements;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class UriOrOobEncodingTests : TestBase {
 		private UriOrOobEncoding encoding;
 
-		[TestInitialize]
+		[SetUp]
 		public void Setup() {
 			this.encoding = new UriOrOobEncoding();
 		}
@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies null value encoding
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void NullValueEncoding() {
 			Assert.AreEqual("oob", this.encoding.EncodedNullValue);
 		}
@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies decoding "oob" results in a null uri.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void DecodeOobToNullUri() {
 			Assert.IsNull(this.encoding.Decode("oob"));
 		}
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies that decoding an empty string generates an exception.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(UriFormatException))]
+		[TestCase, ExpectedException(typeof(UriFormatException))]
 		public void DecodeEmptyStringFails() {
 			this.encoding.Decode(string.Empty);
 		}
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies proper decoding/encoding of a Uri
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UriEncodeDecode() {
 			Uri original = new Uri("http://somehost/p?q=a#frag");
 			string encodedValue = this.encoding.Encode(original);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies failure to decode a relative Uri
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(UriFormatException))]
+		[TestCase, ExpectedException(typeof(UriFormatException))]
 		public void RelativeUriDecodeFails() {
 			this.encoding.Decode("../a/b");
 		}

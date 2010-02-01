@@ -10,14 +10,14 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AuthenticationRequestTest : OpenIdTestBase {
 		/// <summary>
 		/// Verifies the user_setup_url is set properly for immediate negative responses.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UserSetupUrl() {
 			// Construct a V1 immediate request
 			Protocol protocol = Protocol.V11;

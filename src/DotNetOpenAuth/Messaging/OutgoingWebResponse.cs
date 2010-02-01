@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.ResponseStream = new MemoryStream(response.ContentLength < 0 ? 4 * 1024 : (int)response.ContentLength);
 			using (Stream responseStream = response.GetResponseStream()) {
 				// BUGBUG: strictly speaking, is the response were exactly the limit, we'd report it as truncated here.
-				this.IsResponseTruncated = responseStream.CopyTo(this.ResponseStream, maximumBytesToRead) == maximumBytesToRead;
+				this.IsResponseTruncated = responseStream.CopyUpTo(this.ResponseStream, maximumBytesToRead) == maximumBytesToRead;
 				this.ResponseStream.Seek(0, SeekOrigin.Begin);
 			}
 		}

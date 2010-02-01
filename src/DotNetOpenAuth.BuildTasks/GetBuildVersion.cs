@@ -61,6 +61,7 @@ namespace DotNetOpenAuth.BuildTasks {
 				string cmdPath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe");
 				ProcessStartInfo psi = new ProcessStartInfo(cmdPath, "/c git rev-parse HEAD");
 				psi.WindowStyle = ProcessWindowStyle.Hidden;
+				psi.CreateNoWindow = true;
 				psi.RedirectStandardOutput = true;
 				psi.UseShellExecute = false;
 				Process git = Process.Start(psi);

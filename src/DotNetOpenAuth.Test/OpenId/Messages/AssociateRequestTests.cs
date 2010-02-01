@@ -11,31 +11,31 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AssociateRequestTests : OpenIdTestBase {
 		private readonly Protocol protocol = Protocol.V20;
 		private Uri secureRecipient = new Uri("https://hi");
 		private Uri insecureRecipient = new Uri("http://hi");
 		private AssociateRequest request;
 
-		[TestInitialize]
+		[SetUp]
 		public void Setup() {
 			this.request = new AssociateUnencryptedRequest(this.protocol.Version, this.secureRecipient);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ConstructorTest() {
 			Assert.AreEqual(this.secureRecipient, this.request.Recipient);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Mode() {
 			Assert.AreEqual(this.protocol.Args.Mode.associate, this.request.Mode);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void MessagePartsTest() {
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.SessionType = this.protocol.Args.SessionType.NoEncryption;
@@ -51,26 +51,26 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.protocol.Args.SessionType.NoEncryption, dict[this.protocol.openid.session_type]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ValidMessageTest() {
 			this.request = new AssociateUnencryptedRequest(Protocol.V20.Version, this.secureRecipient);
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.EnsureValidMessage();
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void InvalidMessageTest() {
 			this.request = new AssociateUnencryptedRequest(Protocol.V20.Version, this.insecureRecipient);
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.EnsureValidMessage(); // no-encryption only allowed for secure channels.
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequiredProtection() {
 			Assert.AreEqual(MessageProtections.None, this.request.RequiredProtection);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Transport() {
 			Assert.AreEqual(MessageTransport.Direct, this.request.Transport);
 		}
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// <summary>
 		/// Verifies security settings limit RP's initial associate request
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void AssociateRequestDeterminedBySecuritySettings() {
 			Protocol protocol = Protocol.V20;
 			SecuritySettings securitySettings = new RelyingPartySecuritySettings();
