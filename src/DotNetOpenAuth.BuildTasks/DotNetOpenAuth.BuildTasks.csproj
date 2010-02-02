@@ -131,6 +131,7 @@
       <DependentUpon>TaskStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Trim.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TaskStrings.resx">

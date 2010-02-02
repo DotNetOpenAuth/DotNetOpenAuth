@@ -158,7 +158,7 @@
 		<MSBuild Projects="@(ProjectTemplates)" />
 	</Target>
 
-	<Target Name="ProjectTemplatesLayout" DependsOnTargets="GetBuildVersion;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates">
+	<Target Name="ProjectTemplatesLayout" DependsOnTargets="GetBuildVersion;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates;VsixManifestLayout">
 		<ItemGroup>
 			<ProjectTemplatesSource Include="$(ProjectRoot)projecttemplates\**\*"
 			                   Exclude="
@@ -228,11 +228,6 @@
 		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)">
 			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
 		</CopyWithTokenSubstitution>
-		<Purge Directories="$(ProjectTemplatesLayoutPath)"
-					 IntendedFiles="
-						@(ProjectTemplatesLayout);
-						@(ProjectTemplatesTransformLayout);
-						" />
 		<ChangeProjectReferenceToAssemblyReference
 			Projects="@(CopiedProjectTemplateFiles)"
 			Condition="'%(Extension)' == '.csproj'"
@@ -252,7 +247,23 @@
 			ProjectItemTypes="@(VsTemplateProjectItemTypes)"
 			ReplaceParametersExtensions="@(VsTemplateParameterReplaceExtensions)"
 			Templates="@(VSProjectTemplates)"
-			/>
+			VsixManifest="@(ProjectTemplates2010TransformLayout)"
+			EnsureMaxPath="240"
+			Condition=" '%(ProjectTemplates2010TransformLayout.Extension)' == '.vsixmanifest' "
+			>
+			<Output TaskParameter="MaxPathAdjustedPaths" ItemName="ProjectItemShortPathAdjustments"/>
+		</MergeProjectWithVSTemplate>
+
+		<ItemGroup>
+			<ProjectTemplateIntendedFiles Include="
+																		@(ProjectTemplatesLayout);
+																		@(ProjectTemplatesTransformLayout);
+																		%(ProjectItemShortPathAdjustments.ShortPath);
+																		" />
+			<ProjectTemplateIntendedFiles Remove="@(ProjectItemShortPathAdjustments)" />
+		</ItemGroup>
+		<Purge Directories="$(ProjectTemplatesLayoutPath)"
+					 IntendedFiles="@(ProjectTemplateIntendedFiles)" />
 	</Target>
 
 	<Target Name="ProjectTemplates2008" DependsOnTargets="ProjectTemplatesLayout">
@@ -394,7 +405,7 @@
 			/>
 	</Target>
 
-	<Target Name="VsixLayout" DependsOnTargets="ProjectTemplates2010">
+	<Target Name="VsixManifestLayout">
 		<ItemGroup>
 			<ProjectTemplates2010TransformSource Include="
 																					 $(ProjectRoot)vsix\extension.vsixmanifest;
@@ -405,7 +416,12 @@
 				<SkipUnchangedFiles>false</SkipUnchangedFiles>
 			</ProjectTemplates2010TransformSource>
 			<ProjectTemplates2010TransformLayout Include="@(ProjectTemplates2010TransformSource->'$(ExtensionVsixLayoutDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
-
+		</ItemGroup>
+		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplates2010TransformSource)" DestinationFiles="@(ProjectTemplates2010TransformLayout)" />
+	</Target>
+	
+	<Target Name="VsixLayout" DependsOnTargets="ProjectTemplates2010;VsixManifestLayout">
+		<ItemGroup>
 			<ExtensionVsixSources Include="
 														$(ProjectRoot)vsix\*;
 														" Exclude="
@@ -423,8 +439,6 @@
 		</ItemGroup>
 
 		<Copy SourceFiles="@(ExtensionVsixSources)" DestinationFiles="@(ExtensionVsixTargets)" SkipUnchangedFiles="true" />
-		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplates2010TransformSource)" DestinationFiles="@(ProjectTemplates2010TransformLayout)" />
-
 		<Purge Directories="$(ExtensionVsixLayoutDirectory)" IntendedFiles="@(ExtensionVsixContents)" />
 	</Target>
 
