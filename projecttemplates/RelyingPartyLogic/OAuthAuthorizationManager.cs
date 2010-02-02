@@ -31,34 +31,38 @@ namespace RelyingPartyLogic {
 			HttpRequestMessageProperty httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
 			Uri requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
 			ServiceProvider sp = OAuthServiceProvider.ServiceProvider;
-			var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
-			if (auth != null) {
-				var accessToken = Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>().First(token => token.Token == auth.AccessToken);
+			try {
+				var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
+				if (auth != null) {
+					var accessToken = Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>().First(token => token.Token == auth.AccessToken);
 
-				var principal = sp.CreatePrincipal(auth);
-				var policy = new OAuthPrincipalAuthorizationPolicy(principal);
-				var policies = new List<IAuthorizationPolicy> {
-					policy,
-				};
-
-				var securityContext = new ServiceSecurityContext(policies.AsReadOnly());
-				if (operationContext.IncomingMessageProperties.Security != null) {
-					operationContext.IncomingMessageProperties.Security.ServiceSecurityContext = securityContext;
-				} else {
-					operationContext.IncomingMessageProperties.Security = new SecurityMessageProperty {
-						ServiceSecurityContext = securityContext,
+					var principal = sp.CreatePrincipal(auth);
+					var policy = new OAuthPrincipalAuthorizationPolicy(principal);
+					var policies = new List<IAuthorizationPolicy> {
+						policy,
 					};
-				}
 
-				securityContext.AuthorizationContext.Properties["Identities"] = new List<IIdentity> {
-				principal.Identity,
-			};
+					var securityContext = new ServiceSecurityContext(policies.AsReadOnly());
+					if (operationContext.IncomingMessageProperties.Security != null) {
+						operationContext.IncomingMessageProperties.Security.ServiceSecurityContext = securityContext;
+					} else {
+						operationContext.IncomingMessageProperties.Security = new SecurityMessageProperty {
+							ServiceSecurityContext = securityContext,
+						};
+					}
 
-				// Only allow this method call if the access token scope permits it.
-				string[] scopes = accessToken.Scope.Split('|');
-				if (scopes.Contains(operationContext.IncomingMessageHeaders.Action)) {
-					return true;
+					securityContext.AuthorizationContext.Properties["Identities"] = new List<IIdentity> {
+						principal.Identity,
+					};
+
+					// Only allow this method call if the access token scope permits it.
+					string[] scopes = accessToken.Scope.Split('|');
+					if (scopes.Contains(operationContext.IncomingMessageHeaders.Action)) {
+						return true;
+					}
 				}
+			} catch (ProtocolException /*ex*/) {
+				//Logger.Error("Error processing OAuth messages.", ex);
 			}
 
 			return false;
