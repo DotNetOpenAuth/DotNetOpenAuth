@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "We have a Parse function.")]
 		[DebuggerStepThrough]
 		public static implicit operator string(Identifier identifier) {
-			Contract.Ensures((identifier == null) == (Contract.Result<Identifier>() == null));
+			Contract.Ensures((identifier == null) == (Contract.Result<string>() == null));
 			if (identifier == null) {
 				return null;
 			}
