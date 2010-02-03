@@ -444,7 +444,7 @@
 
 	<Target Name="vsix" DependsOnTargets="VsixLayout;_SetDropProperties">
 		<PropertyGroup>
-			<ExtensionVsix>$(DropDirectoryNoSlash).vsix</ExtensionVsix>
+			<ExtensionVsix>$(DropsRoot)$(ProductName) SDK-$(BuildVersion).vsix</ExtensionVsix>
 		</PropertyGroup>
 		<Zip
 			Files="@(ExtensionVsixContents)"
