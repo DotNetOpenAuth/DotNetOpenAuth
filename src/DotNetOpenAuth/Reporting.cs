@@ -30,7 +30,27 @@ namespace DotNetOpenAuth {
 	/// The statistical reporting mechanism used so this library's project authors
 	/// know what versions and features are in use.
 	/// </summary>
-	internal static class Reporting {
+	public static class Reporting {
+		/// <summary>
+		/// A value indicating whether reporting is desirable or not.  Must be logical-AND'd with !<see cref="broken"/>.
+		/// </summary>
+		private static bool enabled;
+
+		/// <summary>
+		/// A value indicating whether reporting experienced an error and cannot be enabled.
+		/// </summary>
+		private static bool broken;
+
+		/// <summary>
+		/// A value indicating whether the reporting class has been initialized or not.
+		/// </summary>
+		private static bool initialized;
+
+		/// <summary>
+		/// The object to lock during initialization.
+		/// </summary>
+		private static object initializationSync = new object();
+
 		/// <summary>
 		/// The isolated storage to use for collecting data in between published reports.
 		/// </summary>
@@ -93,28 +113,38 @@ namespace DotNetOpenAuth {
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Reporting MUST NOT cause unhandled exceptions.")]
 		static Reporting() {
 			Enabled = DotNetOpenAuthSection.Configuration.Reporting.Enabled;
-			if (Enabled) {
-				try {
-					file = GetIsolatedStorage();
-					reportOriginIdentity = GetOrCreateOriginIdentity();
+		}
 
-					webRequestHandler = new StandardWebRequestHandler();
-					observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
-					observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
-					observations.Add(observedFeatures = new PersistentHashSet(file, "features.txt", int.MaxValue));
+		/// <summary>
+		/// Initializes Reporting if it has not been initialized yet.
+		/// </summary>
+		private static void Initialize() {
+			lock(initializationSync) {
+				if (!broken && !initialized) {
+					try {
+						file = GetIsolatedStorage();
+						reportOriginIdentity = GetOrCreateOriginIdentity();
 
-					// Record site-wide features in use.
-					if (HttpContext.Current != null && HttpContext.Current.ApplicationInstance != null) {
-						// MVC or web forms?
-						// front-end or back end web farm?
-						// url rewriting?
-						////RecordFeatureUse(IsMVC ? "ASP.NET MVC" : "ASP.NET Web Forms");
+						webRequestHandler = new StandardWebRequestHandler();
+						observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
+						observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
+						observations.Add(observedFeatures = new PersistentHashSet(file, "features.txt", int.MaxValue));
+
+						// Record site-wide features in use.
+						if (HttpContext.Current != null && HttpContext.Current.ApplicationInstance != null) {
+							// MVC or web forms?
+							// front-end or back end web farm?
+							// url rewriting?
+							////RecordFeatureUse(IsMVC ? "ASP.NET MVC" : "ASP.NET Web Forms");
+						}
+
+						initialized = true;
+					} catch (Exception e) {
+						// This is supposed to be as low-risk as possible, so if it fails, just disable reporting
+						// and avoid rethrowing.
+						broken = true;
+						Logger.Library.Error("Error while trying to initialize reporting.", e);
 					}
-				} catch (Exception e) {
-					// This is supposed to be as low-risk as possible, so if it fails, just disable reporting
-					// and avoid rethrowing.
-					Enabled = false;
-					Logger.Library.Error("Error while trying to initialize reporting.", e);
 				}
 			}
 		}
@@ -123,7 +153,25 @@ namespace DotNetOpenAuth {
 		/// Gets or sets a value indicating whether this reporting is enabled.
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		internal static bool Enabled { get; set; }
+		/// <remarks>
+		/// Setting this property to <c>true</c> <i>may</i> have no effect
+		/// if reporting has already experienced a failure of some kind.
+		/// </remarks>
+		public static bool Enabled {
+			get {
+				return enabled && !broken;
+			}
+
+			set {
+				if (value) {
+					Initialize();
+				}
+
+				// Only set the static field here, so that other threads
+				// don't try to use reporting while we're initializing it.
+				enabled = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the configuration to use for reporting.
@@ -459,7 +507,7 @@ namespace DotNetOpenAuth {
 				} catch (Exception ex) {
 					// Something bad and unexpected happened.  Just deactivate to avoid more trouble.
 					Logger.Library.Error("Error while trying to submit statistical report.", ex);
-					Enabled = false;
+					broken = true;
 				}
 			});
 		}
