@@ -159,7 +159,7 @@
 		<MSBuild Projects="@(ProjectTemplates)" />
 	</Target>
 
-	<Target Name="ProjectTemplatesLayout" DependsOnTargets="GetBuildVersion;VsixManifestLayout">
+	<Target Name="ProjectTemplatesLayout" DependsOnTargets="GetBuildVersion;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates;VsixManifestLayout">
 		<ItemGroup>
 			<ProjectTemplatesSource Include="$(ProjectRoot)projecttemplates\**\*"
 			                   Exclude="
