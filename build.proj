@@ -12,6 +12,7 @@
 
 		<VS2010ProjectTemplatesDirectory>$(IntermediatePath)VS2010projecttemplates\</VS2010ProjectTemplatesDirectory>
 		<ExtensionVsixLayoutDirectory>$(IntermediatePath)Vsix\</ExtensionVsixLayoutDirectory>
+		<ProjectTemplateSubdirectory>$(ExtensionVsixLayoutDirectory)PT\CSharp\Web\</ProjectTemplateSubdirectory>
 		<ZipLevel>6</ZipLevel>
 	</PropertyGroup>
 
@@ -158,7 +159,7 @@
 		<MSBuild Projects="@(ProjectTemplates)" />
 	</Target>
 
-	<Target Name="ProjectTemplatesLayout" DependsOnTargets="GetBuildVersion;BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildProjectTemplates;VsixManifestLayout">
+	<Target Name="ProjectTemplatesLayout" DependsOnTargets="GetBuildVersion;VsixManifestLayout">
 		<ItemGroup>
 			<ProjectTemplatesSource Include="$(ProjectRoot)projecttemplates\**\*"
 			                   Exclude="
@@ -323,9 +324,6 @@
 	</Target>
 
 	<Target Name="ProjectTemplates2010" DependsOnTargets="ProjectTemplatesLayout">
-		<PropertyGroup>
-			<ProjectTemplateSubdirectory>$(ExtensionVsixLayoutDirectory)PT\CSharp\Web\</ProjectTemplateSubdirectory>
-		</PropertyGroup>
 		<ItemGroup>
 			<ProjectTemplates2010Source Include="$(ProjectTemplatesLayoutPath)**" />
 			<ProjectTemplates2010Layout Include="@(ProjectTemplates2010Source->'$(VS2010ProjectTemplatesDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
@@ -440,6 +438,41 @@
 
 		<Copy SourceFiles="@(ExtensionVsixSources)" DestinationFiles="@(ExtensionVsixTargets)" SkipUnchangedFiles="true" />
 		<Purge Directories="$(ExtensionVsixLayoutDirectory)" IntendedFiles="@(ExtensionVsixContents)" />
+
+		<!-- Build individual VSIX files for each project template for the Visual Studio Gallery,
+		     which only allows one project template per VSIX. -->
+		<ItemGroup>
+			<VSGalleryProjectTemplates Include="$(ProjectTemplateSubdirectory)*.zip" />
+			<VSGalleryVsixRawSources Include="$(ExtensionVsixLayoutDirectory)**"
+														Exclude="$(ProjectTemplateSubdirectory)*.zip;$(ExtensionVsixLayoutDirectory)*.vsixmanifest">
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(VSGalleryProjectTemplates.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<TopLevelTemplate>%(VSGalleryProjectTemplates.FileName)</TopLevelTemplate>
+			</VSGalleryVsixRawSources>
+			<VSGalleryVsixSources Include="@(VSGalleryVsixRawSources)">
+				<TargetPath>$(IntermediatePath)%(TopLevelTemplate).vsix\%(FileName)%(Extension)</TargetPath>
+			</VSGalleryVsixSources>
+
+			<VSGalleryVsixZipSources Include="$(ExtensionVsixLayoutDirectory)**\*.zip"/>
+			<VSGalleryVsixSources Include="@(VSGalleryVsixZipSources)">
+				<TopLevelTemplate>%(FileName)</TopLevelTemplate>
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<TargetPath>$(IntermediatePath)%(FileName).vsix\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
+			</VSGalleryVsixSources>
+			
+			<VSGalleryVsixSources Include="@(VSGalleryProjectTemplates->'$(ProjectRoot)projecttemplates\%(FileName).vsixmanifest')">
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(VSGalleryProjectTemplates.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<TopLevelTemplate>%(VSGalleryProjectTemplates.FileName)</TopLevelTemplate>
+				<TargetPath>$(IntermediatePath)%(VSGalleryProjectTemplates.FileName).vsix\extension.vsixmanifest</TargetPath>
+			</VSGalleryVsixSources>
+
+			<VSGalleryVsixTargets Include="@(VSGalleryVsixSources->'%(TargetPath)')">
+				<WorkingDirectory>$(IntermediatePath)%(TopLevelTemplate).vsix</WorkingDirectory>
+			</VSGalleryVsixTargets>
+		</ItemGroup>
+		<Message Importance="high" Text="VSGalleryVsixSources: @(VSGalleryVsixSources)" />
+		<Message Importance="high" Text="VSGalleryVsixTargets: @(VSGalleryVsixTargets)" />
+		<Message Importance="high" Text="ZZZ %(VSGalleryVsixSources.Identity) -> %(VSGalleryVsixSources.TargetPath)" />
+		<HardLinkCopy SourceFiles="@(VSGalleryVsixSources)" DestinationFiles="@(VSGalleryVsixTargets)" />
 	</Target>
 
 	<Target Name="vsix" DependsOnTargets="VsixLayout;_SetDropProperties">
@@ -450,6 +483,13 @@
 			Files="@(ExtensionVsixContents)"
 			ZipFileName="$(ExtensionVsix)"
 			WorkingDirectory="$(ExtensionVsixLayoutDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
+
+		<Zip
+			Files="@(VSGalleryVsixTargets)"
+			ZipFileName="%(VSGalleryVsixTargets.VSGalleryVsix)"
+			WorkingDirectory="%(VSGalleryVsixTargets.WorkingDirectory)"
 			ZipLevel="$(ZipLevel)"
 			/>
 	</Target>
@@ -470,7 +510,7 @@
 		       ExcludeCategory="$(NUnitExcludeCategories)"/>
 	</Target>
 
-	<Target Name="_SetDropProperties">
+	<Target Name="_SetDropProperties" DependsOnTargets="GetBuildVersion">
 		<!-- This target is necessary because PropertyGroups within the same Target as 
 		     where CallTarget is fired do NOT affect those called targets. -->
 		<!-- The rest of these are here so that other DependsOn targets have access to these properties. -->
