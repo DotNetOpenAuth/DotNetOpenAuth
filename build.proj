@@ -469,10 +469,7 @@
 				<WorkingDirectory>$(IntermediatePath)%(TopLevelTemplate).vsix</WorkingDirectory>
 			</VSGalleryVsixTargets>
 		</ItemGroup>
-		<Message Importance="high" Text="VSGalleryVsixSources: @(VSGalleryVsixSources)" />
-		<Message Importance="high" Text="VSGalleryVsixTargets: @(VSGalleryVsixTargets)" />
-		<Message Importance="high" Text="ZZZ %(VSGalleryVsixSources.Identity) -> %(VSGalleryVsixSources.TargetPath)" />
-		<HardLinkCopy SourceFiles="@(VSGalleryVsixSources)" DestinationFiles="@(VSGalleryVsixTargets)" />
+		<HardLinkCopy SourceFiles="@(VSGalleryVsixSources)" DestinationFiles="%(VSGalleryVsixSources.TargetPath)" />
 	</Target>
 
 	<Target Name="vsix" DependsOnTargets="VsixLayout;_SetDropProperties">
