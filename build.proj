@@ -463,13 +463,28 @@
 				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(VSGalleryProjectTemplates.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
 				<TopLevelTemplate>%(VSGalleryProjectTemplates.FileName)</TopLevelTemplate>
 				<TargetPath>$(IntermediatePath)%(VSGalleryProjectTemplates.FileName).vsix\extension.vsixmanifest</TargetPath>
+				<Transform>true</Transform>
+				<BeforeTokens>$version$</BeforeTokens>
+				<AfterTokens>$(BuildVersion)</AfterTokens>
+				<SkipUnchangedFiles>false</SkipUnchangedFiles>
 			</VSGalleryVsixSources>
 
 			<VSGalleryVsixTargets Include="@(VSGalleryVsixSources->'%(TargetPath)')">
 				<WorkingDirectory>$(IntermediatePath)%(TopLevelTemplate).vsix</WorkingDirectory>
 			</VSGalleryVsixTargets>
+			<VSGalleryVsixPathsToPurge Include="@(VSGalleryProjectTemplates->'$(IntermediatePath)%(FileName).vsix')"/>
 		</ItemGroup>
-		<HardLinkCopy SourceFiles="@(VSGalleryVsixSources)" DestinationFiles="%(VSGalleryVsixSources.TargetPath)" />
+		<HardLinkCopy 
+			SourceFiles="@(VSGalleryVsixSources)" 
+			DestinationFiles="%(VSGalleryVsixSources.TargetPath)" 
+			Condition=" '%(VSGalleryVsixSources.Transform)' != 'true' "/>
+		<CopyWithTokenSubstitution
+			SourceFiles="@(VSGalleryVsixSources)"
+			DestinationFiles="%(VSGalleryVsixSources.TargetPath)"
+			Condition=" '%(VSGalleryVsixSources.Transform)' == 'true' "/>
+		<Purge
+			Directories="@(VSGalleryVsixPathsToPurge)"
+			IntendedFiles="@(VSGalleryVsixTargets)" />
 	</Target>
 
 	<Target Name="vsix" DependsOnTargets="VsixLayout;_SetDropProperties">
