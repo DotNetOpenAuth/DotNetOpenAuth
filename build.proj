@@ -249,7 +249,7 @@
 			ReplaceParametersExtensions="@(VsTemplateParameterReplaceExtensions)"
 			Templates="@(VSProjectTemplates)"
 			VsixManifest="@(ProjectTemplates2010TransformLayout)"
-			EnsureMaxPath="240"
+			EnsureMaxPath="235"
 			Condition=" '%(ProjectTemplates2010TransformLayout.Extension)' == '.vsixmanifest' "
 			>
 			<Output TaskParameter="MaxPathAdjustedPaths" ItemName="ProjectItemShortPathAdjustments"/>
