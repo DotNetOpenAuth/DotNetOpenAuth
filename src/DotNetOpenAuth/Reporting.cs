@@ -116,40 +116,6 @@ namespace DotNetOpenAuth {
 		}
 
 		/// <summary>
-		/// Initializes Reporting if it has not been initialized yet.
-		/// </summary>
-		private static void Initialize() {
-			lock(initializationSync) {
-				if (!broken && !initialized) {
-					try {
-						file = GetIsolatedStorage();
-						reportOriginIdentity = GetOrCreateOriginIdentity();
-
-						webRequestHandler = new StandardWebRequestHandler();
-						observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
-						observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
-						observations.Add(observedFeatures = new PersistentHashSet(file, "features.txt", int.MaxValue));
-
-						// Record site-wide features in use.
-						if (HttpContext.Current != null && HttpContext.Current.ApplicationInstance != null) {
-							// MVC or web forms?
-							// front-end or back end web farm?
-							// url rewriting?
-							////RecordFeatureUse(IsMVC ? "ASP.NET MVC" : "ASP.NET Web Forms");
-						}
-
-						initialized = true;
-					} catch (Exception e) {
-						// This is supposed to be as low-risk as possible, so if it fails, just disable reporting
-						// and avoid rethrowing.
-						broken = true;
-						Logger.Library.Error("Error while trying to initialize reporting.", e);
-					}
-				}
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether this reporting is enabled.
 		/// </summary>
 		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
@@ -346,6 +312,40 @@ namespace DotNetOpenAuth {
 				}
 
 				Touch();
+			}
+		}
+
+		/// <summary>
+		/// Initializes Reporting if it has not been initialized yet.
+		/// </summary>
+		private static void Initialize() {
+			lock (initializationSync) {
+				if (!broken && !initialized) {
+					try {
+						file = GetIsolatedStorage();
+						reportOriginIdentity = GetOrCreateOriginIdentity();
+
+						webRequestHandler = new StandardWebRequestHandler();
+						observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
+						observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
+						observations.Add(observedFeatures = new PersistentHashSet(file, "features.txt", int.MaxValue));
+
+						// Record site-wide features in use.
+						if (HttpContext.Current != null && HttpContext.Current.ApplicationInstance != null) {
+							// MVC or web forms?
+							// front-end or back end web farm?
+							// url rewriting?
+							////RecordFeatureUse(IsMVC ? "ASP.NET MVC" : "ASP.NET Web Forms");
+						}
+
+						initialized = true;
+					} catch (Exception e) {
+						// This is supposed to be as low-risk as possible, so if it fails, just disable reporting
+						// and avoid rethrowing.
+						broken = true;
+						Logger.Library.Error("Error while trying to initialize reporting.", e);
+					}
+				}
 			}
 		}
 
