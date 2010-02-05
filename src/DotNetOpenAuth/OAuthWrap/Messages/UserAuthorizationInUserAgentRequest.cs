@@ -18,43 +18,49 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAuthorizationInUserAgentRequest"/> class.
 		/// </summary>
-		/// <param name="tokenIssuer">The token issuer URL to direct the user to.</param>
+		/// <param name="authorizationServer">The token issuer URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		public UserAuthorizationInUserAgentRequest(Uri tokenIssuer, Version version)
-			: base(version, MessageTransport.Indirect, tokenIssuer) {
+		public UserAuthorizationInUserAgentRequest(Uri authorizationServer, Version version)
+			: base(version, MessageTransport.Indirect, authorizationServer) {
 		}
 
 		/// <summary>
-		/// Gets or sets the consumer key.
+		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
-		/// <value>The consumer key.</value>
-		[MessagePart(Protocol.sa_consumer_key, IsRequired = true, AllowEmpty = false)]
-		public string ConsumerKey { get; set; }
+		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
+		public string ClientIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the callback URL.
 		/// </summary>
 		/// <value>
-		/// An absolute URL to which the Token Issuer will redirect the User back after
+		/// An absolute URL to which the Authorization Server will redirect the User back after
 		/// the user has approved the authorization request.
 		/// </value>
 		/// <remarks>
-		/// Consumers which are unable to receive callbacks MUST use <c>null</c> to indicate it
-		/// will receive the Delegation Code out of band.
+		/// Authorization Servers MAY require that the wrap_callback URL match the previously
+		/// registered value for the Client Identifier.
 		/// </remarks>
-		[MessagePart(Protocol.sa_callback, IsRequired = true, AllowEmpty = false, Encoder = typeof(UriOrOutOfBandEncoding))]
+		[MessagePart(Protocol.wrap_callback, IsRequired = true, AllowEmpty = false)]
 		public Uri Callback { get; set; }
 
 		/// <summary>
-		/// Gets or sets the state of the consumer.
+		/// Gets or sets state of the client that should be sent back with the authorization response.
 		/// </summary>
 		/// <value>
-		/// An opaque value that Consumers can use to maintain state associated with this request.
+		/// An opaque value that Clients can use to maintain state associated with this request. 
 		/// </value>
 		/// <remarks>
-		/// If this value is present, the Token Issuer MUST return it to the Consumer's callback URL.
+		/// If this value is present, the Authorization Server MUST return it to the Client's Callback URL.
 		/// </remarks>
-		[MessagePart(Protocol.sa_consumer_state, IsRequired = false, AllowEmpty = true)]
-		public string ConsumerState { get; set; }
+		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
+		public string ClientState { get; set; }
+
+		/// <summary>
+		/// Gets or sets the scope.
+		/// </summary>
+		/// <value>The Authorization Server MAY define authorization scope values for the Client to include.</value>
+		[MessagePart(Protocol.wrap_scope, IsRequired = false, AllowEmpty = true)]
+		public string Scope { get; set; }
 	}
 }

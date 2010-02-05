@@ -19,10 +19,10 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
 		/// </summary>
-		/// <param name="tokenIssuer">The token issuer.</param>
-		protected ConsumerBase(AuthorizationServerDescription tokenIssuer) {
-			ErrorUtilities.VerifyArgumentNotNull(tokenIssuer, "tokenIssuer");
-			this.TokenIssuer = tokenIssuer;
+		/// <param name="authorizationServer">The token issuer.</param>
+		protected ConsumerBase(AuthorizationServerDescription authorizationServer) {
+			ErrorUtilities.VerifyArgumentNotNull(authorizationServer, "authorizationServer");
+			this.TokenIssuer = authorizationServer;
 		}
 
 		/// <summary>
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// so that the Service Provider will allow the request through.
 		/// </summary>
 		/// <param name="request">The request for protected resources from the service provider.</param>
-		/// <param name="accessToken">The access token previously obtained from the Token Issuer.</param>
+		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
 		public static void AuthorizeRequest(HttpWebRequest request, string accessToken) {
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 			request.Headers[HttpRequestHeader.Authorization] = Protocol.HttpAuthorizationScheme + " " + accessToken;

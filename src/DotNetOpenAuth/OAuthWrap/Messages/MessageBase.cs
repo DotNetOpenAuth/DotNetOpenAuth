@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A common message base class for OAuth WRAP messages.
@@ -39,7 +40,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <param name="version">The version.</param>
 		protected MessageBase(Version version) {
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
+			Contract.Requires<ArgumentNullException>(version != null);
 			this.messageTransport = MessageTransport.Direct;
 			this.version = version;
 		}
@@ -49,7 +50,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <param name="request">The originating request.</param>
 		protected MessageBase(IDirectedProtocolMessage request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 			this.originatingRequest = request;
 			this.messageTransport = MessageTransport.Direct;
 			this.version = request.Version;
@@ -63,8 +64,8 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="messageTransport">The message transport.</param>
 		/// <param name="recipient">The recipient.</param>
 		protected MessageBase(Version version, MessageTransport messageTransport, Uri recipient) {
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
-			ErrorUtilities.VerifyArgumentNotNull(recipient, "recipient");
+			Contract.Requires<ArgumentNullException>(version != null);
+			Contract.Requires<ArgumentNullException>(recipient != null);
 
 			this.version = version;
 			this.messageTransport = messageTransport;

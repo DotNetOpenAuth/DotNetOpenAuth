@@ -23,54 +23,64 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal static readonly Version V10 = new Version(1, 0);
 
 		/// <summary>
-		/// The HTTP authorization scheme "SimpleAPIAuth";
+		/// The HTTP authorization scheme "WRAP";
 		/// </summary>
-		internal const string HttpAuthorizationScheme = "SimpleAPIAuth";
+		internal const string HttpAuthorizationScheme = "WRAP";
 
 		/// <summary>
-		/// The "sa_consumer_state" string.
+		/// The "wrap_client_state" string.
 		/// </summary>
-		internal const string sa_consumer_state = "sa_consumer_state";
+		internal const string wrap_client_state = "wrap_client_state";
 
 		/// <summary>
-		/// The "sa_callback" string.
+		/// The "wrap_callback" string.
 		/// </summary>
-		internal const string sa_callback = "sa_callback";
+		internal const string wrap_callback = "wrap_callback";
 
 		/// <summary>
-		/// The "sa_consumer_key" string.
+		/// The "wrap_client_id" string.
 		/// </summary>
-		internal const string sa_consumer_key = "sa_consumer_key";
+		internal const string wrap_client_id = "wrap_client_id";
 
 		/// <summary>
-		/// The "sa_consumer_secret" string.
+		/// The "wrap_scope" string.
 		/// </summary>
-		internal const string sa_consumer_secret = "sa_consumer_secret";
+		internal const string wrap_scope = "wrap_scope";
 
 		/// <summary>
-		/// The "sa_delegation_code" string.
+		/// The "wrap_client_secret" string.
 		/// </summary>
-		internal const string sa_delegation_code = "sa_delegation_code";
+		internal const string wrap_client_secret = "wrap_client_secret";
 
 		/// <summary>
-		/// The "sa_error_reason" string.
+		/// The "wrap_verification_code" string.
 		/// </summary>
-		internal const string sa_error_reason = "sa_error_reason";
+		internal const string wrap_verification_code = "wrap_verification_code";
+
+		/// <summary>
+		/// The "wrap_error_reason" string.
+		/// </summary>
+		internal const string wrap_error_reason = "wrap_error_reason";
 
 		/// <summary>
 		/// The "user_denied" string.
 		/// </summary>
-		internal const string sa_error_reason_denied = "user_denied";
+		internal const string wrap_error_reason_denied = "user_denied";
 
 		/// <summary>
-		/// The "sa_token" string.
+		/// The "wrap_access_token" string.
 		/// </summary>
-		internal const string sa_token = "sa_token";
+		internal const string wrap_access_token = "wrap_access_token";
 
 		/// <summary>
-		/// The "sa_token_expires_in" string.
+		/// The "wrap_refresh_token" string.
 		/// </summary>
-		internal const string sa_token_expires_in = "sa_token_expires_in";
+		internal const string wrap_refresh_token = "wrap_refresh_token";
+
+		/// <summary>
+		/// The "wrap_access_token_expires_in" string.
+		/// </summary>
+		internal const string wrap_access_token_expires_in = "wrap_access_token_expires_in";
 
 		/// <summary>
 		/// The "expired_delegation_code" string.
@@ -78,28 +88,28 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string expired_delegation_code = "expired_delegation_code";
 
 		/// <summary>
-		/// The "sa_username" string.
+		/// The "wrap_username" string.
 		/// </summary>
-		internal const string sa_username = "sa_username";
+		internal const string wrap_username = "wrap_username";
 
 		/// <summary>
-		/// The "sa_password" string.
+		/// The "wrap_password" string.
 		/// </summary>
-		internal const string sa_password = "sa_password";
+		internal const string wrap_password = "wrap_password";
 
 		/// <summary>
-		/// The "sa_name" string.
+		/// The "wrap_name" string.
 		/// </summary>
-		internal const string sa_name = "sa_name";
+		internal const string wrap_name = "wrap_name";
 
 		/// <summary>
-		/// The "sa_SAML" string.
+		/// The "wrap_SAML" string.
 		/// </summary>
-		internal const string sa_saml = "sa_SAML";
+		internal const string wrap_saml = "wrap_SAML";
 
 		/// <summary>
-		/// The "sa_SWT" string.
+		/// The "wrap_SWT" string.
 		/// </summary>
-		internal const string sa_swt = "sa_SWT";
+		internal const string wrap_swt = "wrap_SWT";
 	}
 }

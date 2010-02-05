@@ -14,14 +14,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 	/// <summary>
 	/// The direct response message that may contain the reason the access token 
-	/// was NOT returned from the Token Issuer to the Consumer.
+	/// was NOT returned from the Authorization Server to the Consumer.
 	/// </summary>
 	internal class AccessTokenFailedResponse : MessageBase, IHttpDirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenFailedResponse(AccessTokenWithDelegationCodeRequest request)
+		internal AccessTokenFailedResponse(AccessTokenWithVerificationCodeRequest request)
 			: base(request) {
 		}
 
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// The reason for the failure.  Among other values, it may be <c>null</c>
 		/// or expired_delegation_code.
 		/// </value>
-		[MessagePart(Protocol.sa_error_reason, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.wrap_error_reason, IsRequired = false, AllowEmpty = true)]
 		internal string ErrorReason { get; set; }
 	}
 }

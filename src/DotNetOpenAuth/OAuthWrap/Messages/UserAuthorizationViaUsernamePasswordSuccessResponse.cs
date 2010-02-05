@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A response from the Token Issuer to the Consumer containing a delegation code
+	/// A response from the Authorization Server to the Consumer containing a delegation code
 	/// that the Consumer should use to obtain an access token.
 	/// </summary>
 	internal class UserAuthorizationViaUsernamePasswordSuccessResponse : MessageBase {
@@ -25,13 +25,13 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the delegation code.
+		/// Gets or sets the verification code.
 		/// </summary>
 		/// <value>
-		/// The long-lived credential assigned by the Token Issuer to this Consumer for
+		/// The long-lived credential assigned by the Authorization Server to this Consumer for
 		/// use in accessing the authorizing user's protected resources.
 		/// </value>
-		[MessagePart(Protocol.sa_delegation_code, IsRequired = true, AllowEmpty = true)]
-		internal string DelegationCode { get; set; }
+		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = true)]
+		internal string VerificationCode { get; set; }
 	}
 }

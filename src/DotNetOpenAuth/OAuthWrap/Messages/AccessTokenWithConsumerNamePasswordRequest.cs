@@ -28,14 +28,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the account name.
 		/// </summary>
 		/// <value>The consumer name.</value>
-		[MessagePart(Protocol.sa_name, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.wrap_name, IsRequired = true, AllowEmpty = false)]
 		public string Name { get; set; }
 
 		/// <summary>
 		/// Gets or sets the account password.
 		/// </summary>
 		/// <value>The password.</value>
-		[MessagePart(Protocol.sa_password, IsRequired = true, AllowEmpty = true)]
+		[MessagePart(Protocol.wrap_password, IsRequired = true, AllowEmpty = true)]
 		public string Password { get; set; }
 	}
 }

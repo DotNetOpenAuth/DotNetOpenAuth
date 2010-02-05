@@ -1,60 +1,58 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAuthorizationViaUsernamePasswordRequest.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenWithVerificationCodeRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	/// <summary>
-	/// A request for a delegation code in exchnage for a user's confidential 
-	/// username and password.
+	/// A message sent by the Client directly to the Authorization Server to exchange
+	/// the verification code for an Access Token.
 	/// </summary>
-	/// <remarks>
-	/// After this request has been sent, the consumer application MUST discard
-	/// the confidential user credentials and use the delegation code going forward.
-	/// </remarks>
-	internal class UserAuthorizationViaUsernamePasswordRequest : MessageBase {
+	internal class AccessTokenWithVerificationCodeRequest : MessageBase, IDirectedProtocolMessage {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAuthorizationViaUsernamePasswordRequest"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenWithVerificationCodeRequest"/> class.
 		/// </summary>
+		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="version">The version.</param>
-		internal UserAuthorizationViaUsernamePasswordRequest(Version version)
-			: base(version) {
+		internal AccessTokenWithVerificationCodeRequest(Uri authorizationServer, Version version)
+			: base(version, MessageTransport.Direct, authorizationServer) {
+			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
 		/// <summary>
-		/// Gets or sets the consumer key.
-		/// </summary>
-		/// <value>The consumer key.</value>
+		/// Gets or sets the identifier by which this client is known to the Authorization Server.
+		/// <value>The client identifier.</value>
 		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
 		internal string ClientIdentifier { get; set; }
 
 		/// <summary>
-		/// Gets or sets the consumer secret.
+		/// Gets or sets the client secret.
 		/// </summary>
-		/// <value>The consumer secret.</value>
+		/// <value>The client secret.</value>
 		[MessagePart(Protocol.wrap_client_secret, IsRequired = true, AllowEmpty = false)]
 		internal string ClientSecret { get; set; }
 
 		/// <summary>
-		/// Gets or sets the username.
+		/// Gets or sets the verification code previously communicated to the Client
+		/// in <see cref="UserAuthorizationInUserAgentGrantedResponse.VerificationCode"/>.
 		/// </summary>
-		/// <value>The name of the user.</value>
-		[MessagePart(Protocol.wrap_username, IsRequired = true, AllowEmpty = false)]
-		internal string UserName { get; set; }
+		/// <value>The verification code.</value>
+		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = false)]
+		internal string VerificationCode { get; set; }
 
 		/// <summary>
-		/// Gets or sets the user's password.
+		/// Gets or sets the callback URL used in <see cref="UserAuthorizationInUserAgentRequest.Callback"/>
 		/// </summary>
-		/// <value>The password.</value>
-		[MessagePart(Protocol.wrap_password, IsRequired = true, AllowEmpty = false)]
-		internal string Password { get; set; }
+		/// <value>
+		/// The Callback URL used to obtain the Verification Code.
+		/// </value>
+		[MessagePart(Protocol.wrap_callback, IsRequired = true, AllowEmpty = false)]
+		internal Uri Callback { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

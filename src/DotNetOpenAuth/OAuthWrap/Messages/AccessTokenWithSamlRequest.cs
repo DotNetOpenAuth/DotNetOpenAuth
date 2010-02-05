@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the SAML token.
 		/// </summary>
 		/// <value>A SAML token serialized as an XML document.</value>
-		[MessagePart(Protocol.sa_saml, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.wrap_saml, IsRequired = true, AllowEmpty = false)]
 		public string Saml { get; set; }
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// The spec says that the SWT parameter is required for certain scenarios,
 		/// so we mark it as optional here since the scenario may or may not apply.
 		/// </remarks>
-		[MessagePart(Protocol.sa_swt, IsRequired = false, AllowEmpty = false)]
+		[MessagePart(Protocol.wrap_swt, IsRequired = false, AllowEmpty = false)]
 		public string Swt { get; set; }
 	}
 }

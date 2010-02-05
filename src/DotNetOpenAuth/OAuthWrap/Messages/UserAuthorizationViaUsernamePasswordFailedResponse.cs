@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A response from the Token Issuer to the Consumer to indicate that a
+	/// A response from the Authorization Server to the Consumer to indicate that a
 	/// request for a delegation code failed, probably due to an invalid
 	/// username and password.
 	/// </summary>
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// The reason for the failure.  Among other values, it may be <c>null</c>
 		/// or invalid_user_credentials.
 		/// </value>
-		[MessagePart(Protocol.sa_error_reason, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.wrap_error_reason, IsRequired = false, AllowEmpty = true)]
 		internal string ErrorReason { get; set; }
 	}
 }

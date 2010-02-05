@@ -9,7 +9,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The direct response message that contains the access token from the Token Issuer
+	/// The direct response message that contains the access token from the Authorization Server
 	/// to the Consumer.
 	/// </summary>
 	internal class AccessTokenSuccessResponse : MessageBase {
@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenSuccessResponse(AccessTokenWithDelegationCodeRequest request)
+		internal AccessTokenSuccessResponse(AccessTokenWithVerificationCodeRequest request)
 			: base(request) {
 		}
 
@@ -33,14 +33,21 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The token.</value>
-		[MessagePart(Protocol.sa_token, IsRequired = true, AllowEmpty = false)]
-		internal string Token { get; set; }
+		[MessagePart(Protocol.wrap_access_token, IsRequired = true, AllowEmpty = false)]
+		internal string AccessToken { get; set; }
+
+		/// <summary>
+		/// Gets or sets the refresh token.
+		/// </summary>
+		/// <value>The token.</value>
+		[MessagePart(Protocol.wrap_refresh_token, IsRequired = true, AllowEmpty = false)]
+		internal string RefreshToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets the lifetime of the access token.
 		/// </summary>
 		/// <value>The lifetime.</value>
-		[MessagePart(Protocol.sa_token_expires_in, IsRequired = false, AllowEmpty = false, Encoder = typeof(TimespanSecondsEncoder))]
+		[MessagePart(Protocol.wrap_access_token_expires_in, IsRequired = false, AllowEmpty = false, Encoder = typeof(TimespanSecondsEncoder))]
 		internal TimeSpan? Lifetime { get; set; }
 	}
 }

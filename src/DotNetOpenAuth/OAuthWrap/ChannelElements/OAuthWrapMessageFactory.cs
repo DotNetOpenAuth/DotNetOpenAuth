@@ -37,31 +37,31 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
 			Version version = Protocol.DefaultVersion;
 
-			if (fields.ContainsKey(Protocol.sa_consumer_key) && fields.ContainsKey(Protocol.sa_callback)) {
+			if (fields.ContainsKey(Protocol.wrap_client_id) && fields.ContainsKey(Protocol.wrap_callback)) {
 				return new UserAuthorizationInUserAgentRequest(recipient.Location, version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_consumer_key) && fields.ContainsKey(Protocol.sa_delegation_code)) {
-				return new AccessTokenWithDelegationCodeRequest(recipient.Location, version);
+			if (fields.ContainsKey(Protocol.wrap_client_id) && fields.ContainsKey(Protocol.wrap_verification_code)) {
+				return new AccessTokenWithVerificationCodeRequest(recipient.Location, version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_name)) {
+			if (fields.ContainsKey(Protocol.wrap_name)) {
 				return new AccessTokenWithConsumerNamePasswordRequest(version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_username)) {
+			if (fields.ContainsKey(Protocol.wrap_username)) {
 				return new UserAuthorizationViaUsernamePasswordRequest(version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_saml)) {
+			if (fields.ContainsKey(Protocol.wrap_saml)) {
 				return new AccessTokenWithSamlRequest(version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_delegation_code)) {
+			if (fields.ContainsKey(Protocol.wrap_verification_code)) {
 				return new UserAuthorizationInUserAgentGrantedResponse(recipient.Location, version);
 			}
 
-			if (fields.ContainsKey(Protocol.sa_error_reason)) {
+			if (fields.ContainsKey(Protocol.wrap_error_reason)) {
 				return new UserAuthorizationInUserAgentDeniedResponse(recipient.Location, version);
 			}
 
@@ -81,9 +81,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
 			Version version = Protocol.DefaultVersion;
 
-			var accessTokenRequest = request as AccessTokenWithDelegationCodeRequest;
+			var accessTokenRequest = request as AccessTokenWithVerificationCodeRequest;
 			if (accessTokenRequest != null) {
-				if (fields.ContainsKey(Protocol.sa_token)) {
+				if (fields.ContainsKey(Protocol.wrap_access_token)) {
 					return new AccessTokenSuccessResponse(accessTokenRequest);
 				} else {
 					return new AccessTokenFailedResponse(accessTokenRequest);
@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			var userAuthorization = request as UserAuthorizationViaUsernamePasswordRequest;
 			if (userAuthorization != null) {
-				if (fields.ContainsKey(Protocol.sa_delegation_code)) {
+				if (fields.ContainsKey(Protocol.wrap_verification_code)) {
 					return new UserAuthorizationViaUsernamePasswordSuccessResponse(userAuthorization);
 				} else {
 					return new UserAuthorizationViaUsernamePasswordFailedResponse(userAuthorization);
