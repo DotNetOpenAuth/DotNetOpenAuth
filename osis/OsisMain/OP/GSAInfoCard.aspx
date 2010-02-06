@@ -9,7 +9,7 @@
 				Issuer="" PrivacyUrl="https://test-id.org/OP/PrivacyPolicy.aspx" PrivacyVersion="1">
 				<ClaimsRequested>
 					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
-					<ic:ClaimType Name="http://idmanagement.gov/icam/2009/09/imi_1.0_profile#assuranclevel1" />
+					<ic:ClaimType Name="http://idmanagement.gov/icam/2009/09/imi_1.0_profile#assurancelevel1" />
 				</ClaimsRequested>
 				<UnsupportedTemplate>
 					<p>
