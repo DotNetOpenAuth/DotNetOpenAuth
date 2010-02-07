@@ -1,26 +1,26 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAuthorizationInUserAgentGrantedResponse.cs" company="Andrew Arnott">
+// <copyright file="WebAppSuccessResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
-	using DotNetOpenAuth.Messaging;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// The message sent by the Authorization Server to the Consumer via the user agent
 	/// to indicate that user authorization was granted, and to return the user
 	/// to the Consumer where they started their experience.
 	/// </summary>
-	internal class UserAuthorizationInUserAgentGrantedResponse : MessageBase, IDirectedProtocolMessage {
+	internal class WebAppSuccessResponse : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAuthorizationInUserAgentGrantedResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebAppSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="version">The protocol version.</param>
-		internal UserAuthorizationInUserAgentGrantedResponse(Uri clientCallback, Version version)
+		internal WebAppSuccessResponse(Uri clientCallback, Version version)
 			: base(version, MessageTransport.Indirect, clientCallback) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <value>An opaque value defined by the client.</value>
 		/// <remarks>
-		/// REQUIRED if the Client sent the value in the <see cref="UserAuthorizationRequestInUserAgentRequest"/>.
+		/// REQUIRED if the Client sent the value in the <see cref="WebAppRequest"/>.
 		/// </remarks>
 		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
 		internal string ClientState { get; set; }

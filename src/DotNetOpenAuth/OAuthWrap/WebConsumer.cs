@@ -52,23 +52,23 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// </summary>
 		public string ClientSecret { get; set; }
 
-		public UserAuthorizationInUserAgentRequest PrepareRequestUserAuthorization() {
+		public WebAppRequest PrepareRequestUserAuthorization() {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
-			Contract.Ensures(Contract.Result<UserAuthorizationInUserAgentRequest>() != null);
-			Contract.Ensures(Contract.Result<UserAuthorizationInUserAgentRequest>().ClientIdentifier == this.ClientIdentifier);
+			Contract.Ensures(Contract.Result<WebAppRequest>() != null);
+			Contract.Ensures(Contract.Result<WebAppRequest>().ClientIdentifier == this.ClientIdentifier);
 
 			return this.PrepareRequestUserAuthorization(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
 		}
 
-		public UserAuthorizationInUserAgentRequest PrepareRequestUserAuthorization(Uri callback) {
+		public WebAppRequest PrepareRequestUserAuthorization(Uri callback) {
 			Contract.Requires<ArgumentNullException>(callback != null);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
-			Contract.Ensures(Contract.Result<UserAuthorizationInUserAgentRequest>() != null);
-			Contract.Ensures(Contract.Result<UserAuthorizationInUserAgentRequest>().Callback == callback);
-			Contract.Ensures(Contract.Result<UserAuthorizationInUserAgentRequest>().ClientIdentifier == this.ClientIdentifier);
+			Contract.Ensures(Contract.Result<WebAppRequest>() != null);
+			Contract.Ensures(Contract.Result<WebAppRequest>().Callback == callback);
+			Contract.Ensures(Contract.Result<WebAppRequest>().ClientIdentifier == this.ClientIdentifier);
 
-			var request = new UserAuthorizationInUserAgentRequest(this.TokenIssuer.EndpointUrl, this.TokenIssuer.Version) {
+			var request = new WebAppRequest(this.TokenIssuer.EndpointUrl, this.TokenIssuer.Version) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = callback,
 			};
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			IDirectedProtocolMessage message = this.Channel.ReadFromRequest();
 			if (message != null) {
 				ErrorUtilities.VerifyProtocol(
-					message is UserAuthorizationInUserAgentGrantedResponse || message is UserAuthorizationInUserAgentDeniedResponse,
+					message is WebAppSuccessResponse || message is WebAppFailedResponse,
 					MessagingStrings.UnexpectedMessageReceivedOfMany);
 			}
 			return message;

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAuthorizationViaUsernamePasswordFailedResponse.cs" company="Andrew Arnott">
+// <copyright file="UserNamePasswordFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,12 +17,13 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// request for a delegation code failed, probably due to an invalid
 	/// username and password.
 	/// </summary>
-	internal class UserAuthorizationViaUsernamePasswordFailedResponse : MessageBase, IHttpDirectResponse {
+	internal class UserNamePasswordFailedResponse
+		: MessageBase, IHttpDirectResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAuthorizationViaUsernamePasswordFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="UserNamePasswordFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal UserAuthorizationViaUsernamePasswordFailedResponse(UserAuthorizationViaUsernamePasswordRequest request)
+		internal UserNamePasswordFailedResponse(UserNamePasswordRequest request)
 			: base(request) {
 		}
 
@@ -34,6 +35,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <value><see cref="HttpStatusCode.Unauthorized"/></value>
 		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
 			get { return HttpStatusCode.Unauthorized; }
+		}
+
+		/// <summary>
+		/// Gets the HTTP headers to add to the response.
+		/// </summary>
+		WebHeaderCollection IHttpDirectResponse.Headers {
+			get {
+				return new WebHeaderCollection() {
+					{ HttpResponseHeader.WwwAuthenticate, Protocol.HttpAuthorizationScheme },
+				};
+			}
 		}
 
 		#endregion

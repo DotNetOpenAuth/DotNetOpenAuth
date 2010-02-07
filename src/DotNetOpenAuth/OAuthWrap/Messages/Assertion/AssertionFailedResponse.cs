@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenFailedResponse.cs" company="Andrew Arnott">
+// <copyright file="AssertionFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -13,15 +13,15 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The direct response message that may contain the reason the access token 
-	/// was NOT returned from the Authorization Server to the Consumer.
+	/// A response from the Authorization Server to the Client to indicate that a
+	/// request for an access code failed, probably due to an invalid assertion.
 	/// </summary>
-	internal class AccessTokenFailedResponse : MessageBase, IHttpDirectResponse {
+	internal class AssertionFailedResponse : MessageBase, IHttpDirectResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="AssertionFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenFailedResponse(AccessTokenWithVerificationCodeRequest request)
+		internal AssertionFailedResponse(AssertionRequest request)
 			: base(request) {
 		}
 
@@ -35,16 +35,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			get { return HttpStatusCode.Unauthorized; }
 		}
 
-		#endregion
-
 		/// <summary>
-		/// Gets or sets the error reason.
+		/// Gets the HTTP headers to add to the response.
 		/// </summary>
-		/// <value>
-		/// The reason for the failure.  Among other values, it may be <c>null</c>
-		/// or expired_delegation_code.
-		/// </value>
-		[MessagePart(Protocol.wrap_error_reason, IsRequired = false, AllowEmpty = true)]
-		internal string ErrorReason { get; set; }
+		WebHeaderCollection IHttpDirectResponse.Headers {
+			get {
+				return new WebHeaderCollection() {
+					{ HttpResponseHeader.WwwAuthenticate, Protocol.HttpAuthorizationScheme },
+				};
+			}
+		}
+
+		#endregion
 	}
 }

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenSuccessResponse.cs" company="Andrew Arnott">
+// <copyright file="WebAppRefreshAccessTokenSuccessResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,22 +10,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 	/// <summary>
 	/// The direct response message that contains the access token from the Authorization Server
-	/// to the Consumer.
+	/// to the Client.
 	/// </summary>
-	internal class AccessTokenSuccessResponse : MessageBase {
+	internal class WebAppRefreshAccessTokenSuccessResponse : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebAppRefreshAccessTokenSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenSuccessResponse(AccessTokenWithVerificationCodeRequest request)
-			: base(request) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
-		/// </summary>
-		/// <param name="request">The request.</param>
-		internal AccessTokenSuccessResponse(AccessTokenWithConsumerNamePasswordRequest request)
+		internal WebAppRefreshAccessTokenSuccessResponse(WebAppRefreshAccessTokenRequest request)
 			: base(request) {
 		}
 
@@ -35,13 +27,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <value>The token.</value>
 		[MessagePart(Protocol.wrap_access_token, IsRequired = true, AllowEmpty = false)]
 		internal string AccessToken { get; set; }
-
-		/// <summary>
-		/// Gets or sets the refresh token.
-		/// </summary>
-		/// <value>The token.</value>
-		[MessagePart(Protocol.wrap_refresh_token, IsRequired = true, AllowEmpty = false)]
-		internal string RefreshToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets the lifetime of the access token.

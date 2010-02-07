@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAuthorizationViaUsernamePasswordRequest.cs" company="Andrew Arnott">
+// <copyright file="ClientAccountUsernamePasswordRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,42 +12,29 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A request for a delegation code in exchnage for a user's confidential 
-	/// username and password.
+	/// A request for an access token for a client application that has its
+	/// own (non-user affiliated) client name and password.
 	/// </summary>
 	/// <remarks>
-	/// After this request has been sent, the consumer application MUST discard
-	/// the confidential user credentials and use the delegation code going forward.
+	/// This is somewhat analogous to 2-legged OAuth.
 	/// </remarks>
-	internal class UserAuthorizationViaUsernamePasswordRequest : MessageBase {
+	internal class ClientAccountUsernamePasswordRequest : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAuthorizationViaUsernamePasswordRequest"/> class.
+		/// Initializes a new instance of the <see cref="ClientAccountUsernamePasswordRequest"/> class.
 		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
 		/// <param name="version">The version.</param>
-		internal UserAuthorizationViaUsernamePasswordRequest(Version version)
-			: base(version) {
+		internal ClientAccountUsernamePasswordRequest(Uri authorizationServer, Version version)
+			: base(version, MessageTransport.Direct, authorizationServer) {
+			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
 		/// <summary>
-		/// Gets or sets the consumer key.
+		/// Gets or sets the account name.
 		/// </summary>
-		/// <value>The consumer key.</value>
-		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
-		internal string ClientIdentifier { get; set; }
-
-		/// <summary>
-		/// Gets or sets the consumer secret.
-		/// </summary>
-		/// <value>The consumer secret.</value>
-		[MessagePart(Protocol.wrap_client_secret, IsRequired = true, AllowEmpty = false)]
-		internal string ClientSecret { get; set; }
-
-		/// <summary>
-		/// Gets or sets the username.
-		/// </summary>
-		/// <value>The name of the user.</value>
-		[MessagePart(Protocol.wrap_username, IsRequired = true, AllowEmpty = false)]
-		internal string UserName { get; set; }
+		/// <value>The name on the account.</value>
+		[MessagePart(Protocol.wrap_name, IsRequired = true, AllowEmpty = false)]
+		internal string Name { get; set; }
 
 		/// <summary>
 		/// Gets or sets the user's password.
@@ -55,6 +42,12 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <value>The password.</value>
 		[MessagePart(Protocol.wrap_password, IsRequired = true, AllowEmpty = false)]
 		internal string Password { get; set; }
+
+		/// <summary>
+		/// Gets or sets an optional authorization scope as defined by the Authorization Server.
+		/// </summary>
+		[MessagePart(Protocol.wrap_scope, IsRequired = false, AllowEmpty = true)]
+		internal string Scope { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

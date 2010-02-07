@@ -10,17 +10,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	/// <summary>
-	/// A message sent by the Consumer to the Token Issuer via the user agent
-	/// to get the Token Issuer to obtain authorization from the user and prepare
+	/// A message sent by a web application Client to the AuthorizationServer
+	/// via the user agent to obtain authorization from the user and prepare
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
-	public class UserAuthorizationInUserAgentRequest : MessageBase, IDirectedProtocolMessage {
+	public class WebAppRequest : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAuthorizationInUserAgentRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		public UserAuthorizationInUserAgentRequest(Uri authorizationServer, Version version)
+		public WebAppRequest(Uri authorizationServer, Version version)
 			: base(version, MessageTransport.Indirect, authorizationServer) {
 		}
 

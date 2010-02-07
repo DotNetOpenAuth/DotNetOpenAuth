@@ -284,6 +284,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
+    <Compile Include="Messaging\IHttpDirectResponseContract.cs" />
     <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\IncomingWebResponse.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
@@ -302,6 +303,22 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="OAuthWrap\Messages\Assertion\AssertionRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\Assertion\AssertionFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\Assertion\AssertionSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordCaptchaResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRefreshAccessTokenFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRefreshAccessTokenSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenBadClientResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRefreshAccessTokenRequest.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
@@ -590,18 +607,15 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapMessageFactory.cs" />
     <Compile Include="OAuthWrap\ChannelElements\UriOrOutOfBandEncoding.cs" />
     <Compile Include="OAuthWrap\ConsumerBase.cs" />
-    <Compile Include="OAuthWrap\Messages\AccessTokenFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\AccessTokenSuccessResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\AccessTokenWithConsumerNamePasswordRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\AccessTokenWithSamlRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\MessageBase.cs" />
-    <Compile Include="OAuthWrap\Messages\AccessTokenWithVerificationCodeRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\UserAuthorizationInUserAgentDeniedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\UserAuthorizationInUserAgentRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\UserAuthorizationInUserAgentGrantedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\UserAuthorizationViaUsernamePasswordFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\UserAuthorizationViaUsernamePasswordRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\UserAuthorizationViaUsernamePasswordSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Protocol.cs" />
     <Compile Include="OAuthWrap\SimpleAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -755,6 +769,9 @@ http://opensource.org/licenses/ms-pl.html
       <Install>true</Install>
     </BootstrapperPackage>
     <Content Include="DotNetOpenAuth.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OAuthWrap\Messages\RichApp\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

@@ -1,20 +1,20 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAuthorizationInUserAgentDeniedResponse.cs" company="Andrew Arnott">
+// <copyright file="WebAppFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
-	using DotNetOpenAuth.Messaging;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The message the Authorization Server MAY use to send the user back to the Consumer
+	/// The message the Authorization Server MAY use to send the user back to the Client
 	/// following the user's denial to grant Consumer with authorization of 
 	/// access to requested resources.
 	/// </summary>
-	public class UserAuthorizationInUserAgentDeniedResponse : MessageBase, IDirectedProtocolMessage {
+	public class WebAppFailedResponse : MessageBase {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>
@@ -22,11 +22,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		private const string ErrorReason = Protocol.wrap_error_reason_denied;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAuthorizationInUserAgentDeniedResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebAppFailedResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The recipient of the message.</param>
 		/// <param name="version">The version.</param>
-		internal UserAuthorizationInUserAgentDeniedResponse(Uri clientCallback, Version version) :
+		internal WebAppFailedResponse(Uri clientCallback, Version version) :
 			base(version, MessageTransport.Indirect, clientCallback) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);

@@ -38,31 +38,23 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			Version version = Protocol.DefaultVersion;
 
 			if (fields.ContainsKey(Protocol.wrap_client_id) && fields.ContainsKey(Protocol.wrap_callback)) {
-				return new UserAuthorizationInUserAgentRequest(recipient.Location, version);
+				return new WebAppRequest(recipient.Location, version);
 			}
 
 			if (fields.ContainsKey(Protocol.wrap_client_id) && fields.ContainsKey(Protocol.wrap_verification_code)) {
-				return new AccessTokenWithVerificationCodeRequest(recipient.Location, version);
+				return new WebAppInitialAccessTokenRequest(recipient.Location, version);
 			}
 
 			if (fields.ContainsKey(Protocol.wrap_name)) {
-				return new AccessTokenWithConsumerNamePasswordRequest(version);
+				return new ClientAccountUsernamePasswordRequest(recipient.Location, version);
 			}
 
 			if (fields.ContainsKey(Protocol.wrap_username)) {
-				return new UserAuthorizationViaUsernamePasswordRequest(version);
-			}
-
-			if (fields.ContainsKey(Protocol.wrap_saml)) {
-				return new AccessTokenWithSamlRequest(version);
+				return new UserNamePasswordRequest(recipient.Location, version);
 			}
 
 			if (fields.ContainsKey(Protocol.wrap_verification_code)) {
-				return new UserAuthorizationInUserAgentGrantedResponse(recipient.Location, version);
-			}
-
-			if (fields.ContainsKey(Protocol.wrap_error_reason)) {
-				return new UserAuthorizationInUserAgentDeniedResponse(recipient.Location, version);
+				return new WebAppSuccessResponse(recipient.Location, version);
 			}
 
 			return null;
@@ -81,21 +73,21 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
 			Version version = Protocol.DefaultVersion;
 
-			var accessTokenRequest = request as AccessTokenWithVerificationCodeRequest;
+			var accessTokenRequest = request as WebAppInitialAccessTokenRequest;
 			if (accessTokenRequest != null) {
 				if (fields.ContainsKey(Protocol.wrap_access_token)) {
-					return new AccessTokenSuccessResponse(accessTokenRequest);
+					return new WebAppInitialAccessTokenSuccessResponse(accessTokenRequest);
 				} else {
-					return new AccessTokenFailedResponse(accessTokenRequest);
+					//return new AccessTokenWithVerificationCodeFailedResponse(accessTokenRequest);
 				}
 			}
 
-			var userAuthorization = request as UserAuthorizationViaUsernamePasswordRequest;
+			var userAuthorization = request as UserNamePasswordRequest;
 			if (userAuthorization != null) {
 				if (fields.ContainsKey(Protocol.wrap_verification_code)) {
-					return new UserAuthorizationViaUsernamePasswordSuccessResponse(userAuthorization);
+					return new UserNamePasswordSuccessResponse(userAuthorization);
 				} else {
-					return new UserAuthorizationViaUsernamePasswordFailedResponse(userAuthorization);
+					//return new UserAuthorizationViaUsernamePasswordFailedResponse(userAuthorization);
 				}
 			}
 

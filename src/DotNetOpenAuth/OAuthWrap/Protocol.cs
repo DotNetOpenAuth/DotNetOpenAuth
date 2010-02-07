@@ -58,6 +58,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string wrap_verification_code = "wrap_verification_code";
 
 		/// <summary>
+		/// The "wrap_verification_url" string.
+		/// </summary>
+		internal const string wrap_verification_url = "wrap_verification_url";
+
+		/// <summary>
 		/// The "wrap_error_reason" string.
 		/// </summary>
 		internal const string wrap_error_reason = "wrap_error_reason";
@@ -103,6 +108,16 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string wrap_name = "wrap_name";
 
 		/// <summary>
+		/// The "wrap_assertion_format" string.
+		/// </summary>
+		internal const string wrap_assertion_format = "wrap_assertion_format";
+
+		/// <summary>
+		/// The "wrap_assertion" string.
+		/// </summary>
+		internal const string wrap_assertion = "wrap_assertion";
+
+		/// <summary>
 		/// The "wrap_SAML" string.
 		/// </summary>
 		internal const string wrap_saml = "wrap_SAML";
@@ -111,5 +126,15 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// The "wrap_SWT" string.
 		/// </summary>
 		internal const string wrap_swt = "wrap_SWT";
+
+		/// <summary>
+		/// The "wrap_captcha_url" string.
+		/// </summary>
+		internal const string wrap_captcha_url = "wrap_captcha_url";
+
+		/// <summary>
+		/// The "wrap_captcha_solution" string.
+		/// </summary>
+		internal const string wrap_captcha_solution = "wrap_captcha_solution";
 	}
 }

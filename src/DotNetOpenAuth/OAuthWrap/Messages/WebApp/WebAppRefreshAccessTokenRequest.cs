@@ -1,58 +1,52 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenWithVerificationCodeRequest.cs" company="Andrew Arnott">
+// <copyright file="WebAppRefreshAccessTokenRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	/// <summary>
-	/// A message sent by the Client directly to the Authorization Server to exchange
-	/// the verification code for an Access Token.
+	/// A request from the Client to the Authorization Server to obtain 
+	/// a new Access Token using a Refresh Token.
 	/// </summary>
-	internal class AccessTokenWithVerificationCodeRequest : MessageBase, IDirectedProtocolMessage {
+	internal class WebAppRefreshAccessTokenRequest : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenWithVerificationCodeRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebAppRefreshAccessTokenRequest"/> class.
 		/// </summary>
-		/// <param name="authorizationServer">The token issuer.</param>
+		/// <param name="authorizationServer">The authorization server.</param>
 		/// <param name="version">The version.</param>
-		internal AccessTokenWithVerificationCodeRequest(Uri authorizationServer, Version version)
-			: base(version, MessageTransport.Direct, authorizationServer) {
-			this.HttpMethods = HttpDeliveryMethods.PostRequest;
+		internal WebAppRefreshAccessTokenRequest(Uri authorizationServer, Version version)
+			: base(version, Messaging.MessageTransport.Direct, authorizationServer) {
+				this.HttpMethods = Messaging.HttpDeliveryMethods.PostRequest;
 		}
 
 		/// <summary>
-		/// Gets or sets the identifier by which this client is known to the Authorization Server.
+		/// Gets or sets the client identifier previously obtained from the Authorization Server.
+		/// </summary>
 		/// <value>The client identifier.</value>
 		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
 		internal string ClientIdentifier { get; set; }
 
 		/// <summary>
-		/// Gets or sets the client secret.
+		/// Gets or sets the client secret previously obtained from the Authorization Server.
 		/// </summary>
 		/// <value>The client secret.</value>
 		[MessagePart(Protocol.wrap_client_secret, IsRequired = true, AllowEmpty = false)]
 		internal string ClientSecret { get; set; }
 
 		/// <summary>
-		/// Gets or sets the verification code previously communicated to the Client
-		/// in <see cref="UserAuthorizationInUserAgentGrantedResponse.VerificationCode"/>.
+		/// Gets or sets the refresh token that was received in
+		/// <see cref="UserNamePasswordSuccessResponse.RefreshToken"/>.
 		/// </summary>
-		/// <value>The verification code.</value>
-		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = false)]
-		internal string VerificationCode { get; set; }
-
-		/// <summary>
-		/// Gets or sets the callback URL used in <see cref="UserAuthorizationInUserAgentRequest.Callback"/>
-		/// </summary>
-		/// <value>
-		/// The Callback URL used to obtain the Verification Code.
-		/// </value>
-		[MessagePart(Protocol.wrap_callback, IsRequired = true, AllowEmpty = false)]
-		internal Uri Callback { get; set; }
+		/// <value>The refresh token.</value>
+		[MessagePart(Protocol.wrap_refresh_token, IsRequired = true, AllowEmpty = false)]
+		internal string RefreshToken { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
