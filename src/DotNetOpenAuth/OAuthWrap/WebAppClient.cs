@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebConsumer.cs" company="Andrew Arnott">
+// <copyright file="WebAppClient.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -7,38 +7,38 @@
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.Messages;
-	using System.Diagnostics.Contracts;
-	using System.Web;
 
 	/// <summary>
 	/// An OAuth WRAP consumer designed for web applications.
 	/// </summary>
-	public class WebConsumer : ConsumerBase {
+	public class WebAppClient : ClientBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebConsumer"/> class.
+		/// Initializes a new instance of the <see cref="WebAppClient"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
-		public WebConsumer(AuthorizationServerDescription authorizationServer)
+		public WebAppClient(AuthorizationServerDescription authorizationServer)
 			: base(authorizationServer) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebConsumer"/> class.
+		/// Initializes a new instance of the <see cref="WebAppClient"/> class.
 		/// </summary>
 		/// <param name="tokenIssuerEndpoint">The token issuer endpoint.</param>
-		public WebConsumer(Uri tokenIssuerEndpoint)
+		public WebAppClient(Uri tokenIssuerEndpoint)
 			: base(tokenIssuerEndpoint) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebConsumer"/> class.
+		/// Initializes a new instance of the <see cref="WebAppClient"/> class.
 		/// </summary>
 		/// <param name="tokenIssuerEndpoint">The token issuer endpoint.</param>
-		public WebConsumer(string tokenIssuerEndpoint)
+		public WebAppClient(string tokenIssuerEndpoint)
 			: base(tokenIssuerEndpoint) {
 		}
 
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Ensures(Contract.Result<WebAppRequest>().Callback == callback);
 			Contract.Ensures(Contract.Result<WebAppRequest>().ClientIdentifier == this.ClientIdentifier);
 
-			var request = new WebAppRequest(this.TokenIssuer.EndpointUrl, this.TokenIssuer.Version) {
+			var request = new WebAppRequest(this.AuthorizationServer.EndpointUrl, this.AuthorizationServer.Version) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = callback,
 			};

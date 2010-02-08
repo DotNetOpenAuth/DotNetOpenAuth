@@ -614,7 +614,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapChannel.cs" />
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapMessageFactory.cs" />
     <Compile Include="OAuthWrap\ChannelElements\UriOrOutOfBandEncoding.cs" />
-    <Compile Include="OAuthWrap\ConsumerBase.cs" />
+    <Compile Include="OAuthWrap\ClientBase.cs" />
     <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\MessageBase.cs" />
     <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenRequest.cs" />
@@ -631,7 +631,7 @@ http://opensource.org/licenses/ms-pl.html
       <DependentUpon>SimpleAuthStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuthWrap\AuthorizationServerDescription.cs" />
-    <Compile Include="OAuthWrap\WebConsumer.cs" />
+    <Compile Include="OAuthWrap\WebAppClient.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="OAuth\Protocol.cs" />
     <Compile Include="OAuth\ServiceProvider.cs" />

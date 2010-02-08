@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ConsumerBase.cs" company="Andrew Arnott">
+// <copyright file="ClientBase.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,37 +15,37 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// <summary>
 	/// A base class for common OAuth WRAP Consumer behaviors.
 	/// </summary>
-	public class ConsumerBase {
+	public class ClientBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
+		/// Initializes a new instance of the <see cref="ClientBase"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
-		protected ConsumerBase(AuthorizationServerDescription authorizationServer) {
+		protected ClientBase(AuthorizationServerDescription authorizationServer) {
 			ErrorUtilities.VerifyArgumentNotNull(authorizationServer, "authorizationServer");
-			this.TokenIssuer = authorizationServer;
+			this.AuthorizationServer = authorizationServer;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
+		/// Initializes a new instance of the <see cref="ClientBase"/> class.
 		/// </summary>
-		/// <param name="tokenIssuerEndpoint">The token issuer endpoint.</param>
-		protected ConsumerBase(Uri tokenIssuerEndpoint)
-			: this(new AuthorizationServerDescription(tokenIssuerEndpoint)) {
+		/// <param name="authorizationServer">The token issuer endpoint.</param>
+		protected ClientBase(Uri authorizationServer)
+			: this(new AuthorizationServerDescription(authorizationServer)) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ConsumerBase"/> class.
+		/// Initializes a new instance of the <see cref="ClientBase"/> class.
 		/// </summary>
-		/// <param name="tokenIssuerEndpoint">The token issuer endpoint.</param>
-		protected ConsumerBase(string tokenIssuerEndpoint)
-			: this(new Uri(tokenIssuerEndpoint)) {
+		/// <param name="authorizationServer">The token issuer endpoint.</param>
+		protected ClientBase(string authorizationServer)
+			: this(new Uri(authorizationServer)) {
 		}
 
 		/// <summary>
 		/// Gets the token issuer.
 		/// </summary>
 		/// <value>The token issuer.</value>
-		public AuthorizationServerDescription TokenIssuer { get; private set; }
+		public AuthorizationServerDescription AuthorizationServer { get; private set; }
 
 		/// <summary>
 		/// Gets the channel.

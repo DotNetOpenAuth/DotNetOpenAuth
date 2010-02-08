@@ -8,9 +8,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using System.Net;
 
 	/// <summary>
 	/// A response from the Authorization Server to the client indicating that the user

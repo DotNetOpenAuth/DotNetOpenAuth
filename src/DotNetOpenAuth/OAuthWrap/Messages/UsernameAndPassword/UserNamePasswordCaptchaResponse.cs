@@ -27,10 +27,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 		#region IHttpDirectResponse Members
 
+		/// <summary>
+		/// Gets the HTTP status code that the direct response should be sent with.
+		/// </summary>
 		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
 			get { return HttpStatusCode.BadRequest; }
 		}
 
+		/// <summary>
+		/// Gets the HTTP headers to add to the response.
+		/// </summary>
+		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
 		WebHeaderCollection IHttpDirectResponse.Headers {
 			get { return new WebHeaderCollection(); }
 		}

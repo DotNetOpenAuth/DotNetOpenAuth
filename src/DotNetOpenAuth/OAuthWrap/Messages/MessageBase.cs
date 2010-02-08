@@ -7,8 +7,8 @@
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Collections.Generic;
-	using DotNetOpenAuth.Messaging;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A common message base class for OAuth WRAP messages.

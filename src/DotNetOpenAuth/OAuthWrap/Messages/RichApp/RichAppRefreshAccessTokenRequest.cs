@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// A message from the Client to the Authorization Server requesting a new Access Token.
+	/// </summary>
 	internal class RichAppRefreshAccessTokenRequest : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RichAppRefreshAccessTokenRequest"/> class.

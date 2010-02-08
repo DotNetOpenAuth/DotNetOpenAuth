@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// A request from a Client to an Authorization Server with some assertion for an access token.
+	/// </summary>
 	internal class AssertionRequest : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssertionRequest"/> class.

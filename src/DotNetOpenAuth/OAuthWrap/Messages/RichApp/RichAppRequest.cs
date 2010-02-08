@@ -11,6 +11,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// A request from a rich app Client to an Authorization Server requested 
+	/// authorization to access user Protected Data.
+	/// </summary>
 	internal class RichAppRequest : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RichAppRequest"/> class.
