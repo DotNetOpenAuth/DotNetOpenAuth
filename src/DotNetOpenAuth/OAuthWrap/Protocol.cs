@@ -136,5 +136,10 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// The "wrap_captcha_solution" string.
 		/// </summary>
 		internal const string wrap_captcha_solution = "wrap_captcha_solution";
+
+		/// <summary>
+		/// The "user_denied" string.
+		/// </summary>
+		internal const string user_denied = "user_denied";
 	}
 }

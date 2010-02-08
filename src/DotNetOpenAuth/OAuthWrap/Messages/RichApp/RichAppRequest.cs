@@ -1,32 +1,30 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAuthorizationInUserAgentRequest.cs" company="Andrew Arnott">
+// <copyright file="RichAppRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuthWrap.Messages {
+namespace DotNetOpenAuth.OAuthWrap.Messages.RichApp {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
-	/// <summary>
-	/// A message sent by a web application Client to the AuthorizationServer
-	/// via the user agent to obtain authorization from the user and prepare
-	/// to issue an access token to the Consumer if permission is granted.
-	/// </summary>
-	internal class WebAppRequest : MessageBase {
+	internal class RichAppRequest : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
+		/// Initializes a new instance of the <see cref="RichAppRequest"/> class.
 		/// </summary>
-		/// <param name="authorizationServer">The token issuer URL to direct the user to.</param>
-		/// <param name="version">The protocol version.</param>
-		internal WebAppRequest(Uri authorizationServer, Version version)
+		/// <param name="authorizationServer">The authorization server.</param>
+		/// <param name="version">The version.</param>
+		internal RichAppRequest(Uri authorizationServer, Version version)
 			: base(version, MessageTransport.Indirect, authorizationServer) {
 		}
 
 		/// <summary>
-		/// Gets or sets the identifier by which this client is known to the Authorization Server.
+		/// Gets or sets the client identifier previously obtained from the Authorization Server.
 		/// </summary>
+		/// <value>The client identifier.</value>
 		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
 		internal string ClientIdentifier { get; set; }
 
@@ -41,7 +39,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Authorization Servers MAY require that the wrap_callback URL match the previously
 		/// registered value for the Client Identifier.
 		/// </remarks>
-		[MessagePart(Protocol.wrap_callback, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.wrap_callback, IsRequired = false, AllowEmpty = false)]
 		internal Uri Callback { get; set; }
 
 		/// <summary>

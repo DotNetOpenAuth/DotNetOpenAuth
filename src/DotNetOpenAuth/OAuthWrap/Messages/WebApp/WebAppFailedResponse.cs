@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// following the user's denial to grant Consumer with authorization of 
 	/// access to requested resources.
 	/// </summary>
-	public class WebAppFailedResponse : MessageBase {
+	internal class WebAppFailedResponse : MessageBase {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>
@@ -42,6 +42,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// If this value is present, the Authorization Server MUST return it to the Client's callback URL.
 		/// </remarks>
 		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
-		public string ClientState { get; set; }
+		internal string ClientState { get; set; }
 	}
 }
