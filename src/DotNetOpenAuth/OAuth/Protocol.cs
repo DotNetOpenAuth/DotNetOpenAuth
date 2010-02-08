@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Gets the version used to represent OAuth 1.0a.
+		/// Gets the OAuth version this instance represents.
 		/// </summary>
 		internal Version Version { get; private set; }
 
