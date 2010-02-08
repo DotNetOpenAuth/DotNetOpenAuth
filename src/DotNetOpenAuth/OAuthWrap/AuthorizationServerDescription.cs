@@ -18,28 +18,47 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// Initializes a new instance of the <see cref="AuthorizationServerDescription"/> class.
 		/// </summary>
 		public AuthorizationServerDescription() {
-			this.Version = Protocol.DefaultVersion;
+			this.ProtocolVersion = Protocol.Default.ProtocolVersion;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthorizationServerDescription"/> class.
+		/// Gets or sets the Authorization Server URL at which an Access Token is requested by the Client.
+		/// A refresh token may also be returned to the Client.
 		/// </summary>
-		/// <param name="endpointUrl">The endpoint URL of the Authorization Server.</param>
-		public AuthorizationServerDescription(Uri endpointUrl)
-			: this() {
-			this.EndpointUrl = endpointUrl;
-		}
+		/// <value>An HTTPS URL.</value>
+		/// <remarks>
+		/// Messages sent to this URL must always be sent by the POST HTTP method.
+		/// </remarks>
+		public Uri AccessTokenEndpoint { get; set; }
 
 		/// <summary>
-		/// Gets or sets the endpoint URL of the Authorization Server.
+		/// Gets or sets the Authorization Server URL at which a Refresh Token is presented in exchange
+		/// for a new Access Token.
 		/// </summary>
-		/// <value>The endpoint URL.</value>
-		public Uri EndpointUrl { get; set; }
+		/// <value>An HTTPS URL.</value>
+		/// <remarks>
+		/// Messages sent to this URL must always be sent by the POST HTTP method.
+		/// </remarks>
+		public Uri RefreshTokenEndpoint { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Authorization Server URL where the Client (re)directs the User
+		/// to make an authorization request.
+		/// </summary>
+		/// <value>An HTTP or HTTPS URL.</value>
+		public Uri UserAuthorizationEndpoint { get; set; }
+
+		/// <summary>
+		/// Gets or sets the OAuth WRAP version supported by the Authorization Server.
+		/// </summary>
+		public ProtocolVersion ProtocolVersion { get; set; }
 
 		/// <summary>
 		/// Gets or sets the version of the OAuth WRAP protocol to use with this Authorization Server.
 		/// </summary>
 		/// <value>The version.</value>
-		public Version Version { get; set; }
+		internal Version Version {
+			get { return Protocol.Lookup(this.ProtocolVersion).Version; }
+		}
 	}
 }

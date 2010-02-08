@@ -7,21 +7,22 @@
 
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
+	using System.Collections.Generic;
+
+	/// <summary>
+	/// An enumeration of the OAuth WRAP protocol versions supported by this library.
+	/// </summary>
+	public enum ProtocolVersion {
+		/// <summary>
+		/// The OAuth WRAP 1.0 specification.
+		/// </summary>
+		V10,
+	}
 
 	/// <summary>
 	/// Protocol constants for OAuth WRAP.
 	/// </summary>
 	internal class Protocol {
-		/// <summary>
-		/// The default (latest) version of the OAuth WRAP protocol.
-		/// </summary>
-		internal static readonly Version DefaultVersion = V10;
-
-		/// <summary>
-		/// The initial (1.0) version of OAuth WRAP.
-		/// </summary>
-		internal static readonly Version V10 = new Version(1, 0);
-
 		/// <summary>
 		/// The HTTP authorization scheme "WRAP";
 		/// </summary>
@@ -136,5 +137,47 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// The "user_denied" string.
 		/// </summary>
 		internal const string user_denied = "user_denied";
+
+		/// <summary>
+		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0 of the protocol.
+		/// </summary>
+		internal static readonly Protocol V10 = new Protocol {
+			Version = new Version(1, 0),
+			ProtocolVersion = ProtocolVersion.V10,
+		};
+
+		/// <summary>
+		/// A list of all supported OAuth versions, in order starting from newest version.
+		/// </summary>
+		internal static readonly List<Protocol> AllVersions = new List<Protocol>() { V10 };
+
+		/// <summary>
+		/// The default (or most recent) supported version of the OpenID protocol.
+		/// </summary>
+		internal static readonly Protocol Default = AllVersions[0];
+
+		/// <summary>
+		/// Gets or sets the OAuth WRAP version represented by this instance.
+		/// </summary>
+		/// <value>The version.</value>
+		internal Version Version { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the OAuth WRAP version represented by this instance.
+		/// </summary>
+		/// <value>The protocol version.</value>
+		internal ProtocolVersion ProtocolVersion { get; private set; }
+
+		/// <summary>
+		/// Gets the OAuth Protocol instance to use for the given version.
+		/// </summary>
+		/// <param name="version">The OAuth version to get.</param>
+		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
+		public static Protocol Lookup(ProtocolVersion version) {
+			switch (version) {
+				case ProtocolVersion.V10: return Protocol.V10;
+				default: throw new ArgumentOutOfRangeException("version");
+			}
+		}
 	}
 }
