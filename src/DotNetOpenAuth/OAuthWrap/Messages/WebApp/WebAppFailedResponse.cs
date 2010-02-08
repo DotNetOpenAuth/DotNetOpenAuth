@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>
 		[MessagePart(Protocol.wrap_error_reason, IsRequired = true)]
-		private const string ErrorReason = Protocol.wrap_error_reason_denied;
+		private const string ErrorReason = Protocol.user_denied;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppFailedResponse"/> class.

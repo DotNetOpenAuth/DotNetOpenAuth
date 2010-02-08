@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuthWrap.Messages.RichApp {
+namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;

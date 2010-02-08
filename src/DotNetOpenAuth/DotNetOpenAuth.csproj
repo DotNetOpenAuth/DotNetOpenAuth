@@ -316,6 +316,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppRefreshAccessTokenSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UnauthorizedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenRequest.cs" />

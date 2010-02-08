@@ -68,11 +68,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string wrap_error_reason = "wrap_error_reason";
 
 		/// <summary>
-		/// The "user_denied" string.
-		/// </summary>
-		internal const string wrap_error_reason_denied = "user_denied";
-
-		/// <summary>
 		/// The "wrap_access_token" string.
 		/// </summary>
 		internal const string wrap_access_token = "wrap_access_token";
