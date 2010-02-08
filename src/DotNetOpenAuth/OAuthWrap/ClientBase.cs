@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public AuthorizationServerDescription AuthorizationServer { get; private set; }
 
 		/// <summary>
-		/// Gets the channel.
+		/// Gets the OAuth WRAP channel.
 		/// </summary>
 		/// <value>The channel.</value>
 		public Channel Channel { get; private set; }
@@ -48,10 +48,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public static void AuthorizeRequest(HttpWebRequest request, string accessToken) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
-			request.Headers[HttpRequestHeader.Authorization] = string.Format(
-				CultureInfo.InvariantCulture,
-				Protocol.HttpAuthorizationHeaderFormat,
-				accessToken);
+			WrapUtilities.AuthorizeWithOAuthWrap(request, accessToken);
 		}
 	}
 }
