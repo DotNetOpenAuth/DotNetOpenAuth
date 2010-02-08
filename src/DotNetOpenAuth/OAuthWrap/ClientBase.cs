@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
@@ -21,24 +23,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
 		protected ClientBase(AuthorizationServerDescription authorizationServer) {
-			ErrorUtilities.VerifyArgumentNotNull(authorizationServer, "authorizationServer");
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			this.AuthorizationServer = authorizationServer;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientBase"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The token issuer endpoint.</param>
-		protected ClientBase(Uri authorizationServer)
-			: this(new AuthorizationServerDescription(authorizationServer)) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientBase"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The token issuer endpoint.</param>
-		protected ClientBase(string authorizationServer)
-			: this(new Uri(authorizationServer)) {
 		}
 
 		/// <summary>
@@ -60,8 +46,12 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// <param name="request">The request for protected resources from the service provider.</param>
 		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
 		public static void AuthorizeRequest(HttpWebRequest request, string accessToken) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			request.Headers[HttpRequestHeader.Authorization] = Protocol.HttpAuthorizationScheme + " " + accessToken;
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
+			request.Headers[HttpRequestHeader.Authorization] = string.Format(
+				CultureInfo.InvariantCulture,
+				Protocol.HttpAuthorizationHeaderFormat,
+				accessToken);
 		}
 	}
 }

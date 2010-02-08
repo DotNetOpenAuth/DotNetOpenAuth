@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public ProtocolVersion ProtocolVersion { get; set; }
 
 		/// <summary>
-		/// Gets or sets the version of the OAuth WRAP protocol to use with this Authorization Server.
+		/// Gets the version of the OAuth WRAP protocol to use with this Authorization Server.
 		/// </summary>
 		/// <value>The version.</value>
 		internal Version Version {

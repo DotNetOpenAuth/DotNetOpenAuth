@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		}
 
 		public IDirectedProtocolMessage ProcessUserAuthorization(HttpRequestInfo request) {
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 			IDirectedProtocolMessage message = this.Channel.ReadFromRequest();
 			if (message != null) {
 				ErrorUtilities.VerifyProtocol(
