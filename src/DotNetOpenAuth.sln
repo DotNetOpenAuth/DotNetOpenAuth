@@ -13,10 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F-24F4-4136-8741-6063D0D7A031}"
 	ProjectSection(SolutionItems) = preProject
+		..\doc\specs\draft-hardt-oauth-01.htm = ..\doc\specs\draft-hardt-oauth-01.htm
 		..\doc\specs\ICAM_OpenID20Profile.pdf = ..\doc\specs\ICAM_OpenID20Profile.pdf
 		..\doc\specs\OAuth Core 1.0.htm = ..\doc\specs\OAuth Core 1.0.htm
 		..\doc\specs\OAuth Core 1.0a (Draft 3).htm = ..\doc\specs\OAuth Core 1.0a (Draft 3).htm
-		..\doc\specs\OAuthWRAP-v0.9.7.2.pdf = ..\doc\specs\OAuthWRAP-v0.9.7.2.pdf
 		..\doc\specs\OpenID OAuth Extension.htm = ..\doc\specs\OpenID OAuth Extension.htm
 		..\doc\specs\openid-attribute-exchange-1_0.html = ..\doc\specs\openid-attribute-exchange-1_0.html
 		..\doc\specs\openid-authentication-1_1.html = ..\doc\specs\openid-authentication-1_1.html
