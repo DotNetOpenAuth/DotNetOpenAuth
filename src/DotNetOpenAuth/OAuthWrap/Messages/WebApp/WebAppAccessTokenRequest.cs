@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppInitialAccessTokenRequest.cs" company="Andrew Arnott">
+// <copyright file="WebAppAccessTokenRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A message sent by the Client directly to the Authorization Server to exchange
@@ -16,15 +17,26 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// Used by the Web App (and Rich App?) profiles.
 	/// </remarks>
-	internal class WebAppInitialAccessTokenRequest : MessageBase {
+	internal class WebAppAccessTokenRequest : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppInitialAccessTokenRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebAppAccessTokenRequest"/> class.
 		/// </summary>
-		/// <param name="authorizationServer">The token issuer.</param>
+		/// <param name="accessTokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
-		internal WebAppInitialAccessTokenRequest(Uri authorizationServer, Version version)
-			: base(version, MessageTransport.Direct, authorizationServer) {
+		internal WebAppAccessTokenRequest(Uri accessTokenEndpoint, Version version)
+			: base(version, MessageTransport.Direct, accessTokenEndpoint) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebAppAccessTokenRequest"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		internal WebAppAccessTokenRequest(AuthorizationServerDescription authorizationServer)
+			: this(authorizationServer.AccessTokenEndpoint, authorizationServer.Version) {
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
+			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
+			Contract.Requires<ArgumentException>(authorizationServer.AccessTokenEndpoint != null);
 		}
 
 		/// <summary>
@@ -72,7 +84,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
-			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), SimpleAuthStrings.HttpsRequired);
+			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthWrapStrings.HttpsRequired);
 		}
 	}
 }

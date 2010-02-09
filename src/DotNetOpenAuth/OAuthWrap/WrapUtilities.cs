@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// </summary>
 	public static class WrapUtilities {
 		/// <summary>
-		/// Authorizes an HTTP request using an OAuth WRAP access token.
+		/// Authorizes an HTTP request using an OAuth WRAP access token in an HTTP Authorization header.
 		/// </summary>
 		/// <param name="request">The request to authorize.</param>
 		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>

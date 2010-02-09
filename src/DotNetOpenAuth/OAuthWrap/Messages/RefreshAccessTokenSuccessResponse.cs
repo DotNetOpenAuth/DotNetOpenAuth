@@ -15,12 +15,15 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// A response from the Authorization Server to the Consumer containing a delegation code
 	/// that the Consumer should use to obtain an access token.
 	/// </summary>
-	internal class UserNamePasswordRefreshAccessTokenSuccessResponse : MessageBase {
+	/// <remarks>
+	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
+	/// </remarks>
+	internal class RefreshAccessTokenSuccessResponse : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserNamePasswordRefreshAccessTokenSuccessResponse"/> class.
+		/// Initializes a new instance of the <see cref="RefreshAccessTokenSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal UserNamePasswordRefreshAccessTokenSuccessResponse(UserNamePasswordRefreshAccessTokenRequest request)
+		internal RefreshAccessTokenSuccessResponse(RefreshAccessTokenRequest request)
 			: base(request) {
 		}
 

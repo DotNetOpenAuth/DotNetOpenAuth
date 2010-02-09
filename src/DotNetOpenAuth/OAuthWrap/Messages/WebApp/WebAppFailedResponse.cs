@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// following the user's denial to grant Consumer with authorization of 
 	/// access to requested resources.
 	/// </summary>
-	internal class WebAppFailedResponse : MessageBase {
+	internal class WebAppFailedResponse : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>

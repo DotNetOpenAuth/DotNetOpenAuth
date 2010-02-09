@@ -24,6 +24,13 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Gets or sets the refresh token.
+		/// </summary>
+		/// <value>The token.</value>
+		[MessagePart(Protocol.wrap_refresh_token, IsRequired = true, AllowEmpty = false)]
+		internal string RefreshToken { get; set; }
+
+		/// <summary>
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>

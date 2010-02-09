@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppInitialAccessTokenFailedResponse.cs" company="Andrew Arnott">
+// <copyright file="WebAppAccessTokenFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,15 +14,15 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 	/// <summary>
 	/// A response from the Authorization Server to the Client in the event
-	/// that the <see cref="WebAppInitialAccessTokenRequest"/> message had an
+	/// that the <see cref="WebAppAccessTokenRequest"/> message had an
 	/// invalid calback URL or verification code.
 	/// </summary>
-	internal class WebAppInitialAccessTokenFailedResponse : MessageBase, IHttpDirectResponse {
+	internal class WebAppAccessTokenFailedResponse : MessageBase, IHttpDirectResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppInitialAccessTokenFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebAppAccessTokenFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal WebAppInitialAccessTokenFailedResponse(WebAppInitialAccessTokenRequest request)
+		internal WebAppAccessTokenFailedResponse(WebAppAccessTokenRequest request)
 			: base(request) {
 		}
 

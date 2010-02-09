@@ -303,30 +303,28 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="OAuthWrap\IClientTokenManager.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordRequest.cs" />
     <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\IMessageWithClientState.cs" />
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\RichApp\RichAppRefreshAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppRequest.cs" />
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppResponse.cs" />
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\RichApp\RichAppRefreshAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UnauthorizedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenSuccessResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRefreshAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\RefreshAccessTokenFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\RefreshAccessTokenSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\RefreshAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordCaptchaResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRefreshAccessTokenFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRefreshAccessTokenSuccessResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenBadClientResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRefreshAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenBadClientResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenFailedResponse.cs" />
+    <Compile Include="OAuthWrap\WrapUtilities.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
@@ -614,9 +612,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapChannel.cs" />
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapMessageFactory.cs" />
     <Compile Include="OAuthWrap\ClientBase.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\MessageBase.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppInitialAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\WebApp\WebAppFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\WebApp\WebAppRequest.cs" />
     <Compile Include="OAuthWrap\Messages\WebApp\WebAppSuccessResponse.cs" />
@@ -624,10 +622,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRequest.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Protocol.cs" />
-    <Compile Include="OAuthWrap\SimpleAuthStrings.Designer.cs">
+    <Compile Include="OAuthWrap\OAuthWrapStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>SimpleAuthStrings.resx</DependentUpon>
+      <DependentUpon>OAuthWrapStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuthWrap\AuthorizationServerDescription.cs" />
     <Compile Include="OAuthWrap\WebAppClient.cs" />
@@ -743,9 +741,9 @@ http://opensource.org/licenses/ms-pl.html
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js">
       <Copyright>$(StandardCopyright)</Copyright>
     </EmbeddedResource>
-    <EmbeddedResource Include="OAuthWrap\SimpleAuthStrings.resx">
+    <EmbeddedResource Include="OAuthWrap\OAuthWrapStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SimpleAuthStrings.Designer.cs</LastGenOutput>
+      <LastGenOutput>OAuthWrapStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings.sr.resx" />
     <EmbeddedResource Include="Xrds\XrdsStrings.sr.resx" />

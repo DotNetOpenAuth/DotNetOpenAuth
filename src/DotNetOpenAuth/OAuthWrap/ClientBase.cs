@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public Channel Channel { get; private set; }
 
 		/// <summary>
-		/// Adds the necessary HTTP header to an HTTP request for protected resources
+		/// Adds the necessary HTTP Authorization header to an HTTP request for protected resources
 		/// so that the Service Provider will allow the request through.
 		/// </summary>
 		/// <param name="request">The request for protected resources from the service provider.</param>

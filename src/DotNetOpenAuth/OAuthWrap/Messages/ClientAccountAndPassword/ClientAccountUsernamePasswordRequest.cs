@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
-			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), SimpleAuthStrings.HttpsRequired);
+			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthWrapStrings.HttpsRequired);
 		}
 	}
 }

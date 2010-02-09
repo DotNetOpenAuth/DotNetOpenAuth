@@ -8,20 +8,34 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A message sent by a web application Client to the AuthorizationServer
 	/// via the user agent to obtain authorization from the user and prepare
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
-	internal class WebAppRequest : MessageBase {
+	internal class WebAppRequest : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
 		/// </summary>
-		/// <param name="authorizationServer">The token issuer URL to direct the user to.</param>
+		/// <param name="userAuthorizationEndpoint">The Authorization Server's user authorization URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		internal WebAppRequest(Uri authorizationServer, Version version)
-			: base(version, MessageTransport.Indirect, authorizationServer) {
+		internal WebAppRequest(Uri userAuthorizationEndpoint, Version version)
+			: base(version, MessageTransport.Indirect, userAuthorizationEndpoint) {
+			Contract.Requires<ArgumentNullException>(userAuthorizationEndpoint != null);
+			Contract.Requires<ArgumentNullException>(version != null);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		internal WebAppRequest(AuthorizationServerDescription authorizationServer)
+			: this(authorizationServer.UserAuthorizationEndpoint, authorizationServer.Version) {
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
+			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
+			Contract.Requires<ArgumentException>(authorizationServer.UserAuthorizationEndpoint != null);
 		}
 
 		/// <summary>

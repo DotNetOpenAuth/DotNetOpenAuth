@@ -13,17 +13,20 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 	/// <summary>
 	/// A request from the client to the authorization server for a new access token
-	/// after a previously supplied access token has expired.
+	/// using a refresh token, after a previously supplied access token has expired.
 	/// </summary>
-	internal class UserNamePasswordRefreshAccessTokenRequest : MessageBase {
+	/// <remarks>
+	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
+	/// </remarks>
+	internal class RefreshAccessTokenRequest : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserNamePasswordRefreshAccessTokenRequest"/> class.
+		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
 		/// </summary>
-		/// <param name="authorizationServer">The authorization server.</param>
+		/// <param name="refreshTokenEndpoint">The authorization server's Refresh Token endpoint.</param>
 		/// <param name="version">The version.</param>
-		internal UserNamePasswordRefreshAccessTokenRequest(Uri authorizationServer, Version version)
-			: base(version, MessageTransport.Direct, authorizationServer) {
-				this.HttpMethods = HttpDeliveryMethods.PostRequest;
+		internal RefreshAccessTokenRequest(Uri refreshTokenEndpoint, Version version)
+			: base(version, MessageTransport.Direct, refreshTokenEndpoint) {
+			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
 		/// <summary>
@@ -48,7 +51,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
-			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), SimpleAuthStrings.HttpsRequired);
+			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthWrapStrings.HttpsRequired);
 		}
 	}
 }

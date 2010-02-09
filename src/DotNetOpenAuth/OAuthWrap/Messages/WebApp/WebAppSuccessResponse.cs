@@ -10,11 +10,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The message sent by the Authorization Server to the Consumer via the user agent
+	/// The message sent by the Authorization Server to the Client via the user agent
 	/// to indicate that user authorization was granted, and to return the user
-	/// to the Consumer where they started their experience.
+	/// to the Client where they started their experience.
 	/// </summary>
-	internal class WebAppSuccessResponse : MessageBase {
+	internal class WebAppSuccessResponse : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppSuccessResponse"/> class.
 		/// </summary>

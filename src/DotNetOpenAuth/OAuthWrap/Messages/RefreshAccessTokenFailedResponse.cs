@@ -10,12 +10,15 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// request for an access token renewal failed, probably due to an invalid
 	/// refresh token.
 	/// </summary>
-	internal class UserNamePasswordRefreshAccessTokenFailedResponse : UnauthorizedResponse {
+	/// <remarks>
+	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
+	/// </remarks>
+	internal class RefreshAccessTokenFailedResponse : UnauthorizedResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserNamePasswordRefreshAccessTokenFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="RefreshAccessTokenFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal UserNamePasswordRefreshAccessTokenFailedResponse(UserNamePasswordRefreshAccessTokenRequest request)
+		internal RefreshAccessTokenFailedResponse(RefreshAccessTokenRequest request)
 			: base(request) {
 		}
 	}

@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			}
 
 			if (fields.ContainsKey(Protocol.wrap_client_id) && fields.ContainsKey(Protocol.wrap_verification_code)) {
-				return new WebAppInitialAccessTokenRequest(recipient.Location, version);
+				return new WebAppAccessTokenRequest(recipient.Location, version);
 			}
 
 			if (fields.ContainsKey(Protocol.wrap_name)) {
@@ -73,10 +73,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
 			Version version = Protocol.DefaultVersion;
 
-			var accessTokenRequest = request as WebAppInitialAccessTokenRequest;
+			var accessTokenRequest = request as WebAppAccessTokenRequest;
 			if (accessTokenRequest != null) {
 				if (fields.ContainsKey(Protocol.wrap_access_token)) {
-					return new WebAppInitialAccessTokenSuccessResponse(accessTokenRequest);
+					return new WebAppAccessTokenSuccessResponse(accessTokenRequest);
 				} else {
 					//return new AccessTokenWithVerificationCodeFailedResponse(accessTokenRequest);
 				}
