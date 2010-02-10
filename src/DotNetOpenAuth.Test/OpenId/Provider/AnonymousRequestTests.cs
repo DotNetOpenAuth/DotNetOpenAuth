@@ -9,14 +9,14 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AnonymousRequestTests : OpenIdTestBase {
 		/// <summary>
 		/// Verifies that IsApproved controls which response message is returned.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void IsApprovedDeterminesReturnedMessage() {
 			var op = CreateProvider();
 			Protocol protocol = Protocol.V20;
@@ -27,11 +27,11 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.IsFalse(anonReq.IsApproved.HasValue);
 
 			anonReq.IsApproved = false;
-			Assert.IsInstanceOfType(anonReq.Response, typeof(NegativeAssertionResponse));
+			Assert.IsInstanceOf<NegativeAssertionResponse>(anonReq.Response);
 
 			anonReq.IsApproved = true;
-			Assert.IsInstanceOfType(anonReq.Response, typeof(IndirectSignedResponse));
-			Assert.IsNotInstanceOfType(anonReq.Response, typeof(PositiveAssertionResponse));
+			Assert.IsInstanceOf<IndirectSignedResponse>(anonReq.Response);
+			Assert.IsNotInstanceOf<PositiveAssertionResponse>(anonReq.Response);
 		}
 	}
 }

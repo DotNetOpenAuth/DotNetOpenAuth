@@ -6,27 +6,27 @@
 
 namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.OAuth;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ProtocolTests {
-		[TestMethod]
+		[TestCase]
 		public void Default() {
 			Assert.AreSame(Protocol.V10a, Protocol.Default);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void DataContractNamespace() {
 			Assert.AreEqual("http://oauth.net/core/1.0/", Protocol.V10.DataContractNamespace);
 			Assert.AreEqual("http://oauth.net/core/1.0/", Protocol.DataContractNamespaceV10);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AuthorizationHeaderScheme() {
 			Assert.AreEqual("OAuth", Protocol.AuthorizationHeaderScheme);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ParameterPrefix() {
 			Assert.AreEqual("oauth_", Protocol.ParameterPrefix);
 		}

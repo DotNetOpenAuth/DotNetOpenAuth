@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.Test {
 	using System;
 	using DotNetOpenAuth.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class RealmTests {
-		[TestMethod]
+		[TestCase]
 		public void ValidRealmsTest() {
 			// Just create these.  If any are determined to be invalid,
 			// an exception should be thrown that would fail this test.
@@ -26,67 +26,67 @@ namespace DotNetOpenAuth.Test {
 			new Realm("http://*.guest.myopenid.com/");
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void InvalidRealmNullString() {
 			new Realm((string)null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void InvalidRealmNullUri() {
 			new Realm((Uri)null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmEmpty() {
 			new Realm(string.Empty);
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmBadProtocol() {
 			new Realm("asdf://www.microsoft.com/");
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmNoScheme() {
 			new Realm("www.guy.com");
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmBadWildcard1() {
 			new Realm("http://*www.my.com");
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmBadWildcard2() {
 			new Realm("http://www.*.com");
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmBadWildcard3() {
 			new Realm("http://www.my.*/");
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmTwoWildcards1() {
 			new Realm("http://**.my.com");
 		}
 
-		[TestMethod]
+		[TestCase]
 		[ExpectedException(typeof(UriFormatException))]
 		public void InvalidRealmTwoWildcards2() {
 			new Realm("http://*.*.my.com");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void IsSaneTest() {
 			Assert.IsTrue(new Realm("http://www.myopenid.com").IsSane);
 			Assert.IsTrue(new Realm("http://myopenid.com").IsSane);
@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.Test {
 			Assert.IsFalse(new Realm("http://*.co.uk").IsSane);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void IsUrlWithinRealmTests() {
 			/* 
 			 * The openid.return_to URL MUST descend from the openid.trust_root, or the 
@@ -166,7 +166,7 @@ namespace DotNetOpenAuth.Test {
 			Assert.IsFalse(new Realm("http://www.my.com/abc").Contains("http://www.my.com/ABC"));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ImplicitConversionFromStringTests() {
 			Realm realm = "http://host";
 			Assert.AreEqual("host", realm.Host);
@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.Test {
 			Assert.IsNull(realm);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ImplicitConversionToStringTests() {
 			Realm realm = new Realm("http://host/");
 			string realmString = realm;
@@ -184,7 +184,7 @@ namespace DotNetOpenAuth.Test {
 			Assert.IsNull(realmString);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ImplicitConverstionFromUriTests() {
 			Uri uri = new Uri("http://host");
 			Realm realm = uri;
@@ -194,7 +194,7 @@ namespace DotNetOpenAuth.Test {
 			Assert.IsNull(realm);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EqualsTest() {
 			Realm testRealm1a = new Realm("http://www.yahoo.com");
 			Realm testRealm1b = new Realm("http://www.yahoo.com");

@@ -18,16 +18,16 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class OpenIdChannelTests : TestBase {
 		private static readonly TimeSpan maximumMessageAge = TimeSpan.FromHours(3); // good for tests, too long for production
 		private OpenIdChannel channel;
 		private OpenIdChannel_Accessor accessor;
 		private Mocks.TestWebRequestHandler webHandler;
 
-		[TestInitialize]
+		[SetUp]
 		public void Setup() {
 			this.webHandler = new Mocks.TestWebRequestHandler();
 			this.channel = new OpenIdChannel(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(maximumMessageAge), new RelyingPartySecuritySettings());
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.channel.WebRequestHandler = this.webHandler;
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			// Verify that the channel stack includes the expected types.
 			// While other binding elements may be substituted for these, we'd then have
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that the channel sends direct message requests as HTTP POST requests.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void DirectRequestsUsePost() {
 			IDirectedProtocolMessage requestMessage = new Mocks.TestDirectedMessage(MessageTransport.Direct) {
 				Recipient = new Uri("http://host"),
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			};
 			HttpWebRequest httpRequest = this.accessor.CreateHttpRequest(requestMessage);
 			Assert.AreEqual("POST", httpRequest.Method);
-			StringAssert.Contains(this.webHandler.RequestEntityAsString, "Name=Andrew");
+			StringAssert.Contains("Name=Andrew", this.webHandler.RequestEntityAsString);
 		}
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// class is verified elsewhere.  We're only checking that the KVF class is being used by the 
 		/// <see cref="OpenIdChannel.SendDirectMessageResponse"/> method.
 		/// </remarks>
-		[TestMethod]
+		[TestCase]
 		public void DirectResponsesSentUsingKeyValueForm() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			MessageDictionary messageFields = this.MessageDescriptions.GetAccessor(message);
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that direct message responses are read in using the Key Value Form decoder.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void DirectResponsesReceivedAsKeyValueForm() {
 			var fields = new Dictionary<string, string> {
 				{ "var1", "value1" },
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that messages asking for special HTTP status codes get them.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);

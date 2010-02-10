@@ -12,15 +12,15 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class PolicyResponseTests : OpenIdTestBase {
 		private static readonly DateTime someLocalTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
 		private static readonly DateTime someUtcTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
 		private static readonly DateTime someUnspecifiedTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified);
 
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			PolicyResponse resp = new PolicyResponse();
 			Assert.IsNotNull(resp.ActualPolicies);
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsNull(resp.NistAssuranceLevel);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AddPolicies() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(AuthenticationPolicies.PhishingResistant, resp.ActualPolicies[1]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AddPolicyMultipleTimes() {
 			// Although this isn't really the desired behavior (we'd prefer to see an
 			// exception thrown), since we're using a List<string> internally we can't
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(2, resp.ActualPolicies.Count);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AuthenticationTimeUtcConvertsToUtc() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = someLocalTime;
@@ -60,20 +60,20 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(someLocalTime.ToUniversalTime(), resp.AuthenticationTimeUtc.Value);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AuthenticationTimeUtcSetUtc() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = someUtcTime;
 			Assert.AreEqual(someUtcTime, resp.AuthenticationTimeUtc);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void AuthenticationTimeUtcSetUnspecified() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = someUnspecifiedTime;
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AuthenticationTimeUtcSetNull() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = null;
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsNull(resp.AuthenticationTimeUtc);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void NistAssuranceLevelSetVarious() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.NistAssuranceLevel = NistAssuranceLevel.Level1;
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(NistAssuranceLevel.InsufficientForLevel1, resp.NistAssuranceLevel);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AssuranceLevels() {
 			PolicyResponse resp = new PolicyResponse();
 			Assert.AreEqual(0, resp.AssuranceLevels.Count);
@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsNull(resp.NistAssuranceLevel);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EqualsTest() {
 			PolicyResponse resp = new PolicyResponse();
 			PolicyResponse resp2 = new PolicyResponse();
@@ -164,7 +164,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(resp, resp2);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Serialize() {
 			PolicyResponse resp = new PolicyResponse();
 			IMessageWithEvents respEvents = resp;

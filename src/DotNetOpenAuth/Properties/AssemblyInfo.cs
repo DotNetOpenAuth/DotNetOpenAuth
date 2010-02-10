@@ -70,6 +70,8 @@ using System.Web.UI;
 [assembly: InternalsVisibleTo("DotNetOpenAuth.Test")]
 #endif
 
+#if !CLR4
+
 // Specify what permissions are required and optional for the assembly.
 // In order for CAS to remove unnecessary privileges from this assembly (which is desirable
 // for security), we need at least one RequestMinimum and at least one RequestOptional.
@@ -99,5 +101,6 @@ using System.Web.UI;
 [assembly: RegistryPermission(SecurityAction.RequestOptional, Unrestricted = true)]
 [assembly: SecurityPermission(SecurityAction.RequestOptional, ControlEvidence = true, UnmanagedCode = true, ControlThread = true)]
 [assembly: FileIOPermission(SecurityAction.RequestOptional, AllFiles = FileIOPermissionAccess.PathDiscovery | FileIOPermissionAccess.Read)]
-#endif
-#endif
+#endif // TRACE || DEBUG
+#endif // PARTIAL_TRUST
+#endif // CLR4

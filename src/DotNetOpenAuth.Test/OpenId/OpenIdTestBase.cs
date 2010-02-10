@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	public class OpenIdTestBase : TestBase {
 		internal IDirectWebRequestHandler RequestHandler;
@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		protected ProviderSecuritySettings ProviderSecuritySettings { get; private set; }
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Identifier.EqualityOnStrings = true;
 		}
 
-		[TestCleanup]
+		[TearDown]
 		public override void Cleanup() {
 			base.Cleanup();
 

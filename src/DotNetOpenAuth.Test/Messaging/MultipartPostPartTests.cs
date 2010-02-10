@@ -11,14 +11,14 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.IO;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class MultipartPostPartTests : TestBase {
 		/// <summary>
 		/// Verifies that the Length property matches the length actually serialized.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void FormDataSerializeMatchesLength() {
 			var part = MultipartPostPart.CreateFormPart("a", "b");
 			VerifyLength(part);
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that the length property matches the length actually serialized.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void FileSerializeMatchesLength() {
 			using (TempFileCollection tfc = new TempFileCollection()) {
 				string file = tfc.AddExtension(".txt");
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies file multiparts identify themselves as files and not merely form-data.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void FilePartAsFile() {
 			var part = MultipartPostPart.CreateFormFilePart("somename", "somefile", "plain/text", new MemoryStream());
 			Assert.AreEqual("file", part.ContentDisposition);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies MultiPartPost sends the right number of bytes.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void MultiPartPostAscii() {
 			using (TempFileCollection tfc = new TempFileCollection()) {
 				string file = tfc.AddExtension("txt");
@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies MultiPartPost sends the right number of bytes.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void MultiPartPostMultiByteCharacters() {
 			using (TempFileCollection tfc = new TempFileCollection()) {
 				string file = tfc.AddExtension("txt");
@@ -94,9 +94,9 @@ namespace DotNetOpenAuth.Test.Messaging {
 			bool posted = false;
 			handler.Callback = req => {
 				foreach (string header in req.Headers) {
-					TestContext.WriteLine("{0}: {1}", header, req.Headers[header]);
+					TestUtilities.TestLogger.InfoFormat("{0}: {1}", header, req.Headers[header]);
 				}
-				TestContext.WriteLine(handler.RequestEntityAsString);
+				TestUtilities.TestLogger.InfoFormat(handler.RequestEntityAsString);
 				Assert.AreEqual(req.ContentLength, handler.RequestEntityStream.Length);
 				posted = true;
 				return null;

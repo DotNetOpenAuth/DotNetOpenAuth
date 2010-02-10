@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.BuildTasks {
 	using Microsoft.Build.Utilities;
 
 	public class DiscoverProjectTemplates : Task {
+		[Required]
 		public ITaskItem[] TopLevelTemplates { get; set; }
 
 		[Output]

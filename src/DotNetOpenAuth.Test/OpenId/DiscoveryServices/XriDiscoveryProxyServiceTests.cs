@@ -11,11 +11,11 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 	using System.Text;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class XriDiscoveryProxyServiceTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void Discover() {
 			string xrds = @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD version='2.0' xmlns='xri://$xrd*($v*2.0)'>
@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Assert.AreEqual("=Arnott", se.FriendlyIdentifierForDisplay);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void DiscoverCommunityInameCanonicalIDs() {
 			string llliResponse = @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD version='2.0' xmlns='xri://$xrd*($v*2.0)'>
@@ -292,7 +292,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 			this.VerifyCanonicalId("=Web", "=!91F2.8153.F600.AE24");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void DiscoveryCommunityInameDelegateWithoutCanonicalID() {
 			this.MockResponder.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/=Web*andrew.arnott?_xrd_r=application/xrd%2Bxml;sep=false", @"<?xml version='1.0' encoding='UTF-8'?>

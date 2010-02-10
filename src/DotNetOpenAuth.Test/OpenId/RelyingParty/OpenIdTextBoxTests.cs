@@ -6,14 +6,14 @@
 
 namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class OpenIdTextBoxTests : OpenIdTestBase {
 		/// <summary>
 		/// Verifies that the Text and Identifier properties interact correctly.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void IdentifierTextInteraction() {
 			var box = new OpenIdTextBox();
 			Assert.AreEqual(string.Empty, box.Text);

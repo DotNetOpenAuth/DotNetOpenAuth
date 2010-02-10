@@ -11,6 +11,7 @@ GO
 :setvar Path1 "WEBROOT\App_Data\"
 :setvar DatabaseName "RelyingPartyDatabase"
 :setvar DefaultDataPath ""
+:setvar DefaultLogPath ""
 */
 
 GO
@@ -37,7 +38,7 @@ PRINT N'Creating $(DatabaseName)...'
 GO
 CREATE DATABASE [$(DatabaseName)]
     ON 
-    PRIMARY(NAME = [$(Path1)$(DatabaseName).mdf], FILENAME = '$(Path1)$(DatabaseName).mdf', MAXSIZE = UNLIMITED, FILEGROWTH = 1024 KB)
+    PRIMARY(NAME = [$(Path1)$(DatabaseName).mdf], FILENAME = '$(Path1)$(DatabaseName).mdf', FILEGROWTH = 1024 KB)
     LOG ON (NAME = [$(DatabaseName)_log], FILENAME = '$(Path1)$(DatabaseName)_log.LDF', MAXSIZE = 2097152 MB, FILEGROWTH = 10 %) COLLATE SQL_Latin1_General_CP1_CI_AS
 GO
 EXECUTE sp_dbcmptlevel [$(DatabaseName)], 90;
@@ -101,7 +102,8 @@ IF EXISTS (SELECT 1
                 PAGE_VERIFY CHECKSUM,
                 DATE_CORRELATION_OPTIMIZATION OFF,
                 DISABLE_BROKER,
-                PARAMETERIZATION SIMPLE 
+                PARAMETERIZATION SIMPLE,
+                SUPPLEMENTAL_LOGGING OFF 
             WITH ROLLBACK IMMEDIATE;
     END
 
@@ -121,18 +123,25 @@ IF IS_SRVROLEMEMBER(N'sysadmin') = 1
     END
 ELSE
     BEGIN
-        PRINT N'The database settings for DB_CHAINING or TRUSTWORTHY cannot be modified. You must be a SysAdmin to apply these settings.';
+        PRINT N'The database settings cannot be modified. You must be a SysAdmin to apply these settings.';
     END
 
 
 GO
-IF EXISTS (SELECT 1
-           FROM   [master].[dbo].[sysdatabases]
-           WHERE  [name] = N'$(DatabaseName)')
+IF IS_SRVROLEMEMBER(N'sysadmin') = 1
     BEGIN
-        ALTER DATABASE [$(DatabaseName)]
-            SET HONOR_BROKER_PRIORITY OFF 
-            WITH ROLLBACK IMMEDIATE;
+        IF EXISTS (SELECT 1
+                   FROM   [master].[dbo].[sysdatabases]
+                   WHERE  [name] = N'$(DatabaseName)')
+            BEGIN
+                EXECUTE sp_executesql N'ALTER DATABASE [$(DatabaseName)]
+    SET HONOR_BROKER_PRIORITY OFF 
+    WITH ROLLBACK IMMEDIATE';
+            END
+    END
+ELSE
+    BEGIN
+        PRINT N'The database settings cannot be modified. You must be a SysAdmin to apply these settings.';
     END
 
 
@@ -143,8 +152,6 @@ GO
 IF fulltextserviceproperty(N'IsFulltextInstalled') = 1
     EXECUTE sp_fulltext_database 'enable';
 
-
-GO
 
 GO
 /*
@@ -160,9 +167,7 @@ GO
 */
 
 GO
-
-GO
-PRINT N'Creating dbo.AuthenticationToken...';
+PRINT N'Creating [dbo].[AuthenticationToken]...';
 
 
 GO
@@ -186,7 +191,16 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.Consumer...';
+PRINT N'Creating PK_AuthenticationToken...';
+
+
+GO
+ALTER TABLE [dbo].[AuthenticationToken]
+    ADD CONSTRAINT [PK_AuthenticationToken] PRIMARY KEY CLUSTERED ([AuthenticationTokenId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+
+GO
+PRINT N'Creating [dbo].[Consumer]...';
 
 
 GO
@@ -211,7 +225,25 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.IssuedToken...';
+PRINT N'Creating PK_Consumer...';
+
+
+GO
+ALTER TABLE [dbo].[Consumer]
+    ADD CONSTRAINT [PK_Consumer] PRIMARY KEY CLUSTERED ([ConsumerId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+
+GO
+PRINT N'Creating [dbo].[Consumer].[IX_Consumer]...';
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Consumer]
+    ON [dbo].[Consumer]([ConsumerKey] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
+
+
+GO
+PRINT N'Creating [dbo].[IssuedToken]...';
 
 
 GO
@@ -240,7 +272,25 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.Log...';
+PRINT N'Creating PK_IssuedToken...';
+
+
+GO
+ALTER TABLE [dbo].[IssuedToken]
+    ADD CONSTRAINT [PK_IssuedToken] PRIMARY KEY CLUSTERED ([IssuedTokenId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+
+GO
+PRINT N'Creating [dbo].[IssuedToken].[IX_IssuedToken]...';
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_IssuedToken]
+    ON [dbo].[IssuedToken]([Token] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
+
+
+GO
+PRINT N'Creating [dbo].[Log]...';
 
 
 GO
@@ -256,7 +306,7 @@ CREATE TABLE [dbo].[Log] (
 
 
 GO
-PRINT N'Creating dbo.Nonce...';
+PRINT N'Creating [dbo].[Nonce]...';
 
 
 GO
@@ -278,7 +328,34 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.OpenIDAssociation...';
+PRINT N'Creating PK_Nonce...';
+
+
+GO
+ALTER TABLE [dbo].[Nonce]
+    ADD CONSTRAINT [PK_Nonce] PRIMARY KEY CLUSTERED ([NonceId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+
+GO
+PRINT N'Creating [dbo].[Nonce].[IX_Nonce_Code]...';
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Nonce_Code]
+    ON [dbo].[Nonce]([Context] ASC, [Code] ASC, [Issued] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
+
+
+GO
+PRINT N'Creating [dbo].[Nonce].[IX_Nonce_Expires]...';
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Nonce_Expires]
+    ON [dbo].[Nonce]([Expires] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
+
+
+GO
+PRINT N'Creating [dbo].[OpenIDAssociation]...';
 
 
 GO
@@ -301,7 +378,25 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.Role...';
+PRINT N'Creating PK_OpenIDAssociations...';
+
+
+GO
+ALTER TABLE [dbo].[OpenIDAssociation]
+    ADD CONSTRAINT [PK_OpenIDAssociations] PRIMARY KEY CLUSTERED ([AssociationId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+
+GO
+PRINT N'Creating [dbo].[OpenIDAssociation].[IX_OpenIDAssociations]...';
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_OpenIDAssociations]
+    ON [dbo].[OpenIDAssociation]([DistinguishingFactor] ASC, [AssociationHandle] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
+
+
+GO
+PRINT N'Creating [dbo].[Role]...';
 
 
 GO
@@ -320,7 +415,16 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.User...';
+PRINT N'Creating PK_Role...';
+
+
+GO
+ALTER TABLE [dbo].[Role]
+    ADD CONSTRAINT [PK_Role] PRIMARY KEY CLUSTERED ([RoleId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+
+GO
+PRINT N'Creating [dbo].[User]...';
 
 
 GO
@@ -343,7 +447,16 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.UserRole...';
+PRINT N'Creating PK_User...';
+
+
+GO
+ALTER TABLE [dbo].[User]
+    ADD CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([UserId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+
+GO
+PRINT N'Creating [dbo].[UserRole]...';
 
 
 GO
@@ -362,187 +475,7 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.Consumer.IX_Consumer...';
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Consumer]
-    ON [dbo].[Consumer]([ConsumerKey] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
-
-
-GO
-PRINT N'Creating dbo.IssuedToken.IX_IssuedToken...';
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_IssuedToken]
-    ON [dbo].[IssuedToken]([Token] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
-
-
-GO
-PRINT N'Creating dbo.Nonce.IX_Nonce_Code...';
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Nonce_Code]
-    ON [dbo].[Nonce]([Context] ASC, [Code] ASC, [Issued] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
-
-
-GO
-PRINT N'Creating dbo.Nonce.IX_Nonce_Expires...';
-
-
-GO
-CREATE NONCLUSTERED INDEX [IX_Nonce_Expires]
-    ON [dbo].[Nonce]([Expires] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
-
-
-GO
-PRINT N'Creating dbo.OpenIDAssociation.IX_OpenIDAssociations...';
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_OpenIDAssociations]
-    ON [dbo].[OpenIDAssociation]([DistinguishingFactor] ASC, [AssociationHandle] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
-
-
-GO
-PRINT N'Creating dbo.DF_AuthenticationToken_CreatedOn...';
-
-
-GO
-ALTER TABLE [dbo].[AuthenticationToken]
-    ADD CONSTRAINT [DF_AuthenticationToken_CreatedOn] DEFAULT (getutcdate()) FOR [CreatedOn];
-
-
-GO
-PRINT N'Creating dbo.DF_AuthenticationToken_LastUsed...';
-
-
-GO
-ALTER TABLE [dbo].[AuthenticationToken]
-    ADD CONSTRAINT [DF_AuthenticationToken_LastUsed] DEFAULT (getutcdate()) FOR [LastUsed];
-
-
-GO
-PRINT N'Creating dbo.DF_AuthenticationToken_UsageCount...';
-
-
-GO
-ALTER TABLE [dbo].[AuthenticationToken]
-    ADD CONSTRAINT [DF_AuthenticationToken_UsageCount] DEFAULT ((0)) FOR [UsageCount];
-
-
-GO
-PRINT N'Creating dbo.DF_IssuedToken_CreatedOn...';
-
-
-GO
-ALTER TABLE [dbo].[IssuedToken]
-    ADD CONSTRAINT [DF_IssuedToken_CreatedOn] DEFAULT (getutcdate()) FOR [CreatedOn];
-
-
-GO
-PRINT N'Creating dbo.DF_IssuedToken_IsAccessToken...';
-
-
-GO
-ALTER TABLE [dbo].[IssuedToken]
-    ADD CONSTRAINT [DF_IssuedToken_IsAccessToken] DEFAULT ((0)) FOR [IsAccessToken];
-
-
-GO
-PRINT N'Creating dbo.DF_Nonce_Issued...';
-
-
-GO
-ALTER TABLE [dbo].[Nonce]
-    ADD CONSTRAINT [DF_Nonce_Issued] DEFAULT (getutcdate()) FOR [Issued];
-
-
-GO
-PRINT N'Creating dbo.DF_User_CreatedOn...';
-
-
-GO
-ALTER TABLE [dbo].[User]
-    ADD CONSTRAINT [DF_User_CreatedOn] DEFAULT (getutcdate()) FOR [CreatedOn];
-
-
-GO
-PRINT N'Creating dbo.DF_User_EmailAddressVerified...';
-
-
-GO
-ALTER TABLE [dbo].[User]
-    ADD CONSTRAINT [DF_User_EmailAddressVerified] DEFAULT ((0)) FOR [EmailAddressVerified];
-
-
-GO
-PRINT N'Creating dbo.PK_AuthenticationToken...';
-
-
-GO
-ALTER TABLE [dbo].[AuthenticationToken]
-    ADD CONSTRAINT [PK_AuthenticationToken] PRIMARY KEY CLUSTERED ([AuthenticationTokenId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating dbo.PK_Consumer...';
-
-
-GO
-ALTER TABLE [dbo].[Consumer]
-    ADD CONSTRAINT [PK_Consumer] PRIMARY KEY CLUSTERED ([ConsumerId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating dbo.PK_IssuedToken...';
-
-
-GO
-ALTER TABLE [dbo].[IssuedToken]
-    ADD CONSTRAINT [PK_IssuedToken] PRIMARY KEY CLUSTERED ([IssuedTokenId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating dbo.PK_Nonce...';
-
-
-GO
-ALTER TABLE [dbo].[Nonce]
-    ADD CONSTRAINT [PK_Nonce] PRIMARY KEY CLUSTERED ([NonceId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating dbo.PK_OpenIDAssociations...';
-
-
-GO
-ALTER TABLE [dbo].[OpenIDAssociation]
-    ADD CONSTRAINT [PK_OpenIDAssociations] PRIMARY KEY CLUSTERED ([AssociationId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating dbo.PK_Role...';
-
-
-GO
-ALTER TABLE [dbo].[Role]
-    ADD CONSTRAINT [PK_Role] PRIMARY KEY CLUSTERED ([RoleId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating dbo.PK_User...';
-
-
-GO
-ALTER TABLE [dbo].[User]
-    ADD CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([UserId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating dbo.PK_UserRole...';
+PRINT N'Creating PK_UserRole...';
 
 
 GO
@@ -551,52 +484,124 @@ ALTER TABLE [dbo].[UserRole]
 
 
 GO
-PRINT N'Creating dbo.FK_AuthenticationToken_User...';
+PRINT N'Creating DF_AuthenticationToken_CreatedOn...';
 
 
 GO
 ALTER TABLE [dbo].[AuthenticationToken]
+    ADD CONSTRAINT [DF_AuthenticationToken_CreatedOn] DEFAULT (getutcdate()) FOR [CreatedOn];
+
+
+GO
+PRINT N'Creating DF_AuthenticationToken_LastUsed...';
+
+
+GO
+ALTER TABLE [dbo].[AuthenticationToken]
+    ADD CONSTRAINT [DF_AuthenticationToken_LastUsed] DEFAULT (getutcdate()) FOR [LastUsed];
+
+
+GO
+PRINT N'Creating DF_AuthenticationToken_UsageCount...';
+
+
+GO
+ALTER TABLE [dbo].[AuthenticationToken]
+    ADD CONSTRAINT [DF_AuthenticationToken_UsageCount] DEFAULT ((0)) FOR [UsageCount];
+
+
+GO
+PRINT N'Creating DF_IssuedToken_CreatedOn...';
+
+
+GO
+ALTER TABLE [dbo].[IssuedToken]
+    ADD CONSTRAINT [DF_IssuedToken_CreatedOn] DEFAULT (getutcdate()) FOR [CreatedOn];
+
+
+GO
+PRINT N'Creating DF_IssuedToken_IsAccessToken...';
+
+
+GO
+ALTER TABLE [dbo].[IssuedToken]
+    ADD CONSTRAINT [DF_IssuedToken_IsAccessToken] DEFAULT ((0)) FOR [IsAccessToken];
+
+
+GO
+PRINT N'Creating DF_Nonce_Issued...';
+
+
+GO
+ALTER TABLE [dbo].[Nonce]
+    ADD CONSTRAINT [DF_Nonce_Issued] DEFAULT (getutcdate()) FOR [Issued];
+
+
+GO
+PRINT N'Creating DF_User_CreatedOn...';
+
+
+GO
+ALTER TABLE [dbo].[User]
+    ADD CONSTRAINT [DF_User_CreatedOn] DEFAULT (getutcdate()) FOR [CreatedOn];
+
+
+GO
+PRINT N'Creating DF_User_EmailAddressVerified...';
+
+
+GO
+ALTER TABLE [dbo].[User]
+    ADD CONSTRAINT [DF_User_EmailAddressVerified] DEFAULT ((0)) FOR [EmailAddressVerified];
+
+
+GO
+PRINT N'Creating FK_AuthenticationToken_User...';
+
+
+GO
+ALTER TABLE [dbo].[AuthenticationToken] WITH NOCHECK
     ADD CONSTRAINT [FK_AuthenticationToken_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User] ([UserId]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 GO
-PRINT N'Creating dbo.FK_IssuedToken_Consumer...';
+PRINT N'Creating FK_IssuedToken_Consumer...';
 
 
 GO
-ALTER TABLE [dbo].[IssuedToken]
+ALTER TABLE [dbo].[IssuedToken] WITH NOCHECK
     ADD CONSTRAINT [FK_IssuedToken_Consumer] FOREIGN KEY ([ConsumerId]) REFERENCES [dbo].[Consumer] ([ConsumerId]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 GO
-PRINT N'Creating dbo.FK_IssuedToken_User...';
+PRINT N'Creating FK_IssuedToken_User...';
 
 
 GO
-ALTER TABLE [dbo].[IssuedToken]
+ALTER TABLE [dbo].[IssuedToken] WITH NOCHECK
     ADD CONSTRAINT [FK_IssuedToken_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User] ([UserId]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 GO
-PRINT N'Creating dbo.FK_UserRole_Role...';
+PRINT N'Creating FK_UserRole_Role...';
 
 
 GO
-ALTER TABLE [dbo].[UserRole]
+ALTER TABLE [dbo].[UserRole] WITH NOCHECK
     ADD CONSTRAINT [FK_UserRole_Role] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Role] ([RoleId]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 GO
-PRINT N'Creating dbo.FK_UserRole_User...';
+PRINT N'Creating FK_UserRole_User...';
 
 
 GO
-ALTER TABLE [dbo].[UserRole]
+ALTER TABLE [dbo].[UserRole] WITH NOCHECK
     ADD CONSTRAINT [FK_UserRole_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User] ([UserId]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 GO
-PRINT N'Creating dbo.AddUser...';
+PRINT N'Creating [dbo].[AddUser]...';
 
 
 GO
@@ -605,9 +610,14 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER ON;
 
 GO
 CREATE PROCEDURE [dbo].[AddUser]
-@firstName NVARCHAR (50), @lastName NVARCHAR (50), @openid NVARCHAR (255), @role NVARCHAR (255)
+	(
+	@firstName nvarchar(50),
+	@lastName nvarchar(50),
+	@openid nvarchar(255),
+	@role nvarchar(255)
+	)
 AS
-DECLARE
+	DECLARE
 		@roleid int,
 		@userid int
 
@@ -636,14 +646,12 @@ DECLARE
 	COMMIT TRANSACTION
 	
 	RETURN @userid
-
-
 GO
 SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.ClearExpiredAssociations...';
+PRINT N'Creating [dbo].[ClearExpiredAssociations]...';
 
 
 GO
@@ -651,19 +659,17 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER ON;
 
 
 GO
-CREATE PROCEDURE [dbo].[ClearExpiredAssociations]
-
+CREATE PROCEDURE dbo.ClearExpiredAssociations
 AS
+
 DELETE FROM dbo.OpenIDAssociation
 WHERE [Expiration] < getutcdate()
-
-
 GO
 SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating dbo.ClearExpiredNonces...';
+PRINT N'Creating [dbo].[ClearExpiredNonces]...';
 
 
 GO
@@ -671,27 +677,20 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER ON;
 
 
 GO
-CREATE PROCEDURE [dbo].[ClearExpiredNonces]
-
+CREATE PROCEDURE dbo.ClearExpiredNonces
 AS
+
 DELETE FROM dbo.[Nonce]
 WHERE [Expires] < getutcdate()
-
-
 GO
 SET ANSI_NULLS, QUOTED_IDENTIFIER OFF;
 
 
 GO
-PRINT N'Creating AutoCreatedLocal...';
-
-
+-- Refactoring step to update target server with deployed transaction logs
+CREATE TABLE  [dbo].[__RefactorLog] (OperationKey UNIQUEIDENTIFIER NOT NULL PRIMARY KEY)
 GO
-CREATE ROUTE [AutoCreatedLocal]
-    AUTHORIZATION [dbo]
-    WITH ADDRESS = N'LOCAL';
-
-
+sp_addextendedproperty N'microsoft_database_tools_support', N'refactoring log', N'schema', N'dbo', N'table', N'__RefactorLog'
 GO
 
 GO
@@ -708,8 +707,24 @@ Post-Deployment Script Template
 */
 
 GO
+PRINT N'Checking existing data against newly created constraints';
+
 
 GO
+USE [$(DatabaseName)];
+
+
+GO
+ALTER TABLE [dbo].[AuthenticationToken] WITH CHECK CHECK CONSTRAINT [FK_AuthenticationToken_User];
+
+ALTER TABLE [dbo].[IssuedToken] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_Consumer];
+
+ALTER TABLE [dbo].[IssuedToken] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_User];
+
+ALTER TABLE [dbo].[UserRole] WITH CHECK CHECK CONSTRAINT [FK_UserRole_Role];
+
+ALTER TABLE [dbo].[UserRole] WITH CHECK CHECK CONSTRAINT [FK_UserRole_User];
+
 
 GO
 ALTER DATABASE [$(DatabaseName)]

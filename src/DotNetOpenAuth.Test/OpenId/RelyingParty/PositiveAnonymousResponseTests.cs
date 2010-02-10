@@ -10,14 +10,14 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class PositiveAnonymousResponseTests : OpenIdTestBase {
 		private readonly Realm realm = new Realm("http://localhost/rp.aspx");
 		private readonly Uri returnTo = new Uri("http://localhost/rp.aspx");
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 		}
@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that the Status property returns the correct value.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void CtorAndProperties() {
 			var responseMessage = new IndirectSignedResponse(Protocol.V20.Version, this.returnTo);
 			var ext = new ClaimsResponse();
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies the Provider property.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ProviderTest() {
 			var responseMessage = new IndirectSignedResponse(Protocol.V20.Version, this.returnTo);
 			responseMessage.ProviderEndpoint = OPUri;
