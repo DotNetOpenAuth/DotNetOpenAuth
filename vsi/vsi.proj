@@ -1,0 +1,104 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
+
+	<PropertyGroup>
+		<VS2008ProjectTemplatesDirectory>$(IntermediatePath)VS2008projecttemplates\</VS2008ProjectTemplatesDirectory>
+		<ProjectTemplatesVsiDirectory>$(IntermediatePath)vsi\</ProjectTemplatesVsiDirectory>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<DirectoriesToClean Include="$(ProjectTemplatesLayoutPath)" />
+		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.*proj" />
+	</ItemGroup>
+
+	<Target Name="ProjectTemplates2008" DependsOnTargets="ProjectTemplatesLayout">
+		<ItemGroup>
+			<ProjectTemplates2008Source Include="$(ProjectTemplatesLayoutPath)**" />
+			<ProjectTemplates2008Layout Include="@(ProjectTemplates2008Source->'$(VS2008ProjectTemplatesDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
+			<ProjectTemplates2008Layout>
+				<HardLink Condition=" '%(Extension)' != '.csproj' ">true</HardLink>
+			</ProjectTemplates2008Layout>
+
+			<VS2008ProjectTemplates Include="@(ProjectTemplates2008Layout)" Condition="'%(Extension)' == '.vstemplate'" />
+			<TopLevelVS2008ProjectTemplates Include="@(VS2008ProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(VS2008ProjectTemplatesDirectory)'" />
+			<VS2008ProjectTemplateZipFiles Include="@(TopLevelVS2008ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
+		</ItemGroup>
+
+		<HardLinkCopy SourceFiles="@(ProjectTemplates2008Source)" DestinationFiles="@(ProjectTemplates2008Layout)" />
+
+		<DowngradeProjects
+			Projects="@(ProjectTemplates2008Layout)"
+			Condition="'%(Extension)' == '.csproj'"
+			DowngradeMvc2ToMvc1="true"
+			/>
+
+		<Purge Directories="$(VS2008ProjectTemplatesDirectory)" IntendedFiles="@(ProjectTemplates2008Layout)" />
+
+		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2008ProjectTemplates)">
+			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2008Templates" />
+			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2008TemplateItemContents" />
+		</DiscoverProjectTemplates>
+
+		<ItemGroup>
+			<!-- Include in each template .zip file the top-level .vstemplate file itself. -->
+			<VS2008ProjectTemplateContents Include="@(TopLevelVS2008ProjectTemplates)">
+				<ZipFile>$(ProjectTemplatesVsiDirectory)%(FileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2008ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
+
+			<!-- Now throw in all the files in each of the project-level template's directories and their children. -->
+			<VS2008ProjectTemplateContents Include="@(VS2008TemplateItemContents)">
+				<ZipFile>$(ProjectTemplatesVsiDirectory)%(VS2008TemplateItemContents.TopLevelTemplateFileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2008ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
+
+			<!-- Include the template icon for each .zip file. -->
+			<VS2008ProjectTemplateContents Include="@(TopLevelVS2008ProjectTemplates->'$(VS2008ProjectTemplatesDirectory)__TemplateIcon.ico')">
+				<ZipFile>$(ProjectTemplatesVsiDirectory)%(TopLevelVS2008ProjectTemplates.FileName).zip</ZipFile>
+				<WorkingDirectory>$(VS2008ProjectTemplatesDirectory)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
+		</ItemGroup>
+
+		<Zip
+			Files="@(VS2008ProjectTemplateContents)"
+			ZipFileName="%(VS2008ProjectTemplateContents.ZipFile)"
+			WorkingDirectory="%(VS2008ProjectTemplateContents.WorkingDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
+	</Target>
+
+	<Target Name="vsi" DependsOnTargets="ProjectTemplates2008">
+		<PropertyGroup>
+			<ProjectTemplatesVsi>$(DropDirectoryNoSlash).vsi</ProjectTemplatesVsi>
+		</PropertyGroup>
+		<ItemGroup>
+			<VsiTransformSource Include="$(ProjectRoot)vsi\*.vscontent">
+				<BeforeTokens>$version$</BeforeTokens>
+				<AfterTokens>$(BuildVersion)</AfterTokens>
+				<SkipUnchangedFiles>false</SkipUnchangedFiles>
+			</VsiTransformSource>
+			<VsiTransformLayout Include="@(VsiTransformSource->'$(ProjectTemplatesVsiDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
+
+			<ProjectTemplateVsiContents Include="
+																	$(ProjectTemplatesVsiDirectory)*.zip;
+																	@(VsiTransformLayout);
+																	" />
+		</ItemGroup>
+
+		<CopyWithTokenSubstitution SourceFiles="@(VsiTransformSource)" DestinationFiles="@(VsiTransformLayout)" />
+
+		<Zip
+			Files="@(ProjectTemplateVsiContents)"
+			ZipFileName="$(ProjectTemplatesVsi)"
+			WorkingDirectory="$(ProjectTemplatesVsiDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
+	</Target>
+
+	<Target Name="Build" DependsOnTargets="vsi">
+		
+	</Target>
+
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+</Project>

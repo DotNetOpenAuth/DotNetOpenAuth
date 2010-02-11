@@ -2,11 +2,20 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
 	<Import Project="DotNetOpenAuth.Versioning.targets" />
 	<Import Project="JavascriptPacker.targets" />
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
+		                                $(OutputPath)$(ProductName).dll;
+		                                $(OutputPath)$(ProductName).Contracts.dll;
+		                                $(OutputPath)$(ProductName).Test.dll;
+		                                $(ProjectRoot)samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
+	</ItemGroup>
 
 	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
 		<Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
@@ -47,5 +56,13 @@
 			KeyFile="$(PublicKeyFile)">
 			<Output TaskParameter="AccessorAssembly" ItemName="ReferencePath" />
 		</Publicize>
+	</Target>
+
+	<Target Name="ReSignDelaySignedAssemblies">
+		<Message Text="Signing delay-signed assemblies using key pair container $(KeyPairContainer)." />
+		<ReSignDelaySignedAssemblies
+			KeyContainer="$(KeyPairContainer)"
+			Assemblies="@(DelaySignedAssemblies)"
+			Condition="Exists(%(Identity))" />
 	</Target>
 </Project>

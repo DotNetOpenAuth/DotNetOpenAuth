@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.BuildTasks {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
@@ -15,17 +16,16 @@ namespace DotNetOpenAuth.BuildTasks {
 	using Microsoft.Build.BuildEngine;
 	using Microsoft.Build.Framework;
 	using Microsoft.Build.Utilities;
-	using System.Globalization;
 
 	public class MergeProjectWithVSTemplate : Task {
 		internal const string VSTemplateNamespace = "http://schemas.microsoft.com/developer/vstemplate/2005";
-		
+
 		internal const string VsixNamespace = "http://schemas.microsoft.com/developer/vsx-schema/2010";
 
 		/// <summary>
 		/// A dictionary where the key is the project name and the value is the path contribution.
 		/// </summary>
-		private Dictionary<string, string> vsixContributionToPath = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+		private Dictionary<string, string> vsixContributionToPath = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		[Required]
 		public string[] ProjectItemTypes { get; set; }
@@ -66,8 +66,9 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// </summary>
 		public override bool Execute() {
 			var shortenedItems = new List<ITaskItem>();
+			int uniqueItemCounter = 0;
 
-			foreach(ITaskItem sourceTemplateTaskItem in this.Templates) {
+			foreach (ITaskItem sourceTemplateTaskItem in this.Templates) {
 				var template = XElement.Load(sourceTemplateTaskItem.ItemSpec);
 				var templateContentElement = template.Element(XName.Get("TemplateContent", VSTemplateNamespace));
 				var projectElement = templateContentElement.Element(XName.Get("Project", VSTemplateNamespace));
@@ -85,11 +86,15 @@ namespace DotNetOpenAuth.BuildTasks {
 				// Collect the project items from the project that are appropriate
 				// to include in the .vstemplate file.
 				var itemsByFolder = from item in sourceProject.EvaluatedItems.Cast<BuildItem>()
-							where this.ProjectItemTypes.Contains(item.Name)
-							orderby item.Include
-							group item by Path.GetDirectoryName(item.Include);
+									where this.ProjectItemTypes.Contains(item.Name)
+									orderby item.Include
+									group item by Path.GetDirectoryName(item.Include);
 				foreach (var folder in itemsByFolder) {
-					XElement parentNode = FindOrCreateParent(folder.Key, projectElement);
+					XElement parentNode = projectElement;
+					if (folder.Key.Length > 0) {
+						parentNode = FindOrCreateParent((uniqueItemCounter++).ToString("x"), projectElement);
+						parentNode.SetAttributeValue("TargetFolderName", folder.Key);
+					}
 
 					foreach (var item in folder) {
 						bool replaceParameters = this.ReplaceParametersExtensions.Contains(Path.GetExtension(item.Include));
@@ -158,7 +163,7 @@ namespace DotNetOpenAuth.BuildTasks {
 				return fileName;
 			}
 
-			string hashSuffix = Utilities.SuppressCharacters(fileName.GetHashCode().ToString("x"), Path.GetInvalidFileNameChars(), '_');
+			string hashSuffix = Utilities.SuppressCharacters(Math.Abs(fileName.GetHashCode() % 0xfff).ToString("x"), Path.GetInvalidFileNameChars(), '_');
 			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 			string extension = Path.GetExtension(fileName);
 			string hashSuffixWithExtension = hashSuffix + extension;
@@ -203,7 +208,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			string subPath;
 			if (!vsixContributionToPath.TryGetValue(projectName, out subPath)) {
 				if (this.VsixManifest == null) {
-					this.Log.LogError("The task parameter VsixManifest is required but missing.");
+					this.Log.LogError("The task parameter VsixManifests is required but missing.");
 				}
 				var vsixDocument = XDocument.Load(this.VsixManifest.ItemSpec);
 				XElement vsix = vsixDocument.Element(XName.Get("Vsix", VsixNamespace));

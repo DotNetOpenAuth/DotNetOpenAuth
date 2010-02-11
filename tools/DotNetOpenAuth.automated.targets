@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" InitialTargets="_SetDropProperties">
+	<Import Project="$(ProjectRoot)tools\$(ProductName).targets"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="NUnit" />
+
+	<Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
+
+	<Target Name="Clean">
+		<Delete Files="@(FilesToClean)" />
+		<RemoveDir Directories="@(DirectoriesToClean)" />
+	</Target>
+
+	<Target Name="_SetDropProperties" DependsOnTargets="GetBuildVersion">
+		<!-- This target is necessary because PropertyGroups within the same Target as 
+		     where CallTarget is fired do NOT affect those called targets. -->
+		<!-- The rest of these are here so that other DependsOn targets have access to these properties. -->
+		<PropertyGroup>
+			<DropDirectoryNoSlash>$(DropsRoot)$(ProductName)-$(BuildVersion)</DropDirectoryNoSlash>
+			<DropDirectory>$(DropDirectoryNoSlash)\</DropDirectory>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="BuildUnifiedProduct">
+		<MSBuild BuildInParallel="$(BuildInParallel)"
+						 Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).csproj" 
+						 Targets="BuildUnifiedProduct" />
+	</Target>
+</Project>
