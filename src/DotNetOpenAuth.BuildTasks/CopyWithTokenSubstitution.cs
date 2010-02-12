@@ -58,6 +58,10 @@ namespace DotNetOpenAuth.BuildTasks {
 				string destPath = this.DestinationFiles[i].ItemSpec;
 				bool skipUnchangedFiles = bool.Parse(this.SourceFiles[i].GetMetadata("SkipUnchangedFiles"));
 
+				if (!Directory.Exists(Path.GetDirectoryName(destPath))) {
+					Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+				}
+
 				if (string.IsNullOrEmpty(this.SourceFiles[i].GetMetadata("BeforeTokens"))) {
 					// this is just a standard copy without token substitution
 					if (skipUnchangedFiles && File.GetLastWriteTimeUtc(sourcePath) == File.GetLastWriteTimeUtc(destPath)) {
@@ -85,9 +89,6 @@ namespace DotNetOpenAuth.BuildTasks {
 					}
 
 					using (StreamReader sr = File.OpenText(sourcePath)) {
-						if (!Directory.Exists(Path.GetDirectoryName(destPath))) {
-							Directory.CreateDirectory(Path.GetDirectoryName(destPath));
-						}
 						using (StreamWriter sw = File.CreateText(destPath)) {
 							StringBuilder line = new StringBuilder();
 							while (!sr.EndOfStream) {
