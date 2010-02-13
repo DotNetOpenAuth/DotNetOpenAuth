@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// the Attribute Exchange extension.
 	/// </summary>
 	[Serializable]
+	[DebuggerDisplay("{TypeUri} (required: {IsRequired}) ({Count})")]
 	public class AttributeRequest {
 		/// <summary>
 		/// Backing field for the <see cref="Count"/> property.

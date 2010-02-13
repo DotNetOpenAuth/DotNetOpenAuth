@@ -43,7 +43,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Backing field for the <see cref="Provider"/> property.
 		/// </summary>
-		private static OpenIdProvider provider = CreateProvider();
+		private static OpenIdProvider provider;
+
+		/// <summary>
+		/// The lock that must be obtained when initializing the provider field.
+		/// </summary>
+		private static object providerInitializerLock = new object();
 
 		/// <summary>
 		/// Fired when an incoming OpenID request is an authentication challenge
@@ -64,6 +69,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
 		public static OpenIdProvider Provider {
 			get {
+				Contract.Ensures(Contract.Result<OpenIdProvider>() != null);
+				if (provider == null) {
+					lock (providerInitializerLock) {
+						if (provider == null) {
+							provider = CreateProvider();
+						}
+					}
+				}
+
 				return provider;
 			}
 
@@ -171,7 +185,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				// Then try the configuration file specified one.  Finally, use the default
 				// in-memory one that's built into OpenIdProvider.
 				// determine what incoming message was received
-				IRequest request = provider.GetRequest();
+				IRequest request = Provider.GetRequest();
 				if (request != null) {
 					PendingRequest = null;
 
@@ -191,7 +205,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 						}
 					}
 					if (request.IsResponseReady) {
-						provider.SendResponse(request);
+						Provider.SendResponse(request);
 						Page.Response.End();
 						PendingAuthenticationRequest = null;
 					}
@@ -230,6 +244,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <returns>The new instance of OpenIdProvider.</returns>
 		private static OpenIdProvider CreateProvider() {
+			Contract.Ensures(Contract.Result<OpenIdProvider>() != null);
 			return new OpenIdProvider(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
 		}
 	}
