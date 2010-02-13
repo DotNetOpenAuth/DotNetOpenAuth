@@ -73,8 +73,8 @@
 		<ChangeProjectReferenceToAssemblyReference
 			Projects="@(CopiedProjectFiles)"
 			Condition=" '%(Extension)' == '.csproj' "
-			ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj"
-			Reference="Lib\$(ProductName).dll" />
+			ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj;..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj"
+			References="Lib\$(ProductName).dll;REMOVE" />
 		<FixupReferenceHintPaths
 			Projects="@(CopiedProjectFiles)"
 			References="@(FixupReferenceAssemblies)"
