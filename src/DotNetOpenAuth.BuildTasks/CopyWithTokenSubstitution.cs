@@ -56,7 +56,8 @@ namespace DotNetOpenAuth.BuildTasks {
 			for (int i = 0; i < this.SourceFiles.Length; i++) {
 				string sourcePath = this.SourceFiles[i].ItemSpec;
 				string destPath = this.DestinationFiles[i].ItemSpec;
-				bool skipUnchangedFiles = bool.Parse(this.SourceFiles[i].GetMetadata("SkipUnchangedFiles"));
+				bool skipUnchangedFiles;
+				bool.TryParse(this.SourceFiles[i].GetMetadata("SkipUnchangedFiles"), out skipUnchangedFiles);
 
 				if (!Directory.Exists(Path.GetDirectoryName(destPath))) {
 					Directory.CreateDirectory(Path.GetDirectoryName(destPath));
@@ -69,7 +70,7 @@ namespace DotNetOpenAuth.BuildTasks {
 						continue;
 					}
 
-					Log.LogMessage(MessageImportance.Normal, "Copying \"{0}\" -> \"{1}\"", sourcePath, destPath);
+					Log.LogMessage(MessageImportance.Normal, "Copying file from \"{0}\" to \"{1}\"", sourcePath, destPath);
 					File.Copy(sourcePath, destPath, true);
 				} else {
 					// We deliberably consider newer destination files to be up-to-date rather than

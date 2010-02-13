@@ -34,41 +34,42 @@ namespace DotNetOpenAuth.BuildTasks {
 		public string[] ReplaceParametersExtensions { get; set; }
 
 		[Required]
-		public ITaskItem[] Templates { get; set; }
+		public ITaskItem[] SourceTemplates { get; set; }
 
-		/// <summary>
-		/// Gets or sets the path to the .vsixmanifest file that will be used to assist
-		/// in calculating the actual full path of project items.
-		/// </summary>
-		/// <remarks>
-		/// This property is required if <see cref="EnsureMaxPath"/> &gt; 0;
-		/// </remarks>
-		public ITaskItem VsixManifest { get; set; }
+		[Required]
+		public ITaskItem[] SourceProjects { get; set; }
+
+		[Required]
+		public ITaskItem[] DestinationTemplates { get; set; }
 
 		/// <summary>
 		/// Gets or sets the maximum length a project item's relative path should
 		/// be limited to, artificially renaming them as necessary.
 		/// </summary>
 		/// <value>Use 0 to disable the renaming feature.</value>
-		public int EnsureMaxPath { get; set; }
+		public int MaximumRelativePathLength { get; set; }
 
 		/// <summary>
-		/// Gets or sets the project items that had to be renamed to comply with maximum path length requirements.
+		/// Gets or sets the project item paths from the source project to copy to the destination location.
 		/// </summary>
-		/// <remarks>
-		/// The item name is the original full path.  The ShortPath metadata contains the shortened full path.
-		/// </remarks>
 		[Output]
-		public ITaskItem[] MaxPathAdjustedPaths { get; set; }
+		public ITaskItem[] ProjectItems { get; set; }
 
 		/// <summary>
 		/// Executes this instance.
 		/// </summary>
 		public override bool Execute() {
-			var shortenedItems = new List<ITaskItem>();
-			int uniqueItemCounter = 0;
+			if (this.DestinationTemplates.Length != this.SourceTemplates.Length) {
+				this.Log.LogError("SourceTemplates array has length {0} while DestinationTemplates array has length {1}, but must equal.", this.SourceTemplates.Length, this.DestinationTemplates.Length);
+			}
+			if (this.SourceProjects.Length != this.SourceTemplates.Length) {
+				this.Log.LogError("SourceTemplates array has length {0} while SourceProjects array has length {1}, but must equal.", this.SourceTemplates.Length, this.SourceProjects.Length);
+			}
 
-			foreach (ITaskItem sourceTemplateTaskItem in this.Templates) {
+			var projectItemsToCopy = new List<ITaskItem>();
+
+			for (int iTemplate = 0; iTemplate < this.SourceTemplates.Length; iTemplate++) {
+				ITaskItem sourceTemplateTaskItem = this.SourceTemplates[iTemplate];
 				var template = XElement.Load(sourceTemplateTaskItem.ItemSpec);
 				var templateContentElement = template.Element(XName.Get("TemplateContent", VSTemplateNamespace));
 				var projectElement = templateContentElement.Element(XName.Get("Project", VSTemplateNamespace));
@@ -77,24 +78,69 @@ namespace DotNetOpenAuth.BuildTasks {
 					continue;
 				}
 
-				var projectPath = Path.Combine(Path.GetDirectoryName(sourceTemplateTaskItem.ItemSpec), projectElement.Attribute("File").Value);
+				var projectPath = this.SourceProjects[iTemplate].ItemSpec;
 				var projectDirectory = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(sourceTemplateTaskItem.GetMetadata("FullPath")), projectElement.Attribute("File").Value));
 				Log.LogMessage("Merging project \"{0}\" with \"{1}\".", projectPath, sourceTemplateTaskItem.ItemSpec);
 				var sourceProject = new Project();
 				sourceProject.Load(projectPath);
+				var projectItems = sourceProject.EvaluatedItems.Cast<BuildItem>().Where(item => this.ProjectItemTypes.Contains(item.Name));
+
+				// Figure out where every project item is in source, and where it will go in the destination,
+				// taking into account a given maximum path length that may require that we shorten the path.
+				var sourceToDestinationProjectItemMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				//var oversizedItemPaths = projectItems.Where(item => item.Include.Length > this.MaximumRelativePathLength);
+				foreach (var item in projectItems) {
+					var source = item.Include;
+					var dest = item.Include;
+
+						//        if (this.MaximumRelativePathLength > 0) {
+						//    if (item.Include.Length > this.MaximumRelativePathLength) {
+						//        string leafName = Path.GetFileName(item.Include);
+						//        int targetLeafLength = leafName.Length - (item.Include.Length - this.MaximumRelativePathLength);
+						//        string shortenedFileName = CreateUniqueShortFileName(leafName, targetLeafLength);
+						//        string shortenedRelativePath = Path.Combine(Path.GetDirectoryName(item.Include), shortenedFileName);
+						//        if (shortenedRelativePath.Length <= this.MaximumRelativePathLength) {
+						//            this.Log.LogMessage(
+						//                "Renaming long project item '{0}' to '{1}' within project template to avoid MAX_PATH issues.  The instantiated project will remain unchanged.",
+						//                item.Include,
+						//                shortenedRelativePath);
+						//            projectItem.SetAttributeValue("TargetFileName", Path.GetFileName(item.Include));
+						//            projectItem.Value = shortenedFileName;
+						//            string originalFullPath = Path.Combine(projectDirectory, item.Include);
+						//            string shortenedFullPath = Path.Combine(projectDirectory, shortenedRelativePath);
+						//            if (File.Exists(shortenedFullPath)) {
+						//                File.Delete(shortenedFullPath); // File.Move can't overwrite files
+						//            }
+						//            File.Move(originalFullPath, shortenedFullPath);
+
+						//            // Document the change so the build system can account for it.
+						//            TaskItem shortChange = new TaskItem(originalFullPath);
+						//            shortChange.SetMetadata("ShortPath", shortenedFullPath);
+						//            shortenedItems.Add(shortChange);
+						//        } else {
+						//            this.Log.LogError(
+						//                "Project item '{0}' exceeds maximum allowable length {1} by {2} characters and it cannot be sufficiently shortened.  Estimated full path is: '{3}'.",
+						//                item.Include,
+						//                this.MaximumRelativePathLength,
+						//                item.Include.Length - this.MaximumRelativePathLength,
+						//                item.Include);
+						//        }
+						//    }
+						//}
+
+					sourceToDestinationProjectItemMap[source] = dest;
+				}
 
 				// Collect the project items from the project that are appropriate
 				// to include in the .vstemplate file.
-				var itemsByFolder = from item in sourceProject.EvaluatedItems.Cast<BuildItem>()
-									where this.ProjectItemTypes.Contains(item.Name)
+				var itemsByFolder = from item in projectItems
 									orderby item.Include
 									group item by Path.GetDirectoryName(item.Include);
+
 				foreach (var folder in itemsByFolder) {
 					XElement parentNode = projectElement;
-					if (folder.Key.Length > 0) {
-						parentNode = FindOrCreateParent((uniqueItemCounter++).ToString("x"), projectElement);
-						parentNode.SetAttributeValue("TargetFolderName", folder.Key);
-					}
+					parentNode = FindOrCreateParent(folder.Key, projectElement);
+					//parentNode.SetAttributeValue("TargetFolderName", folder.Key);
 
 					foreach (var item in folder) {
 						bool replaceParameters = this.ReplaceParametersExtensions.Contains(Path.GetExtension(item.Include));
@@ -107,50 +153,21 @@ namespace DotNetOpenAuth.BuildTasks {
 						if (replaceParameters) {
 							projectItem.SetAttributeValue("ReplaceParameters", "true");
 						}
-
-						if (this.EnsureMaxPath > 0) {
-							string estimatedFullPath = EstimateFullPathInProjectCache(Path.GetFileNameWithoutExtension(sourceProject.FullFileName), item.Include);
-							if (estimatedFullPath.Length > this.EnsureMaxPath) {
-								string leafName = Path.GetFileName(item.Include);
-								int targetLeafLength = leafName.Length - (estimatedFullPath.Length - this.EnsureMaxPath);
-								string shortenedFileName = CreateUniqueShortFileName(leafName, targetLeafLength);
-								string shortenedRelativePath = Path.Combine(Path.GetDirectoryName(item.Include), shortenedFileName);
-								string shortenedEstimatedFullPath = EstimateFullPathInProjectCache(Path.GetFileNameWithoutExtension(sourceProject.FullFileName), shortenedRelativePath);
-								if (shortenedEstimatedFullPath.Length <= this.EnsureMaxPath) {
-									this.Log.LogMessage(
-										"Renaming long project item '{0}' to '{1}' within project template to avoid MAX_PATH issues.  The instantiated project will remain unchanged.",
-										item.Include,
-										shortenedRelativePath);
-									projectItem.SetAttributeValue("TargetFileName", Path.GetFileName(item.Include));
-									projectItem.Value = shortenedFileName;
-									string originalFullPath = Path.Combine(projectDirectory, item.Include);
-									string shortenedFullPath = Path.Combine(projectDirectory, shortenedRelativePath);
-									if (File.Exists(shortenedFullPath)) {
-										File.Delete(shortenedFullPath); // File.Move can't overwrite files
-									}
-									File.Move(originalFullPath, shortenedFullPath);
-
-									// Document the change so the build system can account for it.
-									TaskItem shortChange = new TaskItem(originalFullPath);
-									shortChange.SetMetadata("ShortPath", shortenedFullPath);
-									shortenedItems.Add(shortChange);
-								} else {
-									this.Log.LogError(
-										"Project item '{0}' exceeds maximum allowable length {1} by {2} characters and it cannot be sufficiently shortened.  Estimated full path is: '{3}'.",
-										item.Include,
-										this.EnsureMaxPath,
-										estimatedFullPath.Length - this.EnsureMaxPath,
-										estimatedFullPath);
-								}
-							}
-						}
 					}
 				}
 
-				template.Save(sourceTemplateTaskItem.ItemSpec);
+				template.Save(this.DestinationTemplates[iTemplate].ItemSpec);
+				foreach (var pair in sourceToDestinationProjectItemMap) {
+					TaskItem item = new TaskItem(Path.Combine(Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec), pair.Key));
+					item.SetMetadata("SourceFullPath", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec), pair.Key)));
+					item.SetMetadata("DestinationFullPath", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(this.DestinationTemplates[iTemplate].ItemSpec), pair.Value)));
+					item.SetMetadata("RecursiveDir", Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec));
+					projectItemsToCopy.Add(item);
+				}
 			}
 
-			this.MaxPathAdjustedPaths = shortenedItems.ToArray();
+			this.ProjectItems = projectItemsToCopy.ToArray();
+
 			return !Log.HasLoggedErrors;
 		}
 
@@ -198,37 +215,6 @@ namespace DotNetOpenAuth.BuildTasks {
 			}
 
 			return parent;
-		}
-
-		private string EstimateFullPathInProjectCache(string projectName, string itemRelativePath) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(projectName));
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(itemRelativePath));
-
-			const string PathRoot = @"c:\documents and settings\usernameZZZ\AppData\Local\Microsoft\VisualStudio\10.0\Extensions\";
-			string subPath;
-			if (!vsixContributionToPath.TryGetValue(projectName, out subPath)) {
-				if (this.VsixManifest == null) {
-					this.Log.LogError("The task parameter VsixManifests is required but missing.");
-				}
-				var vsixDocument = XDocument.Load(this.VsixManifest.ItemSpec);
-				XElement vsix = vsixDocument.Element(XName.Get("Vsix", VsixNamespace));
-				XElement identifier = vsix.Element(XName.Get("Identifier", VsixNamespace));
-				XElement content = vsix.Element(XName.Get("Content", VsixNamespace));
-				string author = identifier.Element(XName.Get("Author", VsixNamespace)).Value;
-				string name = identifier.Element(XName.Get("Name", VsixNamespace)).Value;
-				string version = identifier.Element(XName.Get("Version", VsixNamespace)).Value;
-				string pt = content.Element(XName.Get("ProjectTemplate", VsixNamespace)).Value;
-				vsixContributionToPath[projectName] = subPath = string.Format(
-					CultureInfo.InvariantCulture,
-					@"{0}\{1}\{2}\~PC\{3}\CSharp\Web\{4}.zip\",
-					author,
-					name,
-					version,
-					pt,
-					projectName
-					);
-			}
-			return Path.Combine(PathRoot + subPath + Path.GetFileNameWithoutExtension(projectName), itemRelativePath);
 		}
 	}
 }

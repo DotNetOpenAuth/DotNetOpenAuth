@@ -2,6 +2,7 @@
 	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
 
 	<PropertyGroup>
+		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">50</ProjectTemplateMaxPath>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
 		<ExtensionVsixLayoutDirectory>$(IntermediatePath)Vsix\</ExtensionVsixLayoutDirectory>
 
@@ -9,6 +10,7 @@
 			BuildUnifiedProduct;
 			ReSignDelaySignedAssemblies;
 			DeploySql;
+			LayoutProjects;
 		</LayoutDependsOn>
 
 		<!-- We don't need to build the project templates, but to make sure we're not shipping junk,
@@ -20,7 +22,7 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<ProjectTemplates Include="**\*.*proj" Exclude="$(MSBuildThisFileDirectory)$(MSBuildThisFile)" />
+		<ProjectTemplates Include="**\*.*proj" Exclude="$(MSBuildThisFile)" />
 	</ItemGroup>
 
 	<Target Name="Validate">
@@ -32,50 +34,17 @@
 		<MSBuild Projects="RelyingPartyDatabase\RelyingPartyDatabase.dbproj" Targets="Build;Deploy" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<Target Name="Layout" DependsOnTargets="$(LayoutDependsOn)">
+	<Target Name="LayoutProjects">
 		<ItemGroup>
-			<ProjectTemplatesSource Include="$(ProjectRoot)projecttemplates\**\*"
-			                   Exclude="
-			                   $(ProjectRoot)projecttemplates\**\*.sln.cache;
-			                   $(ProjectRoot)projecttemplates\**\*.suo;
-			                   $(ProjectRoot)projecttemplates\**\*.gitignore;
-			                   $(ProjectRoot)projecttemplates\**\*.log*;
-			                   $(ProjectRoot)projecttemplates\**\*~;
-			                   $(ProjectRoot)projecttemplates\**\Settings.StyleCop;
-			                   $(ProjectRoot)projecttemplates\**\StyleCop.Cache;
-			                   $(ProjectRoot)projecttemplates\**\*.user;
-			                   $(ProjectRoot)projecttemplates\**\obj\**;
-			                   $(ProjectRoot)projecttemplates\**\bin\**;
-			                   $(ProjectRoot)projecttemplates\**\*.ldf;
-			                   $(ProjectRoot)projecttemplates\**\*.mdf;
-			                   $(ProjectRoot)projecttemplates\**\*.vsixmanifest;
-			                   "/>
-			<ProjectTemplatesSource Remove="@(ProjectTemplatesSource)" Condition=" '%(FullPath)' == '$(MSBuildThisFileDirectory)$(MSBuildThisFile)' " />
-			<_ProjectTemplatesTransformSource Include="@(ProjectTemplatesSource)" Condition="
-																			 '%(Extension)' == '.cs'
-																			 or '%(Extension)' == '.csproj'
-																			 or '%(Extension)' == '.sql'
-																			 or '%(Extension)' == '.config'
-																			 or '%(Extension)' == '.Master'
-																			 or '%(Extension)' == '.aspx'
-																			 or '%(Extension)' == '.ascx'
-																			 or '%(Extension)' == '.asax'
-																			 or '%(Extension)' == '.ashx'
-																			 ">
-				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
+			<TemplateProjects Include="**\*.csproj" Exclude="$(MSBuildThisFile)">
 				<AfterTokens>$safeprojectname$</AfterTokens>
 				<!-- Projects can get changed after the transform+copy operation, so don't skip copying them. -->
-				<SkipUnchangedFiles Condition="'%(Extension)' != '.csproj'">true</SkipUnchangedFiles>
-				<SkipUnchangedFiles Condition="'%(Extension)' == '.csproj'">false</SkipUnchangedFiles>
-			</_ProjectTemplatesTransformSource>
-			<ProjectTemplatesSource Remove="@(_ProjectTemplatesTransformSource)" />
-
-			<ProjectTemplatesLayout Include="@(ProjectTemplatesSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<ProjectTemplatesTransformLayout Include="@(_ProjectTemplatesTransformSource->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
-
-			<!-- Include the template icon -->
-			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\favicon.ico" />
-			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
+				<SkipUnchangedFiles>false</SkipUnchangedFiles>
+			</TemplateProjects>
+			<TemplateProjects>
+				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
+			</TemplateProjects>
+			<TemplateProjectsLayout Include="@(TemplateProjects->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<!-- Add external libraries -->
 			<!-- Include the unified, signed version of the library -->
@@ -88,50 +57,90 @@
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />
 			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(FileName)%(Extension)')" />
 
-			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
-			<ProjectTemplatesLayout Include="@(ProjectTemplateLibrariesTargets)" />
 			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
-
 			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
-			<VSProjectTemplates Include="@(ProjectTemplatesLayout)" Condition="'%(Extension)' == '.vstemplate'" />
+
+			<VSProjectTemplates Include="**\*.vstemplate" Exclude="*.vstemplate" />
+			<VSProjectTemplatesLayout Include="@(VSProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')" />
 		</ItemGroup>
 
-		<Trim Inputs="@(_ProjectTemplatesTransformSource)" MetadataName="BeforeTokens" AllAfter="\">
-			<Output TaskParameter="Outputs" ItemName="ProjectTemplatesTransformSource" />
+		<Trim Inputs="@(TemplateProjects)" MetadataName="BeforeTokens" AllAfter="\">
+			<Output TaskParameter="Outputs" ItemName="TemplateProjectsTransformSource" />
 		</Trim>
-		<!--<MSBuild Projects="@(ProjectTemplates)" />-->
-		<Copy SourceFiles="@(ProjectTemplatesSource)" DestinationFiles="@(ProjectTemplatesLayout)" SkipUnchangedFiles="true" />
-		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplatesTransformSource)" DestinationFiles="@(ProjectTemplatesTransformLayout)">
-			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectTemplateFiles" />
+		<CopyWithTokenSubstitution SourceFiles="@(TemplateProjectsTransformSource)" DestinationFiles="@(TemplateProjectsLayout)">
+			<Output TaskParameter="CopiedFiles" ItemName="CopiedProjectFiles" />
 		</CopyWithTokenSubstitution>
 		<ChangeProjectReferenceToAssemblyReference
-			Projects="@(CopiedProjectTemplateFiles)"
-			Condition="'%(Extension)' == '.csproj'"
+			Projects="@(CopiedProjectFiles)"
+			Condition=" '%(Extension)' == '.csproj' "
 			ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj"
 			Reference="Lib\$(ProductName).dll" />
 		<FixupReferenceHintPaths
-			Projects="@(CopiedProjectTemplateFiles)"
-			Condition="'%(CopiedProjectTemplateFiles.Extension)' == '.csproj'"
+			Projects="@(CopiedProjectFiles)"
 			References="@(FixupReferenceAssemblies)"
 			/>
 		<AddProjectItems
-			Projects="@(CopiedProjectTemplateFiles)"
-			Condition="'%(CopiedProjectTemplateFiles.FileName)%(CopiedProjectTemplateFiles.Extension)' == 'RelyingPartyLogic.csproj'"
+			Projects="@(CopiedProjectFiles)"
+			Condition="'%(CopiedProjectFiles.FileName)%(CopiedProjectFiles.Extension)' == 'RelyingPartyLogic.csproj'"
 			Items="@(InjectedLibraryItems)"
 			/>
 		<MergeProjectWithVSTemplate
 			ProjectItemTypes="@(VsTemplateProjectItemTypes)"
 			ReplaceParametersExtensions="@(VsTemplateParameterReplaceExtensions)"
-			Templates="@(VSProjectTemplates)"
+			SourceTemplates="@(VSProjectTemplates)"
+			SourceProjects="@(TemplateProjectsLayout)"
+			DestinationTemplates="@(VSProjectTemplatesLayout)"
+			MaximumRelativePathLength="$(ProjectTemplateMaxPath)"
 			>
-			<Output TaskParameter="MaxPathAdjustedPaths" ItemName="ProjectItemShortPathAdjustments"/>
+			<Output TaskParameter="ProjectItems" ItemName="TemplateProjectItems"/>
 		</MergeProjectWithVSTemplate>
+	</Target>
+
+	<Target Name="Layout" DependsOnTargets="$(LayoutDependsOn)">
+		<ItemGroup>
+			<TemplateProjectItems Condition="
+					 '%(Extension)' == '.cs'
+					 or '%(Extension)' == '.csproj'
+					 or '%(Extension)' == '.sql'
+					 or '%(Extension)' == '.config'
+					 or '%(Extension)' == '.Master'
+					 or '%(Extension)' == '.aspx'
+					 or '%(Extension)' == '.ascx'
+					 or '%(Extension)' == '.asax'
+					 or '%(Extension)' == '.ashx'
+					 ">
+				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
+				<AfterTokens>$safeprojectname$</AfterTokens>
+			</TemplateProjectItems>
+			<TemplateProjectItems>
+				<SkipUnchangedFiles>true</SkipUnchangedFiles>
+			</TemplateProjectItems>
+			<TemplateProjectItemsForTransformSource Include="@(TemplateProjectItems->'%(SourceFullPath)')" />
+			<TemplateProjectItemsForTransformLayout Include="@(TemplateProjectItems->'%(DestinationFullPath)')" />
+
+			<RootVsTemplateSource Include="*.vstemplate" />
+			<ProjectTemplatesSource Include="@(RootVsTemplateSource)" />
+			<ProjectTemplatesLayout Include="@(RootVsTemplateSource->'$(ProjectTemplatesLayoutPath)%(FileName)%(Extension)')" />
+			
+			<!-- Include the template icon -->
+			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\favicon.ico" />
+			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
+		</ItemGroup>
+
+		<Copy 
+			SourceFiles="@(ProjectTemplatesSource)" 
+			DestinationFiles="@(ProjectTemplatesLayout)" 
+			SkipUnchangedFiles="true" />
+		<CopyWithTokenSubstitution 
+			SourceFiles="@(TemplateProjectItemsForTransformSource)" 
+			DestinationFiles="@(TemplateProjectItemsForTransformLayout)" />
 
 		<ItemGroup>
 			<ProjectTemplateIntendedFiles Include="
 																		@(ProjectTemplatesLayout);
-																		@(ProjectTemplatesTransformLayout);
-																		%(ProjectItemShortPathAdjustments.ShortPath);
+																		@(TemplateProjectItemsForTransformLayout);
+																		@(VSProjectTemplatesLayout);
+																		@(TemplateProjectsLayout);
 																		" />
 			<ProjectTemplateIntendedFiles Remove="@(ProjectItemShortPathAdjustments)" />
 		</ItemGroup>
