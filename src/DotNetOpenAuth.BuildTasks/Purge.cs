@@ -40,6 +40,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// <summary>
 		/// Gets or sets the files that should be NOT be purged.
 		/// </summary>
+		[Required]
 		public ITaskItem[] IntendedFiles { get; set; }
 
 		/// <summary>
