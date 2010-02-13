@@ -62,7 +62,7 @@ namespace RelyingPartyLogic {
 					}
 				}
 			} catch (ProtocolException /*ex*/) {
-				//Logger.Error("Error processing OAuth messages.", ex);
+				////Logger.Error("Error processing OAuth messages.", ex);
 			}
 
 			return false;
