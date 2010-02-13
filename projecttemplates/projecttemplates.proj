@@ -115,12 +115,16 @@
 			<TemplateProjectItems>
 				<SkipUnchangedFiles>true</SkipUnchangedFiles>
 			</TemplateProjectItems>
-			<TemplateProjectItemsForTransformSource Include="@(TemplateProjectItems->'%(SourceFullPath)')" />
-			<TemplateProjectItemsForTransformLayout Include="@(TemplateProjectItems->'%(DestinationFullPath)')" />
-
+			<TemplateProjectItemsForTransformSource Include="@(TemplateProjectItems->'%(SourceFullPath)')"
+																							Condition=" '%(TemplateProjectItems.RelativeDir)' != 'RelyingPartyLogic\lib\' "/>
+			<TemplateProjectItemsForTransformLayout Include="@(TemplateProjectItems->'%(DestinationFullPath)')"
+																							Condition=" '%(TemplateProjectItems.RelativeDir)' != 'RelyingPartyLogic\lib\' "/>
 			<RootVsTemplateSource Include="*.vstemplate" />
 			<ProjectTemplatesSource Include="@(RootVsTemplateSource)" />
 			<ProjectTemplatesLayout Include="@(RootVsTemplateSource->'$(ProjectTemplatesLayoutPath)%(FileName)%(Extension)')" />
+
+			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
+			<ProjectTemplatesLayout Include="@(ProjectTemplateLibrariesTargets)" />
 			
 			<!-- Include the template icon -->
 			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\favicon.ico" />
