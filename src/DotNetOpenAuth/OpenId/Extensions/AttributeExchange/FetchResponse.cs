@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -52,7 +53,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// Gets a sequence of the attributes whose values are provided by the OpenID Provider.
 		/// </summary>
 		public KeyedCollection<string, AttributeValues> Attributes {
-			get { return this.attributesProvided; }
+			get {
+				Contract.Ensures(Contract.Result<KeyedCollection<string, AttributeValues>>() != null);
+				return this.attributesProvided;
+			}
 		}
 
 		/// <summary>

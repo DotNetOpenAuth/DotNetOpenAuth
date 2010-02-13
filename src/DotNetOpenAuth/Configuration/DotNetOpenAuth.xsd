@@ -452,6 +452,14 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="cacheDiscovery" type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>
+									Whether the results of identifier discovery should be cached for a short time to improve performance
+									on subsequent requests, at the potential risk of reading stale data.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="oauth">
