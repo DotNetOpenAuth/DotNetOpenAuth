@@ -4,6 +4,7 @@
 	<PropertyGroup>
 		<VS2010ProjectTemplatesDirectory>$(IntermediatePath)VS2010projecttemplates\</VS2010ProjectTemplatesDirectory>
 		<ProjectTemplateSubdirectory>$(ExtensionVsixLayoutDirectory)PT\CSharp\Web\</ProjectTemplateSubdirectory>
+		<ExtensionVsixLayoutDirectory>$(IntermediatePath)Vsix\</ExtensionVsixLayoutDirectory>
 	</PropertyGroup>
 
 	<Target Name="VsixManifestLayout">

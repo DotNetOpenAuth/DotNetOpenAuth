@@ -3,9 +3,10 @@
 
 	<PropertyGroup>
 		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">50</ProjectTemplateMaxPath>
-		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
-		<ProjectTemplates2008LayoutPath>$(IntermediatePath)projecttemplates2008\</ProjectTemplates2008LayoutPath>
-		<ExtensionVsixLayoutDirectory>$(IntermediatePath)Vsix\</ExtensionVsixLayoutDirectory>
+
+		<!-- We use GetFullPath here because IntermediatePath may be a relative directory, and we need to do full path comparisons. -->
+		<ProjectTemplatesLayoutPath>$([System.IO.Path]::GetFullPath('$(IntermediatePath)projecttemplates\'))</ProjectTemplatesLayoutPath>
+		<ProjectTemplates2008LayoutPath>$([System.IO.Path]::GetFullPath('$(IntermediatePath)projecttemplates2008\'))</ProjectTemplates2008LayoutPath>
 
 		<LayoutDependsOn>
 			BuildUnifiedProduct;
@@ -163,7 +164,9 @@
 
 			<VS2008ProjectTemplates Include="@(ProjectTemplates2008Layout)" Condition="'%(Extension)' == '.vstemplate'" />
 			<TopLevelVS2008ProjectTemplates Include="@(VS2008ProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(ProjectTemplates2008LayoutPath)'" />
+			<VS2008ProjectTemplateZipFiles Include="@(TopLevelVS2008ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
 		</ItemGroup>
+		<Message Text="VS2008ProjectTemplates: @(VS2008ProjectTemplates)" />
 
 		<HardLinkCopy SourceFiles="@(ProjectTemplates2008Source)" DestinationFiles="@(ProjectTemplates2008Layout)" />
 
@@ -173,7 +176,42 @@
 			DowngradeMvc2ToMvc1="true"
 			/>
 
-		<Purge Directories="$(ProjectTemplates2008LayoutPath)" IntendedFiles="@(ProjectTemplates2008Layout)" />
+		<Purge Directories="$(ProjectTemplates2008LayoutPath)" 
+					 IntendedFiles="@(ProjectTemplates2008Layout);@(VS2008ProjectTemplateZipFiles)" />
+	</Target>
+
+	<Target Name="Zip2008" DependsOnTargets="Layout2008">
+		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2008ProjectTemplates)">
+			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2008Templates" />
+			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2008TemplateItemContents" />
+		</DiscoverProjectTemplates>
+
+		<ItemGroup>
+			<!-- Include in each template .zip file the top-level .vstemplate file itself. -->
+			<VS2008ProjectTemplateContents Include="@(TopLevelVS2008ProjectTemplates)">
+				<ZipFile>$(ProjectTemplates2008LayoutPath)%(FileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplates2008LayoutPath)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
+
+			<!-- Now throw in all the files in each of the project-level template's directories and their children. -->
+			<VS2008ProjectTemplateContents Include="@(VS2008TemplateItemContents)">
+				<ZipFile>$(ProjectTemplates2008LayoutPath)%(VS2008TemplateItemContents.TopLevelTemplateFileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplates2008LayoutPath)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
+
+			<!-- Include the template icon for each .zip file. -->
+			<VS2008ProjectTemplateContents Include="@(TopLevelVS2008ProjectTemplates->'$(ProjectTemplates2008LayoutPath)__TemplateIcon.ico')">
+				<ZipFile>$(ProjectTemplates2008LayoutPath)%(TopLevelVS2008ProjectTemplates.FileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplates2008LayoutPath)</WorkingDirectory>
+			</VS2008ProjectTemplateContents>
+		</ItemGroup>
+
+		<Zip
+			Files="@(VS2008ProjectTemplateContents)"
+			ZipFileName="%(VS2008ProjectTemplateContents.ZipFile)"
+			WorkingDirectory="%(VS2008ProjectTemplateContents.WorkingDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
