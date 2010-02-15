@@ -179,9 +179,9 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </remarks>
 		internal static void ConvertSregToMatchRequest(this Provider.IHostProcessedRequest request) {
 			var req = (Provider.HostProcessedRequest)request;
-			var response = (IProtocolMessageWithExtensions)req.Response;
+			var response = req.Response as IProtocolMessageWithExtensions; // negative responses don't support extensions.
 			var sregRequest = request.GetExtension<ClaimsRequest>();
-			if (sregRequest != null) {
+			if (sregRequest != null && response != null) {
 				if (sregRequest.Synthesized) {
 					var axRequest = request.GetExtension<FetchRequest>();
 					ErrorUtilities.VerifyInternal(axRequest != null, "How do we have a synthesized Sreg request without an AX request?");
