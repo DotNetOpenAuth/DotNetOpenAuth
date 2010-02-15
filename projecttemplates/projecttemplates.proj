@@ -1,12 +1,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
+	<Import Project="ProjectTemplates.props"/>
 
 	<PropertyGroup>
 		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">50</ProjectTemplateMaxPath>
-
-		<!-- We use GetFullPath here because IntermediatePath may be a relative directory, and we need to do full path comparisons. -->
-		<ProjectTemplatesLayoutPath>$([System.IO.Path]::GetFullPath('$(IntermediatePath)projecttemplates\'))</ProjectTemplatesLayoutPath>
-		<ProjectTemplates2008LayoutPath>$([System.IO.Path]::GetFullPath('$(IntermediatePath)projecttemplates2008\'))</ProjectTemplates2008LayoutPath>
 
 		<LayoutDependsOn>
 			BuildUnifiedProduct;
@@ -220,7 +217,7 @@
 					 IntendedFiles="@(ProjectTemplates2008Layout);@(VS2008ProjectTemplateZipFiles)" />
 	</Target>
 
-	<Target Name="Zip2008" DependsOnTargets="Layout2008">
+	<Target Name="Zip2008" DependsOnTargets="Layout2008" Returns="%(VS2008ProjectTemplateContents.ZipFile)">
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2008ProjectTemplates)">
 			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2008Templates" />
 			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2008TemplateItemContents" />
