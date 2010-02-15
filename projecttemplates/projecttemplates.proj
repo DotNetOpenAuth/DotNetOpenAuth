@@ -131,6 +131,9 @@
 			<!-- Include the template icon -->
 			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\favicon.ico" />
 			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />
+
+			<TopLevelVS2010ProjectTemplates Include="@(ProjectTemplatesLayout)" Condition=" '%(Extension)' == '.vstemplate' and '%(RootDir)%(Directory)' == '$(ProjectTemplatesLayoutPath)' " />
+			<VS2010ProjectTemplateZipFiles Include="@(TopLevelVS2010ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
 		</ItemGroup>
 
 		<Copy 
@@ -147,6 +150,7 @@
 																		@(TemplateProjectItemsForTransformLayout);
 																		@(VSProjectTemplatesLayout);
 																		@(TemplateProjectsLayout);
+																		@(VS2010ProjectTemplateZipFiles);
 																		" />
 			<ProjectTemplateIntendedFiles Remove="@(ProjectItemShortPathAdjustments)" />
 		</ItemGroup>
@@ -154,9 +158,45 @@
 					 IntendedFiles="@(ProjectTemplateIntendedFiles)" />
 	</Target>
 
+	<Target Name="Zip" DependsOnTargets="Layout">
+		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2010ProjectTemplates)">
+			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2010Templates" />
+			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2010TemplateItemContents" />
+		</DiscoverProjectTemplates>
+
+		<ItemGroup>
+			<!-- Include in each template .zip file the top-level .vstemplate file itself. -->
+			<VS2010ProjectTemplateContents Include="@(TopLevelVS2010ProjectTemplates)">
+				<ZipFile>$(ProjectTemplatesLayoutPath)%(FileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
+			</VS2010ProjectTemplateContents>
+
+			<!-- Now throw in all the files in each of the project-level template's directories and their children. -->
+			<VS2010ProjectTemplateContents Include="@(VS2010TemplateItemContents)">
+				<ZipFile>$(ProjectTemplatesLayoutPath)%(VS2010TemplateItemContents.TopLevelTemplateFileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
+			</VS2010ProjectTemplateContents>
+
+			<!-- Include the template icon for each .zip file. -->
+			<VS2010ProjectTemplateContents Include="@(TopLevelVS2010ProjectTemplates->'$(ProjectTemplatesLayoutPath)__TemplateIcon.ico')">
+				<ZipFile>$(ProjectTemplatesLayoutPath)%(TopLevelVS2010ProjectTemplates.FileName).zip</ZipFile>
+				<WorkingDirectory>$(ProjectTemplatesLayoutPath)</WorkingDirectory>
+			</VS2010ProjectTemplateContents>
+
+			<ExtensionVsixContents Include="%(VS2010ProjectTemplateContents.ZipFile)" />
+		</ItemGroup>
+
+		<Zip
+			Files="@(VS2010ProjectTemplateContents)"
+			ZipFileName="%(VS2010ProjectTemplateContents.ZipFile)"
+			WorkingDirectory="%(VS2010ProjectTemplateContents.WorkingDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
+	</Target>
+	
 	<Target Name="Layout2008" DependsOnTargets="Layout">
 		<ItemGroup>
-			<ProjectTemplates2008Source Include="$(ProjectTemplatesLayoutPath)**" />
+			<ProjectTemplates2008Source Include="$(ProjectTemplatesLayoutPath)**" Exclude="$(ProjectTemplatesLayoutPath)*.zip" />
 			<ProjectTemplates2008Layout Include="@(ProjectTemplates2008Source->'$(ProjectTemplates2008LayoutPath)%(RecursiveDir)%(FileName)%(Extension)')" />
 			<ProjectTemplates2008Layout>
 				<HardLink Condition=" '%(Extension)' != '.csproj' ">true</HardLink>
