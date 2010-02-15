@@ -14,26 +14,8 @@
 
 	<Target Name="ProjectTemplates2008" DependsOnTargets="ProjectTemplatesLayout">
 		<ItemGroup>
-			<ProjectTemplates2008Source Include="$(ProjectTemplatesLayoutPath)**" />
-			<ProjectTemplates2008Layout Include="@(ProjectTemplates2008Source->'$(VS2008ProjectTemplatesDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
-			<ProjectTemplates2008Layout>
-				<HardLink Condition=" '%(Extension)' != '.csproj' ">true</HardLink>
-			</ProjectTemplates2008Layout>
-
-			<VS2008ProjectTemplates Include="@(ProjectTemplates2008Layout)" Condition="'%(Extension)' == '.vstemplate'" />
-			<TopLevelVS2008ProjectTemplates Include="@(VS2008ProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(VS2008ProjectTemplatesDirectory)'" />
 			<VS2008ProjectTemplateZipFiles Include="@(TopLevelVS2008ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
 		</ItemGroup>
-
-		<HardLinkCopy SourceFiles="@(ProjectTemplates2008Source)" DestinationFiles="@(ProjectTemplates2008Layout)" />
-
-		<DowngradeProjects
-			Projects="@(ProjectTemplates2008Layout)"
-			Condition="'%(Extension)' == '.csproj'"
-			DowngradeMvc2ToMvc1="true"
-			/>
-
-		<Purge Directories="$(VS2008ProjectTemplatesDirectory)" IntendedFiles="@(ProjectTemplates2008Layout)" />
 
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2008ProjectTemplates)">
 			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2008Templates" />

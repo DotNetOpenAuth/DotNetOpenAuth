@@ -4,6 +4,7 @@
 	<PropertyGroup>
 		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">50</ProjectTemplateMaxPath>
 		<ProjectTemplatesLayoutPath>$(IntermediatePath)projecttemplates\</ProjectTemplatesLayoutPath>
+		<ProjectTemplates2008LayoutPath>$(IntermediatePath)projecttemplates2008\</ProjectTemplates2008LayoutPath>
 		<ExtensionVsixLayoutDirectory>$(IntermediatePath)Vsix\</ExtensionVsixLayoutDirectory>
 
 		<LayoutDependsOn>
@@ -150,6 +151,29 @@
 		</ItemGroup>
 		<Purge Directories="$(ProjectTemplatesLayoutPath)"
 					 IntendedFiles="@(ProjectTemplateIntendedFiles)" />
+	</Target>
+
+	<Target Name="Layout2008" DependsOnTargets="Layout">
+		<ItemGroup>
+			<ProjectTemplates2008Source Include="$(ProjectTemplatesLayoutPath)**" />
+			<ProjectTemplates2008Layout Include="@(ProjectTemplates2008Source->'$(ProjectTemplates2008LayoutPath)%(RecursiveDir)%(FileName)%(Extension)')" />
+			<ProjectTemplates2008Layout>
+				<HardLink Condition=" '%(Extension)' != '.csproj' ">true</HardLink>
+			</ProjectTemplates2008Layout>
+
+			<VS2008ProjectTemplates Include="@(ProjectTemplates2008Layout)" Condition="'%(Extension)' == '.vstemplate'" />
+			<TopLevelVS2008ProjectTemplates Include="@(VS2008ProjectTemplates)" Condition="'%(RootDir)%(Directory)' == '$(ProjectTemplates2008LayoutPath)'" />
+		</ItemGroup>
+
+		<HardLinkCopy SourceFiles="@(ProjectTemplates2008Source)" DestinationFiles="@(ProjectTemplates2008Layout)" />
+
+		<DowngradeProjects
+			Projects="@(ProjectTemplates2008Layout)"
+			Condition="'%(Extension)' == '.csproj'"
+			DowngradeMvc2ToMvc1="true"
+			/>
+
+		<Purge Directories="$(ProjectTemplates2008LayoutPath)" IntendedFiles="@(ProjectTemplates2008Layout)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
