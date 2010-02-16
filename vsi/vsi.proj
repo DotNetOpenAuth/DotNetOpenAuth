@@ -13,7 +13,7 @@
 
 	<Target Name="Build">
 		<MSBuild Projects="..\projecttemplates\projecttemplates.proj" Targets="Zip2008" BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="ProjectTemplateZipSource"/>
+			<Output TaskParameter="TargetOutputs" ItemName="ProjectTemplate2008ZipSource"/>
 		</MSBuild>
 
 		<PropertyGroup>
@@ -32,14 +32,14 @@
 																	@(VsiTransformLayout);
 																	" />
 
-			<ProjectTemplateZipSource>
+			<ProjectTemplate2008ZipSource>
 				<HardLink>true</HardLink>
-			</ProjectTemplateZipSource>
-			<ProjectTemplateZipTargets Include="@(ProjectTemplateZipSource->'$(ProjectTemplatesVsiDirectory)%(FileName)%(Extension)')" />
+			</ProjectTemplate2008ZipSource>
+			<ProjectTemplate2008ZipTargets Include="@(ProjectTemplate2008ZipSource->'$(ProjectTemplatesVsiDirectory)%(FileName)%(Extension)')" />
 		</ItemGroup>
 
 		<CopyWithTokenSubstitution SourceFiles="@(VsiTransformSource)" DestinationFiles="@(VsiTransformLayout)" />
-		<HardLinkCopy SourceFiles="@(ProjectTemplateZipSource)" DestinationFiles="@(ProjectTemplateZipTargets)" />
+		<HardLinkCopy SourceFiles="@(ProjectTemplate2008ZipSource)" DestinationFiles="@(ProjectTemplate2008ZipTargets)" />
 
 		<Zip
 			Files="@(ProjectTemplateVsiContents)"

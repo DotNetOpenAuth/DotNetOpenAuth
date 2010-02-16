@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
 	<Import Project="ProjectTemplates.props"/>
 
@@ -155,7 +155,7 @@
 					 IntendedFiles="@(ProjectTemplateIntendedFiles)" />
 	</Target>
 
-	<Target Name="Zip" DependsOnTargets="Layout">
+	<Target Name="Zip" DependsOnTargets="Layout" Returns="%(VS2010ProjectTemplateContents.ZipFile)">
 		<DiscoverProjectTemplates TopLevelTemplates="@(TopLevelVS2010ProjectTemplates)">
 			<Output TaskParameter="ProjectTemplates" ItemName="SubVS2010Templates" />
 			<Output TaskParameter="ProjectTemplateContents" ItemName="VS2010TemplateItemContents" />
@@ -250,6 +250,8 @@
 			ZipLevel="$(ZipLevel)"
 			/>
 	</Target>
+
+	<Target Name="Build" DependsOnTargets="Zip;Zip2008" />
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
 </Project>

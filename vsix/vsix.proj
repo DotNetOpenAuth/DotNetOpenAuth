@@ -3,72 +3,78 @@
 	<Import Project="..\projecttemplates\ProjectTemplates.props"/>
 
 	<PropertyGroup>
-		<ExtensionVsixLayoutDirectory>$(IntermediatePath)Vsix\</ExtensionVsixLayoutDirectory>
+		<ExtensionVsixLayoutDirectory>$(IntermediatePath)vsix\</ExtensionVsixLayoutDirectory>
 		<ProjectTemplateSubdirectory>$(ExtensionVsixLayoutDirectory)PT\CSharp\Web\</ProjectTemplateSubdirectory>
 	</PropertyGroup>
 
-	<Target Name="VsixManifestLayout">
+	<Target Name="Layout">
+		<MSBuild Projects="..\projecttemplates\projecttemplates.proj" Targets="Zip" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="ProjectTemplateZipSource"/>
+		</MSBuild>
+
 		<ItemGroup>
-			<ProjectTemplates2010TransformSource Include="
+			<ProjectTemplateZipSource>
+				<HardLink>true</HardLink>
+			</ProjectTemplateZipSource>
+			<ProjectTemplateZipTargets Include="@(ProjectTemplateZipSource->'$(ProjectTemplateSubdirectory)%(FileName)%(Extension)')" />
+
+			<ExtensionVsixTransformSource Include="
 																					 $(ProjectRoot)vsix\extension.vsixmanifest;
 																					 $(ProjectRoot)LICENSE.txt;
 																					 ">
 				<BeforeTokens>$version$</BeforeTokens>
 				<AfterTokens>$(BuildVersion)</AfterTokens>
 				<SkipUnchangedFiles>false</SkipUnchangedFiles>
-			</ProjectTemplates2010TransformSource>
-			<ProjectTemplates2010TransformLayout Include="@(ProjectTemplates2010TransformSource->'$(ExtensionVsixLayoutDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
-		</ItemGroup>
-		<CopyWithTokenSubstitution SourceFiles="@(ProjectTemplates2010TransformSource)" DestinationFiles="@(ProjectTemplates2010TransformLayout)" />
-	</Target>
+			</ExtensionVsixTransformSource>
+			<ExtensionVsixTransformLayout Include="@(ExtensionVsixTransformSource->'$(ExtensionVsixLayoutDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
 
-	<Target Name="VsixLayout" DependsOnTargets="VsixManifestLayout">
-		<MSBuild Projects="..\projecttemplates\projecttemplates.proj" Targets="Zip" BuildInParallel="$(BuildInParallel)" />
-
-		<ItemGroup>
 			<ExtensionVsixSources Include="
 														$(ProjectRoot)vsix\*;
 														" Exclude="
 														$(ProjectRoot)vsix\extension.vsixmanifest;
+														$(ProjectRoot)vsix\$(MSBuildThisFile);
 														">
 				<SkipUnchangedFiles>true</SkipUnchangedFiles>
 			</ExtensionVsixSources>
-
 			<ExtensionVsixTargets Include="@(ExtensionVsixSources->'$(ExtensionVsixLayoutDirectory)%(FileName)%(Extension)')" />
 
 			<ExtensionVsixContents Include="
 														 @(ExtensionVsixTargets);
-														 @(ProjectTemplates2010TransformLayout);
+														 @(ExtensionVsixTransformLayout);
+														 @(ProjectTemplateZipTargets);
 														 "/>
 		</ItemGroup>
 
+		<CopyWithTokenSubstitution SourceFiles="@(ExtensionVsixTransformSource)" DestinationFiles="@(ExtensionVsixTransformLayout)" />
 		<Copy SourceFiles="@(ExtensionVsixSources)" DestinationFiles="@(ExtensionVsixTargets)" SkipUnchangedFiles="true" />
+		<HardLinkCopy SourceFiles="@(ProjectTemplateZipSource)" DestinationFiles="@(ProjectTemplateZipTargets)" />
 		<Purge Directories="$(ExtensionVsixLayoutDirectory)" IntendedFiles="@(ExtensionVsixContents)" />
+	</Target>
 
+	<Target Name="VSGalleryVsixLayout" DependsOnTargets="Layout">
 		<!-- Build individual VSIX files for each project template for the Visual Studio Gallery,
 		     which only allows one project template per VSIX. -->
 		<ItemGroup>
-			<VSGalleryProjectTemplates Include="$(ProjectTemplateSubdirectory)*.zip" />
-			<VSGalleryVsixRawSources Include="$(ExtensionVsixLayoutDirectory)**"
-														Exclude="$(ProjectTemplateSubdirectory)*.zip;$(ExtensionVsixLayoutDirectory)*.vsixmanifest">
-				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(VSGalleryProjectTemplates.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
-				<TopLevelTemplate>%(VSGalleryProjectTemplates.FileName)</TopLevelTemplate>
+			<VSGalleryVsixRawSources Include="$(ExtensionVsixLayoutDirectory)*"
+															 Exclude="$(ExtensionVsixLayoutDirectory)*.vsixmanifest">
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(ProjectTemplateZipTargets.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<TopLevelTemplate>%(ProjectTemplateZipTargets.FileName)</TopLevelTemplate>
 			</VSGalleryVsixRawSources>
 			<VSGalleryVsixSources Include="@(VSGalleryVsixRawSources)">
 				<TargetPath>$(IntermediatePath)%(TopLevelTemplate).vsix\%(FileName)%(Extension)</TargetPath>
 			</VSGalleryVsixSources>
 
-			<VSGalleryVsixZipSources Include="$(ExtensionVsixLayoutDirectory)**\*.zip"/>
+			<VSGalleryVsixZipSources Include="$(ExtensionVsixLayoutDirectory)**\*.zip" />
 			<VSGalleryVsixSources Include="@(VSGalleryVsixZipSources)">
 				<TopLevelTemplate>%(FileName)</TopLevelTemplate>
 				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(FileName)-$(BuildVersion).vsix</VSGalleryVsix>
 				<TargetPath>$(IntermediatePath)%(FileName).vsix\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
 			</VSGalleryVsixSources>
 
-			<VSGalleryVsixSources Include="@(VSGalleryProjectTemplates->'$(ProjectRoot)projecttemplates\%(FileName).vsixmanifest')">
-				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(VSGalleryProjectTemplates.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
-				<TopLevelTemplate>%(VSGalleryProjectTemplates.FileName)</TopLevelTemplate>
-				<TargetPath>$(IntermediatePath)%(VSGalleryProjectTemplates.FileName).vsix\extension.vsixmanifest</TargetPath>
+			<VSGalleryVsixSources Include="@(ProjectTemplateZipTargets->'$(ProjectRoot)projecttemplates\%(FileName).vsixmanifest')">
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(ProjectTemplateZipTargets.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<TopLevelTemplate>%(ProjectTemplateZipTargets.FileName)</TopLevelTemplate>
+				<TargetPath>$(IntermediatePath)%(ProjectTemplateZipTargets.FileName).vsix\extension.vsixmanifest</TargetPath>
 				<Transform>true</Transform>
 				<BeforeTokens>$version$</BeforeTokens>
 				<AfterTokens>$(BuildVersion)</AfterTokens>
@@ -78,8 +84,9 @@
 			<VSGalleryVsixTargets Include="@(VSGalleryVsixSources->'%(TargetPath)')">
 				<WorkingDirectory>$(IntermediatePath)%(TopLevelTemplate).vsix</WorkingDirectory>
 			</VSGalleryVsixTargets>
-			<VSGalleryVsixPathsToPurge Include="@(VSGalleryProjectTemplates->'$(IntermediatePath)%(FileName).vsix')"/>
+			<VSGalleryVsixPathsToPurge Include="@(ProjectTemplateZipTargets->'$(IntermediatePath)%(FileName).vsix')"/>
 		</ItemGroup>
+
 		<HardLinkCopy
 			SourceFiles="@(VSGalleryVsixSources)"
 			DestinationFiles="%(VSGalleryVsixSources.TargetPath)"
@@ -93,7 +100,7 @@
 			IntendedFiles="@(VSGalleryVsixTargets)" />
 	</Target>
 
-	<Target Name="vsix" DependsOnTargets="VsixLayout">
+	<Target Name="Build" DependsOnTargets="Layout;VSGalleryVsixLayout">
 		<PropertyGroup>
 			<ExtensionVsix>$(DropsRoot)$(ProductName) SDK-$(BuildVersion).vsix</ExtensionVsix>
 		</PropertyGroup>
@@ -112,10 +119,5 @@
 			/>
 	</Target>
 
-	<Target Name="Build" DependsOnTargets="vsix">
-		
-	</Target>
-
-	<Import Project="$(ProjectRoot)projecttemplates\projecttemplates.targets"/>
-	<Import Project="$(ProjectRoot)DotNetOpenAuth.automated.targets"/>
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
 </Project>
