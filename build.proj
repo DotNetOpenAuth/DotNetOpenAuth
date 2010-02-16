@@ -107,7 +107,9 @@
 						 vsi\vsi.proj;
 						 vsix\vsix.proj;
 						 doc\doc.proj;
-						 " />
+						 ">
+			<Output TaskParameter="TargetOutputs" ItemName="DropLayoutDependencies"/>
+		</MSBuild>
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
@@ -116,6 +118,8 @@
 			<DropSpecsDirectory>$(DropDirectory)Specs\</DropSpecsDirectory>
 		</PropertyGroup>
 		<ItemGroup>
+			<ExtensionVsix Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsix\vsix.proj' " />
+			<ProjectTemplatesVsi Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsi\vsi.proj' " />
 			<DropDirectories Include="
 						 $(DropDirectory);
 						 $(DropBinDirectory);
@@ -143,8 +147,8 @@
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)Lib\log4net.*;
 																" />
-			<DropProjectTemplatesSourceFiles Include="$(ProjectTemplatesVsi)" />
-			<DropVsixSourceFiles Include="$(ExtensionVsix)" />
+			<DropProjectTemplatesSourceFiles Include="@(ProjectTemplatesVsi)" />
+			<DropVsixSourceFiles Include="@(ExtensionVsix)" Condition=" '%(ExtensionVsix.IncludeInDrop)' == 'true' " />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
 															$(ProjectRoot)**\obj\**;
 															$(ProjectRoot)**\*.sln.cache;

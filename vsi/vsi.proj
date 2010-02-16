@@ -11,7 +11,7 @@
 		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.*proj" />
 	</ItemGroup>
 
-	<Target Name="Build">
+	<Target Name="Build" Returns="$(ProjectTemplatesVsi)">
 		<MSBuild Projects="..\projecttemplates\projecttemplates.proj" Targets="Zip2008" BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="ProjectTemplate2008ZipSource"/>
 		</MSBuild>

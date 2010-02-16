@@ -100,10 +100,17 @@
 			IntendedFiles="@(VSGalleryVsixTargets)" />
 	</Target>
 
-	<Target Name="Build" DependsOnTargets="Layout;VSGalleryVsixLayout">
+	<Target Name="Build" DependsOnTargets="Layout;VSGalleryVsixLayout" Returns="@(GeneratedVsix)">
 		<PropertyGroup>
 			<ExtensionVsix>$(DropsRoot)$(ProductName) SDK-$(BuildVersion).vsix</ExtensionVsix>
 		</PropertyGroup>
+		<ItemGroup>
+			<GeneratedVsix Include="$(ExtensionVsix)">
+				<IncludeInDrop>true</IncludeInDrop>
+			</GeneratedVsix>
+			<GeneratedVsix Include="%(VSGalleryVsixTargets.VSGalleryVsix)" />
+		</ItemGroup>
+
 		<Zip
 			Files="@(ExtensionVsixContents)"
 			ZipFileName="$(ExtensionVsix)"

@@ -4,7 +4,7 @@
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildThisFileDirectory)..\</ProjectRoot>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</ProjectRoot>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
