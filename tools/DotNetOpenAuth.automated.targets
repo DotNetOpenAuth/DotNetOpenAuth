@@ -7,8 +7,15 @@
 	<Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
 
 	<Target Name="Clean">
+		<ItemGroup>
+			<ProjectsToClean>
+				<Targets Condition=" '%(ProjectsToClean.Targets)' == '' ">Clean</Targets>
+			</ProjectsToClean>
+		</ItemGroup>
+		
 		<Delete Files="@(FilesToClean)" />
 		<RemoveDir Directories="@(DirectoriesToClean)" />
+		<MSBuild Projects="@(ProjectsToClean)" Targets="%(ProjectsToClean.Targets)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Target Name="_SetDropProperties" DependsOnTargets="GetBuildVersion">

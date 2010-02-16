@@ -6,31 +6,25 @@
 	<ItemGroup>
 		<ProjectsToClean Include="
 										 $(SolutionPath);
+										 projecttemplates\projecttemplates.proj;
 										 vsi\vsi.proj;
 										 vsix\vsix.proj;
+										 samples\samples.proj;
+										 doc\doc.proj;
 										 "/>
-	</ItemGroup>
 
-	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
-		<MSBuild Projects="@(ProjectsToClean)" Targets="Clean" BuildInParallel="$(BuildInParallel)" />
-		<ItemGroup>
-			<DirtyDirectories Include="
+		<DirectoriesToClean Include="
 			                           $(ProjectRoot)bin;
 			                           $(ProjectRoot)**\obj;
 			                           $(DropsRoot);
 			                           $(ProjectRoot)src\PrecompiledWeb;
 			                           " />
-			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
-			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
-			<DirtyFiles Include="
-			                     $(ProjectRoot)**\*~;
-			                     $(ProjectRoot)**\*.log*;
-			                     $(ProjectRoot)doc\$(ProductName).chm;
-			                     " />
-		</ItemGroup>
-		<Delete Files="@(DirtyFiles)" />
-		<RemoveDir Directories="@(DirtyDirectories)" />
-	</Target>
+		<FilesToClean Include="
+		                     $(ProjectRoot)**\*~;
+		                     $(ProjectRoot)**\*.log*;
+		                     $(ProjectRoot)doc\$(ProductName).chm;
+		                     " />
+	</ItemGroup>
 
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
 		<MSBuild Projects="$(SolutionPath)" Targets="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb" BuildInParallel="$(BuildInParallel)" />
@@ -168,6 +162,7 @@
 															$(ProjectRoot)Samples\**\PresentationCore.dll;
 															$(ProjectRoot)Samples\**\System.Printing.dll;
 															$(ProjectRoot)Samples\**\*.refresh_;
+															$(ProjectRoot)Samples\Samples.proj;
 															" />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
 			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)Samples\**\*.refresh_" />
@@ -221,7 +216,7 @@
 		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\"
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
-		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
+		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
 		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" DowngradeMvc2ToMvc1="true" />
 	</Target>
 
