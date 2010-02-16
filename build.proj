@@ -1,15 +1,9 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.automated.props"/>
-	<PropertyGroup>
-	</PropertyGroup>
-
-	<Import Project="$(ProjectRoot)tools\Documentation.targets"/>
 	<Import Project="$(ProjectRoot)tools\Publish.targets"/>
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 
 	<ItemGroup>
-		<SampleProjects Include="$(ProjectRoot)samples\**\*.csproj;$(ProjectRoot)samples\**\*.vbproj" />
-		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
 		<ProjectsToClean Include="
 										 $(SolutionPath);
 										 vsi\vsi.proj;
@@ -38,21 +32,8 @@
 		<RemoveDir Directories="@(DirtyDirectories)" />
 	</Target>
 
-	<Target Name="SkipVerification" Condition="'$(IsElevated)' == 'true'">
-		<SignatureVerification SkipVerification="true" AssemblyName="*" PublicKeyToken="$(PublicKeyToken)" />
-	</Target>
-	
-	<Target Name="BuildProduct" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).csproj" BuildInParallel="$(BuildInParallel)" />
-	</Target>
-
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
 		<MSBuild Projects="$(SolutionPath)" Targets="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb" BuildInParallel="$(BuildInParallel)" />
-	</Target>
-
-	<Target Name="BuildSamples" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="@(SampleProjects)" BuildInParallel="$(BuildInParallel)" />
-		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="SkipVerification">
@@ -110,9 +91,6 @@
 				 ZipLevel="$(ZipLevel)" />
 	</Target>
 
-	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
-	</Target>
-
 	<Target Name="Test" DependsOnTargets="BuildTests"
 	        Inputs="$(OutputPath)$(ProductName).Test.dll"
 	        Outputs='$(OutputPath)Test-result.xml'>
@@ -126,7 +104,16 @@
 		       ExcludeCategory="$(NUnitExcludeCategories)"/>
 	</Target>
 
-	<Target Name="DropLayout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies;BuildSamples;vsi;vsix;Documentation">
+	<Target Name="DropLayout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
+		<!-- Note that we use an MSBuild task for these dependencies rather than individual DependsOnTargets entries
+		     so that these builds can be executed in parallel. -->
+		<MSBuild BuildInParallel="$(BuildInParallel)"
+						 Projects="
+						 samples\samples.proj;
+						 vsi\vsi.proj;
+						 vsix\vsix.proj;
+						 doc\doc.proj;
+						 " />
 		<PropertyGroup>
 			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
@@ -251,5 +238,5 @@
 
 	</Target>
 
-	<Import Project="$(ProjectRoot)DotNetOpenAuth.automated.targets"/>
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
 </Project>

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
+
+	<Target Name="Build" DependsOnTargets="BuildProduct;Chm" Condition=" '$(NoDocumentation)' != 'true' " />
+
+	<Import Project="$(ProjectRoot)tools\Documentation.targets"/>
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+</Project>
