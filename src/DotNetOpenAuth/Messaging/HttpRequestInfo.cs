@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+	using System.Net.Mime;
 	using System.ServiceModel.Channels;
 	using System.Web;
 
@@ -73,6 +74,8 @@ namespace DotNetOpenAuth.Messaging {
 			// these as well.
 			this.form = request.Form;
 			this.queryString = request.QueryString;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -96,6 +99,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = rawUrl;
 			this.Headers = headers;
 			this.InputStream = inputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -115,6 +120,8 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			this.InputStream = listenerRequest.InputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -131,6 +138,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.Url = requestUri;
 			this.UrlBeforeRewriting = requestUri;
 			this.RawUrl = MakeUpRawUrlFromUrl(requestUri);
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -157,6 +166,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = MakeUpRawUrlFromUrl(request.RequestUri);
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = null;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -223,7 +234,8 @@ namespace DotNetOpenAuth.Messaging {
 			get {
 				Contract.Ensures(Contract.Result<NameValueCollection>() != null);
 				if (this.form == null) {
-					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == Channel.HttpFormUrlEncoded) {
+					ContentType contentType = string.IsNullOrEmpty(this.Headers[HttpRequestHeader.ContentType]) ? null : new ContentType(this.Headers[HttpRequestHeader.ContentType]);
+					if (this.HttpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal)) {
 						StreamReader reader = new StreamReader(this.InputStream);
 						long originalPosition = 0;
 						if (this.InputStream.CanSeek) {
@@ -352,17 +364,6 @@ namespace DotNetOpenAuth.Messaging {
 			return query;
 		}
 
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
-		}
-#endif
-
 		/// <summary>
 		/// Gets the public facing URL for the given incoming HTTP request.
 		/// </summary>
@@ -407,5 +408,16 @@ namespace DotNetOpenAuth.Messaging {
 
 			return headers;
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+		}
+#endif
 	}
 }

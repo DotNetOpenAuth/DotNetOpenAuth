@@ -8,6 +8,7 @@ namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Data.EntityClient;
 	using System.Data.SqlClient;
 	using System.Linq;
 	using System.ServiceModel;
@@ -37,25 +38,46 @@ namespace RelyingPartyLogic {
 				DatabaseEntities dataContext = DataContextSimple;
 				if (dataContext == null) {
 					dataContext = new DatabaseEntities();
-					try {
-						dataContext.Connection.Open();
-					} catch (EntityException entityEx) {
-						var sqlEx = entityEx.InnerException as SqlException;
-						if (sqlEx != null) {
-							if (sqlEx.Class == 14 && sqlEx.Number == 15350) {
-								// Most likely the database schema hasn't been created yet.
-								HttpContext.Current.Response.Redirect("~/Setup.aspx");
-							}
-						}
-
-						throw;
-					}
-
-					DataContextTransactionSimple = dataContext.Connection.BeginTransaction();
+					dataContext.Connection.Open();
+					DataContextTransaction = (EntityTransaction)dataContext.Connection.BeginTransaction();
 					DataContextSimple = dataContext;
 				}
 
 				return dataContext;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the data context is already initialized.
+		/// </summary>
+		internal static bool IsDataContextInitialized {
+			get { return DataContextSimple != null; }
+		}
+
+		internal static EntityTransaction DataContextTransaction {
+			get {
+				if (HttpContext.Current != null) {
+					return HttpContext.Current.Items[DataContextTransactionKey] as EntityTransaction;
+				} else if (OperationContext.Current != null) {
+					object data;
+					if (OperationContext.Current.IncomingMessageProperties.TryGetValue(DataContextTransactionKey, out data)) {
+						return data as EntityTransaction;
+					} else {
+						return null;
+					}
+				} else {
+					throw new InvalidOperationException();
+				}
+			}
+
+			private set {
+				if (HttpContext.Current != null) {
+					HttpContext.Current.Items[DataContextTransactionKey] = value;
+				} else if (OperationContext.Current != null) {
+					OperationContext.Current.IncomingMessageProperties[DataContextTransactionKey] = value;
+				} else {
+					throw new InvalidOperationException();
+				}
 			}
 		}
 
@@ -86,33 +108,6 @@ namespace RelyingPartyLogic {
 			}
 		}
 
-		private static IDbTransaction DataContextTransactionSimple {
-			get {
-				if (HttpContext.Current != null) {
-					return HttpContext.Current.Items[DataContextTransactionKey] as IDbTransaction;
-				} else if (OperationContext.Current != null) {
-					object data;
-					if (OperationContext.Current.IncomingMessageProperties.TryGetValue(DataContextTransactionKey, out data)) {
-						return data as IDbTransaction;
-					} else {
-						return null;
-					}
-				} else {
-					throw new InvalidOperationException();
-				}
-			}
-
-			set {
-				if (HttpContext.Current != null) {
-					HttpContext.Current.Items[DataContextTransactionKey] = value;
-				} else if (OperationContext.Current != null) {
-					OperationContext.Current.IncomingMessageProperties[DataContextTransactionKey] = value;
-				} else {
-					throw new InvalidOperationException();
-				}
-			}
-		}
-
 		public void Dispose() {
 		}
 
@@ -126,10 +121,10 @@ namespace RelyingPartyLogic {
 		}
 
 		protected void Application_Error(object sender, EventArgs e) {
-			if (DataContextTransactionSimple != null) {
-				DataContextTransactionSimple.Rollback();
-				DataContextTransactionSimple.Dispose();
-				DataContextTransactionSimple = null;
+			if (DataContextTransaction != null) {
+				DataContextTransaction.Rollback();
+				DataContextTransaction.Dispose();
+				DataContextTransaction = null;
 			}
 		}
 
@@ -137,9 +132,9 @@ namespace RelyingPartyLogic {
 			var dataContext = DataContextSimple;
 			if (dataContext != null) {
 				dataContext.SaveChanges();
-				if (DataContextTransactionSimple != null) {
-					DataContextTransactionSimple.Commit();
-					DataContextTransactionSimple.Dispose();
+				if (DataContextTransaction != null) {
+					DataContextTransaction.Commit();
+					DataContextTransaction.Dispose();
 				}
 
 				dataContext.Dispose();

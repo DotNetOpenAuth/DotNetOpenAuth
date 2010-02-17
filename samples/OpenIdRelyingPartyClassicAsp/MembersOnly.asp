@@ -11,7 +11,7 @@ End If
 </head>
 <body>
 	<div>
-		<a href="http://DotNetOpenId.googlecode.com">
+		<a href="http://dotnetopenauth.net">
 			<img runat="server" src="images/DotNetOpenId_tiny.gif" title="Jump to the project web site."
 				alt="DotNetOpenAuth" border='0' /></a>
 	</div>

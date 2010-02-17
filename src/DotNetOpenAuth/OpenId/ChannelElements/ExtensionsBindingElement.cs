@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -76,6 +77,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "It doesn't look too bad to me. :)")]
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
@@ -88,6 +90,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				foreach (IExtensionMessage protocolExtension in extendableMessage.Extensions) {
 					var extension = protocolExtension as IOpenIdMessageExtension;
 					if (extension != null) {
+						Reporting.RecordFeatureUse(protocolExtension);
+
 						// Give extensions that require custom serialization a chance to do their work.
 						var customSerializingExtension = extension as IMessageWithEvents;
 						if (customSerializingExtension != null) {
@@ -145,6 +149,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (extendableMessage != null) {
 				// First add the extensions that are signed by the Provider.
 				foreach (IOpenIdMessageExtension signedExtension in this.GetExtensions(extendableMessage, true, null)) {
+					Reporting.RecordFeatureUse(signedExtension);
 					signedExtension.IsSignedByRemoteParty = true;
 					extendableMessage.Extensions.Add(signedExtension);
 				}
@@ -154,6 +159,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				if (this.relyingPartySecuritySettings == null || !this.relyingPartySecuritySettings.IgnoreUnsignedExtensions) {
 					Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
 					foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
+						Reporting.RecordFeatureUse(unsignedExtension);
 						unsignedExtension.IsSignedByRemoteParty = false;
 						extendableMessage.Extensions.Add(unsignedExtension);
 					}
@@ -219,7 +225,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						yield return extension;
 					}
 				} else {
-					Logger.OpenId.WarnFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
+					Logger.OpenId.DebugFormat("Extension with type URI '{0}' ignored because it is not a recognized extension.", typeUri);
 				}
 			}
 		}

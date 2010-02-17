@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -141,7 +142,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Sends an multipart HTTP POST request (useful for posting files).
+		/// Sends a multipart HTTP POST request (useful for posting files).
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
 		/// <param name="requestHandler">The request handler.</param>
@@ -152,24 +153,32 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Requires<ArgumentNullException>(parts != null);
 
+			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
+			parts = parts.CacheGeneratedResults();
 			string boundary = Guid.NewGuid().ToString();
+			string initialPartLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "--{0}\r\n", boundary);
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
 			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
+			var contentType = new ContentType("multipart/form-data") {
+				Boundary = boundary,
+				CharSet = Channel.PostEntityEncoding.WebName,
+			};
 
 			request.Method = "POST";
-			request.ContentType = "multipart/form-data; boundary=" + boundary;
-			request.ContentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
-
-			// Setting the content-encoding to "utf-8" causes Google to reply
-			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
-			// anything specific, so we disable it until we know how to get it right.
-			////request.Headers[HttpRequestHeader.ContentEncoding] = Channel.PostEntityEncoding.WebName;
+			request.ContentType = contentType.ToString();
+			long contentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
+			if (parts.Any()) {
+				contentLength -= 2; // the initial part leading boundary has no leading \r\n
+			}
+			request.ContentLength = contentLength;
 
 			var requestStream = requestHandler.GetRequestStream(request);
 			try {
 				StreamWriter writer = new StreamWriter(requestStream, Channel.PostEntityEncoding);
+				bool firstPart = true;
 				foreach (var part in parts) {
-					writer.Write(partLeadingBoundary);
+					writer.Write(firstPart ? initialPartLeadingBoundary : partLeadingBoundary);
+					firstPart = false;
 					part.Serialize(writer);
 					part.Dispose();
 				}
@@ -643,6 +652,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to get recipient information from.</param>
 		/// <returns>The recipient.</returns>
+		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
 			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, GetHttpDeliveryMethod(request.HttpMethod));
 		}
@@ -652,6 +662,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpVerb">The HTTP verb.</param>
 		/// <returns>A <see cref="HttpDeliveryMethods"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
+		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
 		internal static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
 			if (httpVerb == "GET") {
 				return HttpDeliveryMethods.GetRequest;
@@ -661,6 +672,8 @@ namespace DotNetOpenAuth.Messaging {
 				return HttpDeliveryMethods.PutRequest;
 			} else if (httpVerb == "DELETE") {
 				return HttpDeliveryMethods.DeleteRequest;
+			} else if (httpVerb == "HEAD") {
+				return HttpDeliveryMethods.HeadRequest;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
 			}
@@ -672,14 +685,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <returns>An HTTP verb, such as GET, POST, PUT, or DELETE.</returns>
 		internal static string GetHttpVerb(HttpDeliveryMethods httpMethod) {
-			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
+			if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.GetRequest) {
 				return "GET";
-			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PostRequest) {
 				return "POST";
-			} else if ((httpMethod & HttpDeliveryMethods.PutRequest) != 0) {
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PutRequest) {
 				return "PUT";
-			} else if ((httpMethod & HttpDeliveryMethods.DeleteRequest) != 0) {
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.DeleteRequest) {
 				return "DELETE";
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.HeadRequest) {
+				return "HEAD";
 			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
 			} else {

@@ -4,7 +4,7 @@
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
 	</PropertyGroup>
 	<ItemGroup>
-		<VsTemplateParameterReplaceExtensions Include=".cs;.csproj;.sql;.config;.Master;.aspx;.vb;.asax" />
+		<VsTemplateParameterReplaceExtensions Include=".cs;.csproj;.sql;.config;.Master;.aspx;.ascx;.vb;.asax;.ashx" />
 		<VsTemplateProjectItemTypes Include="Compile;EmbeddedResource;EntityDeploy;Content;None" />
 	</ItemGroup>
 

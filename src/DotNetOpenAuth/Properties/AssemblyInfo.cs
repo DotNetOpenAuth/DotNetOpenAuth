@@ -83,12 +83,14 @@ using System.Web.UI;
 // match the one used by hosting providers.  Listing them individually seems to be more common.
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"http://.*")]
 [assembly: WebPermission(SecurityAction.RequestMinimum, ConnectPattern = @"https://.*")]
-
 #if PARTIAL_TRUST
 // Allows hosting this assembly in an ASP.NET setting.  Not all applications
 // will host this using ASP.NET, so this is optional.  Besides, we need at least
 // one optional permission to activate CAS permission shrinking.
 [assembly: AspNetHostingPermission(SecurityAction.RequestOptional, Level = AspNetHostingPermissionLevel.Medium)]
+
+// Allows this assembly to store reporting data.
+[assembly: IsolatedStorageFilePermission(SecurityAction.RequestOptional, UsageAllowed = IsolatedStorageContainment.AssemblyIsolationByUser)]
 
 // The following are only required for diagnostic logging (Trace.Write, Debug.Assert, etc.).
 #if TRACE || DEBUG

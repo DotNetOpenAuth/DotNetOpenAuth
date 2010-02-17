@@ -187,6 +187,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				IReplayProtectedProtocolMessage replayResponse = response;
 				if (!this.nonceStore.StoreNonce(replayResponse.NonceContext, nonce.RandomPartAsString, nonce.CreationDateUtc)) {
+					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", replayResponse.Nonce, replayResponse.UtcCreationDate);
 					throw new ReplayedMessageException(message);
 				}
 
@@ -212,7 +213,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
-		/// A special DotNetOpenId-only nonce used by the RP when talking to 1.0 OPs in order
+		/// A special DotNetOpenAuth-only nonce used by the RP when talking to 1.0 OPs in order
 		/// to protect against replay attacks.
 		/// </summary>
 		private class CustomNonce {

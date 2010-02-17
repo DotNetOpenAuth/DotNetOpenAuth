@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -140,9 +141,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 
 			// Scrape the entity
-			if (string.Equals(request.Headers[HttpRequestHeader.ContentType], HttpFormUrlEncoded, StringComparison.Ordinal)) {
-				foreach (string key in request.Form) {
-					fields.Add(key, request.Form[key]);
+			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
+				ContentType contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
+				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
+					foreach (string key in request.Form) {
+						fields.Add(key, request.Form[key]);
+					}
 				}
 			}
 
@@ -155,8 +159,16 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				}
 			}
 
+			MessageReceivingEndpoint recipient;
+			try {
+				recipient = request.GetRecipient();
+			} catch (ArgumentException ex) {
+				Logger.OAuth.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+				return null;
+			}
+
 			// Deserialize the message using all the data we've collected.
-			var message = (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
+			var message = (IDirectedProtocolMessage)this.Receive(fields, recipient);
 
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
@@ -197,6 +209,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				httpRequest = this.InitializeRequestAsPost(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
+			} else if ((transmissionMethod & HttpDeliveryMethods.HeadRequest) != 0) {
+				httpRequest = InitializeRequestAsHead(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.PutRequest) != 0) {
 				httpRequest = this.InitializeRequestAsPut(request);
 			} else if ((transmissionMethod & HttpDeliveryMethods.DeleteRequest) != 0) {

@@ -227,6 +227,11 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.PostRequest);
 		}
 
+		[TestMethod]
+		public void RequestUsingHead() {
+			this.ParameterizedRequestTest(HttpDeliveryMethods.HeadRequest);
+		}
+
 		/// <summary>
 		/// Verifies that messages asking for special HTTP status codes get them.
 		/// </summary>
@@ -323,7 +328,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.webRequestHandler.Callback = (req) => {
 				Assert.IsNotNull(req);
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
-				Assert.AreEqual(scheme == HttpDeliveryMethods.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
+				Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), reqInfo.HttpMethod);
 				var incomingMessage = this.channel.ReadFromRequest(reqInfo) as TestMessage;
 				Assert.IsNotNull(incomingMessage);
 				Assert.AreEqual(request.Age, incomingMessage.Age);

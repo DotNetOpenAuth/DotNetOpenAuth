@@ -27,5 +27,13 @@ for all XRDS discovery.
 			<Type>http://specs.openid.net/extensions/ui/1.0/icon</Type>--%>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OpenId/Provider"))%></URI>
 		</Service>
+<% if (ViewData["OPIdentifier"] == null) { %>
+		<Service priority="20">
+			<Type>http://openid.net/signon/1.0</Type>
+			<Type>http://openid.net/extensions/sreg/1.1</Type>
+			<Type>http://axschema.org/contact/email</Type>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OpenId/Provider"))%></URI>
+		</Service>
+<% } %>
 	</XRD>
 </xrds:XRDS>

@@ -11,8 +11,10 @@ namespace DotNetOpenAuth.Test.Messaging
 	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
+	using System.Text.RegularExpressions;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Test.Mocks;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
@@ -138,6 +140,81 @@ namespace DotNetOpenAuth.Test.Messaging
 			Assert.AreEqual("%7F", MessagingUtilities.EscapeUriDataStringRfc3986("\u007f"));
 			Assert.AreEqual("%C2%80", MessagingUtilities.EscapeUriDataStringRfc3986("\u0080"));
 			Assert.AreEqual("%E3%80%81", MessagingUtilities.EscapeUriDataStringRfc3986("\u3001"));
+		}
+
+		/// <summary>
+		/// Verifies the overall format of the multipart POST is correct.
+		/// </summary>
+		[TestMethod]
+		public void PostMultipart() {
+			var httpHandler = new TestWebRequestHandler();
+			bool callbackTriggered = false;
+			httpHandler.Callback = req => {
+				Match m = Regex.Match(req.ContentType, "multipart/form-data; boundary=(.+)");
+				Assert.IsTrue(m.Success, "Content-Type HTTP header not set correctly.");
+				string boundary = m.Groups[1].Value;
+				boundary = boundary.Substring(0, boundary.IndexOf(';')); // trim off charset
+				string expectedEntity = "--{0}\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\r\n--{0}--\r\n";
+				expectedEntity = string.Format(expectedEntity, boundary);
+				string actualEntity = httpHandler.RequestEntityAsString;
+				Assert.AreEqual(expectedEntity, actualEntity);
+				callbackTriggered = true;
+				Assert.AreEqual(req.ContentLength, actualEntity.Length);
+				IncomingWebResponse resp = new CachedDirectWebResponse();
+				return resp;
+			};
+			var request = (HttpWebRequest)WebRequest.Create("http://someserver");
+			var parts = new[] {
+				MultipartPostPart.CreateFormPart("a", "b"),
+			};
+			request.PostMultipart(httpHandler, parts);
+			Assert.IsTrue(callbackTriggered);
+		}
+
+		/// <summary>
+		/// Verifies proper behavior of GetHttpVerb
+		/// </summary>
+		[TestMethod]
+		public void GetHttpVerbTest() {
+			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest));
+			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest));
+			Assert.AreEqual("HEAD", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest));
+			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest));
+			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest));
+
+			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual("HEAD", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+		}
+
+		/// <summary>
+		/// Verifies proper behavior of GetHttpVerb on invalid input.
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void GetHttpVerbOutOfRangeTest() {
+			MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.PostRequest);
+		}
+
+		/// <summary>
+		/// Verifies proper behavior of GetHttpDeliveryMethod
+		/// </summary>
+		[TestMethod]
+		public void GetHttpDeliveryMethodTest() {
+			Assert.AreEqual(HttpDeliveryMethods.GetRequest, MessagingUtilities.GetHttpDeliveryMethod("GET"));
+			Assert.AreEqual(HttpDeliveryMethods.PostRequest, MessagingUtilities.GetHttpDeliveryMethod("POST"));
+			Assert.AreEqual(HttpDeliveryMethods.HeadRequest, MessagingUtilities.GetHttpDeliveryMethod("HEAD"));
+			Assert.AreEqual(HttpDeliveryMethods.PutRequest, MessagingUtilities.GetHttpDeliveryMethod("PUT"));
+			Assert.AreEqual(HttpDeliveryMethods.DeleteRequest, MessagingUtilities.GetHttpDeliveryMethod("DELETE"));
+		}
+
+		/// <summary>
+		/// Verifies proper behavior of GetHttpDeliveryMethod for an unexpected input
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		public void GetHttpDeliveryMethodOutOfRangeTest() {
+			MessagingUtilities.GetHttpDeliveryMethod("UNRECOGNIZED");
 		}
 	}
 }

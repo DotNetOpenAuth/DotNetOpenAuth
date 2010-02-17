@@ -34,6 +34,8 @@ namespace DotNetOpenAuth.OAuth {
 			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager);
 			this.ServiceProvider = serviceDescription;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+
+			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, null);
 		}
 
 		/// <summary>
@@ -200,7 +202,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			// Fine-tune our understanding of the SP's supported OAuth version if it's wrong.
 			if (this.ServiceProvider.Version != requestTokenResponse.Version) {
-				Logger.OAuth.WarnFormat("Expected OAuth service provider at endpoint {0} to use OAuth {1} but {2} was detected.  Adjusting service description to new version.", this.ServiceProvider.RequestTokenEndpoint, this.ServiceProvider.Version, requestTokenResponse.Version);
+				Logger.OAuth.WarnFormat("Expected OAuth service provider at endpoint {0} to use OAuth {1} but {2} was detected.  Adjusting service description to new version.", this.ServiceProvider.RequestTokenEndpoint.Location, this.ServiceProvider.Version, requestTokenResponse.Version);
 				this.ServiceProvider.ProtocolVersion = Protocol.Lookup(requestTokenResponse.Version).ProtocolVersion;
 			}
 

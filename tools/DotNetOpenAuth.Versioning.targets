@@ -5,6 +5,7 @@
 	<PropertyGroup>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<VersionCsFile>$(ProjectRoot)obj\$(Configuration)\$(AssemblyName).Version.cs</VersionCsFile>
+		<NoWarn>$(NoWarn);1607</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(SignAssembly)' == 'true'">
@@ -18,10 +19,19 @@
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
 
 	<Target Name="GetBuildVersion">
-		<GetBuildVersion VersionFile="$(ProjectRoot)src\version.txt" Condition=" '$(BuildVersion)' == '' ">
+		<GetBuildVersion Condition=" '$(BuildVersion)' == '' "
+		                 VersionFile="$(ProjectRoot)src\version.txt"
+		                 GitRepoRoot="$(ProjectRoot)">
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
+			<Output TaskParameter="GitCommitId" PropertyName="AssemblyInformationalVersion" />
 		</GetBuildVersion>
-		<Message Text="Building version $(BuildVersion)"/>
+		<PropertyGroup>
+			<!-- In TeamCity, the build agent doesn't get the .git directory, but the commit id is available by other means. -->
+			<AssemblyInformationalVersion Condition=" '$(AssemblyInformationalVersion)' == '' ">$(BUILD_VCS_NUMBER)</AssemblyInformationalVersion>
+		</PropertyGroup>
+		<Warning Condition=" '$(AssemblyInformationalVersion)' == '' " Text="Unable to determine the git HEAD commit ID to use for informational version number." />
+		<Message Condition=" '$(AssemblyInformationalVersion)' != '' " Text="Building version $(BuildVersion) from commit $(AssemblyInformationalVersion)"/>
+		<Message Condition=" '$(AssemblyInformationalVersion)' == '' " Text="Building version $(BuildVersion)"/>
 	</Target>
 	
 	<Target Name="BeforeBuild" DependsOnTargets="GetBuildVersion">
@@ -29,7 +39,9 @@
 			<NewVersionCsFile>$(VersionCsFile).new</NewVersionCsFile>
 		</PropertyGroup>
 		<MakeDir Directories="$(ProjectRoot)obj\$(Configuration)"/>
-		<AssemblyInfo OutputFile="$(NewVersionCsFile)" CodeLanguage="C#" AssemblyVersion="$(BuildVersion)" />
+		<AssemblyInfo OutputFile="$(NewVersionCsFile)" CodeLanguage="C#"
+		              AssemblyVersion="$(BuildVersion)"
+		              AssemblyInformationalVersion="$(AssemblyInformationalVersion)" />
 		<!-- Avoid applying the newly generated AssemblyInfo.cs file to the build 
 		     unless it has changed in order to allow for incremental building. -->
 		<CompareFiles OriginalItems="$(VersionCsFile)" NewItems="$(NewVersionCsFile)">

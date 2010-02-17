@@ -269,7 +269,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Sets a named value in the message.
 		/// </summary>
 		/// <param name="item">The name-value pair to add.  The name is the serialized form of the key.</param>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts generates the code FxCop is complaining about.")]
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts ccrewrite does this.")]
 		public void Add(KeyValuePair<string, string> item) {
 			this.Add(item.Key, item.Value);
 		}
@@ -393,7 +393,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.Message != null);
 			Contract.Invariant(this.Description != null);
 		}

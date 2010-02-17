@@ -18,15 +18,17 @@ namespace RelyingPartyLogic {
 		/// <summary>
 		/// Clears the expired nonces.
 		/// </summary>
-		internal void ClearExpiredNonces() {
-			this.ExecuteCommand("ClearExpiredNonces");
+		/// <param name="transaction">The transaction to use, if any.</param>
+		internal void ClearExpiredNonces(EntityTransaction transaction) {
+			this.ExecuteCommand(transaction, "DatabaseEntities.ClearExpiredNonces");
 		}
 
 		/// <summary>
 		/// Clears the expired associations.
 		/// </summary>
-		internal void ClearExpiredAssociations() {
-			this.ExecuteCommand("ClearExpiredAssociations");
+		/// <param name="transaction">The transaction to use, if any.</param>
+		internal void ClearExpiredAssociations(EntityTransaction transaction) {
+			this.ExecuteCommand(transaction, "DatabaseEntities.ClearExpiredAssociations");
 		}
 	}
 }

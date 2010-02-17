@@ -54,7 +54,7 @@ public partial class Twitter : System.Web.UI.Page {
 
 	protected void downloadUpdates_Click(object sender, EventArgs e) {
 		var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-		XPathDocument updates = new XPathDocument(TwitterConsumer.GetUpdates(twitter, AccessToken).CreateReader());
+		XPathDocument updates = new XPathDocument(TwitterConsumer.GetUpdates(twitter, this.AccessToken).CreateReader());
 		XPathNavigator nav = updates.CreateNavigator();
 		var parsedUpdates = from status in nav.Select("/statuses/status").OfType<XPathNavigator>()
 							where !status.SelectSingleNode("user/protected").ValueAsBoolean
@@ -74,5 +74,21 @@ public partial class Twitter : System.Web.UI.Page {
 		}
 		tableBuilder.Append("</table>");
 		resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
+	}
+
+	protected void uploadProfilePhotoButton_Click(object sender, EventArgs e) {
+		if (profilePhoto.PostedFile.ContentType == null) {
+			photoUploadedLabel.Visible = true;
+			photoUploadedLabel.Text = "Select a file first.";
+			return;
+		}
+
+		var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
+		XDocument imageResult = TwitterConsumer.UpdateProfileImage(
+			twitter,
+			this.AccessToken,
+			profilePhoto.PostedFile.InputStream,
+			profilePhoto.PostedFile.ContentType);
+		photoUploadedLabel.Visible = true;
 	}
 }

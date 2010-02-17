@@ -244,6 +244,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdMobileTextBox"/> class.
 		/// </summary>
 		public OpenIdMobileTextBox() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		#region Events

@@ -99,11 +99,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// replay attacks.  But only 2.0+ Providers can be expected to provide 
 			// replay protection.
 			if (nonceStore == null) {
-				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
+				if (this.SecuritySettings.MinimumRequiredOpenIdVersion < ProtocolVersion.V20) {
+					Logger.OpenId.Warn("Raising minimum OpenID version requirement for Providers to 2.0 to protect this stateless RP from replay attacks.");
+					this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
+				}
 			}
 
 			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
 		}
 
 		/// <summary>
@@ -593,6 +598,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private void OnBehaviorsChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			foreach (IRelyingPartyBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
+				Reporting.RecordFeatureUse(profile);
 			}
 		}
 

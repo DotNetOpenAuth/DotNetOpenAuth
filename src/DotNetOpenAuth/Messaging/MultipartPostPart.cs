@@ -116,6 +116,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="contentType">Type of the content in HTTP Content-Type format.</param>
 		/// <returns>The constructed part.</returns>
 		public static MultipartPostPart CreateFormFilePart(string name, string filePath, string contentType) {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(filePath));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(contentType));
+
 			string fileName = Path.GetFileName(filePath);
 			return CreateFormFilePart(name, fileName, contentType, File.OpenRead(filePath));
 		}
@@ -130,11 +134,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The constructed part.</returns>
 		public static MultipartPostPart CreateFormFilePart(string name, string fileName, string contentType, Stream content) {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
-			Contract.Requires<ArgumentException>(fileName != null);
-			Contract.Requires<ArgumentException>(contentType != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(fileName));
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(contentType));
 			Contract.Requires<ArgumentException>(content != null);
 
-			var part = new MultipartPostPart("form-data");
+			var part = new MultipartPostPart("file");
 			part.ContentAttributes["name"] = name;
 			part.ContentAttributes["filename"] = fileName;
 			part.PartHeaders[HttpRequestHeader.ContentType] = contentType;
@@ -192,7 +196,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		protected void Invariant() {
+		private void Invariant() {
 			Contract.Invariant(!string.IsNullOrEmpty(this.ContentDisposition));
 			Contract.Invariant(this.PartHeaders != null);
 			Contract.Invariant(this.ContentAttributes != null);

@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Cache;
+	using System.Net.Mime;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
@@ -37,6 +38,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// URL-encoded series of key=value pairs.
 		/// </summary>
 		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
+
+		/// <summary>
+		/// The content-type used on HTTP POST requests where the POST entity is a
+		/// URL-encoded series of key=value pairs.
+		/// This includes the <see cref="PostEntityEncoding"/> character encoding.
+		/// </summary>
+		protected internal static readonly ContentType HttpFormUrlEncodedContentType = new ContentType(HttpFormUrlEncoded) { CharSet = PostEntityEncoding.WebName };
 
 		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
@@ -580,7 +588,15 @@ namespace DotNetOpenAuth.Messaging {
 				fields = request.QueryStringBeforeRewriting.ToDictionary();
 			}
 
-			return (IDirectedProtocolMessage)this.Receive(fields, request.GetRecipient());
+			MessageReceivingEndpoint recipient;
+			try {
+				recipient = request.GetRecipient();
+			} catch (ArgumentException ex) {
+				Logger.Messaging.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+				return null;
+			}
+
+			return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 		}
 
 		/// <summary>
@@ -819,6 +835,24 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Prepares to send a request to the Service Provider as the query string in a HEAD request.
+		/// </summary>
+		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
+		/// <returns>The web request ready to send.</returns>
+		/// <remarks>
+		/// This method is simply a standard HTTP HEAD request with the message parts serialized to the query string.
+		/// This method satisfies OAuth 1.0 section 5.2, item #3.
+		/// </remarks>
+		protected virtual HttpWebRequest InitializeRequestAsHead(IDirectedProtocolMessage requestMessage) {
+			Contract.Requires<ArgumentNullException>(requestMessage != null);
+			Contract.Requires<ArgumentException>(requestMessage.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+
+			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = "HEAD";
+			return request;
+		}
+
+		/// <summary>
 		/// Prepares to send a request to the Service Provider as the payload of a POST request.
 		/// </summary>
 		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>
@@ -890,15 +924,9 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(httpRequest != null);
 			Contract.Requires<ArgumentNullException>(fields != null);
 
-			httpRequest.ContentType = HttpFormUrlEncoded;
-
-			// Setting the content-encoding to "utf-8" causes Google to reply
-			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
-			// anything specific, so we disable it until we know how to get it right.
-			////httpRequest.Headers[HttpRequestHeader.ContentEncoding] = PostEntityEncoding.WebName;
-
 			string requestBody = MessagingUtilities.CreateQueryString(fields);
 			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
+			httpRequest.ContentType = HttpFormUrlEncodedContentType.ToString();
 			httpRequest.ContentLength = requestBytes.Length;
 			Stream requestStream = this.WebRequestHandler.GetRequestStream(httpRequest);
 			try {
@@ -1008,18 +1036,6 @@ namespace DotNetOpenAuth.Messaging {
 			this.incomingBindingElements.AddRange(incomingOrder);
 		}
 
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
-			Contract.Invariant(this.MessageDescriptions != null);
-		}
-#endif
-
 		/// <summary>
 		/// Ensures a consistent and secure set of binding elements and 
 		/// sorts them as necessary for a valid sequence of operations.
@@ -1069,8 +1085,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="protection1">The first protection type to compare.</param>
 		/// <param name="protection2">The second protection type to compare.</param>
 		/// <returns>
-		/// -1 if <paramref name="element1"/> should be applied to an outgoing message before <paramref name="element2"/>.
-		/// 1 if <paramref name="element2"/> should be applied to an outgoing message before <paramref name="element1"/>.
+		/// -1 if <paramref name="protection1"/> should be applied to an outgoing message before <paramref name="protection2"/>.
+		/// 1 if <paramref name="protection2"/> should be applied to an outgoing message before <paramref name="protection1"/>.
 		/// 0 if it doesn't matter.
 		/// </returns>
 		private static int BindingElementOutgoingMessageApplicationOrder(MessageProtections protection1, MessageProtections protection2) {
@@ -1079,6 +1095,18 @@ namespace DotNetOpenAuth.Messaging {
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+			Contract.Invariant(this.MessageDescriptions != null);
+		}
+#endif
 
 		/// <summary>
 		/// Verifies that all required message parts are initialized to values

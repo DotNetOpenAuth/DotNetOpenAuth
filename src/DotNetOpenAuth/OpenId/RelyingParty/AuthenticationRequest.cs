@@ -416,7 +416,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			var failedAssociationEndpoints = new List<ServiceEndpoint>(0);
 
 			foreach (var endpoint in endpoints) {
-				Logger.OpenId.InfoFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
+				Logger.OpenId.DebugFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
 				// The strategy here is to prefer endpoints with whom we can create associations.
 				Association association = null;
@@ -446,10 +446,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				if (relyingParty.SecuritySettings.RequireAssociation) {
 					Logger.OpenId.Warn("Associations could not be formed with some Providers.  Security settings require shared associations for authentication requests so these will be skipped.");
 				} else {
-					Logger.OpenId.WarnFormat("Now generating requests for Provider endpoints that failed initial association attempts.");
+					Logger.OpenId.Debug("Now generating requests for Provider endpoints that failed initial association attempts.");
 
 					foreach (var endpoint in failedAssociationEndpoints) {
-						Logger.OpenId.WarnFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
+						Logger.OpenId.DebugFormat("Creating authentication request for user supplied Identifier: {0} at endpoint: {1}", userSuppliedIdentifier, endpoint.ProviderEndpoint.AbsoluteUri);
 
 						// Create the auth request, but prevent it from attempting to create an association
 						// because we've already tried.  Let's not have it waste time trying again.

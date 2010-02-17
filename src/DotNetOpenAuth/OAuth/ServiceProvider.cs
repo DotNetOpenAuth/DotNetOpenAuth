@@ -102,6 +102,8 @@ namespace DotNetOpenAuth.OAuth {
 			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+
+			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, nonceStore);
 		}
 
 		/// <summary>
