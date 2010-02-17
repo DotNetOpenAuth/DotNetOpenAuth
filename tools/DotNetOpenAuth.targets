@@ -10,11 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
-		                                $(OutputPath)$(ProductName).dll;
-		                                $(OutputPath)$(ProductName).Contracts.dll;
-		                                $(OutputPath)$(ProductName).Test.dll;
-		                                $(ProjectRoot)samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
+		<DelaySignedAssemblies Include="$(TargetPath)" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
@@ -58,15 +54,30 @@
 		</Publicize>
 	</Target>
 
-	<Target Name="ReSignDelaySignedAssemblies" DependsOnTargets="BuildProduct">
+	<Target Name="Sign" DependsOnTargets="@(SignDependsOn)" Condition=" '@(DelaySignedAssemblies)' != '' ">
+		<!-- Add the resource assemblies. -->
+		<PropertyGroup>
+			<DelaySignedSatelliteAssembliesPattern>@(DelaySignedAssemblies->'%(RootDir)%(Directory)*\%(FileName).resources.*')</DelaySignedSatelliteAssembliesPattern>
+		</PropertyGroup>
 		<ItemGroup>
-			<!-- Add the resource assemblies that only just now are known to exist. -->
-			<DelaySignedAssemblies Include="$(OutputPath)**\$(ProductName).resources.dll" />
+			<DelaySignedSatelliteAssemblies Include="$(DelaySignedSatelliteAssembliesPattern)" />
 		</ItemGroup>
+
 		<Message Text="Signing delay-signed assemblies using key pair container $(KeyPairContainer)." />
 		<ReSignDelaySignedAssemblies
 			KeyContainer="$(KeyPairContainer)"
-			Assemblies="@(DelaySignedAssemblies)"
+			Assemblies="@(DelaySignedAssemblies);@(DelaySignedSatelliteAssemblies)"
 			Condition="Exists(%(Identity))" />
+	</Target>
+
+	<Target Name="ResignDelaySignedAssemblies">
+		<ItemGroup>
+			<DelaySignedProjects Include="
+													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.csproj;
+													 $(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj;
+													 $(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj;
+													 " />
+		</ItemGroup>
+		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 </Project>

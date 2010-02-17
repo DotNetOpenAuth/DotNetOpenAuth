@@ -27,6 +27,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<SignDependsOn Include="Build" />
 		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll;
 		                                 $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
 	</ItemGroup>

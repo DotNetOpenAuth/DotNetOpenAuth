@@ -729,6 +729,13 @@ http://opensource.org/licenses/ms-pl.html
     <Content Include="DotNetOpenAuth.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <SignDependsOn Include="BuildUnifiedProduct" />
+    <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
+                                    $(OutputPath)$(ProductName).Contracts.dll;
+                                   " />
+  </ItemGroup>
+
   <Target Name="BuildUnifiedProduct"
         DependsOnTargets="Build"
         Inputs="@(ILMergeInputAssemblies)"
