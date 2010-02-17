@@ -19,7 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <UICulture>en-US</UICulture>
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
-    <OutputPath>bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
+    <OutputPath Condition=" '$(OutputPath)' == '' ">bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
     <ApplicationIcon>openid.ico</ApplicationIcon>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

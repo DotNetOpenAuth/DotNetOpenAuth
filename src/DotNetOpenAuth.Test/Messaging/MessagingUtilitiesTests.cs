@@ -153,6 +153,7 @@ namespace DotNetOpenAuth.Test.Messaging
 				Match m = Regex.Match(req.ContentType, "multipart/form-data; boundary=(.+)");
 				Assert.IsTrue(m.Success, "Content-Type HTTP header not set correctly.");
 				string boundary = m.Groups[1].Value;
+				boundary = boundary.Substring(0, boundary.IndexOf(';')); // trim off charset
 				string expectedEntity = "--{0}\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\r\n--{0}--\r\n";
 				expectedEntity = string.Format(expectedEntity, boundary);
 				string actualEntity = httpHandler.RequestEntityAsString;

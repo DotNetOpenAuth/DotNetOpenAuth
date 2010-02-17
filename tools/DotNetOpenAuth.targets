@@ -58,7 +58,11 @@
 		</Publicize>
 	</Target>
 
-	<Target Name="ReSignDelaySignedAssemblies">
+	<Target Name="ReSignDelaySignedAssemblies" DependsOnTargets="BuildProduct">
+		<ItemGroup>
+			<!-- Add the resource assemblies that only just now are known to exist. -->
+			<DelaySignedAssemblies Include="$(OutputPath)**\$(ProductName).resources.dll" />
+		</ItemGroup>
 		<Message Text="Signing delay-signed assemblies using key pair container $(KeyPairContainer)." />
 		<ReSignDelaySignedAssemblies
 			KeyContainer="$(KeyPairContainer)"
