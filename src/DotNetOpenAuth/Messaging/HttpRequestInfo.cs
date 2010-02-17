@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+	using System.Net.Mime;
 	using System.ServiceModel.Channels;
 	using System.Web;
 
@@ -233,7 +234,8 @@ namespace DotNetOpenAuth.Messaging {
 			get {
 				Contract.Ensures(Contract.Result<NameValueCollection>() != null);
 				if (this.form == null) {
-					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == Channel.HttpFormUrlEncoded) {
+					ContentType contentType = string.IsNullOrEmpty(this.Headers[HttpRequestHeader.ContentType]) ? null : new ContentType(this.Headers[HttpRequestHeader.ContentType]);
+					if (this.HttpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal)) {
 						StreamReader reader = new StreamReader(this.InputStream);
 						long originalPosition = 0;
 						if (this.InputStream.CanSeek) {

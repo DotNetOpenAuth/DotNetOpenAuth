@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- Properties that must be set for these targets to function:
+	        $(BranchName): The name of the branch being built.  Used to determine the web subdirectory for publishing.
+          
+          For creating web sites:
+          $(PublishDocsWebSiteName): The name of the web site under which the documentation web applications will be created/deleted.
+
+          For creating or publishing to web sites:
+	        $(DocWebRoot): the full physical path to where documentation should be copied to, excluding $(BranchName)
+	-->
+
+	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
+
+	<Target Name="Build" DependsOnTargets="BuildProduct;Chm" Condition=" '$(NoDocumentation)' != 'true' " />
+
+	<Target Name="Prepare">
+		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />
+		<Error Text="The DocWebRoot property must be set." Condition=" '$(DocWebRoot)' == '' " />
+		<PropertyGroup>
+			<PublishDocsWebSiteVirtualPath>/$(BranchName)</PublishDocsWebSiteVirtualPath>
+		</PropertyGroup>
+	</Target>
+	
+	<Target Name="PrepareForPublish" DependsOnTargets="Prepare;BuildProduct;Html">
+		<ItemGroup>
+			<DocSources Include="$(ProjectRoot)doc\api\**\*" />
+			<DocTargets Include="@(DocSources->'$(DocWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)')" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="Publish"
+					DependsOnTargets="PrepareForPublish"
+					Inputs="@(DocSources)"
+					Outputs="@(DocTargets)">
+		<RemoveDir Directories="$(DocWebRoot)\$(BranchName)" />
+		<MakeDir Directories="$(DocWebRoot)\$(BranchName)" />
+		<Copy SourceFiles="@(DocSources)" DestinationFiles="@(DocTargets)" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="Unpublish"
+					DependsOnTargets="DeleteSiteOnIis"
+					Condition=" '$(DocWebRoot)' != '' ">
+	</Target>
+
+	<Target Name="CreateSiteOnIis" DependsOnTargets="Prepare">
+		<Error Text="The PublishDocsWebSiteName property must be set." Condition=" '$(PublishDocsWebSiteName)' == '' "/>
+		<CreateWebApplication
+			WebSiteName="$(PublishDocsWebSiteName)"
+			PhysicalPaths="$(DocWebRoot)\$(BranchName)"
+			VirtualPaths="$(PublishDocsWebSiteVirtualPath)"
+			/>
+	</Target>
+
+	<Target Name="DeleteSiteOnIis" DependsOnTargets="Prepare">
+		<Error Text="The PublishDocsWebSiteName property must be set." Condition=" '$(PublishDocsWebSiteName)' == '' "/>
+		<DeleteWebApplication
+			WebSiteName="$(PublishDocsWebSiteName)"
+			VirtualPaths="$(PublishDocsWebSiteVirtualPath)"
+			/>
+	</Target>
+
+	<Import Project="$(ProjectRoot)tools\Documentation.targets"/>
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+</Project>

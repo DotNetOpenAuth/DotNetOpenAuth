@@ -1,0 +1,53 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
+	<Import Project="..\projecttemplates\ProjectTemplates.props"/>
+
+	<PropertyGroup>
+		<ProjectTemplatesVsiDirectory>$(IntermediatePath)vsi\</ProjectTemplatesVsiDirectory>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<DirectoriesToClean Include="$(ProjectTemplatesLayoutPath)" />
+		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.*proj" />
+	</ItemGroup>
+
+	<Target Name="Build" Returns="$(ProjectTemplatesVsi)">
+		<MSBuild Projects="..\projecttemplates\projecttemplates.proj" Targets="Zip2008" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="ProjectTemplate2008ZipSource"/>
+		</MSBuild>
+
+		<PropertyGroup>
+			<ProjectTemplatesVsi>$(DropDirectoryNoSlash).vsi</ProjectTemplatesVsi>
+		</PropertyGroup>
+		<ItemGroup>
+			<VsiTransformSource Include="*.vscontent">
+				<BeforeTokens>$version$</BeforeTokens>
+				<AfterTokens>$(BuildVersion)</AfterTokens>
+				<SkipUnchangedFiles>false</SkipUnchangedFiles>
+			</VsiTransformSource>
+			<VsiTransformLayout Include="@(VsiTransformSource->'$(ProjectTemplatesVsiDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
+
+			<ProjectTemplateVsiContents Include="
+																	$(ProjectTemplatesVsiDirectory)*.zip;
+																	@(VsiTransformLayout);
+																	" />
+
+			<ProjectTemplate2008ZipSource>
+				<HardLink>true</HardLink>
+			</ProjectTemplate2008ZipSource>
+			<ProjectTemplate2008ZipTargets Include="@(ProjectTemplate2008ZipSource->'$(ProjectTemplatesVsiDirectory)%(FileName)%(Extension)')" />
+		</ItemGroup>
+
+		<CopyWithTokenSubstitution SourceFiles="@(VsiTransformSource)" DestinationFiles="@(VsiTransformLayout)" />
+		<HardLinkCopy SourceFiles="@(ProjectTemplate2008ZipSource)" DestinationFiles="@(ProjectTemplate2008ZipTargets)" />
+
+		<Zip
+			Files="@(ProjectTemplateVsiContents)"
+			ZipFileName="$(ProjectTemplatesVsi)"
+			WorkingDirectory="$(ProjectTemplatesVsiDirectory)"
+			ZipLevel="$(ZipLevel)"
+			/>
+	</Target>
+
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+</Project>
