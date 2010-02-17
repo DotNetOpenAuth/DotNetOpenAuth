@@ -2,11 +2,16 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
 	<Import Project="DotNetOpenAuth.Versioning.targets" />
 	<Import Project="JavascriptPacker.targets" />
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<DelaySignedAssemblies Include="$(TargetPath)" />
+	</ItemGroup>
 
 	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
 		<Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
@@ -47,5 +52,32 @@
 			KeyFile="$(PublicKeyFile)">
 			<Output TaskParameter="AccessorAssembly" ItemName="ReferencePath" />
 		</Publicize>
+	</Target>
+
+	<Target Name="Sign" DependsOnTargets="@(SignDependsOn)" Condition=" '@(DelaySignedAssemblies)' != '' ">
+		<!-- Add the resource assemblies. -->
+		<PropertyGroup>
+			<DelaySignedSatelliteAssembliesPattern>@(DelaySignedAssemblies->'%(RootDir)%(Directory)*\%(FileName).resources.*')</DelaySignedSatelliteAssembliesPattern>
+		</PropertyGroup>
+		<ItemGroup>
+			<DelaySignedSatelliteAssemblies Include="$(DelaySignedSatelliteAssembliesPattern)" />
+		</ItemGroup>
+
+		<Message Text="Signing delay-signed assemblies using key pair container $(KeyPairContainer)." />
+		<ReSignDelaySignedAssemblies
+			KeyContainer="$(KeyPairContainer)"
+			Assemblies="@(DelaySignedAssemblies);@(DelaySignedSatelliteAssemblies)"
+			Condition="Exists(%(Identity))" />
+	</Target>
+
+	<Target Name="ResignDelaySignedAssemblies">
+		<ItemGroup>
+			<DelaySignedProjects Include="
+													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.csproj;
+													 $(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj;
+													 $(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj;
+													 " />
+		</ItemGroup>
+		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 </Project>
