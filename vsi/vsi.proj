@@ -27,15 +27,14 @@
 			</VsiTransformSource>
 			<VsiTransformLayout Include="@(VsiTransformSource->'$(ProjectTemplatesVsiDirectory)%(RecursiveDir)%(FileName)%(Extension)')" />
 
-			<ProjectTemplateVsiContents Include="
-																	$(ProjectTemplatesVsiDirectory)*.zip;
-																	@(VsiTransformLayout);
-																	" />
-
 			<ProjectTemplate2008ZipSource>
 				<HardLink>true</HardLink>
 			</ProjectTemplate2008ZipSource>
 			<ProjectTemplate2008ZipTargets Include="@(ProjectTemplate2008ZipSource->'$(ProjectTemplatesVsiDirectory)%(FileName)%(Extension)')" />
+			<ProjectTemplateVsiContents Include="
+																	@(VsiTransformLayout);
+																	@(ProjectTemplate2008ZipTargets);
+																	" />
 		</ItemGroup>
 
 		<CopyWithTokenSubstitution SourceFiles="@(VsiTransformSource)" DestinationFiles="@(VsiTransformLayout)" />
