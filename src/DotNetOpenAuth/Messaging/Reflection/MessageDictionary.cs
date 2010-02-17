@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 
 	/// <summary>
@@ -270,6 +271,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Sets a named value in the message.
 		/// </summary>
 		/// <param name="item">The name-value pair to add.  The name is the serialized form of the key.</param>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Code Contracts ccrewrite does this.")]
 		public void Add(KeyValuePair<string, string> item) {
 			this.Add(item.Key, item.Value);
 		}

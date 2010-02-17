@@ -112,11 +112,11 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var rp = CreateRelyingParty();
 
 			// First verify that delegating identifiers work
-			Assert.IsTrue(AuthenticationRequest.Create(id, rp, realm, returnTo, false).Any(), "The delegating identifier should have not generated any results.");
+			Assert.IsTrue(AuthenticationRequest.Create(id, rp, this.realm, this.returnTo, false).Any(), "The delegating identifier should have not generated any results.");
 
 			// Now disable them and try again.
 			rp.SecuritySettings.RejectDelegatingIdentifiers = true;
-			Assert.IsFalse(AuthenticationRequest.Create(id, rp, realm, returnTo, false).Any(), "The delegating identifier should have not generated any results.");
+			Assert.IsFalse(AuthenticationRequest.Create(id, rp, this.realm, this.returnTo, false).Any(), "The delegating identifier should have not generated any results.");
 		}
 
 		/// <summary>

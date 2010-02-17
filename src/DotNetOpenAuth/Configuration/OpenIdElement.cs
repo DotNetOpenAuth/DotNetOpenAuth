@@ -104,10 +104,10 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the registered OpenID extensions.
+		/// Gets or sets the registered OpenID extension factories.
 		/// </summary>
 		[ConfigurationProperty(ExtensionFactoriesElementName, IsDefaultCollection = false)]
-		[ConfigurationCollection(typeof(TypeConfigurationCollection<IOpenIdMessageExtension>))]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IOpenIdExtensionFactory>))]
 		internal TypeConfigurationCollection<IOpenIdExtensionFactory> ExtensionFactories {
 			get { return (TypeConfigurationCollection<IOpenIdExtensionFactory>)this[ExtensionFactoriesElementName] ?? new TypeConfigurationCollection<IOpenIdExtensionFactory>(); }
 			set { this[ExtensionFactoriesElementName] = value; }

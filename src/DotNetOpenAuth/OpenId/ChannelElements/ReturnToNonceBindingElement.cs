@@ -209,7 +209,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		/// <summary>
-		/// A special DotNetOpenId-only nonce used by the RP when talking to 1.0 OPs in order
+		/// A special DotNetOpenAuth-only nonce used by the RP when talking to 1.0 OPs in order
 		/// to protect against replay attacks.
 		/// </summary>
 		private class CustomNonce {

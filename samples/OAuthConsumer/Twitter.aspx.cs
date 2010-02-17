@@ -54,7 +54,7 @@ public partial class Twitter : System.Web.UI.Page {
 
 	protected void downloadUpdates_Click(object sender, EventArgs e) {
 		var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-		XPathDocument updates = new XPathDocument(TwitterConsumer.GetUpdates(twitter, AccessToken).CreateReader());
+		XPathDocument updates = new XPathDocument(TwitterConsumer.GetUpdates(twitter, this.AccessToken).CreateReader());
 		XPathNavigator nav = updates.CreateNavigator();
 		var parsedUpdates = from status in nav.Select("/statuses/status").OfType<XPathNavigator>()
 							where !status.SelectSingleNode("user/protected").ValueAsBoolean
