@@ -14,9 +14,9 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.ChannelElements;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class KeyValueFormEncodingTests : TestBase {
 		private Dictionary<string, string> sampleData = new Dictionary<string, string> {
 			{ "key1", "value1" },
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Both = 0x3,
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void BasicEncodingTest() {
 			byte[] kvfBytes = KeyValueFormEncoding.GetBytes(this.sampleData);
 			string responseString = Encoding.UTF8.GetString(kvfBytes);
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			}
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EncodeDecode() {
 			this.KVDictTest(UTF8Encoding.UTF8.GetBytes(string.Empty), new Dictionary<string, string>(), TestMode.Both);
 
@@ -117,35 +117,35 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("east:west\nnorth:south"), d10, TestMode.Decoder);
 		}
 
-		[TestMethod, ExpectedException(typeof(FormatException))]
+		[TestCase, ExpectedException(typeof(FormatException))]
 		public void NoValue() {
 			this.Illegal("x\n", KeyValueFormConformanceLevel.OpenId11);
 		}
 
-		[TestMethod, ExpectedException(typeof(FormatException))]
+		[TestCase, ExpectedException(typeof(FormatException))]
 		public void NoValueLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			this.KVDictTest(Encoding.UTF8.GetBytes("x\n"), d, TestMode.Decoder);
 		}
 
-		[TestMethod, ExpectedException(typeof(FormatException))]
+		[TestCase, ExpectedException(typeof(FormatException))]
 		public void EmptyLine() {
 			this.Illegal("x:b\n\n", KeyValueFormConformanceLevel.OpenId20);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EmptyLineLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			d.Add("x", "b");
 			this.KVDictTest(Encoding.UTF8.GetBytes("x:b\n\n"), d, TestMode.Decoder);
 		}
 
-		[TestMethod, ExpectedException(typeof(FormatException))]
+		[TestCase, ExpectedException(typeof(FormatException))]
 		public void LastLineNotTerminated() {
 			this.Illegal("x:y\na:b", KeyValueFormConformanceLevel.OpenId11);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void LastLineNotTerminatedLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			d.Add("x", "y");

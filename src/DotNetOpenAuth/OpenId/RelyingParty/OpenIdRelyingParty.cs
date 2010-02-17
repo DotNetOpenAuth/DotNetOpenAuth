@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <c>True</c> if the endpoint should be considered.  
 	/// <c>False</c> to remove it from the pool of acceptable providers.
 	/// </returns>
-	public delegate bool EndpointSelector(IXrdsProviderEndpoint endpoint);
+	public delegate bool EndpointSelector(IProviderEndpoint endpoint);
 
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenId consumer.
@@ -49,6 +49,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private readonly ObservableCollection<IRelyingPartyBehavior> behaviors = new ObservableCollection<IRelyingPartyBehavior>();
 
 		/// <summary>
+		/// Backing field for the <see cref="DiscoveryServices"/> property.
+		/// </summary>
+		private readonly IList<IIdentifierDiscoveryService> discoveryServices = new List<IIdentifierDiscoveryService>(2);
+
+		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private RelyingPartySecuritySettings securitySettings;
@@ -56,7 +61,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Backing store for the <see cref="EndpointOrder"/> property.
 		/// </summary>
-		private Comparison<IXrdsProviderEndpoint> endpointOrder = DefaultEndpointOrder;
+		private Comparison<IdentifierDiscoveryResult> endpointOrder = DefaultEndpointOrder;
 
 		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
@@ -90,6 +95,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
+
+			foreach (var discoveryService in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.DiscoveryServices.CreateInstances(true)) {
+				this.discoveryServices.Add(discoveryService);
+			}
+
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
@@ -119,8 +129,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Endpoints lacking any priority value are sorted to the end of the list.
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static Comparison<IXrdsProviderEndpoint> DefaultEndpointOrder {
-			get { return ServiceEndpoint.EndpointOrder; }
+		public static Comparison<IdentifierDiscoveryResult> DefaultEndpointOrder {
+			get { return IdentifierDiscoveryResult.EndpointOrder; }
 		}
 
 		/// <summary>
@@ -202,7 +212,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// can be set to the value of <see cref="DefaultEndpointOrder"/>.
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public Comparison<IXrdsProviderEndpoint> EndpointOrder {
+		public Comparison<IdentifierDiscoveryResult> EndpointOrder {
 			get {
 				return this.endpointOrder;
 			}
@@ -229,6 +239,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public ICollection<IRelyingPartyBehavior> Behaviors {
 			get { return this.behaviors; }
+		}
+
+		/// <summary>
+		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
+		/// </summary>
+		public IList<IIdentifierDiscoveryService> DiscoveryServices {
+			get { return this.discoveryServices; }
 		}
 
 		/// <summary>
@@ -459,21 +476,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 
-			// Build the realm URL
-			UriBuilder realmUrl = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
-			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
-			realmUrl.Query = null;
-			realmUrl.Fragment = null;
-
-			// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
-			// virtual directory hosted apps, we need to make sure that the realm path ends
-			// in a slash (since our calculation above guarantees it doesn't end in a specific
-			// page like default.aspx).
-			if (!realmUrl.Path.EndsWith("/", StringComparison.Ordinal)) {
-				realmUrl.Path += "/";
-			}
-
-			return this.CreateRequests(userSuppliedIdentifier, new Realm(realmUrl.Uri));
+			return this.CreateRequests(userSuppliedIdentifier, Realm.AutoDetect);
 		}
 
 		/// <summary>
@@ -574,6 +577,42 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 			rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
 			return rp;
+		}
+
+		/// <summary>
+		/// Performs discovery on the specified identifier.
+		/// </summary>
+		/// <param name="identifier">The identifier to discover services for.</param>
+		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
+		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
+			Contract.Requires<ArgumentNullException>(identifier != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
+
+			IEnumerable<IdentifierDiscoveryResult> results = Enumerable.Empty<IdentifierDiscoveryResult>();
+			foreach (var discoverer in this.DiscoveryServices) {
+				bool abortDiscoveryChain;
+				var discoveryResults = discoverer.Discover(identifier, this.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();
+				results = results.Concat(discoveryResults);
+				if (abortDiscoveryChain) {
+					Logger.OpenId.InfoFormat("Further discovery on '{0}' was stopped by the {1} discovery service.", identifier, discoverer.GetType().Name);
+					break;
+				}
+			}
+
+			// If any OP Identifier service elements were found, we must not proceed
+			// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.
+			// For a discussion on this topic, see
+			// http://groups.google.com/group/dotnetopenid/browse_thread/thread/4b5a8c6b2210f387/5e25910e4d2252c8
+			// Sometimes the IIdentifierDiscoveryService will automatically filter this for us, but
+			// just to be sure, we'll do it here as well.
+			if (!this.SecuritySettings.AllowDualPurposeIdentifiers) {
+				results = results.CacheGeneratedResults(); // avoid performing discovery repeatedly
+				var opIdentifiers = results.Where(result => result.ClaimedIdentifier == result.Protocol.ClaimedIdentifierForOPIdentifier);
+				var claimedIdentifiers = results.Where(result => result.ClaimedIdentifier != result.Protocol.ClaimedIdentifierForOPIdentifier);
+				results = opIdentifiers.Any() ? opIdentifiers : claimedIdentifiers;
+			}
+
+			return results;
 		}
 
 		/// <summary>

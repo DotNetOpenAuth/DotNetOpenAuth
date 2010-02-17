@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 				return;
 			}
 
-			if (req.Provider.IsExtensionSupported<ClaimsRequest>()) {
+			if (req.DiscoveryResult.IsExtensionSupported<ClaimsRequest>()) {
 				Logger.OpenId.Debug("Skipping generation of AX request because the Identifier advertises the Provider supports the Sreg extension.");
 				return;
 			}
@@ -276,8 +276,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <returns>The AX format(s) to use based on the Provider's advertised AX support.</returns>
 		private static bool TryDetectOPAttributeFormat(RelyingParty.IAuthenticationRequest request, out AXAttributeFormats attributeFormat) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			var provider = (RelyingParty.ServiceEndpoint)request.Provider;
-			attributeFormat = DetectAXFormat(provider.ProviderDescription.Capabilities);
+			attributeFormat = DetectAXFormat(request.DiscoveryResult.Capabilities);
 			return attributeFormat != AXAttributeFormats.None;
 		}
 

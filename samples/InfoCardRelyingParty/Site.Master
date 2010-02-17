@@ -20,7 +20,7 @@
 	</span>
 	<div>
 		<a href="http://dotnetopenauth.net">
-			<img runat="server" src="~/images/dotnetopenid_tiny.gif" title="Jump to the project web site."
+			<img runat="server" src="~/images/DotNetOpenAuth.png" title="Jump to the project web site."
 				alt="DotNetOpenAuth" border='0' /></a>
 	</div>
 	<div>

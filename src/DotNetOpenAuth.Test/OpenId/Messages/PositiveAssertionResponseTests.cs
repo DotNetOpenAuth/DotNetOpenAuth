@@ -15,9 +15,9 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class PositiveAssertionResponseTests : OpenIdTestBase {
 		private const string CreationDateString = "2005-05-15T17:11:51Z";
 		private readonly DateTime creationDate = DateTime.Parse(CreationDateString, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		private PositiveAssertionResponse unsolicited;
 		private Protocol protocol;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.unsolicited = new PositiveAssertionResponse(this.protocol.Version, RPUri);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorFromRequest() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.response.Mode);
 			Assert.AreEqual(this.request.Version, this.response.Version);
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(OPUri, this.response.ProviderEndpoint);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorUnsolicited() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.unsolicited.Mode);
 			Assert.AreEqual(this.protocol.Version, this.unsolicited.Version);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// <summary>
 		/// Verifies that local_id and claimed_id can either be null or specified.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ClaimedIdAndLocalIdSpecifiedIsValid() {
 			this.response.LocalIdentifier = "http://local";
 			this.response.ClaimedIdentifier = "http://claimedid";

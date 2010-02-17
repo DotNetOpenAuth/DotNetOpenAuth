@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Information about the OP endpoint that issued this assertion.
 		/// </summary>
-		private readonly ProviderEndpointDescription provider;
+		private readonly IProviderEndpoint provider;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAnonymousResponse"/> class.

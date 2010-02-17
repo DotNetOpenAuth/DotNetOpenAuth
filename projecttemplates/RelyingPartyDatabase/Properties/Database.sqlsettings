@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<CatalogProperties xmlns="urn:Microsoft.VisualStudio.Data.Schema.Project.CatalogProperties">
-  <Version>1</Version>
+<CatalogProperties xmlns="urn:Microsoft.VisualStudio.Data.Schema.Package.CatalogProperties">
+  <Version>1.0</Version>
   <Properties>
     <AllowSnapshotIsolation>False</AllowSnapshotIsolation>
     <AnsiNullDefault>False</AnsiNullDefault>

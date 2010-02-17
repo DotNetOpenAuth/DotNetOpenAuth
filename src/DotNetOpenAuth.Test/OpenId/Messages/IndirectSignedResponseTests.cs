@@ -16,9 +16,9 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class IndirectSignedResponseTests : OpenIdTestBase {
 		private const string CreationDateString = "2005-05-15T17:11:51Z";
 		private readonly DateTime creationDate = DateTime.Parse(CreationDateString, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		private IndirectSignedResponse unsolicited;
 		private Protocol protocol;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.unsolicited = new IndirectSignedResponse(this.protocol.Version, RPUri);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorFromRequest() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.response.Mode);
 			Assert.AreEqual(this.request.Version, this.response.Version);
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.IsTrue(DateTime.UtcNow - ((ITamperResistantOpenIdMessage)this.response).UtcCreationDate < TimeSpan.FromSeconds(5));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorUnsolicited() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.unsolicited.Mode);
 			Assert.AreEqual(this.protocol.Version, this.unsolicited.Version);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(OPUri, this.unsolicited.ProviderEndpoint);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ResponseNonceSetter() {
 			const string HybridValue = CreationDateString + "UNIQUE";
 			var responseAccessor = IndirectSignedResponse_Accessor.AttachShadow(this.response);
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.IsNull(responseReplay.Nonce);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ResponseNonceGetter() {
 			var responseAccessor = IndirectSignedResponse_Accessor.AttachShadow(this.response);
 			IReplayProtectedProtocolMessage responseReplay = this.response;
@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.creationDate, responseReplay.UtcCreationDate);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void UtcCreationDateConvertsToUniversal() {
 			IReplayProtectedProtocolMessage responseReplay = this.response;
 			DateTime local = DateTime.Parse("1982-01-01", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.creationDate.Hour, utcCreationDate.Hour, "The hour should match since both times are UTC time.");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ReturnToDoesNotMatchRecipient() {
 			// Make sure its valid first, so we know that when it's invalid
 			// it is due to our tampering.
@@ -127,24 +127,24 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void GetReturnToArgumentNullKey() {
 			this.response.GetReturnToArgument(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void GetReturnToArgumentEmptyKey() {
 			this.response.GetReturnToArgument(string.Empty);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GetReturnToArgumentDoesNotReturnExtraArgs() {
 			this.response.ExtraData["a"] = "b";
 			Assert.IsNull(this.response.GetReturnToArgument("a"));
 			Assert.AreEqual(0, this.response.GetReturnToParameterNames().Count());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GetReturnToArgumentAndNames() {
 			UriBuilder returnToBuilder = new UriBuilder(this.response.ReturnTo);
 			returnToBuilder.AppendQueryArgs(new Dictionary<string, string> { { "a", "b" } });

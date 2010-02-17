@@ -32,11 +32,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		Realm IAuthenticationRequest.Realm {
-			get { throw new NotImplementedException(); }
+			get {
+				Contract.Ensures(Contract.Result<Realm>() != null);
+				throw new NotImplementedException();
+			}
 		}
 
 		Identifier IAuthenticationRequest.ClaimedIdentifier {
-			get { throw new NotImplementedException(); }
+			get {
+				throw new NotImplementedException();
+			}
 		}
 
 		bool IAuthenticationRequest.IsDirectedIdentity {
@@ -54,7 +59,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		IProviderEndpoint IAuthenticationRequest.Provider {
-			get { throw new NotImplementedException(); }
+			get {
+				Contract.Ensures(Contract.Result<IProviderEndpoint>() != null);
+				throw new NotImplementedException();
+			}
+		}
+
+		IdentifierDiscoveryResult IAuthenticationRequest.DiscoveryResult {
+			get {
+				Contract.Ensures(Contract.Result<IdentifierDiscoveryResult>() != null);
+				throw new NotImplementedException();
+			}
 		}
 
 		void IAuthenticationRequest.AddCallbackArguments(IDictionary<string, string> arguments) {

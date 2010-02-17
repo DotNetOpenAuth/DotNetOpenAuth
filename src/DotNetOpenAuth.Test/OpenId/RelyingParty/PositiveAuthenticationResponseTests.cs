@@ -12,14 +12,14 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class PositiveAuthenticationResponseTests : OpenIdTestBase {
 		private readonly Realm realm = new Realm("http://localhost/rp.aspx");
 		private readonly Uri returnTo = new Uri("http://localhost/rp.aspx");
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 		}
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies good, positive assertions are accepted.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Valid() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			ClaimsResponse extension = new ClaimsResponse();
@@ -37,8 +37,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var authResponseAccessor = PositiveAuthenticationResponse_Accessor.AttachShadow(authResponse);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.IsNull(authResponse.Exception);
-			Assert.AreEqual<string>(assertion.ClaimedIdentifier, authResponse.ClaimedIdentifier);
-			Assert.AreEqual<string>(authResponse.Endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
+			Assert.AreEqual((string)assertion.ClaimedIdentifier, (string)authResponse.ClaimedIdentifier);
+			Assert.AreEqual(authResponse.Endpoint.FriendlyIdentifierForDisplay, authResponse.FriendlyIdentifierForDisplay);
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension(typeof(ClaimsResponse)));
 			Assert.AreSame(extension, authResponse.GetUntrustedExtension<ClaimsResponse>());
 			Assert.IsNull(authResponse.GetCallbackArgument("a"));
@@ -46,11 +46,37 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Verifies that discovery verification of a positive assertion can match a dual identifier.
+		/// </summary>
+		[TestCase]
+		public void DualIdentifierMatchesInAssertionVerification() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
+			var rp = CreateRelyingParty();
+			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
+			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+		}
+
+		/// <summary>
+		/// Verifies that discovery verification of a positive assertion cannot match a dual identifier
+		/// if the default settings are in place.
+		/// </summary>
+		[TestCase, ExpectedException(typeof(ProtocolException))]
+		public void DualIdentifierNoMatchInAssertionVerificationByDefault() {
+			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
+			ClaimsResponse extension = new ClaimsResponse();
+			assertion.Extensions.Add(extension);
+			var rp = CreateRelyingParty();
+			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+		}
+
+		/// <summary>
 		/// Verifies that the RP rejects signed solicited assertions by an OP that
 		/// makes up a claimed Id that was not part of the original request, and 
 		/// that the OP has no authority to assert positively regarding.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void SpoofedClaimedIdDetectionSolicited() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			assertion.ProviderEndpoint = new Uri("http://rogueOP");
@@ -63,7 +89,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that the RP rejects positive assertions with HTTP Claimed
 		/// Cdentifiers when RequireSsl is set to true.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void InsecureIdentifiersRejectedWithRequireSsl() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			var rp = CreateRelyingParty();
@@ -71,7 +97,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GetCallbackArguments() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			var rp = CreateRelyingParty();
@@ -95,9 +121,13 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		private PositiveAssertionResponse GetPositiveAssertion() {
+			return this.GetPositiveAssertion(false);
+		}
+
+		private PositiveAssertionResponse GetPositiveAssertion(bool dualIdentifier) {
 			Protocol protocol = Protocol.Default;
 			PositiveAssertionResponse assertion = new PositiveAssertionResponse(protocol.Version, this.returnTo);
-			assertion.ClaimedIdentifier = this.GetMockIdentifier(protocol.ProtocolVersion, false);
+			assertion.ClaimedIdentifier = dualIdentifier ? this.GetMockDualIdentifier() : this.GetMockIdentifier(protocol.ProtocolVersion, false);
 			assertion.LocalIdentifier = OPLocalIdentifiers[0];
 			assertion.ReturnTo = this.returnTo;
 			assertion.ProviderEndpoint = OPUri;

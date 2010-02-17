@@ -62,13 +62,13 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public static XDocument UpdateProfileBackgroundImage(ConsumerBase twitter, string accessToken, string image, bool tile) {
-			HttpWebRequest request = twitter.PrepareAuthorizedRequest(UpdateProfileBackgroundImageEndpoint, accessToken);
-			request.ServicePoint.Expect100Continue = false;
 			var parts = new[] {
 				MultipartPostPart.CreateFormFilePart("image", image, "image/" + Path.GetExtension(image).Substring(1).ToLowerInvariant()),
 				MultipartPostPart.CreateFormPart("tile", tile.ToString().ToLowerInvariant()),
 			};
-			IncomingWebResponse response = request.PostMultipart(twitter.Channel.WebRequestHandler, parts);
+			HttpWebRequest request = twitter.PrepareAuthorizedRequest(UpdateProfileBackgroundImageEndpoint, accessToken, parts);
+			request.ServicePoint.Expect100Continue = false;
+			IncomingWebResponse response = twitter.Channel.WebRequestHandler.GetResponse(request);
 			string responseString = response.GetResponseReader().ReadToEnd();
 			return XDocument.Parse(responseString);
 		}
@@ -79,11 +79,11 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public static XDocument UpdateProfileImage(ConsumerBase twitter, string accessToken, Stream image, string contentType) {
-			HttpWebRequest request = twitter.PrepareAuthorizedRequest(UpdateProfileImageEndpoint, accessToken);
 			var parts = new[] {
 				MultipartPostPart.CreateFormFilePart("image", "twitterPhoto", contentType, image),
 			};
-			IncomingWebResponse response = request.PostMultipart(twitter.Channel.WebRequestHandler, parts);
+			HttpWebRequest request = twitter.PrepareAuthorizedRequest(UpdateProfileImageEndpoint, accessToken, parts);
+			IncomingWebResponse response = twitter.Channel.WebRequestHandler.GetResponse(request);
 			string responseString = response.GetResponseReader().ReadToEnd();
 			return XDocument.Parse(responseString);
 		}

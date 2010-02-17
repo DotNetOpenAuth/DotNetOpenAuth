@@ -8,17 +8,17 @@ namespace DotNetOpenAuth.Test {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// Tests for the <see cref="ServiceProviderEndpoints"/> class.
 	/// </summary>
-	[TestClass]
+	[TestFixture]
 	public class ServiceProviderDescriptionTests : TestBase {
 		/// <summary>
 		/// A test for UserAuthorizationUri
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UserAuthorizationUriTest() {
 			ServiceProviderDescription target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethods.GetRequest);
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// A test for RequestTokenUri
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void RequestTokenUriTest() {
 			var target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethods.GetRequest);
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test {
 		/// Verifies that oauth parameters are not allowed in <see cref="ServiceProvider.RequestTokenUri"/>,
 		/// per section OAuth 1.0 section 4.1.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void RequestTokenUriWithOAuthParametersTest() {
 			var target = new ServiceProviderDescription();
 			target.RequestTokenEndpoint = new MessageReceivingEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethods.GetRequest);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// A test for AccessTokenUri
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void AccessTokenUriTest() {
 			var target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/accesstoken", HttpDeliveryMethods.GetRequest);

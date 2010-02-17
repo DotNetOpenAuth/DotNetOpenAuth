@@ -73,6 +73,22 @@ namespace RelyingPartyLogic {
 		}
 
 		public static void AuthorizePendingRequestToken() {
+			var response = AuthorizePendingRequestTokenAndGetResponse();
+			if (response != null) {
+				serviceProvider.Channel.Send(response);
+			}
+		}
+
+		public static OutgoingWebResponse AuthorizePendingRequestTokenAsWebResponse() {
+			var response = AuthorizePendingRequestTokenAndGetResponse();
+			if (response != null) {
+				return serviceProvider.Channel.PrepareResponse(response);
+			} else {
+				return null;
+			}
+		}
+
+		private static UserAuthorizationResponse AuthorizePendingRequestTokenAndGetResponse() {
 			var pendingRequest = PendingAuthorizationRequest;
 			if (pendingRequest == null) {
 				throw new InvalidOperationException("No pending authorization request to authorize.");
@@ -84,9 +100,7 @@ namespace RelyingPartyLogic {
 
 			PendingAuthorizationRequest = null;
 			var response = serviceProvider.PrepareAuthorizationResponse(pendingRequest);
-			if (response != null) {
-				serviceProvider.Channel.Send(response);
-			}
+			return response;
 		}
 
 		/// <summary>

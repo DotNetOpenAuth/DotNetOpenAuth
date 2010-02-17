@@ -107,14 +107,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			HttpContext context = HttpContext.Current;
 
-			// We use Request.Url for the full path to the server, and modify it
-			// with Request.RawUrl to capture both the cookieless session "directory" if it exists
-			// and the original path in case URL rewriting is going on.  We don't want to be
-			// fooled by URL rewriting because we're comparing the actual URL with what's in
-			// the return_to parameter in some cases.
-			// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
-			// session, but not the URL rewriting problem.
-			return new Uri(context.Request.Url, context.Request.RawUrl);
+			return HttpRequestInfo.GetPublicFacingUrl(context.Request, context.Request.ServerVariables);
 		}
 
 		/// <summary>
@@ -149,6 +142,46 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="parts">The parts to include in the POST entity.</param>
 		/// <returns>The HTTP response.</returns>
 		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(parts != null);
+
+			PostMultipartNoGetResponse(request, requestHandler, parts);
+			return requestHandler.GetResponse(request);
+		}
+
+		/// <summary>
+		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
+		/// </summary>
+		/// <param name="exception">The exception.</param>
+		/// <returns>The assembled message.</returns>
+		public static string ToStringDescriptive(this Exception exception) {
+			// The input being null is probably bad, but since this method is called
+			// from a catch block, we don't really want to throw a new exception and
+			// hide the details of this one.  
+			if (exception == null) {
+				Logger.Messaging.Error("MessagingUtilities.GetAllMessages called with null input.");
+			}
+
+			StringBuilder message = new StringBuilder();
+			while (exception != null) {
+				message.Append(exception.Message);
+				exception = exception.InnerException;
+				if (exception != null) {
+					message.Append("  ");
+				}
+			}
+
+			return message.ToString();
+		}
+
+		/// <summary>
+		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="parts">The parts to include in the POST entity.</param>
+		internal static void PostMultipartNoGetResponse(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Requires<ArgumentNullException>(parts != null);
@@ -193,33 +226,6 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
-
-			return requestHandler.GetResponse(request);
-		}
-
-		/// <summary>
-		/// Assembles a message comprised of the message on a given exception and all inner exceptions.
-		/// </summary>
-		/// <param name="exception">The exception.</param>
-		/// <returns>The assembled message.</returns>
-		public static string ToStringDescriptive(this Exception exception) {
-			// The input being null is probably bad, but since this method is called
-			// from a catch block, we don't really want to throw a new exception and
-			// hide the details of this one.  
-			if (exception == null) {
-				Logger.Messaging.Error("MessagingUtilities.GetAllMessages called with null input.");
-			}
-
-			StringBuilder message = new StringBuilder();
-			while (exception != null) {
-				message.Append(exception.Message);
-				exception = exception.InnerException;
-				if (exception != null) {
-					message.Append("  ");
-				}
-			}
-
-			return message.ToString();
 		}
 
 		/// <summary>
@@ -324,6 +330,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !CLR4
 		/// <summary>
 		/// Copies the contents of one stream to another.
 		/// </summary>
@@ -339,8 +346,9 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(copyTo != null);
 			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
 			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
-			return CopyTo(copyFrom, copyTo, int.MaxValue);
+			return CopyUpTo(copyFrom, copyTo, int.MaxValue);
 		}
+#endif
 
 		/// <summary>
 		/// Copies the contents of one stream to another.
@@ -353,7 +361,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Copying begins at the streams' current positions.
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
-		internal static int CopyTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
+		internal static int CopyUpTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
 			Contract.Requires<ArgumentNullException>(copyFrom != null);
 			Contract.Requires<ArgumentNullException>(copyTo != null);
 			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);

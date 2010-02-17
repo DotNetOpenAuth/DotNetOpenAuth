@@ -47,28 +47,24 @@ EXEC [dbo].[AddUser] 'admin', 'admin', '{1}', '{2}'
 GO
 ";
 			var removeSnippets = new string[] { @"
-IF EXISTS (SELECT 1
-           FROM   [master].[dbo].[sysdatabases]
-           WHERE  [name] = N'$(DatabaseName)')
+IF IS_SRVROLEMEMBER(N'sysadmin') = 1
     BEGIN
-        ALTER DATABASE [$(DatabaseName)]
-            SET HONOR_BROKER_PRIORITY OFF 
-            WITH ROLLBACK IMMEDIATE;
+        IF EXISTS (SELECT 1
+                   FROM   [master].[dbo].[sysdatabases]
+                   WHERE  [name] = N'$(DatabaseName)')
+            BEGIN
+                EXECUTE sp_executesql N'ALTER DATABASE [$(DatabaseName)]
+    SET HONOR_BROKER_PRIORITY OFF 
+    WITH ROLLBACK IMMEDIATE';
+            END
+    END
+ELSE
+    BEGIN
+        PRINT N'The database settings cannot be modified. You must be a SysAdmin to apply these settings.';
     END
 
 
-GO", @"
-PRINT N'Creating AutoCreatedLocal...';
-
-
-GO
-CREATE ROUTE [AutoCreatedLocal]
-    AUTHORIZATION [dbo]
-    WITH ADDRESS = N'LOCAL';
-
-
-GO
-" };
+GO" };
 			string databasePath = HttpContext.Current.Server.MapPath("~/App_Data/" + databaseName + ".mdf");
 			StringBuilder schemaSqlBuilder = new StringBuilder();
 			using (var sr = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(DefaultNamespace + ".CreateDatabase.sql"))) {

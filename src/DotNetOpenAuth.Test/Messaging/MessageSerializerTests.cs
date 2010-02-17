@@ -9,30 +9,30 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// Tests for the <see cref="MessageSerializer"/> class.
 	/// </summary>
-	[TestClass()]
+	[TestFixture()]
 	public class MessageSerializerTests : MessagingTestBase {
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Serialize(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void GetInvalidMessageType() {
 			MessageSerializer.Get(typeof(string));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void GetNullType() {
 			MessageSerializer.Get(null);
 		}
 
-		[TestMethod()]
+		[TestCase()]
 		public void SerializeTest() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
@@ -52,13 +52,13 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsFalse(actual.ContainsKey("EmptyMember"));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void DeserializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Deserialize(null, null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void DeserializeSimple() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// The element sorting rules are first inheritance order, then alphabetical order.
 		/// This test validates correct behavior on both.
 		/// </remarks>
-		[TestMethod]
+		[TestCase]
 		public void DeserializeVerifyElementOrdering() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestDerivedMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual("privateValue", actual.PrivatePropertyAccessor);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void DeserializeWithExtraFields() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsNull(actual.EmptyMember);
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeInvalidMessage() {
 			IProtocolMessage message = new Mocks.TestDirectedMessage();
 			var serializer = MessageSerializer.Get(message.GetType());

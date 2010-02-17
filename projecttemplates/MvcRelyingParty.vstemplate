@@ -1,0 +1,22 @@
+<VSTemplate Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="ProjectGroup">
+	<TemplateData>
+		<Name>ASP.NET MVC OpenID-InfoCard RP</Name>
+		<RequiredFrameworkVersion>3.5</RequiredFrameworkVersion>
+		<Description>An ASP.NET MVC web site that accepts OpenID logins and acts as an OAuth service provider.</Description>
+		<ProjectType>CSharp</ProjectType>
+		<NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+		<SortOrder>1000</SortOrder>
+		<CreateNewFolder>true</CreateNewFolder>
+		<DefaultName>WebRPApplication</DefaultName>
+		<ProvideDefaultName>true</ProvideDefaultName>
+		<LocationField>Enabled</LocationField>
+		<EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+		<Icon>__TemplateIcon.ico</Icon>
+	</TemplateData>
+	<TemplateContent>
+		<ProjectCollection>
+			<ProjectTemplateLink ProjectName="$projectname$">MvcRelyingParty\MvcRelyingParty.vstemplate</ProjectTemplateLink>
+			<ProjectTemplateLink ProjectName="RelyingPartyLogic">RelyingPartyLogic\RelyingPartyLogic.vstemplate</ProjectTemplateLink>
+		</ProjectCollection>
+	</TemplateContent>
+</VSTemplate>

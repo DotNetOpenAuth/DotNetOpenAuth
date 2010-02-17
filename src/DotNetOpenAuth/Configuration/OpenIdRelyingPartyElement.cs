@@ -5,8 +5,10 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Configuration {
+	using System;
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
@@ -25,9 +27,19 @@ namespace DotNetOpenAuth.Configuration {
 		private const string SecuritySettingsConfigName = "security";
 
 		/// <summary>
-		/// Gets the name of the &lt;behaviors&gt; sub-element.
+		/// The name of the &lt;behaviors&gt; sub-element.
 		/// </summary>
 		private const string BehaviorsElementName = "behaviors";
+
+		/// <summary>
+		/// The name of the &lt;discoveryServices&gt; sub-element.
+		/// </summary>
+		private const string DiscoveryServicesElementName = "discoveryServices";
+
+		/// <summary>
+		/// The built-in set of identifier discovery services.
+		/// </summary>
+		private static readonly TypeConfigurationCollection<IIdentifierDiscoveryService> defaultDiscoveryServices = new TypeConfigurationCollection<IIdentifierDiscoveryService>(new Type[] { typeof(UriDiscoveryService), typeof(XriDiscoveryProxyService) });
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyElement"/> class.
@@ -61,6 +73,26 @@ namespace DotNetOpenAuth.Configuration {
 		public TypeConfigurationElement<IRelyingPartyApplicationStore> ApplicationStore {
 			get { return (TypeConfigurationElement<IRelyingPartyApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IRelyingPartyApplicationStore>(); }
 			set { this[StoreConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the services to use for discovering service endpoints for identifiers.
+		/// </summary>
+		/// <remarks>
+		/// If no discovery services are defined in the (web) application's .config file,
+		/// the default set of discovery services built into the library are used.
+		/// </remarks>
+		[ConfigurationProperty(DiscoveryServicesElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TypeConfigurationCollection<IIdentifierDiscoveryService>))]
+		internal TypeConfigurationCollection<IIdentifierDiscoveryService> DiscoveryServices {
+			get {
+				var configResult = (TypeConfigurationCollection<IIdentifierDiscoveryService>)this[DiscoveryServicesElementName];
+				return configResult != null && configResult.Count > 0 ? configResult : defaultDiscoveryServices;
+			}
+
+			set {
+				this[DiscoveryServicesElementName] = value;
+			}
 		}
 	}
 }

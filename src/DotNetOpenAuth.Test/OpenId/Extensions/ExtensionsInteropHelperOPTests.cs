@@ -14,14 +14,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ExtensionsInteropHelperOPTests : OpenIdTestBase {
 		private AuthenticationRequest request;
 		private IList<IExtensionMessage> extensions;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies no extensions appear as no extensions
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void NoRequestedExtensions() {
 			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.request);
 			Assert.IsNull(sreg);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreSame(sregResponse, extensions.Single());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void NegativeResponse() {
 			this.request.IsAuthenticated = false;
 			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies sreg coming in is seen as sreg.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsAsSregWithSreg() {
 			var sregInjected = new ClaimsRequest {
 				Nickname = DemandLevel.Request,
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies AX coming in looks like sreg.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsAsSregWithAX() {
 			this.ParameterizedAXTest(AXAttributeFormats.AXSchemaOrg);
 		}
@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies AX coming in looks like sreg.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsAsSregWithAXSchemaOpenIdNet() {
 			this.ParameterizedAXTest(AXAttributeFormats.SchemaOpenIdNet);
 		}
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies sreg and AX in one request has a preserved sreg request.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsAsSregWithBothSregAndAX() {
 			var sregInjected = new ClaimsRequest {
 				Nickname = DemandLevel.Request,

@@ -12,18 +12,18 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.Runtime.Serialization.Formatters.Binary;
 	using System.Xml.Serialization;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ClaimsResponseTests {
-		[TestMethod]
+		[TestCase]
 		public void EmptyMailAddress() {
 			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
 			response.Email = string.Empty;
 			Assert.IsNull(response.MailAddress);
 		}
 
-		[TestMethod, Ignore] // serialization no longer supported
+		[TestCase, Ignore("serialization no longer supported")]
 		public void BinarySerialization() {
 			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(fields, fields2);
 		}
 
-		[TestMethod, Ignore] // serialization no longer supported
+		[TestCase, Ignore("serialization no longer supported")]
 		public void XmlSerialization() {
 			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(fields, fields2);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EqualityTest() {
 			ClaimsResponse fields1 = this.GetFilledData();
 
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreNotEqual(fields1, fields2);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Birthdates() {
 			var response = new ClaimsResponse();
 			// Verify that they both start out as null
@@ -124,7 +124,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsFalse(response.BirthDate.HasValue);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void InvalidRawBirthdate() {
 			var response = new ClaimsResponse();
 			response.BirthDateRaw = "2008";

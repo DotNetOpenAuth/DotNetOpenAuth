@@ -319,6 +319,7 @@
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>
+												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean" />
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="behaviors">
@@ -351,6 +352,27 @@
 																	</xs:documentation>
 																</xs:annotation>
 															</xs:attribute>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="discoveryServices">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="clear">

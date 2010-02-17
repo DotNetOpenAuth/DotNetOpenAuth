@@ -16,13 +16,14 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
 	/// </summary>
-	internal static class OpenIdUtilities {
+	public static class OpenIdUtilities {
 		/// <summary>
 		/// The prefix to designate this library's proprietary parameters added to the protocol.
 		/// </summary>

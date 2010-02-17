@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<Import Project="DotNetOpenAuth.Versioning.targets" />
+	<Import Project="JavascriptPacker.targets" />
+
+	<PropertyGroup>
+		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
+		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+		<Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<!-- This forces a build break when Code Contracts are not installed. -->
+	<PropertyGroup>
+		<CompileDependsOn>$(CompileDependsOn);CheckForCodeContracts</CompileDependsOn>
+	</PropertyGroup>
+	<Target Name="CheckForCodeContracts">
+		<Error Condition=" '$(CodeContractsImported)' != 'true' " Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx" />
+	</Target>
+
+	<!-- This is our multi-targeting aware shadow assembly generator. -->
+	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="Publicize" />
+	<PropertyGroup>
+		<ResolveReferencesDependsOn>
+			$(ResolveReferencesDependsOn);
+			CreatePublicAccessors
+		</ResolveReferencesDependsOn>
+	</PropertyGroup>
+	<!-- Remove the built-in shadow generator, since we do it ourselves to avoid bugs in the Microsoft code. -->
+	<Target Name="CreatePublicAccessors">
+		<PropertyGroup>
+			<VSVersionForTargetFramework>v10.0</VSVersionForTargetFramework>
+			<VSVersionForTargetFramework Condition=" '$(ClrVersion)' != '4' ">v9.0</VSVersionForTargetFramework>
+		</PropertyGroup>
+		<Publicize
+			Condition=" '%(ReferencePath.Shadow)' == 'true' "
+			SkipUnchangedFiles="true"
+			MSBuildExtensionsPath="$(MSBuildExtensionsPath)"
+			ToolPath="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\$(VSVersionForTargetFramework)\TeamTest"
+			Assembly="@(ReferencePath)"
+			DelaySign="$(DelaySign)"
+			KeyFile="$(PublicKeyFile)">
+			<Output TaskParameter="AccessorAssembly" ItemName="ReferencePath" />
+		</Publicize>
+	</Target>
+</Project>

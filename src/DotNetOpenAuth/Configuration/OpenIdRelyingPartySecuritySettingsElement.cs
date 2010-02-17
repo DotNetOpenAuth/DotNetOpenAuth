@@ -66,6 +66,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
 
 		/// <summary>
+		/// Gets the name of the @allowDualPurposeIdentifiers attribute.
+		/// </summary>
+		private const string AllowDualPurposeIdentifiersConfigName = "allowDualPurposeIdentifiers";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartySecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartySecuritySettingsElement() {
@@ -183,6 +188,19 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether identifiers that are both OP Identifiers and Claimed Identifiers
+		/// should ever be recognized as claimed identifiers.
+		/// </summary>
+		/// <value>
+		/// 	The default value is <c>false</c>, per the OpenID 2.0 spec.
+		/// </value>
+		[ConfigurationProperty(AllowDualPurposeIdentifiersConfigName, DefaultValue = false)]
+		public bool AllowDualPurposeIdentifiers {
+			get { return (bool)this[AllowDualPurposeIdentifiersConfigName]; }
+			set { this[AllowDualPurposeIdentifiersConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -200,6 +218,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
+			settings.AllowDualPurposeIdentifiers = this.AllowDualPurposeIdentifiers;
 
 			return settings;
 		}

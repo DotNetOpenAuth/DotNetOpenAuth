@@ -76,16 +76,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Null if no association could be created that meet the security requirements
 		/// and the provider OpenID version.
 		/// </returns>
-		internal static AssociateRequest Create(SecuritySettings securityRequirements, ProviderEndpointDescription provider) {
+		internal static AssociateRequest Create(SecuritySettings securityRequirements, IProviderEndpoint provider) {
 			Contract.Requires<ArgumentNullException>(securityRequirements != null);
 			Contract.Requires<ArgumentNullException>(provider != null);
 
 			// Apply our knowledge of the endpoint's transport, OpenID version, and
 			// security requirements to decide the best association.
-			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
+			bool unencryptedAllowed = provider.Uri.IsTransportSecure();
 			bool useDiffieHellman = !unencryptedAllowed;
 			string associationType, sessionType;
-			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.ProtocolVersion), true, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
+			if (!HmacShaAssociation.TryFindBestAssociation(Protocol.Lookup(provider.Version), true, securityRequirements, useDiffieHellman, out associationType, out sessionType)) {
 				// There are no associations that meet all requirements.
 				Logger.OpenId.Warn("Security requirements and protocol combination knock out all possible association types.  Dumb mode forced.");
 				return null;
@@ -106,19 +106,19 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Null if no association could be created that meet the security requirements
 		/// and the provider OpenID version.
 		/// </returns>
-		internal static AssociateRequest Create(SecuritySettings securityRequirements, ProviderEndpointDescription provider, string associationType, string sessionType) {
+		internal static AssociateRequest Create(SecuritySettings securityRequirements, IProviderEndpoint provider, string associationType, string sessionType) {
 			Contract.Requires<ArgumentNullException>(securityRequirements != null);
 			Contract.Requires<ArgumentNullException>(provider != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
 			Contract.Requires<ArgumentNullException>(sessionType != null);
 
-			bool unencryptedAllowed = provider.Endpoint.IsTransportSecure();
+			bool unencryptedAllowed = provider.Uri.IsTransportSecure();
 			if (unencryptedAllowed) {
-				var associateRequest = new AssociateUnencryptedRequest(provider.ProtocolVersion, provider.Endpoint);
+				var associateRequest = new AssociateUnencryptedRequest(provider.Version, provider.Uri);
 				associateRequest.AssociationType = associationType;
 				return associateRequest;
 			} else {
-				var associateRequest = new AssociateDiffieHellmanRequest(provider.ProtocolVersion, provider.Endpoint);
+				var associateRequest = new AssociateDiffieHellmanRequest(provider.Version, provider.Uri);
 				associateRequest.AssociationType = associationType;
 				associateRequest.SessionType = sessionType;
 				associateRequest.InitializeRequest();

@@ -18,13 +18,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 	/// having a dependency on a hosted web site to actually perform discovery on.
 	/// </summary>
 	internal class MockIdentifier : Identifier {
-		private IEnumerable<ServiceEndpoint> endpoints;
+		private IEnumerable<IdentifierDiscoveryResult> endpoints;
 
 		private MockHttpRequest mockHttpRequest;
 
 		private Identifier wrappedIdentifier;
 
-		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<ServiceEndpoint> endpoints)
+		public MockIdentifier(Identifier wrappedIdentifier, MockHttpRequest mockHttpRequest, IEnumerable<IdentifierDiscoveryResult> endpoints)
 			: base(wrappedIdentifier.OriginalString, false) {
 			Contract.Requires<ArgumentNullException>(wrappedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(mockHttpRequest != null);
@@ -39,6 +39,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 			mockHttpRequest.RegisterMockXrdsResponse(new Uri(wrappedIdentifier.ToString()), endpoints);
 		}
 
+		internal IEnumerable<IdentifierDiscoveryResult> DiscoveryEndpoints {
+			get { return this.endpoints; }
+		}
+
 		public override string ToString() {
 			return this.wrappedIdentifier.ToString();
 		}
@@ -49,10 +53,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		public override int GetHashCode() {
 			return this.wrappedIdentifier.GetHashCode();
-		}
-
-		public override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			return this.endpoints;
 		}
 
 		internal override Identifier TrimFragment() {

@@ -9,11 +9,11 @@ namespace DotNetOpenAuth.Test.Configuration {
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class SectionTests {
-		[TestMethod]
+		[TestCase]
 		public void UntrustedWebRequest() {
 			var uwr = DotNetOpenAuthSection.Configuration.Messaging.UntrustedWebRequest;
 
@@ -29,12 +29,12 @@ namespace DotNetOpenAuth.Test.Configuration {
 			Assert.IsTrue(uwr.WhitelistHostsRegex.KeysAsStrings.Contains(".+trusted.+"));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void OpenIdMaxAuthenticationTime() {
 			Assert.AreEqual(TimeSpan.Parse("00:08:17"), DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void OpenIdRelyingParty() {
 			var rp = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty;
 			Assert.IsNull(rp.ApplicationStore.CustomType);
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 			Assert.IsFalse(rp.SecuritySettings.RequireSsl);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void OpenIdProvider() {
 			var op = DotNetOpenAuthSection.Configuration.OpenId.Provider;
 			Assert.IsNull(op.ApplicationStore.CustomType);
