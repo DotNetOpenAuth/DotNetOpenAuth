@@ -2,7 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
 
-	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct">
+	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ResignDelaySignedAssemblies">
 		<PropertyGroup>
 			<ToolsDirectoryNoSlash>$(DropsRoot)$(ProductName)-Tools-$(BuildVersion)</ToolsDirectoryNoSlash>
 			<ToolsDirectory>$(ToolsDirectoryNoSlash)\</ToolsDirectory>
