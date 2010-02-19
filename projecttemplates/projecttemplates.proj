@@ -34,6 +34,9 @@
 	</Target>
 
 	<Target Name="LayoutProjects">
+		<MSBuild Projects="..\src\$(ProductName)\$(ProductName).csproj" Targets="Sign" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="SignedProductAssemblies" />
+		</MSBuild>
 		<ItemGroup>
 			<TemplateProjects Include="**\*.csproj" Exclude="$(MSBuildThisFile)">
 				<AfterTokens>$safeprojectname$</AfterTokens>
@@ -45,16 +48,14 @@
 			</TemplateProjects>
 			<TemplateProjectsLayout Include="@(TemplateProjects->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
-			<!-- Add external libraries -->
-			<!-- Include the unified, signed version of the library -->
-			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
-			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb" />
+			<!-- Add external libraries and their symbols -->
+			<ProjectTemplateLibraries Include="@(SignedProductAssemblies)" />
+			<ProjectTemplateLibraries Include="@(SignedProductAssemblies->'%(SymbolPath)')" />
 			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).xml" />
-			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />
-			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(FileName)%(Extension)')" />
+			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(CultureDir)%(FileName)%(Extension)')" />
 
 			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
 			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
