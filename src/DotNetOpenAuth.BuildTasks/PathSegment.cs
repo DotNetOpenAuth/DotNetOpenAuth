@@ -19,10 +19,12 @@ namespace DotNetOpenAuth.BuildTasks {
 		private readonly PathSegment parent;
 		private readonly string originalName;
 		private string currentName;
+		private bool minimized;
 
 		internal PathSegment() {
 			this.currentName = string.Empty;
 			this.originalName = string.Empty;
+			this.minimized = true;
 			this.Children = new Collection<PathSegment>();
 		}
 
@@ -32,6 +34,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			Contract.Requires<ArgumentNullException>(parent != null);
 			this.currentName = this.originalName = originalName;
 			this.parent = parent;
+			this.minimized = false;
 		}
 
 		internal string OriginalPath {
@@ -72,7 +75,11 @@ namespace DotNetOpenAuth.BuildTasks {
 		internal int FullLength {
 			get {
 				if (this.parent != null) {
-					return this.parent.FullLength + 1/*slash*/ + this.currentName.Length;
+					int parentLength = this.parent.FullLength;
+					if (parentLength > 0) {
+						parentLength++; // allow for an in between slash
+					}
+					return parentLength + this.currentName.Length;
 				} else {
 					return this.currentName.Length;
 				}
@@ -98,11 +105,30 @@ namespace DotNetOpenAuth.BuildTasks {
 			}
 		}
 
+		internal IEnumerable<PathSegment> Ancestors {
+			get {
+				PathSegment parent = this.parent;
+				while (parent != null) {
+					yield return parent;
+					parent = parent.parent;
+				}
+			}
+		}
+
 		internal IEnumerable<PathSegment> SelfAndDescendents {
 			get {
 				yield return this;
 				foreach (var child in this.Descendents) {
 					yield return child;
+				}
+			}
+		}
+
+		internal IEnumerable<PathSegment> SelfAndAncestors {
+			get {
+				yield return this;
+				foreach (var parent in this.Ancestors) {
+					yield return parent;
 				}
 			}
 		}
@@ -157,32 +183,35 @@ namespace DotNetOpenAuth.BuildTasks {
 			Contract.Requires<ArgumentOutOfRangeException>(maxLength > 0, "A path can only have a positive length.");
 			Contract.Requires<ArgumentOutOfRangeException>(this.parent == null || maxLength > this.parent.FullLength + 1, "A child path cannot possibly be made shorter than its parent.");
 			Contract.Ensures(Contract.Result<int>() <= maxLength);
+			const int uniqueBase = 16;
 
-			// First check whether this segment itself is too long.
-			if (this.FullLength > maxLength) {
-				int tooLongBy = this.FullLength - maxLength;
-				this.currentName = CreateUniqueShortFileName(this.originalName, this.currentName.Length - tooLongBy);
-			}
-
-			// Now check whether children are too long.
-			if (this.Children.Count > 0) {
-				var longChildren = this.Children.Where(path => path.FullLength > maxLength).ToList();
-				if (longChildren.Any()) {
-					// If this segment's name is longer than the longest child that is too long, we need to 
-					// shorten THIS segment's name.
-					if (longChildren.Max(child => child.CurrentName.Length) < this.CurrentName.Length) {
-						int tooLongBy = this.FullLength - maxLength;
-						this.currentName = CreateUniqueShortFileName(this.originalName, this.currentName.Length - tooLongBy);
-					} else {
-						// The children need to be shortened.
-						longChildren.ForEach(child => child.EnsureSelfAndChildrenNoLongerThan(maxLength));
+			// Find the items that are too long, and always work on the longest one
+			var longPaths = this.SelfAndDescendents.Where(path => path.FullLength > maxLength).OrderByDescending(path => path.FullLength);
+			PathSegment longPath;
+			while ((longPath = longPaths.FirstOrDefault()) != null) {
+				// Keep working on this one until it's short enough.
+				do {
+					int tooLongBy = longPath.FullLength - maxLength;
+					var longSegments = longPath.SelfAndAncestors.Where(segment => !segment.minimized).OrderByDescending(segment => segment.CurrentName.Length);
+					PathSegment longestSegment = longSegments.FirstOrDefault();
+					if (longestSegment == null) {
+						throw new InvalidOperationException("Unable to shrink path length sufficiently.");
 					}
-				}
-			}
-
-			// Give each child a chance to check on their own children.
-			foreach (var child in this.Children) {
-				child.EnsureSelfAndChildrenNoLongerThan(maxLength);
+					PathSegment secondLongestSegment = longSegments.Skip(1).FirstOrDefault();
+					int shortenByUpTo;
+					if (secondLongestSegment != null) {
+						shortenByUpTo = Math.Min(tooLongBy, Math.Max(1, longestSegment.CurrentName.Length - secondLongestSegment.CurrentName.Length));
+					} else {
+						shortenByUpTo = tooLongBy;
+					}
+					int minimumGuaranteedUniqueLength = Math.Max(1, RoundUp(Math.Log(longestSegment.Siblings.Count(), uniqueBase)));
+					int allowableSegmentLength = Math.Max(minimumGuaranteedUniqueLength, longestSegment.CurrentName.Length - shortenByUpTo);
+					if (allowableSegmentLength >= longestSegment.CurrentName.Length) {
+						// We can't make this segment any shorter.
+						longestSegment.minimized = true;
+					}
+					longestSegment.currentName = longestSegment.CreateUniqueShortFileName(longestSegment.CurrentName, allowableSegmentLength);
+				} while (longPath.FullLength > maxLength);
 			}
 
 			// Return the total length of self or longest child.
@@ -203,7 +232,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			Contract.Ensures(Contract.Result<string>().Length <= allowableLength);
 			string candidateName = string.Empty;
 			int i;
-			for (i = -1; i < 0 || this.Siblings.Any(child => string.Equals(child.CurrentName, candidateName, StringComparison.OrdinalIgnoreCase)); i++) {
+			for (i = -1; candidateName.Length == 0 || this.Siblings.Any(child => string.Equals(child.CurrentName, candidateName, StringComparison.OrdinalIgnoreCase)); i++) {
 				string unique = i < 0 ? string.Empty : i.ToString("x");
 				if (allowableLength < unique.Length) {
 					throw new InvalidOperationException("Unable to shorten path sufficiently to fit constraints.");
@@ -221,6 +250,15 @@ namespace DotNetOpenAuth.BuildTasks {
 			}
 
 			return candidateName;
+		}
+
+		private static int RoundUp(double value) {
+			int roundedValue = (int)value;
+			if (roundedValue < value) {
+				roundedValue++;
+			}
+
+			return roundedValue;
 		}
 
 		private string CreateUniqueShortFileName(string fileName, int targetLength) {
