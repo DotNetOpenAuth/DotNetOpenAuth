@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.BuildTasks {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
@@ -41,6 +42,8 @@ namespace DotNetOpenAuth.BuildTasks {
 
 		[Required]
 		public ITaskItem[] DestinationTemplates { get; set; }
+
+		public ITaskItem[] SourcePathExceptions { get; set; }
 
 		/// <summary>
 		/// Gets or sets the maximum length a project item's relative path should
@@ -87,81 +90,50 @@ namespace DotNetOpenAuth.BuildTasks {
 
 				// Figure out where every project item is in source, and where it will go in the destination,
 				// taking into account a given maximum path length that may require that we shorten the path.
-				var sourceToDestinationProjectItemMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-				//var oversizedItemPaths = projectItems.Where(item => item.Include.Length > this.MaximumRelativePathLength);
-				foreach (var item in projectItems) {
-					var source = item.Include;
-					var dest = item.Include;
-
-						//        if (this.MaximumRelativePathLength > 0) {
-						//    if (item.Include.Length > this.MaximumRelativePathLength) {
-						//        string leafName = Path.GetFileName(item.Include);
-						//        int targetLeafLength = leafName.Length - (item.Include.Length - this.MaximumRelativePathLength);
-						//        string shortenedFileName = CreateUniqueShortFileName(leafName, targetLeafLength);
-						//        string shortenedRelativePath = Path.Combine(Path.GetDirectoryName(item.Include), shortenedFileName);
-						//        if (shortenedRelativePath.Length <= this.MaximumRelativePathLength) {
-						//            this.Log.LogMessage(
-						//                "Renaming long project item '{0}' to '{1}' within project template to avoid MAX_PATH issues.  The instantiated project will remain unchanged.",
-						//                item.Include,
-						//                shortenedRelativePath);
-						//            projectItem.SetAttributeValue("TargetFileName", Path.GetFileName(item.Include));
-						//            projectItem.Value = shortenedFileName;
-						//            string originalFullPath = Path.Combine(projectDirectory, item.Include);
-						//            string shortenedFullPath = Path.Combine(projectDirectory, shortenedRelativePath);
-						//            if (File.Exists(shortenedFullPath)) {
-						//                File.Delete(shortenedFullPath); // File.Move can't overwrite files
-						//            }
-						//            File.Move(originalFullPath, shortenedFullPath);
-
-						//            // Document the change so the build system can account for it.
-						//            TaskItem shortChange = new TaskItem(originalFullPath);
-						//            shortChange.SetMetadata("ShortPath", shortenedFullPath);
-						//            shortenedItems.Add(shortChange);
-						//        } else {
-						//            this.Log.LogError(
-						//                "Project item '{0}' exceeds maximum allowable length {1} by {2} characters and it cannot be sufficiently shortened.  Estimated full path is: '{3}'.",
-						//                item.Include,
-						//                this.MaximumRelativePathLength,
-						//                item.Include.Length - this.MaximumRelativePathLength,
-						//                item.Include);
-						//        }
-						//    }
-						//}
-
-					sourceToDestinationProjectItemMap[source] = dest;
-				}
+				PathSegment root = new PathSegment();
+				root.Add(projectItems.Select(item => item.Include));
+				root.EnsureSelfAndChildrenNoLongerThan(this.MaximumRelativePathLength);
 
 				// Collect the project items from the project that are appropriate
 				// to include in the .vstemplate file.
-				var itemsByFolder = from item in projectItems
-									orderby item.Include
-									group item by Path.GetDirectoryName(item.Include);
-
-				foreach (var folder in itemsByFolder) {
+				foreach (var folder in root.SelfAndDescendents.Where(path => !path.IsLeaf && path.LeafChildren.Any())) {
 					XElement parentNode = projectElement;
-					parentNode = FindOrCreateParent(folder.Key, projectElement);
-					//parentNode.SetAttributeValue("TargetFolderName", folder.Key);
+					parentNode = FindOrCreateParent(folder.CurrentPath, projectElement);
+					if (folder.NameChanged) {
+						parentNode.SetAttributeValue("TargetFolderName", folder.OriginalName);
+					}
 
-					foreach (var item in folder) {
-						bool replaceParameters = this.ReplaceParametersExtensions.Contains(Path.GetExtension(item.Include));
+					foreach (var item in folder.LeafChildren) {
 						var itemName = XName.Get("ProjectItem", VSTemplateNamespace);
-						var projectItem = parentNode.Elements(itemName).FirstOrDefault(el => string.Equals(el.Value, Path.GetFileName(item.Include), StringComparison.OrdinalIgnoreCase));
+						// The project item MAY be hard-coded in the .vstemplate file, under the original name.
+						var projectItem = parentNode.Elements(itemName).FirstOrDefault(el => string.Equals(el.Value, Path.GetFileName(item.OriginalName), StringComparison.OrdinalIgnoreCase));
 						if (projectItem == null) {
-							projectItem = new XElement(itemName, Path.GetFileName(item.Include));
+							projectItem = new XElement(itemName, item.CurrentName);
 							parentNode.Add(projectItem);
 						}
-						if (replaceParameters) {
+						if (item.NameChanged) {
+							projectItem.Value = item.CurrentName; // set Value in case it was a hard-coded item in the .vstemplate file.
+							projectItem.SetAttributeValue("TargetFileName", item.OriginalName);
+						}
+						if (this.ReplaceParametersExtensions.Contains(Path.GetExtension(item.OriginalPath))) {
 							projectItem.SetAttributeValue("ReplaceParameters", "true");
 						}
 					}
 				}
 
 				template.Save(this.DestinationTemplates[iTemplate].ItemSpec);
-				foreach (var pair in sourceToDestinationProjectItemMap) {
-					TaskItem item = new TaskItem(Path.Combine(Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec), pair.Key));
-					item.SetMetadata("SourceFullPath", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec), pair.Key)));
-					item.SetMetadata("DestinationFullPath", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(this.DestinationTemplates[iTemplate].ItemSpec), pair.Value)));
+				foreach (var pair in root.LeafDescendents) {
+					TaskItem item = new TaskItem(Path.Combine(Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec), pair.OriginalPath));
+					string apparentSource = Path.Combine(Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec), pair.OriginalPath);
+					var sourcePathException = this.SourcePathExceptions.FirstOrDefault(ex => string.Equals(ex.ItemSpec, apparentSource));
+					if (sourcePathException != null) {
+						item.SetMetadata("SourceFullPath", sourcePathException.GetMetadata("ActualSource"));
+					} else {
+						item.SetMetadata("SourceFullPath", Path.GetFullPath(apparentSource));
+					}
+					item.SetMetadata("DestinationFullPath", Path.GetFullPath(Path.Combine(Path.GetDirectoryName(this.DestinationTemplates[iTemplate].ItemSpec), pair.CurrentPath)));
 					item.SetMetadata("RecursiveDir", Path.GetDirectoryName(this.SourceTemplates[iTemplate].ItemSpec));
+					item.SetMetadata("Transform", this.ReplaceParametersExtensions.Contains(Path.GetExtension(pair.OriginalName)) ? "true" : "false");
 					projectItemsToCopy.Add(item);
 				}
 			}
@@ -169,27 +141,6 @@ namespace DotNetOpenAuth.BuildTasks {
 			this.ProjectItems = projectItemsToCopy.ToArray();
 
 			return !Log.HasLoggedErrors;
-		}
-
-		private static string CreateUniqueShortFileName(string fileName, int targetLength) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(fileName));
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
-
-			// The filename may already full within the target length.
-			if (fileName.Length <= targetLength) {
-				return fileName;
-			}
-
-			string hashSuffix = Utilities.SuppressCharacters(Math.Abs(fileName.GetHashCode() % 0xfff).ToString("x"), Path.GetInvalidFileNameChars(), '_');
-			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-			string extension = Path.GetExtension(fileName);
-			string hashSuffixWithExtension = hashSuffix + extension;
-
-			// If the target length is itself shorter than the hash code, then we won't meet our goal,
-			// but at least put the hash in there so it's unique, and we'll return a string that's too long.
-			string shortenedFileName = fileName.Substring(0, Math.Max(0, targetLength - hashSuffixWithExtension.Length)) + hashSuffixWithExtension;
-
-			return shortenedFileName;
 		}
 
 		private static XElement FindOrCreateParent(string directoryName, XElement projectElement) {
