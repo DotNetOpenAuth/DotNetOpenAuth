@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		private readonly string originalName;
 		private string currentName;
 		private bool minimized;
+		private static readonly string[] ReservedFileNames = "CON PRN AUX CLOCK$ NUL COM0 COM1 COM2 COM3 COM4 COM5 COM6 COM7 COM8 COM9 LPT0 LPT1 LPT2 LPT3 LPT4 LPT5 LPT6 LPT7 LPT8 LPT9".Split(' ');
 
 		internal PathSegment() {
 			this.currentName = string.Empty;
@@ -232,7 +233,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			Contract.Ensures(Contract.Result<string>().Length <= allowableLength);
 			string candidateName = string.Empty;
 			int i;
-			for (i = -1; candidateName.Length == 0 || this.Siblings.Any(child => string.Equals(child.CurrentName, candidateName, StringComparison.OrdinalIgnoreCase)); i++) {
+			for (i = -1; candidateName.Length == 0 || ReservedFileNames.Contains(candidateName, StringComparer.OrdinalIgnoreCase) || this.Siblings.Any(child => string.Equals(child.CurrentName, candidateName, StringComparison.OrdinalIgnoreCase)); i++) {
 				string unique = i < 0 ? string.Empty : i.ToString("x");
 				if (allowableLength < unique.Length) {
 					throw new InvalidOperationException("Unable to shorten path sufficiently to fit constraints.");
