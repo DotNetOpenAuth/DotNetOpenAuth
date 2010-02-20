@@ -289,6 +289,7 @@
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdTextBoxTests.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponseTests.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshotTests.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyTests.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettingsTests.cs" />

@@ -4,13 +4,14 @@
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\</ProjectRoot>
-		<DropsRoot>$(ProjectRoot)drops\$(Configuration)\</DropsRoot>
+		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</ProjectRoot>
+		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
 		<IntermediatePath>$(ProjectRoot)obj\$(TargetFrameworkVersion)\$(Configuration)\</IntermediatePath>
 		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
+		<ZipLevel>6</ZipLevel>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
 
@@ -20,7 +21,17 @@
 		<KeyPairContainer Condition="'$(KeyPairContainer)' == ''">DotNetOpenAuth</KeyPairContainer>
 		<PublicKeyToken>2780CCD10D57B246</PublicKeyToken>
 		<DelaySign>true</DelaySign>
+		<SignedSubPath>signed\</SignedSubPath>
+
+		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
+		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<SignDependsOn Include="Build" />
+		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll;
+		                                 $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
+	</ItemGroup>
 
 	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />
 

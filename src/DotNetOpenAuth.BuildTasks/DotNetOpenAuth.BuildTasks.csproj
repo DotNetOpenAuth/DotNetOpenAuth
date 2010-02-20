@@ -118,6 +118,7 @@
     <Compile Include="JsPack.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ParseMaster.cs" />
+    <Compile Include="PathSegment.cs" />
     <Compile Include="Publicize.cs" />
     <Compile Include="Purge.cs" />
     <Compile Include="ReSignDelaySignedAssemblies.cs" />
@@ -131,6 +132,7 @@
       <DependentUpon>TaskStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Trim.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TaskStrings.resx">

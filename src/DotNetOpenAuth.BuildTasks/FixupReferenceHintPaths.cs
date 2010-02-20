@@ -40,7 +40,13 @@ namespace DotNetOpenAuth.BuildTasks {
 			// Figure out what the assembly names are of the references that are available.
 			AssemblyName[] availableReferences = new AssemblyName[this.References.Length];
 			for (int i = 0; i < this.References.Length; i++) {
-				availableReferences[i] = AssemblyName.GetAssemblyName(this.References[i].ItemSpec);
+				if (File.Exists(this.References[i].ItemSpec)) {
+					availableReferences[i] = AssemblyName.GetAssemblyName(this.References[i].ItemSpec);
+				} else {
+					availableReferences[i] = new AssemblyName(Path.GetFileNameWithoutExtension(this.References[i].ItemSpec)) {
+						CodeBase = this.References[i].GetMetadata("FullPath"),
+					};
+				}
 			}
 
 			foreach (var projectTaskItem in this.Projects) {

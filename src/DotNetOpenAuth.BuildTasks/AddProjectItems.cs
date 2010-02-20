@@ -6,13 +6,13 @@
 
 namespace DotNetOpenAuth.BuildTasks {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 	using Microsoft.Build.BuildEngine;
 	using Microsoft.Build.Framework;
 	using Microsoft.Build.Utilities;
-	using System.Collections;
 
 	public class AddProjectItems : Task {
 		/// <summary>
@@ -49,7 +49,10 @@ namespace DotNetOpenAuth.BuildTasks {
 					BuildItem newItem = project.AddNewItem(itemType, projectItem.ItemSpec, false);
 					var customMetadata = projectItem.CloneCustomMetadata();
 					foreach (DictionaryEntry entry in customMetadata) {
-						newItem.SetMetadata((string)entry.Key, (string)entry.Value);
+						string value = (string)entry.Value;
+						if (value.Length > 0) {
+							newItem.SetMetadata((string)entry.Key, value);
+						}
 					}
 				}
 

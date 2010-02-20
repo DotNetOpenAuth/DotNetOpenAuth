@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
-	<Identifier Id="DotNetOpenAuth.d2122791-8de4-4d3b-a414-7563c9a8cd6e">
-		<Name>DotNetOpenAuth SDK</Name>
+	<Identifier Id="DotNetOpenAuth.WebFormsRelyingParty.FB0AB0B2-B447-4F10-A03E-F488DDAF024A">
+		<Name>ASP.NET OpenID web site (C#)</Name>
 		<Author>DotNetOpenAuth</Author>
 		<Version>$version$</Version>
 		<Description>Resources for developing applications that use OpenID, OAuth, and InfoCard.</Description>
@@ -23,6 +23,5 @@
 	<References />
 	<Content>
 		<ProjectTemplate>PT</ProjectTemplate>
-		<!--<VsPackage>DotNetOpenAuthSDK.pkgdef</VsPackage>-->
 	</Content>
 </Vsix>

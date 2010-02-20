@@ -711,6 +711,10 @@ PRINT N'Checking existing data against newly created constraints';
 
 
 GO
+USE [$(DatabaseName)];
+
+
+GO
 ALTER TABLE [dbo].[AuthenticationToken] WITH CHECK CHECK CONSTRAINT [FK_AuthenticationToken_User];
 
 ALTER TABLE [dbo].[IssuedToken] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_Consumer];

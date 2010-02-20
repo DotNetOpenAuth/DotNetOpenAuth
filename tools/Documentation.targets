@@ -5,7 +5,6 @@
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<OutputAssembly>DotNetOpenAuth</OutputAssembly>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
-		<IntermediatePath>$(ProjectRoot)obj\$(Configuration)\</IntermediatePath>
 		<DocumentationFile>$(OutputPath)$(OutputAssembly).xml</DocumentationFile>
 	</PropertyGroup>
 

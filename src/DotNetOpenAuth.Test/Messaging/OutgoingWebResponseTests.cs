@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.Messaging {
 	using System.Net;
+	using System.Net.Mime;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using NUnit.Framework;
@@ -30,7 +31,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
 
 			// Verify that the header was set correctly.
-			Assert.AreEqual(encoding.HeaderName, response.Headers[HttpResponseHeader.ContentEncoding]);
+			Assert.IsNull(response.Headers[HttpResponseHeader.ContentEncoding]);
+			Assert.AreEqual(encoding.HeaderName, new ContentType(response.Headers[HttpResponseHeader.ContentType]).CharSet);
 		}
 	}
 }

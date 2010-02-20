@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -106,14 +107,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			HttpContext context = HttpContext.Current;
 
-			// We use Request.Url for the full path to the server, and modify it
-			// with Request.RawUrl to capture both the cookieless session "directory" if it exists
-			// and the original path in case URL rewriting is going on.  We don't want to be
-			// fooled by URL rewriting because we're comparing the actual URL with what's in
-			// the return_to parameter in some cases.
-			// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
-			// session, but not the URL rewriting problem.
-			return new Uri(context.Request.Url, context.Request.RawUrl);
+			return HttpRequestInfo.GetPublicFacingUrl(context.Request, context.Request.ServerVariables);
 		}
 
 		/// <summary>
@@ -198,19 +192,18 @@ namespace DotNetOpenAuth.Messaging {
 			string initialPartLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "--{0}\r\n", boundary);
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
 			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
+			var contentType = new ContentType("multipart/form-data") {
+				Boundary = boundary,
+				CharSet = Channel.PostEntityEncoding.WebName,
+			};
 
 			request.Method = "POST";
-			request.ContentType = "multipart/form-data; boundary=" + boundary;
+			request.ContentType = contentType.ToString();
 			long contentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
 			if (parts.Any()) {
 				contentLength -= 2; // the initial part leading boundary has no leading \r\n
 			}
 			request.ContentLength = contentLength;
-
-			// Setting the content-encoding to "utf-8" causes Google to reply
-			// with a 415 UnsupportedMediaType. But adding it doesn't buy us
-			// anything specific, so we disable it until we know how to get it right.
-			////request.Headers[HttpRequestHeader.ContentEncoding] = Channel.PostEntityEncoding.WebName;
 
 			var requestStream = requestHandler.GetRequestStream(request);
 			try {
