@@ -735,6 +735,10 @@ http://opensource.org/licenses/ms-pl.html
                                     $(OutputPath)$(ProductName).Contracts.dll;
                                    " />
   </ItemGroup>
+	<PropertyGroup>
+		<!-- Don't sign the non-unified version of the assembly. -->
+		<SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
+	</PropertyGroup>
 
   <Target Name="BuildUnifiedProduct"
         DependsOnTargets="Build"

@@ -3,7 +3,7 @@
 	<Import Project="ProjectTemplates.props"/>
 
 	<PropertyGroup>
-		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">50</ProjectTemplateMaxPath>
+		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">6</ProjectTemplateMaxPath>
 
 		<LayoutDependsOn>
 			BuildUnifiedProduct;
@@ -34,6 +34,9 @@
 	</Target>
 
 	<Target Name="LayoutProjects">
+		<MSBuild Projects="..\src\$(ProductName)\$(ProductName).csproj" Targets="Sign" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="SignedProductAssemblies" />
+		</MSBuild>
 		<ItemGroup>
 			<TemplateProjects Include="**\*.csproj" Exclude="$(MSBuildThisFile)">
 				<AfterTokens>$safeprojectname$</AfterTokens>
@@ -45,19 +48,29 @@
 			</TemplateProjects>
 			<TemplateProjectsLayout Include="@(TemplateProjects->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
-			<!-- Add external libraries -->
-			<!-- Include the unified, signed version of the library -->
-			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
-			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb" />
+			<!-- Add external libraries and their symbols -->
+			<ProjectTemplateLibraries Include="@(SignedProductAssemblies)" />
+			<ProjectTemplateLibraries Include="@(SignedProductAssemblies->'%(SymbolPath)')" />
 			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).xml" />
-			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />
-			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(FileName)%(Extension)')" />
+			<ProjectTemplateLibrariesTargets Include="@(ProjectTemplateLibraries->'$(ProjectTemplatesLayoutPath)RelyingPartyLogic\lib\%(CultureDir)%(FileName)%(Extension)')">
+				<ApparentSource>RelyingPartyLogic\lib\%(ProjectTemplateLibraries.CultureDir)%(FileName)%(Extension)</ApparentSource>
+				<ActualSource>%(Identity)</ActualSource>
+			</ProjectTemplateLibrariesTargets>
+			<ProjectTemplateLibrariesSourceExceptions Include="@(ProjectTemplateLibrariesTargets->'%(ApparentSource)')"/>
 
 			<FixupReferenceAssemblies Include="@(ProjectTemplateLibrariesTargets)" Condition="'%(Extension)' == '.dll'" />
-			<InjectedLibraryItems Include="@(ProjectTemplateLibrariesTargets->'lib\%(FileName)%(Extension)')" />
+			<InjectedLibraryItems Include="@(ProjectTemplateLibraries->'lib\%(CultureDir)%(FileName)%(Extension)')">
+				<Visible/>
+				<UnsignedAssemblyPath/>
+				<SymbolPath/>
+				<OriginalItemSpec/>
+				<MSBuildSourceProjectFile/>
+				<MSBuildSourceTargetName/>
+				<CultureDir/>
+			</InjectedLibraryItems>
 
 			<VSProjectTemplates Include="**\*.vstemplate" Exclude="*.vstemplate" />
 			<VSProjectTemplatesLayout Include="@(VSProjectTemplates->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')" />
@@ -89,6 +102,7 @@
 			SourceTemplates="@(VSProjectTemplates)"
 			SourceProjects="@(TemplateProjectsLayout)"
 			DestinationTemplates="@(VSProjectTemplatesLayout)"
+			SourcePathExceptions="@(ProjectTemplateLibrariesSourceExceptions)"
 			MaximumRelativePathLength="$(ProjectTemplateMaxPath)"
 			>
 			<Output TaskParameter="ProjectItems" ItemName="TemplateProjectItems"/>
@@ -97,34 +111,19 @@
 
 	<Target Name="Layout" DependsOnTargets="$(LayoutDependsOn)">
 		<ItemGroup>
-			<TemplateProjectItems Condition="
-					 '%(Extension)' == '.cs'
-					 or '%(Extension)' == '.csproj'
-					 or '%(Extension)' == '.sql'
-					 or '%(Extension)' == '.config'
-					 or '%(Extension)' == '.Master'
-					 or '%(Extension)' == '.aspx'
-					 or '%(Extension)' == '.ascx'
-					 or '%(Extension)' == '.asax'
-					 or '%(Extension)' == '.ashx'
-					 ">
+			<TemplateProjectItems Condition=" '%(Transform)' == 'true' ">
 				<BeforeTokens>%(RecursiveDir)</BeforeTokens>
 				<AfterTokens>$safeprojectname$</AfterTokens>
 			</TemplateProjectItems>
 			<TemplateProjectItems>
 				<SkipUnchangedFiles>true</SkipUnchangedFiles>
 			</TemplateProjectItems>
-			<TemplateProjectItemsForTransformSource Include="@(TemplateProjectItems->'%(SourceFullPath)')"
-																							Condition=" '%(TemplateProjectItems.RelativeDir)' != 'RelyingPartyLogic\lib\' "/>
-			<TemplateProjectItemsForTransformLayout Include="@(TemplateProjectItems->'%(DestinationFullPath)')"
-																							Condition=" '%(TemplateProjectItems.RelativeDir)' != 'RelyingPartyLogic\lib\' "/>
+			<TemplateProjectItemsForTransformSource Include="@(TemplateProjectItems->'%(SourceFullPath)')" />
+			<TemplateProjectItemsForTransformLayout Include="@(TemplateProjectItems->'%(DestinationFullPath)')" />
 			<RootVsTemplateSource Include="*.vstemplate" />
 			<ProjectTemplatesSource Include="@(RootVsTemplateSource)" />
 			<ProjectTemplatesLayout Include="@(RootVsTemplateSource->'$(ProjectTemplatesLayoutPath)%(FileName)%(Extension)')" />
 
-			<ProjectTemplatesSource Include="@(ProjectTemplateLibraries)" />
-			<ProjectTemplatesLayout Include="@(ProjectTemplateLibrariesTargets)" />
-			
 			<!-- Include the template icon -->
 			<ProjectTemplatesSource Include="$(ProjectRoot)doc\logo\favicon.ico" />
 			<ProjectTemplatesLayout Include="$(ProjectTemplatesLayoutPath)__TemplateIcon.ico" />

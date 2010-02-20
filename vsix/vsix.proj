@@ -68,7 +68,8 @@
 			<VSGalleryVsixSources Include="@(VSGalleryVsixZipSources)">
 				<TopLevelTemplate>%(FileName)</TopLevelTemplate>
 				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(FileName)-$(BuildVersion).vsix</VSGalleryVsix>
-				<TargetPath>$(IntermediatePath)%(FileName).vsix\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
+				<!-- The A in the path below used to be %(FileName), but to fit inside MAX_PATH when VS expands, we shorten it. -->
+				<TargetPath>$(IntermediatePath)%(FileName).vsix\%(RecursiveDir)A%(Extension)</TargetPath>
 			</VSGalleryVsixSources>
 
 			<VSGalleryVsixSources Include="@(ProjectTemplateZipTargets->'$(ProjectRoot)projecttemplates\%(FileName).vsixmanifest')">

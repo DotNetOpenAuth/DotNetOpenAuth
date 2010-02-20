@@ -41,13 +41,16 @@
 																"
 											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
-																$(ILMergeOutputAssemblyDirectory)$(ProductName).???;
-																$(OutputPath)**\$(ProductName).resources.dll;
+																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).???;
 																$(OutputPath)$(ProductName).xml;
-																$(OutputPath)$(ProductName).Contracts.???;
+																$(OutputPath)$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
+			<DropSatelliteSourceFiles Include="$(OutputPath)**\$(SignedSubPath)$(ProductName).resources.dll" />
+			<DropSatelliteSourceFiles>
+				<CultureDir>$([System.IO.Path]::GetDirectoryName('$([System.IO.Path]::GetDirectoryName('%(RecursiveDir)'))'))\</CultureDir>
+			</DropSatelliteSourceFiles>
 			<DropLibSourceFiles Include="
 																$(ProjectRoot)Lib\log4net.*;
 																" />
@@ -66,6 +69,7 @@
 															$(ProjectRoot)**\Settings.StyleCop;
 															$(ProjectRoot)**\StyleCop.Cache;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
+															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
 															$(ProjectRoot)Samples\**\log4net.???;
 															$(ProjectRoot)Samples\**\PresentationCore.dll;
 															$(ProjectRoot)Samples\**\System.Printing.dll;
@@ -78,6 +82,7 @@
 
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSatelliteFiles Include="@(DropSatelliteSourceFiles->'$(DropBinDirectory)%(CultureDir)%(FileName)%(Extension)')" />
 			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropVsixFiles Include="@(DropVsixSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
@@ -89,6 +94,7 @@
 			<AllDropSources Include="
 										@(DropSourceFiles);
 										@(DropBinSourceFiles);
+										@(DropSatelliteSourceFiles);
 										@(DropLibSourceFiles);
 										@(DropProjectTemplatesSourceFiles);
 										@(DropVsixSourceFiles);
@@ -101,6 +107,7 @@
 			<AllDropTargets Include="
 										@(DropFiles);
 										@(DropBinFiles);
+										@(DropSatelliteFiles);
 										@(DropLibFiles);
 										@(DropProjectTemplatesFiles);
 										@(DropVsixFiles);

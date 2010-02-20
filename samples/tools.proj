@@ -2,30 +2,29 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
 
-	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ResignDelaySignedAssemblies">
+	<Target Name="Layout">
 		<PropertyGroup>
 			<ToolsDirectoryNoSlash>$(DropsRoot)$(ProductName)-Tools-$(BuildVersion)</ToolsDirectoryNoSlash>
 			<ToolsDirectory>$(ToolsDirectoryNoSlash)\</ToolsDirectory>
 		</PropertyGroup>
 
 		<ItemGroup>
-			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
+			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj">
+				<Targets>Sign</Targets>
+			</ToolProjects>
 		</ItemGroup>
 
-		<MSBuild Projects="@(ToolProjects)" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="@(ToolProjects)" Targets="%(ToolProjects.Targets)" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="OfflineProvider"/>
+		</MSBuild>
 
 		<ItemGroup>
-			<OfflineProvider Include="
-											 $(OutputPath)**\*.dll;
-											 $(OutputPath)OpenIdOfflineProvider.exe"
-				 Exclude="
-											 $(OutputPath)$(ProductName).*;
-											 $(ILMergeOutputAssembly);
-											 "/>
+			<!-- Remove the un-unified assembly. -->
+			<OfflineProvider Remove="$(OutputPath)$(SignedSubPath)$(ProductName).dll" />
+			<!-- add the PDBs -->
+			<OfflineProvider Include="@(OfflineProvider->'%(SymbolPath)')" />
 			<OfflineProviderTargets Include="
-											 @(OfflineProvider->'$(ToolsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<OfflineProvider Include="$(ILMergeOutputAssembly)" />
-			<OfflineProviderTargets Include="$(ToolsDirectory)$(ProductName).dll" />
+											 @(OfflineProvider->'$(ToolsDirectory)%(CultureDir)%(FileName)%(Extension)')"/>
 
 			<AllToolSources Include="@(OfflineProvider)" />
 			<AllToolTargets Include="@(OfflineProviderTargets)" />
