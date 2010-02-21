@@ -16,7 +16,8 @@ using System.Diagnostics.Contracts;
 		IWrapAuthorization GetAuthorizationState(Uri callbackUrl, string clientState);
 	}
 
-	internal class IClientTokenManagerContract : IClientTokenManager {
+	[ContractClassFor(typeof(IClientTokenManager))]
+	internal abstract class IClientTokenManagerContract : IClientTokenManager {
 		private IClientTokenManagerContract() {
 		}
 
@@ -30,7 +31,6 @@ using System.Diagnostics.Contracts;
 		#endregion
 	}
 
-
 	public interface IWrapAuthorization {
 		Uri Callback { get; set; }
 		string RefreshToken { get; set; }
@@ -39,5 +39,6 @@ using System.Diagnostics.Contracts;
 		string Scope { get; set; }
 
 		void Delete();
+		void SaveChanges();
 	}
 }

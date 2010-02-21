@@ -50,5 +50,19 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
 			WrapUtilities.AuthorizeWithOAuthWrap(request, accessToken);
 		}
+
+		/// <summary>
+		/// Adds the necessary HTTP Authorization header to an HTTP request for protected resources
+		/// so that the Service Provider will allow the request through.
+		/// </summary>
+		/// <param name="request">The request for protected resources from the service provider.</param>
+		/// <param name="authorization">The authorization for this request previously obtained via OAuth WRAP.</param>
+		public static void AuthorizeRequest(HttpWebRequest request, IWrapAuthorization authorization) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(authorization != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(authorization.AccessToken));
+			Contract.Requires<ProtocolException>(authorization.AccessTokenExpirationUtc < DateTime.UtcNow);
+			AuthorizeRequest(request, authorization.AccessToken);
+		}
 	}
 }

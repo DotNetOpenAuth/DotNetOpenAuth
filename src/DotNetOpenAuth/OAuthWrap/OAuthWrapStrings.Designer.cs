@@ -61,11 +61,29 @@ namespace DotNetOpenAuth.OAuthWrap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to obtain access token.  Authorization Server reports reason: {0}.
+        /// </summary>
+        internal static string CannotObtainAccessTokenWithReason {
+            get {
+                return ResourceManager.GetString("CannotObtainAccessTokenWithReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This message can only be sent over HTTPS..
         /// </summary>
         internal static string HttpsRequired {
             get {
                 return ResourceManager.GetString("HttpsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to obtain access token due to invalid Client Identifier or Client Secret..
+        /// </summary>
+        internal static string InvalidClientCredentials {
+            get {
+                return ResourceManager.GetString("InvalidClientCredentials", resourceCulture);
             }
         }
     }

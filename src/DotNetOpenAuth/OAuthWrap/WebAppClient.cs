@@ -48,6 +48,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 			if (authorizationState.Callback == null) {
 				authorizationState.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting;
+				authorizationState.SaveChanges();
 			}
 
 			var request = new WebAppRequest(this.AuthorizationServer) {
@@ -90,12 +91,17 @@ namespace DotNetOpenAuth.OAuthWrap {
 						authorizationState.AccessToken = accessTokenSuccess.AccessToken;
 						authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
 						authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
+						authorizationState.SaveChanges();
 					} else if (badClientAccessTokenResponse != null) {
-						ErrorUtilities.ThrowProtocol("Failed to obtain access token due to invalid Client Identifier or Client Secret.");
+						authorizationState.Delete();
+						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.InvalidClientCredentials);
 					} else { // failedAccessTokenResponse != null
-						ErrorUtilities.ThrowProtocol("Failed to obtain access token.  Authorization Server reports reason: {0}", failedAccessTokenResponse.ErrorReason);
+						authorizationState.Delete();
+						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.CannotObtainAccessTokenWithReason, failedAccessTokenResponse.ErrorReason);
 					}
 				} else { // failure
+					Logger.Wrap.Info("User refused to grant the requested authorization at the Authorization Server.");
+					authorizationState.Delete();
 				}
 
 				return authorizationState;
