@@ -300,4 +300,7 @@
   <data name="BinaryDataRequiresMultipart" xml:space="preserve">
     <value>Unable to send all message data because some of it requires multi-part POST, but IMessageWithBinaryData.SendAsMultipart was false.</value>
   </data>
+  <data name="StandardMessageFactoryUnsupportedMessageType" xml:space="preserve">
+    <value>This message factory does not support message type(s): {0}</value>
+  </data>
 </root>
