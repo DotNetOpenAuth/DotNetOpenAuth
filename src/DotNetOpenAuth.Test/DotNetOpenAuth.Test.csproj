@@ -196,6 +196,7 @@
     <Compile Include="Messaging\Bindings\StandardExpirationBindingElementTests.cs" />
     <Compile Include="Messaging\Reflection\MessagePartTests.cs" />
     <Compile Include="Messaging\Reflection\ValueMappingTests.cs" />
+    <Compile Include="Messaging\StandardMessageFactoryTests.cs" />
     <Compile Include="Mocks\AssociateUnencryptedRequestNoSslCheck.cs" />
     <Compile Include="Mocks\CoordinatingChannel.cs" />
     <Compile Include="Mocks\CoordinatingHttpRequestInfo.cs" />

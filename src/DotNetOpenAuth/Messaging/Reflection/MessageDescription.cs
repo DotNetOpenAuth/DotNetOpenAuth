@@ -19,16 +19,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// </summary>
 	internal class MessageDescription {
 		/// <summary>
-		/// The type of message this instance was generated from.
-		/// </summary>
-		private Type messageType;
-
-		/// <summary>
-		/// The message version this instance was generated from.
-		/// </summary>
-		private Version messageVersion;
-
-		/// <summary>
 		/// A mapping between the serialized key names and their 
 		/// describing <see cref="MessagePart"/> instances.
 		/// </summary>
@@ -44,8 +34,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
 			Contract.Requires<ArgumentNullException>(messageVersion != null);
 
-			this.messageType = messageType;
-			this.messageVersion = messageVersion;
+			this.MessageType = messageType;
+			this.MessageVersion = messageVersion;
 			this.ReflectMessageType();
 		}
 
@@ -55,6 +45,32 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		internal IDictionary<string, MessagePart> Mapping {
 			get { return this.mapping; }
+		}
+
+		/// <summary>
+		/// Gets the message version this instance was generated from.
+		/// </summary>
+		internal Version MessageVersion { get; private set; }
+
+		/// <summary>
+		/// Gets the type of message this instance was generated from.
+		/// </summary>
+		/// <value>The type of the described message.</value>
+		internal Type MessageType { get; private set; }
+
+		/// <summary>
+		/// Gets the constructors available on the message type.
+		/// </summary>
+		internal ConstructorInfo[] Constructors { get; private set; }
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
+		public override string ToString() {
+			return this.MessageType.Name + " (" + this.MessageVersion + ")";
 		}
 
 		/// <summary>
@@ -70,28 +86,128 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
+		/// Ensures the message parts pass basic validation.
+		/// </summary>
+		/// <param name="parts">The key/value pairs of the serialized message.</param>
+		internal void EnsureMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
+			try {
+				this.CheckRequiredMessagePartsArePresent(parts.Keys, true);
+				this.CheckRequiredProtocolMessagePartsAreNotEmpty(parts, true);
+			} catch (ProtocolException) {
+				Logger.Messaging.ErrorFormat(
+					"Error while performing basic validation of {0} with these message parts:{1}{2}",
+					this.MessageType.Name,
+					Environment.NewLine,
+					parts.ToStringDeferred());
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// Tests whether all the required message parts pass basic validation for the given data.
+		/// </summary>
+		/// <param name="parts">The key/value pairs of the serialized message.</param>
+		/// <returns>A value indicating whether the provided data fits the message's basic requirements.</returns>
+		internal bool CheckMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
+			Contract.Requires<ArgumentNullException>(parts != null);
+
+			return this.CheckRequiredMessagePartsArePresent(parts.Keys, false) &&
+				   this.CheckRequiredProtocolMessagePartsAreNotEmpty(parts, false);
+		}
+
+		/// <summary>
+		/// Verifies that a given set of keys include all the required parameters
+		/// for this message type or throws an exception.
+		/// </summary>
+		/// <param name="keys">The names of all parameters included in a message.</param>
+		/// <param name="throwOnFailure">if set to <c>true</c> an exception is thrown on failure with details.</param>
+		/// <returns>A value indicating whether the provided data fits the message's basic requirements.</returns>
+		/// <exception cref="ProtocolException">
+		/// Thrown when required parts of a message are not in <paramref name="keys"/>
+		/// if <paramref name="throwOnFailure"/> is <c>true</c>.
+		/// </exception>
+		private bool CheckRequiredMessagePartsArePresent(IEnumerable<string> keys, bool throwOnFailure) {
+			Contract.Requires<ArgumentNullException>(keys != null);
+
+			var missingKeys = (from part in this.Mapping.Values
+							   where part.IsRequired && !keys.Contains(part.Name)
+							   select part.Name).ToArray();
+			if (missingKeys.Length > 0) {
+				if (throwOnFailure) {
+					ErrorUtilities.ThrowProtocol(
+						MessagingStrings.RequiredParametersMissing,
+						this.MessageType.FullName,
+						string.Join(", ", missingKeys));
+				} else {
+					Logger.Messaging.DebugFormat(
+						MessagingStrings.RequiredParametersMissing,
+						this.MessageType.FullName,
+						missingKeys.ToStringDeferred());
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Ensures the protocol message parts that must not be empty are in fact not empty.
+		/// </summary>
+		/// <param name="partValues">A dictionary of key/value pairs that make up the serialized message.</param>
+		/// <param name="throwOnFailure">if set to <c>true</c> an exception is thrown on failure with details.</param>
+		/// <returns>A value indicating whether the provided data fits the message's basic requirements.</returns>
+		/// <exception cref="ProtocolException">
+		/// Thrown when required parts of a message are not in <paramref name="partValues"/>
+		/// if <paramref name="throwOnFailure"/> is <c>true</c>.
+		/// </exception>
+		private bool CheckRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues, bool throwOnFailure) {
+			Contract.Requires<ArgumentNullException>(partValues != null);
+
+			string value;
+			var emptyValuedKeys = (from part in this.Mapping.Values
+								   where !part.AllowEmpty && partValues.TryGetValue(part.Name, out value) && value != null && value.Length == 0
+								   select part.Name).ToArray();
+			if (emptyValuedKeys.Length > 0) {
+				if (throwOnFailure) {
+					ErrorUtilities.ThrowProtocol(
+						MessagingStrings.RequiredNonEmptyParameterWasEmpty,
+						this.MessageType.FullName,
+						string.Join(", ", emptyValuedKeys));
+				} else {
+					Logger.Messaging.DebugFormat(
+						MessagingStrings.RequiredNonEmptyParameterWasEmpty,
+						this.MessageType.FullName,
+						emptyValuedKeys.ToStringDeferred());
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		/// Reflects over some <see cref="IMessage"/>-implementing type
 		/// and prepares to serialize/deserialize instances of that type.
 		/// </summary>
-		internal void ReflectMessageType() {
+		private void ReflectMessageType() {
 			this.mapping = new Dictionary<string, MessagePart>();
 
-			Type currentType = this.messageType;
+			Type currentType = this.MessageType;
 			do {
 				foreach (MemberInfo member in currentType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
 					if (member is PropertyInfo || member is FieldInfo) {
 						MessagePartAttribute partAttribute =
 							(from a in member.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>()
 							 orderby a.MinVersionValue descending
-							 where a.MinVersionValue <= this.messageVersion
-							 where a.MaxVersionValue >= this.messageVersion
+							 where a.MinVersionValue <= this.MessageVersion
+							 where a.MaxVersionValue >= this.MessageVersion
 							 select a).FirstOrDefault();
 						if (partAttribute != null) {
 							MessagePart part = new MessagePart(member, partAttribute);
 							if (this.mapping.ContainsKey(part.Name)) {
 								Logger.Messaging.WarnFormat(
 									"Message type {0} has more than one message part named {1}.  Inherited members will be hidden.",
-									this.messageType.Name,
+									this.MessageType.Name,
 									part.Name);
 							} else {
 								this.mapping.Add(part.Name, part);
@@ -101,63 +217,21 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				}
 				currentType = currentType.BaseType;
 			} while (currentType != null);
+
+			BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+			this.Constructors = this.MessageType.GetConstructors(flags);
 		}
 
+#if CONTRACTS_FULL
 		/// <summary>
-		/// Ensures the message parts pass basic validation.
+		/// Describes traits of this class that are always true.
 		/// </summary>
-		/// <param name="parts">The key/value pairs of the serialized message.</param>
-		internal void EnsureMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
-			try {
-				this.EnsureRequiredMessagePartsArePresent(parts.Keys);
-				this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
-			} catch (ProtocolException) {
-				Logger.Messaging.ErrorFormat(
-					"Error while performing basic validation of {0} with these message parts:{1}{2}",
-					this.messageType.Name,
-					Environment.NewLine,
-					parts.ToStringDeferred());
-				throw;
-			}
+		[ContractInvariantMethod]
+		private void Invariant() {
+			Contract.Invariant(this.MessageType != null);
+			Contract.Invariant(this.MessageVersion != null);
+			Contract.Invariant(this.Constructors != null);
 		}
-
-		/// <summary>
-		/// Verifies that a given set of keys include all the required parameters
-		/// for this message type or throws an exception.
-		/// </summary>
-		/// <param name="keys">The names of all parameters included in a message.</param>
-		/// <exception cref="ProtocolException">Thrown when required parts of a message are not in <paramref name="keys"/></exception>
-		private void EnsureRequiredMessagePartsArePresent(IEnumerable<string> keys) {
-			var missingKeys = (from part in this.Mapping.Values
-							   where part.IsRequired && !keys.Contains(part.Name)
-							   select part.Name).ToArray();
-			if (missingKeys.Length > 0) {
-				throw new ProtocolException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.RequiredParametersMissing,
-						this.messageType.FullName,
-						string.Join(", ", missingKeys)));
-			}
-		}
-
-		/// <summary>
-		/// Ensures the protocol message parts that must not be empty are in fact not empty.
-		/// </summary>
-		/// <param name="partValues">A dictionary of key/value pairs that make up the serialized message.</param>
-		private void EnsureRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues) {
-			string value;
-			var emptyValuedKeys = (from part in this.Mapping.Values
-								   where !part.AllowEmpty && partValues.TryGetValue(part.Name, out value) && value != null && value.Length == 0
-								   select part.Name).ToArray();
-			if (emptyValuedKeys.Length > 0) {
-				throw new ProtocolException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						MessagingStrings.RequiredNonEmptyParameterWasEmpty,
-						this.messageType.FullName,
-						string.Join(", ", emptyValuedKeys)));
-			}
-		}
+#endif
 	}
 }

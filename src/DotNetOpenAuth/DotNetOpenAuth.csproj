@@ -303,6 +303,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="Messaging\StandardMessageFactory.cs" />
     <Compile Include="OAuthWrap\IClientTokenManager.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionFailedResponse.cs" />
