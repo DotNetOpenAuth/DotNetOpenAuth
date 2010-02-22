@@ -19,16 +19,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// </summary>
 	internal class MessageDescription {
 		/// <summary>
-		/// The type of message this instance was generated from.
-		/// </summary>
-		private Type messageType;
-
-		/// <summary>
-		/// The message version this instance was generated from.
-		/// </summary>
-		private Version messageVersion;
-
-		/// <summary>
 		/// A mapping between the serialized key names and their 
 		/// describing <see cref="MessagePart"/> instances.
 		/// </summary>
@@ -44,8 +34,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
 			Contract.Requires<ArgumentNullException>(messageVersion != null);
 
-			this.messageType = messageType;
-			this.messageVersion = messageVersion;
+			this.MessageType = messageType;
+			this.MessageVersion = messageVersion;
 			this.ReflectMessageType();
 		}
 
@@ -56,6 +46,17 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal IDictionary<string, MessagePart> Mapping {
 			get { return this.mapping; }
 		}
+
+		/// <summary>
+		/// Gets the message version this instance was generated from.
+		/// </summary>
+		internal Version MessageVersion { get; private set; }
+
+		/// <summary>
+		/// Gets the type of message this instance was generated from.
+		/// </summary>
+		/// <value>The type of the described message.</value>
+		internal Type MessageType { get; private set; }
 
 		/// <summary>
 		/// Gets a dictionary that provides read/write access to a message.
@@ -76,22 +77,22 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal void ReflectMessageType() {
 			this.mapping = new Dictionary<string, MessagePart>();
 
-			Type currentType = this.messageType;
+			Type currentType = this.MessageType;
 			do {
 				foreach (MemberInfo member in currentType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
 					if (member is PropertyInfo || member is FieldInfo) {
 						MessagePartAttribute partAttribute =
 							(from a in member.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>()
 							 orderby a.MinVersionValue descending
-							 where a.MinVersionValue <= this.messageVersion
-							 where a.MaxVersionValue >= this.messageVersion
+							 where a.MinVersionValue <= this.MessageVersion
+							 where a.MaxVersionValue >= this.MessageVersion
 							 select a).FirstOrDefault();
 						if (partAttribute != null) {
 							MessagePart part = new MessagePart(member, partAttribute);
 							if (this.mapping.ContainsKey(part.Name)) {
 								Logger.Messaging.WarnFormat(
 									"Message type {0} has more than one message part named {1}.  Inherited members will be hidden.",
-									this.messageType.Name,
+									this.MessageType.Name,
 									part.Name);
 							} else {
 								this.mapping.Add(part.Name, part);
@@ -114,7 +115,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			} catch (ProtocolException) {
 				Logger.Messaging.ErrorFormat(
 					"Error while performing basic validation of {0} with these message parts:{1}{2}",
-					this.messageType.Name,
+					this.MessageType.Name,
 					Environment.NewLine,
 					parts.ToStringDeferred());
 				throw;
@@ -136,7 +137,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					string.Format(
 						CultureInfo.CurrentCulture,
 						MessagingStrings.RequiredParametersMissing,
-						this.messageType.FullName,
+						this.MessageType.FullName,
 						string.Join(", ", missingKeys)));
 			}
 		}
@@ -155,7 +156,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					string.Format(
 						CultureInfo.CurrentCulture,
 						MessagingStrings.RequiredNonEmptyParameterWasEmpty,
-						this.messageType.FullName,
+						this.MessageType.FullName,
 						string.Join(", ", emptyValuedKeys)));
 			}
 		}
