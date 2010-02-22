@@ -59,9 +59,19 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal Type MessageType { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the constructors available on the message type.
+		/// Gets the constructors available on the message type.
 		/// </summary>
 		internal ConstructorInfo[] Constructors { get; private set; }
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
+		public override string ToString() {
+			return this.MessageType.Name + " (" + this.MessageVersion + ")";
+		}
 
 		/// <summary>
 		/// Gets a dictionary that provides read/write access to a message.
@@ -73,53 +83,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
 			return new MessageDictionary(message, this);
-		}
-
-		/// <summary>
-		/// Reflects over some <see cref="IMessage"/>-implementing type
-		/// and prepares to serialize/deserialize instances of that type.
-		/// </summary>
-		internal void ReflectMessageType() {
-			this.mapping = new Dictionary<string, MessagePart>();
-
-			Type currentType = this.MessageType;
-			do {
-				foreach (MemberInfo member in currentType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
-					if (member is PropertyInfo || member is FieldInfo) {
-						MessagePartAttribute partAttribute =
-							(from a in member.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>()
-							 orderby a.MinVersionValue descending
-							 where a.MinVersionValue <= this.MessageVersion
-							 where a.MaxVersionValue >= this.MessageVersion
-							 select a).FirstOrDefault();
-						if (partAttribute != null) {
-							MessagePart part = new MessagePart(member, partAttribute);
-							if (this.mapping.ContainsKey(part.Name)) {
-								Logger.Messaging.WarnFormat(
-									"Message type {0} has more than one message part named {1}.  Inherited members will be hidden.",
-									this.MessageType.Name,
-									part.Name);
-							} else {
-								this.mapping.Add(part.Name, part);
-							}
-						}
-					}
-				}
-				currentType = currentType.BaseType;
-			} while (currentType != null);
-
-			BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-			this.Constructors = this.MessageType.GetConstructors(flags);
-		}
-
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
-		/// </returns>
-		public override string ToString() {
-			return this.MessageType.Name + " (" + this.MessageVersion + ")";
 		}
 
 		/// <summary>
@@ -220,6 +183,43 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Reflects over some <see cref="IMessage"/>-implementing type
+		/// and prepares to serialize/deserialize instances of that type.
+		/// </summary>
+		private void ReflectMessageType() {
+			this.mapping = new Dictionary<string, MessagePart>();
+
+			Type currentType = this.MessageType;
+			do {
+				foreach (MemberInfo member in currentType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
+					if (member is PropertyInfo || member is FieldInfo) {
+						MessagePartAttribute partAttribute =
+							(from a in member.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>()
+							 orderby a.MinVersionValue descending
+							 where a.MinVersionValue <= this.MessageVersion
+							 where a.MaxVersionValue >= this.MessageVersion
+							 select a).FirstOrDefault();
+						if (partAttribute != null) {
+							MessagePart part = new MessagePart(member, partAttribute);
+							if (this.mapping.ContainsKey(part.Name)) {
+								Logger.Messaging.WarnFormat(
+									"Message type {0} has more than one message part named {1}.  Inherited members will be hidden.",
+									this.MessageType.Name,
+									part.Name);
+							} else {
+								this.mapping.Add(part.Name, part);
+							}
+						}
+					}
+				}
+				currentType = currentType.BaseType;
+			} while (currentType != null);
+
+			BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+			this.Constructors = this.MessageType.GetConstructors(flags);
 		}
 
 #if CONTRACTS_FULL
