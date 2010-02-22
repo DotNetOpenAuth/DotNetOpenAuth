@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageDescriptionCollection"/> class.
 		/// </summary>
-		public MessageDescriptionCollection() {
+		internal MessageDescriptionCollection() {
 		}
 
 		/// <summary>
