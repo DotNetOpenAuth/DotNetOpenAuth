@@ -35,6 +35,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <value>The lifetime.</value>
 		[MessagePart(Protocol.wrap_access_token_expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
-		internal TimeSpan Lifetime { get; set; }
+		internal TimeSpan? Lifetime { get; set; }
 	}
 }

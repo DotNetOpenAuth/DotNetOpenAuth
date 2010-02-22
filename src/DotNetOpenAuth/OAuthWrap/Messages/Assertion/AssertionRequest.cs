@@ -18,9 +18,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssertionRequest"/> class.
 		/// </summary>
-		/// <param name="version">The version.</param>
 		/// <param name="authorizationServer">The authorization server.</param>
-		internal AssertionRequest(Version version, Uri authorizationServer)
+		/// <param name="version">The version.</param>
+		internal AssertionRequest(Uri authorizationServer, Version version)
 			: base(version, MessageTransport.Direct, authorizationServer) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}

@@ -16,7 +16,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TimespanSecondsEncoder"/> class.
 		/// </summary>
-		internal TimespanSecondsEncoder() {
+		public TimespanSecondsEncoder() {
+			// Note that this constructor is public so it can be instantiated via Activator.
 		}
 
 		#region IMessagePartEncoder Members
