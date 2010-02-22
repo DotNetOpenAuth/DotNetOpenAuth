@@ -19,20 +19,28 @@ namespace DotNetOpenAuth.Test.Messaging {
 		private static readonly Version V1 = new Version(1, 0);
 		private static readonly MessageReceivingEndpoint receiver = new MessageReceivingEndpoint("http://receiver", HttpDeliveryMethods.PostRequest);
 
-		/// <summary>
-		/// Verifies the constructor throws the appropriate exception on null input.
-		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
-		public void CtorNull() {
-			new StandardMessageFactory(null);
+		private StandardMessageFactory factory;
+
+		public override void SetUp() {
+			base.SetUp();
+
+			this.factory = new StandardMessageFactory();
 		}
 
 		/// <summary>
-		/// Verifies the constructor throws the appropriate exception on null input.
+		/// Verifies that AddMessageTypes throws the appropriate exception on null input.
+		/// </summary>
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		public void AddMessageTypesNull() {
+			this.factory.AddMessageTypes(null);
+		}
+
+		/// <summary>
+		/// Verifies that AddMessageTypes throws the appropriate exception on null input.
 		/// </summary>
 		[TestCase, ExpectedException(typeof(ArgumentException))]
-		public void CtorNullMessageDescription() {
-			new StandardMessageFactory(new MessageDescription[] { null });
+		public void AddMessageTypesNullMessageDescription() {
+			this.factory.AddMessageTypes(new MessageDescription[] { null });
 		}
 
 		/// <summary>
@@ -40,13 +48,13 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// </summary>
 		[TestCase]
 		public void SingleRequestMessageType() {
-			var factory = new StandardMessageFactory(new MessageDescription[] { MessageDescriptions.Get(typeof(RequestMessageMock), V1) });
+			this.factory.AddMessageTypes(new MessageDescription[] { MessageDescriptions.Get(typeof(RequestMessageMock), V1) });
 			var fields = new Dictionary<string, string> {
 				{ "random", "bits" },
 			};
-			Assert.IsNull(factory.GetNewRequestMessage(receiver, fields));
+			Assert.IsNull(this.factory.GetNewRequestMessage(receiver, fields));
 			fields["Age"] = "18";
-			Assert.IsInstanceOf(typeof(RequestMessageMock), factory.GetNewRequestMessage(receiver, fields));
+			Assert.IsInstanceOf(typeof(RequestMessageMock), this.factory.GetNewRequestMessage(receiver, fields));
 		}
 
 		/// <summary>
@@ -54,20 +62,20 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// </summary>
 		[TestCase]
 		public void SingleResponseMessageType() {
-			var factory = new StandardMessageFactory(new MessageDescription[] { MessageDescriptions.Get(typeof(DirectResponseMessageMock), V1) });
+			this.factory.AddMessageTypes(new MessageDescription[] { MessageDescriptions.Get(typeof(DirectResponseMessageMock), V1) });
 			var fields = new Dictionary<string, string> {
 				{ "random", "bits" },
 			};
 			IDirectedProtocolMessage request = new RequestMessageMock(receiver.Location, V1);
-			Assert.IsNull(factory.GetNewResponseMessage(request, fields));
+			Assert.IsNull(this.factory.GetNewResponseMessage(request, fields));
 			fields["Age"] = "18";
-			IDirectResponseProtocolMessage response = factory.GetNewResponseMessage(request, fields);
+			IDirectResponseProtocolMessage response = this.factory.GetNewResponseMessage(request, fields);
 			Assert.IsInstanceOf<DirectResponseMessageMock>(response);
 			Assert.AreSame(request, response.OriginatingRequest);
 
 			// Verify that we can instantiate a response with a derived-type of an expected request message.
 			request = new TestSignedDirectedMessage();
-			response = factory.GetNewResponseMessage(request, fields);
+			response = this.factory.GetNewResponseMessage(request, fields);
 			Assert.IsInstanceOf<DirectResponseMessageMock>(response);
 			Assert.AreSame(request, response.OriginatingRequest);
 		}

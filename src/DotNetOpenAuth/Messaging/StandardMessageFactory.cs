@@ -33,8 +33,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardMessageFactory"/> class.
 		/// </summary>
+		internal StandardMessageFactory() {
+		}
+
+		/// <summary>
+		/// Adds message types to the set that this factory can create.
+		/// </summary>
 		/// <param name="messageTypes">The message types that this factory may instantiate.</param>
-		internal StandardMessageFactory(IEnumerable<MessageDescription> messageTypes) {
+		public virtual void AddMessageTypes(IEnumerable<MessageDescription> messageTypes) {
 			Contract.Requires<ArgumentNullException>(messageTypes != null);
 			Contract.Requires<ArgumentException>(messageTypes.All(msg => msg != null));
 
