@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// A cache of <see cref="MessageDescription"/> instances.
 	/// </summary>
 	[ContractVerification(true)]
-	internal class MessageDescriptionCollection {
+	internal class MessageDescriptionCollection : IEnumerable<MessageDescription> {
 		/// <summary>
 		/// A dictionary of reflected message types and the generated reflection information.
 		/// </summary>
@@ -25,6 +25,34 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		internal MessageDescriptionCollection() {
 		}
+
+		#region IEnumerable<MessageDescription> Members
+
+		/// <summary>
+		/// Returns an enumerator that iterates through a collection.
+		/// </summary>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+		/// </returns>
+		public IEnumerator<MessageDescription> GetEnumerator() {
+			return this.reflectedMessageTypes.Values.GetEnumerator();
+		}
+
+		#endregion
+
+		#region IEnumerable Members
+
+		/// <summary>
+		/// Returns an enumerator that iterates through a collection.
+		/// </summary>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+		/// </returns>
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+			return this.reflectedMessageTypes.Values.GetEnumerator();
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets a <see cref="MessageDescription"/> instance prepared for the
