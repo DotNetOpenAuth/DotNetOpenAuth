@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-using System.Diagnostics.Contracts;
 
 	[ContractClass(typeof(IClientTokenManagerContract))]
 	public interface IClientTokenManager {
@@ -33,9 +33,13 @@ using System.Diagnostics.Contracts;
 
 	public interface IWrapAuthorization {
 		Uri Callback { get; set; }
+
 		string RefreshToken { get; set; }
+
 		string AccessToken { get; set; }
+
 		DateTime? AccessTokenExpirationUtc { get; set; }
+
 		string Scope { get; set; }
 
 		void Delete();

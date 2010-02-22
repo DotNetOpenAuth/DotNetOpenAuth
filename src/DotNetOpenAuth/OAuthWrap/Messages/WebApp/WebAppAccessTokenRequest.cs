@@ -6,9 +6,9 @@
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A message sent by the Client directly to the Authorization Server to exchange

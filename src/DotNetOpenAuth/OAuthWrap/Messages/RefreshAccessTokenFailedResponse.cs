@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserNamePasswordRefreshAccessTokenFailedResponse.cs" company="Andrew Arnott">
+// <copyright file="RefreshAccessTokenFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
