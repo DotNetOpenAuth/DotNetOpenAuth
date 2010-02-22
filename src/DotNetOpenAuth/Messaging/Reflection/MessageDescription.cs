@@ -157,7 +157,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="throwOnFailure">if set to <c>true</c> an exception is thrown on failure with details.</param>
 		/// <returns>A value indicating whether the provided data fits the message's basic requirements.</returns>
 		/// <exception cref="ProtocolException">
-		/// Thrown when required parts of a message are not in <paramref name="keys"/>
+		/// Thrown when required parts of a message are not in <paramref name="partValues"/>
 		/// if <paramref name="throwOnFailure"/> is <c>true</c>.
 		/// </exception>
 		private bool CheckRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues, bool throwOnFailure) {
