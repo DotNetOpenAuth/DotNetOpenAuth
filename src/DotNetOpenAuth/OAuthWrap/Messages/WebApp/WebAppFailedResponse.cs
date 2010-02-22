@@ -42,6 +42,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// If this value is present, the Authorization Server MUST return it to the Client's callback URL.
 		/// </remarks>
 		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
-		internal string ClientState { get; set; }
+		public string ClientState { get; set; }
 	}
 }

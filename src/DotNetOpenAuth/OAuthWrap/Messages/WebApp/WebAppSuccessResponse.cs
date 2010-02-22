@@ -27,6 +27,16 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Gets or sets some state as provided by the client in the authorization request.
+		/// </summary>
+		/// <value>An opaque value defined by the client.</value>
+		/// <remarks>
+		/// REQUIRED if the Client sent the value in the <see cref="WebAppRequest"/>.
+		/// </remarks>
+		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
+		public string ClientState { get; set; }
+
+		/// <summary>
 		/// Gets or sets the verification code.
 		/// </summary>
 		/// <value>
@@ -35,15 +45,5 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </value>
 		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = true)]
 		internal string VerificationCode { get; set; }
-
-		/// <summary>
-		/// Gets or sets some state as provided by the client in the authorization request.
-		/// </summary>
-		/// <value>An opaque value defined by the client.</value>
-		/// <remarks>
-		/// REQUIRED if the Client sent the value in the <see cref="WebAppRequest"/>.
-		/// </remarks>
-		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
-		internal string ClientState { get; set; }
 	}
 }

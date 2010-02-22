@@ -39,6 +39,18 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Gets or sets state of the client that should be sent back with the authorization response.
+		/// </summary>
+		/// <value>
+		/// An opaque value that Clients can use to maintain state associated with this request. 
+		/// </value>
+		/// <remarks>
+		/// If this value is present, the Authorization Server MUST return it to the Client's Callback URL.
+		/// </remarks>
+		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
+		public string ClientState { get; set; }
+
+		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
 		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
@@ -57,18 +69,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </remarks>
 		[MessagePart(Protocol.wrap_callback, IsRequired = true, AllowEmpty = false)]
 		internal Uri Callback { get; set; }
-
-		/// <summary>
-		/// Gets or sets state of the client that should be sent back with the authorization response.
-		/// </summary>
-		/// <value>
-		/// An opaque value that Clients can use to maintain state associated with this request. 
-		/// </value>
-		/// <remarks>
-		/// If this value is present, the Authorization Server MUST return it to the Client's Callback URL.
-		/// </remarks>
-		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
-		internal string ClientState { get; set; }
 
 		/// <summary>
 		/// Gets or sets the scope.
