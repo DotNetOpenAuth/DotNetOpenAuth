@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the message descriptions.
 		/// </summary>
-		internal MessageDescriptionCollection MessageDescriptions {
+		internal virtual MessageDescriptionCollection MessageDescriptions {
 			get {
 				return this.messageDescriptions;
 			}
@@ -201,11 +201,12 @@ namespace DotNetOpenAuth.Messaging {
 		protected internal bool IsDisposed { get; set; }
 
 		/// <summary>
-		/// Gets a tool that can figure out what kind of message is being received
+		/// Gets or sets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
 		protected IMessageFactory MessageFactory {
 			get { return this.messageTypeProvider; }
+			set { this.messageTypeProvider = value; }
 		}
 
 		/// <summary>

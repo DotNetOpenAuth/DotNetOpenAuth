@@ -611,7 +611,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="Reporting.cs" />
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapChannel.cs" />
-    <Compile Include="OAuthWrap\ChannelElements\OAuthWrapMessageFactory.cs" />
     <Compile Include="OAuthWrap\ClientBase.cs" />
     <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\MessageBase.cs" />

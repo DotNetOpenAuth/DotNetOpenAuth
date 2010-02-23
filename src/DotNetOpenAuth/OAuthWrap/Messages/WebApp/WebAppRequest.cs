@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// via the user agent to obtain authorization from the user and prepare
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
-	internal class WebAppRequest : MessageBase, IMessageWithClientState {
+	public class WebAppRequest : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
 		/// </summary>
