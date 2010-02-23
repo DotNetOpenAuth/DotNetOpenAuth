@@ -198,5 +198,8 @@
 				MessageBox.Show(this, ex.Message);
 			}
 		}
+
+		private void wrapBeginButton_Click(object sender, RoutedEventArgs e) {
+		}
 	}
 }

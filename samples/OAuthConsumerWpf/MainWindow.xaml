@@ -133,5 +133,55 @@
 				<TextBox Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="3" Name="resultsBox" IsReadOnly="True" />
 			</Grid>
 		</TabItem>
-	</TabControl>
+        <TabItem Header="Generic WRAP">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0">Access Token URL</Label>
+                <TextBox Grid.Column="1" x:Name="wrapAccessTokenUrlBox" />
+                <Label Grid.Column="2">POST</Label>
+                <Label Grid.Row="1">Refresh Token URL</Label>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapRefreshTokenUrlBox" />
+                <Label Grid.Row="1" Grid.Column="2">POST</Label>
+                <Label Grid.Row="2">User Authorization URL</Label>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapUserAuthorizationUrlBox" />
+                <Label Grid.Row="2" Grid.Column="2">GET</Label>
+                <Label Grid.Row="3">Resource URL</Label>
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="wrapResourceUrlBox" />
+                <ComboBox Grid.Row="3" Grid.Column="2" x:Name="wrapResourceHttpMethodList" SelectedIndex="0">
+                    <ComboBox.Items>
+                        <ComboBoxItem>GET w/ header</ComboBoxItem>
+                        <ComboBoxItem>GET w/ querystring</ComboBoxItem>
+                        <ComboBoxItem>POST</ComboBoxItem>
+                    </ComboBox.Items>
+                </ComboBox>
+                <Label Grid.Row="4">Client Identifier</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" x:Name="wrapClientIdentifierBox" Grid.ColumnSpan="2"/>
+                <Label Grid.Row="5">Client Secret</Label>
+                <TextBox Grid.Row="5" Grid.Column="1" x:Name="wrapClientSecretBox" Grid.ColumnSpan="2"/>
+                <Label Grid.Row="6">WRAP version</Label>
+                <ComboBox Grid.Row="6" Grid.Column="1" SelectedIndex="0" x:Name="wrapVersion">
+                    <ComboBox.Items>
+                        <ComboBoxItem>1.0 early DRAFT</ComboBoxItem>
+                    </ComboBox.Items>
+                </ComboBox>
+                <Button Grid.Row="7" Grid.Column="1" x:Name="wrapBeginButton" Click="wrapBeginButton_Click">Begin</Button>
+                <TextBox Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="3" Name="wrapResultsBox" IsReadOnly="True" />
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Window>

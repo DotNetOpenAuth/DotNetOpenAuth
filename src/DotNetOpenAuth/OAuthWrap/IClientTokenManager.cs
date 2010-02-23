@@ -13,6 +13,12 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 	[ContractClass(typeof(IClientTokenManagerContract))]
 	public interface IClientTokenManager {
+		/// <summary>
+		/// Gets the state of the authorization for a given callback URL and client state.
+		/// </summary>
+		/// <param name="callbackUrl">The callback URL.</param>
+		/// <param name="clientState">State of the client stored at the beginning of an authorization request.</param>
+		/// <returns>The authorization state; may be <c>null</c> if no authorization state matches.</returns>
 		IWrapAuthorization GetAuthorizationState(Uri callbackUrl, string clientState);
 	}
 
@@ -31,18 +37,54 @@ namespace DotNetOpenAuth.OAuthWrap {
 		#endregion
 	}
 
+	/// <summary>
+	/// Provides access to a persistent object that tracks the state of an authorization.
+	/// </summary>
 	public interface IWrapAuthorization {
+		/// <summary>
+		/// Gets or sets the callback URL used to obtain authorization.
+		/// </summary>
+		/// <value>The callback URL.</value>
 		Uri Callback { get; set; }
 
+		/// <summary>
+		/// Gets or sets the long-lived token used to renew the short-lived <see cref="AccessToken"/>.
+		/// </summary>
+		/// <value>The refresh token.</value>
 		string RefreshToken { get; set; }
 
+		/// <summary>
+		/// Gets or sets the access token.
+		/// </summary>
+		/// <value>The access token.</value>
 		string AccessToken { get; set; }
 
+		/// <summary>
+		/// Gets or sets the access token UTC expiration date.
+		/// </summary>
 		DateTime? AccessTokenExpirationUtc { get; set; }
 
+		/// <summary>
+		/// Gets or sets the scope the token is (to be) authorized for.
+		/// </summary>
+		/// <value>The scope.</value>
 		string Scope { get; set; }
 
+		/// <summary>
+		/// Deletes this authorization, including access token and refresh token were applicable.
+		/// </summary>
+		/// <remarks>
+		/// This method is invoked when an authorization attempt fails, is rejected, is revoked, or
+		/// expires and cannot be renewed.
+		/// </remarks>
 		void Delete();
+
+		/// <summary>
+		/// Saves any changes made to this authorization object's properties.
+		/// </summary>
+		/// <remarks>
+		/// This method is invoked after DotNetOpenAuth changes any property.
+		/// </remarks>
 		void SaveChanges();
 	}
 }
