@@ -142,13 +142,16 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(recipient != null);
 			Contract.Requires<ArgumentNullException>(fields != null);
 
-			var basicMatches = this.requestMessageTypes.Keys.Where(message => message.CheckMessagePartsPassBasicValidation(fields));
-			var match = basicMatches.FirstOrDefault();
+			var matches = this.requestMessageTypes.Keys
+				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
+				.OrderByDescending(message => message.Mapping.Count)
+				.CacheGeneratedResults();
+			var match = matches.FirstOrDefault();
 			if (match != null) {
-				if (Logger.Messaging.IsDebugEnabled && basicMatches.Count() > 1) {
-					Logger.Messaging.DebugFormat(
+				if (Logger.Messaging.IsWarnEnabled && matches.Count() > 1) {
+					Logger.Messaging.WarnFormat(
 						"Multiple message types seemed to fit the incoming data: {0}",
-						basicMatches.ToStringDeferred());
+						matches.ToStringDeferred());
 				}
 
 				return match;
@@ -168,13 +171,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">May be thrown if the incoming data is ambiguous.</exception>
 		protected virtual MessageDescription GetMessageDescription(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
-			var basicMatches = this.responseMessageTypes.Keys.Where(message => message.CheckMessagePartsPassBasicValidation(fields)).CacheGeneratedResults();
-			var match = basicMatches.FirstOrDefault();
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(fields != null);
+
+			var matches = this.responseMessageTypes.Keys
+				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
+				.Where(message => FindMatchingResponseConstructors(message, request.GetType()).Any())
+				.OrderByDescending(message => message.Mapping.Count)
+				.CacheGeneratedResults();
+			var match = matches.FirstOrDefault();
 			if (match != null) {
-				if (Logger.Messaging.IsDebugEnabled && basicMatches.Count() > 1) {
-					Logger.Messaging.DebugFormat(
+				if (Logger.Messaging.IsWarnEnabled && matches.Count() > 1) {
+					Logger.Messaging.WarnFormat(
 						"Multiple message types seemed to fit the incoming data: {0}",
-						basicMatches.ToStringDeferred());
+						matches.ToStringDeferred());
 				}
 
 				return match;
@@ -211,10 +221,10 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<IDirectResponseProtocolMessage>() != null);
 
 			Type requestType = request.GetType();
-			var ctors = this.responseMessageTypes[messageDescription].Where(pair => pair.Key.IsAssignableFrom(requestType));
+			var ctors = this.FindMatchingResponseConstructors(messageDescription, requestType);
 			ConstructorInfo ctor = null;
 			try {
-				ctor = ctors.Single().Value;
+				ctor = ctors.Single();
 			} catch (InvalidOperationException) {
 				if (ctors.Any()) {
 					ErrorUtilities.ThrowInternal("More than one matching constructor for request type " + requestType.Name + " and response type " + messageDescription.MessageType.Name);
@@ -223,6 +233,13 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 			return (IDirectResponseProtocolMessage)ctor.Invoke(new object[] { request });
+		}
+
+		private IEnumerable<ConstructorInfo> FindMatchingResponseConstructors(MessageDescription messageDescription, Type requestType) {
+			Contract.Requires<ArgumentNullException>(messageDescription != null);
+			Contract.Requires<ArgumentNullException>(requestType != null);
+
+			return this.responseMessageTypes[messageDescription].Where(pair => pair.Key.IsAssignableFrom(requestType)).Select(pair => pair.Value);
 		}
 	}
 }
