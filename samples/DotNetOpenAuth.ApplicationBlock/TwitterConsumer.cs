@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Web;
@@ -197,10 +198,13 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				return false;
 			}
 
-			XDocument xml = VerifyCredentials(TwitterSignIn, response.AccessToken);
-			XPathNavigator nav = xml.CreateNavigator();
-			screenName = nav.SelectSingleNode("/user/screen_name").Value;
-			userId = int.Parse(nav.SelectSingleNode("/user/id").Value);
+			screenName = response.ExtraData["screen_name"];
+			userId = int.Parse(response.ExtraData["user_id"]);
+
+			// If we were going to make this LOOK like OpenID even though it isn't,
+			// this seems like a reasonable, secure claimed id to allow the user to assume.
+			OpenId.Identifier fake_claimed_id = string.Format(CultureInfo.InvariantCulture, "http://twitter.com/{0}#{1}", screenName, userId);
+
 			return true;
 		}
 	}
