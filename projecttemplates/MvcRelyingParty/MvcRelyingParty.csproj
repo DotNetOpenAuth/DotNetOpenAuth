@@ -95,9 +95,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\images\google.gif" />
+    <Content Include="Content\images\myopenid.png" />
+    <Content Include="Content\images\openid.gif" />
+    <Content Include="Content\images\verisign.gif" />
+    <Content Include="Content\images\yahoo.gif" />
+    <Content Include="Content\images\yahoo_login.png" />
     <Content Include="Default.aspx" />
     <Content Include="Getting Started.htm" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Setup.aspx" />
     <Content Include="Views\Account\EditFields.ascx" />
     <Content Include="Views\Account\Edit.aspx" />
