@@ -183,12 +183,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// would transmit the message that normally would be transmitted via a user agent redirect.
 		/// </summary>
 		/// <param name="channel">The channel to use for encoding.</param>
-		/// <returns>The URL that would transmit the original message.</returns>
+		/// <returns>
+		/// The URL that would transmit the original message.  This URL may exceed the normal 2K limit,
+		/// and should therefore be broken up manually and POSTed as form fields when it exceeds this length.
+		/// </returns>
 		/// <remarks>
 		/// This is useful for desktop applications that will spawn a user agent to transmit the message
 		/// rather than cause a redirect.
 		/// </remarks>
-		internal Uri GetDirectUriRequest(Channel channel) {
+		public Uri GetDirectUriRequest(Channel channel) {
 			Contract.Requires<ArgumentNullException>(channel != null);
 
 			var message = this.OriginalMessage as IDirectedProtocolMessage;

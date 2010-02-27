@@ -61,6 +61,14 @@
 				loader.insert();
 			}
 		} catch (e) { }
+		window.aspnetapppath = '/';
+		window.dnoa_internal.maxPositiveAssertionLifetime = 5 * 60 * 1000;
+		window.dnoa_internal.callbackAsync = function (argument, resultFunction, errorCallback) {
+			// TODO: this should invoke AccountController.Discover(argument)
+		};
+		window.dnoa_internal.callback = function (argument, resultFunction, errorCallback) {
+			// TODO: this should invoke AccountController.Discover(argument)
+		};
 	//]]>--></script>
 </asp:Content>
 <asp:Content ContentPlaceHolderID="Head" runat="server">
