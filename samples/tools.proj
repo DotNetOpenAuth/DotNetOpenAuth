@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
+
+	<Target Name="Layout">
+		<PropertyGroup>
+			<ToolsDirectoryNoSlash>$(DropsRoot)$(ProductName)-Tools-$(BuildVersion)</ToolsDirectoryNoSlash>
+			<ToolsDirectory>$(ToolsDirectoryNoSlash)\</ToolsDirectory>
+		</PropertyGroup>
+
+		<ItemGroup>
+			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj">
+				<Targets>Sign</Targets>
+			</ToolProjects>
+		</ItemGroup>
+
+		<MSBuild Projects="@(ToolProjects)" Targets="%(ToolProjects.Targets)" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="OfflineProvider"/>
+		</MSBuild>
+
+		<ItemGroup>
+			<!-- Remove the un-unified assembly. -->
+			<OfflineProvider Remove="$(OutputPath)$(SignedSubPath)$(ProductName).dll" />
+			<!-- add the PDBs -->
+			<OfflineProvider Include="@(OfflineProvider->'%(SymbolPath)')" />
+			<OfflineProviderTargets Include="
+											 @(OfflineProvider->'$(ToolsDirectory)%(CultureDir)%(FileName)%(Extension)')"/>
+
+			<AllToolSources Include="@(OfflineProvider)" />
+			<AllToolTargets Include="@(OfflineProviderTargets)" />
+		</ItemGroup>
+
+		<MakeDir Directories="@(ToolsDirectory)" />
+		<Copy SourceFiles="@(AllToolSources)" DestinationFiles="@(AllToolTargets)" SkipUnchangedFiles="true" />
+
+		<!-- remove files that shouldn't be in the directory (perhaps from a previous version). -->
+		<Purge Directories="$(ToolsDirectory)" IntendedFiles="@(AllToolTargets)" />
+	</Target>
+
+	<Target Name="Build" DependsOnTargets="Layout">
+		<PropertyGroup>
+			<ToolsZip>$(ToolsDirectoryNoSlash).zip</ToolsZip>
+		</PropertyGroup>
+
+		<Zip ZipFileName="$(ToolsZip)"
+				 Files="@(AllToolTargets)"
+				 WorkingDirectory="$(ToolsDirectory)"
+				 ZipLevel="$(ZipLevel)" />
+	</Target>
+
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+</Project>

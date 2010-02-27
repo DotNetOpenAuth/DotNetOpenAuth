@@ -100,7 +100,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Code\InMemoryTokenManager.cs" />
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="loginGoogleApps.aspx.cs">

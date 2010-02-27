@@ -5,9 +5,14 @@
 	using System.Web;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Messaging;
 
 	public interface IOpenIdRelyingParty {
+		Channel Channel { get; }
+
 		IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo);
+
+		IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo);
 
 		IAuthenticationResponse GetResponse();
 	}
@@ -33,8 +38,16 @@
 
 		#region IOpenIdRelyingParty Members
 
+		public Channel Channel {
+			get { return relyingParty.Channel; }
+		}
+
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo) {
 			return relyingParty.CreateRequest(userSuppliedIdentifier, realm, returnTo);
+		}
+
+		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo) {
+			return relyingParty.CreateRequests(userSuppliedIdentifier, realm, returnTo);
 		}
 
 		public IAuthenticationResponse GetResponse() {

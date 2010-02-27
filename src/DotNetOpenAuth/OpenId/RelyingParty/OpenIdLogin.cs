@@ -643,11 +643,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				base.UsePersistentCookie = value;
 
-				// use conditional here to prevent infinite recursion
-				// with CheckedChanged event.
-				bool rememberMe = value != LogOnPersistence.Session;
-				if (this.rememberMeCheckBox.Checked != rememberMe) {
-					this.rememberMeCheckBox.Checked = rememberMe;
+				if (this.rememberMeCheckBox != null) {
+					// use conditional here to prevent infinite recursion
+					// with CheckedChanged event.
+					bool rememberMe = value != LogOnPersistence.Session;
+					if (this.rememberMeCheckBox.Checked != rememberMe) {
+						this.rememberMeCheckBox.Checked = rememberMe;
+					}
 				}
 			}
 		}
@@ -782,7 +784,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			cell = new TableCell();
 			this.rememberMeCheckBox = new CheckBox();
 			this.rememberMeCheckBox.Text = RememberMeTextDefault;
-			this.rememberMeCheckBox.Checked = RememberMeDefault;
+			this.rememberMeCheckBox.Checked = this.UsePersistentCookie != LogOnPersistence.Session;
 			this.rememberMeCheckBox.Visible = RememberMeVisibleDefault;
 			this.rememberMeCheckBox.CheckedChanged += this.RememberMeCheckBox_CheckedChanged;
 			cell.Controls.Add(this.rememberMeCheckBox);

@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
@@ -87,7 +88,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public string Body {
 			get { return this.ResponseStream != null ? this.GetResponseReader().ReadToEnd() : null; }
-			set { this.SetResponse(value); }
+			set { this.SetResponse(value, null); }
 		}
 
 		/// <summary>
@@ -182,12 +183,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// would transmit the message that normally would be transmitted via a user agent redirect.
 		/// </summary>
 		/// <param name="channel">The channel to use for encoding.</param>
-		/// <returns>The URL that would transmit the original message.</returns>
+		/// <returns>
+		/// The URL that would transmit the original message.  This URL may exceed the normal 2K limit,
+		/// and should therefore be broken up manually and POSTed as form fields when it exceeds this length.
+		/// </returns>
 		/// <remarks>
 		/// This is useful for desktop applications that will spawn a user agent to transmit the message
 		/// rather than cause a redirect.
 		/// </remarks>
-		internal Uri GetDirectUriRequest(Channel channel) {
+		public Uri GetDirectUriRequest(Channel channel) {
 			Contract.Requires<ArgumentNullException>(channel != null);
 
 			var message = this.OriginalMessage as IDirectedProtocolMessage;
@@ -205,13 +209,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// Sets the response to some string, encoded as UTF-8.
 		/// </summary>
 		/// <param name="body">The string to set the response to.</param>
-		internal void SetResponse(string body) {
+		/// <param name="contentType">Type of the content.  May be null.</param>
+		internal void SetResponse(string body, ContentType contentType) {
 			if (body == null) {
 				this.ResponseStream = null;
 				return;
 			}
 
-			this.Headers[HttpResponseHeader.ContentEncoding] = bodyStringEncoder.HeaderName;
+			if (contentType == null) {
+				contentType = new ContentType("text/html");
+				contentType.CharSet = bodyStringEncoder.WebName;
+			} else if (contentType.CharSet != bodyStringEncoder.WebName) {
+				// clone the original so we're not tampering with our inputs if it came as a parameter.
+				contentType = new ContentType(contentType.ToString());
+				contentType.CharSet = bodyStringEncoder.WebName;
+			}
+
+			this.Headers[HttpResponseHeader.ContentType] = contentType.ToString();
 			this.ResponseStream = new MemoryStream();
 			StreamWriter writer = new StreamWriter(this.ResponseStream, bodyStringEncoder);
 			writer.Write(body);

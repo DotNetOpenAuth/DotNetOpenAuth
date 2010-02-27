@@ -4,11 +4,20 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABBE14A3-0404-4123-9093-E598C3DD3E9B}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\build.proj = ..\..\build.proj
+		..\..\doc\doc.proj = ..\..\doc\doc.proj
+		..\..\tools\DotNetOpenAuth.automated.props = ..\..\tools\DotNetOpenAuth.automated.props
+		..\..\tools\DotNetOpenAuth.automated.targets = ..\..\tools\DotNetOpenAuth.automated.targets
 		..\..\lib\DotNetOpenAuth.BuildTasks.targets = ..\..\lib\DotNetOpenAuth.BuildTasks.targets
 		..\..\tools\DotNetOpenAuth.Common.Settings.targets = ..\..\tools\DotNetOpenAuth.Common.Settings.targets
 		..\..\tools\DotNetOpenAuth.props = ..\..\tools\DotNetOpenAuth.props
 		..\..\tools\DotNetOpenAuth.targets = ..\..\tools\DotNetOpenAuth.targets
 		..\..\tools\DotNetOpenAuth.Versioning.targets = ..\..\tools\DotNetOpenAuth.Versioning.targets
+		..\..\tools\drop.proj = ..\..\tools\drop.proj
+		..\..\projecttemplates\projecttemplates.proj = ..\..\projecttemplates\projecttemplates.proj
+		..\..\samples\Samples.proj = ..\..\samples\Samples.proj
+		..\..\samples\tools.proj = ..\..\samples\tools.proj
+		..\..\vsi\vsi.proj = ..\..\vsi\vsi.proj
+		..\..\vsix\vsix.proj = ..\..\vsix\vsix.proj
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.BuildTasks", "DotNetOpenAuth.BuildTasks.csproj", "{AC231A51-EF60-437C-A33F-AF8ADEB8EB74}"

@@ -152,6 +152,50 @@
 			return RedirectToAction("Index", "Home");
 		}
 
+		public JsonResult Discover(string identifier) {
+			if (!this.Request.IsAjaxRequest()) {
+				throw new InvalidOperationException();
+			}
+
+			// We prepare a JSON object with this interface:
+			// class jsonResponse {
+			//    string claimedIdentifier;
+			//    Array requests; // never null
+			//    string error; // null if no error
+			// }
+			// Each element in the requests array looks like this:
+			// class jsonAuthRequest {
+			//    string endpoint;  // URL to the OP endpoint
+			//    string immediate; // URL to initiate an immediate request
+			//    string setup;     // URL to initiate a setup request.
+			// }
+			IEnumerable<IAuthenticationRequest> requests = this.RelyingParty.CreateRequests(identifier, Realm.AutoDetect, Url.ActionFull("LogOnReturnTo")).CacheGeneratedResults();
+			if (requests.Any()) {
+				return new JsonResult {
+					Data = new {
+						claimedIdentifier = requests.First().ClaimedIdentifier,
+						requests = requests.Select(req => new {
+							endpoint = req.Provider.Uri.AbsoluteUri,
+							immediate = GetRedirectUrl(req, true),
+							setup = GetRedirectUrl(req, false),
+						}).ToArray()
+					},
+				};
+			} else {
+				return new JsonResult {
+					Data = new {
+						requests = new object [0],
+						error = "No OpenID endpoint found",
+					}
+				};
+			}
+		}
+
+		private Uri GetRedirectUrl(IAuthenticationRequest request, bool immediate) {
+			request.Mode = immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
+			return request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel);
+		}
+
 		[Authorize]
 		public ActionResult Edit() {
 			return View(GetAccountInfoModel());

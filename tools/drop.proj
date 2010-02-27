@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildProjectDirectory)\DotNetOpenAuth.automated.props"/>
+
+	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
+		<!-- Note that we use an MSBuild task for these dependencies rather than individual DependsOnTargets entries
+		     so that these builds can be executed in parallel. -->
+		<MSBuild BuildInParallel="$(BuildInParallel)"
+						 Projects="
+						 $(ProjectRoot)samples\samples.proj;
+						 $(ProjectRoot)vsi\vsi.proj;
+						 $(ProjectRoot)vsix\vsix.proj;
+						 $(ProjectRoot)doc\doc.proj;
+						 ">
+			<Output TaskParameter="TargetOutputs" ItemName="DropLayoutDependencies"/>
+		</MSBuild>
+		<PropertyGroup>
+			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
+			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
+			<DropProjectTemplatesDirectory>$(DropDirectory)Project Templates\</DropProjectTemplatesDirectory>
+			<DropSamplesDirectory>$(DropDirectory)Samples\</DropSamplesDirectory>
+			<DropSpecsDirectory>$(DropDirectory)Specs\</DropSpecsDirectory>
+		</PropertyGroup>
+		<ItemGroup>
+			<ExtensionVsix Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsix\vsix.proj' " />
+			<ProjectTemplatesVsi Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsi\vsi.proj' " />
+			<DropDirectories Include="
+						 $(DropDirectory);
+						 $(DropBinDirectory);
+						 $(DropLibDirectory);
+						 $(DropProjectTemplatesDirectory);
+						 $(DropSamplesDirectory);
+						 $(DropSpecsDirectory);
+										 " />
+
+			<DropSourceFiles Include="
+																$(ProjectRoot)Doc\$(ProductName).chm;
+																$(ProjectRoot)Doc\*.htm*;
+																$(ProjectRoot)LICENSE.txt;
+																$(ProjectRoot)CONTRIB.txt;
+																"
+											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
+			<DropBinSourceFiles Include="
+																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).???;
+																$(OutputPath)$(ProductName).xml;
+																$(OutputPath)$(SignedSubPath)$(ProductName).Contracts.???;
+																$(ProjectRoot)Doc\README.Bin.html;
+																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
+													" />
+			<DropSatelliteSourceFiles Include="$(OutputPath)**\$(SignedSubPath)$(ProductName).resources.dll" />
+			<DropSatelliteSourceFiles>
+				<CultureDir>$([System.IO.Path]::GetDirectoryName('$([System.IO.Path]::GetDirectoryName('%(RecursiveDir)'))'))\</CultureDir>
+			</DropSatelliteSourceFiles>
+			<DropLibSourceFiles Include="
+																$(ProjectRoot)Lib\log4net.*;
+																" />
+			<DropProjectTemplatesSourceFiles Include="@(ProjectTemplatesVsi)" />
+			<DropVsixSourceFiles Include="@(ExtensionVsix)" Condition=" '%(ExtensionVsix.IncludeInDrop)' == 'true' " />
+			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
+															$(ProjectRoot)**\obj\**;
+															$(ProjectRoot)**\*.sln.cache;
+															$(ProjectRoot)**\*.suo;
+															$(ProjectRoot)**\*.user;
+															$(ProjectRoot)**\*.gitignore;
+															$(ProjectRoot)**\*.ldf;
+															$(ProjectRoot)**\*.log*;
+															$(ProjectRoot)**\*~;
+															$(ProjectRoot)**\Debug\**;
+															$(ProjectRoot)**\Settings.StyleCop;
+															$(ProjectRoot)**\StyleCop.Cache;
+															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
+															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
+															$(ProjectRoot)Samples\**\log4net.???;
+															$(ProjectRoot)Samples\**\PresentationCore.dll;
+															$(ProjectRoot)Samples\**\System.Printing.dll;
+															$(ProjectRoot)Samples\**\*.refresh_;
+															$(ProjectRoot)Samples\*.proj;
+															" />
+			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
+			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)Samples\**\*.refresh_" />
+			<DropSpecsSourceFiles Include="$(ProjectRoot)Doc\specs\*.htm*" />
+
+			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSatelliteFiles Include="@(DropSatelliteSourceFiles->'$(DropBinDirectory)%(CultureDir)%(FileName)%(Extension)')" />
+			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
+			<DropVsixFiles Include="@(DropVsixSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
+			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
+			<DropSamplesToolsProjects Include="$(DropSamplesDirectory)OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
+			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+
+			<AllDropSources Include="
+										@(DropSourceFiles);
+										@(DropBinSourceFiles);
+										@(DropSatelliteSourceFiles);
+										@(DropLibSourceFiles);
+										@(DropProjectTemplatesSourceFiles);
+										@(DropVsixSourceFiles);
+										@(DropSamplesSourceFiles);
+										@(DropSamplesRefreshSourceFiles);
+										@(DropDocSourceFiles);
+										@(DropSpecsSourceFiles);
+										" />
+
+			<AllDropTargets Include="
+										@(DropFiles);
+										@(DropBinFiles);
+										@(DropSatelliteFiles);
+										@(DropLibFiles);
+										@(DropProjectTemplatesFiles);
+										@(DropVsixFiles);
+										@(DropSamplesFiles);
+										@(DropSamplesRefreshFiles);
+										@(DropDocFiles);
+										@(DropSpecsFiles)
+										" />
+		</ItemGroup>
+
+		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
+		<MakeDir Directories="@(DropDirectories)" />
+		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
+		<Purge Directories="$(DropDirectory)" IntendedFiles="@(AllDropTargets)" />
+		<!-- fix up the samples so that they will compile right out of the drop -->
+		<ItemGroup>
+			<SampleProjectTargets Include="$(DropSamplesDirectory)**\*.*proj" />
+			<SampleSolutionTargets Include="$(DropSamplesDirectory)**\*.sln" />
+		</ItemGroup>
+		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)"
+		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\"
+		                          AddReferences="Microsoft.Contracts"/>
+		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
+		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
+		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" DowngradeMvc2ToMvc1="true" />
+	</Target>
+
+	<Target Name="Build" DependsOnTargets="Layout">
+		<PropertyGroup>
+			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
+		</PropertyGroup>
+		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" ZipLevel="$(ZipLevel)" />
+	</Target>
+
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+</Project>

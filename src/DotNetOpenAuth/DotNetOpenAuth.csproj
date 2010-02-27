@@ -728,6 +728,31 @@ http://opensource.org/licenses/ms-pl.html
     </BootstrapperPackage>
     <Content Include="DotNetOpenAuth.ico" />
   </ItemGroup>
+
+  <ItemGroup>
+    <SignDependsOn Include="BuildUnifiedProduct" />
+    <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
+                                    $(OutputPath)$(ProductName).Contracts.dll;
+                                   " />
+  </ItemGroup>
+	<PropertyGroup>
+		<!-- Don't sign the non-unified version of the assembly. -->
+		<SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
+	</PropertyGroup>
+
+  <Target Name="BuildUnifiedProduct"
+        DependsOnTargets="Build"
+        Inputs="@(ILMergeInputAssemblies)"
+        Outputs="$(ILMergeOutputAssembly)">
+    <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
+    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
+             InputAssemblies="@(ILMergeInputAssemblies)"
+             OutputFile="$(ILMergeOutputAssembly)"
+             KeyFile="$(PublicKeyFile)"
+             DelaySign="true"
+             />
+  </Target>
+
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
 </Project>

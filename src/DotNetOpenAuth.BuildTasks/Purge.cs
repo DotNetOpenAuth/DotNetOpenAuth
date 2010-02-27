@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.BuildTasks {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.Build.Utilities;
-	using Microsoft.Build.Framework;
-	using System.IO;
 	using System.Text.RegularExpressions;
+	using Microsoft.Build.Framework;
+	using Microsoft.Build.Utilities;
 
 	/// <summary>
 	/// Purges directory trees of all directories and files that are not on a whitelist.
@@ -40,6 +40,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// <summary>
 		/// Gets or sets the files that should be NOT be purged.
 		/// </summary>
+		[Required]
 		public ITaskItem[] IntendedFiles { get; set; }
 
 		/// <summary>
@@ -82,7 +83,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		}
 
 		private static string NormalizePath(string path) {
-			return Regex.Replace(path, @"\\+", @"\");
+			return Path.GetFullPath(Regex.Replace(path, @"\\+", @"\"));
 		}
 	}
 }
