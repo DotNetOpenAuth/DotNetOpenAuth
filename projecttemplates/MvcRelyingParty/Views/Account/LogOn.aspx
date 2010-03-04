@@ -64,10 +64,17 @@
 		window.aspnetapppath = '/';
 		window.dnoa_internal.maxPositiveAssertionLifetime = 5 * 60 * 1000;
 		window.dnoa_internal.callbackAsync = function (argument, resultFunction, errorCallback) {
-			// TODO: this should invoke AccountController.Discover(argument)
+			var req = new Sys.Net.WebRequest();
+			jQuery.ajax({
+				async: true,
+				dataType: "text",
+				error: function (request, status, error) { errorCallback(status, argument); },
+				success: function (result) { resultFunction(result, argument); },
+				url: 'http://localhost:18916/Account/Discover?identifier=' + escape(argument)
+			});
 		};
 		window.dnoa_internal.callback = function (argument, resultFunction, errorCallback) {
-			// TODO: this should invoke AccountController.Discover(argument)
+			alert('we thought this was unused');
 		};
 	//]]>--></script>
 </asp:Content>
