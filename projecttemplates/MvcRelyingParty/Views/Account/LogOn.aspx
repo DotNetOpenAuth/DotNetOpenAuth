@@ -70,7 +70,7 @@
 				dataType: "text",
 				error: function (request, status, error) { errorCallback(status, argument); },
 				success: function (result) { resultFunction(result, argument); },
-				url: 'http://localhost:18916/Account/Discover?identifier=' + escape(argument)
+				url: '<%= Url.Action("Discover") %>?identifier=' + encodeURIComponent(argument)
 			});
 		};
 		window.dnoa_internal.callback = function (argument, resultFunction, errorCallback) {
