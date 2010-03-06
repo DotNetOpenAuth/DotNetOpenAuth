@@ -10,16 +10,7 @@
 namespace OpenIdWebRingSsoProvider {
     
     
-    public partial class Server {
-        
-        /// <summary>
-        /// providerEndpoint1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::DotNetOpenAuth.OpenId.Provider.ProviderEndpoint providerEndpoint1;
+    public partial class Login {
         
         /// <summary>
         /// form1 control.
@@ -29,5 +20,23 @@ namespace OpenIdWebRingSsoProvider {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        
+        /// <summary>
+        /// login1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Login login1;
+        
+        /// <summary>
+        /// cancelButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button cancelButton;
     }
 }
