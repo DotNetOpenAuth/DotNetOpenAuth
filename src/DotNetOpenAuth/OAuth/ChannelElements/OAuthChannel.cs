@@ -145,7 +145,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				ContentType contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
 				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
 					foreach (string key in request.Form) {
-						fields.Add(key, request.Form[key]);
+						if (key != null) {
+							fields.Add(key, request.Form[key]);
+						} else {
+							Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", request.Form[key]);
+						}
 					}
 				}
 			}
