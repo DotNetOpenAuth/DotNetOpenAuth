@@ -39,6 +39,11 @@
 	<% } %>
 </asp:Content>
 <asp:Content ID="Content1" ContentPlaceHolderID="ScriptsArea" runat="server">
+	<script type="text/javascript" language="javascript"><!--
+		//<![CDATA[
+		window.openid_visible_iframe = true; // causes the hidden iframe to show up
+		window.openid_trace = true; // causes lots of messages
+	//]]>--></script>
 	<script type="text/javascript" src="../../Scripts/MicrosoftAjax.js"></script>
 	<script type="text/javascript" src="../../Scripts/MicrosoftMvcAjax.js"></script>
 	<script type="text/javascript" src="../../Scripts/jquery-1.3.2.min.js"></script>

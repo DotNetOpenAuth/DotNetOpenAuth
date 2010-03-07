@@ -910,7 +910,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Resolve the trust root, and swap out the scheme and port if necessary to match the
 			// return_to URL, since this match is required by OpenId, and the consumer app
 			// may be using HTTP at some times and HTTPS at others.
-			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
+			// Only resolve the realm URL if we're actually hosted in a page, as opposed to being invoked
+			// from RelyingPartyUtilities.
+			UriBuilder realm = this.Page != null ? OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext()) : new UriBuilder(this.RealmUrl);
 			realm.Scheme = returnToApproximation.Scheme;
 			realm.Port = returnToApproximation.Port;
 
