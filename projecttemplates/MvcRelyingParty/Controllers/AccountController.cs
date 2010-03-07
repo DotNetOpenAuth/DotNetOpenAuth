@@ -64,48 +64,6 @@
 		}
 
 		/// <summary>
-		/// Accepts the login information provided by the user and redirects
-		/// the user to their Provider to complete authentication.
-		/// </summary>
-		/// <param name="openid_identifier">The user-supplied identifier.</param>
-		/// <param name="rememberMe">Whether the user wants a persistent cookie.</param>
-		/// <param name="returnUrl">The URL to direct the user to after successfully authenticating.</param>
-		/// <returns>The action result.</returns>
-		[AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
-		public ActionResult LogOn(string openid_identifier, bool rememberMe, string returnUrl) {
-			Identifier userSuppliedIdentifier;
-			if (Identifier.TryParse(openid_identifier, out userSuppliedIdentifier)) {
-				try {
-					var request = this.RelyingParty.CreateRequest(openid_identifier, Realm.AutoDetect, Url.ActionFull("LogOnReturnTo"));
-					request.SetUntrustedCallbackArgument("rememberMe", rememberMe ? "1" : "0");
-
-					// This might be signed so the OP can't send the user to a dangerous URL.
-					// Of course, if that itself was a danger then the site is vulnerable to XSRF attacks anyway.
-					if (!string.IsNullOrEmpty(returnUrl)) {
-						request.SetUntrustedCallbackArgument("returnUrl", returnUrl);
-					}
-
-					// Ask for the user's email, not because we necessarily need it to do our work,
-					// but so we can display something meaningful to the user as their "username"
-					// when they log in with a PPID from Google, for example.
-					request.AddExtension(new ClaimsRequest {
-						Email = DemandLevel.Require,
-						FullName = DemandLevel.Request,
-						PolicyUrl = Url.ActionFull("PrivacyPolicy", "Home"),
-					});
-
-					return request.RedirectingResponse.AsActionResult();
-				} catch (ProtocolException ex) {
-					ModelState.AddModelError("OpenID", ex.Message);
-				}
-			} else {
-				ModelState.AddModelError("openid_identifier", "This doesn't look like a valid OpenID.");
-			}
-
-			return View();
-		}
-
-		/// <summary>
 		/// Handles the positive assertion that comes from Providers to Javascript running in the browser.
 		/// </summary>
 		/// <returns>The action result.</returns>
@@ -115,7 +73,7 @@
 		/// hack attempts and result in errors when validation is turned on.
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
-		public ActionResult LogOnReturnToAjax() {
+		public ActionResult PopUpReturnTo() {
 			return RelyingPartyUtilities.AjaxReturnTo(this.Request);
 		}
 
@@ -129,7 +87,7 @@
 		/// hack attempts and result in errors when validation is turned on.
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
-		public ActionResult LogOnReturnTo(string openid_openidAuthData) {
+		public ActionResult LogOnPostAssertion(string openid_openidAuthData) {
 			IAuthenticationResponse response;
 			if (!string.IsNullOrEmpty(openid_openidAuthData)) {
 				var auth = new Uri(openid_openidAuthData);
@@ -147,8 +105,7 @@
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
 						var token = RelyingPartyLogic.User.ProcessUserLogin(response);
-						bool rememberMe = response.GetUntrustedCallbackArgument("rememberMe") == "1";
-						this.FormsAuth.SignIn(token.ClaimedIdentifier, rememberMe);
+						this.FormsAuth.SignIn(token.ClaimedIdentifier, false);
 						string returnUrl = response.GetUntrustedCallbackArgument("returnUrl");
 						if (!String.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
@@ -184,7 +141,18 @@
 				throw new InvalidOperationException();
 			}
 
-			return RelyingPartyUtilities.AjaxDiscover(identifier, Realm.AutoDetect, Url.ActionFull("LogOnReturnToAjax"));
+			Action<IAuthenticationRequest> addExtensions = (request) => {
+				// Ask for the user's email, not because we necessarily need it to do our work,
+				// but so we can display something meaningful to the user as their "username"
+				// when they log in with a PPID from Google, for example.
+				request.AddExtension(new ClaimsRequest {
+					Email = DemandLevel.Require,
+					FullName = DemandLevel.Request,
+					PolicyUrl = Url.ActionFull("PrivacyPolicy", "Home"),
+				});
+			};
+
+			return RelyingPartyUtilities.AjaxDiscover(identifier, Realm.AutoDetect, Url.ActionFull("PopUpReturnTo"), addExtensions);
 		}
 
 		[Authorize]

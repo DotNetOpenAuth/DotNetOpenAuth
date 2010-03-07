@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		///    string setup;     // URL to initiate a setup request.
 		/// }
 		/// </remarks>
-		public static JsonResult AjaxDiscover(Identifier identifier, Realm realm, Uri returnTo) {
+		public static JsonResult AjaxDiscover(Identifier identifier, Realm realm, Uri returnTo, Action<IAuthenticationRequest> attachExtensions) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Requires<ArgumentNullException>(returnTo != null);
@@ -60,8 +60,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			selector.RealmUrl = realm;
 			selector.ReturnToUrl = returnTo.AbsoluteUri;
 			selector.ID = "MVC";
-			var requests = selector.CreateRequests(identifier);
+			var requests = selector.CreateRequests(identifier).CacheGeneratedResults();
 			if (requests.Any()) {
+				if (attachExtensions != null) {
+					foreach (var request in requests) {
+						attachExtensions(request);
+					}
+				}
 				return new JsonResult {
 					Data = new {
 						claimedIdentifier = requests.First().ClaimedIdentifier,

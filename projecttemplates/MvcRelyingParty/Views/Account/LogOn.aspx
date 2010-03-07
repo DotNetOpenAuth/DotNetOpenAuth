@@ -7,44 +7,36 @@
 	<h2>
 		Log On
 	</h2>
+	<p>Login using an account you already use. </p>
 	<%= Html.ValidationSummary("Login was unsuccessful. Please correct the errors and try again.") %>
 
-	<% using (Html.BeginForm("LogOn", "Account")) { %>
+	<% using (Html.BeginForm("LogOnPostAssertion", "Account")) { %>
 	<%= Html.AntiForgeryToken() %>
 	<%= Html.Hidden("ReturnUrl", Request.QueryString["ReturnUrl"]) %>
 	<%= Html.Hidden("openid_openidAuthData") %>
 	<div>
-		<fieldset>
-			<legend>Account Information</legend>
-			<ul class="OpenIdProviders">
-				<li id="https://www.google.com/accounts/o8/id" class="OPButton"><a href="#"><div><div>
-				<img src="../../Content/images/google.gif" />
-				<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
-				</div><div class="ui-widget-overlay"></div></div></a>
-				</li>
-				<li id="https://me.yahoo.com/" class="OPButton"><a href="#"><div><div>
-				<img src="../../Content/images/yahoo.gif" />
-				<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
-				</div><div class="ui-widget-overlay"></div></div></a>
-				</li>
-				<li id="OpenIDButton" class="OpenIDButton"><a href="#"><div><div>
-				<img src="../../Content/images/openid.gif" />
-				<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
-				</div><div class="ui-widget-overlay"></div></div></a>
-				</li>
-			</ul>
-			<div style="display: none" id="OpenIDForm">
-				<span class="OpenIdAjaxTextBox" style="display: inline-block; position: relative; font-size: 16px">
-					<input name="openid_identifier" id="openid_identifier" size="40" style="padding-left: 18px; border-style: solid; border-width: 1px; border-color: lightgray" />
-				</span>
-			</div>
-			<p>
-				<%= Html.CheckBox("rememberMe") %> <label class="inline" for="rememberMe">Remember me?</label>
-			</p>
-			<p>
-				<input type="submit" value="Log On" />
-			</p>
-		</fieldset>
+		<ul class="OpenIdProviders">
+			<li id="https://www.google.com/accounts/o8/id" class="OPButton"><a href="#"><div><div>
+			<img src="../../Content/images/google.gif" />
+			<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
+			</div><div class="ui-widget-overlay"></div></div></a>
+			</li>
+			<li id="https://me.yahoo.com/" class="OPButton"><a href="#"><div><div>
+			<img src="../../Content/images/yahoo.gif" />
+			<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
+			</div><div class="ui-widget-overlay"></div></div></a>
+			</li>
+			<li id="OpenIDButton" class="OpenIDButton"><a href="#"><div><div>
+			<img src="../../Content/images/openid.gif" />
+			<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
+			</div><div class="ui-widget-overlay"></div></div></a>
+			</li>
+		</ul>
+		<div style="display: none" id="OpenIDForm">
+			<span class="OpenIdAjaxTextBox" style="display: inline-block; position: relative; font-size: 16px">
+				<input name="openid_identifier" id="openid_identifier" size="40" style="padding-left: 18px; border-style: solid; border-width: 1px; border-color: lightgray" />
+			</span>
+		</div>
 	</div>
 	<% } %>
 </asp:Content>
@@ -52,7 +44,7 @@
 	<script type="text/javascript" language="javascript"><!--
 		//<![CDATA[
 		//window.openid_visible_iframe = true; // causes the hidden iframe to show up
-		window.openid_trace = true; // causes lots of messages
+		//window.openid_trace = true; // causes lots of messages
 	//]]>--></script>
 	<script type="text/javascript" src="../../Scripts/MicrosoftAjax.js"></script>
 	<script type="text/javascript" src="../../Scripts/MicrosoftMvcAjax.js"></script>
@@ -87,12 +79,8 @@
 				url: '<%= Url.Action("Discover") %>?identifier=' + encodeURIComponent(argument)
 			});
 		};
-		window.dnoa_internal.callback = function (argument, resultFunction, errorCallback) {
-			alert('we thought this was unused');
-		};
 		window.postLoginAssertion = function (positiveAssertion) {
 			$('#openid_openidAuthData')[0].setAttribute('value', positiveAssertion);
-			document.forms[0].action = '<%= Url.Action("LogOnReturnTo") %>';
 			document.forms[0].submit();
 		};
 		$(function () {
