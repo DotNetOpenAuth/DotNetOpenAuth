@@ -8,13 +8,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.UI;
-	using System.Web;
-	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 
 	public static class RelyingPartyUtilities {
@@ -87,8 +87,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			Logger.OpenId.DebugFormat("AJAX (iframe) callback from OP: {0}", request.Url);
 			string extensionsJson = null;
-			var RelyingPartyNonVerifying = OpenIdRelyingParty.CreateNonVerifying();
-			var authResponse = RelyingPartyNonVerifying.GetResponse();
+			var relyingPartyNonVerifying = OpenIdRelyingParty.CreateNonVerifying();
+			var authResponse = relyingPartyNonVerifying.GetResponse();
 			Logger.Controls.DebugFormat(
 				"The MVC controller checked for an authentication response from a popup window or iframe using a non-verifying RP and found: {0}",
 				authResponse.Status);
@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		private static ActionResult CallbackUserAgentMethod(string methodCall) {
 			Logger.OpenId.DebugFormat("Sending Javascript callback: {0}", methodCall);
-			StringBuilder builder = new StringBuilder() ;
+			StringBuilder builder = new StringBuilder();
 			builder.AppendLine("<html><body><script type='text/javascript' language='javascript'><!--");
 			builder.AppendLine("//<![CDATA[");
 			builder.Append(@"	var inPopup = !window.frameElement;
@@ -160,7 +160,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			builder.AppendFormat(CultureInfo.InvariantCulture, htmlFormat, methodCall);
 			builder.AppendLine("//]]>--></script>");
 			builder.AppendLine("</body></html>");
-			return new ContentResult { Content = builder.ToString(), ContentType="text/html" };
+			return new ContentResult { Content = builder.ToString(), ContentType = "text/html" };
 		}
 	}
 }

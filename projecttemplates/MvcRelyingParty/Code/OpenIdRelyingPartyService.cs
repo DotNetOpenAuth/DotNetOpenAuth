@@ -3,9 +3,9 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.Messaging;
 
 	public interface IOpenIdRelyingParty {
 		Channel Channel { get; }
