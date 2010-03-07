@@ -27,7 +27,17 @@
 				<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
 				</div><div class="ui-widget-overlay"></div></div></a>
 				</li>
+				<li id="OpenIDButton" class="OpenIDButton"><a href="#"><div><div>
+				<img src="../../Content/images/openid.gif" />
+				<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
+				</div><div class="ui-widget-overlay"></div></div></a>
+				</li>
 			</ul>
+			<div style="display: none" id="OpenIDForm">
+				<span class="OpenIdAjaxTextBox" style="display: inline-block; position: relative; font-size: 16px">
+					<input name="openid_identifier" id="openid_identifier" size="40" style="padding-left: 18px; border-style: solid; border-width: 1px; border-color: lightgray" />
+				</span>
+			</div>
 			<p>
 				<%= Html.CheckBox("rememberMe") %> <label class="inline" for="rememberMe">Remember me?</label>
 			</p>
@@ -41,7 +51,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="ScriptsArea" runat="server">
 	<script type="text/javascript" language="javascript"><!--
 		//<![CDATA[
-		window.openid_visible_iframe = true; // causes the hidden iframe to show up
+		//window.openid_visible_iframe = true; // causes the hidden iframe to show up
 		window.openid_trace = true; // causes lots of messages
 	//]]>--></script>
 	<script type="text/javascript" src="../../Scripts/MicrosoftAjax.js"></script>
@@ -51,10 +61,9 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js"></script>
 	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.js")%>"></script>
 	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.js")%>"></script>
-	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.js")%>"></script>
+	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.js")%>"></script>
 	<script type="text/javascript" language="javascript"><!--
 		//<![CDATA[
-		//$addHandler(window, 'load', function () { document.getElementsByName("openid_identifier")[0].focus(); });
 		try {
 			if (YAHOO) {
 				var loader = new YAHOO.util.YUILoader({
@@ -86,7 +95,34 @@
 			document.forms[0].action = '<%= Url.Action("LogOnReturnTo") %>';
 			document.forms[0].submit();
 		};
+		$(function () {
+			var box = document.getElementsByName('openid_identifier')[0];
+			initAjaxOpenId(
+				box, 
+				'<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.openid_login.gif")%>',
+				'<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.spinner.gif")%>',
+				'<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png")%>',
+				'<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_failure.png")%>',
+				3, // throttle
+				8000, // timeout
+				null, // js function to invoke on receiving a positive assertion
+				"LOG IN",
+				"Click here to log in using a pop-up window.",
+				true, // ShowLogOnPostBackButton
+				"Click here to log in immediately.",
+				"RETRY",
+				"Retry a failed identifier discovery.",
+				"Discovering/authenticating",
+				"Please correct errors in OpenID identifier and allow login to complete before submitting.",
+				"Please wait for login to complete.",
+				"Authenticated by {0}.",
+				"Authenticated as {0}.",
+				"Authentication failed.",
+				false, // auto postback
+				null); // PostBackEventReference (unused in MVC)
+		});
 	//]]>--></script>
+	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.js")%>"></script>
 </asp:Content>
 <asp:Content ContentPlaceHolderID="Head" runat="server">
 	<link rel="Stylesheet" type="text/css" href="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.css")%>" />
