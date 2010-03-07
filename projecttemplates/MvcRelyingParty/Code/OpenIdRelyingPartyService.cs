@@ -15,6 +15,8 @@
 		IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo);
 
 		IAuthenticationResponse GetResponse();
+
+		IAuthenticationResponse GetResponse(HttpRequestInfo request);
 	}
 
 	/// <summary>
@@ -52,6 +54,10 @@
 
 		public IAuthenticationResponse GetResponse() {
 			return relyingParty.GetResponse();
+		}
+
+		public IAuthenticationResponse GetResponse(HttpRequestInfo request) {
+			return relyingParty.GetResponse(request);
 		}
 
 		#endregion

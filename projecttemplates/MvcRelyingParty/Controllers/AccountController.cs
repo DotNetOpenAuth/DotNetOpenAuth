@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net;
 	using System.Security.Principal;
 	using System.Web;
 	using System.Web.Mvc;
@@ -128,8 +129,20 @@
 		/// hack attempts and result in errors when validation is turned on.
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
-		public ActionResult LogOnReturnTo() {
-			var response = this.RelyingParty.GetResponse();
+		public ActionResult LogOnReturnTo(string openid_openidAuthData) {
+			IAuthenticationResponse response;
+			if (!string.IsNullOrEmpty(openid_openidAuthData)) {
+				var auth = new Uri(openid_openidAuthData);
+				var headers = new WebHeaderCollection();
+				foreach (string header in Request.Headers) {
+					headers[header] = Request.Headers[header];
+				}
+				// Always say it's a GET since the payload is all in the URL, even the large ones.
+				HttpRequestInfo clientResponseInfo = new HttpRequestInfo("GET", auth, auth.PathAndQuery, headers, null);
+				response = this.RelyingParty.GetResponse(clientResponseInfo);
+			} else {
+				response = this.RelyingParty.GetResponse();
+			}
 			if (response != null) {
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:

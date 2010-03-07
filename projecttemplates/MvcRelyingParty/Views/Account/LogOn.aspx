@@ -81,6 +81,11 @@
 		window.dnoa_internal.callback = function (argument, resultFunction, errorCallback) {
 			alert('we thought this was unused');
 		};
+		window.postLoginAssertion = function (positiveAssertion) {
+			$('#openid_openidAuthData')[0].setAttribute('value', positiveAssertion);
+			document.forms[0].action = '<%= Url.Action("LogOnReturnTo") %>';
+			document.forms[0].submit();
+		};
 	//]]>--></script>
 </asp:Content>
 <asp:Content ContentPlaceHolderID="Head" runat="server">
