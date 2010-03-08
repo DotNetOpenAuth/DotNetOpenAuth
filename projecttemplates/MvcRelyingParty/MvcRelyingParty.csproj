@@ -137,6 +137,7 @@
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\LoginLink.js" />
     <Content Include="Setup.aspx" />
+    <Content Include="Views\Account\LogOnScripts.ascx" />
     <Content Include="Views\Account\LogOn.aspx" />
     <Content Include="Views\Account\LogOnContent.ascx" />
     <Content Include="Views\Account\EditFields.ascx" />

@@ -27,7 +27,6 @@
 	window.aspnetapppath = '/';
 	window.dnoa_internal.maxPositiveAssertionLifetime = 5 * 60 * 1000;
 	window.dnoa_internal.callbackAsync = function (argument, resultFunction, errorCallback) {
-		var req = new Sys.Net.WebRequest();
 		jQuery.ajax({
 			async: true,
 			dataType: "text",
