@@ -33,10 +33,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	public delegate bool EndpointSelector(IProviderEndpoint endpoint);
 
 	/// <summary>
-	/// Provides the programmatic facilities to act as an OpenId consumer.
+	/// Provides the programmatic facilities to act as an OpenID relying party.
 	/// </summary>
 	[ContractVerification(true)]
-	public sealed class OpenIdRelyingParty : IDisposable {
+	public class OpenIdRelyingParty : IDisposable {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="applicationStore">The application store.  If null, the relying party will always operate in "dumb mode".</param>
+		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
 		public OpenIdRelyingParty(IRelyingPartyApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
 		}
@@ -395,7 +395,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentNullException>(returnToUrl != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>();
+			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>().CacheGeneratedResults();
 		}
 
 		/// <summary>
@@ -487,6 +487,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		public IAuthenticationResponse GetResponse() {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return this.GetResponse(this.Channel.GetRequestFromContext());
 		}
 
@@ -619,7 +620,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing) {
+		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
 				// Tear off the instance member as a local variable for thread safety.
 				IDisposable disposableChannel = this.channel as IDisposable;

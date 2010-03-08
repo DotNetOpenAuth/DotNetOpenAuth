@@ -31,6 +31,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal const string EmbeddedAjaxJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.js";
 
 		/// <summary>
+		/// The "dnoa.op_endpoint" string.
+		/// </summary>
+		internal const string OPEndpointParameterName = OpenIdUtilities.CustomParameterPrefix + "op_endpoint";
+
+		/// <summary>
+		/// The "dnoa.claimed_id" string.
+		/// </summary>
+		internal const string ClaimedIdParameterName = OpenIdUtilities.CustomParameterPrefix + "claimed_id";
+
+		/// <summary>
 		/// The name of the javascript function that will initiate a synchronous callback.
 		/// </summary>
 		protected const string CallbackJSFunction = "window.dnoa_internal.callback";
@@ -45,16 +55,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// good for before it must be refreshed.
 		/// </summary>
 		private const string MaxPositiveAssertionLifetimeJsName = "window.dnoa_internal.maxPositiveAssertionLifetime";
-
-		/// <summary>
-		/// The "dnoa.op_endpoint" string.
-		/// </summary>
-		private const string OPEndpointParameterName = OpenIdUtilities.CustomParameterPrefix + "op_endpoint";
-
-		/// <summary>
-		/// The "dnoa.claimed_id" string.
-		/// </summary>
-		private const string ClaimedIdParameterName = OpenIdUtilities.CustomParameterPrefix + "claimed_id";
 
 		#region Property viewstate keys
 

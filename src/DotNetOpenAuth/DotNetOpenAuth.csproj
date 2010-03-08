@@ -529,8 +529,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
+    <Compile Include="OpenId\RelyingParty\DuplicateRequestedHostsComparer.cs" />
     <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
-    <Compile Include="OpenId\RelyingParty\RelyingPartyUtilities.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />

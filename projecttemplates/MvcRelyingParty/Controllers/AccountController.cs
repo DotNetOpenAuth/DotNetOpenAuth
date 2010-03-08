@@ -55,6 +55,12 @@
 		/// </summary>
 		public IOpenIdRelyingParty RelyingParty { get; private set; }
 
+		private Uri PrivacyPolicyUrl {
+			get {
+				return Url.ActionFull("PrivacyPolicy", "Home");
+			}
+		}
+
 		/// <summary>
 		/// Prepares a web page to help the user supply his login information.
 		/// </summary>
@@ -74,12 +80,13 @@
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
 		public ActionResult PopUpReturnTo() {
-			return RelyingPartyUtilities.AjaxReturnTo(this.Request);
+			return this.RelyingParty.ProcessAjaxOpenIdResponse();
 		}
 
 		/// <summary>
 		/// Handles the positive assertion that comes from Providers.
 		/// </summary>
+		/// <param name="openid_openidAuthData">The positive assertion obtained via AJAX.</param>
 		/// <returns>The action result.</returns>
 		/// <remarks>
 		/// This method instructs ASP.NET MVC to <i>not</i> validate input
@@ -95,6 +102,7 @@
 				foreach (string header in Request.Headers) {
 					headers[header] = Request.Headers[header];
 				}
+
 				// Always say it's a GET since the payload is all in the URL, even the large ones.
 				HttpRequestInfo clientResponseInfo = new HttpRequestInfo("GET", auth, auth.PathAndQuery, headers, null);
 				response = this.RelyingParty.GetResponse(clientResponseInfo);
@@ -136,23 +144,16 @@
 			return RedirectToAction("Index", "Home");
 		}
 
-		public JsonResult Discover(string identifier) {
+		public ActionResult Discover(string identifier) {
 			if (!this.Request.IsAjaxRequest()) {
 				throw new InvalidOperationException();
 			}
 
-			Action<IAuthenticationRequest> addExtensions = (request) => {
-				// Ask for the user's email, not because we necessarily need it to do our work,
-				// but so we can display something meaningful to the user as their "username"
-				// when they log in with a PPID from Google, for example.
-				request.AddExtension(new ClaimsRequest {
-					Email = DemandLevel.Require,
-					FullName = DemandLevel.Request,
-					PolicyUrl = Url.ActionFull("PrivacyPolicy", "Home"),
-				});
-			};
-
-			return RelyingPartyUtilities.AjaxDiscover(identifier, Realm.AutoDetect, Url.ActionFull("PopUpReturnTo"), addExtensions);
+			return this.RelyingParty.AjaxDiscovery(
+				identifier,
+				Realm.AutoDetect,
+				Url.ActionFull("PopUpReturnTo"),
+				this.PrivacyPolicyUrl);
 		}
 
 		[Authorize]
@@ -271,7 +272,7 @@
 			Identifier userSuppliedIdentifier;
 			if (Identifier.TryParse(openid_identifier, out userSuppliedIdentifier)) {
 				try {
-					var request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, Realm.AutoDetect, Url.ActionFull("AddAuthenticationTokenReturnTo"));
+					var request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, Realm.AutoDetect, Url.ActionFull("AddAuthenticationTokenReturnTo"), this.PrivacyPolicyUrl);
 					return request.RedirectingResponse.AsActionResult();
 				} catch (ProtocolException ex) {
 					ModelState.AddModelError("openid_identifier", ex);
@@ -285,8 +286,8 @@
 
 		private static AccountInfoModel GetAccountInfoModel() {
 			var authorizedApps = from token in Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>()
-			                     where token.User.UserId == Database.LoggedInUser.UserId
-			                     select new AccountInfoModel.AuthorizedApp { AppName = token.Consumer.Name, Token = token.Token };
+								 where token.User.UserId == Database.LoggedInUser.UserId
+								 select new AccountInfoModel.AuthorizedApp { AppName = token.Consumer.Name, Token = token.Token };
 			Database.LoggedInUser.AuthenticationTokens.Load();
 			var model = new AccountInfoModel {
 				FirstName = Database.LoggedInUser.FirstName,

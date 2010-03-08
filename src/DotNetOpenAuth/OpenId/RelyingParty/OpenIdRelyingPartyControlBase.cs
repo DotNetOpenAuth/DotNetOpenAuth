@@ -92,6 +92,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
 
+		#region Protected internal callback parameter names
+
+		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in a popup window or hidden iframe.
+		/// </summary>
+		protected internal const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
+
+		/// <summary>
+		/// The parameter name to include in the formulated auth request so that javascript can know whether
+		/// the OP advertises support for the UI extension.
+		/// </summary>
+		protected internal const string PopupUISupportedJSHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
+
+		#endregion
+
 		#region Property category constants
 
 		/// <summary>
@@ -111,18 +126,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		#region Callback parameter names
-
-		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in a popup window or hidden iframe.
-		/// </summary>
-		protected const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
-
-		/// <summary>
-		/// The parameter name to include in the formulated auth request so that javascript can know whether
-		/// the OP advertises support for the UI extension.
-		/// </summary>
-		protected const string PopupUISupportedJSHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
+		#region Private callback parameter names
 
 		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
@@ -1030,68 +1034,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// An authentication request comparer that judges equality solely on the OP endpoint hostname.
-		/// </summary>
-		private class DuplicateRequestedHostsComparer : IEqualityComparer<IAuthenticationRequest> {
-			/// <summary>
-			/// The singleton instance of this comparer.
-			/// </summary>
-			private static IEqualityComparer<IAuthenticationRequest> instance = new DuplicateRequestedHostsComparer();
-
-			/// <summary>
-			/// Prevents a default instance of the <see cref="DuplicateRequestedHostsComparer"/> class from being created.
-			/// </summary>
-			private DuplicateRequestedHostsComparer() {
-			}
-
-			/// <summary>
-			/// Gets the singleton instance of this comparer.
-			/// </summary>
-			internal static IEqualityComparer<IAuthenticationRequest> Instance {
-				get { return instance; }
-			}
-
-			#region IEqualityComparer<IAuthenticationRequest> Members
-
-			/// <summary>
-			/// Determines whether the specified objects are equal.
-			/// </summary>
-			/// <param name="x">The first object to compare.</param>
-			/// <param name="y">The second object to compare.</param>
-			/// <returns>
-			/// true if the specified objects are equal; otherwise, false.
-			/// </returns>
-			public bool Equals(IAuthenticationRequest x, IAuthenticationRequest y) {
-				if (x == null && y == null) {
-					return true;
-				}
-
-				if (x == null || y == null) {
-					return false;
-				}
-
-				// We'll distinguish based on the host name only, which
-				// admittedly is only a heuristic, but if we remove one that really wasn't a duplicate, well,
-				// this multiple OP attempt thing was just a convenience feature anyway.
-				return string.Equals(x.Provider.Uri.Host, y.Provider.Uri.Host, StringComparison.OrdinalIgnoreCase);
-			}
-
-			/// <summary>
-			/// Returns a hash code for the specified object.
-			/// </summary>
-			/// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param>
-			/// <returns>A hash code for the specified object.</returns>
-			/// <exception cref="T:System.ArgumentNullException">
-			/// The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.
-			/// </exception>
-			public int GetHashCode(IAuthenticationRequest obj) {
-				return obj.Provider.Uri.Host.GetHashCode();
-			}
-
-			#endregion
 		}
 	}
 }
