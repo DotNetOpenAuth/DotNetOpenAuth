@@ -93,7 +93,7 @@
 		/// because some OpenID positive assertions messages otherwise look like
 		/// hack attempts and result in errors when validation is turned on.
 		/// </remarks>
-		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
+		[AcceptVerbs(HttpVerbs.Post), ValidateInput(false)]
 		public ActionResult LogOnPostAssertion(string openid_openidAuthData) {
 			IAuthenticationResponse response;
 			if (!string.IsNullOrEmpty(openid_openidAuthData)) {
@@ -114,7 +114,7 @@
 					case AuthenticationStatus.Authenticated:
 						var token = RelyingPartyLogic.User.ProcessUserLogin(response);
 						this.FormsAuth.SignIn(token.ClaimedIdentifier, false);
-						string returnUrl = response.GetUntrustedCallbackArgument("returnUrl");
+						string returnUrl = Request.Form["returnUrl"];
 						if (!String.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
 						} else {

@@ -22,7 +22,7 @@ Welcome <b>
 	} else {
 %>
 [
-<%= Html.ActionLink("Log On", "LogOn", "Account") %>
+<a href="#" class="loginPopupLink">Login / Register</a>
 ]
 <%
 	}

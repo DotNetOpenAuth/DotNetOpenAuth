@@ -1,18 +1,20 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
+﻿<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 
-<asp:Content ID="loginTitle" ContentPlaceHolderID="TitleContent" runat="server">
-	Log On
-</asp:Content>
-<asp:Content ID="loginContent" ContentPlaceHolderID="MainContent" runat="server">
-	<h2>
-		Log On
-	</h2>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Login</title>
+	<link rel="Stylesheet" type="text/css" href="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.css")%>" />
+	<link rel="Stylesheet" type="text/css" href="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.css")%>" />
+	<link rel="stylesheet" type="text/css" href='<%= Url.Content("~/Content/loginpopup.css") %>' />
+</head>
+<body>
 	<p>Login using an account you already use. </p>
 	<%= Html.ValidationSummary("Login was unsuccessful. Please correct the errors and try again.") %>
 
-	<% using (Html.BeginForm("LogOnPostAssertion", "Account")) { %>
+	<% using (Html.BeginForm("LogOnPostAssertion", "Account", FormMethod.Post, new { target = "_top" })) { %>
 	<%= Html.AntiForgeryToken() %>
-	<%= Html.Hidden("ReturnUrl", Request.QueryString["ReturnUrl"]) %>
+	<%= Html.Hidden("ReturnUrl", Request.QueryString["ReturnUrl"], new { id = "ReturnUrl" }) %>
 	<%= Html.Hidden("openid_openidAuthData") %>
 	<div>
 		<ul class="OpenIdProviders">
@@ -39,17 +41,24 @@
 		</div>
 	</div>
 	<% } %>
-</asp:Content>
-<asp:Content ID="Content1" ContentPlaceHolderID="ScriptsArea" runat="server">
 	<script type="text/javascript" language="javascript"><!--
 		//<![CDATA[
 		//window.openid_visible_iframe = true; // causes the hidden iframe to show up
 		//window.openid_trace = true; // causes lots of messages
 	//]]>--></script>
-	<script type="text/javascript" src="../../Scripts/MicrosoftAjax.js"></script>
-	<script type="text/javascript" src="../../Scripts/MicrosoftMvcAjax.js"></script>
-	<script type="text/javascript" src="../../Scripts/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="../../Scripts/jquery.cookie.js"></script>
+	<script type="text/javascript" src='<%= Url.Content("~/Scripts/MicrosoftAjax.js") %>'></script>
+	<script type="text/javascript" src='<%= Url.Content("~/Scripts/MicrosoftMvcAjax.js") %>'></script>
+	<% if (Request.Url.IsLoopback) { %>
+		<script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery-1.3.2.min.js") %>'></script>
+		<script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery-ui-personalized-1.6rc6.min.js") %>'></script>
+	<% } else { %>
+		<script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+		<script type="text/javascript" language="javascript">
+			google.load("jquery", "1.3.2");
+			google.load("jqueryui", "1.7.2");
+		</script>
+	<% } %>
+	<script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery.cookie.js") %>'></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js"></script>
 	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyControlBase.js")%>"></script>
 	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.js")%>"></script>
@@ -81,6 +90,7 @@
 		};
 		window.postLoginAssertion = function (positiveAssertion) {
 			$('#openid_openidAuthData')[0].setAttribute('value', positiveAssertion);
+			$('#ReturnUrl')[0].setAttribute('value', window.parent.location.href);
 			document.forms[0].submit();
 		};
 		$(function () {
@@ -111,8 +121,5 @@
 		});
 	//]]>--></script>
 	<script type="text/javascript" src="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.js")%>"></script>
-</asp:Content>
-<asp:Content ContentPlaceHolderID="Head" runat="server">
-	<link rel="Stylesheet" type="text/css" href="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.css")%>" />
-	<link rel="Stylesheet" type="text/css" href="<%=Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.OpenIdAjaxTextBox.css")%>" />
-</asp:Content>
+</body>
+</html>
