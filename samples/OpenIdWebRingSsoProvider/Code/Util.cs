@@ -15,6 +15,17 @@ namespace OpenIdWebRingSsoProvider.Code {
 	public class Util {
 		private const string RolesAttribute = "http://samples.dotnetopenauth.net/sso/roles";
 
+		/// <summary>
+		/// Gets a value indicating whether the authentication system used by the OP requires
+		/// no user interaction (an HTTP header based authentication protocol).
+		/// </summary>
+		internal static bool ImplicitAuth {
+			get {
+				// This should return false if using FormsAuthentication.
+				return bool.Parse(ConfigurationManager.AppSettings["ImplicitAuth"]);
+			}
+		}
+
 		public static string ExtractUserName(Uri url) {
 			return url.Segments[url.Segments.Length - 1];
 		}
@@ -98,17 +109,6 @@ namespace OpenIdWebRingSsoProvider.Code {
 					}
 					idrequest.AddResponseExtension(fetchResponse);
 				}
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the authentication system used by the OP requires
-		/// no user interaction (an HTTP header based authentication protocol).
-		/// </summary>
-		internal static bool ImplicitAuth {
-			get {
-				// This should return false if using FormsAuthentication.
-				return bool.Parse(ConfigurationManager.AppSettings["ImplicitAuth"]);
 			}
 		}
 	}

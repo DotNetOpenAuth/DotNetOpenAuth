@@ -30,7 +30,7 @@
 						this.login1.FindControl("Password").Focus();
 					}
 				}
-				cancelButton.Visible = ProviderEndpoint.PendingAuthenticationRequest != null;
+				this.cancelButton.Visible = ProviderEndpoint.PendingAuthenticationRequest != null;
 			}
 		}
 
