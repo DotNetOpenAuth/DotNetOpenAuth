@@ -1,5 +1,5 @@
 ﻿$(function() {
-	var loginContent = '/Account/LogOn';
+	var loginContent = '/Account/LogOnPopup';
 	var popupWindowName = 'openidlogin';
 	var popupWidth = 355;
 	var popupHeight = 205; // use 205 for 1 row of OP buttons, or 273 for 2 rows

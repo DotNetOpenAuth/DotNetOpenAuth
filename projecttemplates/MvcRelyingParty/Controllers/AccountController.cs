@@ -70,6 +70,14 @@
 		}
 
 		/// <summary>
+		/// Prepares a web page to help the user supply his login information.
+		/// </summary>
+		/// <returns>The action result.</returns>
+		public ActionResult LogOnPopUp() {
+			return View();
+		}
+
+		/// <summary>
 		/// Handles the positive assertion that comes from Providers to Javascript running in the browser.
 		/// </summary>
 		/// <returns>The action result.</returns>

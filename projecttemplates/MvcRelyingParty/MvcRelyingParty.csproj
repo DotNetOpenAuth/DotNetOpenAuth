@@ -137,6 +137,8 @@
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\LoginLink.js" />
     <Content Include="Setup.aspx" />
+    <Content Include="Views\Account\LogOn.aspx" />
+    <Content Include="Views\Account\LogOnContent.ascx" />
     <Content Include="Views\Account\EditFields.ascx" />
     <Content Include="Views\Account\Edit.aspx" />
     <Content Include="Views\Home\PrivacyPolicy.aspx" />
@@ -150,7 +152,7 @@
     <Content Include="Scripts\MicrosoftAjax.debug.js" />
     <Content Include="Scripts\MicrosoftMvcAjax.js" />
     <Content Include="Scripts\MicrosoftMvcAjax.debug.js" />
-    <Content Include="Views\Account\LogOn.aspx" />
+    <Content Include="Views\Account\LogOnPopup.aspx" />
     <Content Include="Views\Home\About.aspx" />
     <Content Include="Views\Home\Index.aspx" />
     <Content Include="Views\Shared\Error.aspx" />
