@@ -48,13 +48,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The name of the javascript function that will initiate an asynchronous callback.
 		/// </summary>
-		protected const string CallbackJSFunctionAsync = "window.dnoa_internal.callbackAsync";
+		protected internal const string CallbackJSFunctionAsync = "window.dnoa_internal.callbackAsync";
 
 		/// <summary>
 		/// The name of the javascript field that stores the maximum time a positive assertion is
 		/// good for before it must be refreshed.
 		/// </summary>
-		private const string MaxPositiveAssertionLifetimeJsName = "window.dnoa_internal.maxPositiveAssertionLifetime";
+		internal const string MaxPositiveAssertionLifetimeJsName = "window.dnoa_internal.maxPositiveAssertionLifetime";
 
 		#region Property viewstate keys
 
