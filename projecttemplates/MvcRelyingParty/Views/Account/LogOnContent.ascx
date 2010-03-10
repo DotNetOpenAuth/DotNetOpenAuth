@@ -13,11 +13,7 @@
 		<%= Html.OpenIdSelectorOPButton(this.Page, "https://www.google.com/accounts/o8/id", Url.Content("~/Content/images/google.gif")) %>
 		<%= Html.OpenIdSelectorOpenIdButton(this.Page, Url.Content("~/Content/images/openid.gif")) %>
 	</ul>
-	<div style="display: none" id="OpenIDForm">
-		<span class="OpenIdAjaxTextBox" style="display: inline-block; position: relative; font-size: 16px">
-			<input name="openid_identifier" id="openid_identifier" size="40" style="padding-left: 18px; border-style: solid; border-width: 1px; border-color: lightgray" />
-		</span>
-	</div>
+	<%= Html.OpenIdAjaxTextBox() %>
 
 	<div class="helpDoc">
 		<p>

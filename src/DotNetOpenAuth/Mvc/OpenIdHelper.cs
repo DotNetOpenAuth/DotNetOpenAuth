@@ -41,7 +41,7 @@ window.openid_trace = {1}; // causes lots of messages",
 			result.WriteScriptTags(page, new[] {
 				OpenIdRelyingPartyControlBase.EmbeddedJavascriptResource,
 				OpenIdRelyingPartyAjaxControlBase.EmbeddedAjaxJavascriptResource,
-				OpenIdAjaxTextBox.EmbeddedScriptResourceName,
+				OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName,
 			});
 
 			if (options.DownloadYahooUILibrary) {
@@ -123,12 +123,12 @@ window.openid_trace = {1}; // causes lots of messages",
 			null); // PostBackEventReference (unused in MVC)
 	}});",
 				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdTextBox.EmbeddedLogoResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdAjaxTextBox.EmbeddedSpinnerResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)));
+				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)));
 
 			result.WriteScriptBlock(blockBuilder.ToString());
-			result.WriteScriptTags(page, OpenIdSelector.EmbeddedScriptResourceName);
+			result.WriteScriptTags(page, OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName);
 			return result.ToString();
 		}
 
@@ -149,6 +149,14 @@ window.openid_trace = {1}; // causes lots of messages",
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return OpenIdSelectorButton(html, page, "OpenIDButton", "OpenIDButton", imageUrl);
+		}
+
+		public static string OpenIdAjaxTextBox(this HtmlHelper html) {
+			return @"<div style='display: none' id='OpenIDForm'>
+		<span class='OpenIdAjaxTextBox' style='display: inline-block; position: relative; font-size: 16px'>
+			<input name='openid_identifier' id='openid_identifier' size='40' style='padding-left: 18px; border-style: solid; border-width: 1px; border-color: lightgray' />
+		</span>
+	</div>";
 		}
 
 		private static string OpenIdSelectorButton(this HtmlHelper html, Page page, string id, string cssClass, string imageUrl) {
@@ -177,7 +185,7 @@ window.openid_trace = {1}; // causes lots of messages",
 			h.RenderBeginTag(HtmlTextWriterTag.Img);
 			h.RenderEndTag();
 
-			h.AddAttribute(HtmlTextWriterAttribute.Src, page.ClientScript.GetWebResourceUrl(typeof(OpenIdSelector), OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
+			h.AddAttribute(HtmlTextWriterAttribute.Src, page.ClientScript.GetWebResourceUrl(typeof(OpenIdSelector), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
 			h.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
 			h.AddAttribute(HtmlTextWriterAttribute.Title, "Authenticated as {0}");
 			h.RenderBeginTag(HtmlTextWriterTag.Img);
