@@ -151,6 +151,43 @@ window.openid_trace = {1}; // causes lots of messages",
 			return OpenIdSelectorButton(html, page, "OpenIDButton", "OpenIDButton", imageUrl);
 		}
 
+		public static string OpenIdSelector(this HtmlHelper html, Page page, params SelectorButton[] buttons) {
+			Contract.Requires<ArgumentNullException>(html != null);
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Requires<ArgumentNullException>(buttons != null);
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			var writer = new StringWriter();
+			var h = new HtmlTextWriter(writer);
+
+			h.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIdProviders");
+			h.RenderBeginTag(HtmlTextWriterTag.Ul);
+
+			foreach (SelectorButton button in buttons) {
+				var op = button as SelectorProviderButton;
+				if (op != null) {
+					h.Write(OpenIdSelectorOPButton(html, page, op.OPIdentifier, op.Image));
+					continue;
+				}
+
+				var openid = button as SelectorOpenIdButton;
+				if (openid != null) {
+					h.Write(OpenIdSelectorOpenIdButton(html, page, openid.Image));
+					continue;
+				}
+
+				ErrorUtilities.VerifySupported(false, "The {0} button is not yet supported for MVC.", button.GetType().Name);
+			}
+
+			h.RenderEndTag(); // ul
+
+			if (buttons.OfType<SelectorOpenIdButton>().Any()) {
+				h.Write(OpenIdAjaxTextBox(html));
+			}
+
+			return writer.ToString();
+		}
+
 		public static string OpenIdAjaxTextBox(this HtmlHelper html) {
 			return @"<div style='display: none' id='OpenIDForm'>
 		<span class='OpenIdAjaxTextBox' style='display: inline-block; position: relative; font-size: 16px'>

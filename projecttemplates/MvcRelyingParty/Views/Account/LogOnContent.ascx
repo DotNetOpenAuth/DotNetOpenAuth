@@ -1,5 +1,6 @@
 <%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
 <%@ Import Namespace="DotNetOpenAuth.Mvc" %>
+<%@ Import Namespace="DotNetOpenAuth.OpenId.RelyingParty" %>
 <p>Login using an account you already use. </p>
 <%= Html.ValidationSummary("Login was unsuccessful. Please correct the errors and try again.") %>
 
@@ -8,12 +9,11 @@
 <%= Html.Hidden("ReturnUrl", Request.QueryString["ReturnUrl"], new { id = "ReturnUrl" }) %>
 <%= Html.Hidden("openid_openidAuthData") %>
 <div>
-	<ul class="OpenIdProviders">
-		<%= Html.OpenIdSelectorOPButton(this.Page, "https://me.yahoo.com/", Url.Content("~/Content/images/yahoo.gif"))%>
-		<%= Html.OpenIdSelectorOPButton(this.Page, "https://www.google.com/accounts/o8/id", Url.Content("~/Content/images/google.gif")) %>
-		<%= Html.OpenIdSelectorOpenIdButton(this.Page, Url.Content("~/Content/images/openid.gif")) %>
-	</ul>
-	<%= Html.OpenIdAjaxTextBox() %>
+<%= Html.OpenIdSelector(this.Page, new SelectorButton[] {
+	new SelectorProviderButton("https://me.yahoo.com/", Url.Content("~/Content/images/yahoo.gif")),
+	new SelectorProviderButton("https://www.google.com/accounts/o8/id", Url.Content("~/Content/images/google.gif")),
+	new SelectorOpenIdButton(Url.Content("~/Content/images/openid.gif")),
+}) %>
 
 	<div class="helpDoc">
 		<p>
