@@ -11,7 +11,7 @@
 </ul>
 
 <h4>Add a new login method </h4>
-<% using(Html.BeginForm("AddAuthenticationToken", "Account", FormMethod.Post)) { %>
+<% using(Html.BeginForm("AddAuthenticationToken", "Auth", FormMethod.Post)) { %>
 	<%= Html.AntiForgeryToken() %>
 	<label for="openid_identifier">OpenID:</label>
 	<%= Html.TextBox("openid_identifier")%>

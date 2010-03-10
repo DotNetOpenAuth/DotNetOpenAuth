@@ -16,7 +16,7 @@ Welcome <b>
 		}
 	%>
 </b>! [
-<%= Html.ActionLink("Log Off", "LogOff", "Account") %>
+<%= Html.ActionLink("Log Off", "LogOff", "Auth") %>
 ]
 <%
 	} else {

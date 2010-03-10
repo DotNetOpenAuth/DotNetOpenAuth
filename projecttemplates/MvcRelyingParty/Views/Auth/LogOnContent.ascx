@@ -4,7 +4,7 @@
 <p>Login using an account you already use. </p>
 <%= Html.ValidationSummary("Login was unsuccessful. Please correct the errors and try again.") %>
 
-<% using (Html.BeginForm("LogOnPostAssertion", "Account", FormMethod.Post, new { target = "_top" })) { %>
+<% using (Html.BeginForm("LogOnPostAssertion", "Auth", FormMethod.Post, new { target = "_top" })) { %>
 <%= Html.AntiForgeryToken() %>
 <%= Html.Hidden("ReturnUrl", Request.QueryString["ReturnUrl"], new { id = "ReturnUrl" }) %>
 <%= Html.Hidden("openid_openidAuthData") %>
