@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.Mvc {
 	using System.Web.UI;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	public static class OpenIdHelper {
@@ -25,6 +26,7 @@ namespace DotNetOpenAuth.Mvc {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentNullException>(options != null);
+			Contract.Ensures(Contract.Result<string>() != null);
 
 			StringWriter result = new StringWriter();
 
@@ -128,6 +130,70 @@ window.openid_trace = {1}; // causes lots of messages",
 			result.WriteScriptBlock(blockBuilder.ToString());
 			result.WriteScriptTags(page, OpenIdSelector.EmbeddedScriptResourceName);
 			return result.ToString();
+		}
+
+		public static string OpenIdSelectorOPButton(this HtmlHelper html, Page page, Identifier providerIdentifier, string imageUrl) {
+			Contract.Requires<ArgumentNullException>(html != null);
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Requires<ArgumentNullException>(providerIdentifier != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Contract.Ensures(Contract.Result<string>() != null);
+			
+			return OpenIdSelectorButton(html, page, providerIdentifier, "OPButton", imageUrl);
+		}
+
+		public static string OpenIdSelectorOpenIdButton(this HtmlHelper html, Page page, string imageUrl) {
+			Contract.Requires<ArgumentNullException>(html != null);
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			return OpenIdSelectorButton(html, page, "OpenIDButton", "OpenIDButton", imageUrl);
+		}
+
+		private static string OpenIdSelectorButton(this HtmlHelper html, Page page, string id, string cssClass, string imageUrl) {
+			Contract.Requires<ArgumentNullException>(html != null);
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Requires<ArgumentNullException>(id != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			var writer = new StringWriter();
+			var h = new HtmlTextWriter(writer);
+
+			h.AddAttribute(HtmlTextWriterAttribute.Id, id);
+			if (!string.IsNullOrEmpty(cssClass)) {
+				h.AddAttribute(HtmlTextWriterAttribute.Class, cssClass);
+			}
+			h.RenderBeginTag(HtmlTextWriterTag.Li);
+
+			h.AddAttribute(HtmlTextWriterAttribute.Href, "#");
+			h.RenderBeginTag(HtmlTextWriterTag.A);
+
+			h.RenderBeginTag(HtmlTextWriterTag.Div);
+			h.RenderBeginTag(HtmlTextWriterTag.Div);
+
+			h.AddAttribute(HtmlTextWriterAttribute.Src, imageUrl);
+			h.RenderBeginTag(HtmlTextWriterTag.Img);
+			h.RenderEndTag();
+
+			h.AddAttribute(HtmlTextWriterAttribute.Src, page.ClientScript.GetWebResourceUrl(typeof(OpenIdSelector), OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
+			h.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
+			h.AddAttribute(HtmlTextWriterAttribute.Title, "Authenticated as {0}");
+			h.RenderBeginTag(HtmlTextWriterTag.Img);
+			h.RenderEndTag();
+
+			h.RenderEndTag(); // div
+
+			h.AddAttribute(HtmlTextWriterAttribute.Class, "ui-widget-overlay");
+			h.RenderBeginTag(HtmlTextWriterTag.Div);
+			h.RenderEndTag(); // div
+
+			h.RenderEndTag(); // div
+			h.RenderEndTag(); // a
+			h.RenderEndTag(); // li
+
+			return writer.ToString();
 		}
 
 		private static void WriteScriptTags(this TextWriter writer, IEnumerable<string> scriptUrls) {

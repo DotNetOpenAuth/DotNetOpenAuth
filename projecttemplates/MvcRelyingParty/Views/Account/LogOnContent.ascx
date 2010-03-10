@@ -1,4 +1,5 @@
 <%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
+<%@ Import Namespace="DotNetOpenAuth.Mvc" %>
 <p>Login using an account you already use. </p>
 <%= Html.ValidationSummary("Login was unsuccessful. Please correct the errors and try again.") %>
 
@@ -8,21 +9,9 @@
 <%= Html.Hidden("openid_openidAuthData") %>
 <div>
 	<ul class="OpenIdProviders">
-		<li id="https://www.google.com/accounts/o8/id" class="OPButton"><a href="#"><div><div>
-		<img src='<%= Url.Content("~/Content/images/google.gif") %>' />
-		<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
-		</div><div class="ui-widget-overlay"></div></div></a>
-		</li>
-		<li id="https://me.yahoo.com/" class="OPButton"><a href="#"><div><div>
-		<img src='<%= Url.Content("~/Content/images/yahoo.gif") %>' />
-		<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
-		</div><div class="ui-widget-overlay"></div></div></a>
-		</li>
-		<li id="OpenIDButton" class="OpenIDButton"><a href="#"><div><div>
-		<img src='<%= Url.Content("~/Content/images/openid.gif") %>' />
-		<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
-		</div><div class="ui-widget-overlay"></div></div></a>
-		</li>
+		<%= Html.OpenIdSelectorOPButton(this.Page, "https://me.yahoo.com/", Url.Content("~/Content/images/yahoo.gif"))%>
+		<%= Html.OpenIdSelectorOPButton(this.Page, "https://www.google.com/accounts/o8/id", Url.Content("~/Content/images/google.gif")) %>
+		<%= Html.OpenIdSelectorOpenIdButton(this.Page, Url.Content("~/Content/images/openid.gif")) %>
 	</ul>
 	<div style="display: none" id="OpenIDForm">
 		<span class="OpenIdAjaxTextBox" style="display: inline-block; position: relative; font-size: 16px">
