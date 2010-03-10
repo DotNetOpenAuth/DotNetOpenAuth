@@ -9,17 +9,17 @@
 <div>
 	<ul class="OpenIdProviders">
 		<li id="https://www.google.com/accounts/o8/id" class="OPButton"><a href="#"><div><div>
-		<img src="../../Content/images/google.gif" />
+		<img src='<%= Url.Content("~/Content/images/google.gif") %>' />
 		<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
 		</div><div class="ui-widget-overlay"></div></div></a>
 		</li>
 		<li id="https://me.yahoo.com/" class="OPButton"><a href="#"><div><div>
-		<img src="../../Content/images/yahoo.gif" />
+		<img src='<%= Url.Content("~/Content/images/yahoo.gif") %>' />
 		<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
 		</div><div class="ui-widget-overlay"></div></div></a>
 		</li>
 		<li id="OpenIDButton" class="OpenIDButton"><a href="#"><div><div>
-		<img src="../../Content/images/openid.gif" />
+		<img src='<%= Url.Content("~/Content/images/openid.gif") %>' />
 		<img src="<%= Page.ClientScript.GetWebResourceUrl(typeof(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector), "DotNetOpenAuth.OpenId.RelyingParty.login_success.png") %>" class="loginSuccess" title="Authenticated as {0}" />
 		</div><div class="ui-widget-overlay"></div></div></a>
 		</li>
