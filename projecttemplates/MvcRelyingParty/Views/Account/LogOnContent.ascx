@@ -29,5 +29,16 @@
 			<input name="openid_identifier" id="openid_identifier" size="40" style="padding-left: 18px; border-style: solid; border-width: 1px; border-color: lightgray" />
 		</span>
 	</div>
+
+	<div class="helpDoc">
+		<p>
+			If you have logged in previously, click the same button you did last time.
+		</p>
+		<p>
+			If you don't have an account with any of these services, just pick Google. They'll
+			help you set up an account.
+		</p>
+	</div>
+
 </div>
 <% } %>
