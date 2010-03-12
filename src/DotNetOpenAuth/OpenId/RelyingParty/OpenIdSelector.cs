@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public event EventHandler<TokenProcessingErrorEventArgs> TokenProcessingError;
 
 		/// <summary>
-		/// Gets or sets the text box where applicable.
+		/// Gets the text box where applicable.
 		/// </summary>
 		public OpenIdAjaxTextBox TextBox {
 			get {
@@ -256,7 +256,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		/// <summary>
 		/// Ensures that the child controls have been built, but doesn't set control
-		/// properties that require executing <see cref="EnsureID"/> in order to avoid
+		/// properties that require executing <see cref="Control.EnsureID"/> in order to avoid
 		/// certain initialization order problems.
 		/// </summary>
 		/// <remarks>

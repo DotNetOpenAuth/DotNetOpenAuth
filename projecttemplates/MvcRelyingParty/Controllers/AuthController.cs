@@ -8,12 +8,12 @@ namespace MvcRelyingParty.Controllers {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Web;
 	using System.Web.Mvc;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using System.Net;
-	using DotNetOpenAuth.Messaging;
 	using RelyingPartyLogic;
 
 	public class AuthController : Controller {
