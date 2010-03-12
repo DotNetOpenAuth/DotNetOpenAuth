@@ -81,11 +81,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private HiddenField positiveAssertionField;
 
 		/// <summary>
-		/// A field to store the value to set on the <see cref="textBox"/> control after it's created.
-		/// </summary>
-		private bool downloadYuiLibrary = OpenIdAjaxTextBox.DownloadYahooUILibraryDefault;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdSelector"/> class.
 		/// </summary>
 		public OpenIdSelector() {
@@ -126,19 +121,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Description("Whether a split button will be used for the \"log in\" when the user provides an identifier that delegates to more than one Provider.")]
 		public bool DownloadYahooUILibrary {
 			get {
-				return this.textBox != null ? this.textBox.DownloadYahooUILibrary : this.downloadYuiLibrary;
+				this.EnsureChildControlsAreCreatedSafe();
+				return this.textBox.DownloadYahooUILibrary;
 			}
 
 			set {
-				// We don't just call EnsureChildControls() and then set the property on
-				// this.textBox itself because (apparently) setting this property in the ASPX
-				// page and thus calling this EnsureID() via EnsureChildControls() this early
-				// results in no ID.
-				if (this.textBox != null) {
-					this.textBox.DownloadYahooUILibrary = value;
-				} else {
-					this.downloadYuiLibrary = value;
-				}
+				this.EnsureChildControlsAreCreatedSafe();
+				this.textBox.DownloadYahooUILibrary = value;
 			}
 		}
 
@@ -207,9 +196,36 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Called by the ASP.NET page framework to notify server controls that use composition-based implementation to create any child controls they contain in preparation for posting back or rendering.
 		/// </summary>
 		protected override void CreateChildControls() {
+			this.EnsureChildControlsAreCreatedSafe();
+
 			base.CreateChildControls();
+
+			// Now do the ID specific work.
 			this.EnsureID();
 			ErrorUtilities.VerifyInternal(!string.IsNullOrEmpty(this.UniqueID), "Control.EnsureID() failed to give us a unique ID.  Try setting an ID on the OpenIdSelector control.  But please also file this bug with the project owners.");
+
+			this.Controls.Add(this.textBox);
+
+			this.positiveAssertionField.ID = this.ID + AuthDataFormKeySuffix;
+			this.Controls.Add(this.positiveAssertionField);
+		}
+
+		/// <summary>
+		/// Ensures that the child controls have been built, but doesn't set control
+		/// properties that require executing <see cref="EnsureID"/> in order to avoid
+		/// certain initialization order problems.
+		/// </summary>
+		/// <remarks>
+		/// We don't just call EnsureChildControls() and then set the property on
+		/// this.textBox itself because (apparently) setting this property in the ASPX
+		/// page and thus calling this EnsureID() via EnsureChildControls() this early
+		/// results in no ID.
+		/// </remarks>
+		protected virtual void EnsureChildControlsAreCreatedSafe() {
+			// If we've already created the child controls, this method is a no-op.
+			if (this.textBox != null) {
+				return;
+			}
 
 			var selectorButton = this.Buttons.OfType<SelectorInfoCardButton>().FirstOrDefault();
 			if (selectorButton != null) {
@@ -225,12 +241,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.textBox.ID = "openid_identifier";
 			this.textBox.HookFormSubmit = false;
 			this.textBox.ShowLogOnPostBackButton = true;
-			this.textBox.DownloadYahooUILibrary = this.downloadYuiLibrary;
-			this.Controls.Add(this.textBox);
 
 			this.positiveAssertionField = new HiddenField();
-			this.positiveAssertionField.ID = this.ID + AuthDataFormKeySuffix;
-			this.Controls.Add(this.positiveAssertionField);
 		}
 
 		/// <summary>
