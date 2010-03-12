@@ -13,9 +13,14 @@ namespace DotNetOpenAuth.Mvc {
 	public class OpenIdAjaxOptions {
 		public OpenIdAjaxOptions() {
 			this.AssertionHiddenFieldId = "openid_openidAuthData";
+			this.ReturnUrlHiddenFieldId = "ReturnUrl";
 		}
 
 		public string AssertionHiddenFieldId { get; set; }
+
+		public string ReturnUrlHiddenFieldId { get; set; }
+
+		public int FormIndex { get; set; }
 
 		public bool ShowDiagnosticTrace { get; set; }
 

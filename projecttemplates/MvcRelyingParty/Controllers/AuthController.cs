@@ -157,34 +157,39 @@ namespace MvcRelyingParty.Controllers {
 			return View("LogOn");
 		}
 
-		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
-		public ActionResult AddAuthenticationToken(string openid_identifier) {
-			Identifier userSuppliedIdentifier;
-			if (Identifier.TryParse(openid_identifier, out userSuppliedIdentifier)) {
-				try {
-					var request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, Realm.AutoDetect, Url.ActionFull("AddAuthenticationTokenReturnTo"), this.PrivacyPolicyUrl);
-					return request.RedirectingResponse.AsActionResult();
-				} catch (ProtocolException ex) {
-					ModelState.AddModelError("openid_identifier", ex);
+		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken, ValidateInput(false)]
+		public ActionResult AddAuthenticationToken(string openid_openidAuthData) {
+			IAuthenticationResponse response;
+			if (!string.IsNullOrEmpty(openid_openidAuthData)) {
+				var auth = new Uri(openid_openidAuthData);
+				var headers = new WebHeaderCollection();
+				foreach (string header in Request.Headers) {
+					headers[header] = Request.Headers[header];
 				}
+
+				// Always say it's a GET since the payload is all in the URL, even the large ones.
+				HttpRequestInfo clientResponseInfo = new HttpRequestInfo("GET", auth, auth.PathAndQuery, headers, null);
+				response = this.RelyingParty.GetResponse(clientResponseInfo);
 			} else {
-				ModelState.AddModelError("openid_identifier", "This doesn't look like a valid OpenID.");
+				response = this.RelyingParty.GetResponse();
 			}
-
-			return RedirectToAction("Edit", "Account");
-		}
-
-		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
-		public ActionResult AddAuthenticationTokenReturnTo(string openid_identifier) {
-			var response = this.RelyingParty.GetResponse();
 			if (response != null) {
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
-						Database.LoggedInUser.AuthenticationTokens.Add(new AuthenticationToken {
-							ClaimedIdentifier = response.ClaimedIdentifier,
-							FriendlyIdentifier = response.FriendlyIdentifierForDisplay,
-						});
-						Database.DataContext.SaveChanges();
+						string identifierString = response.ClaimedIdentifier;
+						var existing = Database.DataContext.AuthenticationTokens.Include("User").FirstOrDefault(token => token.ClaimedIdentifier == identifierString);
+						if (existing == null) {
+							Database.LoggedInUser.AuthenticationTokens.Add(new AuthenticationToken {
+								ClaimedIdentifier = response.ClaimedIdentifier,
+								FriendlyIdentifier = response.FriendlyIdentifierForDisplay,
+							});
+							Database.DataContext.SaveChanges();
+						} else {
+							if (existing.User != Database.LoggedInUser) {
+								// The supplied token is already bound to a different user account.
+								// TODO: communicate the problem to the user.
+							}
+						}
 						break;
 					default:
 						break;

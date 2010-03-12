@@ -100,12 +100,14 @@ window.openid_trace = {1}; // causes lots of messages",
 
 			blockBuilder.WriteLine(@"	window.postLoginAssertion = function (positiveAssertion) {{
 		$('#{0}')[0].setAttribute('value', positiveAssertion);
-		if (!$('#ReturnUrl')[0].value) {{ // popups have no ReturnUrl predefined, but full page LogOn does.
-			$('#ReturnUrl')[0].setAttribute('value', window.parent.location.href);
+		if ($('#{1}')[0] && !$('#{1}')[0].value) {{ // popups have no ReturnUrl predefined, but full page LogOn does.
+			$('#{1}')[0].setAttribute('value', window.parent.location.href);
 		}}
-		document.forms[0].submit();
+		document.forms[{2}].submit();
 	}};",
-				additionalOptions.AssertionHiddenFieldId);
+				additionalOptions.AssertionHiddenFieldId,
+				additionalOptions.ReturnUrlHiddenFieldId,
+				additionalOptions.FormIndex);
 
 			blockBuilder.WriteLine(@"	$(function () {{
 		var box = document.getElementsByName('openid_identifier')[0];
