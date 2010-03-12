@@ -22,21 +22,32 @@ namespace DotNetOpenAuth.Mvc {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	public static class OpenIdHelper {
-		public static string OpenIdSelectorScripts(this HtmlHelper html, Page page, OpenIdSelectorOptions options) {
+		public static string OpenIdSelectorScripts(this HtmlHelper html, Page page) {
+			return OpenIdSelectorScripts(html, page, null, null);
+		}
+	
+		public static string OpenIdSelectorScripts(this HtmlHelper html, Page page, OpenIdSelector selectorOptions, OpenIdAjaxOptions additionalOptions) {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Requires<ArgumentNullException>(page != null);
-			Contract.Requires<ArgumentNullException>(options != null);
 			Contract.Ensures(Contract.Result<string>() != null);
+
+			if (selectorOptions == null) {
+				selectorOptions = new OpenId.RelyingParty.OpenIdSelector();
+			}
+
+			if (additionalOptions == null) {
+				additionalOptions = new OpenIdAjaxOptions();
+			}
 
 			StringWriter result = new StringWriter();
 
-			if (options.ShowDiagnosticIFrame || options.ShowDiagnosticTrace) {
+			if (additionalOptions.ShowDiagnosticIFrame || additionalOptions.ShowDiagnosticTrace) {
 				result.WriteScriptBlock(string.Format(
 					CultureInfo.InvariantCulture,
 @"window.openid_visible_iframe = {0}; // causes the hidden iframe to show up
 window.openid_trace = {1}; // causes lots of messages",
-					options.ShowDiagnosticIFrame ? "true" : "false",
-					options.ShowDiagnosticTrace ? "true" : "false"));
+					additionalOptions.ShowDiagnosticIFrame ? "true" : "false",
+					additionalOptions.ShowDiagnosticTrace ? "true" : "false"));
 			}
 			result.WriteScriptTags(page, new[] {
 				OpenIdRelyingPartyControlBase.EmbeddedJavascriptResource,
@@ -44,12 +55,12 @@ window.openid_trace = {1}; // causes lots of messages",
 				OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName,
 			});
 
-			if (options.DownloadYahooUILibrary) {
+			if (selectorOptions.DownloadYahooUILibrary) {
 			result.WriteScriptTags(new[] { "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js" });
 			}
 
 			var blockBuilder = new StringWriter();
-			if (options.DownloadYahooUILibrary) {
+			if (selectorOptions.DownloadYahooUILibrary) {
 				blockBuilder.WriteLine(@"	try {
 		if (YAHOO) {
 			var loader = new YAHOO.util.YUILoader({
@@ -94,38 +105,34 @@ window.openid_trace = {1}; // causes lots of messages",
 		}}
 		document.forms[0].submit();
 	}};",
-				options.AssertionHiddenFieldId);
+				additionalOptions.AssertionHiddenFieldId);
 
 			blockBuilder.WriteLine(@"	$(function () {{
 		var box = document.getElementsByName('openid_identifier')[0];
-		initAjaxOpenId(
-			box,
-			{0},
-			{1},
-			{2},
-			{3},
-			3, // throttle
-			8000, // timeout
+		initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5},
 			null, // js function to invoke on receiving a positive assertion
-			'LOG IN',
-			'Click here to log in using a pop-up window.',
-			true, // ShowLogOnPostBackButton
-			'Click here to log in immediately.',
-			'RETRY',
-			'Retry a failed identifier discovery.',
-			'Discovering/authenticating',
-			'Please correct errors in OpenID identifier and allow login to complete before submitting.',
-			'Please wait for login to complete.',
-			'Authenticated by {{0}}.',
-			'Authenticated as {{0}}.',
-			'Authentication failed.',
+			{6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17},
 			false, // auto postback
 			null); // PostBackEventReference (unused in MVC)
 	}});",
 				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdTextBox.EmbeddedLogoResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName)),
 				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)));
+				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)),
+				selectorOptions.Throttle,
+				selectorOptions.Timeout.TotalMilliseconds,
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnText),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnToolTip),
+				selectorOptions.TextBox.ShowLogOnPostBackButton ? "true" : "false",
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnPostBackToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.RetryText),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.RetryToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.BusyToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.IdentifierRequiredMessage),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnInProgressMessage),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticationSucceededToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticatedAsToolTip),
+				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticationFailedToolTip));
 
 			result.WriteScriptBlock(blockBuilder.ToString());
 			result.WriteScriptTags(page, OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName);

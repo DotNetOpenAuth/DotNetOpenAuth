@@ -3,4 +3,4 @@
 <script type="text/javascript" src='<%= Url.Content("~/Scripts/MicrosoftAjax.js") %>'></script>
 <script type="text/javascript" src='<%= Url.Content("~/Scripts/MicrosoftMvcAjax.js") %>'></script>
 <script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery.cookie.js") %>'></script>
-<%= Html.OpenIdSelectorScripts(this.Page, new OpenIdSelectorOptions { })%>
+<%= Html.OpenIdSelectorScripts(this.Page)%>

@@ -97,6 +97,50 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public event EventHandler<TokenProcessingErrorEventArgs> TokenProcessingError;
 
 		/// <summary>
+		/// Gets or sets the text box where applicable.
+		/// </summary>
+		public OpenIdAjaxTextBox TextBox {
+			get {
+				this.EnsureChildControlsAreCreatedSafe();
+				return this.textBox;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of OpenID Providers to simultaneously try to authenticate with.
+		/// </summary>
+		[Browsable(true), DefaultValue(OpenIdAjaxTextBox.ThrottleDefault), Category(BehaviorCategory)]
+		[Description("The maximum number of OpenID Providers to simultaneously try to authenticate with.")]
+		public int Throttle {
+			get {
+				this.EnsureChildControlsAreCreatedSafe();
+				return this.textBox.Throttle;
+			}
+
+			set {
+				this.EnsureChildControlsAreCreatedSafe();
+				this.textBox.Throttle = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.
+		/// </summary>
+		[Browsable(true), DefaultValue(typeof(TimeSpan), "00:00:08"), Category(BehaviorCategory)]
+		[Description("The time duration for the AJAX control to wait for an OP to respond before reporting failure to the user.")]
+		public TimeSpan Timeout {
+			get {
+				this.EnsureChildControlsAreCreatedSafe();
+				return this.textBox.Timeout;
+			}
+
+			set {
+				this.EnsureChildControlsAreCreatedSafe();
+				this.textBox.Timeout = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the tool tip text that appears on the green checkmark when authentication succeeds.
 		/// </summary>
 		[Bindable(true), DefaultValue(AuthenticatedAsToolTipDefault), Localizable(true), Category(AppearanceCategory)]

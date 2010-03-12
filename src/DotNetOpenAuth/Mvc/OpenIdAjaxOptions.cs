@@ -10,13 +10,10 @@ namespace DotNetOpenAuth.Mvc {
 	using System.Linq;
 	using System.Text;
 
-	public class OpenIdSelectorOptions {
-		public OpenIdSelectorOptions() {
-			this.DownloadYahooUILibrary = true;
+	public class OpenIdAjaxOptions {
+		public OpenIdAjaxOptions() {
 			this.AssertionHiddenFieldId = "openid_openidAuthData";
 		}
-
-		public bool DownloadYahooUILibrary { get; set; }
 
 		public string AssertionHiddenFieldId { get; set; }
 

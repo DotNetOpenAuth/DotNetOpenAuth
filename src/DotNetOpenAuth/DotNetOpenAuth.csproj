@@ -303,7 +303,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="Mvc\OpenIdHelper.cs" />
-    <Compile Include="Mvc\OpenIdSelectorOptions.cs" />
+    <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
