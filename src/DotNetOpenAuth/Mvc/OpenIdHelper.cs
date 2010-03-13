@@ -27,6 +27,23 @@ namespace DotNetOpenAuth.Mvc {
 	/// </summary>
 	public static class OpenIdHelper {
 		/// <summary>
+		/// Emits a series of stylesheet import tags to support the AJAX OpenID Selector.
+		/// </summary>
+		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
+		/// <param name="page">The page being rendered.</param>
+		/// <returns>HTML that should be sent directly to the browser.</returns>
+		public static string OpenIdSelectorStyles(this HtmlHelper html, Page page) {
+			Contract.Requires<ArgumentNullException>(html != null);
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			StringWriter result = new StringWriter();
+			result.WriteStylesheetLink(page, OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName);
+			result.WriteStylesheetLink(page, OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedStylesheetResourceName);
+			return result.ToString();
+		}
+
+		/// <summary>
 		/// Emits a series of script import tags and some inline script to support the AJAX OpenID Selector.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
@@ -344,6 +361,10 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="page">The page being rendered.</param>
 		/// <param name="resourceName">Name of the resource.</param>
 		private static void WriteScriptTags(this TextWriter writer, Page page, string resourceName) {
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(resourceName));
+
 			WriteScriptTags(writer, page, new[] { resourceName });
 		}
 
@@ -367,10 +388,39 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="script">The script to inline on the page.</param>
 		private static void WriteScriptBlock(this TextWriter writer, string script) {
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(script));
+
 			writer.WriteLine("<script type='text/javascript' language='javascript'><!--");
 			writer.WriteLine("//<![CDATA[");
 			writer.WriteLine(script);
 			writer.WriteLine("//]]>--></script>");
+		}
+
+		/// <summary>
+		/// Writes a given CSS link.
+		/// </summary>
+		/// <param name="writer">The writer to emit the tags to.</param>
+		/// <param name="page">The page being rendered.</param>
+		/// <param name="resourceName">Name of the resource containing the CSS content.</param>
+		private static void WriteStylesheetLink(this TextWriter writer, Page page, string resourceName) {
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Requires<ArgumentNullException>(page != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(resourceName));
+
+			WriteStylesheetLink(writer, page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyAjaxControlBase), resourceName));
+		}
+
+		/// <summary>
+		/// Writes a given CSS link.
+		/// </summary>
+		/// <param name="writer">The writer to emit the tags to.</param>
+		/// <param name="stylesheet">The stylesheet to link in.</param>
+		private static void WriteStylesheetLink(this TextWriter writer, string stylesheet) {
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(stylesheet));
+
+			writer.WriteLine("<link rel='stylesheet' type='text/css' href='{0}' />", stylesheet);
 		}
 	}
 }
