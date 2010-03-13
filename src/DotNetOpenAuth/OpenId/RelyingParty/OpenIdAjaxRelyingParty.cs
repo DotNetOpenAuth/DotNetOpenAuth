@@ -112,9 +112,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Performs discovery on some identifier on behalf of Javascript running on the browser.
+		/// Serializes discovery results on some <i>single</i> identifier on behalf of Javascript running on the browser.
 		/// </summary>
-		/// <param name="requests">The identifier discovery results to serialize as a JSON response.</param>
+		/// <param name="requests">The discovery results from just <i>one</i> identifier to serialize as a JSON response.</param>
 		/// <returns>
 		/// The JSON result to return to the user agent.
 		/// </returns>
@@ -139,36 +139,81 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public OutgoingWebResponse AsAjaxDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
 			Contract.Requires<ArgumentNullException>(requests != null);
 
+			var serializer = new JavaScriptSerializer();
 			return new OutgoingWebResponse {
-				Body = this.AsJsonDiscoveryResult(requests),
+				Body = serializer.Serialize(this.AsJsonDiscoveryResult(requests)),
 			};
+		}
+
+		/// <summary>
+		/// Serializes discovery on a set of identifiers for preloading into an HTML page that carries
+		/// an AJAX-aware OpenID control.
+		/// </summary>
+		/// <param name="requests">The discovery results to serialize as a JSON response.</param>
+		/// <returns>
+		/// The JSON result to return to the user agent.
+		/// </returns>
+		public string AsAjaxPreloadedDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+			Contract.Requires<ArgumentNullException>(requests != null);
+
+			var serializer = new JavaScriptSerializer();
+			string json = serializer.Serialize(this.AsJsonPreloadedDiscoveryResult(requests));
+
+			string script = "window.dnoa_internal.loadPreloadedDiscoveryResults(" + json + ");";
+			return script;
 		}
 
 		/// <summary>
 		/// Converts a sequence of authentication requests to a JSON object for seeding an AJAX-enabled login page.
 		/// </summary>
-		/// <param name="requests">The authentication requests.</param>
-		/// <returns>A JSON string.</returns>
-		private string AsJsonDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+		/// <param name="requests">The discovery results from just <i>one</i> identifier to serialize as a JSON response.</param>
+		/// <returns>A JSON object, not yet serialized.</returns>
+		internal object AsJsonDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+			Contract.Requires<ArgumentNullException>(requests != null);
+
 			requests = requests.CacheGeneratedResults();
 
-			JavaScriptSerializer serializer = new JavaScriptSerializer();
-			string json;
 			if (requests.Any()) {
-				json = serializer.Serialize(new {
+				return new {
 					claimedIdentifier = requests.First().ClaimedIdentifier,
 					requests = requests.Select(req => new {
 						endpoint = req.Provider.Uri.AbsoluteUri,
 						immediate = this.GetRedirectUrl(req, true),
 						setup = this.GetRedirectUrl(req, false),
 					}).ToArray()
-				});
+				};
 			} else {
-				json = serializer.Serialize(new {
+				return new {
 					requests = new object[0],
 					error = OpenIdStrings.OpenIdEndpointNotFound,
-				});
+				};
 			}
+		}
+
+		/// <summary>
+		/// Serializes discovery on a set of identifiers for preloading into an HTML page that carries
+		/// an AJAX-aware OpenID control.
+		/// </summary>
+		/// <param name="requests">The discovery results to serialize as a JSON response.</param>
+		/// <returns>
+		/// A JSON object, not yet serialized to a string.
+		/// </returns>
+		private object AsJsonPreloadedDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+			Contract.Requires<ArgumentNullException>(requests != null);
+
+			// We prepare a JSON object with this interface:
+			// Array discoveryWrappers;
+			// Where each element in the above array has this interface:
+			// class discoveryWrapper {
+			//    string userSuppliedIdentifier;
+			//    jsonResponse discoveryResult; // contains result of call to SerializeDiscoveryAsJson(Identifier)
+			// }
+			var json = (from request in requests
+						group request by request.DiscoveryResult.UserSuppliedIdentifier into requestsByIdentifier
+						select new {
+							userSuppliedIdentifier = requestsByIdentifier.Key.ToString(),
+							discoveryResult = this.AsJsonDiscoveryResult(requestsByIdentifier),
+						}).ToArray();
 
 			return json;
 		}
