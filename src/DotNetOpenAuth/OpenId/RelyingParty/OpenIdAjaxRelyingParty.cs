@@ -51,6 +51,72 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Generates AJAX-ready authentication requests that can satisfy the requirements of some OpenID Identifier.
+		/// </summary>
+		/// <param name="userSuppliedIdentifier">The Identifier supplied by the user.  This may be a URL, an XRI or i-name.</param>
+		/// <param name="realm">The shorest URL that describes this relying party web site's address.
+		/// For example, if your login page is found at https://www.example.com/login.aspx,
+		/// your realm would typically be https://www.example.com/.</param>
+		/// <param name="returnToUrl">The URL of the login page, or the page prepared to receive authentication
+		/// responses from the OpenID Provider.</param>
+		/// <returns>
+		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
+		/// Never null, but may be empty.
+		/// </returns>
+		/// <remarks>
+		/// 	<para>Any individual generated request can satisfy the authentication.
+		/// The generated requests are sorted in preferred order.
+		/// Each request is generated as it is enumerated to.  Associations are created only as
+		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
+		/// 	<para>No exception is thrown if no OpenID endpoints were discovered.
+		/// An empty enumerable is returned instead.</para>
+		/// </remarks>
+		public override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+			var requests = base.CreateRequests(userSuppliedIdentifier, realm, returnToUrl);
+
+			// Alter the requests so that have AJAX characteristics.
+			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
+			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
+			// and don't try it multiple times.
+			requests = requests.Distinct(DuplicateRequestedHostsComparer.Instance);
+
+			// Configure each generated request.
+			int reqIndex = 0;
+			foreach (var req in requests) {
+				// Inform ourselves in return_to that we're in a popup.
+				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyControlBase.UIPopupCallbackKey, "1");
+
+				if (req.DiscoveryResult.IsExtensionSupported<UIRequest>()) {
+					// Inform the OP that we'll be using a popup window consistent with the UI extension.
+					req.AddExtension(new UIRequest());
+
+					// Provide a hint for the client javascript about whether the OP supports the UI extension.
+					// This is so the window can be made the correct size for the extension.
+					// If the OP doesn't advertise support for the extension, the javascript will use
+					// a bigger popup window.
+					req.SetUntrustedCallbackArgument(OpenIdRelyingPartyControlBase.PopupUISupportedJSHint, "1");
+				}
+
+				req.SetUntrustedCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
+
+				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
+				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
+					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
+				}
+
+				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
+				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
+				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyAjaxControlBase.OPEndpointParameterName, req.Provider.Uri.AbsoluteUri);
+				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyAjaxControlBase.ClaimedIdParameterName, (string)req.ClaimedIdentifier ?? string.Empty);
+
+				// Inform ourselves in return_to that we're in a popup or iframe.
+				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyAjaxControlBase.UIPopupCallbackKey, "1");
+
+				yield return req;
+			}
+		}
+
+		/// <summary>
 		/// Performs discovery on some identifier on behalf of Javascript running on the browser.
 		/// </summary>
 		/// <param name="requests">The identifier discovery results to serialize as a JSON response.</param>
@@ -78,10 +144,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public OutgoingWebResponse AsAjaxDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
 			Contract.Requires<ArgumentNullException>(requests != null);
 
-			string json = this.AsJsonDiscoveryResult(this.AsPopups(requests));
-			OutgoingWebResponse response = new OutgoingWebResponse();
-			response.Body = json;
-			return response;
+			return new OutgoingWebResponse {
+				Body = this.AsJsonDiscoveryResult(requests),
+			};
 		}
 
 		/// <summary>
@@ -113,6 +178,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public OutgoingWebResponse ProcessAjaxOpenIdResponse() {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+
 			return this.ProcessAjaxOpenIdResponse(this.Channel.GetRequestFromContext());
 		}
 
@@ -123,6 +190,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The HTTP response to send to this HTTP request.</returns>
 		public OutgoingWebResponse ProcessAjaxOpenIdResponse(HttpRequestInfo request) {
 			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			string extensionsJson = null;
 			var authResponse = this.nonVerifyingRelyingParty.GetResponse();
@@ -212,68 +280,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Prepares authentication requests for use as AJAX-initiated logins.
-		/// </summary>
-		/// <param name="requests">The authentication requests to prepare for AJAX.</param>
-		/// <returns>The AJAX-ified authentication requests</returns>
-		/// <remarks>
-		/// The original requests are altered as part of executing this method.
-		/// </remarks>
-		private IEnumerable<IAuthenticationRequest> AsPopups(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires<ArgumentNullException>(requests != null);
-
-			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
-			// Since we're gathering OPs to try one after the other, just take the first choice of each OP
-			// and don't try it multiple times.
-			requests = requests.Distinct(DuplicateRequestedHostsComparer.Instance);
-
-			// Configure each generated request.
-			foreach (var req in requests) {
-				// Inform ourselves in return_to that we're in a popup.
-				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyControlBase.UIPopupCallbackKey, "1");
-
-				if (req.DiscoveryResult.IsExtensionSupported<UIRequest>()) {
-					// Inform the OP that we'll be using a popup window consistent with the UI extension.
-					req.AddExtension(new UIRequest());
-
-					// Provide a hint for the client javascript about whether the OP supports the UI extension.
-					// This is so the window can be made the correct size for the extension.
-					// If the OP doesn't advertise support for the extension, the javascript will use
-					// a bigger popup window.
-					req.SetUntrustedCallbackArgument(OpenIdRelyingPartyControlBase.PopupUISupportedJSHint, "1");
-				}
-
-				yield return req;
-			}
-		}
-
-		/// <summary>
 		/// Converts a sequence of authentication requests to a JSON object for seeding an AJAX-enabled login page.
 		/// </summary>
 		/// <param name="requests">The authentication requests.</param>
 		/// <returns>A JSON string.</returns>
 		private string AsJsonDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
 			requests = requests.CacheGeneratedResults();
-
-			// Configure each generated request.
-			int reqIndex = 0;
-			foreach (var req in requests) {
-				req.SetUntrustedCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
-
-				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
-				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
-					Identifier userSuppliedIdentifier = ((AuthenticationRequest)req).DiscoveryResult.UserSuppliedIdentifier;
-					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
-				}
-
-				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
-				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
-				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyAjaxControlBase.OPEndpointParameterName, req.Provider.Uri.AbsoluteUri);
-				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyAjaxControlBase.ClaimedIdParameterName, (string)req.ClaimedIdentifier ?? string.Empty);
-
-				// Inform ourselves in return_to that we're in a popup or iframe.
-				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyAjaxControlBase.UIPopupCallbackKey, "1");
-			}
 
 			JavaScriptSerializer serializer = new JavaScriptSerializer();
 			string json;
