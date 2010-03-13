@@ -124,6 +124,10 @@ window.openid_trace = {1}; // causes lots of messages";
 				OpenIdRelyingPartyAjaxControlBase.MaxPositiveAssertionLifetimeJsName,
 				assertionLifetimeInMilliseconds.ToString(CultureInfo.InvariantCulture));
 
+			if (additionalOptions.PreloadedDiscoveryResults != null) {
+				blockBuilder.WriteLine(additionalOptions.PreloadedDiscoveryResults);
+			}
+
 			string discoverUrl = VirtualPathUtility.AppendTrailingSlash(HttpContext.Current.Request.ApplicationPath) + html.RouteCollection["OpenIdDiscover"].GetVirtualPath(html.ViewContext.RequestContext, new RouteValueDictionary(new { identifier = "xxx" })).VirtualPath;
 			string blockFormat = @"	{0} = function (argument, resultFunction, errorCallback) {{
 		jQuery.ajax({{

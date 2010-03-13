@@ -41,6 +41,11 @@ namespace DotNetOpenAuth.Mvc {
 		public int FormIndex { get; set; }
 
 		/// <summary>
+		/// Gets or sets the preloaded discovery results.
+		/// </summary>
+		public string PreloadedDiscoveryResults { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to print diagnostic trace messages in the browser.
 		/// </summary>
 		public bool ShowDiagnosticTrace { get; set; }

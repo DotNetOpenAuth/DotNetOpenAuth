@@ -80,6 +80,7 @@ namespace MvcRelyingParty.Controllers {
 		/// </summary>
 		/// <returns>The action result.</returns>
 		public ActionResult LogOn() {
+			this.PreloadDiscoveryResults();
 			return View();
 		}
 
@@ -88,6 +89,7 @@ namespace MvcRelyingParty.Controllers {
 		/// </summary>
 		/// <returns>The action result.</returns>
 		public ActionResult LogOnPopUp() {
+			this.PreloadDiscoveryResults();
 			return View();
 		}
 
@@ -206,6 +208,18 @@ namespace MvcRelyingParty.Controllers {
 		public ActionResult LogOff() {
 			this.FormsAuth.SignOut();
 			return RedirectToAction("Index", "Home");
+		}
+
+		/// <summary>
+		/// Preloads discovery results for the OP buttons we display on the selector in the ViewData.
+		/// </summary>
+		private void PreloadDiscoveryResults() {
+			this.ViewData["PreloadedDiscoveryResults"] = this.RelyingParty.PreloadDiscoveryResults(
+				Realm.AutoDetect,
+				Url.ActionFull("PopUpReturnTo"),
+				this.PrivacyPolicyUrl,
+				"https://me.yahoo.com/",
+				"https://www.google.com/accounts/o8/id");
 		}
 	}
 }

@@ -18,6 +18,8 @@
 
 		ActionResult AjaxDiscovery(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy);
 
+		string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers);
+
 		ActionResult ProcessAjaxOpenIdResponse();
 
 		IAuthenticationResponse GetResponse();
@@ -84,6 +86,11 @@
 		public ActionResult AjaxDiscovery(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
 			return relyingParty.AsAjaxDiscoveryResult(
 				this.CreateRequests(userSuppliedIdentifier, realm, returnTo, privacyPolicy)).AsActionResult();
+		}
+
+		public string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers) {
+			return relyingParty.AsAjaxPreloadedDiscoveryResult(
+				identifiers.Select(id => this.CreateRequests(id, realm, returnTo, privacyPolicy)).Flatten());
 		}
 
 		public ActionResult ProcessAjaxOpenIdResponse() {

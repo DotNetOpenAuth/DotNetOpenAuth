@@ -176,6 +176,20 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Flattens the specified sequence of sequences.
+		/// </summary>
+		/// <typeparam name="T">The type of element contained in the sequence.</typeparam>
+		/// <param name="sequence">The sequence of sequences to flatten.</param>
+		/// <returns>A sequence of the contained items.</returns>
+		public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> sequence) {
+			foreach (IEnumerable<T> subsequence in sequence) {
+				foreach (T item in subsequence) {
+					yield return item;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
@@ -470,20 +484,6 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return newRequest;
-		}
-
-		/// <summary>
-		/// Flattens the specified sequence of sequences.
-		/// </summary>
-		/// <typeparam name="T">The type of element contained in the sequence.</typeparam>
-		/// <param name="sequence">The sequence of sequences to flatten.</param>
-		/// <returns>A sequence of the contained items.</returns>
-		internal static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> sequence) {
-			foreach (IEnumerable<T> subsequence in sequence) {
-				foreach (T item in subsequence) {
-					yield return item;
-				}
-			}
 		}
 
 		/// <summary>

@@ -3,4 +3,9 @@
 <script type="text/javascript" src='<%= Url.Content("~/Scripts/MicrosoftAjax.js") %>'></script>
 <script type="text/javascript" src='<%= Url.Content("~/Scripts/MicrosoftMvcAjax.js") %>'></script>
 <script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery.cookie.js") %>'></script>
-<%= Html.OpenIdSelectorScripts(this.Page)%>
+<%
+	var options = new OpenIdAjaxOptions {
+		PreloadedDiscoveryResults = (string)this.ViewData["PreloadedDiscoveryResults"],
+	};
+%>
+<%= Html.OpenIdSelectorScripts(this.Page, null, options)%>
