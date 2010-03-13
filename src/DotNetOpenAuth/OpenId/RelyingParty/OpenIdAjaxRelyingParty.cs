@@ -28,6 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdAjaxRelyingParty"/> class.
 		/// </summary>
 		public OpenIdAjaxRelyingParty() {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		/// <summary>
@@ -36,6 +37,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
 		public OpenIdAjaxRelyingParty(IRelyingPartyApplicationStore applicationStore)
 			: base(applicationStore) {
+			Reporting.RecordFeatureUse(this);
 		}
 
 		/// <summary>

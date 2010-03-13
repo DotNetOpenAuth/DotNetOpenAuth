@@ -184,6 +184,8 @@ window.openid_trace = {1}; // causes lots of messages";
 
 			result.WriteScriptBlock(blockBuilder.ToString());
 			result.WriteScriptTags(page, OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName);
+
+			Reporting.RecordFeatureUse("MVC " + typeof(OpenIdSelector).Name);
 			return result.ToString();
 		}
 
