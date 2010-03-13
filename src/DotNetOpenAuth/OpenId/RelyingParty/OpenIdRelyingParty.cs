@@ -598,6 +598,26 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return this.ProcessResponseFromPopup(request, null);
 		}
 
+		/// <summary>
+		/// Allows an OpenID extension to read data out of an unverified positive authentication assertion
+		/// and send it down to the client browser so that Javascript running on the page can perform
+		/// some preprocessing on the extension data.
+		/// </summary>
+		/// <typeparam name="T">The extension <i>response</i> type that will read data from the assertion.</typeparam>
+		/// <param name="propertyName">The property name on the openid_identifier input box object that will be used to store the extension data.  For example: sreg</param>
+		/// <remarks>
+		/// This method should be called before <see cref="ProcessResponseFromPopup()"/>.
+		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
+		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
+			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
+			foreach (var ext in this.clientScriptExtensions.Keys) {
+				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);
+			}
+			this.clientScriptExtensions.Add(typeof(T), propertyName);
+		}
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -642,26 +662,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 			rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
 			return rp;
-		}
-
-		/// <summary>
-		/// Allows an OpenID extension to read data out of an unverified positive authentication assertion
-		/// and send it down to the client browser so that Javascript running on the page can perform
-		/// some preprocessing on the extension data.
-		/// </summary>
-		/// <typeparam name="T">The extension <i>response</i> type that will read data from the assertion.</typeparam>
-		/// <param name="propertyName">The property name on the openid_identifier input box object that will be used to store the extension data.  For example: sreg</param>
-		/// <remarks>
-		/// This method should be called before <see cref="ProcessResponseFromPopup()"/>.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
-		internal void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
-			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
-			foreach (var ext in this.clientScriptExtensions.Keys) {
-				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);
-			}
-			this.clientScriptExtensions.Add(typeof(T), propertyName);
 		}
 
 		/// <summary>
