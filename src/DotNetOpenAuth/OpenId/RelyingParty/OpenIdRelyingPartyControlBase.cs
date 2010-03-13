@@ -297,10 +297,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// heavily trafficked web pages.
 		/// </remarks>
 		[Browsable(false)]
-		public OpenIdRelyingParty RelyingParty {
+		public virtual OpenIdRelyingParty RelyingParty {
 			get {
 				if (this.relyingParty == null) {
 					this.relyingParty = this.CreateRelyingParty();
+					this.ConfigureRelyingParty(this.relyingParty);
 					this.relyingPartyOwned = true;
 				}
 				return this.relyingParty;
@@ -560,8 +561,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected internal virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 
-			// Delegate to a private method to keep 'yield return' and Code Contract separate.
-			return this.CreateRequestsCore(identifier);
+			// If this control is actually a member of another OpenID RP control,
+			// delegate creation of requests to the parent control.
+			var parentOwner = this.ParentControls.OfType<OpenIdRelyingPartyControlBase>().FirstOrDefault();
+			if (parentOwner != null) {
+				return parentOwner.CreateRequests(identifier);
+			} else {
+				// Delegate to a private method to keep 'yield return' and Code Contract separate.
+				return this.CreateRequestsCore(identifier);
+			}
 		}
 
 		/// <summary>
@@ -635,6 +643,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					response != null ? response.Status.ToString() : "nothing");
 				this.ProcessResponse(response);
 			}
+		}
+
+		/// <summary>
+		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
+		/// </summary>
+		protected virtual void ScriptClosingPopupOrIFrame() {
+			this.RelyingParty.ProcessResponseFromPopup();
 		}
 
 		/// <summary>
@@ -773,29 +788,32 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the relying party instance used to generate authentication requests.
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
-		protected virtual OpenIdRelyingParty CreateRelyingParty() {
-			return this.CreateRelyingParty(true);
+		protected OpenIdRelyingParty CreateRelyingParty() {
+			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
+			return this.CreateRelyingParty(store);
 		}
 
 		/// <summary>
 		/// Creates the relying party instance used to generate authentication requests.
 		/// </summary>
-		/// <param name="verifySignature">
-		/// A value indicating whether message protections should be applied to the processed messages.
-		/// Use <c>false</c> to postpone verification to a later time without invalidating nonces.
-		/// </param>
+		/// <param name="store">The store to pass to the relying party constructor.</param>
 		/// <returns>The instantiated relying party.</returns>
-		protected virtual OpenIdRelyingParty CreateRelyingParty(bool verifySignature) {
-			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
-			var rp = verifySignature ? new OpenIdRelyingParty(store) : OpenIdRelyingParty.CreateNonVerifying();
+		protected virtual OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store) {
+			return new OpenIdRelyingParty(store);
+		}
+
+		/// <summary>
+		/// Configures the relying party.
+		/// </summary>
+		/// <param name="relyingParty">The relying party.</param>
+		protected virtual void ConfigureRelyingParty(OpenIdRelyingParty relyingParty) {
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
 			// Only set RequireSsl to true, as we don't want to override 
 			// a .config setting of true with false.
 			if (this.RequireSsl) {
-				rp.SecuritySettings.RequireSsl = true;
+				relyingParty.SecuritySettings.RequireSsl = true;
 			}
-
-			return rp;
 		}
 
 		/// <summary>
@@ -842,21 +860,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.AddAttribute("onMouseOver", "window.status = " + MessagingUtilities.GetSafeJavascriptValue(windowStatus));
 				writer.AddAttribute("onMouseOut", "window.status = null");
 			}
-		}
-
-		/// <summary>
-		/// Wires the popup window to close itself and pass the authentication result to the parent window.
-		/// </summary>
-		protected virtual void ScriptClosingPopupOrIFrame() {
-			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL);");
-			startupScript.AppendLine("window.close();");
-
-			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
-
-			// TODO: alternately we should probably take over rendering this page here to avoid
-			// a lot of unnecessary work on the server and possible momentary display of the 
-			// page in the popup window.
 		}
 
 		/// <summary>
@@ -943,7 +946,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 					if (req.DiscoveryResult.IsExtensionSupported<UIRequest>()) {
 						// Inform the OP that we'll be using a popup window consistent with the UI extension.
-						req.AddExtension(new UIRequest());
+						// But beware that the extension MAY have already been added if we're using
+						// the OpenIdAjaxRelyingParty class.
+						if (!((AuthenticationRequest)req).Extensions.OfType<UIRequest>().Any()) {
+							req.AddExtension(new UIRequest());
+						}
 
 						// Provide a hint for the client javascript about whether the OP supports the UI extension.
 						// This is so the window can be made the correct size for the extension.

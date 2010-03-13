@@ -87,7 +87,7 @@
 		}
 
 		public ActionResult ProcessAjaxOpenIdResponse() {
-			return relyingParty.ProcessAjaxOpenIdResponse().AsActionResult();
+			return relyingParty.ProcessResponseFromPopup().AsActionResult();
 		}
 
 		public IAuthenticationResponse GetResponse() {

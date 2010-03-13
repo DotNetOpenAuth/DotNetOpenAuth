@@ -25,18 +25,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public class OpenIdAjaxRelyingParty : OpenIdRelyingParty {
 		/// <summary>
-		/// The <see cref="OpenIdRelyingParty"/> instance used to process authentication responses
-		/// without verifying the assertion or consuming nonces.
-		/// </summary>
-		private OpenIdRelyingParty nonVerifyingRelyingParty = OpenIdRelyingParty.CreateNonVerifying();
-
-		/// <summary>
-		/// A dictionary of extension response types and the javascript member 
-		/// name to map them to on the user agent.
-		/// </summary>
-		private Dictionary<Type, string> clientScriptExtensions = new Dictionary<Type, string>();
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdAjaxRelyingParty"/> class.
 		/// </summary>
 		public OpenIdAjaxRelyingParty() {
@@ -112,6 +100,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// Inform ourselves in return_to that we're in a popup or iframe.
 				req.SetUntrustedCallbackArgument(OpenIdRelyingPartyAjaxControlBase.UIPopupCallbackKey, "1");
 
+				// We append a # at the end so that if the OP happens to support it,
+				// the OpenID response "query string" is appended after the hash rather than before, resulting in the
+				// browser being super-speedy in closing the popup window since it doesn't try to pull a newer version
+				// of the static resource down from the server merely because of a changed URL.
+				// http://www.nabble.com/Re:-Defining-how-OpenID-should-behave-with-fragments-in-the-return_to-url-p22694227.html
+				////TODO:
+
 				yield return req;
 			}
 		}
@@ -147,136 +142,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return new OutgoingWebResponse {
 				Body = this.AsJsonDiscoveryResult(requests),
 			};
-		}
-
-		/// <summary>
-		/// Allows an OpenID extension to read data out of an unverified positive authentication assertion
-		/// and send it down to the client browser so that Javascript running on the page can perform
-		/// some preprocessing on the extension data.
-		/// </summary>
-		/// <typeparam name="T">The extension <i>response</i> type that will read data from the assertion.</typeparam>
-		/// <param name="propertyName">The property name on the openid_identifier input box object that will be used to store the extension data.  For example: sreg</param>
-		/// <remarks>
-		/// This method should be called before <see cref="ProcessAjaxOpenIdResponse()"/>.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
-		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
-			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
-			foreach (var ext in this.clientScriptExtensions.Keys) {
-				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);
-			}
-			this.clientScriptExtensions.Add(typeof(T), propertyName);
-		}
-
-		/// <summary>
-		/// Processes the response received in a popup window or iframe to an AJAX-directed OpenID authentication.
-		/// </summary>
-		/// <returns>The HTTP response to send to this HTTP request.</returns>
-		/// <remarks>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
-		/// </remarks>
-		public OutgoingWebResponse ProcessAjaxOpenIdResponse() {
-			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
-
-			return this.ProcessAjaxOpenIdResponse(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Processes the response received in a popup window or iframe to an AJAX-directed OpenID authentication.
-		/// </summary>
-		/// <param name="request">The incoming HTTP request that is expected to carry an OpenID authentication response.</param>
-		/// <returns>The HTTP response to send to this HTTP request.</returns>
-		public OutgoingWebResponse ProcessAjaxOpenIdResponse(HttpRequestInfo request) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
-
-			string extensionsJson = null;
-			var authResponse = this.nonVerifyingRelyingParty.GetResponse();
-			ErrorUtilities.VerifyProtocol(authResponse != null, "OpenID popup window or iframe did not recognize an OpenID response in the request.");
-			Logger.OpenId.DebugFormat("AJAX (iframe) callback from OP: {0}", request.Url);
-			Logger.Controls.DebugFormat(
-				"The MVC controller checked for an authentication response from a popup window or iframe using a non-verifying RP and found: {0}",
-				authResponse.Status);
-			if (authResponse.Status == AuthenticationStatus.Authenticated) {
-				var extensionsDictionary = new Dictionary<string, string>();
-				foreach (var pair in this.clientScriptExtensions) {
-					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
-					if (extension == null) {
-						continue;
-					}
-					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
-					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
-					if (!string.IsNullOrEmpty(js)) {
-						extensionsDictionary[pair.Value] = js;
-					}
-				}
-
-				extensionsJson = MessagingUtilities.CreateJsonObject(extensionsDictionary, true);
-			}
-
-			string payload = "document.URL";
-			if (request.HttpMethod == "POST") {
-				// Promote all form variables to the query string, but since it won't be passed
-				// to any server (this is a javascript window-to-window transfer) the length of
-				// it can be arbitrarily long, whereas it was POSTed here probably because it
-				// was too long for HTTP transit.
-				UriBuilder payloadUri = new UriBuilder(request.Url);
-				payloadUri.AppendQueryArgs(request.Form.ToDictionary());
-				payload = MessagingUtilities.GetSafeJavascriptValue(payloadUri.Uri.AbsoluteUri);
-			}
-
-			if (!string.IsNullOrEmpty(extensionsJson)) {
-				payload += ", " + extensionsJson;
-			}
-
-			return InvokeParentPageScript("dnoa_internal.processAuthorizationResult(" + payload + ")");
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing) {
-			this.nonVerifyingRelyingParty.Dispose();
-			base.Dispose(disposing);
-		}
-
-		/// <summary>
-		/// Invokes a method on a parent frame or window and closes the calling popup window if applicable.
-		/// </summary>
-		/// <param name="methodCall">The method to call on the parent window, including
-		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
-		/// <returns>The entire HTTP response to send to the popup window or iframe to perform the invocation.</returns>
-		private static OutgoingWebResponse InvokeParentPageScript(string methodCall) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(methodCall));
-
-			Logger.OpenId.DebugFormat("Sending Javascript callback: {0}", methodCall);
-			StringBuilder builder = new StringBuilder();
-			builder.AppendLine("<html><body><script type='text/javascript' language='javascript'><!--");
-			builder.AppendLine("//<![CDATA[");
-			builder.Append(@"	var inPopup = !window.frameElement;
-	var objSrc = inPopup ? window.opener : window.frameElement;
-");
-
-			// Something about calling objSrc.{0} can somehow cause FireFox to forget about the inPopup variable,
-			// so we have to actually put the test for it ABOVE the call to objSrc.{0} so that it already 
-			// whether to call window.self.close() after the call.
-			string htmlFormat = @"	if (inPopup) {{
-		objSrc.{0};
-		window.self.close();
-	}} else {{
-		objSrc.{0};
-	}}";
-			builder.AppendFormat(CultureInfo.InvariantCulture, htmlFormat, methodCall);
-			builder.AppendLine("//]]>--></script>");
-			builder.AppendLine("</body></html>");
-
-			var response = new OutgoingWebResponse();
-			response.Body = builder.ToString();
-			response.Headers.Add(HttpResponseHeader.ContentType, new ContentType("text/html").ToString());
-			return response;
 		}
 
 		/// <summary>
