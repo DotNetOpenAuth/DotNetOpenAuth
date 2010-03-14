@@ -10,6 +10,20 @@
 				<ClaimsRequested>
 					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
 					<ic:ClaimType Name="http://idmanagement.gov/icam/2009/09/imi_1.0_profile#assurancelevel1" />
+
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality" IsOptional="true"/ />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/country" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/gender" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/homephone" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/postalcode" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/stateorprovince" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/streetaddress" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" IsOptional="true" />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/webpage" IsOptional="true" />
 				</ClaimsRequested>
 				<UnsupportedTemplate>
 					<p>
