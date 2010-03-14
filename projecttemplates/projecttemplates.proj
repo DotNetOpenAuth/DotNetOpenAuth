@@ -3,7 +3,7 @@
 	<Import Project="ProjectTemplates.props"/>
 
 	<PropertyGroup>
-		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">6</ProjectTemplateMaxPath>
+		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">10</ProjectTemplateMaxPath>
 
 		<LayoutDependsOn>
 			BuildUnifiedProduct;

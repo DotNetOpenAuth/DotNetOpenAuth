@@ -302,6 +302,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="Mvc\OpenIdHelper.cs" />
+    <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
@@ -529,7 +531,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
+    <Compile Include="OpenId\RelyingParty\DuplicateRequestedHostsComparer.cs" />
     <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />

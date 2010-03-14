@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
+	using System;
 	using System.ComponentModel;
 	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
@@ -22,6 +23,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		public SelectorProviderButton() {
 			Reporting.RecordFeatureUse(this);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SelectorProviderButton"/> class.
+		/// </summary>
+		/// <param name="providerIdentifier">The OP Identifier.</param>
+		/// <param name="imageUrl">The image to display on the button.</param>
+		public SelectorProviderButton(Identifier providerIdentifier, string imageUrl)
+			: this() {
+			Contract.Requires<ArgumentNullException>(providerIdentifier != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+
+			this.OPIdentifier = providerIdentifier;
+			this.Image = imageUrl;
 		}
 
 		/// <summary>

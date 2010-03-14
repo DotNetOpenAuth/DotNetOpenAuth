@@ -121,7 +121,6 @@
     <Content Include="Global.asax" />
     <Content Include="Views\User\Index.aspx" />
     <Content Include="Views\User\Login.aspx" />
-    <Content Include="Views\User\LoginPopup.aspx" />
     <Content Include="Web.config" />
     <Content Include="Content\Site.css" />
     <Content Include="Views\Home\Index.aspx" />
