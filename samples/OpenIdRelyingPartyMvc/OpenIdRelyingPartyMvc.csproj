@@ -83,7 +83,7 @@
     <Content Include="Content\images\aol.gif" />
     <Content Include="Content\images\facebook.gif" />
     <Content Include="Content\images\google.gif" />
-    <Content Include="Content\images\openid.gif" />
+    <Content Include="Content\images\openid.png" />
     <Content Include="Content\images\openid_small.gif" />
     <Content Include="Content\images\yahoo.gif" />
     <Content Include="Content\scripts\jquery-1.3.1.js" />

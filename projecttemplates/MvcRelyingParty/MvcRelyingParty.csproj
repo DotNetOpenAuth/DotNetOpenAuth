@@ -98,7 +98,7 @@
   <ItemGroup>
     <Content Include="Content\images\google.gif" />
     <Content Include="Content\images\myopenid.png" />
-    <Content Include="Content\images\openid.gif" />
+    <Content Include="Content\images\openid.png" />
     <Content Include="Content\images\verisign.gif" />
     <Content Include="Content\images\yahoo.gif" />
     <Content Include="Content\images\yahoo_login.png" />

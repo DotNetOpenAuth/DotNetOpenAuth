@@ -47,7 +47,7 @@
 						</ClaimsRequested>
 					</InfoCardSelector>
 				</rp:SelectorInfoCardButton>
-				<rp:SelectorOpenIdButton Image="images/openid.gif" />
+				<rp:SelectorOpenIdButton Image="images/openid.png" />
 			</Buttons>
 			<Extensions>
 				<sreg:ClaimsRequest Email="Require" FullName="Request" />
