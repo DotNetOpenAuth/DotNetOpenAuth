@@ -651,7 +651,7 @@ http://opensource.org/licenses/ms-pl.html
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\openid_login.gif" />
+    <EmbeddedResource Include="OpenId\RelyingParty\openid_login.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OpenId\RelyingParty\login_failure.png" />
