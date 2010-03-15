@@ -11,7 +11,7 @@
 					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
 					<ic:ClaimType Name="http://idmanagement.gov/icam/2009/09/imi_1.0_profile#assurancelevel1" />
 
-					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality" IsOptional="true"/ />
+					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/locality" IsOptional="true" />
 					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/country" IsOptional="true" />
 					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth" IsOptional="true" />
 					<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" IsOptional="true" />
