@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Linq;
 	using System.Text;
 	using System.Web;
+	using System.Web.Script.Serialization;
 	using System.Web.UI;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -31,30 +32,30 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal const string EmbeddedAjaxJavascriptResource = Util.DefaultNamespace + ".OpenId.RelyingParty.OpenIdRelyingPartyAjaxControlBase.js";
 
 		/// <summary>
-		/// The name of the javascript function that will initiate a synchronous callback.
+		/// The "dnoa.op_endpoint" string.
 		/// </summary>
-		protected const string CallbackJSFunction = "window.dnoa_internal.callback";
+		internal const string OPEndpointParameterName = OpenIdUtilities.CustomParameterPrefix + "op_endpoint";
 
 		/// <summary>
-		/// The name of the javascript function that will initiate an asynchronous callback.
+		/// The "dnoa.claimed_id" string.
 		/// </summary>
-		protected const string CallbackJSFunctionAsync = "window.dnoa_internal.callbackAsync";
+		internal const string ClaimedIdParameterName = OpenIdUtilities.CustomParameterPrefix + "claimed_id";
 
 		/// <summary>
 		/// The name of the javascript field that stores the maximum time a positive assertion is
 		/// good for before it must be refreshed.
 		/// </summary>
-		private const string MaxPositiveAssertionLifetimeJsName = "window.dnoa_internal.maxPositiveAssertionLifetime";
+		internal const string MaxPositiveAssertionLifetimeJsName = "window.dnoa_internal.maxPositiveAssertionLifetime";
 
 		/// <summary>
-		/// The "dnoa.op_endpoint" string.
+		/// The name of the javascript function that will initiate an asynchronous callback.
 		/// </summary>
-		private const string OPEndpointParameterName = OpenIdUtilities.CustomParameterPrefix + "op_endpoint";
+		protected internal const string CallbackJSFunctionAsync = "window.dnoa_internal.callbackAsync";
 
 		/// <summary>
-		/// The "dnoa.claimed_id" string.
+		/// The name of the javascript function that will initiate a synchronous callback.
 		/// </summary>
-		private const string ClaimedIdParameterName = OpenIdUtilities.CustomParameterPrefix + "claimed_id";
+		protected const string CallbackJSFunction = "window.dnoa_internal.callback";
 
 		#region Property viewstate keys
 
@@ -86,11 +87,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const LogOnSiteNotification LogOnModeDefault = LogOnSiteNotification.None;
 
 		/// <summary>
-		/// Backing field for the <see cref="RelyingPartyNonVerifying"/> property.
-		/// </summary>
-		private static OpenIdRelyingParty relyingPartyNonVerifying;
-
-		/// <summary>
 		/// The authentication response that just came in.
 		/// </summary>
 		private IAuthenticationResponse authenticationResponse;
@@ -100,12 +96,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// to be picked up by ASP.NET on the way down to the user agent.
 		/// </summary>
 		private string discoveryResult;
-
-		/// <summary>
-		/// A dictionary of extension response types and the javascript member 
-		/// name to map them to on the user agent.
-		/// </summary>
-		private Dictionary<Type, string> clientScriptExtensions = new Dictionary<Type, string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyAjaxControlBase"/> class.
@@ -152,6 +142,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets or sets the <see cref="OpenIdRelyingParty"/> instance to use.
+		/// </summary>
+		/// <value>
+		/// The default value is an <see cref="OpenIdRelyingParty"/> instance initialized according to the web.config file.
+		/// </value>
+		/// <remarks>
+		/// A performance optimization would be to store off the
+		/// instance as a static member in your web site and set it
+		/// to this property in your <see cref="Control.Load">Page.Load</see>
+		/// event since instantiating these instances can be expensive on
+		/// heavily trafficked web pages.
+		/// </remarks>
+		public override OpenIdRelyingParty RelyingParty {
+			get {
+				return base.RelyingParty;
+			}
+
+			set {
+				// Make sure we get an AJAX-ready instance.
+				ErrorUtilities.VerifyArgument(value is OpenIdAjaxRelyingParty, OpenIdStrings.TypeMustImplementX, typeof(OpenIdAjaxRelyingParty).Name);
+				base.RelyingParty = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets the completed authentication response.
 		/// </summary>
 		public IAuthenticationResponse AuthenticationResponse {
@@ -193,22 +208,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the relying party as its AJAX type.
+		/// </summary>
+		protected OpenIdAjaxRelyingParty AjaxRelyingParty {
+			get { return (OpenIdAjaxRelyingParty)this.RelyingParty; }
+		}
+
+		/// <summary>
 		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
 		/// </summary>
 		/// <value>Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.</value>
 		protected abstract string OpenIdAuthDataFormKey { get; }
-
-		/// <summary>
-		/// Gets the relying party to use when verification of incoming messages is NOT wanted.
-		/// </summary>
-		private static OpenIdRelyingParty RelyingPartyNonVerifying {
-			get {
-				if (relyingPartyNonVerifying == null) {
-					relyingPartyNonVerifying = OpenIdRelyingParty.CreateNonVerifying();
-				}
-				return relyingPartyNonVerifying;
-			}
-		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether an authentication in the page's view state
@@ -232,11 +242,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
 		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
-			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
-			foreach (var ext in this.clientScriptExtensions.Keys) {
-				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);
-			}
-			this.clientScriptExtensions.Add(typeof(T), propertyName);
+			this.RelyingParty.RegisterClientScriptExtension<T>(propertyName);
 		}
 
 		#region ICallbackEventHandler Members
@@ -263,27 +269,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#endregion
 
 		/// <summary>
-		/// Creates the authentication requests for a given user-supplied Identifier.
-		/// </summary>
-		/// <param name="identifier">The identifier to create a request for.</param>
-		/// <returns>
-		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
-		/// </returns>
-		protected internal override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
-			// If this control is actually a member of another OpenID RP control,
-			// delegate creation of requests to the parent control.
-			var parentOwner = this.ParentControls.OfType<OpenIdRelyingPartyControlBase>().FirstOrDefault();
-			if (parentOwner != null) {
-				return parentOwner.CreateRequests(identifier);
-			} else {
-				// We delegate all our logic to another method, since invoking base. methods
-				// within an iterator method results in unverifiable code.
-				return this.CreateRequestsCore(base.CreateRequests(identifier));
-			}
-		}
-
-		/// <summary>
 		/// Returns the results of a callback event that targets a control.
 		/// </summary>
 		/// <returns>The result of the callback.</returns>
@@ -305,7 +290,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Logger.OpenId.InfoFormat("AJAX discovery on {0} requested.", userSuppliedIdentifier);
 
 			this.Identifier = userSuppliedIdentifier;
-			this.discoveryResult = this.SerializeDiscoveryAsJson(this.Identifier);
+
+			var serializer = new JavaScriptSerializer();
+			IEnumerable<IAuthenticationRequest> requests = this.CreateRequests(this.Identifier);
+			this.discoveryResult = serializer.Serialize(this.AjaxRelyingParty.AsJsonDiscoveryResult(requests));
+		}
+
+		/// <summary>
+		/// Creates the relying party instance used to generate authentication requests.
+		/// </summary>
+		/// <param name="store">The store to pass to the relying party constructor.</param>
+		/// <returns>The instantiated relying party.</returns>
+		protected override OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store) {
+			return new OpenIdAjaxRelyingParty(store);
 		}
 
 		/// <summary>
@@ -323,8 +320,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="identifiers">The identifiers to perform discovery on.</param>
 		protected void PreloadDiscovery(IEnumerable<Identifier> identifiers) {
-			string discoveryResults = this.SerializeDiscoveryAsJson(identifiers);
-			string script = "window.dnoa_internal.loadPreloadedDiscoveryResults(" + discoveryResults + ");";
+			string script = this.AjaxRelyingParty.AsAjaxPreloadedDiscoveryResult(
+				identifiers.Select(id => this.CreateRequests(id)).Flatten());
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyAjaxControlBase), this.ClientID, script, true);
 		}
 
@@ -420,172 +417,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
 		protected override void ScriptClosingPopupOrIFrame() {
-			Logger.OpenId.DebugFormat("AJAX (iframe) callback from OP: {0}", this.Page.Request.Url);
-			string extensionsJson = null;
-
-			var authResponse = RelyingPartyNonVerifying.GetResponse();
-			Logger.Controls.DebugFormat(
-				"The {0} control checked for an authentication response from a popup window or iframe using a non-verifying RP and found: {1}",
-				this.ID,
-				authResponse.Status);
-			if (authResponse.Status == AuthenticationStatus.Authenticated) {
-				this.OnUnconfirmedPositiveAssertion(); // event handler will fill the clientScriptExtensions collection.
-				var extensionsDictionary = new Dictionary<string, string>();
-				foreach (var pair in this.clientScriptExtensions) {
-					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
-					if (extension == null) {
-						continue;
-					}
-					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
-					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
-					if (!string.IsNullOrEmpty(js)) {
-						extensionsDictionary[pair.Value] = js;
-					}
+			Action<AuthenticationStatus> callback = status => {
+				if (status == AuthenticationStatus.Authenticated) {
+					this.OnUnconfirmedPositiveAssertion(); // event handler will fill the clientScriptExtensions collection.
 				}
+			};
 
-				extensionsJson = MessagingUtilities.CreateJsonObject(extensionsDictionary, true);
-			}
+			OutgoingWebResponse response = this.RelyingParty.ProcessResponseFromPopup(
+				this.RelyingParty.Channel.GetRequestFromContext(),
+				callback);
 
-			string payload = "document.URL";
-			if (Page.Request.HttpMethod == "POST") {
-				// Promote all form variables to the query string, but since it won't be passed
-				// to any server (this is a javascript window-to-window transfer) the length of
-				// it can be arbitrarily long, whereas it was POSTed here probably because it
-				// was too long for HTTP transit.
-				UriBuilder payloadUri = new UriBuilder(Page.Request.Url);
-				payloadUri.AppendQueryArgs(Page.Request.Form.ToDictionary());
-				payload = MessagingUtilities.GetSafeJavascriptValue(payloadUri.Uri.AbsoluteUri);
-			}
-
-			if (!string.IsNullOrEmpty(extensionsJson)) {
-				payload += ", " + extensionsJson;
-			}
-
-			this.CallbackUserAgentMethod("dnoa_internal.processAuthorizationResult(" + payload + ")");
-		}
-
-		/// <summary>
-		/// Serializes the discovery of multiple identifiers as a JSON object.
-		/// </summary>
-		/// <param name="identifiers">The identifiers to perform discovery on and create requests for.</param>
-		/// <returns>The serialized JSON object.</returns>
-		private string SerializeDiscoveryAsJson(IEnumerable<Identifier> identifiers) {
-			ErrorUtilities.VerifyArgumentNotNull(identifiers, "identifiers");
-
-			// We prepare a JSON object with this interface:
-			// Array discoveryWrappers;
-			// Where each element in the above array has this interface:
-			// class discoveryWrapper {
-			//    string userSuppliedIdentifier;
-			//    jsonResponse discoveryResult; // contains result of call to SerializeDiscoveryAsJson(Identifier)
-			// }
-			StringBuilder discoveryResultBuilder = new StringBuilder();
-			discoveryResultBuilder.Append("[");
-			foreach (var identifier in identifiers) { // TODO: parallelize discovery on these identifiers
-				discoveryResultBuilder.Append("{");
-				discoveryResultBuilder.AppendFormat("userSuppliedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(identifier));
-				discoveryResultBuilder.AppendFormat("discoveryResult: {0}", this.SerializeDiscoveryAsJson(identifier));
-				discoveryResultBuilder.Append("},");
-			}
-
-			discoveryResultBuilder.Length -= 1; // trim last comma
-			discoveryResultBuilder.Append("]");
-			return discoveryResultBuilder.ToString();
-		}
-
-		/// <summary>
-		/// Serializes the results of discovery and the created auth requests as a JSON object
-		/// for the user agent to initiate.
-		/// </summary>
-		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <returns>The JSON string.</returns>
-		private string SerializeDiscoveryAsJson(Identifier identifier) {
-			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
-
-			// We prepare a JSON object with this interface:
-			// class jsonResponse {
-			//    string claimedIdentifier;
-			//    Array requests; // never null
-			//    string error; // null if no error
-			// }
-			// Each element in the requests array looks like this:
-			// class jsonAuthRequest {
-			//    string endpoint;  // URL to the OP endpoint
-			//    string immediate; // URL to initiate an immediate request
-			//    string setup;     // URL to initiate a setup request.
-			// }
-			StringBuilder discoveryResultBuilder = new StringBuilder();
-			discoveryResultBuilder.Append("{");
-			try {
-				IEnumerable<IAuthenticationRequest> requests = this.CreateRequests(identifier).CacheGeneratedResults();
-				if (requests.Any()) {
-					discoveryResultBuilder.AppendFormat("claimedIdentifier: {0},", MessagingUtilities.GetSafeJavascriptValue(requests.First().ClaimedIdentifier));
-					discoveryResultBuilder.Append("requests: [");
-					foreach (IAuthenticationRequest request in requests) {
-						discoveryResultBuilder.Append("{");
-						discoveryResultBuilder.AppendFormat("endpoint: {0},", MessagingUtilities.GetSafeJavascriptValue(request.Provider.Uri.AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Immediate;
-						OutgoingWebResponse response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("immediate: {0},", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						request.Mode = AuthenticationRequestMode.Setup;
-						response = request.RedirectingResponse;
-						discoveryResultBuilder.AppendFormat("setup: {0}", MessagingUtilities.GetSafeJavascriptValue(response.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri));
-						discoveryResultBuilder.Append("},");
-					}
-					discoveryResultBuilder.Length -= 1; // trim off last comma
-					discoveryResultBuilder.Append("]");
-				} else {
-					discoveryResultBuilder.Append("requests: [],");
-					discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(OpenIdStrings.OpenIdEndpointNotFound));
-				}
-			} catch (ProtocolException ex) {
-				discoveryResultBuilder.Append("requests: [],");
-				discoveryResultBuilder.AppendFormat("error: {0}", MessagingUtilities.GetSafeJavascriptValue(ex.Message));
-			}
-
-			discoveryResultBuilder.Append("}");
-			return discoveryResultBuilder.ToString();
-		}
-
-		/// <summary>
-		/// Creates the authentication requests for a given user-supplied Identifier.
-		/// </summary>
-		/// <param name="requests">The authentication requests to prepare.</param>
-		/// <returns>
-		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
-		/// </returns>
-		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
-			ErrorUtilities.VerifyArgumentNotNull(requests, "requests"); // NO CODE CONTRACTS! (yield return used here)
-
-			// Configure each generated request.
-			int reqIndex = 0;
-			foreach (var req in requests) {
-				req.SetUntrustedCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
-
-				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
-				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
-					Identifier userSuppliedIdentifier = ((AuthenticationRequest)req).DiscoveryResult.UserSuppliedIdentifier;
-					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
-				}
-
-				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
-				// This gives us the info even for 1.0 OPs and 2.0 setup_required responses.
-				req.SetUntrustedCallbackArgument(OPEndpointParameterName, req.Provider.Uri.AbsoluteUri);
-				req.SetUntrustedCallbackArgument(ClaimedIdParameterName, (string)req.ClaimedIdentifier ?? string.Empty);
-
-				// Inform ourselves in return_to that we're in a popup or iframe.
-				req.SetUntrustedCallbackArgument(UIPopupCallbackKey, "1");
-
-				// We append a # at the end so that if the OP happens to support it,
-				// the OpenID response "query string" is appended after the hash rather than before, resulting in the
-				// browser being super-speedy in closing the popup window since it doesn't try to pull a newer version
-				// of the static resource down from the server merely because of a changed URL.
-				// http://www.nabble.com/Re:-Defining-how-OpenID-should-behave-with-fragments-in-the-return_to-url-p22694227.html
-				////TODO:
-
-				yield return req;
-			}
+			response.Send();
 		}
 
 		/// <summary>
@@ -612,33 +454,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				callbackResultParameterName,
 				callbackErrorCallbackParameterName,
 				callback);
-		}
-
-		/// <summary>
-		/// Invokes a method on a parent frame/window's OpenIdAjaxTextBox,
-		/// and closes the calling popup window if applicable.
-		/// </summary>
-		/// <param name="methodCall">The method to call on the OpenIdAjaxTextBox, including
-		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
-		private void CallbackUserAgentMethod(string methodCall) {
-			Logger.OpenId.DebugFormat("Sending Javascript callback: {0}", methodCall);
-			Page.Response.Write(@"<html><body><script language='javascript'>
-	var inPopup = !window.frameElement;
-	var objSrc = inPopup ? window.opener : window.frameElement;
-");
-
-			// Something about calling objSrc.{0} can somehow cause FireFox to forget about the inPopup variable,
-			// so we have to actually put the test for it ABOVE the call to objSrc.{0} so that it already 
-			// whether to call window.self.close() after the call.
-			string htmlFormat = @"	if (inPopup) {{
-		objSrc.{0};
-		window.self.close();
-	}} else {{
-		objSrc.{0};
-	}}
-</script></body></html>";
-			Page.Response.Write(string.Format(CultureInfo.InvariantCulture, htmlFormat, methodCall));
-			Page.Response.End();
 		}
 
 		/// <summary>

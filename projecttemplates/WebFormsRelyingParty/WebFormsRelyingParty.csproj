@@ -80,6 +80,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="images\openid.png" />
     <Content Include="Members\AccountInfo.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Login.aspx" />
@@ -191,7 +192,6 @@
     <Content Include="Getting Started.htm" />
     <Content Include="images\infocard_23x16.png" />
     <Content Include="images\myopenid.png" />
-    <Content Include="images\openid.gif" />
     <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo_login.png" />
     <Content Include="LoginFrame.aspx" />
