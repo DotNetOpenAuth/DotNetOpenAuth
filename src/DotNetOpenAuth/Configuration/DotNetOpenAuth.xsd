@@ -320,6 +320,14 @@
 													</xs:annotation>
 												</xs:attribute>
 												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean" />
+												<xs:attribute name="protectDownlevelReplayAttacks" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether the relying party should take special care
+															to protect users against replay attacks when interoperating with OpenID 1.1 Providers.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="behaviors">

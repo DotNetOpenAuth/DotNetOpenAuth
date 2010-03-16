@@ -71,6 +71,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string AllowDualPurposeIdentifiersConfigName = "allowDualPurposeIdentifiers";
 
 		/// <summary>
+		/// Gets the name of the @protectDownlevelReplayAttacks attribute.
+		/// </summary>
+		private const string ProtectDownlevelReplayAttacksConfigName = "protectDownlevelReplayAttacks";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartySecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartySecuritySettingsElement() {
@@ -201,6 +206,16 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the Relying Party should take special care 
+		/// to protect users against replay attacks when interoperating with OpenID 1.1 Providers.
+		/// </summary>
+		[ConfigurationProperty(ProtectDownlevelReplayAttacksConfigName, DefaultValue = RelyingPartySecuritySettings.ProtectDownlevelReplayAttacksDefault)]
+		public bool ProtectDownlevelReplayAttacks {
+			get { return (bool)this[ProtectDownlevelReplayAttacksConfigName]; }
+			set { this[ProtectDownlevelReplayAttacksConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -219,6 +234,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
 			settings.AllowDualPurposeIdentifiers = this.AllowDualPurposeIdentifiers;
+			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
 
 			return settings;
 		}
