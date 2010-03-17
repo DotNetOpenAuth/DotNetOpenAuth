@@ -7,10 +7,10 @@
 <head>
 	<title>OpenID login demo</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-	<link type="text/css" href="../../Content/theme/ui.all.css" rel="Stylesheet" />
-	<link type="text/css" href="../../Content/css/openidlogin.css" rel="stylesheet" />
-	<script type="text/javascript" src="../../Content/scripts/jquery-1.3.1.js"></script>
-	<script type="text/javascript" src="../../Content/scripts/jquery-ui-personalized-1.6rc6.js"></script>
+	<link type="text/css" href='<%= Url.Content("~/Content/theme/ui.all.css") %>' rel="Stylesheet" />
+	<link type="text/css" href='<%= Url.Content("~/Content/css/openidlogin.css") %>' rel="stylesheet" />
+	<script type="text/javascript" src='<%= Url.Content("~/Content/scripts/jquery-1.3.1.js") %>'></script>
+	<script type="text/javascript" src='<%= Url.Content("~/Content/scripts/jquery-ui-personalized-1.6rc6.js") %>'></script>
 	<script>
 	$(function() {
 		$('#openidlogin').dialog({
@@ -171,10 +171,10 @@
 <div id="openidlogin" class="ui-widget-content">
 	<p>Log in with an account you already use:</p>
 	<div class="large buttons">
-		<div class="provider" onclick="document.selectProvider(this, 'https://www.google.com/accounts/o8/id')"><div><img src="../../Content/images/google.gif"/></div></div>
-		<div class="provider" onclick="document.selectProvider(this, 'https://me.yahoo.com/')"><div><img src="../../Content/images/yahoo.gif"/></div></div>
-		<div class="provider" onclick="document.selectProvider(this, 'http://openid.aol.com/{username}')"><div><img src="../../Content/images/aol.gif"/></div></div>
-		<div class="provider" onclick="document.selectProvider(this, '')"><div><img src="../../Content/images/openid.gif"/></div></div>
+		<div class="provider" onclick="document.selectProvider(this, 'https://www.google.com/accounts/o8/id')"><div><img src='<%= Url.Content("~/Content/images/google.gif") %>'/></div></div>
+		<div class="provider" onclick="document.selectProvider(this, 'https://me.yahoo.com/')"><div><img src='<%= Url.Content("~/Content/images/yahoo.gif") %>'/></div></div>
+		<div class="provider" onclick="document.selectProvider(this, 'http://openid.aol.com/{username}')"><div><img src='<%= Url.Content("~/Content/images/aol.gif") %>'/></div></div>
+		<div class="provider" onclick="document.selectProvider(this, '')"><div><img src='<%= Url.Content("~/Content/images/openid.gif") %>'/></div></div>
 	</div>
 	<div class="small buttons">
 		<div class="provider" onclick="document.selectProvider(this, 'http://www.flickr.com/photos/{username}')"><div><img src="http://flickr.com/favicon.ico"/></div></div>
