@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreSame(sregResponse, extensions.Single());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void NegativeResponse() {
 			this.request.IsAuthenticated = false;
 			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);

@@ -229,7 +229,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// sometimes causes the CLR to throw:
 				// "VerificationException: Operation could destabilize the runtime."
 				// Just give up and use dumb mode in this case.
-				Logger.OpenId.ErrorFormat("VerificationException occurred while trying to create an association with {0}.  {1}", provider.Endpoint, ex);
+				Logger.OpenId.ErrorFormat("VerificationException occurred while trying to create an association with {0}.  {1}", provider.Uri, ex);
 				return null;
 			}
 		}
