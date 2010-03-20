@@ -736,7 +736,7 @@ window.dnoa_internal.clearExpiredPositiveAssertions = function() {
 		var discoveryResult = window.dnoa_internal.discoveryResults[identifier];
 		if (typeof (discoveryResult) != 'object') { continue; } // skip functions
 		for (var i = 0; i < discoveryResult.length; i++) {
-			if (discoveryResult[i].result === window.dnoa_internal.authSuccess) {
+			if (discoveryResult[i] && discoveryResult[i].result === window.dnoa_internal.authSuccess) {
 				if (new Date() - discoveryResult[i].successReceived > window.dnoa_internal.maxPositiveAssertionLifetime) {
 					// This positive assertion is too old, and may eventually be rejected by DNOA during verification.
 					// Let's clear out the positive assertion so it can be renewed.
