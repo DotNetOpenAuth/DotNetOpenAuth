@@ -177,7 +177,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			if (requests.Any()) {
 				return new {
-					claimedIdentifier = requests.First().ClaimedIdentifier,
+					claimedIdentifier = requests.First().ClaimedIdentifier.ToString(),
 					requests = requests.Select(req => new {
 						endpoint = req.Provider.Uri.AbsoluteUri,
 						immediate = this.GetRedirectUrl(req, true),
