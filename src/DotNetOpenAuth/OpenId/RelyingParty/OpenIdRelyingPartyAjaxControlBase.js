@@ -701,7 +701,7 @@ window.dnoa_internal.PositiveAssertion = function(uri) {
 };
 
 window.dnoa_internal.clone = function(obj) {
-	if (obj === null || typeof (obj) != 'object') {
+	if (obj === null || typeof (obj) != 'object' || !isNaN(obj)) { // !isNaN catches Date objects
 		return obj;
 	}
 
@@ -709,6 +709,10 @@ window.dnoa_internal.clone = function(obj) {
 	for (var key in obj) {
 		temp[key] = window.dnoa_internal.clone(obj[key]);
 	}
+
+	// Copy over some built-in methods that were not included in the above loop,
+	// but nevertheless may have been overridden.
+	temp.toString = window.dnoa_internal.clone(obj.toString);
 
 	return temp;
 };
