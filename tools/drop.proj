@@ -41,7 +41,8 @@
 																"
 											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
-																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).???;
+																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).dll;
+																$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb;
 																$(OutputPath)$(ProductName).xml;
 																$(OutputPath)$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
