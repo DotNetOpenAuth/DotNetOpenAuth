@@ -21,7 +21,7 @@
 <body>
 	<form id="form1" runat="server">
 	<span style="float: right">
-		<asp:Image runat="server" ID="openIdUsernameImage" ImageUrl="~/images/openid_login.gif"
+		<asp:Image runat="server" ID="openIdUsernameImage" ImageUrl="~/images/openid_login.png"
 			EnableViewState="false" />
 		<asp:Label runat="server" ID="friendlyUsername" Text="" EnableViewState="false" />
 		<asp:LoginStatus ID="LoginStatus1" runat="server" OnLoggedOut="LoginStatus1_LoggedOut" />

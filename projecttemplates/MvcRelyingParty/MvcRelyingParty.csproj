@@ -99,6 +99,7 @@
     <Content Include="Content\images\google.gif" />
     <Content Include="Content\images\myopenid.png" />
     <Content Include="Content\images\openid.png" />
+    <Content Include="Content\images\openid_login.png" />
     <Content Include="Content\images\verisign.gif" />
     <Content Include="Content\images\yahoo.gif" />
     <Content Include="Content\images\yahoo_login.png" />
@@ -174,7 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\images\infocard_23x16.png" />
-    <Content Include="Content\images\openid_login.gif" />
     <Content Include="OAuth.ashx" />
     <Content Include="Views\Account\AuthenticationTokens.ascx" />
     <Content Include="Views\Account\Authorize.aspx" />
