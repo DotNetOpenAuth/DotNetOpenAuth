@@ -128,11 +128,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Without a nonce store, we must rely on the Provider to protect against
 			// replay attacks.  But only 2.0+ Providers can be expected to provide 
 			// replay protection.
-			if (nonceStore == null) {
-				if (this.SecuritySettings.MinimumRequiredOpenIdVersion < ProtocolVersion.V20) {
-					Logger.OpenId.Warn("Raising minimum OpenID version requirement for Providers to 2.0 to protect this stateless RP from replay attacks.");
-					this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
-				}
+			if (nonceStore == null &&
+				this.SecuritySettings.ProtectDownlevelReplayAttacks &&
+				this.SecuritySettings.MinimumRequiredOpenIdVersion < ProtocolVersion.V20) {
+				Logger.OpenId.Warn("Raising minimum OpenID version requirement for Providers to 2.0 to protect this stateless RP from replay attacks.");
+				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
 			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
