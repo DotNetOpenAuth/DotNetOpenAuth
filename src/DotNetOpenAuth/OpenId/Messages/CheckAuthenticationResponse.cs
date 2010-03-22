@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			// really doesn't exist.  OpenID 2.0 section 11.4.2.2.
 			IndirectSignedResponse signedResponse = new IndirectSignedResponse(request, provider.Channel);
 			string invalidateHandle = ((ITamperResistantOpenIdMessage)signedResponse).InvalidateHandle;
-			if (invalidateHandle != null && provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, invalidateHandle) == null) {
+			if (!string.IsNullOrEmpty(invalidateHandle) && provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, invalidateHandle) == null) {
 				this.InvalidateHandle = invalidateHandle;
 			}
 		}
@@ -70,8 +70,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <para>This two-step process for invalidating associations is necessary 
 		/// to prevent an attacker from invalidating an association at will by 
 		/// adding "invalidate_handle" parameters to an authentication response.</para>
+		/// <para>For OpenID 1.1, we allow this to be present but empty to put up with poor implementations such as Blogger.</para>
 		/// </remarks>
-		[MessagePart("invalidate_handle", IsRequired = false, AllowEmpty = false)]
+		[MessagePart("invalidate_handle", IsRequired = false, AllowEmpty = true, MaxVersion = "1.1")]
+		[MessagePart("invalidate_handle", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
 		internal string InvalidateHandle { get; set; }
 	}
 }
