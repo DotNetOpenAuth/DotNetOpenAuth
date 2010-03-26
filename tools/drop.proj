@@ -133,7 +133,10 @@
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
-		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" DowngradeMvc2ToMvc1="true" />
+		<DowngradeProjects
+			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
+			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
+			/>
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="Layout">
