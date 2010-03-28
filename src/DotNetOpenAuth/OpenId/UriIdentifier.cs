@@ -61,7 +61,18 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes static members of the <see cref="UriIdentifier"/> class.
 		/// </summary>
+		/// <remarks>
+		/// This method attempts to workaround the .NET Uri class parsing bug described here:
+		/// https://connect.microsoft.com/VisualStudio/feedback/details/386695/system-uri-incorrectly-strips-trailing-dots?wa=wsignin1.0#tabs
+		/// since some identifiers (like some of the pseudonymous identifiers from Yahoo) include path segments
+		/// that end with periods, which the Uri class will typically trim off.
+		/// </remarks>
 		static UriIdentifier() {
+			// Our first attempt to handle trailing periods in path segments is to leverage
+			// full trust if it's available to rewrite the rules.
+			// In fact this is the ONLY way in .NET 3.5 (and arguably in .NET 4.0) to send
+			// outbound HTTP requests with trailing periods, so it's the only way to perform
+			// discovery on such an identifier.
 			try {
 				UriParser.Register(roundTrippingHttpParser, "dnoarthttp", 80);
 				UriParser.Register(roundTrippingHttpsParser, "dnoarthttps", 443);
@@ -216,14 +227,7 @@ namespace DotNetOpenAuth.OpenId {
 		public override string ToString() {
 			return Uri.AbsoluteUri;
 		}
-#if UNUSED
-		static bool TryCanonicalize(string uri, out string canonicalUri) {
-			Uri normalizedUri;
-			bool result = TryCanonicalize(uri, out normalizedUri);
-			canonicalUri = normalizedUri.AbsoluteUri;
-			return result;
-		}
-#endif
+
 		/// <summary>
 		/// Determines whether a URI is a valid OpenID Identifier (of any kind).
 		/// </summary>
@@ -416,6 +420,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "The user will see the result of this operation and they want to see it in lower case.")]
 		private static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
+			Contract.Requires<ArgumentNullException>(uriBuilder != null);
+
 			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
 
 			if (schemeSubstitution) {
@@ -424,7 +430,6 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			canonicalUri = uriBuilder.Uri;
-			////ImprintStandardOriginalString(canonicalUri);
 			return true;
 		}
 
@@ -435,6 +440,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The non-compressing equivalent scheme or URL for the given value.</returns>
 		private static string NormalSchemeToSpecialRoundTrippingScheme(string normal) {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(normal));
+			Contract.Requires<InternalErrorException>(schemeSubstitution);
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			int delimiterIndex = normal.IndexOf(Uri.SchemeDelimiter);
 			string normalScheme = delimiterIndex < 0 ? normal : normal.Substring(0, delimiterIndex);
