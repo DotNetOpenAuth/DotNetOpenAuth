@@ -25,6 +25,7 @@
 		<Expander Grid.Row="2" Grid.ColumnSpan="2" Header="Advanced options">
 			<StackPanel Margin="3">
 				<CheckBox Name="directedIdentityTrailingPeriodsCheckbox">Directed identity uses trailing periods in path</CheckBox>
+				<CheckBox Name="capitalizedHostName">Directed identity uses capitalized host name in claimed identifier</CheckBox>
 			</StackPanel>
 		</Expander>
 		<TextBox Height="auto" Margin="0,8,0,0" Grid.Row="3" Grid.ColumnSpan="2" Name="logBox" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" />

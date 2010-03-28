@@ -225,7 +225,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString() {
-			return Uri.AbsoluteUri;
+			return this.OriginalStringAsToString ? this.OriginalString : Uri.AbsoluteUri;
 		}
 
 		/// <summary>

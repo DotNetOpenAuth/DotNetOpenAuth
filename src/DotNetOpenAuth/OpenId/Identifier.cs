@@ -59,6 +59,18 @@ namespace DotNetOpenAuth.OpenId {
 		protected internal bool IsDiscoverySecureEndToEnd { get; private set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this instance was initialized from
+		/// deserializing a message.
+		/// </summary>
+		/// <remarks>
+		/// This is interesting because when an Identifier comes from the network,
+		/// we can't normalize it and then expect signatures to still verify.  
+		/// But if the Identifier is initialized locally, we can and should normalize it
+		/// before serializing it.
+		/// </remarks>
+		protected bool OriginalStringAsToString { get; private set; }
+
+		/// <summary>
 		/// Converts the string representation of an Identifier to its strong type.
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
@@ -118,11 +130,32 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
 			Contract.Ensures(Contract.Result<Identifier>() != null);
 
+			return Parse(identifier, false);
+		}
+
+		/// <summary>
+		/// Parses an identifier string and automatically determines
+		/// whether it is an XRI or URI.
+		/// </summary>
+		/// <param name="identifier">Either a URI or XRI identifier.</param>
+		/// <param name="preserveExactValue">if set to <c>true</c> this Identifier will serialize exactly as given rather than in its normalized form.</param>
+		/// <returns>
+		/// An <see cref="Identifier"/> instance for the given value.
+		/// </returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
+		public static Identifier Parse(string identifier, bool preserveExactValue) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
+			Contract.Ensures(Contract.Result<Identifier>() != null);
+
+			Identifier id;
 			if (XriIdentifier.IsValidXri(identifier)) {
-				return new XriIdentifier(identifier);
+				id = new XriIdentifier(identifier);
 			} else {
-				return new UriIdentifier(identifier);
+				id = new UriIdentifier(identifier);
 			}
+
+			id.OriginalStringAsToString = preserveExactValue;
+			return id;
 		}
 
 		/// <summary>

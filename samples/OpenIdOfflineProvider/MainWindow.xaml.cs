@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 	using log4net;
 	using log4net.Appender;
@@ -117,11 +118,15 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 						switch (checkidRequestList.SelectedIndex) {
 							case 0:
 								if (authRequest.IsDirectedIdentity) {
-									if (directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
-										authRequest.ClaimedIdentifier = this.hostedProvider.UserIdentityPageBase + "directedidentity.";
-									} else {
-										authRequest.ClaimedIdentifier = this.hostedProvider.UserIdentityPageBase + "directedidentity";
+									string userIdentityPageBase = this.hostedProvider.UserIdentityPageBase.AbsoluteUri;
+									if (capitalizedHostName.IsChecked.Value) {
+										userIdentityPageBase = (this.hostedProvider.UserIdentityPageBase.Scheme + Uri.SchemeDelimiter + this.hostedProvider.UserIdentityPageBase.Authority).ToUpperInvariant() + this.hostedProvider.UserIdentityPageBase.PathAndQuery;
 									}
+									string leafPath = "directedidentity";
+									if (directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
+										leafPath += ".";
+									}
+									authRequest.ClaimedIdentifier = Identifier.Parse(userIdentityPageBase + leafPath, true);
 									authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
 								}
 								authRequest.IsAuthenticated = true;
