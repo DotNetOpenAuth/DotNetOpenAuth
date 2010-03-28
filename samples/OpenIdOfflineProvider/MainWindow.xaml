@@ -6,7 +6,9 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="auto" />
@@ -20,6 +22,12 @@
 			<ComboBoxItem>Auto respond: No</ComboBoxItem>
 			<ComboBoxItem>Intercept</ComboBoxItem>
 		</ComboBox>
-		<TextBox Height="auto" Margin="0,8,0,0" Grid.Row="2" Grid.ColumnSpan="2" Name="logBox" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" />
+		<Expander Grid.Row="2" Grid.ColumnSpan="2" Header="Advanced options">
+			<StackPanel Margin="3">
+				<CheckBox Name="directedIdentityTrailingPeriodsCheckbox">Directed identity uses trailing periods in path</CheckBox>
+			</StackPanel>
+		</Expander>
+		<TextBox Height="auto" Margin="0,8,0,0" Grid.Row="3" Grid.ColumnSpan="2" Name="logBox" IsReadOnly="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" />
+		<Button Grid.Row="4" Grid.ColumnSpan="2" Click="Button_Click">Clear log</Button>
 	</Grid>
 </Window>

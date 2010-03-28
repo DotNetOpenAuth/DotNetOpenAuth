@@ -117,7 +117,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 						switch (checkidRequestList.SelectedIndex) {
 							case 0:
 								if (authRequest.IsDirectedIdentity) {
-									authRequest.ClaimedIdentifier = new Uri(this.hostedProvider.UserIdentityPageBase, "directedidentity");
+									if (directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
+										authRequest.ClaimedIdentifier = this.hostedProvider.UserIdentityPageBase + "directedidentity.";
+									} else {
+										authRequest.ClaimedIdentifier = this.hostedProvider.UserIdentityPageBase + "directedidentity";
+									}
 									authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
 								}
 								authRequest.IsAuthenticated = true;
@@ -168,6 +172,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			} catch (COMException ex) {
 				MessageBox.Show(this, ex.Message, "Error while copying OP Identifier to the clipboard", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e) {
+			logBox.Clear();
 		}
 	}
 }
