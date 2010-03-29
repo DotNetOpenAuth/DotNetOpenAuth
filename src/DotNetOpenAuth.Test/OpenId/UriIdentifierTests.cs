@@ -271,9 +271,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual("http://abc/D./e.?Qq#Ff", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq#Ff").ToString());
 			Assert.AreEqual("http://abc/D./e.?Qq", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq").ToString());
 			Assert.AreEqual("http://abc/D./e.#Ff", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.#Ff").ToString());
+			Assert.AreEqual("http://abc/", new UriIdentifier.SimpleUri("HTTP://ABC/").ToString());
 			Assert.AreEqual("http://abc/", new UriIdentifier.SimpleUri("HTTP://ABC").ToString());
 			Assert.AreEqual("http://abc/?q", new UriIdentifier.SimpleUri("HTTP://ABC?q").ToString());
 			Assert.AreEqual("http://abc/#f", new UriIdentifier.SimpleUri("HTTP://ABC#f").ToString());
+
+			Assert.AreEqual("http://abc/a//b", new UriIdentifier.SimpleUri("http://abc/a//b").ToString());
+			Assert.AreEqual("http://abc/a%2Fb/c", new UriIdentifier.SimpleUri("http://abc/a%2fb/c").ToString());
+			Assert.AreEqual("http://abc/A/c", new UriIdentifier.SimpleUri("http://abc/%41/c").ToString());
 		}
 
 		private static void TestAsFullAndPartialTrust(Action<bool> action) {

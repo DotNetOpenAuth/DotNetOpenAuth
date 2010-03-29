@@ -535,6 +535,8 @@ namespace DotNetOpenAuth.OpenId {
 						this.Path = value.Substring(hostFinish, pathFinish - hostFinish);
 					}
 				}
+
+				this.Path = NormalizePathEscaping(this.Path);
 			}
 
 			/// <summary>
@@ -575,6 +577,22 @@ namespace DotNetOpenAuth.OpenId {
 			/// </returns>
 			public override string ToString() {
 				return this.Scheme + Uri.SchemeDelimiter + this.Authority + this.Path + this.Query + this.Fragment;
+			}
+
+			/// <summary>
+			/// Normalizes the characters that are escaped in the given URI path.
+			/// </summary>
+			/// <param name="path">The path to normalize.</param>
+			/// <returns>The given path, with exactly those characters escaped which should be.</returns>
+			private static string NormalizePathEscaping(string path) {
+				Contract.Requires<ArgumentNullException>(path != null);
+
+				string[] segments = path.Split('/');
+				for (int i = 0; i < segments.Length; i++) {
+					segments[i] = Uri.EscapeDataString(Uri.UnescapeDataString(segments[i]));
+				}
+
+				return string.Join("/", segments);
 			}
 		}
 
