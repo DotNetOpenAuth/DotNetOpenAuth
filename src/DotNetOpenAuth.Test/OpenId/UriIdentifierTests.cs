@@ -130,19 +130,25 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[TestCase]
 		public void EqualsTest() {
-			Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri));
-			// This next test is an interesting side-effect of passing off to Uri.Equals.  But it's probably ok.
-			Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "#frag"));
-			Assert.AreNotEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "a"));
-			Assert.AreNotEqual(null, new UriIdentifier(this.goodUri));
-			Assert.IsTrue(new UriIdentifier(this.goodUri).Equals(this.goodUri));
+			TestAsFullAndPartialTrust(fulltrust => {
+				Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri));
+				// This next test is an interesting side-effect of passing off to Uri.Equals.  But it's probably ok.
+				Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "#frag"));
+				Assert.AreEqual(new UriIdentifier("http://a/b./c."), new UriIdentifier("http://a/b./c.#frag"));
+				Assert.AreNotEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "a"));
+				Assert.AreNotEqual(null, new UriIdentifier(this.goodUri));
+				Assert.IsTrue(new UriIdentifier(this.goodUri).Equals(this.goodUri));
 
-			Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", true));
-			Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", false));
-			Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", false), Identifier.Parse("http://www.foo.com/abc", false));
-			Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", true));
-			Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", false));
-			Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", false), Identifier.Parse("http://www.foo.com/ABC", false));
+				Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", true));
+				Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", false));
+				Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", false), Identifier.Parse("http://www.foo.com/abc", false));
+				Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", true));
+				Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", false));
+				Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", false), Identifier.Parse("http://www.foo.com/ABC", false));
+
+				Assert.AreNotEqual(Identifier.Parse("http://a/b./c."), Identifier.Parse("http://a/b/c."));
+				Assert.AreEqual(Identifier.Parse("http://a/b./c."), Identifier.Parse("http://a/b./c."));
+			});
 		}
 
 		[TestCase]

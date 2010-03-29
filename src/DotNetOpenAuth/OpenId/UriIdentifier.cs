@@ -84,9 +84,12 @@ namespace DotNetOpenAuth.OpenId {
 				publishableHttpParser.Initialize(true);
 				publishableHttpsParser.Initialize(true);
 				schemeSubstitution = true;
+				Logger.OpenId.Debug(".NET Uri class path compression overridden.");
+				Reporting.RecordFeatureUse("FullTrust");
 			} catch (SecurityException) {
 				// We must be running in partial trust.  Nothing more we can do.
 				Logger.OpenId.Warn("Unable to coerce .NET to stop compressing URI paths due to partial trust limitations.  Some URL identifiers may be unable to complete login.");
+				Reporting.RecordFeatureUse("PartialTrust");
 			}
 		}
 
@@ -225,7 +228,12 @@ namespace DotNetOpenAuth.OpenId {
 			if (other == null) {
 				return false;
 			}
-			return this.Uri == other.Uri;
+
+			if (this.ProblematicNormalization || other.ProblematicNormalization) {
+				return new SimpleUri(this.OriginalString).Equals(new SimpleUri(other.OriginalString));
+			} else {
+				return this.Uri == other.Uri;
+			}
 		}
 
 		/// <summary>
@@ -577,6 +585,31 @@ namespace DotNetOpenAuth.OpenId {
 			/// </returns>
 			public override string ToString() {
 				return this.Scheme + Uri.SchemeDelimiter + this.Authority + this.Path + this.Query + this.Fragment;
+			}
+
+			/// <summary>
+			/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+			/// </summary>
+			/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+			/// <returns>
+			/// 	<c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+			/// </returns>
+			/// <exception cref="T:System.NullReferenceException">
+			/// The <paramref name="obj"/> parameter is null.
+			/// </exception>
+			public override bool Equals(object obj) {
+				SimpleUri other = obj as SimpleUri;
+				if (other == null) {
+					return false;
+				}
+
+				// Note that this equality check is intentionally leaving off the Fragment part
+				// to match Uri behavior, and is intentionally being case sensitive and insensitive
+				// for different parts.
+				return string.Equals(this.Scheme, other.Scheme, StringComparison.OrdinalIgnoreCase) &&
+					string.Equals(this.Authority, other.Authority, StringComparison.OrdinalIgnoreCase) &&
+					string.Equals(this.Path, other.Path, StringComparison.Ordinal) &&
+					string.Equals(this.Query, other.Query, StringComparison.Ordinal);
 			}
 
 			/// <summary>
