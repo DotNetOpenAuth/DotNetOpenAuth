@@ -319,7 +319,14 @@
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>
-												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean" />
+												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether identifiers that are both OP Identifiers and Claimed Identifiers
+															should ever be recognized as claimed identifiers.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 												<xs:attribute name="allowApproximateIdentifierDiscovery" type="xs:boolean">
 													<xs:annotation>
 														<xs:documentation>
