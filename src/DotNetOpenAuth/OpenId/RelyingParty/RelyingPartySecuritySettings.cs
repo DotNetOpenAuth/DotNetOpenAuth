@@ -27,6 +27,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			: base(false) {
 			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
 			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
+			this.AllowApproximateIdentifierDiscovery = true;
 		}
 
 		/// <summary>
@@ -130,6 +131,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// therefore this setting should only be changed with caution.
 		/// </remarks>
 		public bool AllowDualPurposeIdentifiers { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether certain Claimed Identifiers that exploit
+		/// features that .NET does not have the ability to send exact HTTP requests for will
+		/// still be allowed by using an approximate HTTP request.
+		/// </summary>
+		/// <value>
+		/// 	The default value is <c>true</c>.
+		/// </value>
+		public bool AllowApproximateIdentifierDiscovery { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether special measures are taken to
