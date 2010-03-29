@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This is useful for desktop applications that will spawn a user agent to transmit the message
 		/// rather than cause a redirect.
 		/// </remarks>
-		public Uri GetDirectUriRequest(Channel channel) {
+		internal Uri GetDirectUriRequest(Channel channel) {
 			Contract.Requires<ArgumentNullException>(channel != null);
 
 			var message = this.OriginalMessage as IDirectedProtocolMessage;

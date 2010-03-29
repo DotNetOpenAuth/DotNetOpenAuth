@@ -10,8 +10,8 @@
 <!-- LICENSE: Microsoft Public License available at http://opensource.org/licenses/ms-pl.html -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-	<link type="text/css" href="theme/ui.all.css" rel="Stylesheet" />
-	<link href="styles/loginpopup.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="theme/ui.all.css" />
+	<link rel="stylesheet" type="text/css" href="styles/loginpopup.css" />
 </head>
 <body>
 <% if (Request.Url.IsLoopback) { %>
@@ -47,7 +47,7 @@
 						</ClaimsRequested>
 					</InfoCardSelector>
 				</rp:SelectorInfoCardButton>
-				<rp:SelectorOpenIdButton Image="images/openid.gif" />
+				<rp:SelectorOpenIdButton Image="images/openid.png" />
 			</Buttons>
 			<Extensions>
 				<sreg:ClaimsRequest Email="Require" FullName="Request" />

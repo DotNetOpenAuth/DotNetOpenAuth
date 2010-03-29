@@ -16,13 +16,13 @@ Welcome <b>
 		}
 	%>
 </b>! [
-<%= Html.ActionLink("Log Off", "LogOff", "Account") %>
+<%= Html.ActionLink("Log Off", "LogOff", "Auth") %>
 ]
 <%
 	} else {
 %>
 [
-<%= Html.ActionLink("Log On", "LogOn", "Account") %>
+<a href="#" class="loginPopupLink">Login / Register</a>
 ]
 <%
 	}

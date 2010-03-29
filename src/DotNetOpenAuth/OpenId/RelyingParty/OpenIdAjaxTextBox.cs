@@ -64,6 +64,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const bool DownloadYahooUILibraryDefault = true;
 
+		/// <summary>
+		/// The default value for the <see cref="Throttle"/> property.
+		/// </summary>
+		internal const int ThrottleDefault = 3;
+
 		#region Property viewstate keys
 
 		/// <summary>
@@ -219,11 +224,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The default value for the <see cref="AuthenticationFailedToolTip"/> property.
 		/// </summary>
 		private const string AuthenticationFailedToolTipDefault = "Authentication failed.";
-
-		/// <summary>
-		/// The default value for the <see cref="Throttle"/> property.
-		/// </summary>
-		private const int ThrottleDefault = 3;
 
 		/// <summary>
 		/// The default value for the <see cref="LogOnText"/> property.

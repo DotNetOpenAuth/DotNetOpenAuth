@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Web;
@@ -59,6 +60,52 @@ namespace DotNetOpenAuth.ApplicationBlock {
 
 		private static readonly MessageReceivingEndpoint VerifyCredentialsEndpoint = new MessageReceivingEndpoint("http://api.twitter.com/1/account/verify_credentials.xml", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest);
 
+		/// <summary>
+		/// The consumer used for the Sign in to Twitter feature.
+		/// </summary>
+		private static WebConsumer signInConsumer;
+
+		/// <summary>
+		/// The lock acquired to initialize the <see cref="signInConsumer"/> field.
+		/// </summary>
+		private static object signInConsumerInitLock = new object();
+
+		/// <summary>
+		/// Initializes static members of the <see cref="TwitterConsumer"/> class.
+		/// </summary>
+		static TwitterConsumer() {
+			// Twitter can't handle the Expect 100 Continue HTTP header. 
+			ServicePointManager.FindServicePoint(GetFavoritesEndpoint.Location).Expect100Continue = false;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the Twitter consumer key and secret are set in the web.config file.
+		/// </summary>
+		public static bool IsTwitterConsumerConfigured {
+			get {
+				return !string.IsNullOrEmpty(ConfigurationManager.AppSettings["twitterConsumerKey"]) &&
+					!string.IsNullOrEmpty(ConfigurationManager.AppSettings["twitterConsumerSecret"]);
+			}
+		}
+
+		/// <summary>
+		/// Gets the consumer to use for the Sign in to Twitter feature.
+		/// </summary>
+		/// <value>The twitter sign in.</value>
+		private static WebConsumer TwitterSignIn {
+			get {
+				if (signInConsumer == null) {
+					lock (signInConsumerInitLock) {
+						if (signInConsumer == null) {
+							signInConsumer = new WebConsumer(SignInWithTwitterServiceDescription, ShortTermUserSessionTokenManager);
+						}
+					}
+				}
+
+				return signInConsumer;
+			}
+		}
+
 		private static InMemoryTokenManager ShortTermUserSessionTokenManager {
 			get {
 				var store = HttpContext.Current.Session;
@@ -75,39 +122,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				}
 
 				return tokenManager;
-			}
-		}
-
-		private static WebConsumer signInConsumer;
-
-		private static object signInConsumerInitLock = new object();
-
-		private static WebConsumer TwitterSignIn {
-			get {
-				if (signInConsumer == null) {
-					lock (signInConsumerInitLock) {
-						if (signInConsumer == null) {
-							signInConsumer = new WebConsumer(SignInWithTwitterServiceDescription, ShortTermUserSessionTokenManager);
-						}
-					}
-				}
-
-				return signInConsumer;
-			}
-		}
-
-		/// <summary>
-		/// Initializes static members of the <see cref="TwitterConsumer"/> class.
-		/// </summary>
-		static TwitterConsumer() {
-			// Twitter can't handle the Expect 100 Continue HTTP header. 
-			ServicePointManager.FindServicePoint(GetFavoritesEndpoint.Location).Expect100Continue = false;
-		}
-
-		public static bool IsTwitterConsumerConfigured {
-			get {
-				return !string.IsNullOrEmpty(ConfigurationManager.AppSettings["twitterConsumerKey"]) &&
-					!string.IsNullOrEmpty(ConfigurationManager.AppSettings["twitterConsumerSecret"]);
 			}
 		}
 
@@ -197,10 +211,13 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				return false;
 			}
 
-			XDocument xml = VerifyCredentials(TwitterSignIn, response.AccessToken);
-			XPathNavigator nav = xml.CreateNavigator();
-			screenName = nav.SelectSingleNode("/user/screen_name").Value;
-			userId = int.Parse(nav.SelectSingleNode("/user/id").Value);
+			screenName = response.ExtraData["screen_name"];
+			userId = int.Parse(response.ExtraData["user_id"]);
+
+			// If we were going to make this LOOK like OpenID even though it isn't,
+			// this seems like a reasonable, secure claimed id to allow the user to assume.
+			OpenId.Identifier fake_claimed_id = string.Format(CultureInfo.InvariantCulture, "http://twitter.com/{0}#{1}", screenName, userId);
+
 			return true;
 		}
 	}

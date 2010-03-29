@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdTextBox.EmbeddedLogoResourceName, "image/png")]
 
 #pragma warning disable 0809 // marking inherited, unsupported properties as obsolete to discourage their use
 
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the manifest stream containing the
 		/// OpenID logo that is placed inside the text box.
 		/// </summary>
-		internal const string EmbeddedLogoResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.openid_login.gif";
+		internal const string EmbeddedLogoResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.openid_login.png";
 
 		/// <summary>
 		/// Default value for <see cref="TabIndex"/> property.

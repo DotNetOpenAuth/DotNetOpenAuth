@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Users>
+	<User>
+		<UserName>bob</UserName>
+		<Password>test</Password>
+	</User>
+	<User>
+		<UserName>bob1</UserName>
+		<Password>test</Password>
+	</User>
+	<User>
+		<UserName>bob2</UserName>
+		<Password>test</Password>
+	</User>
+	<User>
+		<UserName>bob3</UserName>
+		<Password>test</Password>
+	</User>
+	<User>
+		<UserName>bob4</UserName>
+		<Password>test</Password>
+	</User>
+</Users>
