@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<byte[]>(safeFromByteArray, safeToByteArray);
 			Map<Realm>(realm => realm.ToString(), safeRealm);
-			Map<Identifier>(id => id.ToString(), safeIdentifier);
+			Map<Identifier>(id => id.SerializedString, safeIdentifier);
 			Map<bool>(value => value.ToString().ToLowerInvariant(), safeBool);
 			Map<CultureInfo>(c => c.Name, str => new CultureInfo(str));
 			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());

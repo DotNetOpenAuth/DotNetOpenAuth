@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Linq;
 	using System.Reflection;
 	using System.Security;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
@@ -86,7 +87,6 @@ namespace DotNetOpenAuth.OpenId {
 			} catch (SecurityException) {
 				// We must be running in partial trust.  Nothing more we can do.
 				Logger.OpenId.Warn("Unable to coerce .NET to stop compressing URI paths due to partial trust limitations.  Some URL identifiers may be unable to complete login.");
-				schemeSubstitution = false;
 			}
 		}
 
@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.OpenId {
 				uriAsString = NormalSchemeToSpecialRoundTrippingScheme(uriAsString);
 			}
 
-			if (!TryCanonicalize(new UriBuilder(uriAsString), out uri)) {
+			if (!TryCanonicalize(uriAsString, out uri)) {
 				throw new UriFormatException();
 			}
 			if (requireSslDiscovery && uri.Scheme != Uri.UriSchemeHttps) {
@@ -162,6 +162,26 @@ namespace DotNetOpenAuth.OpenId {
 		/// normalization process.
 		/// </summary>
 		internal bool SchemeImplicitlyPrepended { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating whether this Identifier has characters or patterns that
+		/// the <see cref="Uri"/> class normalizes away and invalidating the Identifier.
+		/// </summary>
+		internal bool ProblematicNormalization {
+			get {
+				if (schemeSubstitution) {
+					// With full trust, we have no problematic URIs
+					return false;
+				}
+
+				var simpleUri = new SimpleUri(this.OriginalString);
+				if (simpleUri.Path.EndsWith(".", StringComparison.Ordinal) || simpleUri.Path.Contains("./")) {
+					return true;
+				}
+
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// Converts a <see cref="UriIdentifier"/> instance to a <see cref="Uri"/> instance.
@@ -225,7 +245,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString() {
-			return this.OriginalStringAsToString ? this.OriginalString : Uri.AbsoluteUri;
+			if (this.ProblematicNormalization) {
+				return new SimpleUri(this.OriginalString).ToString();
+			} else {
+				return this.Uri.AbsoluteUri;
+			}
 		}
 
 		/// <summary>
@@ -399,7 +423,7 @@ namespace DotNetOpenAuth.OpenId {
 				}
 
 				// Use a UriBuilder because it helps to normalize the URL as well.
-				return TryCanonicalize(new UriBuilder(uri), out canonicalUri);
+				return TryCanonicalize(uri, out canonicalUri);
 			} catch (UriFormatException) {
 				// We try not to land here with checks in the try block, but just in case.
 				return false;
@@ -407,9 +431,9 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Removes the fragment from a URL and sets the host to lowercase.
+		/// Fixes up the scheme if appropriate.
 		/// </summary>
-		/// <param name="uriBuilder">The URI builder with the value to canonicalize.</param>
+		/// <param name="uri">The URI to canonicalize.</param>
 		/// <param name="canonicalUri">The resulting canonical URI.</param>
 		/// <returns><c>true</c> if the canonicalization was successful; <c>false</c> otherwise.</returns>
 		/// <remarks>
@@ -419,17 +443,19 @@ namespace DotNetOpenAuth.OpenId {
 		/// For this, you should lookup the value stored in IAuthenticationResponse.ClaimedIdentifier.
 		/// </remarks>
 		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "The user will see the result of this operation and they want to see it in lower case.")]
-		private static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
-			Contract.Requires<ArgumentNullException>(uriBuilder != null);
-
-			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
+		private static bool TryCanonicalize(string uri, out Uri canonicalUri) {
+			Contract.Requires<ArgumentNullException>(uri != null);
 
 			if (schemeSubstitution) {
+				UriBuilder uriBuilder = new UriBuilder(uri);
+
 				// Swap out our round-trippable scheme for the publishable (hidden) scheme.
 				uriBuilder.Scheme = uriBuilder.Scheme == roundTrippingHttpParser.RegisteredScheme ? publishableHttpParser.RegisteredScheme : publishableHttpsParser.RegisteredScheme;
+				canonicalUri = uriBuilder.Uri;
+			} else {
+				canonicalUri = new Uri(uri);
 			}
 
-			canonicalUri = uriBuilder.Uri;
 			return true;
 		}
 
@@ -473,6 +499,86 @@ namespace DotNetOpenAuth.OpenId {
 #endif
 
 		/// <summary>
+		/// A simple URI class that doesn't suffer from the parsing problems of the <see cref="Uri"/> class.
+		/// </summary>
+		internal class SimpleUri {
+			/// <summary>
+			/// URI characters that separate the URI Path from subsequent elements.
+			/// </summary>
+			private static readonly char[] PathEndingCharacters = new char[] { '?', '#' };
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="SimpleUri"/> class.
+			/// </summary>
+			/// <param name="value">The value.</param>
+			internal SimpleUri(string value) {
+				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
+
+				// Leverage the Uri class's parsing where we can.
+				Uri uri = new Uri(value);
+				this.Scheme = uri.Scheme;
+				this.Authority = uri.Authority;
+				this.Query = uri.Query;
+				this.Fragment = uri.Fragment;
+
+				// Get the Path out ourselves, since the default Uri parser compresses it too much for OpenID.
+				int schemeLength = value.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
+				int hostStart = schemeLength + Uri.SchemeDelimiter.Length;
+				int hostFinish = value.IndexOf('/', hostStart);
+				if (hostFinish < 0) {
+					this.Path = "/";
+				} else {
+					int pathFinish = value.IndexOfAny(PathEndingCharacters, hostFinish);
+					if (pathFinish < 0) {
+						this.Path = value.Substring(hostFinish);
+					} else {
+						this.Path = value.Substring(hostFinish, pathFinish - hostFinish);
+					}
+				}
+			}
+
+			/// <summary>
+			/// Gets the scheme.
+			/// </summary>
+			/// <value>The scheme.</value>
+			public string Scheme { get; private set; }
+
+			/// <summary>
+			/// Gets the authority.
+			/// </summary>
+			/// <value>The authority.</value>
+			public string Authority { get; private set; }
+
+			/// <summary>
+			/// Gets the path of the URI.
+			/// </summary>
+			/// <value>The path from the URI.</value>
+			public string Path { get; private set; }
+
+			/// <summary>
+			/// Gets the query.
+			/// </summary>
+			/// <value>The query.</value>
+			public string Query { get; private set; }
+
+			/// <summary>
+			/// Gets the fragment.
+			/// </summary>
+			/// <value>The fragment.</value>
+			public string Fragment { get; private set; }
+
+			/// <summary>
+			/// Returns a <see cref="System.String"/> that represents this instance.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="System.String"/> that represents this instance.
+			/// </returns>
+			public override string ToString() {
+				return this.Scheme + Uri.SchemeDelimiter + this.Authority + this.Path + this.Query + this.Fragment;
+			}
+		}
+
+		/// <summary>
 		/// A URI parser that does not compress paths, such as trimming trailing periods from path segments.
 		/// </summary>
 		private class NonPathCompressingUriParser : GenericUriParser {
@@ -506,10 +612,6 @@ namespace DotNetOpenAuth.OpenId {
 			/// Initializes this parser with the actual scheme it should appear to be.
 			/// </summary>
 			/// <param name="hideNonStandardScheme">if set to <c>true</c> Uris using this scheme will look like they're using the original standard scheme.</param>
-			/// <returns>
-			/// A value indicating whether this parser will be able to complete its task.
-			/// It can return <c>false</c> under partial trust conditions.
-			/// </returns>
 			internal void Initialize(bool hideNonStandardScheme) {
 				if (schemeField == null) {
 					schemeField = typeof(UriParser).GetField("m_Scheme", BindingFlags.NonPublic | BindingFlags.Instance);

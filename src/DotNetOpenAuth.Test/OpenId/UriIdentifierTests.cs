@@ -118,6 +118,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[TestCase]
 		public void ToStringTest() {
 			Assert.AreEqual(this.goodUri, new UriIdentifier(this.goodUri).ToString());
+			TestAsFullAndPartialTrust(fullTrust => {
+				Assert.AreEqual("http://abc/D./e.?Qq#Ff", new UriIdentifier("HTTP://ABC/D./e.?Qq#Ff").ToString());
+				Assert.AreEqual("http://abc/D./e.?Qq", new UriIdentifier("HTTP://ABC/D./e.?Qq").ToString());
+				Assert.AreEqual("http://abc/D./e.#Ff", new UriIdentifier("HTTP://ABC/D./e.#Ff").ToString());
+				Assert.AreEqual("http://abc/", new UriIdentifier("HTTP://ABC").ToString());
+				Assert.AreEqual("http://abc/?q", new UriIdentifier("HTTP://ABC?q").ToString());
+				Assert.AreEqual("http://abc/#f", new UriIdentifier("HTTP://ABC#f").ToString());
+			});
 		}
 
 		[TestCase]
@@ -128,6 +136,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreNotEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "a"));
 			Assert.AreNotEqual(null, new UriIdentifier(this.goodUri));
 			Assert.IsTrue(new UriIdentifier(this.goodUri).Equals(this.goodUri));
+
+			Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", true));
+			Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", false));
+			Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", false), Identifier.Parse("http://www.foo.com/abc", false));
+			Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", true));
+			Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", false));
+			Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", false), Identifier.Parse("http://www.foo.com/ABC", false));
 		}
 
 		[TestCase]
@@ -160,33 +175,39 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </remarks>
 		[TestCase]
 		public void TrailingPeriodsNotTrimmed() {
-			string claimedIdentifier = "https://me.yahoo.com/a/AsDf.#asdf";
-			Identifier id = claimedIdentifier;
-			Assert.AreEqual(claimedIdentifier, id.OriginalString);
-			Assert.AreEqual(claimedIdentifier, id.ToString());
+			TestAsFullAndPartialTrust(fullTrust => {
+				string claimedIdentifier = "https://me.yahoo.com/a/AsDf.#asdf";
+				Identifier id = claimedIdentifier;
+				Assert.AreEqual(claimedIdentifier, id.OriginalString);
+				Assert.AreEqual(claimedIdentifier, id.ToString());
 
-			UriIdentifier idUri = new UriIdentifier(claimedIdentifier);
-			Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
-			Assert.AreEqual(claimedIdentifier, idUri.ToString());
-			Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
-			Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
-			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
-			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
-			Assert.AreEqual(id.ToString(), new UriIdentifier(idUri.Uri).ToString());
+				UriIdentifier idUri = new UriIdentifier(claimedIdentifier);
+				Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
+				Assert.AreEqual(claimedIdentifier, idUri.ToString());
+				if (fullTrust) {
+					Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
+				}
+				Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
+				Assert.AreEqual(id.ToString(), new UriIdentifier((Uri)idUri).ToString(), "Round tripping UriIdentifier->Uri->UriIdentifier failed.");
 
-			idUri = new UriIdentifier(new Uri(claimedIdentifier));
-			Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
-			Assert.AreEqual(claimedIdentifier, idUri.ToString());
-			Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
-			Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
-			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
-			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
-			Assert.AreEqual(id.ToString(), new UriIdentifier(idUri.Uri).ToString());
+				idUri = new UriIdentifier(new Uri(claimedIdentifier));
+				Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
+				Assert.AreEqual(claimedIdentifier, idUri.ToString());
+				if (fullTrust) {
+					Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
+				}
+				Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
+				Assert.AreEqual(id.ToString(), new UriIdentifier((Uri)idUri).ToString(), "Round tripping UriIdentifier->Uri->UriIdentifier failed.");
 
-			claimedIdentifier = "https://me.yahoo.com:443/a/AsDf.#asdf";
-			id = claimedIdentifier;
-			Assert.AreEqual(claimedIdentifier, id.OriginalString);
-			Assert.AreEqual("https://me.yahoo.com/a/AsDf.#asdf", id.ToString());
+				claimedIdentifier = "https://me.yahoo.com:443/a/AsDf.#asdf";
+				id = claimedIdentifier;
+				Assert.AreEqual(claimedIdentifier, id.OriginalString);
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.#asdf", id.ToString());
+			});
 		}
 
 		[TestCase]
@@ -240,6 +261,32 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public void UnicodeHostSupport() {
 			var id = new UriIdentifier("http://server崎/村");
 			Assert.AreEqual("server崎", id.Uri.Host);
+		}
+
+		/// <summary>
+		/// Verifies SimpleUri behavior
+		/// </summary>
+		[TestCase]
+		public void SimpleUri() {
+			Assert.AreEqual("http://abc/D./e.?Qq#Ff", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq#Ff").ToString());
+			Assert.AreEqual("http://abc/D./e.?Qq", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq").ToString());
+			Assert.AreEqual("http://abc/D./e.#Ff", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.#Ff").ToString());
+			Assert.AreEqual("http://abc/", new UriIdentifier.SimpleUri("HTTP://ABC").ToString());
+			Assert.AreEqual("http://abc/?q", new UriIdentifier.SimpleUri("HTTP://ABC?q").ToString());
+			Assert.AreEqual("http://abc/#f", new UriIdentifier.SimpleUri("HTTP://ABC#f").ToString());
+		}
+
+		private static void TestAsFullAndPartialTrust(Action<bool> action) {
+			// Test a bunch of interesting URLs both with scheme substitution on and off.
+			Assert.IsTrue(UriIdentifier_Accessor.schemeSubstitution, "Expected scheme substitution to be working.");
+			action(true);
+
+			UriIdentifier_Accessor.schemeSubstitution = false;
+			try {
+				action(false);
+			} finally {
+				UriIdentifier_Accessor.schemeSubstitution = true;
+			}
 		}
 	}
 }

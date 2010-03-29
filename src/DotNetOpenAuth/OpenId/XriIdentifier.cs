@@ -121,7 +121,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString() {
-			return this.OriginalStringAsToString ? this.OriginalString : this.CanonicalXri;
+			return this.CanonicalXri;
 		}
 
 		/// <summary>
