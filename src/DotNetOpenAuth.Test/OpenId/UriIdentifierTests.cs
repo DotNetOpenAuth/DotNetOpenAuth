@@ -112,7 +112,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Identifier noFragment = UriIdentifier.Parse("http://a/b");
 			Identifier fragment = UriIdentifier.Parse("http://a/b#c");
 			Assert.AreSame(noFragment, noFragment.TrimFragment());
-			Assert.AreEqual(noFragment, fragment.TrimFragment());
+			Assert.AreEqual(noFragment.ToString(), fragment.TrimFragment().ToString());
+
+			// Try the problematic ones
+			TestAsFullAndPartialTrust(fullTrust => {
+				Identifier noFrag = UriIdentifier.Parse("http://a/b./c");
+				Identifier frag = UriIdentifier.Parse("http://a/b./c#d");
+				Assert.AreSame(noFrag, noFrag.TrimFragment());
+				Assert.AreEqual(noFrag.ToString(), frag.TrimFragment().ToString());
+			});
 		}
 
 		[TestCase]
