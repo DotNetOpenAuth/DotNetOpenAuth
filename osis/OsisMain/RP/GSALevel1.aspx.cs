@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using DotNetOpenAuth.OpenId.Provider;
-using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 using DotNetOpenAuth.OpenId.Behaviors;
+using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+using DotNetOpenAuth.OpenId.Provider;
 
 public partial class RP_GSALevel1 : System.Web.UI.Page {
 	/// <summary>
@@ -28,7 +29,13 @@ public partial class RP_GSALevel1 : System.Web.UI.Page {
 					if (pape != null && pape.PreferredPolicies.Contains(AuthenticationPolicies.USGovernmentTrustLevel1)) {
 						MultiView1.SetActiveView(RequestGsa);
 						ProviderEndpoint.PendingAuthenticationRequest = authRequest;
-						rpDiscoveryResult.Text = authRequest.IsReturnUrlDiscoverable(provider) == RelyingPartyDiscoveryResult.Success ? "succeeded" : "failed";
+						if (authRequest.IsReturnUrlDiscoverable(provider) == RelyingPartyDiscoveryResult.Success) {
+							rpDiscoveryResult.Text = "succeeded";
+						} else {
+							rpDiscoveryResult.Text = "failed";
+							rpDiscoveryResult.Font.Bold = true;
+							rpDiscoveryResult.ForeColor = Color.Red;
+						}
 						
 						var sreg = authRequest.GetExtension<ClaimsRequest>();
 						profileFields.Visible = sreg != null;
