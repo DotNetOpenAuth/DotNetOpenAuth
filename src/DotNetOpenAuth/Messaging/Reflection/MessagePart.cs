@@ -189,7 +189,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			try {
 				if (this.IsConstantValue) {
 					string constantValue = this.GetValue(message);
-					if (!string.Equals(constantValue, value)) {
+					if (!string.Equals(constantValue, value, StringComparison.OrdinalIgnoreCase)) {
 						throw new ArgumentException(string.Format(
 							CultureInfo.CurrentCulture,
 							MessagingStrings.UnexpectedMessagePartValueForConstant,
