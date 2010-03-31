@@ -26,6 +26,12 @@ public partial class RP_SignatureCheck20 : System.Web.UI.Page {
 		MissingAssocHandle,
 		MissingClaimedId,
 		MissingIdentity,
+
+		// Tests that should PASS authentication
+		SchemeCapitalizationShared,
+		HostNameCapitalizationShared,
+		SchemeCapitalizationPrivate,
+		HostNameCapitalizationPrivate,
 	}
 
 	protected void Page_Load(object sender, EventArgs e) {
@@ -41,7 +47,11 @@ public partial class RP_SignatureCheck20 : System.Web.UI.Page {
 					AuthPanel.Visible = true;
 					if (((ITamperResistantOpenIdMessage)opAuthReq.positiveResponse).AssociationHandle == null) {
 						invalidSignatureSharedButton.Enabled = false;
+						hostNameSharedButton.Enabled = false;
+						schemeSharedButton.Enabled = false;
 						invalidSignatureSharedButton.ToolTip = "Invalid test since RP is using stateless mode.";
+						hostNameSharedButton.ToolTip = invalidSignatureSharedButton.ToolTip;
+						schemeSharedButton.ToolTip = hostNameSharedButton.ToolTip;
 					}
 				} else {
 					op.SendResponse(req);
@@ -55,6 +65,7 @@ public partial class RP_SignatureCheck20 : System.Web.UI.Page {
 		SignatureVariance method = (SignatureVariance)int.Parse(sendingButton.CommandArgument);
 		OpenIdProvider op = new OpenIdProvider();
 		var signatureTamperer = new SignatureTamperingBindingElement();
+		signatureTamperer.Channel = op.Channel;
 		op.Channel.outgoingBindingElements.Add(signatureTamperer);
 
 		// We need to change the assertion before sending it back.
@@ -68,7 +79,7 @@ public partial class RP_SignatureCheck20 : System.Web.UI.Page {
 
 	private void AlterAssertion(Channel channel, AuthenticationRequest authRequest, SignatureVariance method, SignatureTamperingBindingElement signatureTamperer) {
 		var assertion = authRequest.positiveResponse;
-		
+
 		// Ensure the channel has its own descriptions collection so we don't corrupt
 		// the generally reusable ones.
 		channel.MessageDescriptions = new MessageDescriptionCollection();
@@ -100,6 +111,24 @@ public partial class RP_SignatureCheck20 : System.Web.UI.Page {
 				break;
 			case SignatureVariance.MissingIdentity:
 				skipSignOnPart = protocol.openid.identity;
+				break;
+			case SignatureVariance.SchemeCapitalizationShared:
+				var claimedIdParts = new UriIdentifier.SimpleUri(assertion.ClaimedIdentifier);
+				assertion.ClaimedIdentifier = Identifier.Parse(claimedIdParts.Scheme.ToUpperInvariant() + Uri.SchemeDelimiter + claimedIdParts.Authority + claimedIdParts.Path + claimedIdParts.Query + claimedIdParts.Fragment, true);
+				break;
+			case SignatureVariance.SchemeCapitalizationPrivate:
+				((ITamperResistantOpenIdMessage)assertion).AssociationHandle = null;
+				claimedIdParts = new UriIdentifier.SimpleUri(assertion.ClaimedIdentifier);
+				assertion.ClaimedIdentifier = Identifier.Parse(claimedIdParts.Scheme.ToUpperInvariant() + Uri.SchemeDelimiter + claimedIdParts.Authority + claimedIdParts.Path + claimedIdParts.Query + claimedIdParts.Fragment, true);
+				break;
+			case SignatureVariance.HostNameCapitalizationShared:
+				claimedIdParts = new UriIdentifier.SimpleUri(assertion.ClaimedIdentifier);
+				assertion.ClaimedIdentifier = Identifier.Parse(claimedIdParts.Scheme + Uri.SchemeDelimiter + claimedIdParts.Authority.ToUpperInvariant() + claimedIdParts.Path + claimedIdParts.Query + claimedIdParts.Fragment, true);
+				break;
+			case SignatureVariance.HostNameCapitalizationPrivate:
+				((ITamperResistantOpenIdMessage)assertion).AssociationHandle = null;
+				claimedIdParts = new UriIdentifier.SimpleUri(assertion.ClaimedIdentifier);
+				assertion.ClaimedIdentifier = Identifier.Parse(claimedIdParts.Scheme + Uri.SchemeDelimiter + claimedIdParts.Authority.ToUpperInvariant() + claimedIdParts.Path + claimedIdParts.Query + claimedIdParts.Fragment, true);
 				break;
 			default:
 				throw new ArgumentException();

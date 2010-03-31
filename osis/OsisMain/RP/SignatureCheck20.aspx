@@ -21,6 +21,15 @@
 		<asp:Button Text="Signature missing assoc_handle" CommandArgument="6" OnClick="CompleteAuthentication_Click" runat="server" />
 		<asp:Button Text="Signature missing claimed_id" CommandArgument="7" OnClick="CompleteAuthentication_Click" runat="server" />
 		<asp:Button Text="Signature missing identity" CommandArgument="8" OnClick="CompleteAuthentication_Click" runat="server" />
+		<h4>Tests that should succeed authentication</h4>
+		<asp:Button Text="Scheme - shared association (capitalization only)" CommandArgument="9" OnClick="CompleteAuthentication_Click" ID="schemeSharedButton"
+			runat="server" />
+		<asp:Button Text="Host name - shared association  (capitalization only)" CommandArgument="10" OnClick="CompleteAuthentication_Click" ID="hostNameSharedButton"
+			runat="server" />
+		<asp:Button ID="Button1" Text="Scheme - private association (capitalization only)" CommandArgument="11" OnClick="CompleteAuthentication_Click"
+			runat="server" />
+		<asp:Button ID="Button2" Text="Host name - private association  (capitalization only)" CommandArgument="12" OnClick="CompleteAuthentication_Click"
+			runat="server" />
 	</asp:Panel>
 	<h3>Instructions </h3>
 	<ol>

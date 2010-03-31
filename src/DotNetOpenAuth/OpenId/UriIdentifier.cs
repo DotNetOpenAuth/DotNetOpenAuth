@@ -509,7 +509,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// A simple URI class that doesn't suffer from the parsing problems of the <see cref="Uri"/> class.
 		/// </summary>
-		internal class SimpleUri {
+		public class SimpleUri {
 			/// <summary>
 			/// URI characters that separate the URI Path from subsequent elements.
 			/// </summary>
@@ -519,7 +519,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// Initializes a new instance of the <see cref="SimpleUri"/> class.
 			/// </summary>
 			/// <param name="value">The value.</param>
-			internal SimpleUri(string value) {
+			public SimpleUri(string value) {
 				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
 
 				// Leverage the Uri class's parsing where we can.
