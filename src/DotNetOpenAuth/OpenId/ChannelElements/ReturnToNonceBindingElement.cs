@@ -209,7 +209,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// or if unsolicited assertions should be rejected at the RP; otherwise <c>false</c>.
 		/// </returns>
 		private bool UseRequestNonce(IMessage message) {
-			return message != null && (message.Version.Major < 2 || this.securitySettings.RejectUnsolicitedAssertions);
+			return message != null && (this.securitySettings.RejectUnsolicitedAssertions ||
+				(message.Version.Major < 2 && this.securitySettings.ProtectDownlevelReplayAttacks));
 		}
 
 		/// <summary>

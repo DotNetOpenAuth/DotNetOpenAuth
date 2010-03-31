@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Security;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
@@ -221,6 +222,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// Since having associations with OPs is not totally critical, we'll log and eat
 				// the exception so that auth may continue in dumb mode.
 				Logger.OpenId.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Uri, ex);
+				return null;
+			} catch (VerificationException ex) {
+				// See Trac ticket #163.  In partial trust host environments, the
+				// Diffie-Hellman implementation we're using for HTTP OP endpoints
+				// sometimes causes the CLR to throw:
+				// "VerificationException: Operation could destabilize the runtime."
+				// Just give up and use dumb mode in this case.
+				Logger.OpenId.ErrorFormat("VerificationException occurred while trying to create an association with {0}.  {1}", provider.Uri, ex);
 				return null;
 			}
 		}

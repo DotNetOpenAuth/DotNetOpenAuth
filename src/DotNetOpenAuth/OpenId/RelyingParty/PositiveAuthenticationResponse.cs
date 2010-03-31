@@ -146,6 +146,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				}
 			}
 
+			// Check whether this particular identifier presents a problem with HTTP discovery
+			// due to limitations in the .NET Uri class.
+			UriIdentifier claimedIdUri = claimedId as UriIdentifier;
+			if (claimedIdUri != null && claimedIdUri.ProblematicNormalization) {
+				ErrorUtilities.VerifyProtocol(relyingParty.SecuritySettings.AllowApproximateIdentifierDiscovery, OpenIdStrings.ClaimedIdentifierDefiesDotNetNormalization);
+				Logger.OpenId.WarnFormat("Positive assertion for claimed identifier {0} cannot be precisely verified under partial trust hosting due to .NET limitation.  An approximate verification will be attempted.", claimedId);
+			}
+
 			// While it LOOKS like we're performing discovery over HTTP again
 			// Yadis.IdentifierDiscoveryCachePolicy is set to HttpRequestCacheLevel.CacheIfAvailable
 			// which means that the .NET runtime is caching our discoveries for us.  This turns out

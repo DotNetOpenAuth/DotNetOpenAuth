@@ -65,9 +65,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -82,9 +84,11 @@
     <Compile Include="CustomExtensions\AcmeRequest.cs" />
     <Compile Include="CustomExtensions\AcmeResponse.cs" />
     <Compile Include="GoogleConsumer.cs" />
+    <Compile Include="InMemoryTokenManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwitterConsumer.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="YubikeyRelyingParty.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">

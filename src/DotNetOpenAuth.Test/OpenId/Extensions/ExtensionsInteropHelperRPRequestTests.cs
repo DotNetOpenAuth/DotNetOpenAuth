@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.OpenId {
+namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.OpenId;

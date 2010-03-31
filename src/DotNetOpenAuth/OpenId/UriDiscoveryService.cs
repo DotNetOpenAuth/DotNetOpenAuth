@@ -67,6 +67,7 @@ namespace DotNetOpenAuth.OpenId {
 
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
+					yadisResult.TryRevertToHtmlResponse();
 					var htmlEndpoints = new List<IdentifierDiscoveryResult>(DiscoverFromHtml(yadisResult.NormalizedUri, uriIdentifier, yadisResult.ResponseText));
 					if (htmlEndpoints.Any()) {
 						Logger.Yadis.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);

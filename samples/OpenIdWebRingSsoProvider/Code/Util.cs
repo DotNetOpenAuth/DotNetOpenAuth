@@ -15,6 +15,17 @@ namespace OpenIdWebRingSsoProvider.Code {
 	public class Util {
 		private const string RolesAttribute = "http://samples.dotnetopenauth.net/sso/roles";
 
+		/// <summary>
+		/// Gets a value indicating whether the authentication system used by the OP requires
+		/// no user interaction (an HTTP header based authentication protocol).
+		/// </summary>
+		internal static bool ImplicitAuth {
+			get {
+				// This should return false if using FormsAuthentication.
+				return bool.Parse(ConfigurationManager.AppSettings["ImplicitAuth"]);
+			}
+		}
+
 		public static string ExtractUserName(Uri url) {
 			return url.Segments[url.Segments.Length - 1];
 		}
@@ -58,7 +69,16 @@ namespace OpenIdWebRingSsoProvider.Code {
 					idrequest.LocalIdentifier = Util.BuildIdentityUrl();
 					idrequest.IsAuthenticated = true;
 				} else {
-					idrequest.IsAuthenticated = false;
+					// If the RP demands an immediate answer, or if we're using implicit authentication
+					// and therefore have nothing further to ask the user, just reject the authentication.
+					if (idrequest.Immediate || ImplicitAuth) {
+						idrequest.IsAuthenticated = false;
+					} else {
+						// Send the user to a page to actually log into the OP.
+						if (!HttpContext.Current.Request.Path.EndsWith("Login.aspx", StringComparison.OrdinalIgnoreCase)) {
+							HttpContext.Current.Response.Redirect("~/Login.aspx");
+						}
+					}
 				}
 			} else {
 				string userOwningOpenIdUrl = Util.ExtractUserName(idrequest.LocalIdentifier);
@@ -67,6 +87,13 @@ namespace OpenIdWebRingSsoProvider.Code {
 				// respond affirmatively if the user has already authorized this consumer
 				// to know the answer.
 				idrequest.IsAuthenticated = userOwningOpenIdUrl == HttpContext.Current.User.Identity.Name;
+
+				if (!idrequest.IsAuthenticated.Value && !ImplicitAuth && !idrequest.Immediate) {
+					// Send the user to a page to actually log into the OP.
+					if (!HttpContext.Current.Request.Path.EndsWith("Login.aspx", StringComparison.OrdinalIgnoreCase)) {
+						HttpContext.Current.Response.Redirect("~/Login.aspx");
+					}
+				}
 			}
 
 			if (idrequest.IsAuthenticated.Value) {
@@ -76,7 +103,8 @@ namespace OpenIdWebRingSsoProvider.Code {
 					var fetchResponse = new FetchResponse();
 					if (fetchRequest.Attributes.Contains(RolesAttribute)) {
 						// Inform the RP what roles this user should fill
-						// These roles would normally come out of the user database.
+						// These roles would normally come out of the user database
+						// or Windows security groups.
 						fetchResponse.Attributes.Add(RolesAttribute, "Member", "Admin");
 					}
 					idrequest.AddResponseExtension(fetchResponse);

@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.OpenId {
 				// not a derived type that will override expected behavior.
 				// Elsewhere in this class, we count on the fact that this property
 				// is either UriIdentifier or XriIdentifier.  MockIdentifier messes it up.
-				this.claimedIdentifier = value != null ? Identifier.Parse(value) : null;
+				this.claimedIdentifier = value != null ? Identifier.Reparse(value) : null;
 			}
 		}
 

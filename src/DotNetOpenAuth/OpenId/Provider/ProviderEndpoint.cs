@@ -98,11 +98,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IAuthenticationRequest PendingAuthenticationRequest {
 			get {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				Contract.Requires<InvalidOperationException>(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				Contract.Ensures(Contract.Result<IAuthenticationRequest>() == null || PendingRequest != null);
 				return HttpContext.Current.Session[PendingRequestKey] as IAuthenticationRequest;
 			}
 
 			set {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				Contract.Requires<InvalidOperationException>(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
 			}
 		}
@@ -118,11 +122,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IAnonymousRequest PendingAnonymousRequest {
 			get {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				Contract.Requires<InvalidOperationException>(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				Contract.Ensures(Contract.Result<IAnonymousRequest>() == null || PendingRequest != null);
 				return HttpContext.Current.Session[PendingRequestKey] as IAnonymousRequest;
 			}
 
 			set {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				Contract.Requires<InvalidOperationException>(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
 			}
 		}
@@ -137,8 +145,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// before responding to the relying party's request.
 		/// </remarks>
 		public static IHostProcessedRequest PendingRequest {
-			get { return HttpContext.Current.Session[PendingRequestKey] as IHostProcessedRequest; }
-			set { HttpContext.Current.Session[PendingRequestKey] = value; }
+			get {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				Contract.Requires<InvalidOperationException>(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				return HttpContext.Current.Session[PendingRequestKey] as IHostProcessedRequest;
+			}
+
+			set {
+				Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				Contract.Requires<InvalidOperationException>(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				HttpContext.Current.Session[PendingRequestKey] = value;
+			}
 		}
 
 		/// <summary>

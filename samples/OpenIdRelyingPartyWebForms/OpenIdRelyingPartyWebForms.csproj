@@ -71,6 +71,7 @@
   <ItemGroup>
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="images\openid_login.png" />
     <Content Include="login.aspx" />
     <Content Include="loginProgrammatic.aspx" />
     <Content Include="logout.aspx" />
@@ -100,7 +101,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Code\InMemoryTokenManager.cs" />
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="loginGoogleApps.aspx.cs">
@@ -183,7 +183,6 @@
     <Content Include="loginGoogleApps.aspx" />
     <Content Include="loginPlusOAuthSampleOP.aspx" />
     <Content Include="images\attention.png" />
-    <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo.png" />
     <Content Include="loginPlusOAuth.aspx" />
     <Content Include="MembersOnly\DisplayGoogleContacts.aspx" />

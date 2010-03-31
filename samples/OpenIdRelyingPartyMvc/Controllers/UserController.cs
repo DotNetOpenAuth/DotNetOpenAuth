@@ -14,19 +14,15 @@
 
 		public ActionResult Index() {
 			if (!User.Identity.IsAuthenticated) {
-				Response.Redirect("/User/Login?ReturnUrl=Index");
+				Response.Redirect("~/User/Login?ReturnUrl=Index");
 			}
 
 			return View("Index");
 		}
 
-		public ActionResult LoginPopup() {
-			return View("LoginPopup");
-		}
-
 		public ActionResult Logout() {
 			FormsAuthentication.SignOut();
-			return Redirect("/Home");
+			return Redirect("~/Home");
 		}
 
 		public ActionResult Login() {

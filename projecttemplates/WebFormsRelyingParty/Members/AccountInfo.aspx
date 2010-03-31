@@ -136,7 +136,7 @@
 				<rp:SelectorInfoCardButton>
 					<InfoCardSelector Issuer="" />
 				</rp:SelectorInfoCardButton>
-				<rp:SelectorOpenIdButton Image="~/images/openid.gif" />
+				<rp:SelectorOpenIdButton Image="~/images/openid.png" />
 			</Buttons>
 		</rp:OpenIdSelector>
 	</div>
