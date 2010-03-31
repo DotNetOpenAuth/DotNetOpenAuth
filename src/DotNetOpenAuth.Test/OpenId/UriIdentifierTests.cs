@@ -150,6 +150,28 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual("https://host:80/PaTH?KeY=VaLUE#fRag", id.ToString());
 		}
 
+		/// <summary>
+		/// Verifies that URIs that contain base64 encoded path segments (such as Yahoo) are properly preserved.
+		/// </summary>
+		/// <remarks>
+		/// Yahoo includes a base64 encoded part as their last path segment,
+		/// which may end with a period.  The default .NET Uri parser trims off
+		/// trailing periods, which breaks OpenID unless special precautions are taken.
+		/// </remarks>
+		[TestCase]
+		public void TrailingPeriodsNotTrimmed() {
+			string claimedIdentifier = "https://me.yahoo.com/a/AsDf.#asdf";
+			Identifier id = claimedIdentifier;
+			Assert.AreEqual(claimedIdentifier, id.OriginalString);
+			Assert.AreEqual(claimedIdentifier, id.ToString());
+
+			UriIdentifier idUri = new UriIdentifier(claimedIdentifier);
+			Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
+			Assert.AreEqual(claimedIdentifier, idUri.ToString());
+			Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
+			Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
+		}
+
 		[TestCase]
 		public void HttpSchemePrepended() {
 			UriIdentifier id = new UriIdentifier("www.yahoo.com");
