@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Reflection;
+	using System.Security;
 	using System.Text.RegularExpressions;
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
@@ -28,6 +30,54 @@ namespace DotNetOpenAuth.OpenId {
 		/// The allowed protocol schemes in a URI Identifier.
 		/// </summary>
 		private static readonly string[] allowedSchemes = { "http", "https" };
+
+		/// <summary>
+		/// The special scheme to use for HTTP URLs that should not have their paths compressed.
+		/// </summary>
+		private static NonPathCompressingUriParser roundTrippingHttpParser = new NonPathCompressingUriParser(Uri.UriSchemeHttp);
+
+		/// <summary>
+		/// The special scheme to use for HTTPS URLs that should not have their paths compressed.
+		/// </summary>
+		private static NonPathCompressingUriParser roundTrippingHttpsParser = new NonPathCompressingUriParser(Uri.UriSchemeHttps);
+
+		/// <summary>
+		/// The special scheme to use for HTTP URLs that should not have their paths compressed.
+		/// </summary>
+		private static NonPathCompressingUriParser publishableHttpParser = new NonPathCompressingUriParser(Uri.UriSchemeHttp);
+
+		/// <summary>
+		/// The special scheme to use for HTTPS URLs that should not have their paths compressed.
+		/// </summary>
+		private static NonPathCompressingUriParser publishableHttpsParser = new NonPathCompressingUriParser(Uri.UriSchemeHttps);
+
+		/// <summary>
+		/// A value indicating whether scheme substitution is being used to workaround
+		/// .NET path compression that invalidates some OpenIDs that have trailing periods
+		/// in one of their path segments.
+		/// </summary>
+		private static bool schemeSubstitution;
+
+		/// <summary>
+		/// Initializes static members of the <see cref="UriIdentifier"/> class.
+		/// </summary>
+		static UriIdentifier() {
+			try {
+				UriParser.Register(roundTrippingHttpParser, "dnoarthttp", 80);
+				UriParser.Register(roundTrippingHttpsParser, "dnoarthttps", 443);
+				UriParser.Register(publishableHttpParser, "dnoahttp", 80);
+				UriParser.Register(publishableHttpsParser, "dnoahttps", 443);
+				roundTrippingHttpParser.Initialize(false);
+				roundTrippingHttpsParser.Initialize(false);
+				publishableHttpParser.Initialize(true);
+				publishableHttpsParser.Initialize(true);
+				schemeSubstitution = true;
+			} catch (SecurityException) {
+				// We must be running in partial trust.  Nothing more we can do.
+				Logger.OpenId.Warn("Unable to coerce .NET to stop compressing URI paths due to partial trust limitations.  Some URL identifiers may be unable to complete login.");
+				schemeSubstitution = false;
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
@@ -62,7 +112,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// Initializes a new instance of the <see cref="UriIdentifier"/> class.
 		/// </summary>
 		/// <param name="uri">The value this identifier will represent.</param>
-		internal UriIdentifier(Uri uri) : this(uri, false) {
+		internal UriIdentifier(Uri uri)
+			: this(uri, false) {
 		}
 
 		/// <summary>
@@ -73,7 +124,13 @@ namespace DotNetOpenAuth.OpenId {
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
 			: base(uri != null ? uri.OriginalString : null, requireSslDiscovery) {
 			Contract.Requires<ArgumentNullException>(uri != null);
-			if (!TryCanonicalize(new UriBuilder(uri), out uri)) {
+
+			string uriAsString = uri.OriginalString;
+			if (schemeSubstitution) {
+				uriAsString = NormalSchemeToSpecialRoundTrippingScheme(uriAsString);
+			}
+
+			if (!TryCanonicalize(new UriBuilder(uriAsString), out uri)) {
 				throw new UriFormatException();
 			}
 			if (requireSslDiscovery && uri.Scheme != Uri.UriSchemeHttps) {
@@ -222,9 +279,7 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			// Strip the fragment.
-			UriBuilder builder = new UriBuilder(Uri);
-			builder.Fragment = null;
-			return builder.Uri;
+			return new UriIdentifier(this.OriginalString.Substring(0, this.OriginalString.IndexOf('#')));
 		}
 
 		/// <summary>
@@ -335,6 +390,10 @@ namespace DotNetOpenAuth.OpenId {
 					schemePrepended = true;
 				}
 
+				if (schemeSubstitution) {
+					uri = NormalSchemeToSpecialRoundTrippingScheme(uri);
+				}
+
 				// Use a UriBuilder because it helps to normalize the URL as well.
 				return TryCanonicalize(new UriBuilder(uri), out canonicalUri);
 			} catch (UriFormatException) {
@@ -358,8 +417,39 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "The user will see the result of this operation and they want to see it in lower case.")]
 		private static bool TryCanonicalize(UriBuilder uriBuilder, out Uri canonicalUri) {
 			uriBuilder.Host = uriBuilder.Host.ToLowerInvariant();
+
+			if (schemeSubstitution) {
+				// Swap out our round-trippable scheme for the publishable (hidden) scheme.
+				uriBuilder.Scheme = uriBuilder.Scheme == roundTrippingHttpParser.RegisteredScheme ? publishableHttpParser.RegisteredScheme : publishableHttpsParser.RegisteredScheme;
+			}
+
 			canonicalUri = uriBuilder.Uri;
+			////ImprintStandardOriginalString(canonicalUri);
 			return true;
+		}
+
+		/// <summary>
+		/// Gets the special non-compressing scheme or URL for a standard scheme or URL.
+		/// </summary>
+		/// <param name="normal">The ordinary URL or scheme name.</param>
+		/// <returns>The non-compressing equivalent scheme or URL for the given value.</returns>
+		private static string NormalSchemeToSpecialRoundTrippingScheme(string normal) {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(normal));
+
+			int delimiterIndex = normal.IndexOf(Uri.SchemeDelimiter);
+			string normalScheme = delimiterIndex < 0 ? normal : normal.Substring(0, delimiterIndex);
+			string nonCompressingScheme;
+			if (string.Equals(normalScheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) ||
+				string.Equals(normalScheme, publishableHttpParser.RegisteredScheme, StringComparison.OrdinalIgnoreCase)) {
+				nonCompressingScheme = roundTrippingHttpParser.RegisteredScheme;
+			} else if (string.Equals(normalScheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase) ||
+				string.Equals(normalScheme, publishableHttpsParser.RegisteredScheme, StringComparison.OrdinalIgnoreCase)) {
+				nonCompressingScheme = roundTrippingHttpsParser.RegisteredScheme;
+			} else {
+				throw new NotSupportedException();
+			}
+
+			return delimiterIndex < 0 ? nonCompressingScheme : nonCompressingScheme + normal.Substring(delimiterIndex);
 		}
 
 #if CONTRACTS_FULL
@@ -374,5 +464,56 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Invariant(this.Uri.AbsoluteUri != null);
 		}
 #endif
+
+		/// <summary>
+		/// A URI parser that does not compress paths, such as trimming trailing periods from path segments.
+		/// </summary>
+		private class NonPathCompressingUriParser : GenericUriParser {
+			/// <summary>
+			/// The field that stores the scheme that this parser is registered under.
+			/// </summary>
+			private static FieldInfo schemeField;
+
+			/// <summary>
+			/// The standard "http" or "https" scheme that this parser is subverting.
+			/// </summary>
+			private string standardScheme;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="NonPathCompressingUriParser"/> class.
+			/// </summary>
+			/// <param name="standardScheme">The standard scheme that this parser will be subverting.</param>
+			public NonPathCompressingUriParser(string standardScheme)
+				: base(GenericUriParserOptions.DontCompressPath | GenericUriParserOptions.IriParsing | GenericUriParserOptions.Idn) {
+				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(standardScheme));
+				this.standardScheme = standardScheme;
+			}
+
+			/// <summary>
+			/// Gets the scheme this parser is registered under.
+			/// </summary>
+			/// <value>The registered scheme.</value>
+			internal string RegisteredScheme { get; private set; }
+
+			/// <summary>
+			/// Initializes this parser with the actual scheme it should appear to be.
+			/// </summary>
+			/// <param name="hideNonStandardScheme">if set to <c>true</c> Uris using this scheme will look like they're using the original standard scheme.</param>
+			/// <returns>
+			/// A value indicating whether this parser will be able to complete its task.
+			/// It can return <c>false</c> under partial trust conditions.
+			/// </returns>
+			internal void Initialize(bool hideNonStandardScheme) {
+				if (schemeField == null) {
+					schemeField = typeof(UriParser).GetField("m_Scheme", BindingFlags.NonPublic | BindingFlags.Instance);
+				}
+
+				this.RegisteredScheme = (string)schemeField.GetValue(this);
+
+				if (hideNonStandardScheme) {
+					schemeField.SetValue(this, this.standardScheme.ToLowerInvariant());
+				}
+			}
+		}
 	}
 }

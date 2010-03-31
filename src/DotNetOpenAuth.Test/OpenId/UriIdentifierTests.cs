@@ -170,6 +170,23 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(claimedIdentifier, idUri.ToString());
 			Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
 			Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
+			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
+			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
+			Assert.AreEqual(id.ToString(), new UriIdentifier(idUri.Uri).ToString());
+
+			idUri = new UriIdentifier(new Uri(claimedIdentifier));
+			Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
+			Assert.AreEqual(claimedIdentifier, idUri.ToString());
+			Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
+			Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
+			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
+			Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
+			Assert.AreEqual(id.ToString(), new UriIdentifier(idUri.Uri).ToString());
+
+			claimedIdentifier = "https://me.yahoo.com:443/a/AsDf.#asdf";
+			id = claimedIdentifier;
+			Assert.AreEqual(claimedIdentifier, id.OriginalString);
+			Assert.AreEqual("https://me.yahoo.com/a/AsDf.#asdf", id.ToString());
 		}
 
 		[TestCase]
@@ -214,6 +231,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
 			Assert.AreEqual(0, Discover(secureId).Count());
+		}
+
+		/// <summary>
+		/// Verifies that unicode hostnames are handled.
+		/// </summary>
+		[TestCase]
+		public void UnicodeHostSupport() {
+			var id = new UriIdentifier("http://server崎/村");
+			Assert.AreEqual("server崎", id.Uri.Host);
 		}
 	}
 }
