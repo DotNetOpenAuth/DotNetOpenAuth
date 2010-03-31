@@ -349,4 +349,7 @@ Discovered endpoint info:
   <data name="X509CertificateNotTrusted" xml:space="preserve">
     <value>The X.509 certificate used to sign this document is not trusted.</value>
   </data>
+  <data name="ClaimedIdentifierDefiesDotNetNormalization" xml:space="preserve">
+    <value>This OpenID exploits features that this relying party cannot reliably verify.  Please try logging in with a human-readable OpenID or from a different OpenID Provider.</value>
+  </data>
 </root>

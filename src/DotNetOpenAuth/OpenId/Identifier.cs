@@ -39,6 +39,18 @@ namespace DotNetOpenAuth.OpenId {
 		public string OriginalString { get; private set; }
 
 		/// <summary>
+		/// Gets the Identifier in the form in which it should be serialized.
+		/// </summary>
+		/// <value>
+		/// For Identifiers that were originally deserialized, this is the exact same
+		/// string that was deserialized.  For Identifiers instantiated in some other way, this is
+		/// the normalized form of the string used to instantiate the identifier.
+		/// </value>
+		internal virtual string SerializedString {
+			get { return this.IsDeserializedInstance ? this.OriginalString : this.ToString(); }
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether <see cref="Identifier"/> instances are considered equal
 		/// based solely on their string reprsentations.
 		/// </summary>
@@ -57,6 +69,18 @@ namespace DotNetOpenAuth.OpenId {
 		/// <see cref="TryRequireSsl"/>.
 		/// </remarks>
 		protected internal bool IsDiscoverySecureEndToEnd { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating whether this instance was initialized from
+		/// deserializing a message.
+		/// </summary>
+		/// <remarks>
+		/// This is interesting because when an Identifier comes from the network,
+		/// we can't normalize it and then expect signatures to still verify.  
+		/// But if the Identifier is initialized locally, we can and should normalize it
+		/// before serializing it.
+		/// </remarks>
+		protected bool IsDeserializedInstance { get; private set; }
 
 		/// <summary>
 		/// Converts the string representation of an Identifier to its strong type.
@@ -118,11 +142,32 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
 			Contract.Ensures(Contract.Result<Identifier>() != null);
 
+			return Parse(identifier, false);
+		}
+
+		/// <summary>
+		/// Parses an identifier string and automatically determines
+		/// whether it is an XRI or URI.
+		/// </summary>
+		/// <param name="identifier">Either a URI or XRI identifier.</param>
+		/// <param name="serializeExactValue">if set to <c>true</c> this Identifier will serialize exactly as given rather than in its normalized form.</param>
+		/// <returns>
+		/// An <see cref="Identifier"/> instance for the given value.
+		/// </returns>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
+		public static Identifier Parse(string identifier, bool serializeExactValue) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
+			Contract.Ensures(Contract.Result<Identifier>() != null);
+
+			Identifier id;
 			if (XriIdentifier.IsValidXri(identifier)) {
-				return new XriIdentifier(identifier);
+				id = new XriIdentifier(identifier);
 			} else {
-				return new UriIdentifier(identifier);
+				id = new UriIdentifier(identifier);
 			}
+
+			id.IsDeserializedInstance = serializeExactValue;
+			return id;
 		}
 
 		/// <summary>
@@ -209,6 +254,19 @@ namespace DotNetOpenAuth.OpenId {
 		public override int GetHashCode() {
 			Debug.Fail("This should be overridden in every derived class.");
 			return base.GetHashCode();
+		}
+
+		/// <summary>
+		/// Reparses the specified identifier in order to be assured that the concrete type that
+		/// implements the identifier is one of the well-known ones.
+		/// </summary>
+		/// <param name="identifier">The identifier.</param>
+		/// <returns>Either <see cref="XriIdentifier"/> or <see cref="UriIdentifier"/>.</returns>
+		internal static Identifier Reparse(Identifier identifier) {
+			Contract.Requires<ArgumentNullException>(identifier != null);
+			Contract.Ensures(Contract.Result<Identifier>() != null);
+
+			return Parse(identifier, identifier.IsDeserializedInstance);
 		}
 
 		/// <summary>
