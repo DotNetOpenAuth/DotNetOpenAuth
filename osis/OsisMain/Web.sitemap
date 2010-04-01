@@ -38,6 +38,7 @@
 		<siteMapNode url="~/RP/POSTAssertion.aspx" title="RP accepts POST assertion" />
 		<siteMapNode url="~/RP/POSTAssertionWithUtf8.aspx" title="RP accepts POST assertion with UTF-8 multi-byte characters" />
 		<siteMapNode url="~/RP/IgnoresContentLocationHeader.aspx" title="RP ignores Content-Location header in response from claimed identifier" />
+		<siteMapNode url="~/RP/TrailingPeriodsInClaimedIdPath.aspx" title="RP correctly handles paths with trailing periods" />
 		<siteMapNode url="~/RP/GSALevel1.aspx" title="RP complies with GSA level 1 profile" />
 		<siteMapNode url="~/RP/InfoCardPpid.aspx" title="InfoCard RP receives Ppid" />
 	</siteMapNode>
