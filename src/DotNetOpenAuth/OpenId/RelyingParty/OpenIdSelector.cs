@@ -310,11 +310,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.EnsureValidButtons();
 
 			var css = new HtmlLink();
-			css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
-			css.Attributes["rel"] = "stylesheet";
-			css.Attributes["type"] = "text/css";
-			ErrorUtilities.VerifyHost(this.Page.Header != null, OpenIdStrings.HeadTagMustIncludeRunatServer);
-			this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
+			try {
+				css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
+				css.Attributes["rel"] = "stylesheet";
+				css.Attributes["type"] = "text/css";
+				ErrorUtilities.VerifyHost(this.Page.Header != null, OpenIdStrings.HeadTagMustIncludeRunatServer);
+				this.Page.Header.Controls.AddAt(0, css); // insert at top so host page can override
+			} catch {
+				css.Dispose();
+				throw;
+			}
 
 			// Import the .js file where most of the code is.
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(OpenIdSelector), EmbeddedScriptResourceName);
@@ -344,6 +349,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		protected override void Render(HtmlTextWriter writer) {
+			Contract.Assume(writer != null, "Missing contract");
 			writer.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIdProviders");
 			writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 

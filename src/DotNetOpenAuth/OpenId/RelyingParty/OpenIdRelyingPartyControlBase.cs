@@ -358,6 +358,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
+				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
+
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Realm object based on it.
 					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, this.RelyingParty.Channel.GetRequestFromContext())); // throws an exception on failure.

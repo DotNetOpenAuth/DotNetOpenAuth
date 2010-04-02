@@ -217,9 +217,9 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Requires<ArgumentNullException>(response != null);
 
 			var signatureNode = document.Node.SelectSingleNode("/xrds:XRDS/ds:Signature", document.XmlNamespaceResolver);
-			ErrorUtilities.VerifyProtocol(signatureNode != null, "Missing Signature element.");
+			ErrorUtilities.VerifyProtocol(signatureNode != null, OpenIdStrings.MissingElement, "Signature");
 			var signedInfoNode = signatureNode.SelectSingleNode("ds:SignedInfo", document.XmlNamespaceResolver);
-			ErrorUtilities.VerifyProtocol(signedInfoNode != null, "Missing SignedInfo element.");
+			ErrorUtilities.VerifyProtocol(signedInfoNode != null, OpenIdStrings.MissingElement, "SignedInfo");
 			ErrorUtilities.VerifyProtocol(
 				signedInfoNode.SelectSingleNode("ds:CanonicalizationMethod[@Algorithm='http://docs.oasis-open.org/xri/xrd/2009/01#canonicalize-raw-octets']", document.XmlNamespaceResolver) != null,
 				"Unrecognized or missing canonicalization method.");
@@ -227,7 +227,7 @@ namespace DotNetOpenAuth.OpenId {
 				signedInfoNode.SelectSingleNode("ds:SignatureMethod[@Algorithm='http://www.w3.org/2000/09/xmldsig#rsa-sha1']", document.XmlNamespaceResolver) != null,
 				"Unrecognized or missing signature method.");
 			var certNodes = signatureNode.Select("ds:KeyInfo/ds:X509Data/ds:X509Certificate", document.XmlNamespaceResolver);
-			ErrorUtilities.VerifyProtocol(certNodes.Count > 0, "Missing X509Certificate element.");
+			ErrorUtilities.VerifyProtocol(certNodes.Count > 0, OpenIdStrings.MissingElement, "X509Certificate");
 			var certs = certNodes.Cast<XPathNavigator>().Select(n => new X509Certificate2(Convert.FromBase64String(n.Value.Trim()))).ToList();
 
 			// Verify that we trust the signer of the certificates.

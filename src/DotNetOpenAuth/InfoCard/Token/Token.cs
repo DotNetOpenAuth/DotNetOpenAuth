@@ -49,16 +49,18 @@ namespace DotNetOpenAuth.InfoCard {
 			byte[] decryptedBytes;
 			string decryptedString;
 
-			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
-				Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
-				if (IsEncrypted(tokenReader)) {
-					Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
-					decryptedBytes = decryptor.DecryptToken(tokenReader);
-					decryptedString = Encoding.UTF8.GetString(decryptedBytes);
-					Contract.Assume(decryptedString != null); // BCL contracts should be enhanced here
-				} else {
-					decryptedBytes = Encoding.UTF8.GetBytes(tokenXml);
-					decryptedString = tokenXml;
+			using (StringReader xmlReader = new StringReader(tokenXml)) {
+				using (XmlReader tokenReader = XmlReader.Create(xmlReader)) {
+					Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
+					if (IsEncrypted(tokenReader)) {
+						Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
+						decryptedBytes = decryptor.DecryptToken(tokenReader);
+						decryptedString = Encoding.UTF8.GetString(decryptedBytes);
+						Contract.Assume(decryptedString != null); // BCL contracts should be enhanced here
+					} else {
+						decryptedBytes = Encoding.UTF8.GetBytes(tokenXml);
+						decryptedString = tokenXml;
+					}
 				}
 			}
 

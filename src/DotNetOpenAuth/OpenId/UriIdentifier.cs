@@ -68,6 +68,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// since some identifiers (like some of the pseudonymous identifiers from Yahoo) include path segments
 		/// that end with periods, which the Uri class will typically trim off.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Some things just can't be done in a field initializer.")]
 		static UriIdentifier() {
 			// Our first attempt to handle trailing periods in path segments is to leverage
 			// full trust if it's available to rewrite the rules.
@@ -531,12 +532,14 @@ namespace DotNetOpenAuth.OpenId {
 
 				// Get the Path out ourselves, since the default Uri parser compresses it too much for OpenID.
 				int schemeLength = value.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
+				Contract.Assume(schemeLength > 0);
 				int hostStart = schemeLength + Uri.SchemeDelimiter.Length;
 				int hostFinish = value.IndexOf('/', hostStart);
 				if (hostFinish < 0) {
 					this.Path = "/";
 				} else {
 					int pathFinish = value.IndexOfAny(PathEndingCharacters, hostFinish);
+					Contract.Assume(pathFinish >= hostFinish || pathFinish < 0);
 					if (pathFinish < 0) {
 						this.Path = value.Substring(hostFinish);
 					} else {
@@ -663,6 +666,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// Initializes this parser with the actual scheme it should appear to be.
 			/// </summary>
 			/// <param name="hideNonStandardScheme">if set to <c>true</c> Uris using this scheme will look like they're using the original standard scheme.</param>
+			[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Schemes are traditionally displayed in lowercase.")]
 			internal void Initialize(bool hideNonStandardScheme) {
 				if (schemeField == null) {
 					schemeField = typeof(UriParser).GetField("m_Scheme", BindingFlags.NonPublic | BindingFlags.Instance);

@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		public CultureInfo[] LanguagePreference { get; set; }
 
 		/// <summary>
-		/// Gets the style of UI that the RP is hosting the OP's authentication page in.
+		/// Gets or sets the style of UI that the RP is hosting the OP's authentication page in.
 		/// </summary>
 		/// <value>Some value from the <see cref="UIModes"/> class.  Defaults to <see cref="UIModes.Popup"/>.</value>
 		[MessagePart("mode", AllowEmpty = false, IsRequired = true)]

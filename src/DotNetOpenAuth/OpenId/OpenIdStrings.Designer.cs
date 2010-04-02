@@ -425,6 +425,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Missing {0} element..
+        /// </summary>
+        internal static string MissingElement {
+            get {
+                return ResourceManager.GetString("MissingElement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No recognized association type matches the requested length of {0}..
         /// </summary>
         internal static string NoAssociationTypeFoundByLength {
