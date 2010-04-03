@@ -24,7 +24,7 @@
 		                                 $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
 		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
 		                                $(OutputPath)$(ProductName).dll;
-		                                $(OutputPath)$(ProductName).Contracts.dll;
+		                                $(OutputPath)CodeContracts\$(ProductName).Contracts.dll;
 		                                $(OutputPath)$(ProductName).Test.dll;
 		                                $(ProjectRoot)samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
 	</ItemGroup>
@@ -201,7 +201,7 @@
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssembly)" />
 			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb" />
 			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).xml" />
-			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).Contracts.dll" />
+			<ProjectTemplateLibraries Include="$(OutputPath)CodeContracts\$(ProductName).Contracts.dll" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />
@@ -352,7 +352,7 @@
 																$(ILMergeOutputAssemblyDirectory)$(ProductName).???;
 																$(OutputPath)**\$(ProductName).resources.dll;
 																$(OutputPath)$(ProductName).xml;
-																$(OutputPath)$(ProductName).Contracts.???;
+																$(OutputPath)CodeContracts\$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
