@@ -44,7 +44,7 @@
 																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).dll;
 																$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb;
 																$(OutputPath)$(ProductName).xml;
-																$(OutputPath)$(SignedSubPath)$(ProductName).Contracts.???;
+																$(OutputPath)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
