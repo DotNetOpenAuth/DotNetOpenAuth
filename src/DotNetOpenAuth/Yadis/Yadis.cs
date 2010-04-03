@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// The maximum number of bytes to read from an HTTP response
 		/// in searching for a link to a YADIS document.
 		/// </summary>
-		private const int MaximumResultToScan = 1024 * 1024;
+		internal const int MaximumResultToScan = 1024 * 1024;
 
 		/// <summary>
 		/// Performs YADIS discovery on some identifier.

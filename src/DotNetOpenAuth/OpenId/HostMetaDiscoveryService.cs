@@ -110,29 +110,29 @@ namespace DotNetOpenAuth.OpenId {
 
 			var results = new List<IdentifierDiscoveryResult>();
 			string signingHost;
-			var response = GetXrdsResponse(uriIdentifier, requestHandler, out signingHost);
+			using (var response = GetXrdsResponse(uriIdentifier, requestHandler, out signingHost)) {
+				if (response != null) {
+					try {
+						var document = new XrdsDocument(XmlReader.Create(response.ResponseStream));
+						ValidateXmlDSig(document, uriIdentifier, response, signingHost);
+						var xrds = GetXrdElements(document, uriIdentifier.Uri.Host);
 
-			if (response != null) {
-				try {
-					var document = new XrdsDocument(XmlReader.Create(response.ResponseStream));
-					ValidateXmlDSig(document, uriIdentifier, response, signingHost);
-					var xrds = GetXrdElements(document, uriIdentifier.Uri.Host);
+						// Look for claimed identifier template URIs for an additional XRDS document.
+						results.AddRange(GetExternalServices(xrds, uriIdentifier, requestHandler));
 
-					// Look for claimed identifier template URIs for an additional XRDS document.
-					results.AddRange(GetExternalServices(xrds, uriIdentifier, requestHandler));
+						// If we couldn't find any claimed identifiers, look for OP identifiers.
+						// Normally this would be the opposite (OP Identifiers take precedence over
+						// claimed identifiers, but for Google Apps, XRDS' always have OP Identifiers
+						// mixed in, which the OpenID spec mandate should eclipse Claimed Identifiers,
+						// which would break positive assertion checks).
+						if (results.Count == 0) {
+							results.AddRange(xrds.CreateServiceEndpoints(uriIdentifier, uriIdentifier));
+						}
 
-					// If we couldn't find any claimed identifiers, look for OP identifiers.
-					// Normally this would be the opposite (OP Identifiers take precedence over
-					// claimed identifiers, but for Google Apps, XRDS' always have OP Identifiers
-					// mixed in, which the OpenID spec mandate should eclipse Claimed Identifiers,
-					// which would break positive assertion checks).
-					if (results.Count == 0) {
-						results.AddRange(xrds.CreateServiceEndpoints(uriIdentifier, uriIdentifier));
+						abortDiscoveryChain = true;
+					} catch (XmlException ex) {
+						Logger.Yadis.ErrorFormat("Error while parsing XRDS document at {0} pointed to by host-meta: {1}", response.FinalUri, ex);
 					}
-
-					abortDiscoveryChain = true;
-				} catch (XmlException ex) {
-					Logger.Yadis.ErrorFormat("Error while parsing XRDS document at {0} pointed to by host-meta: {1}", response.FinalUri, ex);
 				}
 			}
 
@@ -188,10 +188,11 @@ namespace DotNetOpenAuth.OpenId {
 					Uri externalLocation = new Uri(templateNode.Value.Trim().Replace("{%uri}", Uri.EscapeDataString(identifier.Uri.AbsoluteUri)));
 					string nextAuthority = nextAuthorityNode != null ? nextAuthorityNode.Value.Trim() : identifier.Uri.Host;
 					try {
-						var externalXrdsResponse = GetXrdsResponse(identifier, requestHandler, externalLocation);
-						XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream));
-						ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority);
-						results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
+						using (var externalXrdsResponse = GetXrdsResponse(identifier, requestHandler, externalLocation)) {
+							XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream));
+							ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority);
+							results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
+						}
 					} catch (ProtocolException ex) {
 						Logger.Yadis.WarnFormat("HTTP GET error while retrieving described-by XRDS document {0}: {1}", externalLocation.AbsoluteUri, ex);
 					} catch (XmlException ex) {
@@ -303,7 +304,7 @@ namespace DotNetOpenAuth.OpenId {
 			request.CachePolicy = Yadis.IdentifierDiscoveryCachePolicy;
 			request.Accept = ContentTypes.Xrds;
 			var options = identifier.IsDiscoverySecureEndToEnd ? DirectWebRequestOptions.RequireSsl : DirectWebRequestOptions.None;
-			var response = requestHandler.GetResponse(request, options);
+			var response = requestHandler.GetResponse(request, options).GetSnapshot(Yadis.MaximumResultToScan);
 			if (!string.Equals(response.ContentType.MediaType, ContentTypes.Xrds, StringComparison.Ordinal)) {
 				Logger.Yadis.WarnFormat("Host-meta pointed to XRDS at {0}, but Content-Type at that URL was unexpected value '{1}'.", xrdsLocation, response.ContentType);
 			}
@@ -342,23 +343,24 @@ namespace DotNetOpenAuth.OpenId {
 		private Uri GetXrdsLocation(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			var hostMetaResponse = this.GetHostMeta(identifier, requestHandler, out signingHost);
-			if (hostMetaResponse == null) {
+			using (var hostMetaResponse = this.GetHostMeta(identifier, requestHandler, out signingHost)) {
+				if (hostMetaResponse == null) {
+					return null;
+				}
+
+				using (var sr = hostMetaResponse.GetResponseReader()) {
+					string line = sr.ReadLine();
+					Match m = HostMetaLink.Match(line);
+					if (m.Success) {
+						Uri location = new Uri(m.Groups["location"].Value);
+						Logger.Yadis.InfoFormat("Found link to XRDS at {0} in host-meta document {1}.", location, hostMetaResponse.FinalUri);
+						return location;
+					}
+				}
+
+				Logger.Yadis.WarnFormat("Could not find link to XRDS in host-meta document: {0}", hostMetaResponse.FinalUri);
 				return null;
 			}
-
-			using (var sr = hostMetaResponse.GetResponseReader()) {
-				string line = sr.ReadLine();
-				Match m = HostMetaLink.Match(line);
-				if (m.Success) {
-					Uri location = new Uri(m.Groups["location"].Value);
-					Logger.Yadis.InfoFormat("Found link to XRDS at {0} in host-meta document {1}.", location, hostMetaResponse.FinalUri);
-					return location;
-				}
-			}
-
-			Logger.Yadis.WarnFormat("Could not find link to XRDS in host-meta document: {0}", hostMetaResponse.FinalUri);
-			return null;
 		}
 
 		/// <summary>
@@ -381,13 +383,19 @@ namespace DotNetOpenAuth.OpenId {
 				if (identifier.IsDiscoverySecureEndToEnd) {
 					options |= DirectWebRequestOptions.RequireSsl;
 				}
-				var response = requestHandler.GetResponse(request, options);
-				if (response.Status == HttpStatusCode.OK) {
-					Logger.Yadis.InfoFormat("Found host-meta for {0} at: {1}", identifier.Uri.Host, hostMetaLocation);
-					signingHost = hostMetaProxy.GetSigningHost(identifier);
-					return response;
-				} else {
-					Logger.Yadis.InfoFormat("Could not obtain host-meta for {0} from {1}", identifier.Uri.Host, hostMetaLocation);
+				var response = requestHandler.GetResponse(request, options).GetSnapshot(Yadis.MaximumResultToScan);
+				try {
+					if (response.Status == HttpStatusCode.OK) {
+						Logger.Yadis.InfoFormat("Found host-meta for {0} at: {1}", identifier.Uri.Host, hostMetaLocation);
+						signingHost = hostMetaProxy.GetSigningHost(identifier);
+						return response;
+					} else {
+						Logger.Yadis.InfoFormat("Could not obtain host-meta for {0} from {1}", identifier.Uri.Host, hostMetaLocation);
+						response.Dispose();
+					}
+				} catch {
+					response.Dispose();
+					throw;
 				}
 			}
 
