@@ -42,6 +42,9 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			fields.Clear();
 			fields[Protocol.wrap_access_token] = "abc";
 			Assert.IsInstanceOf(typeof(RefreshAccessTokenSuccessResponse), messageFactory.GetNewResponseMessage(request, fields));
+
+			fields.Clear();
+			Assert.IsInstanceOf(typeof(RefreshAccessTokenFailedResponse), messageFactory.GetNewResponseMessage(request, fields));
 		}
 	}
 }
