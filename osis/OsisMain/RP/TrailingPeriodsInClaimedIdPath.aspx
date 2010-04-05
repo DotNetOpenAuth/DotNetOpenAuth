@@ -20,7 +20,7 @@
 			</h3>
 			<ol>
 				<li>Visit the RP and log in with this OpenID Identifier:
-					<%= New Uri(Request.Url, Request.Url.AbsolutePath + "/a.")%>
+					<%= New Uri(Request.Url, Request.Url.AbsolutePath).AbsoluteUri + "/a."%>
 				</li>
 			</ol>
 			<h3>
@@ -28,7 +28,7 @@
 			</h3>
 			<p>
 				The RP passes this test if it successfully logs in the user as:
-				<%= New Uri(Request.Url, Request.Url.AbsolutePath + "/a.")%>
+				<%= New Uri(Request.Url, Request.Url.AbsolutePath).AbsoluteUri + "/a."%>
 			</p>
 		</asp:View>
 		<asp:View runat="server" ID="ResultsView">
