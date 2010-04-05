@@ -51,6 +51,7 @@ public partial class RP_SignatureCheck11 : System.Web.UI.Page {
 		SignatureVariance method = (SignatureVariance)int.Parse(sendingButton.CommandArgument);
 		OpenIdProvider op = new OpenIdProvider();
 		var signatureTamperer = new SignatureTamperingBindingElement();
+		signatureTamperer.Channel = op.Channel;
 		op.Channel.outgoingBindingElements.Add(signatureTamperer);
 
 		// We need to change the assertion before sending it back.

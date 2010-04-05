@@ -1,0 +1,59 @@
+<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>
+		<asp:ContentPlaceHolder ID="TitleContent" runat="server" />
+	</title>
+	<link rel="stylesheet" type="text/css" href='<%= Url.Content("~/Content/Site.css") %>' />
+	<link rel="stylesheet" type="text/css" href='<%= Url.Content("~/Content/theme/ui.all.css") %>' />
+	<asp:ContentPlaceHolder ID="Head" runat="server" />
+</head>
+<body>
+	<div class="page">
+		<div id="header">
+			<div id="title">
+				<h1>
+					My MVC Application
+				</h1>
+			</div>
+			<div id="logindisplay">
+				<% Html.RenderPartial("LogOnUserControl"); %>
+			</div>
+			<div id="menucontainer">
+				<ul id="menu">
+					<li>
+						<%= Html.ActionLink("Home", "Index", "Home")%>
+					</li>
+					<li>
+						<%= Html.ActionLink("About", "About", "Home")%>
+					</li>
+					<% if (Page.User.Identity.IsAuthenticated) { %>
+					<li>
+						<%= Html.ActionLink("Account", "Edit", "Account")%>
+					</li>
+					<% } %>
+				</ul>
+			</div>
+		</div>
+		<div id="main">
+			<asp:ContentPlaceHolder ID="MainContent" runat="server" />
+			<div id="footer">
+			</div>
+		</div>
+	</div>
+	<% if (Request.Url.IsLoopback) { %>
+		<script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery-1.3.2.min.js") %>'></script>
+		<script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery-ui-personalized-1.6rc6.min.js") %>'></script>
+	<% } else { %>
+		<script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+		<script type="text/javascript" language="javascript">
+			google.load("jquery", "1.3.2");
+			google.load("jqueryui", "1.7.2");
+		</script>
+	<% } %>
+	<script type="text/javascript" language="javascript" src='<%= Url.Content("~/Scripts/LoginLink.js") %>'></script>
+	<asp:ContentPlaceHolder runat="server" ID="ScriptsArea" />
+</body>
+</html>

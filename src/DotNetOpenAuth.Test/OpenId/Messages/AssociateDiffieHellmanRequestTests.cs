@@ -8,24 +8,24 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 	using System;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AssociateDiffieHellmanRequestTests {
 		private static readonly Uri Recipient = new Uri("http://host");
 		private AssociateDiffieHellmanRequest request;
 
-		[TestInitialize]
+		[SetUp]
 		public void Setup() {
 			this.request = new AssociateDiffieHellmanRequest(Protocol.V20.Version, Recipient);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Ctor() {
 			Assert.AreEqual(Recipient, this.request.Recipient);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void Mode() {
 			Assert.AreEqual("associate", this.request.Mode);
 		}

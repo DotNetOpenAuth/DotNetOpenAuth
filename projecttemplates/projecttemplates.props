@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<!-- We use GetFullPath here because IntermediatePath may be a relative directory, and we need to do full path comparisons. -->
+		<ProjectTemplatesLayoutPath>$([System.IO.Path]::GetFullPath('$(IntermediatePath)projecttemplates\'))</ProjectTemplatesLayoutPath>
+		<ProjectTemplates2008LayoutPath>$([System.IO.Path]::GetFullPath('$(IntermediatePath)projecttemplates2008\'))</ProjectTemplates2008LayoutPath>
+	</PropertyGroup>
+</Project>

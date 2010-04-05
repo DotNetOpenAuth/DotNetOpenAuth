@@ -1,51 +1,46 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.Common.Settings.targets"/>
-	<PropertyGroup>
-		<AutomatedBuild>true</AutomatedBuild>
-		<SolutionPath>$(ProjectRoot)\src\$(ProductName).sln</SolutionPath>
-	</PropertyGroup>
-
-	<Import Project="$(ProjectRoot)\tools\$(ProductName).Versioning.targets"/>
-	<Import Project="$(ProjectRoot)\tools\Documentation.targets"/>
-	<Import Project="$(ProjectRoot)\tools\Publish.targets"/>
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="Zip"/>
+	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.automated.props"/>
+	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 
 	<ItemGroup>
-		<SampleProjects Include="$(ProjectRoot)\samples\**\*.csproj" />
-		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
+		<ProjectsInDrop Include="
+										samples\tools.proj;
+										tools\drop.proj;
+										" />
+		<ProjectsToPublish Include="
+										samples\samples.proj;
+										doc\doc.proj;
+										" />
+
+		<ProjectsToClean Include="
+										 $(SolutionPath);
+										 projecttemplates\projecttemplates.proj;
+										 vsi\vsi.proj;
+										 vsix\vsix.proj;
+										 samples\samples.proj;
+										 doc\doc.proj;
+										 "/>
+
+		<DirectoriesToClean Include="
+			                           $(ProjectRoot)bin;
+			                           $(ProjectRoot)**\obj;
+			                           $(DropsRoot);
+			                           $(ProjectRoot)src\PrecompiledWeb;
+			                           " />
+		<FilesToClean Include="
+			                     $(ProjectRoot)**\*~;
+			                     $(ProjectRoot)**\*.log*;
+			                     $(ProjectRoot)doc\$(ProductName).chm;
+			                     " />
 	</ItemGroup>
 
-	<Target Name="Clean" DependsOnTargets="CleanDocumentation;UnpublishSamples;UnpublishDocumentation">
-		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
-		<ItemGroup>
-			<DirtyDirectories Include="
-			                           $(ProjectRoot)\bin;
-			                           $(ProjectRoot)\**\obj;
-			                           $(ProjectRoot)\drops;
-			                           $(ProjectRoot)\src\PrecompiledWeb;
-			                           " />
-			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\bin')" />
-			<DirtyDirectories Include="@(SampleDirectories->'%(FullPath)\obj')" />
-			<DirtyFiles Include="
-			                     $(ProjectRoot)\**\*~;
-			                     $(ProjectRoot)\**\*.log*;
-			                     $(ProjectRoot)\doc\$(ProductName).chm;
-			                     " />
-		</ItemGroup>
-		<Delete Files="@(DirtyFiles)" />
-		<RemoveDir Directories="@(DirtyDirectories)" />
-	</Target>
-
-	<Target Name="BuildProduct">
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName)\$(ProductName).csproj" />
-	</Target>
-	
-	<Target Name="Osis" DependsOnTargets="BuildProduct;BuildSamples">
+	<Target Name="Osis">
+		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.csproj;$(ProjectRoot)samples\samples.proj" BuildInParallel="$(BuildInParallel)" />
 		<PropertyGroup>
-			<OsisSite>$(ProjectRoot)\Osis\OsisMain</OsisSite>
+			<OsisSite>$(ProjectRoot)Osis\OsisMain</OsisSite>
 		</PropertyGroup>
 		<ItemGroup>
-			<OsisBinFiles Include="$(ProjectRoot)\lib\Microsoft.Contracts.dll" />
+			<OsisBinFiles Include="$(ProjectRoot)lib\Microsoft.Contracts.dll" />
 			<OsisTargetBinFiles Include="@(OsisBinFiles->'$(OsisSite)\Bin\%(FileName)%(Extension)')" />
 		</ItemGroup>
 		<MakeDir Directories="$(OsisSite)\Bin" />
@@ -56,210 +51,38 @@
 		<MSBuild Projects="$(SolutionPath)" Targets="OsisMain" />
 	</Target>
 
-	<Target Name="BuildTests">
-		<MSBuild Projects="$(ProjectRoot)\src\$(ProductName).Test\$(ProductName).Test.csproj" />
+	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
+		<MSBuild Projects="$(SolutionPath)" Targets="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<Target Name="BuildSamples">
-		<MSBuild Projects="@(SampleProjects)" />
-		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" Properties="Sign=$(Sign)" />
+	<Target Name="Build" DependsOnTargets="SkipVerification">
+		<MSBuild Projects="$(SolutionPath)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<Target Name="Build">
-		<!-- We explicitly pass the Sign property in because if properties are set
-		     inside this very .proj file instead of being passed on the command-line, their
-		     values won't propagate automatically. -->
-		<MSBuild Projects="$(SolutionPath)" Properties="Sign=$(Sign)" />
+	<Target Name="Rebuild" DependsOnTargets="SkipVerification">
+		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<Target Name="Rebuild">
-		<!-- We explicitly pass the Sign property in because if properties are set
-		     inside this very .proj file instead of being passed on the command-line, their
-		     values won't propagate automatically. -->
-		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" Properties="Sign=$(Sign)" />
-	</Target>
-
-	<Target Name="_EnsureCleanTools" DependsOnTargets="_SetToolsProperties" Condition="'$(NoClean)' != 'true'">
-		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
-		<RemoveDir Directories="$(ToolsDirectory)" />
-	</Target>
-
-	<Target Name="_SetToolsProperties">
+	<Target Name="Test" DependsOnTargets="BuildTests"
+	        Inputs="$(OutputPath)$(ProductName).Test.dll"
+	        Outputs='$(OutputPath)Test-result.xml'>
 		<PropertyGroup>
-			<ToolsDirectory>$(ProjectRoot)\drops\$(ProductName)-Tools-$(BuildVersion)</ToolsDirectory>
+			<!-- Performance tests are only expected to pass in optimized builds. -->
+			<NUnitExcludeCategories Condition=" '$(Configuration)' != 'Release' ">Performance</NUnitExcludeCategories>
 		</PropertyGroup>
+		<NUnit Assemblies="$(OutputPath)$(ProductName).Test.dll"
+		       ToolPath="$(NUnitToolPath)"
+		       OutputXmlFile="$(OutputPath)Test-result.xml"
+		       ExcludeCategory="$(NUnitExcludeCategories)"/>
 	</Target>
 
-	<Target Name="ToolsLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;_SetToolsProperties;_EnsureCleanTools">
-		<ItemGroup>
-			<ToolProjects Include="$(ProjectRoot)\Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
-			<OfflineProvider Include="
-											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\**\*.dll;
-											 $(ProjectRoot)\Samples\OpenIdOfflineProvider\bin\$(Configuration)\OpenIdOfflineProvider.exe" />
-			<OfflineProviderTargets Include="
-											 @(OfflineProvider->'$(ToolsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
-
-			<AllToolSources Include="@(OfflineProvider)" />
-			<AllToolTargets Include="@(OfflineProviderTargets)" />
-		</ItemGroup>
-
-		<MSBuild Projects="@(ToolProjects)" Properties="Sign=$(Sign)" />
-
-		<MakeDir Directories="@(ToolsDirectory)" />
-		<Copy SourceFiles="@(AllToolSources)" DestinationFiles="@(AllToolTargets)" SkipUnchangedFiles="true" />
-	</Target>
-	
-	<Target Name="Tools" DependsOnTargets="ToolsLayout">
-		<PropertyGroup>
-			<ToolsZip>$(ToolsDirectory).zip</ToolsZip>
-		</PropertyGroup>
-
-		<Delete Files="$(ToolsZip)" />
-		<Zip ZipFileName="$(ToolsZip)" 
-				 Files="@(AllToolTargets)"
-				 WorkingDirectory="$(ToolsDirectory)" />
+	<Target Name="Nightly">
+		<MSBuild Projects="@(ProjectsInDrop)" Targets="%(ProjectsInDrop.Targets)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<Target Name="Documentation" DependsOnTargets="BuildProduct;Chm" Condition="'$(NoDocumentation)' != 'true'">
+	<Target Name="Publish">
+		<MSBuild Projects="@(ProjectsToPublish)" Targets="Publish" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<!-- Test depends on "Build" rather than "BuildTests" until we can figure out how to build the 
-	     no-.csproj file test project (to copy binaries to Bin directory). -->
-	<Target Name="Test" DependsOnTargets="Build"
-	        Inputs="$(OutputPath)\$(ProductName).Test.dll"
-	        Outputs='$(OutputPath)\Test-results.xml;$(OutputPath)\Test-output-results.log'>
-		<Exec Command='"mstest.exe" /testcontainer:"$(OutputPath)\$(ProductName).Test.dll"' />
-	</Target>
-
-	<Target Name="_SetDropProperties">
-		<!-- This target is necessary because PropertyGroups within the same Target as 
-		     where CallTarget is fired do NOT affect those called targets. -->
-		<PropertyGroup>
-			<Sign Condition="'$(Sign)' == ''">true</Sign>
-		</PropertyGroup>
-
-		<!-- The rest of these are here so that other DependsOn targets have access to these properties. -->
-		<PropertyGroup>
-			<DropDirectory>$(ProjectRoot)\drops\$(ProductName)-$(BuildVersion)</DropDirectory>
-		</PropertyGroup>
-	</Target>
-
-	<Target Name="_EnsureCleanDrop" Condition="'$(NoClean)' != 'true'">
-		<!-- This target only does a clean sufficient to guarantee that our DotNetOpenAuth.dll is rebuilt, but
-		     we don't usually want to clean our documentation because that takes forever to build froms scratch. -->
-		<MSBuild Projects="$(SolutionPath)" Targets="Clean" />
-
-		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
-		<RemoveDir Directories="$(DropDirectory)" />
-	</Target>
-
-	<Target Name="DropLayout" DependsOnTargets="GetBuildVersion;_SetDropProperties;_EnsureCleanDrop;BuildProduct;BuildSamples;Documentation">
-		<Warning Condition=" '$(Configuration)' != 'release' " Text="Building $(Configuration) instead of Release!" />
-		<Warning Condition=" '$(Sign)' != 'true' " Text="Building unsigned!" />
-		<PropertyGroup>
-			<DropBinDirectory>$(DropDirectory)\Bin</DropBinDirectory>
-			<DropLibDirectory>$(DropDirectory)\Lib</DropLibDirectory>
-			<DropSamplesDirectory>$(DropDirectory)\Samples</DropSamplesDirectory>
-			<DropSpecsDirectory>$(DropDirectory)\Specs</DropSpecsDirectory>
-		</PropertyGroup>
-		<ItemGroup>
-			<DropDirectories Include="
-						 $(DropDirectory);
-						 $(DropBinDirectory);
-						 $(DropLibDirectory);
-						 $(DropSamplesDirectory);
-						 $(DropSpecsDirectory);
-										 " />
-
-			<DropSourceFiles Include="
-																$(ProjectRoot)\Doc\$(ProductName).chm;
-																$(ProjectRoot)\Doc\*.htm*;
-																$(ProjectRoot)\LICENSE.txt;
-																$(ProjectRoot)\CONTRIB.txt;
-																"
-											 Exclude="$(ProjectRoot)\Doc\README.*.html;" />
-			<DropBinSourceFiles Include="
-																$(OutputPath)\$(ProductName).???;
-																$(ProjectRoot)\Doc\README.Bin.html;
-																$(ProjectRoot)\src\$(ProductName)\Configuration\$(ProductName).xsd;
-													" />
-			<DropLibSourceFiles Include="
-																$(ProjectRoot)\Lib\log4net.*;
-																" />
-			<DropSamplesSourceFiles Include="$(ProjectRoot)\Samples\**" Exclude="
-															$(ProjectRoot)\**\obj\**;
-															$(ProjectRoot)\**\*.user;
-															$(ProjectRoot)\**\*.sln.cache;
-															$(ProjectRoot)\**\*.suo;
-															$(ProjectRoot)\**\*.user;
-															$(ProjectRoot)\**\*.gitignore;
-															$(ProjectRoot)\**\*.ldf;
-															$(ProjectRoot)\**\*.log*;
-															$(ProjectRoot)\**\*~;
-															$(ProjectRoot)\**\Debug\**;
-															$(ProjectRoot)\**\Settings.StyleCop;
-															$(ProjectRoot)\Samples\**\DotNetOpenAuth.???;
-															$(ProjectRoot)\Samples\**\log4net.???;
-															$(ProjectRoot)\Samples\**\PresentationCore.dll;
-															$(ProjectRoot)\Samples\**\System.Printing.dll;
-															$(ProjectRoot)\Samples\**\*.refresh_;
-															" />
-			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
-			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)\Samples\**\*.refresh_" />
-			<DropSpecsSourceFiles Include="$(ProjectRoot)\Doc\specs\*.htm*" />
-
-			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)\%(RecurisveDir)%(FileName)%(Extension)')"/>
-			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)\%(RecursiveDir)%(FileName).refresh')"/>
-			<DropSamplesToolsProjects Include="$(DropSamplesDirectory)\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
-			<DropSpecsFiles Include="@(DropSpecsSourceFiles->'$(DropSpecsDirectory)\%(RecursiveDir)%(FileName)%(Extension)')"/>
-
-			<AllDropSources Include="
-										@(DropSourceFiles);
-										@(DropBinSourceFiles);
-										@(DropLibSourceFiles);
-										@(DropSamplesSourceFiles);
-										@(DropSamplesRefreshSourceFiles);
-										@(DropDocSourceFiles);
-										@(DropSpecsSourceFiles);
-										" />
-
-			<AllDropTargets Include="
-										@(DropFiles);
-										@(DropBinFiles);
-										@(DropLibFiles);
-										@(DropSamplesFiles);
-										@(DropSamplesRefreshFiles);
-										@(DropDocFiles);
-										@(DropSpecsFiles)
-										" />
-		</ItemGroup>
-
-		<MakeDir Directories="@(DropDirectories)" />
-		<Copy SourceFiles="@(AllDropSources)" DestinationFiles="@(AllDropTargets)" SkipUnchangedFiles="true" />
-		<!-- fix up the samples so that they will compile right out of the drop -->
-		<ItemGroup>
-			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
-		</ItemGroup>
-		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" />
-		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
-		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
-	</Target>
-
-	<Target Name="Drop" DependsOnTargets="DropLayout">
-		<PropertyGroup>
-			<DropZip>$(DropDirectory).zip</DropZip>
-		</PropertyGroup>
-		<Delete Files="$(DropZip)" />
-		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(ProjectRoot)\drops" />
-	</Target>
-
-	<!-- Although Nightly includes publishing samples and docs, those targets are conditioned for
-	     running only when the SampleWebRoot and DocWebRoot properties are set, respectively. -->
-	<Target Name="Nightly" DependsOnTargets="Drop;Tools;PublishSamples;PublishDocumentation">
-
-	</Target>
-
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
 </Project>

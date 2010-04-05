@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using DotNetOpenAuth.Messaging;
@@ -17,15 +18,15 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using DotNetOpenAuth.Test.OpenId.Extensions;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ExtensionsBindingElementTests : OpenIdTestBase {
 		private StandardOpenIdExtensionFactory factory;
 		private ExtensionsBindingElement rpElement;
 		private IProtocolMessageWithExtensions request;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -36,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RoundTripFullStackTest() {
 			IOpenIdMessageExtension request = new MockOpenIdExtension("requestPart", "requestData");
 			IOpenIdMessageExtension response = new MockOpenIdExtension("responsePart", "responseData");
@@ -46,12 +47,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				new IOpenIdMessageExtension[] { response });
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ExtensionFactory() {
 			Assert.AreSame(this.factory, this.rpElement.ExtensionFactory);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void PrepareMessageForSendingNull() {
 			this.rpElement.ProcessOutgoingMessage(null);
 		}
@@ -59,13 +60,13 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that false is returned when a non-extendable message is sent.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void PrepareMessageForSendingNonExtendableMessage() {
 			IProtocolMessage request = new AssociateDiffieHellmanRequest(Protocol.Default.Version, OpenIdTestBase.OPUri);
 			Assert.IsNull(this.rpElement.ProcessOutgoingMessage(request));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void PrepareMessageForSending() {
 			this.request.Extensions.Add(new MockOpenIdExtension("part", "extra"));
 			Assert.IsNotNull(this.rpElement.ProcessOutgoingMessage(this.request));
@@ -76,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Assert.AreEqual("extra", this.request.ExtraData["openid." + alias + ".data"]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void PrepareMessageForReceiving() {
 			this.request.ExtraData["openid.ns.mock"] = MockOpenIdExtension.MockTypeUri;
 			this.request.ExtraData["openid.mock.Part"] = "part";
@@ -90,7 +91,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that extension responses are included in the OP's signature.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ExtensionResponsesAreSigned() {
 			Protocol protocol = Protocol.Default;
 			var op = this.CreateProvider();
@@ -112,7 +113,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that unsigned extension responses (where any or all fields are unsigned) are ignored.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ExtensionsAreIdentifiedAsSignedOrUnsigned() {
 			Protocol protocol = Protocol.Default;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -143,7 +144,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// OpenID Authentication 2.0 section 12 states that
 		/// "A namespace MUST NOT be assigned more than one alias in the same message".
 		/// </remarks>
-		[TestMethod]
+		[TestCase]
 		public void TwoExtensionsSameTypeUri() {
 			IOpenIdMessageExtension request1 = new MockOpenIdExtension("requestPart1", "requestData1");
 			IOpenIdMessageExtension request2 = new MockOpenIdExtension("requestPart2", "requestData2");
@@ -153,8 +154,8 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 					new IOpenIdMessageExtension[] { request1, request2 },
 					new IOpenIdMessageExtension[0]);
 				Assert.Fail("Expected ProtocolException not thrown.");
-			} catch (AssertFailedException ex) {
-				Assert.IsInstanceOfType(ex.InnerException, typeof(ProtocolException));
+			} catch (AssertionException ex) {
+				Assert.IsInstanceOf<ProtocolException>(ex.InnerException);
 			}
 		}
 
@@ -167,7 +168,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		private static void RegisterMockExtension(Channel channel) {
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			ExtensionTestUtilities.RegisterExtension(channel, MockOpenIdExtension.Factory);
 		}
@@ -178,7 +179,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <param name="protocol">The protocol to construct the message with.</param>
 		/// <returns>The message ready to send from OP to RP.</returns>
 		private IndirectSignedResponse CreateResponseWithExtensions(Protocol protocol) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			Contract.Requires<ArgumentNullException>(protocol != null);
 
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ProviderEndpoint = OPUri;

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// A binding element that checks/verifies a nonce message part.
@@ -41,7 +42,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="nonceStore">The store where nonces will be persisted and checked.</param>
 		/// <param name="allowEmptyNonces">A value indicating whether zero-length nonces will be allowed.</param>
 		internal StandardReplayProtectionBindingElement(INonceStore nonceStore, bool allowEmptyNonces) {
-			ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
 
 			this.nonceStore = nonceStore;
 			this.AllowZeroLengthNonce = allowEmptyNonces;
@@ -124,6 +125,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce, MessagingStrings.InvalidNonceReceived);
 
 				if (!this.nonceStore.StoreNonce(nonceMessage.NonceContext, nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
+					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", nonceMessage.Nonce, nonceMessage.UtcCreationDate);
 					throw new ReplayedMessageException(message);
 				}
 

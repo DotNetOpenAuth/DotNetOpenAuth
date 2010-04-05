@@ -33,12 +33,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageType">A type that implements <see cref="IMessage"/>.</param>
 		/// <param name="messageVersion">The protocol version of the message.</param>
 		/// <returns>A <see cref="MessageDescription"/> instance.</returns>
+		[Pure]
 		internal MessageDescription Get(Type messageType, Version messageVersion) {
-			Contract.Requires(messageType != null && typeof(IMessage).IsAssignableFrom(messageType));
-			Contract.Requires(messageVersion != null);
+			Contract.Requires<ArgumentNullException>(messageType != null);
+			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
+			Contract.Requires<ArgumentNullException>(messageVersion != null);
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(messageType, "messageType");
-			ErrorUtilities.VerifyArgumentNotNull(messageVersion, "messageVersion");
 
 			MessageTypeAndVersion key = new MessageTypeAndVersion(messageType, messageVersion);
 
@@ -63,10 +63,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>
 		/// A <see cref="MessageDescription"/> instance.
 		/// </returns>
+		[Pure]
 		public MessageDescription Get(IMessage message) {
-			Contract.Requires(message != null);
+			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			return this.Get(message.GetType(), message.Version);
 		}
 
@@ -75,9 +75,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <returns>The dictionary.</returns>
+		[Pure]
 		internal MessageDictionary GetAccessor(IMessage message) {
-			Contract.Requires(message != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 			return this.Get(message).GetDictionary(message);
 		}
 
@@ -102,10 +102,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			/// <param name="messageType">Type of the message.</param>
 			/// <param name="messageVersion">The message version.</param>
 			internal MessageTypeAndVersion(Type messageType, Version messageVersion) {
-				Contract.Requires(messageType != null);
-				Contract.Requires(messageVersion != null);
-				ErrorUtilities.VerifyArgumentNotNull(messageType, "messageType");
-				ErrorUtilities.VerifyArgumentNotNull(messageVersion, "messageVersion");
+				Contract.Requires<ArgumentNullException>(messageType != null);
+				Contract.Requires<ArgumentNullException>(messageVersion != null);
 
 				this.type = messageType;
 				this.version = messageVersion;

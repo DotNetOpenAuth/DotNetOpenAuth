@@ -11,12 +11,12 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// Tests for cached enumeration.
 	/// </summary>
-	[TestClass]
+	[TestFixture]
 	public class EnumerableCacheTests {
 		/// <summary>
 		/// The number of times the generator method's implementation is started.
@@ -29,20 +29,15 @@ namespace DotNetOpenAuth.Test.Messaging {
 		private int generatorCompleted;
 
 		/// <summary>
-		/// Gets or sets the test context.
-		/// </summary>
-		public TestContext TestContext { get; set; }
-
-		/// <summary>
 		/// Sets up a test.
 		/// </summary>
-		[TestInitialize]
+		[SetUp]
 		public void Setup() {
 			this.generatorInvocations = 0;
 			this.generatorCompleted = 0;
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EnumerableCache() {
 			// Baseline
 			var generator = this.NumberGenerator();
@@ -63,7 +58,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			CollectionAssert.AreEqual(list1, list4);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GeneratesOnlyRequiredElements() {
 			var generator = this.NumberGenerator().CacheGeneratedResults();
 			Assert.AreEqual(0, this.generatorInvocations);
@@ -72,28 +67,28 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(0, this.generatorCompleted, "Only taking part of the list should not have completed the generator.");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void PassThruDoubleCache() {
 			var cache1 = this.NumberGenerator().CacheGeneratedResults();
 			var cache2 = cache1.CacheGeneratedResults();
 			Assert.AreSame(cache1, cache2, "Two caches were set up rather than just sharing the first one.");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void PassThruList() {
 			var list = this.NumberGenerator().ToList();
 			var cache = list.CacheGeneratedResults();
 			Assert.AreSame(list, cache);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void PassThruArray() {
 			var array = this.NumberGenerator().ToArray();
 			var cache = array.CacheGeneratedResults();
 			Assert.AreSame(array, cache);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void PassThruCollection() {
 			var collection = new Collection<int>();
 			var cache = collection.CacheGeneratedResults();
@@ -103,7 +98,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Tests calling IEnumerator.Current before first call to MoveNext.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
+		[TestCase, ExpectedException(typeof(InvalidOperationException))]
 		public void EnumerableCacheCurrentThrowsBefore() {
 			var foo = this.NumberGenerator().CacheGeneratedResults().GetEnumerator().Current;
 		}
@@ -111,7 +106,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Tests calling IEnumerator.Current after MoveNext returns false.
 		/// </summary>
-		[TestMethod, ExpectedException(typeof(InvalidOperationException))]
+		[TestCase, ExpectedException(typeof(InvalidOperationException))]
 		public void EnumerableCacheCurrentThrowsAfter() {
 			var enumerator = this.NumberGenerator().CacheGeneratedResults().GetEnumerator();
 			while (enumerator.MoveNext()) {

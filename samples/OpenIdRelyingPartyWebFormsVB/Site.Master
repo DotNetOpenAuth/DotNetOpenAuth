@@ -1,0 +1,39 @@
+﻿<%@ Master Language="VB" AutoEventWireup="true" %>
+<%@ Import Namespace="OpenIdRelyingPartyWebFormsVB" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<script runat="server">
+	Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs)
+		friendlyUsername.Text = State.FriendlyLoginName
+	End Sub
+
+	Protected Sub LoginStatus1_LoggedOut(ByVal sender As Object, ByVal e As EventArgs)
+		State.Clear()
+	End Sub
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<title>OpenID Relying Party, by DotNetOpenAuth</title>
+	<link href="styles.css" rel="stylesheet" type="text/css" />
+	<asp:ContentPlaceHolder ID="head" runat="server" />
+</head>
+<body>
+	<form id="form1" runat="server">
+	<span style="float: right">
+		<asp:Image runat="server" ID="openIdUsernameImage" ImageUrl="~/images/openid_login.png"
+			EnableViewState="false" />
+		<asp:Label runat="server" ID="friendlyUsername" Text="" EnableViewState="false" />
+		<asp:LoginStatus ID="LoginStatus1" runat="server" OnLoggedOut="LoginStatus1_LoggedOut" />
+	</span>
+	<div>
+		<a href="http://dotnetopenauth.net">
+			<img runat="server" src="~/images/DotNetOpenAuth.png" title="Jump to the project web site."
+				alt="DotNetOpenAuth" border='0' /></a>
+	</div>
+	<div>
+		<asp:ContentPlaceHolder ID="Main" runat="server" />
+	</div>
+	</form>
+</body>
+</html>

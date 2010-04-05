@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -18,9 +19,9 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class OAuthChannelTests : TestBase {
 		private OAuthChannel channel;
 		private OAuthChannel_Accessor accessor;
@@ -28,44 +29,44 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		private SigningBindingElementBase signingElement;
 		private INonceStore nonceStore;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
 			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
-			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.DefaultMaximumMessageAge);
+			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
 			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 			this.accessor = OAuthChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullSigner() {
 			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
 			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), new TestMessageFactory());
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
 			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, new TestMessageFactory());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorSimpleConsumer() {
 			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CtorSimpleServiceProvider() {
 			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ReadFromRequestAuthorization() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
 		}
@@ -74,7 +75,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		/// Verifies that the OAuth ReadFromRequest method gathers parameters
 		/// from the Authorization header, the query string and the entity form data.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ReadFromRequestAuthorizationScattered() {
 			// Start by creating a standard POST HTTP request.
 			var fields = new Dictionary<string, string> {
@@ -98,24 +99,24 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			IDirectedProtocolMessage requestMessage = this.channel.ReadFromRequest(requestInfo);
 
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
+			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage testMessage = (TestMessage)requestMessage;
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ReadFromRequestForm() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.PostRequest);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ReadFromRequestQueryString() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.GetRequest);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void SendDirectMessageResponse() {
 			IProtocolMessage message = new TestDirectedMessage {
 				Age = 15,
@@ -134,7 +135,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual("http://hostb/pathB", body["Location"]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ReadFromResponse() {
 			var fields = new Dictionary<string, string> {
 				{ "age", "15" },
@@ -156,18 +157,18 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			}
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void RequestNull() {
 			this.channel.Request(null);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void RequestNullRecipient() {
 			IDirectedProtocolMessage message = new TestDirectedMessage(MessageTransport.Direct);
 			this.channel.Request(message);
 		}
 
-		[TestMethod, ExpectedException(typeof(NotSupportedException))]
+		[TestCase, ExpectedException(typeof(NotSupportedException))]
 		public void RequestBadPreferredScheme() {
 			TestDirectedMessage message = new TestDirectedMessage(MessageTransport.Direct);
 			message.Recipient = new Uri("http://localtest");
@@ -175,7 +176,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.channel.Request(message);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequestUsingAuthorizationHeader() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
 		}
@@ -183,7 +184,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		/// <summary>
 		/// Verifies that message parts can be distributed to the query, form, and Authorization header.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void RequestUsingAuthorizationHeaderScattered() {
 			TestDirectedMessage request = new TestDirectedMessage(MessageTransport.Direct) {
 				Age = 15,
@@ -216,20 +217,25 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual("appearinform=formish", this.webRequestHandler.RequestEntityAsString);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequestUsingGet() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.GetRequest);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RequestUsingPost() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.PostRequest);
+		}
+
+		[TestCase]
+		public void RequestUsingHead() {
+			this.ParameterizedRequestTest(HttpDeliveryMethods.HeadRequest);
 		}
 
 		/// <summary>
 		/// Verifies that messages asking for special HTTP status codes get them.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);
@@ -243,7 +249,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		}
 
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
+			Contract.Requires<ArgumentNullException>(fields != null);
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append("OAuth ");
@@ -322,7 +328,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.webRequestHandler.Callback = (req) => {
 				Assert.IsNotNull(req);
 				HttpRequestInfo reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
-				Assert.AreEqual(scheme == HttpDeliveryMethods.PostRequest ? "POST" : "GET", reqInfo.HttpMethod);
+				Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), reqInfo.HttpMethod);
 				var incomingMessage = this.channel.ReadFromRequest(reqInfo) as TestMessage;
 				Assert.IsNotNull(incomingMessage);
 				Assert.AreEqual(request.Age, incomingMessage.Age);
@@ -343,7 +349,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 
 			IProtocolMessage response = this.channel.Request(request);
 			Assert.IsNotNull(response);
-			Assert.IsInstanceOfType(response, typeof(TestMessage));
+			Assert.IsInstanceOf<TestMessage>(response);
 			TestMessage responseMessage = (TestMessage)response;
 			Assert.AreEqual(request.Age, responseMessage.Age);
 			Assert.AreEqual(request.Name, responseMessage.Name);
@@ -359,7 +365,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			};
 			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(scheme, fields));
 			Assert.IsNotNull(requestMessage);
-			Assert.IsInstanceOfType(requestMessage, typeof(TestMessage));
+			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage testMessage = (TestMessage)requestMessage;
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);

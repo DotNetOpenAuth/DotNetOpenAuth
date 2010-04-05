@@ -6,18 +6,17 @@
 
 namespace DotNetOpenAuth.Test {
 	using System.Diagnostics.Contracts;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[SetUpFixture]
 	public class AssemblyTesting {
-		[AssemblyInitialize]
-		public static void AssemblyInitialize(TestContext tc) {
+		[SetUp]
+		public static void AssemblyInitialize() {
 			// Make contract failures become test failures.
 			Contract.ContractFailed += (sender, e) => {
-				if (e.FailureKind == ContractFailureKind.Precondition) {
-					// Currently we ignore these so that the regular ErrorUtilities can kick in.
-					e.SetHandled();
-				} else {
+				// For now, we have tests that verify that preconditions throw exceptions.
+				// So we don't want to fail a test just because a precondition check failed.
+				if (e.FailureKind != ContractFailureKind.Precondition) {
 					e.SetHandled();
 					Assert.Fail(e.FailureKind.ToString() + ": " + e.Message);
 				}

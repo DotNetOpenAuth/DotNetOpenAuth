@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<PropertyGroup>
+		<PackJs Condition="'$(PackJs)' == '' and '$(Configuration)' == 'Release'">true</PackJs>
+		<PrepareResourcesDependsOn Condition="'$(PackJs)' == 'true'">
+			$(PrepareResourcesDependsOn);
+			PackJavascriptResources;
+		</PrepareResourcesDependsOn>
+		<CleanDependsOn>
+			$(CleanDependsOn);
+			CleanPackedJavascriptResources;
+		</CleanDependsOn>
+	</PropertyGroup>
+
+	<!-- We depend on CreateManifestResourceNames because we'll be changing the paths
+	     from which resources are embedded, which will alter their names if that target
+	     runs after us. -->
+	<Target Name="PackJavascriptResources" DependsOnTargets="CreateManifestResourceNames">
+		<ItemGroup>
+			<JavascriptInputs Include="@(EmbeddedResource)" Condition="'%(Extension)' == '.js'" />
+			<JavascriptOutputs Include="@(JavascriptInputs->'$(IntermediateOutputPath)%(RelativeDir)%(Filename)%(Extension)')" />
+			<EmbeddedResource Remove="@(JavascriptInputs)" />
+			<EmbeddedResource Include="@(JavascriptOutputs)" />
+		</ItemGroup>
+
+		<JsPack Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)" />
+	</Target>
+
+	<Target Name="CleanPackedJavascriptResources">
+		<ItemGroup>
+			<_JavascriptOutputsToClean
+				Include="@(EmbeddedResource->'$(IntermediateOutputPath)%(RelativeDir)%(Filename)%(Extension)')"
+				Condition="'%(Extension)' == '.js'" />
+		</ItemGroup>
+		<Delete Files="@(_JavascriptOutputsToClean)" />
+	</Target>
+</Project>

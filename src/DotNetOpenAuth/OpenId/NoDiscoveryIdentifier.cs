@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
@@ -28,9 +29,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="wrappedIdentifier">The ordinary Identifier whose discovery is being masked.</param>
 		/// <param name="claimSsl">Whether this Identifier should claim to be SSL-secure, although no discovery will never generate service endpoints anyway.</param>
 		internal NoDiscoveryIdentifier(Identifier wrappedIdentifier, bool claimSsl)
-			: base(claimSsl) {
-			Contract.Requires(wrappedIdentifier != null);
-			ErrorUtilities.VerifyArgumentNotNull(wrappedIdentifier, "wrappedIdentifier");
+			: base(wrappedIdentifier.OriginalString, claimSsl) {
+			Contract.Requires<ArgumentNullException>(wrappedIdentifier != null);
 
 			this.wrappedIdentifier = wrappedIdentifier;
 		}
@@ -67,17 +67,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		public override int GetHashCode() {
 			return this.wrappedIdentifier.GetHashCode();
-		}
-
-		/// <summary>
-		/// Performs discovery on the Identifier.
-		/// </summary>
-		/// <param name="requestHandler">The web request handler to use for discovery.</param>
-		/// <returns>
-		/// An initialized structure containing the discovered provider endpoint information.
-		/// </returns>
-		public override IEnumerable<ServiceEndpoint> Discover(IDirectWebRequestHandler requestHandler) {
-			return Enumerable.Empty<ServiceEndpoint>();
 		}
 
 		/// <summary>

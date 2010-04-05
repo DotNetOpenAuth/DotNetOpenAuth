@@ -40,17 +40,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageType">Type of the message.</param>
 		/// <param name="messageVersion">The message version.</param>
 		internal MessageDescription(Type messageType, Version messageVersion) {
-			Contract.Requires(messageType != null && typeof(IMessage).IsAssignableFrom(messageType));
-			Contract.Requires(messageVersion != null);
-			ErrorUtilities.VerifyArgumentNotNull(messageType, "messageType");
-			ErrorUtilities.VerifyArgumentNotNull(messageVersion, "messageVersion");
-			if (!typeof(IMessage).IsAssignableFrom(messageType)) {
-				throw new ArgumentException(string.Format(
-					CultureInfo.CurrentCulture,
-					MessagingStrings.UnexpectedType,
-					typeof(IMessage),
-					messageType));
-			}
+			Contract.Requires<ArgumentNullException>(messageType != null);
+			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
+			Contract.Requires<ArgumentNullException>(messageVersion != null);
 
 			this.messageType = messageType;
 			this.messageVersion = messageVersion;
@@ -70,10 +62,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="message">The message the dictionary should provide access to.</param>
 		/// <returns>The dictionary accessor to the message</returns>
+		[Pure]
 		internal MessageDictionary GetDictionary(IMessage message) {
-			Contract.Requires(message != null);
+			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
 			return new MessageDictionary(message, this);
 		}
 

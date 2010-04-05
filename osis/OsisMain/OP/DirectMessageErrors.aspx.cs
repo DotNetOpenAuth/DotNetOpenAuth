@@ -15,11 +15,11 @@ public partial class OP_DirectMessageErrors : System.Web.UI.Page {
 			return;
 		}
 
-		ServiceEndpoint endpoint;
+		IdentifierDiscoveryResult endpoint;
 		var rp = new OpenIdRelyingParty();
 		try {
 			Identifier identifier = identifierBox.Text;
-			endpoint = identifier.Discover(rp.Channel.WebRequestHandler).First();
+			endpoint = rp.Discover(identifier).First();
 		} catch (ProtocolException ex) {
 			errorLabel.Text = ex.Message;
 			errorLabel.Visible = true;
@@ -27,11 +27,11 @@ public partial class OP_DirectMessageErrors : System.Web.UI.Page {
 		}
 
 		MultiView1.ActiveViewIndex = 1;
-		testResultDisplay.ProviderEndpoint = endpoint.ProviderDescription.Endpoint;
+		testResultDisplay.ProviderEndpoint = endpoint.ProviderEndpoint;
 		testResultDisplay.ProtocolVersion = endpoint.Version;
 
 		try {
-			var response = rp.Channel.Request<DirectErrorResponse>(new BadRequest(endpoint.ProviderDescription.Endpoint));
+			var response = rp.Channel.Request<DirectErrorResponse>(new BadRequest(endpoint.ProviderEndpoint));
 			testResultDisplay.Pass = true;
 			testResultDisplay.Details = "OP returned error: " + response.ErrorMessage;
 		} catch (ProtocolException ex) {

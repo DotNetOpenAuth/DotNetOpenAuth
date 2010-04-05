@@ -1,0 +1,26 @@
+﻿<VSContent xmlns="http://schemas.microsoft.com/developer/vscontent/2005">
+	<Content>
+		<FileName>WebFormsRelyingParty.zip</FileName>
+		<DisplayName>ASP.NET OpenID-InfoCard RP</DisplayName>
+		<Description>An ASP.NET web forms web site that accepts OpenID and InfoCard logins</Description>
+		<FileContentType>VSTemplate</FileContentType>
+		<ContentVersion>2.0</ContentVersion>
+		<Attributes>
+			<Attribute name="ProjectType" value="Visual C#"/>
+			<Attribute name="ProjectSubType" value="Web"/>
+			<Attribute name="TemplateType" value="Project"/>
+		</Attributes>
+	</Content>
+	<Content>
+		<FileName>MvcRelyingParty.zip</FileName>
+		<DisplayName>ASP.NET MVC OpenID-InfoCard RP</DisplayName>
+		<Description>An ASP.NET MVC web site that accepts OpenID logins</Description>
+		<FileContentType>VSTemplate</FileContentType>
+		<ContentVersion>2.0</ContentVersion>
+		<Attributes>
+			<Attribute name="ProjectType" value="Visual C#"/>
+			<Attribute name="ProjectSubType" value="Web"/>
+			<Attribute name="TemplateType" value="Project"/>
+		</Attributes>
+	</Content>
+</VSContent>

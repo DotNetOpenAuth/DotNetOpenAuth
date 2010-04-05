@@ -41,7 +41,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="message">The message that needs to be signed.</param>
 		/// <returns>True if this binding element can be used to sign the message.  False otherwise.</returns>
 		protected override bool IsMessageApplicable(ITamperResistantOAuthMessage message) {
-			return string.Equals(message.Recipient.Scheme, "https", StringComparison.OrdinalIgnoreCase);
+			if (string.Equals(message.Recipient.Scheme, "https", StringComparison.OrdinalIgnoreCase)) {
+				return true;
+			} else {
+				Logger.Bindings.DebugFormat("The {0} element will not sign this message because the URI scheme is not https.", this.GetType().Name);
+				return false;
+			}
 		}
 
 		/// <summary>

@@ -1,7 +1,12 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4376ECC9-C346-4A99-B13C-FA93C0FBD2C9}</ProjectGuid>
@@ -9,24 +14,40 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetOpenAuth.Test</RootNamespace>
     <AssemblyName>DotNetOpenAuth.Test</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
     </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
@@ -44,22 +65,45 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Sign)' == 'true' ">
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\official-build-key.pfx</AssemblyOriginatorKeyFile>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsPlatformPath>
+    </CodeContractsPlatformPath>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\bin\CodeAnalysis\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -71,7 +115,7 @@
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
     </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
@@ -87,20 +131,24 @@
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
     <Reference Include="Moq, Version=3.1.416.3, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -131,10 +179,12 @@
     <Compile Include="Hosting\HostingTests.cs" />
     <Compile Include="Hosting\HttpHost.cs" />
     <Compile Include="Hosting\TestingWorkerRequest.cs" />
+    <Compile Include="LocalizationTests.cs" />
     <Compile Include="Messaging\CollectionAssert.cs" />
     <Compile Include="Messaging\EnumerableCacheTests.cs" />
     <Compile Include="Messaging\ErrorUtilitiesTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
+    <Compile Include="Messaging\MultipartPostPartTests.cs" />
     <Compile Include="Messaging\OutgoingWebResponseTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDictionaryTests.cs" />
@@ -153,6 +203,7 @@
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
+    <Compile Include="Mocks\MockIdentifierDiscoveryService.cs" />
     <Compile Include="Mocks\MockOpenIdExtension.cs" />
     <Compile Include="Mocks\MockRealm.cs" />
     <Compile Include="Mocks\MockTransformationBindingElement.cs" />
@@ -187,6 +238,8 @@
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElementTests.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElementTests.cs" />
     <Compile Include="OpenId\DiffieHellmanTests.cs" />
+    <Compile Include="OpenId\DiscoveryServices\UriDiscoveryServiceTests.cs" />
+    <Compile Include="OpenId\DiscoveryServices\XriDiscoveryProxyServiceTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchRequestTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\FetchResponseTests.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeExchangeRoundtripTests.cs" />
@@ -223,6 +276,7 @@
     <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
+    <Compile Include="OpenId\OpenIdUtilitiesTests.cs" />
     <Compile Include="OpenId\Provider\PerformanceTests.cs" />
     <Compile Include="OpenId\ProviderEndpointDescriptionTests.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequestTests.cs" />
@@ -233,11 +287,13 @@
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestTests.cs" />
     <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponseTests.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdTextBoxTests.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponseTests.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshotTests.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseTests.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyTests.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettingsTests.cs" />
-    <Compile Include="OpenId\RelyingParty\ServiceEndpointTests.cs" />
+    <Compile Include="OpenId\RelyingParty\IdentifierDiscoveryResultTests.cs" />
     <Compile Include="OpenId\UriIdentifierTests.cs" />
     <Compile Include="OpenId\XriIdentifierTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -254,13 +310,11 @@
     <ProjectReference Include="..\DotNetOpenAuth\DotNetOpenAuth.csproj">
       <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
       <Name>DotNetOpenAuth</Name>
+      <Shadow>true</Shadow>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Logging.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Shadow Include="Test References\DotNetOpenAuth.accessor" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html1020.html" />
@@ -292,8 +346,39 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\xrds20dual.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="OpenId\UI\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\tools\DotNetOpenAuth.Versioning.targets" />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html20provWithEmptyXrds.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html20provWithBadXrds.html" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
 </Project>

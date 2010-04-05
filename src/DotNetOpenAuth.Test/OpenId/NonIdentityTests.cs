@@ -9,11 +9,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class NonIdentityTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void ExtensionOnlyChannelLevel() {
 			Protocol protocol = Protocol.V20;
 			AuthenticationRequestMode mode = AuthenticationRequestMode.Setup;
@@ -25,12 +25,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 				},
 				op => {
 					var request = op.Channel.ReadFromRequest<SignedResponseRequest>();
-					Assert.IsNotInstanceOfType(request, typeof(CheckIdRequest));
+					Assert.IsNotInstanceOf<CheckIdRequest>(request);
 				});
 			coordinator.Run();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ExtensionOnlyFacadeLevel() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new OpenIdCoordinator(
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 					var request = (IAnonymousRequest)op.GetRequest();
 					request.IsApproved = true;
-					Assert.IsNotInstanceOfType(request, typeof(CheckIdRequest));
+					Assert.IsNotInstanceOf<CheckIdRequest>(request);
 					op.SendResponse(request);
 				});
 			coordinator.Run();

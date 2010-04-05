@@ -54,10 +54,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The incoming request message.</param>
 		/// <param name="securitySettings">The security settings from the channel.</param>
 		protected Request(IDirectedProtocolMessage request, ProviderSecuritySettings securitySettings) {
-			Contract.Requires(request != null);
-			Contract.Requires(securitySettings != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.request = request;
 			this.SecuritySettings = securitySettings;
@@ -71,10 +69,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="version">The version.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		protected Request(Version version, ProviderSecuritySettings securitySettings) {
-			Contract.Requires(version != null);
-			Contract.Requires(securitySettings != null);
-			ErrorUtilities.VerifyArgumentNotNull(version, "version");
-			ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
+			Contract.Requires<ArgumentNullException>(version != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.protocolVersion = version;
 			this.SecuritySettings = securitySettings;
@@ -103,10 +99,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
 		internal IProtocolMessage Response {
 			get {
-				Contract.Requires(this.IsResponseReady);
+				Contract.Requires<InvalidOperationException>(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
 
-				ErrorUtilities.VerifyOperation(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 				if (this.responseExtensions.Count > 0) {
 					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
 					ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);
@@ -161,8 +156,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="extension">The extension to add to the response message.</param>
 		public void AddResponseExtension(IOpenIdMessageExtension extension) {
-			ErrorUtilities.VerifyArgumentNotNull(extension, "extension");
-
 			// Because the derived AuthenticationRequest class can swap out
 			// one response message for another (auth vs. no-auth), and because
 			// some response messages support extensions while others don't,
@@ -194,7 +187,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// An instance of the extension initialized with values passed in with the request.
 		/// </returns>
 		public IOpenIdMessageExtension GetExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			if (this.extensibleMessage != null) {
 				return this.extensibleMessage.Extensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).SingleOrDefault();
 			} else {

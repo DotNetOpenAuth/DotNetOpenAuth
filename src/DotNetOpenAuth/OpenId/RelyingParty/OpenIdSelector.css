@@ -1,0 +1,109 @@
+﻿ul.OpenIdProviders
+{
+	padding: 0;
+	margin: 0px 0px 0px 0px;
+	list-style-type: none;
+	text-align: center;
+}
+
+ul.OpenIdProviders li
+{
+	background-color: White;
+	display: inline-block;
+	border: 1px solid #DDD;
+	margin: 0px 2px 4px 2px;
+	height: 50px;
+	width: 100px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+ul.OpenIdProviders li div
+{
+	margin: 0;
+	padding: 0;
+	height: 50px;
+	width: 100px;
+	text-align: center;
+	display: table;
+	position: relative;
+	overflow: hidden;
+}
+
+ul.OpenIdProviders li div div
+{
+	margin: 0;
+	padding: 0;
+	top: 50%;
+	display: table-cell;
+	vertical-align: middle;
+	position: static;
+}
+
+ul.OpenIdProviders li img
+{
+}
+
+ul.OpenIdProviders li a img
+{
+	border-width: 0;
+}
+
+ul.OpenIdProviders li img.loginSuccess
+{
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	display: none;
+}
+
+ul.OpenIdProviders li.loginSuccess img.loginSuccess
+{
+	display: inline;
+}
+
+ul.OpenIdProviders li a
+{
+	display: block; /* Chrome needs this for proper position of grayed out overlay */
+	position: relative;
+}
+
+ul.OpenIdProviders li div.ui-widget-overlay
+{
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	bottom: 0;
+}
+
+ul.OpenIdProviders li.grayedOut div.ui-widget-overlay
+{
+	display: block;
+}
+
+ul.OpenIdProviders li.focused
+{
+	border: solid 2px yellow;
+}
+
+ul.OpenIdProviders li.infocard
+{
+	display: none; /* default to hiding InfoCard until the user agent determines it's supported */
+	cursor: pointer;
+}
+
+#openid_identifier
+{
+	width: 298px;
+}
+
+#OpenIDForm
+{
+	text-align: center;
+}
+
+#openid_login_button
+{
+}

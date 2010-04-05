@@ -48,6 +48,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// The authorization context carried by the token.
 		/// </returns>
 		internal static AuthorizationContext AuthenticateToken(XmlReader reader, Uri audience) {
+			Contract.Ensures(Contract.Result<AuthorizationContext>() != null);
+
 			// Extensibility Point:
 			// in order to accept different token types, you would need to add additional 
 			// code to create an authenticationcontext from the security token. 
@@ -160,8 +162,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="authzContext">The Authorization Context</param>
 		/// <returns>A unique ID for this user at this web site.</returns>
 		internal static string GetUniqueName(AuthorizationContext authzContext) {
-			Contract.Requires(authzContext != null);
-			ErrorUtilities.VerifyArgumentNotNull(authzContext, "authzContext");
+			Contract.Requires<ArgumentNullException>(authzContext != null);
 
 			Claim uniqueIssuerClaim = null;
 			Claim uniqueUserClaim = null;
@@ -217,9 +218,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="ppid">The personal private identifier.</param>
 		/// <returns>A string containing the XXX-XXXX-XXX cosmetic value.</returns>
 		internal static string CalculateSiteSpecificID(string ppid) {
-			Contract.Requires(ppid != null);
-			ErrorUtilities.VerifyArgumentNotNull(ppid, "ppid");
-			Contract.Ensures(Contract.Result<string>() != null && Contract.Result<string>().Length > 0);
+			Contract.Requires<ArgumentNullException>(ppid != null);
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			int callSignChars = 10;
 			char[] charMap = "QL23456789ABCDEFGHJKMNPRSTUVWXYZ".ToCharArray();
@@ -246,8 +246,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="cs">the claimset which contains the claim</param>
 		/// <returns>a RSA claim</returns>
 		private static Claim GetUniqueRsaClaim(ClaimSet cs) {
-			Contract.Requires(cs != null);
-			ErrorUtilities.VerifyArgumentNotNull(cs, "cs");
+			Contract.Requires<ArgumentNullException>(cs != null);
 
 			Claim rsa = null;
 
@@ -269,11 +268,9 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="claimValue">the claim value to hash with.</param>
 		/// <returns>A base64 representation of the combined ID.</returns>
 		private static string ComputeCombinedId(RSA issuerKey, string claimValue) {
-			Contract.Requires(issuerKey != null);
-			Contract.Requires(claimValue != null);
+			Contract.Requires<ArgumentNullException>(issuerKey != null);
+			Contract.Requires<ArgumentNullException>(claimValue != null);
 			Contract.Ensures(Contract.Result<string>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(issuerKey, "issuerKey");
-			ErrorUtilities.VerifyArgumentNotNull(claimValue, "claimValue");
 
 			int nameLength = Encoding.UTF8.GetByteCount(claimValue);
 			RSAParameters rsaParams = issuerKey.ExportParameters(false);

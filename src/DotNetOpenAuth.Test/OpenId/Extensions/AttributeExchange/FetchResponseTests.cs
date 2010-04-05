@@ -9,37 +9,37 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.IO;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.Test.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class FetchResponseTests : OpenIdTestBase {
-		[TestMethod]
+		[TestCase]
 		public void AddAttribute() {
 			var response = new FetchResponse();
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AddTwoAttributes() {
 			var response = new FetchResponse();
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 			response.Attributes.Add(new AttributeValues("http://someOtherAttribute", "Value2"));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeTwice() {
 			var response = new FetchResponse();
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeNull() {
 			var response = new FetchResponse();
 			response.Attributes.Add(null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void GetAttributeValue() {
 			var response = new FetchResponse();
 
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual("a", response.GetAttributeValue("http://someattribute3"));
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EqualityTests() {
 			var response1 = new FetchResponse();
 			var response2 = new FetchResponse();
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Serializable() {
 			var fetch = new FetchResponse();
 			fetch.Attributes.Add("http://someAttribute", "val1", "val2");

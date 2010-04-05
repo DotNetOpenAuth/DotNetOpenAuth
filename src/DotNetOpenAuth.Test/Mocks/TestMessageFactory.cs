@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -32,8 +33,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 		#region IMessageFactory Members
 
 		public IDirectedProtocolMessage GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
-			ErrorUtilities.VerifyArgumentNotNull(fields, "fields");
-
 			if (fields.ContainsKey("age")) {
 				if (this.signedMessages) {
 					if (this.expiringMessages) {

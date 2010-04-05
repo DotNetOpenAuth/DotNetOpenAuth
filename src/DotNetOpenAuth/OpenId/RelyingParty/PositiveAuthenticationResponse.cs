@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
+	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
@@ -19,27 +20,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
 	public class PositiveAuthenticationResponse : PositiveAnonymousResponse {
 		/// <summary>
-		/// The OpenID service endpoint reconstructed from the assertion message.
-		/// </summary>
-		/// <remarks>
-		/// This information is straight from the Provider, and therefore must not
-		/// be trusted until verified as matching the discovery information for
-		/// the claimed identifier to avoid a Provider asserting an Identifier
-		/// for which it has no authority. 
-		/// </remarks>
-		private readonly ServiceEndpoint endpoint;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAuthenticationResponse"/> class.
 		/// </summary>
 		/// <param name="response">The positive assertion response that was just received by the Relying Party.</param>
 		/// <param name="relyingParty">The relying party.</param>
 		internal PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
 			: base(response) {
-			Contract.Requires(relyingParty != null);
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
-			this.endpoint = ServiceEndpoint.CreateForClaimedIdentifier(
+			this.Endpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				this.Response.ClaimedIdentifier,
 				this.Response.GetReturnToArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName),
 				this.Response.LocalIdentifier,
@@ -48,6 +37,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				null);
 
 			this.VerifyDiscoveryMatchesAssertion(relyingParty);
+
+			Logger.OpenId.InfoFormat("Received identity assertion for {0} via {1}.", this.Response.ClaimedIdentifier, this.Provider.Uri);
 		}
 
 		#region IAuthenticationResponse Properties
@@ -69,7 +60,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </para>
 		/// </remarks>
 		public override Identifier ClaimedIdentifier {
-			get { return this.endpoint.ClaimedIdentifier; }
+			get { return this.Endpoint.ClaimedIdentifier; }
 		}
 
 		/// <summary>
@@ -102,7 +93,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </para>
 		/// </remarks>
 		public override string FriendlyIdentifierForDisplay {
-			get { return this.endpoint.FriendlyIdentifierForDisplay; }
+			get { return this.Endpoint.FriendlyIdentifierForDisplay; }
 		}
 
 		/// <summary>
@@ -113,6 +104,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the OpenID service endpoint reconstructed from the assertion message.
+		/// </summary>
+		/// <remarks>
+		/// This information is straight from the Provider, and therefore must not
+		/// be trusted until verified as matching the discovery information for
+		/// the claimed identifier to avoid a Provider asserting an Identifier
+		/// for which it has no authority. 
+		/// </remarks>
+		internal IdentifierDiscoveryResult Endpoint { get; private set; }
 
 		/// <summary>
 		/// Gets the positive assertion response message.
@@ -144,6 +146,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				}
 			}
 
+			// Check whether this particular identifier presents a problem with HTTP discovery
+			// due to limitations in the .NET Uri class.
+			UriIdentifier claimedIdUri = claimedId as UriIdentifier;
+			if (claimedIdUri != null && claimedIdUri.ProblematicNormalization) {
+				ErrorUtilities.VerifyProtocol(relyingParty.SecuritySettings.AllowApproximateIdentifierDiscovery, OpenIdStrings.ClaimedIdentifierDefiesDotNetNormalization);
+				Logger.OpenId.WarnFormat("Positive assertion for claimed identifier {0} cannot be precisely verified under partial trust hosting due to .NET limitation.  An approximate verification will be attempted.", claimedId);
+			}
+
 			// While it LOOKS like we're performing discovery over HTTP again
 			// Yadis.IdentifierDiscoveryCachePolicy is set to HttpRequestCacheLevel.CacheIfAvailable
 			// which means that the .NET runtime is caching our discoveries for us.  This turns out
@@ -153,11 +163,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// is signed by the RP before it's considered reliable.  In 1.x stateless mode, this RP
 			// doesn't (and can't) sign its own return_to URL, so its cached discovery information
 			// is merely a hint that must be verified by performing discovery again here.
-			var discoveryResults = claimedId.Discover(relyingParty.WebRequestHandler);
+			var discoveryResults = relyingParty.Discover(claimedId);
 			ErrorUtilities.VerifyProtocol(
-				discoveryResults.Contains(this.endpoint),
+				discoveryResults.Contains(this.Endpoint),
 				OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery,
-				this.endpoint,
+				this.Endpoint,
 				discoveryResults.ToStringDeferred(true));
 		}
 	}

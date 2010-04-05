@@ -319,6 +319,32 @@
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>
+												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether identifiers that are both OP Identifiers and Claimed Identifiers
+															should ever be recognized as claimed identifiers.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="allowApproximateIdentifierDiscovery" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether certain Claimed Identifiers that exploit
+															features that .NET does not have the ability to send exact HTTP requests for will
+															still be allowed by using an approximate HTTP request.
+															Only impacts hosts running under partial trust.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="protectDownlevelReplayAttacks" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether the relying party should take special care
+															to protect users against replay attacks when interoperating with OpenID 1.1 Providers.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="behaviors">
@@ -351,6 +377,27 @@
 																	</xs:documentation>
 																</xs:annotation>
 															</xs:attribute>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="discoveryServices">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="clear">
@@ -746,6 +793,70 @@
 								</xs:complexType>
 							</xs:element>
 						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="reporting">
+					<xs:annotation>
+						<xs:documentation>
+							Adjusts statistical reports DotNetOpenAuth may send to the library authors to
+							assist with future development of the library.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="enabled" type="xs:boolean">
+							<xs:annotation>
+								<xs:documentation>
+									Controls whether reporting is active at all or entirely inactive.
+									Note that even if active, the reports may be more or less empty based
+									on other settings.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="minimumReportingInterval" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>
+									Controls how frequently reports are collected and transmitted.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="minimumFlushInterval" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>
+									Controls how frequently the statistics that are collected in memory are persisted to disk.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeFeatureUsage" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether a list of features in DotNetOpenAuth that are actually used by this host
+									are included in the report.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeEventStatistics" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether a set of counters that track how often certain events (such as an 
+									successful or failed authentication) is included in the report.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeLocalRequestUris" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether to include a few of this host's URLs that contain DotNetOpenAuth components.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="includeCultures" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether to include the cultures as set on the user agents of incoming requests to pages
+									that contain DotNetOpenAuth components.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>

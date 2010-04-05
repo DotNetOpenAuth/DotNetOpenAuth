@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;
@@ -59,6 +60,11 @@ namespace DotNetOpenAuth {
 		private static readonly ILog http = Create("DotNetOpenAuth.Http");
 
 		/// <summary>
+		/// Backing field for the <see cref="Controls"/> property.
+		/// </summary>
+		private static readonly ILog controls = Create("DotNetOpenAuth.Controls");
+
+		/// <summary>
 		/// Backing field for the <see cref="OpenId"/> property.
 		/// </summary>
 		private static readonly ILog openId = Create("DotNetOpenAuth.OpenId");
@@ -109,6 +115,11 @@ namespace DotNetOpenAuth {
 		internal static ILog Http { get { return http; } }
 
 		/// <summary>
+		/// Gets the logger for events logged by ASP.NET controls.
+		/// </summary>
+		internal static ILog Controls { get { return controls; } }
+
+		/// <summary>
 		/// Gets the logger for high-level OpenID events.
 		/// </summary>
 		internal static ILog OpenId { get { return openId; } }
@@ -131,7 +142,7 @@ namespace DotNetOpenAuth {
 		/// <param name="name">A name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
 		internal static ILog Create(string name) {
-			ErrorUtilities.VerifyNonZeroLength(name, "name");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(name));
 			return InitializeFacade(name);
 		}
 
@@ -142,6 +153,7 @@ namespace DotNetOpenAuth {
 		/// <param name="name">A name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
 		internal static ILog CreateWithBanner(string name) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(name));
 			ILog log = Create(name);
 			log.Info(Util.LibraryVersion);
 			return log;
@@ -153,9 +165,7 @@ namespace DotNetOpenAuth {
 		/// <param name="type">A type whose full name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given type name.</returns>
 		internal static ILog Create(Type type) {
-			if (type == null) {
-				throw new ArgumentNullException("type");
-			}
+			Contract.Requires<ArgumentNullException>(type != null);
 
 			return Create(type.FullName);
 		}

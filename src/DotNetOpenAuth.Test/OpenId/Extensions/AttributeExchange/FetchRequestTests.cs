@@ -9,35 +9,35 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.IO;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.Test.OpenId;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class FetchRequestTests : OpenIdTestBase {
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeRequestNull() {
 			new FetchRequest().Attributes.Add(null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AddAttributeRequest() {
 			var req = new FetchRequest();
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://someUri" });
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void AddAttributeRequestStrangeUri() {
 			var req = new FetchRequest();
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "=someUri*who*knows*but*this*is*legal" });
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeRequestAgain() {
 			var req = new FetchRequest();
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://UriTwice" });
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://UriTwice" });
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RespondSimpleValue() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual("value", resp.Values[0]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void RespondTwoValues() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual("value2", resp.Values[1]);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void RespondTooManyValues() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";
@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			req.Respond("value1", "value2");
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void RespondNull() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			req.Respond(null);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void EqualityTests() {
 			var req1 = new FetchRequest();
 			var req2 = new FetchRequest();
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Serializable() {
 			var fetch = new FetchRequest();
 			fetch.Attributes.AddRequired("http://someAttribute");

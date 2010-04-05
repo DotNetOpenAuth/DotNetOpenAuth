@@ -9,14 +9,14 @@ namespace DotNetOpenAuth.Test {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class UtilTests {
 		/// <summary>
 		/// Verifies ToStringDeferred generates a reasonable string for an empty, multi-line list.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ToStringDeferredEmptyMultiLine() {
 			Assert.AreEqual("[]", Util.ToStringDeferred(Enumerable.Empty<string>(), true).ToString());
 		}

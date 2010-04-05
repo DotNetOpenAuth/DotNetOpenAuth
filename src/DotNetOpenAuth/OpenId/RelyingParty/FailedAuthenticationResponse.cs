@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using System.Web;
@@ -27,9 +28,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="exception">The exception that resulted in the failed authentication.</param>
 		internal FailedAuthenticationResponse(Exception exception) {
-			ErrorUtilities.VerifyArgumentNotNull(exception, "exception");
+			Contract.Requires<ArgumentNullException>(exception != null);
 
 			this.Exception = exception;
+
+			string category = string.Empty;
+			if (Reporting.Enabled) {
+				var pe = exception as ProtocolException;
+				if (pe != null) {
+					var responseMessage = pe.FaultedMessage as IndirectSignedResponse;
+					if (responseMessage != null && responseMessage.ProviderEndpoint != null) { // check "required" parts because this is a failure after all
+						category = responseMessage.ProviderEndpoint.AbsoluteUri;
+					}
+				}
+
+				Reporting.RecordEventOccurrence(this, category);
+			}
 		}
 
 		#region IAuthenticationResponse Members

@@ -6,16 +6,17 @@
 
 namespace DotNetOpenAuth.Test.Messaging {
 	using System.Net;
+	using System.Net.Mime;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class OutgoingWebResponseTests {
 		/// <summary>
 		/// Verifies that setting the Body property correctly converts to a byte stream.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void SetBodyToByteStream() {
 			var response = new OutgoingWebResponse();
 			string stringValue = "abc";
@@ -30,7 +31,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
 
 			// Verify that the header was set correctly.
-			Assert.AreEqual(encoding.HeaderName, response.Headers[HttpResponseHeader.ContentEncoding]);
+			Assert.IsNull(response.Headers[HttpResponseHeader.ContentEncoding]);
+			Assert.AreEqual(encoding.HeaderName, new ContentType(response.Headers[HttpResponseHeader.ContentType]).CharSet);
 		}
 	}
 }

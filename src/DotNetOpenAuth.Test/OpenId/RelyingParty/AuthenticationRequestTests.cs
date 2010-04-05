@@ -16,9 +16,10 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using DotNetOpenAuth.Test.Mocks;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AuthenticationRequestTests : OpenIdTestBase {
 		private readonly Realm realm = new Realm("http://localhost/rp.aspx");
 		private readonly Identifier claimedId = "http://claimedId";
@@ -26,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		private readonly Protocol protocol = Protocol.Default;
 		private Uri returnTo;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 			this.returnTo = new Uri("http://localhost/rp.aspx");
@@ -35,9 +36,9 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies IsDirectedIdentity returns true when appropriate.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void IsDirectedIdentity() {
-			IAuthenticationRequest_Accessor iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			var iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.IsFalse(iauthRequest.IsDirectedIdentity);
 
 			iauthRequest = this.CreateAuthenticationRequest(IdentifierSelect, IdentifierSelect);
@@ -47,9 +48,9 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies ClaimedIdentifier behavior.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ClaimedIdentifier() {
-			IAuthenticationRequest_Accessor iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.delegatedLocalId);
+			var iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.delegatedLocalId);
 			Assert.AreEqual(this.claimedId, iauthRequest.ClaimedIdentifier);
 
 			iauthRequest = this.CreateAuthenticationRequest(IdentifierSelect, IdentifierSelect);
@@ -59,16 +60,16 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies ProviderVersion behavior.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void ProviderVersion() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
-			Assert.AreEqual(this.protocol.Version, authRequest.endpoint.Protocol.Version);
+			Assert.AreEqual(this.protocol.Version, authRequest.DiscoveryResult.Version);
 		}
 
 		/// <summary>
 		/// Verifies RedirectingResponse.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void CreateRequestMessage() {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
@@ -106,7 +107,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that delegating authentication requests are filtered out when configured to do so.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void CreateFiltersDelegatingIdentifiers() {
 			Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
 			var rp = CreateRelyingParty();
@@ -122,9 +123,9 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies the Provider property returns non-null.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void Provider() {
-			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.IsNotNull(authRequest.Provider);
 			Assert.AreEqual(OPUri, authRequest.Provider.Uri);
 			Assert.AreEqual(this.protocol.Version, authRequest.Provider.Version);
@@ -133,9 +134,9 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that AddCallbackArguments adds query arguments to the return_to URL of the message.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void AddCallbackArgument() {
-			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.AreEqual(this.returnTo, authRequest.ReturnToUrl);
 			authRequest.AddCallbackArguments("p1", "v1");
 			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
@@ -147,12 +148,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that AddCallbackArguments replaces pre-existing parameter values 
 		/// rather than appending them.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void AddCallbackArgumentClearsPreviousArgument() {
 			UriBuilder returnToWithArgs = new UriBuilder(this.returnTo);
 			returnToWithArgs.AppendQueryArgs(new Dictionary<string, string> { { "p1", "v1" } });
 			this.returnTo = returnToWithArgs.Uri;
-			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			authRequest.AddCallbackArguments("p1", "v2");
 			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
 			NameValueCollection query = HttpUtility.ParseQueryString(req.ReturnTo.Query);
@@ -162,31 +163,48 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies identity-less checkid_* request behavior.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void NonIdentityRequest() {
-			IAuthenticationRequest_Accessor authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
+			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			authRequest.IsExtensionOnly = true;
 			Assert.IsTrue(authRequest.IsExtensionOnly);
 			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
-			Assert.IsNotInstanceOfType(req, typeof(CheckIdRequest), "An unexpected SignedResponseRequest derived type was generated.");
+			Assert.IsNotInstanceOf<CheckIdRequest>(req, "An unexpected SignedResponseRequest derived type was generated.");
+		}
+
+		/// <summary>
+		/// Verifies that discovery on identifiers that serve as OP identifiers and claimed identifiers
+		/// only generate OP Identifier auth requests.
+		/// </summary>
+		[TestCase]
+		public void DualIdentifierUsedOnlyAsOPIdentifierForAuthRequest() {
+			var rp = this.CreateRelyingParty(true);
+			var results = AuthenticationRequest.Create(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false).ToList();
+			Assert.AreEqual(1, results.Count);
+			Assert.IsTrue(results[0].IsDirectedIdentity);
+
+			// Also test when dual identiifer support is turned on.
+			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
+			results = AuthenticationRequest.Create(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false).ToList();
+			Assert.AreEqual(1, results.Count);
+			Assert.IsTrue(results[0].IsDirectedIdentity);
 		}
 
 		/// <summary>
 		/// Verifies that authentication requests are generated first for OPs that respond
 		/// to authentication requests.
 		/// </summary>
-		[TestMethod, Ignore]
+		[TestCase, Ignore("Not yet implemented")]
 		public void UnresponsiveProvidersComeLast() {
 			// TODO: code here
 			Assert.Inconclusive("Not yet implemented.");
 		}
 
-		private AuthenticationRequest_Accessor CreateAuthenticationRequest(Identifier claimedIdentifier, Identifier providerLocalIdentifier) {
+		private AuthenticationRequest CreateAuthenticationRequest(Identifier claimedIdentifier, Identifier providerLocalIdentifier) {
 			ProviderEndpointDescription providerEndpoint = new ProviderEndpointDescription(OPUri, this.protocol.Version);
-			ServiceEndpoint endpoint = ServiceEndpoint.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
+			IdentifierDiscoveryResult endpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, providerLocalIdentifier, providerEndpoint, 10, 5);
 			OpenIdRelyingParty rp = this.CreateRelyingParty();
-			AuthenticationRequest_Accessor authRequest = new AuthenticationRequest_Accessor(endpoint, this.realm, this.returnTo, rp);
-			return authRequest;
+			return AuthenticationRequest.CreateForTest(endpoint, this.realm, this.returnTo, rp);
 		}
 	}
 }

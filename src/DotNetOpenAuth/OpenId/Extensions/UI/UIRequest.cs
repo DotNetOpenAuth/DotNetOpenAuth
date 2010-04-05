@@ -28,8 +28,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// <see cref="UIModes.Popup"/>. </para>
 	/// 	<para>An RP may determine whether an arbitrary OP supports this extension (and thereby determine
 	/// whether to use a standard full window redirect or a popup) via the
-	/// <see cref="IProviderEndpoint.IsExtensionSupported"/> method on the <see cref="DotNetOpenAuth.OpenId.RelyingParty.IAuthenticationRequest.Provider"/>
-	/// object.</para>
+	/// <see cref="IdentifierDiscoveryResult.IsExtensionSupported&lt;T&gt;()"/> method.</para>
 	/// </remarks>
 	public sealed class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
 		/// <summary>
@@ -62,6 +61,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// </summary>
 		public UIRequest() {
 			this.LanguagePreference = new[] { CultureInfo.CurrentUICulture };
+			this.Mode = UIModes.Popup;
 		}
 
 		/// <summary>
@@ -79,9 +79,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// Gets the style of UI that the RP is hosting the OP's authentication page in.
 		/// </summary>
 		/// <value>Some value from the <see cref="UIModes"/> class.  Defaults to <see cref="UIModes.Popup"/>.</value>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Design is to allow this later to be changable when more than one value exists.")]
 		[MessagePart("mode", AllowEmpty = false, IsRequired = true)]
-		public string Mode { get { return UIModes.Popup; } }
+		public string Mode { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the Relying Party has an icon

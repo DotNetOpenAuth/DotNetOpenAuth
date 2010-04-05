@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ArgumentPropertyMissing" xml:space="preserve">
+    <value>Svojstvo {0}.{1} argumenta je neophodno, ali je ono prazno ili nepostojeće.</value>
+  </data>
+  <data name="CurrentHttpContextRequired" xml:space="preserve">
+    <value>HttpContext.Current je nepostojeći.  Mora postojati ASP.NET zahtev u procesu da bi ova operacija bila uspešna.</value>
+  </data>
+  <data name="DataContractMissingFromMessageType" xml:space="preserve">
+    <value>DataContractSerializer se ne može inicijalizovati na tipu poruke {0}.  Da li nedostaje [DataContract] atribut?</value>
+  </data>
+  <data name="DataContractMissingNamespace" xml:space="preserve">
+    <value>DataContractSerializer se ne može inicijalizovati na tipu poruke {0} jer svojstvo DataContractAttribute.Namespace property nije podešeno.</value>
+  </data>
+  <data name="DerivedTypeNotExpected" xml:space="preserve">
+    <value>Instanca tipa {0} je bila očekivana, a primljena je neočekivana izvedena instanca tipa {1}.</value>
+  </data>
+  <data name="DirectedMessageMissingRecipient" xml:space="preserve">
+    <value>Svojstvo Recipient usmerene poruke ne sme biti nepostojeće.</value>
+  </data>
+  <data name="DirectWebRequestOptionsNotSupported" xml:space="preserve">
+    <value>Dati set opcija ({0}) nije podržan od strane {1}.</value>
+  </data>
+  <data name="ErrorDeserializingMessage" xml:space="preserve">
+    <value>Greška prilikom deserijalizacije poruke {0}.</value>
+  </data>
+  <data name="ErrorInRequestReplyMessage" xml:space="preserve">
+    <value>Greška se desila tokom slanja usmerene poruke ili tokom primanja odgovora.</value>
+  </data>
+  <data name="ExceptionNotConstructedForTransit" xml:space="preserve">
+    <value>Ovaj izuzetak nije napravljen sa početnom porukom koja ga je izazvala.</value>
+  </data>
+  <data name="ExpectedMessageNotReceived" xml:space="preserve">
+    <value>Očekivana je poruka {0} a primljena poruka nije prepoznata.</value>
+  </data>
+  <data name="ExpiredMessage" xml:space="preserve">
+    <value>Poruka ističe u {0} a sada je {1}.</value>
+  </data>
+  <data name="GetOrPostFlagsRequired" xml:space="preserve">
+    <value>Bar jedan od GET ili POST flegova mora biti prisutan.</value>
+  </data>
+  <data name="HttpContextRequired" xml:space="preserve">
+    <value>Ovaj metod zahteva tekući HttpContext. Kao alternativa, koristite preklopljeni metod koji dozvoljava da se prosledi informacija bez HttpContext-a.</value>
+  </data>
+  <data name="IndirectMessagesMustImplementIDirectedProtocolMessage" xml:space="preserve">
+    <value>Poruke koje ukazuju na indirektni transport moraju implementirati {0} interfejs.</value>
+  </data>
+  <data name="InsecureWebRequestWithSslRequired" xml:space="preserve">
+    <value>Nebezbedan web zahtev za '{0}' prekinut zbog bezbednosnih zahteva koji zahtevaju HTTPS.</value>
+  </data>
+  <data name="InsufficientMessageProtection" xml:space="preserve">
+    <value>Poruka {0} je zahtevala zaštite {{{1}}} ali prenosni kanal nije mogao primeniti {{{2}}}.</value>
+  </data>
+  <data name="InvalidCustomBindingElementOrder" xml:space="preserve">
+    <value>Redosled prilagođenih vezujućih elemenata je neispravan.</value>
+  </data>
+  <data name="InvalidMessageParts" xml:space="preserve">
+    <value>Neki deo ili delovi poruke imaju nevalidne vrednosti: {0}</value>
+  </data>
+  <data name="InvalidNonceReceived" xml:space="preserve">
+    <value>Primljena poruka imala je neispravan ili nedostajući jedinstveni identifikator.</value>
+  </data>
+  <data name="KeyAlreadyExists" xml:space="preserve">
+    <value>Element sa istom vrednošću ključa je već dodat.</value>
+  </data>
+  <data name="MessageNotExtensible" xml:space="preserve">
+    <value>Poruka {0} ne podržava ekstenzije.</value>
+  </data>
+  <data name="MessagePartEncoderWrongType" xml:space="preserve">
+    <value>Vrednost za {0}.{1} člana {1} je trebala da bude izvedena od  {2} ali je izvedena od {3}.</value>
+  </data>
+  <data name="MessagePartReadFailure" xml:space="preserve">
+    <value>Greška prilikom čitanja poruke '{0}' parametar '{1}' sa vrednošću '{2}'.</value>
+  </data>
+  <data name="MessagePartValueBase64DecodingFault" xml:space="preserve">
+    <value>Parametar poruke '{0}' sa vrednošću '{1}' nije se base64-dekodovao.</value>
+  </data>
+  <data name="MessagePartWriteFailure" xml:space="preserve">
+    <value>Greška prilikom pripremanja poruke '{0}' parametra '{1}' za slanje.</value>
+  </data>
+  <data name="QueuedMessageResponseAlreadyExists" xml:space="preserve">
+    <value>Poruka-odgovor je već u redu za slanje u stream-u za odgovore.</value>
+  </data>
+  <data name="ReplayAttackDetected" xml:space="preserve">
+    <value>Ova poruka je već obrađena.  Ovo može ukazivati na replay napad u toku.</value>
+  </data>
+  <data name="ReplayProtectionNotSupported" xml:space="preserve">
+    <value>Ovaj kanal ne podržava replay zaštitu.</value>
+  </data>
+  <data name="RequiredNonEmptyParameterWasEmpty" xml:space="preserve">
+    <value>Sledeći zahtevani parametri koji ne smeju biti prazni su bili prazni u {0} poruke: {1}</value>
+  </data>
+  <data name="RequiredParametersMissing" xml:space="preserve">
+    <value>Sledeći zahtevani parametri nedostaju u {0} poruke: {1}</value>
+  </data>
+  <data name="RequiredProtectionMissing" xml:space="preserve">
+    <value>Povezujući element koji nudi {0} zaštitu zahteva drugu zaštitu koja nije ponuđena.</value>
+  </data>
+  <data name="SequenceContainsNoElements" xml:space="preserve">
+    <value>Lista je prazna.</value>
+  </data>
+  <data name="SequenceContainsNullElement" xml:space="preserve">
+    <value>Lista sadrži prazan (null) element.</value>
+  </data>
+  <data name="SignatureInvalid" xml:space="preserve">
+    <value>Potpis poruke je neispravan.</value>
+  </data>
+  <data name="SigningNotSupported" xml:space="preserve">
+    <value>Ovaj kanal ne podržava potpisivanje poruka. Da bi podržao potpisivanje poruka, izvedeni tip Channel mora preklopiti Sign i IsSignatureValid metode.</value>
+  </data>
+  <data name="StreamUnreadable" xml:space="preserve">
+    <value>Svojstvo stream-a CanRead je vratilo false.</value>
+  </data>
+  <data name="StreamUnwritable" xml:space="preserve">
+    <value>Svojstvo stream-a CanWrite je vratilo false.</value>
+  </data>
+  <data name="TooManyBindingsOfferingSameProtection" xml:space="preserve">
+    <value>Očekivano je da najviše 1 povezujući element primeni zaštitu {0}, ali je više njih primenjeno.</value>
+  </data>
+  <data name="TooManyRedirects" xml:space="preserve">
+    <value>Maksimalno dozvoljeni broj redirekcija je prekoračen u toku zahtevanja '{0}'.</value>
+  </data>
+  <data name="UnexpectedEmptyArray" xml:space="preserve">
+    <value>Niz ne sme biti prazan.</value>
+  </data>
+  <data name="UnexpectedEmptyString" xml:space="preserve">
+    <value>Prazan string nije dozvoljen.</value>
+  </data>
+  <data name="UnexpectedMessagePartValue" xml:space="preserve">
+    <value>Parametar poruke '{0}' ima neočekivanu '{1}'.</value>
+  </data>
+  <data name="UnexpectedMessagePartValueForConstant" xml:space="preserve">
+    <value>Očekivano je da od poruke {0} parametar '{1}' ima vrednost '{2}' ali je imao vrednost '{3}'.</value>
+  </data>
+  <data name="UnexpectedMessageReceived" xml:space="preserve">
+    <value>Očekivana je poruka {0} ali je umesto nje primljena {1}.</value>
+  </data>
+  <data name="UnexpectedMessageReceivedOfMany" xml:space="preserve">
+    <value>Poruka neočekivanog tipa je primljena.</value>
+  </data>
+  <data name="UnexpectedNullKey" xml:space="preserve">
+    <value>null ključ je uključen a nije dozvoljen.</value>
+  </data>
+  <data name="UnexpectedNullOrEmptyKey" xml:space="preserve">
+    <value>null ili prazan ključ je uključen a nije dozvoljen.</value>
+  </data>
+  <data name="UnexpectedNullValue" xml:space="preserve">
+    <value>null vrednost je uključena za ključ '{0}' a nije dozvoljena.</value>
+  </data>
+  <data name="UnexpectedType" xml:space="preserve">
+    <value>Tip {0} ili izvedeni tip je očekivan, a dat je {1}.</value>
+  </data>
+  <data name="UnrecognizedEnumValue" xml:space="preserve">
+    <value>{0} svojstvo ima nepoznatu vrednost {1}.</value>
+  </data>
+  <data name="UnsafeWebRequestDetected" xml:space="preserve">
+    <value>URL '{0}' je rangiran kao nebezbedan i ne može se zahtevati na ovaj način.</value>
+  </data>
+  <data name="UntrustedRedirectsOnPOSTNotSupported" xml:space="preserve">
+    <value>Redirekcije na POST zahteve usmerene ka serverima kojima se ne veruje nisu podržane.</value>
+  </data>
+  <data name="WebRequestFailed" xml:space="preserve">
+    <value>Web zahtev za '{0}' nije uspeo.</value>
+  </data>
+  <data name="ExceptionUndeliverable" xml:space="preserve">
+    <value>Ovaj izuzetak mora se kreirati zajedno sa primaocem koji će primiti poruku o grešci ili sa instancom poruke direktnog zahteva na koju će ovaj izuzetak odgovoriti.</value>
+  </data>
+  <data name="UnsupportedHttpVerbForMessageType" xml:space="preserve">
+    <value>'{0}' poruka ne može biti primljeno sa HTTP glagolom '{1}'.</value>
+  </data>
+  <data name="UnexpectedHttpStatusCode" xml:space="preserve">
+    <value>Očekivano je da direktan odgovor koristi HTTP status kod {0} a korišćen je {1}.</value>
+  </data>
+  <data name="UnsupportedHttpVerb" xml:space="preserve">
+    <value>HTTP glagol '{0}' je neprepoznat i nije podržan.</value>
+  </data>
+</root>

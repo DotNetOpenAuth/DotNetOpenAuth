@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 			: base(MessageProtections.All, transport, recipient, version) {
 			ITamperResistantOAuthMessage self = (ITamperResistantOAuthMessage)this;
 			HttpDeliveryMethods methods = ((IDirectedProtocolMessage)this).HttpMethods;
-			self.HttpMethod = (methods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
+			self.HttpMethod = MessagingUtilities.GetHttpVerb(methods);
 		}
 
 		#region ITamperResistantOAuthMessage Members

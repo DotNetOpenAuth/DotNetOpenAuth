@@ -66,6 +66,21 @@ namespace DotNetOpenAuth.Configuration {
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
 
 		/// <summary>
+		/// Gets the name of the @allowDualPurposeIdentifiers attribute.
+		/// </summary>
+		private const string AllowDualPurposeIdentifiersConfigName = "allowDualPurposeIdentifiers";
+
+		/// <summary>
+		/// Gets the name of the @allowApproximateIdentifierDiscovery attribute.
+		/// </summary>
+		private const string AllowApproximateIdentifierDiscoveryConfigName = "allowApproximateIdentifierDiscovery";
+
+		/// <summary>
+		/// Gets the name of the @protectDownlevelReplayAttacks attribute.
+		/// </summary>
+		private const string ProtectDownlevelReplayAttacksConfigName = "protectDownlevelReplayAttacks";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartySecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartySecuritySettingsElement() {
@@ -183,6 +198,43 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether identifiers that are both OP Identifiers and Claimed Identifiers
+		/// should ever be recognized as claimed identifiers.
+		/// </summary>
+		/// <value>
+		/// 	The default value is <c>false</c>, per the OpenID 2.0 spec.
+		/// </value>
+		[ConfigurationProperty(AllowDualPurposeIdentifiersConfigName, DefaultValue = false)]
+		public bool AllowDualPurposeIdentifiers {
+			get { return (bool)this[AllowDualPurposeIdentifiersConfigName]; }
+			set { this[AllowDualPurposeIdentifiersConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether certain Claimed Identifiers that exploit
+		/// features that .NET does not have the ability to send exact HTTP requests for will
+		/// still be allowed by using an approximate HTTP request.
+		/// </summary>
+		/// <value>
+		/// 	The default value is <c>true</c>.
+		/// </value>
+		[ConfigurationProperty(AllowApproximateIdentifierDiscoveryConfigName, DefaultValue = true)]
+		public bool AllowApproximateIdentifierDiscovery {
+			get { return (bool)this[AllowApproximateIdentifierDiscoveryConfigName]; }
+			set { this[AllowApproximateIdentifierDiscoveryConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the Relying Party should take special care 
+		/// to protect users against replay attacks when interoperating with OpenID 1.1 Providers.
+		/// </summary>
+		[ConfigurationProperty(ProtectDownlevelReplayAttacksConfigName, DefaultValue = RelyingPartySecuritySettings.ProtectDownlevelReplayAttacksDefault)]
+		public bool ProtectDownlevelReplayAttacks {
+			get { return (bool)this[ProtectDownlevelReplayAttacksConfigName]; }
+			set { this[ProtectDownlevelReplayAttacksConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -200,6 +252,9 @@ namespace DotNetOpenAuth.Configuration {
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
+			settings.AllowDualPurposeIdentifiers = this.AllowDualPurposeIdentifiers;
+			settings.AllowApproximateIdentifierDiscovery = this.AllowApproximateIdentifierDiscovery;
+			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
 
 			return settings;
 		}

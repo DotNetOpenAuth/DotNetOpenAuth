@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
 	using System.Reflection;
 	using DotNetOpenAuth.Configuration;
@@ -15,7 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
 	public class OpenIdTestBase : TestBase {
 		internal IDirectWebRequestHandler RequestHandler;
@@ -61,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		protected ProviderSecuritySettings ProviderSecuritySettings { get; private set; }
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -74,7 +75,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Identifier.EqualityOnStrings = true;
 		}
 
-		[TestCleanup]
+		[TearDown]
 		public override void Cleanup() {
 			base.Cleanup();
 
@@ -116,17 +117,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 		}
 
-		internal static ServiceEndpoint GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
+		internal static IdentifierDiscoveryResult GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl) {
 			return GetServiceEndpoint(user, providerVersion, servicePriority, useSsl, false);
 		}
 
-		internal static ServiceEndpoint GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl, bool delegating) {
+		internal static IdentifierDiscoveryResult GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl, bool delegating) {
 			var providerEndpoint = new ProviderEndpointDescription(
 				useSsl ? OpenIdTestBase.OPUriSsl : OpenIdTestBase.OPUri,
 				new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI });
 			var local_id = useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user];
 			var claimed_id = delegating ? (useSsl ? VanityUriSsl : VanityUri) : local_id;
-			return ServiceEndpoint.CreateForClaimedIdentifier(
+			return IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				claimed_id,
 				claimed_id,
 				local_id,
@@ -176,6 +177,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 			}
 		}
 
+		internal IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
+			var rp = this.CreateRelyingParty(true);
+			rp.Channel.WebRequestHandler = this.RequestHandler;
+			return rp.Discover(identifier);
+		}
+
 		protected Realm GetMockRealm(bool useSsl) {
 			var rpDescription = new RelyingPartyEndpointDescription(useSsl ? RPUriSsl : RPUri, new string[] { Protocol.V20.RPReturnToTypeURI });
 			return new MockRealm(useSsl ? RPRealmUriSsl : RPRealmUri, rpDescription);
@@ -190,9 +197,21 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
-			ServiceEndpoint se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
+			var se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
 			UriIdentifier identityUri = (UriIdentifier)se.ClaimedIdentifier;
-			return new MockIdentifier(identityUri, this.MockResponder, new ServiceEndpoint[] { se });
+			return new MockIdentifier(identityUri, this.MockResponder, new IdentifierDiscoveryResult[] { se });
+		}
+
+		protected Identifier GetMockDualIdentifier() {
+			Protocol protocol = Protocol.Default;
+			var opDesc = new ProviderEndpointDescription(OPUri, protocol.Version);
+			var dualResults = new IdentifierDiscoveryResult[] {
+				IdentifierDiscoveryResult.CreateForClaimedIdentifier(VanityUri.AbsoluteUri, OPLocalIdentifiers[0], opDesc, 10, 10),
+				IdentifierDiscoveryResult.CreateForProviderIdentifier(protocol.ClaimedIdentifierForOPIdentifier, opDesc, 20, 20),
+			};
+
+			Identifier dualId = new MockIdentifier(VanityUri, this.MockResponder, dualResults);
+			return dualId;
 		}
 
 		/// <summary>
@@ -211,6 +230,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
 			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore());
 			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+			rp.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
 			return rp;
 		}
 
@@ -221,6 +241,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		protected OpenIdProvider CreateProvider() {
 			var op = new OpenIdProvider(new StandardProviderApplicationStore());
 			op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+			op.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
 			return op;
 		}
 	}

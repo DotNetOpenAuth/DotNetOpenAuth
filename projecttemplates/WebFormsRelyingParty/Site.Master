@@ -1,0 +1,60 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="WebFormsRelyingParty.Site" %>
+
+<%@ Import Namespace="RelyingPartyLogic" %>
+<%@ Import Namespace="System.Linq" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<title><%=Page.Title %></title>
+	<link type="text/css" href="theme/ui.all.css" rel="Stylesheet" />
+	<link href="styles/Standard.css" rel="stylesheet" type="text/css" />
+	<asp:ContentPlaceHolder ID="head" runat="server" />
+</head>
+<body>
+	<form id="form1" runat="server">
+	<div style="float: right">
+		<asp:LoginView runat="server">
+			<LoggedInTemplate>
+				<%
+					var authToken = Database.DataContext.AuthenticationTokens.Include("User").First(token => token.ClaimedIdentifier == Page.User.Identity.Name);
+					if (!string.IsNullOrEmpty(authToken.User.EmailAddress)) {
+						Response.Write(HttpUtility.HtmlEncode(authToken.User.EmailAddress));
+					} else if (!string.IsNullOrEmpty(authToken.User.FirstName)) {
+						Response.Write(HttpUtility.HtmlEncode(authToken.User.FirstName));
+					} else {
+						Response.Write(HttpUtility.HtmlEncode(authToken.FriendlyIdentifier));
+					}
+				%>
+				| <asp:HyperLink runat="server" NavigateUrl="~/" Text="Home" /> | <asp:HyperLink
+					runat="server" NavigateUrl="~/Members/AccountInfo.aspx" Text="Account" /> |
+				<asp:LoginStatus ID="LoginStatus1" runat="server" />
+			</LoggedInTemplate>
+			<AnonymousTemplate>
+			<% if (Page.Request.Path != FormsAuthentication.LoginUrl) {%>
+				<a href="#" class="loginPopupLink">Login / Register</a>
+			<% }  %>
+			</AnonymousTemplate>
+		</asp:LoginView>
+	</div>
+	<div>
+		<h1><asp:HyperLink runat="server" NavigateUrl="~/" Text="Adventure Works" /></h1>
+		<asp:ContentPlaceHolder ID="Body" runat="server"/>
+	</div>
+	</form>
+
+<% if (!this.Page.User.Identity.IsAuthenticated) { %>
+	<% if (Request.Url.IsLoopback) { %>
+		<script type="text/javascript" src="scripts/jquery-1.3.1.js"></script>
+		<script type="text/javascript" src="scripts/jquery-ui-personalized-1.6rc6.js"></script>
+	<% } else { %>
+		<script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+		<script type="text/javascript" language="javascript">
+			google.load("jquery", "1.3.2");
+			google.load("jqueryui", "1.7.2");
+		</script>
+	<% } %>
+
+	<script type="text/javascript" language="javascript" src="scripts/LoginLink.js"></script>
+<% } %>
+</body>
+</html>

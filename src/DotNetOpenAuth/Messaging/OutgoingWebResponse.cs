@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
@@ -50,14 +51,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The <see cref="HttpWebResponse"/> to clone.</param>
 		/// <param name="maximumBytesToRead">The maximum bytes to read from the response stream.</param>
 		protected internal OutgoingWebResponse(HttpWebResponse response, int maximumBytesToRead) {
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.Status = response.StatusCode;
 			this.Headers = response.Headers;
 			this.ResponseStream = new MemoryStream(response.ContentLength < 0 ? 4 * 1024 : (int)response.ContentLength);
 			using (Stream responseStream = response.GetResponseStream()) {
 				// BUGBUG: strictly speaking, is the response were exactly the limit, we'd report it as truncated here.
-				this.IsResponseTruncated = responseStream.CopyTo(this.ResponseStream, maximumBytesToRead) == maximumBytesToRead;
+				this.IsResponseTruncated = responseStream.CopyUpTo(this.ResponseStream, maximumBytesToRead) == maximumBytesToRead;
 				this.ResponseStream.Seek(0, SeekOrigin.Begin);
 			}
 		}
@@ -88,7 +89,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public string Body {
 			get { return this.ResponseStream != null ? this.GetResponseReader().ReadToEnd() : null; }
-			set { this.SetResponse(value); }
+			set { this.SetResponse(value, null); }
 		}
 
 		/// <summary>
@@ -126,8 +127,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires a current HttpContext.
 		/// </remarks>
 		public virtual void Send() {
-			Contract.Requires(HttpContext.Current != null);
-			ErrorUtilities.VerifyHttpContext();
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 			this.Send(HttpContext.Current);
 		}
@@ -140,8 +140,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Typically this is <see cref="HttpContext.Current"/>.</param>
 		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
 		public virtual void Send(HttpContext context) {
-			Contract.Requires(context != null);
-			ErrorUtilities.VerifyArgumentNotNull(context, "context");
+			Contract.Requires<ArgumentNullException>(context != null);
 
 			context.Response.Clear();
 			context.Response.StatusCode = (int)this.Status;
@@ -168,8 +167,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The response to set to this message.</param>
 		public virtual void Send(HttpListenerResponse response) {
-			Contract.Requires(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			response.StatusCode = (int)this.Status;
 			MessagingUtilities.ApplyHeadersToResponse(this.Headers, response);
@@ -186,14 +184,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// would transmit the message that normally would be transmitted via a user agent redirect.
 		/// </summary>
 		/// <param name="channel">The channel to use for encoding.</param>
-		/// <returns>The URL that would transmit the original message.</returns>
+		/// <returns>
+		/// The URL that would transmit the original message.  This URL may exceed the normal 2K limit,
+		/// and should therefore be broken up manually and POSTed as form fields when it exceeds this length.
+		/// </returns>
 		/// <remarks>
 		/// This is useful for desktop applications that will spawn a user agent to transmit the message
 		/// rather than cause a redirect.
 		/// </remarks>
 		internal Uri GetDirectUriRequest(Channel channel) {
-			Contract.Requires(channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			var message = this.OriginalMessage as IDirectedProtocolMessage;
 			if (message == null) {
@@ -210,13 +210,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// Sets the response to some string, encoded as UTF-8.
 		/// </summary>
 		/// <param name="body">The string to set the response to.</param>
-		internal void SetResponse(string body) {
+		/// <param name="contentType">Type of the content.  May be null.</param>
+		internal void SetResponse(string body, ContentType contentType) {
 			if (body == null) {
 				this.ResponseStream = null;
 				return;
 			}
 
-			this.Headers[HttpResponseHeader.ContentEncoding] = bodyStringEncoder.HeaderName;
+			if (contentType == null) {
+				contentType = new ContentType("text/html");
+				contentType.CharSet = bodyStringEncoder.WebName;
+			} else if (contentType.CharSet != bodyStringEncoder.WebName) {
+				// clone the original so we're not tampering with our inputs if it came as a parameter.
+				contentType = new ContentType(contentType.ToString());
+				contentType.CharSet = bodyStringEncoder.WebName;
+			}
+
+			this.Headers[HttpResponseHeader.ContentType] = contentType.ToString();
 			this.ResponseStream = new MemoryStream();
 			StreamWriter writer = new StreamWriter(this.ResponseStream, bodyStringEncoder);
 			writer.Write(body);

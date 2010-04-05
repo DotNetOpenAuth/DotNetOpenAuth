@@ -14,21 +14,21 @@ public partial class OP_POSTRequests : System.Web.UI.Page {
 
 		// Force all requests to be POSTS
 		openIdTextBox.RelyingParty.Channel.IndirectMessageGetToPostThreshold = 1;
-		var request = openIdTextBox.CreateRequest();
-		if (request != null) {
-			request.AddCallbackArguments("op_endpoint", request.Provider.Uri.AbsoluteUri);
-			request.AddCallbackArguments("version", request.Provider.Version.ToString());
-		}
 		openIdTextBox.LogOn();
 	}
 
-	protected void openIdTextBox_Response(object sender, DotNetOpenAuth.OpenId.RelyingParty.OpenIdEventArgs e) {
+	protected void openIdTextBox_LoggingIn(object sender, OpenIdEventArgs e) {
+		e.Request.SetUntrustedCallbackArgument("op_endpoint", e.Request.Provider.Uri.AbsoluteUri);
+		e.Request.SetUntrustedCallbackArgument("version", e.Request.Provider.Version.ToString());
+	}
+
+	protected void openIdTextBox_Response(object sender, OpenIdEventArgs e) {
 		e.Cancel = true; // avoid actually logging the user in with FormsAuthentication.
 
 		MultiView1.SetActiveView(View2);
 		testResultDisplay.Pass = e.Response.Status == AuthenticationStatus.Authenticated;
-		testResultDisplay.ProviderEndpoint = new Uri(e.Response.GetCallbackArgument("op_endpoint"));
-		testResultDisplay.ProtocolVersion = new Version(e.Response.GetCallbackArgument("version"));
+		testResultDisplay.ProviderEndpoint = new Uri(e.Response.GetUntrustedCallbackArgument("op_endpoint"));
+		testResultDisplay.ProtocolVersion = new Version(e.Response.GetUntrustedCallbackArgument("version"));
 		if (e.Response.Exception != null) {
 			testResultDisplay.Details = e.Response.Exception.Message;
 		}

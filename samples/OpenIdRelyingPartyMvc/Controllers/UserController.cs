@@ -20,10 +20,6 @@
 			return View("Index");
 		}
 
-		public ActionResult LoginPopup() {
-			return View("LoginPopup");
-		}
-
 		public ActionResult Logout() {
 			FormsAuthentication.SignOut();
 			return Redirect("~/Home");

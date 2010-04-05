@@ -8,6 +8,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Security;
 using System.Web.UI.WebControls;
 using DotNetOpenAuth;
+using DotNetOpenAuth.ApplicationBlock;
 using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OAuth;
 using DotNetOpenAuth.OAuth.ChannelElements;

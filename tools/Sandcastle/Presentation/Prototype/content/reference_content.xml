@@ -6,6 +6,8 @@
   
 	<!-- topic titles -->
   <item id="namespacesTopicTitle">Namespaces</item>
+  <item id="rootTopicTitle">Namespaces</item>
+
 	<item id="namespaceTopicTitle">{0} Namespace</item>
 	<item id="classTopicTitle">{0} Class</item>
 	<item id="structureTopicTitle">{0} Structure</item>
@@ -58,7 +60,7 @@
 	<item id="notesForImplementersTitle">Notes For Implementers</item>
 	<item id="notesForInheritersTitle">Notes For Inheriters</item>
 	<item id="exceptionsTitle">Exceptions</item>
-	<item id="permissionsTitle">Permissions</item>
+	<item id="permissionsTitle">.NET Framework Security</item> 
 	<item id="namespacesTitle">Namespaces</item>
 	<item id="typesTitle">Types</item>
 	<item id="membersTitle">Members</item>

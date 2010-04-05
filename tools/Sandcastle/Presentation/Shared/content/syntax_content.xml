@@ -6,6 +6,10 @@
   <!-- C++ messages -->
   <item id="UnsupportedOperator_ManagedCPlusPlus">Visual C++ does not support this operator.</item>
   
+  <!-- F# messages -->
+  <item id="UnsupportedOperator_FSharp">F# does not support this operator.</item>
+  <item id="UnsupportedCast_FSharp">F# does not support the declaration of new casting operators.</item>"
+  
   <!-- VB messages -->
 	<item id="UnsupportedUnsafe_VisualBasic">Visual Basic does not support APIs that consume or return unsafe types.</item>
   <item id="UnsupportedOperator_VisualBasic">Visual Basic does not support this operator.</item>
@@ -32,6 +36,13 @@
   
   <!-- JavaScript(Script#) messages-->
   <item id="UnsupportedType_ScriptSharp">This type supports the Script# infrastructure and cannot be used directly from JavaScript.</item>
+  <item id="UnsupportedUnsafe_JavaScript">JavaScript does not support APIs that consume or return unsafe types.</item>
+  <item id="UnsupportedGeneric_JavaScript">JavaScript does not support generic types or methods.</item>
+  <item id="UnsupportedExplicit_JavaScript">JavaScript does not support explicit interface implementations.</item>
+  <item id="UnsupportedOperator_JavaScript">JavaScript does not support overloaded operators.</item>
+  <item id="UnsupportedStructure_JavaScript">JavaScript supports the use of structures, but not the declaration of new ones.</item>
+  <item id="UnsupportedIndex_JavaScript">JavaScript does not support indexed properties.</item>
+  <item id="UnsupportedCast_JavaScript">JavaScript does not support the declaration of new casting operators.</item>
   <!-- VB usages message -->
   <item id="UnsupportedUnsafe_VisualBasicUsage">Visual basic does not support APIs that consume or return unsafe types.</item>
   <item id="UnsupportedOperator_VisualBasicUsage">Visual basic does not support this operator.</item>
@@ -63,7 +74,7 @@
 	<item id="propertyXamlSyntax_nonXaml">You cannot set this property in XAML.</item>
 
 	<!-- syntax used with all enums in xaml assemblies -->
-	<item id="enumerationOverviewXamlSyntax"><span>&lt;<i>object property</i>="<i>enumerationValue</i>" .../&gt;</span></item>
+	<item id="enumerationOverviewXamlSyntax"><span>&lt;<i>object property</i>="<i>enumerationMemberName</i>" .../&gt;</span></item>
 
 	<!-- boilerplate used with all method, field, etc. in xaml assemblies -->
 	<item id="constructorOverviewXamlSyntax">You cannot use constructors in XAML.</item>

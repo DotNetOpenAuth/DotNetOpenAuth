@@ -5,7 +5,9 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId.Extensions {
+	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -71,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		}
 
 		internal static void RegisterExtension(Channel channel, StandardOpenIdExtensionFactory.CreateDelegate extensionFactory) {
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			var factory = (OpenIdExtensionFactoryAggregator)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory;
 			factory.Factories.OfType<StandardOpenIdExtensionFactory>().Single().RegisterExtension(extensionFactory);

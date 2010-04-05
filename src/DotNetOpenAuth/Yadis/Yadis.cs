@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Yadis {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Net.Cache;
@@ -72,6 +73,7 @@ namespace DotNetOpenAuth.Yadis {
 			CachedDirectWebResponse response2 = null;
 			if (IsXrdsDocument(response)) {
 				Logger.Yadis.Debug("An XRDS response was received from GET at user-supplied identifier.");
+				Reporting.RecordEventOccurrence("Yadis", "XRDS in initial response");
 				response2 = response;
 			} else {
 				string uriString = response.Headers.Get(HeaderName);
@@ -79,12 +81,14 @@ namespace DotNetOpenAuth.Yadis {
 				if (uriString != null) {
 					if (Uri.TryCreate(uriString, UriKind.Absolute, out url)) {
 						Logger.Yadis.DebugFormat("{0} found in HTTP header.  Preparing to pull XRDS from {1}", HeaderName, url);
+						Reporting.RecordEventOccurrence("Yadis", "XRDS referenced in HTTP header");
 					}
 				}
 				if (url == null && response.ContentType != null && (response.ContentType.MediaType == ContentTypes.Html || response.ContentType.MediaType == ContentTypes.XHtml)) {
 					url = FindYadisDocumentLocationInHtmlMetaTags(response.GetResponseString());
 					if (url != null) {
 						Logger.Yadis.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
+						Reporting.RecordEventOccurrence("Yadis", "XRDS referenced in HTML");
 					}
 				}
 				if (url != null) {
@@ -92,7 +96,6 @@ namespace DotNetOpenAuth.Yadis {
 						response2 = Request(requestHandler, url, requireSsl, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
 						if (response2.Status != HttpStatusCode.OK) {
 							Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.Status, response2.Status, uri);
-							return null;
 						}
 					} else {
 						Logger.Yadis.WarnFormat("XRDS document at insecure location '{0}'.  Aborting YADIS discovery.", url);
@@ -132,8 +135,10 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="acceptTypes">The value of the Accept HTTP header to include in the request.</param>
 		/// <returns>The HTTP response retrieved from the request.</returns>
 		internal static IncomingWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
-			ErrorUtilities.VerifyArgumentNotNull(requestHandler, "requestHandler");
-			ErrorUtilities.VerifyArgumentNotNull(uri, "uri");
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Contract.Requires<ArgumentNullException>(uri != null);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
+			Contract.Ensures(Contract.Result<IncomingWebResponse>().ResponseStream != null);
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.CachePolicy = IdentifierDiscoveryCachePolicy;

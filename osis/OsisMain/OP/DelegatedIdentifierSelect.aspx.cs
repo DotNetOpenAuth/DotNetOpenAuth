@@ -46,19 +46,19 @@ public partial class OP_DelegatedIdentifierSelect : System.Web.UI.Page {
 	protected void beginButton_Click(object sender, EventArgs e) {
 		OpenIdRelyingParty rp = new OpenIdRelyingParty();
 		Identifier opIdentifier = identifierBox.Text;
-		ServiceEndpoint opEndpoint = opIdentifier.Discover(rp.Channel.WebRequestHandler).FirstOrDefault(ep => ep.ClaimedIdentifier == Protocol.V20.ClaimedIdentifierForOPIdentifier);
+		var opEndpoint = rp.Discover(opIdentifier).FirstOrDefault(ep => ep.ClaimedIdentifier == Protocol.V20.ClaimedIdentifierForOPIdentifier);
 		if (opEndpoint == null) {
 			opIdentifierRequired.Visible = true;
 			return;
 		}
 
-		CheckIdRequest req = new CheckIdRequestNoCheck(opEndpoint.Version, opEndpoint.ProviderDescription.Endpoint, AuthenticationRequestMode.Setup);
+		CheckIdRequest req = new CheckIdRequestNoCheck(opEndpoint.Version, opEndpoint.ProviderEndpoint, AuthenticationRequestMode.Setup);
 		req.LocalIdentifier = Protocol.V20.ClaimedIdentifierForOPIdentifier;
 		req.ReturnTo = new Uri(Request.Url, Request.Url.AbsolutePath);
 		req.Realm = req.ReturnTo;
 
 		// Force the claimed_id to be something that would simulate delegation.
-		req.ClaimedIdentifier = GetVanityUrl(opEndpoint.ProviderDescription.Endpoint);
+		req.ClaimedIdentifier = GetVanityUrl(opEndpoint.ProviderEndpoint);
 
 		rp.Channel.Send(req);
 	}

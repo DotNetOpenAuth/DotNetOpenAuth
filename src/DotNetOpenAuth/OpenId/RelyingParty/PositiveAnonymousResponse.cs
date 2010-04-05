@@ -26,19 +26,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Information about the OP endpoint that issued this assertion.
 		/// </summary>
-		private readonly ProviderEndpointDescription provider;
+		private readonly IProviderEndpoint provider;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PositiveAnonymousResponse"/> class.
 		/// </summary>
 		/// <param name="response">The response message.</param>
 		protected internal PositiveAnonymousResponse(IndirectSignedResponse response) {
-			Contract.Requires(response != null);
-			ErrorUtilities.VerifyArgumentNotNull(response, "response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.response = response;
 			if (response.ProviderEndpoint != null && response.Version != null) {
 				this.provider = new ProviderEndpointDescription(response.ProviderEndpoint, response.Version);
+			}
+
+			// Derived types of this are responsible to log an appropriate message for themselves.
+			if (Logger.OpenId.IsInfoEnabled && this.GetType() == typeof(PositiveAnonymousResponse)) {
+				Logger.OpenId.Info("Received anonymous (identity-less) positive assertion.");
+			}
+
+			if (response.ProviderEndpoint != null) {
+				Reporting.RecordEventOccurrence(this, response.ProviderEndpoint.AbsoluteUri);
 			}
 		}
 
@@ -127,6 +135,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets a value indicating whether trusted callback arguments are available.
+		/// </summary>
+		/// <remarks>
+		/// We use this internally to avoid logging a warning during a standard snapshot creation.
+		/// </remarks>
+		internal bool TrustedCallbackArgumentsAvailable {
+			get { return this.response.ReturnToParametersSignatureValidated; }
+		}
 
 		/// <summary>
 		/// Gets the positive extension-only message the Relying Party received that this instance wraps.
@@ -272,7 +290,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public IOpenIdMessageExtension GetExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			return this.response.SignedExtensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).FirstOrDefault();
 		}
 
@@ -322,7 +339,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public IOpenIdMessageExtension GetUntrustedExtension(Type extensionType) {
-			ErrorUtilities.VerifyArgumentNotNull(extensionType, "extensionType");
 			return this.response.Extensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).FirstOrDefault();
 		}
 

@@ -40,15 +40,15 @@ public partial class OP_IndirectMessageErrors : System.Web.UI.Page {
 		var rp = new OpenIdRelyingParty();
 		try {
 			Identifier identifier = identifierBox.Text;
-			var endpoint = identifier.Discover(rp.Channel.WebRequestHandler).First();
+			var endpoint = rp.Discover(identifier).First();
 			UriBuilder returnTo = new UriBuilder(new Uri(Request.Url, Request.Url.AbsolutePath));
 			returnTo.Query = string.Format(
 				CultureInfo.InvariantCulture,
 				"op_endpoint={0}&version={1}",
-				Uri.EscapeDataString(endpoint.ProviderDescription.Endpoint.AbsoluteUri),
+				Uri.EscapeDataString(endpoint.ProviderEndpoint.AbsoluteUri),
 				Uri.EscapeDataString(endpoint.Version.ToString()));
 			IDirectedProtocolMessage badMessage = new BadRequest(
-				endpoint.ProviderDescription.Endpoint,
+				endpoint.ProviderEndpoint,
 				returnTo.Uri);
 			rp.Channel.Send(badMessage);
 		} catch (ProtocolException ex) {

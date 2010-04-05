@@ -40,6 +40,10 @@ public class DatabaseTokenManager : IServiceProviderTokenManager {
 		}
 	}
 
+	public void UpdateToken(IServiceProviderRequestToken token) {
+		// Nothing to do here, since we're using Linq To SQL.
+	}
+
 	#endregion
 
 	#region ITokenManager Members

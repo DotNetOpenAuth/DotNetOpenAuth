@@ -4,6 +4,7 @@
   <item id="fb_product"></item>
   <item id="fb_deliverable"></item>
 
+  <item id="fb_subject">Customer%20Feedback</item>
   <item id="fb_body"></item>
  
    <item id="fb_headerFeedBack">Send Feedback</item>
@@ -17,6 +18,7 @@
    <item id="feedback_fileVersion"></item>
    <item id="feedback_topicVersion"></item>
    <item id="feedback_body"></item>
+   <item id="feedback_subject"></item>
 
    <item id="fb_Introduction">We value your feedback. To rate this topic and send feedback about this topic to the documentation team, click a rating, and then click <b>Send Feedback</b>. For assistance with support issues, refer to the technical support information included with the product.</item>
 

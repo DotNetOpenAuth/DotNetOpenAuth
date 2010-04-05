@@ -13,14 +13,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class ExtensionsInteropHelperRPResponseTests : OpenIdTestBase {
 		private IAuthenticationResponse response;
 		private IList<IExtensionMessage> extensions;
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that with no extensions present, UnifyExtensionsAsSreg returns an empty ClaimsResponse.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsAsSregNoExtensions() {
 			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.IsNotNull(sreg);
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that with sreg and AX extensions present, the sreg extension is returned.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsAsSregWithSreg() {
 			var sregInjected = new ClaimsResponse {
 				Nickname = "andy",
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies UnifyExtensionsAsSreg correctly converts AX to sreg.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsAsSregFromAXSchemaOrg() {
 			var axInjected = new FetchResponse();
 			axInjected.Attributes.Add(WellKnownAttributes.Name.Alias, "nate");
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies UnifyExtensionsAsSreg correctly converts AX in a non-standard format to sreg.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnifyExtensionsasSregFromSchemaOpenIdNet() {
 			var axInjected = new FetchResponse();
 			axInjected.Attributes.Add(ExtensionsInteropHelper_Accessor.TransformAXFormat(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet), "nate");

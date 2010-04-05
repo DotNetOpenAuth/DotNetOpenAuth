@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Security;
 	using System.Security.Permissions;
 
 	/// <summary>
@@ -43,7 +45,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="faultedMessage">The message that was the cause of the exception.  Must not be null.</param>
 		protected internal ProtocolException(string message, IProtocolMessage faultedMessage)
 			: base(message) {
-			ErrorUtilities.VerifyArgumentNotNull(faultedMessage, "faultedMessage");
+			Contract.Requires<ArgumentNullException>(faultedMessage != null);
 			this.FaultedMessage = faultedMessage;
 		}
 
@@ -78,7 +80,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*"/>
 		/// 	<IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="SerializationFormatter"/>
 		/// </PermissionSet>
+#if CLR4
+		[SecurityCritical]
+#else
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+#endif
 		public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) {
 			base.GetObjectData(info, context);
 			throw new NotImplementedException();

@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
@@ -13,16 +14,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class AuthenticationTests : OpenIdTestBase {
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void SharedAssociationPositive() {
 			this.ParameterizedAuthenticationTest(true, true, false);
 		}
@@ -30,17 +31,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies that a shared association protects against tampering.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void SharedAssociationTampered() {
 			this.ParameterizedAuthenticationTest(true, true, true);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void SharedAssociationNegative() {
 			this.ParameterizedAuthenticationTest(true, false, false);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void PrivateAssociationPositive() {
 			this.ParameterizedAuthenticationTest(false, true, false);
 		}
@@ -48,17 +49,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies that a private association protects against tampering.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void PrivateAssociationTampered() {
 			this.ParameterizedAuthenticationTest(false, true, true);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void NoAssociationNegative() {
 			this.ParameterizedAuthenticationTest(false, false, false);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void UnsolicitedAssertion() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -76,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			coordinator.Run();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void UnsolicitedAssertionRejected() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -99,7 +100,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies that delegating identifiers are rejected in unsolicited assertions
 		/// when the appropriate security setting is set.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void UnsolicitedDelegatingIdentifierRejection() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -135,8 +136,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private void ParameterizedAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool immediate, bool tamper) {
-			ErrorUtilities.VerifyArgument(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
-			ErrorUtilities.VerifyArgument(positive || !tamper, "Cannot tamper with a negative response.");
+			Contract.Requires<ArgumentException>(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
+			Contract.Requires<ArgumentException>(positive || !tamper, "Cannot tamper with a negative response.");
 			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
 			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -36,8 +37,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The hashing algorithm to use.</returns>
 		/// <exception cref="ProtocolException">Thrown if no match could be found for the given <paramref name="sessionType"/>.</exception>
 		public static HashAlgorithm Lookup(Protocol protocol, string sessionType) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
-			ErrorUtilities.VerifyArgumentNotNull(sessionType, "sessionType");
+			Contract.Requires<ArgumentNullException>(protocol != null);
+			Contract.Requires<ArgumentNullException>(sessionType != null);
 
 			// We COULD use just First instead of FirstOrDefault, but we want to throw ProtocolException instead of InvalidOperationException.
 			DHSha match = diffieHellmanSessionTypes.FirstOrDefault(dhsha => String.Equals(dhsha.GetName(protocol), sessionType, StringComparison.Ordinal));
@@ -52,7 +53,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="hashSizeInBits">The hash size (in bits) that the DH session must have.</param>
 		/// <returns>The value to be used for the openid.session_type parameter, or null if no match was found.</returns>
 		internal static string GetNameForSize(Protocol protocol, int hashSizeInBits) {
-			ErrorUtilities.VerifyArgumentNotNull(protocol, "protocol");
+			Contract.Requires<ArgumentNullException>(protocol != null);
 			DHSha match = diffieHellmanSessionTypes.FirstOrDefault(dhsha => dhsha.Algorithm.HashSize == hashSizeInBits);
 			return match != null ? match.GetName(protocol) : null;
 		}
@@ -72,10 +73,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// The secret itself if the encrypted version of the secret was given in <paramref name="remotePublicKey"/>.
 		/// </returns>
 		internal static byte[] SHAHashXorSecret(HashAlgorithm hasher, DiffieHellman dh, byte[] remotePublicKey, byte[] plainOrEncryptedSecret) {
-			ErrorUtilities.VerifyArgumentNotNull(hasher, "hasher");
-			ErrorUtilities.VerifyArgumentNotNull(dh, "dh");
-			ErrorUtilities.VerifyArgumentNotNull(remotePublicKey, "remotePublicKey");
-			ErrorUtilities.VerifyArgumentNotNull(plainOrEncryptedSecret, "plainOrEncryptedSecret");
+			Contract.Requires<ArgumentNullException>(hasher != null);
+			Contract.Requires<ArgumentNullException>(dh != null);
+			Contract.Requires<ArgumentNullException>(remotePublicKey != null);
+			Contract.Requires<ArgumentNullException>(plainOrEncryptedSecret != null);
 
 			byte[] sharedBlock = dh.DecryptKeyExchange(remotePublicKey);
 			byte[] sharedBlockHash = hasher.ComputeHash(EnsurePositive(sharedBlock));
@@ -101,7 +102,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// This is to be consistent with OpenID spec section 4.2.
 		/// </remarks>
 		internal static byte[] EnsurePositive(byte[] inputBytes) {
-			ErrorUtilities.VerifyArgumentNotNull(inputBytes, "inputBytes");
+			Contract.Requires<ArgumentNullException>(inputBytes != null);
 			if (inputBytes.Length == 0) {
 				throw new ArgumentException(MessagingStrings.UnexpectedEmptyArray, "inputBytes");
 			}
@@ -127,8 +128,8 @@ namespace DotNetOpenAuth.OpenId {
 			/// <param name="algorithm">The hashing algorithm used in this particular Diffie-Hellman session type.</param>
 			/// <param name="getName">A function that will return the value of the openid.session_type parameter for a given version of OpenID.</param>
 			public DHSha(HashAlgorithm algorithm, Func<Protocol, string> getName) {
-				ErrorUtilities.VerifyArgumentNotNull(algorithm, "algorithm");
-				ErrorUtilities.VerifyArgumentNotNull(getName, "getName");
+				Contract.Requires<ArgumentNullException>(algorithm != null);
+				Contract.Requires<ArgumentNullException>(getName != null);
 
 				this.GetName = getName;
 				this.Algorithm = algorithm;

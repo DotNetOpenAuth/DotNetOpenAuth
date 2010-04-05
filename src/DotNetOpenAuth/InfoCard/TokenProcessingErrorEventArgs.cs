@@ -18,8 +18,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="tokenXml">The token XML.</param>
 		/// <param name="exception">The exception.</param>
 		internal TokenProcessingErrorEventArgs(string tokenXml, Exception exception) {
-			Contract.Requires(tokenXml != null);
-			Contract.Requires(exception != null);
+			Contract.Requires<ArgumentNullException>(tokenXml != null);
+			Contract.Requires<ArgumentNullException>(exception != null);
 			this.TokenXml = tokenXml;
 			this.Exception = exception;
 		}
@@ -38,6 +38,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
 		private void ObjectInvariant() {

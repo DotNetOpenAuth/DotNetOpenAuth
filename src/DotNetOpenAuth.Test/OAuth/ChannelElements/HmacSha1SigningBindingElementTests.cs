@@ -8,11 +8,11 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.Test.Mocks;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class HmacSha1SigningBindingElementTests : MessagingTestBase {
-		[TestMethod]
+		[TestCase]
 		public void SignatureTest() {
 			UnauthorizedTokenRequest message = SigningBindingElementBaseTests.CreateTestRequestTokenMessage(this.MessageDescriptions, null);
 

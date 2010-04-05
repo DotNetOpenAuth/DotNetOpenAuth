@@ -35,6 +35,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string OAuthElementName = "oauth";
 
 		/// <summary>
+		/// The name of the &lt;reporting&gt; sub-element.
+		/// </summary>
+		private const string ReportingElementName = "reporting";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
@@ -46,7 +51,10 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the configuration section from the .config file.
 		/// </summary>
 		public static DotNetOpenAuthSection Configuration {
-			get { return (DotNetOpenAuthSection)ConfigurationManager.GetSection(SectionName) ?? new DotNetOpenAuthSection(); }
+			get {
+				Contract.Ensures(Contract.Result<DotNetOpenAuthSection>() != null);
+				return (DotNetOpenAuthSection)ConfigurationManager.GetSection(SectionName) ?? new DotNetOpenAuthSection();
+			}
 		}
 
 		/// <summary>
@@ -54,8 +62,14 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		[ConfigurationProperty(MessagingElementName)]
 		public MessagingElement Messaging {
-			get { return (MessagingElement)this[MessagingElementName] ?? new MessagingElement(); }
-			set { this[MessagingElementName] = value; }
+			get {
+				Contract.Ensures(Contract.Result<MessagingElement>() != null);
+				return (MessagingElement)this[MessagingElementName] ?? new MessagingElement();
+			}
+
+			set {
+				this[MessagingElementName] = value;
+			}
 		}
 
 		/// <summary>
@@ -63,8 +77,14 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		[ConfigurationProperty(OpenIdElementName)]
 		internal OpenIdElement OpenId {
-			get { return (OpenIdElement)this[OpenIdElementName] ?? new OpenIdElement(); }
-			set { this[OpenIdElementName] = value; }
+			get {
+				Contract.Ensures(Contract.Result<OpenIdElement>() != null);
+				return (OpenIdElement)this[OpenIdElementName] ?? new OpenIdElement();
+			}
+
+			set {
+				this[OpenIdElementName] = value;
+			}
 		}
 
 		/// <summary>
@@ -72,8 +92,29 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		[ConfigurationProperty(OAuthElementName)]
 		internal OAuthElement OAuth {
-			get { return (OAuthElement)this[OAuthElementName] ?? new OAuthElement(); }
-			set { this[OAuthElementName] = value; }
+			get {
+				Contract.Ensures(Contract.Result<OAuthElement>() != null);
+				return (OAuthElement)this[OAuthElementName] ?? new OAuthElement();
+			}
+
+			set {
+				this[OAuthElementName] = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the configuration for reporting.
+		/// </summary>
+		[ConfigurationProperty(ReportingElementName)]
+		internal ReportingElement Reporting {
+			get {
+				Contract.Ensures(Contract.Result<ReportingElement>() != null);
+				return (ReportingElement)this[ReportingElementName] ?? new ReportingElement();
+			}
+
+			set {
+				this[ReportingElementName] = value;
+			}
 		}
 	}
 }

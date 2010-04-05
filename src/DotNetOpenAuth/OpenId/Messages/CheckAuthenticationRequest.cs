@@ -41,8 +41,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="channel">The channel.  This is used only within the constructor and is not stored in a field.</param>
 		internal CheckAuthenticationRequest(IndirectSignedResponse message, Channel channel)
 			: base(message.Version, message.ProviderEndpoint, GetProtocolConstant(message.Version, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
-			Contract.Requires(channel != null);
-			ErrorUtilities.VerifyArgumentNotNull(channel, "channel");
+			Contract.Requires<ArgumentNullException>(channel != null);
 
 			// Copy all message parts from the id_res message into this one,
 			// except for the openid.mode parameter.

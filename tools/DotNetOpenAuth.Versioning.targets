@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
-	<!-- Import this .targets file to automaticaly generate AssemblyVersion 
-	     attribute according to DotNetOpenAuth convention. -->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<!-- Import this .targets file to automatically generate AssemblyVersion 
+	     attribute according to DotNetOpenAuth convention. 
+	     This file assumes DotNetOpenAuth.props and DotNetOpenAuth.targets are also imported. -->
 	<PropertyGroup>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
-		<VersionCsFile>$(ProjectRoot)\obj\$(Configuration)\$(AssemblyName).Version.cs</VersionCsFile>
+		<VersionCsFile>$(IntermediatePath)\$(AssemblyName).Version.cs</VersionCsFile>
 		<NoWarn>$(NoWarn);1607</NoWarn>
 	</PropertyGroup>
 
-	<Import Project="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.targets" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
+	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
 
 	<Target Name="GetBuildVersion">
 		<GetBuildVersion Condition=" '$(BuildVersion)' == '' "
-		                 VersionFile="$(ProjectRoot)\src\version.txt"
-		                 GitRepoRoot="$(ProjectRoot)\">
+		                 VersionFile="$(ProjectRoot)src\version.txt"
+		                 GitRepoRoot="$(ProjectRoot)">
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 			<Output TaskParameter="GitCommitId" PropertyName="AssemblyInformationalVersion" />
 		</GetBuildVersion>
@@ -26,12 +25,12 @@
 		<Message Condition=" '$(AssemblyInformationalVersion)' != '' " Text="Building version $(BuildVersion) from commit $(AssemblyInformationalVersion)"/>
 		<Message Condition=" '$(AssemblyInformationalVersion)' == '' " Text="Building version $(BuildVersion)"/>
 	</Target>
-	
+
 	<Target Name="BeforeBuild" DependsOnTargets="GetBuildVersion">
 		<PropertyGroup>
 			<NewVersionCsFile>$(VersionCsFile).new</NewVersionCsFile>
 		</PropertyGroup>
-		<MakeDir Directories="$(ProjectRoot)\obj\$(Configuration)"/>
+		<MakeDir Directories="$(IntermediatePath)"/>
 		<AssemblyInfo OutputFile="$(NewVersionCsFile)" CodeLanguage="C#"
 		              AssemblyVersion="$(BuildVersion)"
 		              AssemblyInformationalVersion="$(AssemblyInformationalVersion)" />

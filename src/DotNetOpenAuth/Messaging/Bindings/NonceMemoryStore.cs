@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Initializes a new instance of the <see cref="NonceMemoryStore"/> class.
 		/// </summary>
 		internal NonceMemoryStore()
-			: this(StandardExpirationBindingElement.DefaultMaximumMessageAge) {
+			: this(StandardExpirationBindingElement.MaximumMessageAge) {
 		}
 
 		/// <summary>

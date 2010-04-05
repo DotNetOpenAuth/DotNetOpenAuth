@@ -25,20 +25,25 @@ td
 
 <asp:Content runat="server" ContentPlaceHolderID="Main">
 <script type="text/javascript">
-	function onauthenticated(sender) {
+	function onauthenticated(sender, e) {
 		var emailBox = document.getElementById('<%= emailAddressBox.ClientID %>');
 		emailBox.disabled = false;
 		emailBox.title = null; // remove tooltip describing why the box was disabled.
 		// the sreg response may not always be included.
-		if (sender.sreg) {
+		if (e && e.sreg) {
 			// and the email field may not always be included in the sreg response.
-			if (sender.sreg.email) { emailBox.value = sender.sreg.email; }
+			if (e.sreg.email) { emailBox.value = e.sreg.email; }
 		}
 	}
 </script>
 
 	<asp:MultiView runat="server" ID="multiView" ActiveViewIndex='0'>
 		<asp:View runat="server" ID="commentSubmission">
+			<p>
+				The scenario here is that you've just read a blog post and you want to comment on
+				that post. You're <b>not</b> actually logging into the web site by entering your
+				OpenID here, but your OpenID <i>will</i> be verified before the comment is posted.
+			</p>
 			<table>
 				<tr>
 					<td>
@@ -48,7 +53,7 @@ td
 						<openid:OpenIdAjaxTextBox ID="OpenIdAjaxTextBox1" runat="server" CssClass="openidtextbox"
 							OnLoggingIn="OpenIdAjaxTextBox1_LoggingIn" 
 							OnLoggedIn="OpenIdAjaxTextBox1_LoggedIn"
-							OnClientAssertionReceived="onauthenticated(sender)"
+							OnClientAssertionReceived="onauthenticated(sender, e)"
 							OnUnconfirmedPositiveAssertion="OpenIdAjaxTextBox1_UnconfirmedPositiveAssertion" />
 						<asp:RequiredFieldValidator ID="openidRequiredValidator" runat="server" 
 							ControlToValidate="OpenIdAjaxTextBox1" ValidationGroup="openidVG"
@@ -74,7 +79,7 @@ td
 					</td>
 				</tr>
 				<tr>
-					<td />
+					<td></td>
 					<td>
 						<asp:Button runat="server" Text="Submit" ID="submitButton" OnClick="submitButton_Click" />
 					</td>

@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// <summary>
 		/// The required width of the popup window the relying party creates for the provider.
 		/// </summary>
-		public const int PopupWidth = 450;
+		public const int PopupWidth = 500; // UI extension calls for 450px, but Yahoo needs 500px
 
 		/// <summary>
 		/// The required height of the popup window the relying party creates for the provider.
@@ -34,9 +34,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// <param name="windowName">The name to assign to the popup window.</param>
 		/// <returns>A string starting with 'window.open' and forming just that one method call.</returns>
 		internal static string GetWindowPopupScript(OpenIdRelyingParty relyingParty, IAuthenticationRequest request, string windowName) {
-			Contract.Requires(relyingParty != null);
-			Contract.Requires(request != null);
-			Contract.Requires(!string.IsNullOrEmpty(windowName));
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(windowName));
 
 			Uri popupUrl = request.RedirectingResponse.GetDirectUriRequest(relyingParty.Channel);
 

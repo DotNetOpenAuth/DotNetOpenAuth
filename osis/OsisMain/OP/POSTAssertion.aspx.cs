@@ -12,25 +12,25 @@ public partial class OP_POSTAssertion : System.Web.UI.Page {
 			return;
 		}
 
-		// Force callback URL to be just under the limit, which will cause the
-		// OP to be over the limit, causing the OP to send a POST with the assertion.
-		var request = openIdTextBox.CreateRequest();
-		if (request != null) {
-			request.AddCallbackArguments("op_endpoint", request.Provider.Uri.AbsoluteUri);
-			request.AddCallbackArguments("version", request.Provider.Version.ToString());
-			if (includeMultibyteCharacters.Checked) {
-				request.AddCallbackArguments("utf8", "true");
-				request.AddCallbackArguments("ç", "á");
-			}
-
-			int argsize = Convert.ToInt32(callbackArgumentSize.Text);
-			request.AddCallbackArguments("inflate", new string('a', argsize));
-		}
-
 		openIdTextBox.LogOn();
 	}
 
-	protected void openIdTextBox_Response(object sender, DotNetOpenAuth.OpenId.RelyingParty.OpenIdEventArgs e) {
+	protected void openIdTextBox_LoggingIn(object sender, OpenIdEventArgs e) {
+		// Force callback URL to be just under the limit, which will cause the
+		// OP to be over the limit, causing the OP to send a POST with the assertion.
+		var request = e.Request;
+		request.AddCallbackArguments("op_endpoint", request.Provider.Uri.AbsoluteUri);
+		request.AddCallbackArguments("version", request.Provider.Version.ToString());
+		if (includeMultibyteCharacters.Checked) {
+			request.AddCallbackArguments("utf8", "true");
+			request.AddCallbackArguments("ç", "á");
+		}
+
+		int argsize = Convert.ToInt32(callbackArgumentSize.Text);
+		request.AddCallbackArguments("inflate", new string('a', argsize));
+	}
+
+	protected void openIdTextBox_Response(object sender, OpenIdEventArgs e) {
 		e.Cancel = true; // avoid actually logging the user in with FormsAuthentication.
 
 		MultiView1.SetActiveView(View2);

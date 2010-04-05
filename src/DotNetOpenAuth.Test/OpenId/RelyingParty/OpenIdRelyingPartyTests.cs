@@ -12,40 +12,40 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class OpenIdRelyingPartyTests : OpenIdTestBase {
-		[TestInitialize]
+		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CreateRequestDumbMode() {
-			var rp = new OpenIdRelyingParty(null);
+			var rp = this.CreateRelyingParty(true);
 			Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
 			var authReq = rp.CreateRequest(id, RPRealmUri, RPUri);
 			CheckIdRequest requestMessage = (CheckIdRequest)authReq.RedirectingResponse.OriginalMessage;
 			Assert.IsNull(requestMessage.AssociationHandle);
 		}
 
-		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
 			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 			rp.SecuritySettings = null;
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void ExtensionFactories() {
 			var rp = new OpenIdRelyingParty(null);
 			var factories = rp.ExtensionFactories;
 			Assert.IsNotNull(factories);
 			Assert.AreEqual(1, factories.Count);
-			Assert.IsInstanceOfType(factories[0], typeof(StandardOpenIdExtensionFactory));
+			Assert.IsInstanceOf<StandardOpenIdExtensionFactory>(factories[0]);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CreateRequest() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsNotNull(req);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CreateRequests() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(1, requests.Count());
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CreateRequestsWithEndpointFilter() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(0, requests.Count());
 		}
 
-		[TestMethod, ExpectedException(typeof(ProtocolException))]
+		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void CreateRequestOnNonOpenID() {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");
 			var rp = this.CreateRelyingParty();
@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			rp.CreateRequest(nonOpenId, RPRealmUri, RPUri);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void CreateRequestsOnNonOpenID() {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");
 			var rp = this.CreateRelyingParty();
@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that incoming positive assertions throw errors if they come from
 		/// OPs that are not approved by <see cref="OpenIdRelyingParty.EndpointFilter"/>.
 		/// </summary>
-		[TestMethod]
+		[TestCase]
 		public void AssertionWithEndpointFilter() {
 			var coordinator = new OpenIdCoordinator(
 				rp => {

@@ -138,6 +138,9 @@
   <data name="MinimumConsumerVersionRequirementNotMet" xml:space="preserve">
     <value>This OAuth service provider requires OAuth consumers to implement OAuth {0}, but this consumer appears to only support {1}.</value>
   </data>
+  <data name="MultipartPostMustBeUsedWithAuthHeader" xml:space="preserve">
+    <value>Cannot send OAuth message as multipart POST without an authorization HTTP header because sensitive data would not be signed.</value>
+  </data>
   <data name="OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface" xml:space="preserve">
     <value>Use of the OpenID+OAuth extension requires that the token manager in use implement the {0} interface.</value>
   </data>

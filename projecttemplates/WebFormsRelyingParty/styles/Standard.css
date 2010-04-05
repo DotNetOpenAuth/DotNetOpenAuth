@@ -1,0 +1,67 @@
+﻿body
+{
+	font-family: Cambria, Arial, Times New Roman;
+	font-size: 12pt;
+}
+
+h1 a
+{
+	text-decoration: none;
+	color: Black;
+}
+
+div.OpenIdButtons
+{
+	margin-bottom: 10px;
+}
+
+div.OpenIdButtons span.OpenIdButton
+{
+	margin-left: 2px;
+	margin-right: 2px;
+	display: table;
+	float: left;
+	width: 92px;
+	height: 64px;
+	border: solid 1px lightgray;
+	text-align: center;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+div.OpenIdButtons span.OpenIdButton span
+{
+	margin: 0;
+	padding: 0;
+	top: 50%;
+	display: table-cell;
+	vertical-align: middle;
+}
+
+div.OpenIdButtons span.OpenIdButton object
+{
+	height: 0px;
+}
+
+div.OpenIdButtons span.OpenIdButton div
+{
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+
+div.OpenIdBox
+{
+	margin-top: 10px;
+	clear: left;
+}
+
+ul.AuthTokens li.OpenID
+{
+	list-style-image: url(../images/openid_login.png);
+}
+
+ul.AuthTokens li.InfoCard
+{
+	list-style-image: url(../images/infocard_23x16.png);
+}

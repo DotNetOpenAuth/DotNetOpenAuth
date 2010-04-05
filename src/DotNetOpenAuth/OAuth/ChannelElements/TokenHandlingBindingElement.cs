@@ -29,8 +29,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="tokenManager">The token manager.</param>
 		internal TokenHandlingBindingElement(IServiceProviderTokenManager tokenManager) {
-			Contract.Requires(tokenManager != null);
-			ErrorUtilities.VerifyArgumentNotNull(tokenManager, "tokenManager");
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
 
 			this.tokenManager = tokenManager;
 		}
@@ -68,11 +67,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-
 			var userAuthResponse = message as UserAuthorizationResponse;
 			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
-				this.tokenManager.GetRequestToken(userAuthResponse.RequestToken).VerificationCode = userAuthResponse.VerificationCode;
+				var requestToken = this.tokenManager.GetRequestToken(userAuthResponse.RequestToken);
+				requestToken.VerificationCode = userAuthResponse.VerificationCode;
+				this.tokenManager.UpdateToken(requestToken);
 				return MessageProtections.None;
 			}
 
@@ -80,10 +79,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var grantRequestTokenResponse = message as UnauthorizedTokenResponse;
 			if (grantRequestTokenResponse != null) {
 				this.tokenManager.StoreNewRequestToken(grantRequestTokenResponse.RequestMessage, grantRequestTokenResponse);
-				this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken).ConsumerVersion = grantRequestTokenResponse.Version;
+
+				// The host may have already set these properties, but just to make sure...
+				var requestToken = this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken);
+				requestToken.ConsumerVersion = grantRequestTokenResponse.Version;
 				if (grantRequestTokenResponse.RequestMessage.Callback != null) {
-					this.tokenManager.GetRequestToken(grantRequestTokenResponse.RequestToken).Callback = grantRequestTokenResponse.RequestMessage.Callback;
+					requestToken.Callback = grantRequestTokenResponse.RequestMessage.Callback;
 				}
+				this.tokenManager.UpdateToken(requestToken);
 
 				return MessageProtections.None;
 			}
@@ -109,8 +112,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
-
 			var authorizedTokenRequest = message as AuthorizedTokenRequest;
 			if (authorizedTokenRequest != null) {
 				if (authorizedTokenRequest.Version >= Protocol.V10a.Version) {
@@ -142,7 +143,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The incoming message carrying the access token.</param>
 		private void VerifyThrowTokenNotExpired(AccessProtectedResourceRequest message) {
-			ErrorUtilities.VerifyArgumentNotNull(message, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			try {
 				IServiceProviderAccessToken token = this.tokenManager.GetAccessToken(message.AccessToken);

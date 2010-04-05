@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+	using System.Net.Mime;
 	using System.ServiceModel.Channels;
 	using System.Web;
 
@@ -50,8 +51,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The ASP.NET structure to copy from.</param>
 		public HttpRequestInfo(HttpRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Ensures(this.HttpMethod == request.HttpMethod);
+			Contract.Ensures(this.Url == request.Url);
+			Contract.Ensures(this.RawUrl == request.RawUrl);
+			Contract.Ensures(this.UrlBeforeRewriting != null);
+			Contract.Ensures(this.Headers != null);
+			Contract.Ensures(this.InputStream == request.InputStream);
+			Contract.Ensures(this.form == request.Form);
+			Contract.Ensures(this.queryString == request.QueryString);
 
 			this.HttpMethod = request.HttpMethod;
 			this.Url = request.Url;
@@ -66,6 +74,8 @@ namespace DotNetOpenAuth.Messaging {
 			// these as well.
 			this.form = request.Form;
 			this.queryString = request.QueryString;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -78,14 +88,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">Headers in the HTTP request.</param>
 		/// <param name="inputStream">The entity stream, if any.  (POST requests typically have these).  Use <c>null</c> for GET requests.</param>
 		public HttpRequestInfo(string httpMethod, Uri requestUrl, string rawUrl, WebHeaderCollection headers, Stream inputStream) {
-			Contract.Requires(!string.IsNullOrEmpty(httpMethod));
-			Contract.Requires(requestUrl != null);
-			Contract.Requires(rawUrl != null);
-			Contract.Requires(headers != null);
-			ErrorUtilities.VerifyNonZeroLength(httpMethod, "httpMethod");
-			ErrorUtilities.VerifyArgumentNotNull(requestUrl, "requestUrl");
-			ErrorUtilities.VerifyArgumentNotNull(rawUrl, "rawUrl");
-			ErrorUtilities.VerifyArgumentNotNull(headers, "headers");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(httpMethod));
+			Contract.Requires<ArgumentNullException>(requestUrl != null);
+			Contract.Requires<ArgumentNullException>(rawUrl != null);
+			Contract.Requires<ArgumentNullException>(headers != null);
 
 			this.HttpMethod = httpMethod;
 			this.Url = requestUrl;
@@ -93,6 +99,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = rawUrl;
 			this.Headers = headers;
 			this.InputStream = inputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -100,8 +108,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="listenerRequest">Details on the incoming HTTP request.</param>
 		public HttpRequestInfo(HttpListenerRequest listenerRequest) {
-			Contract.Requires(listenerRequest != null);
-			ErrorUtilities.VerifyArgumentNotNull(listenerRequest, "listenerRequest");
+			Contract.Requires<ArgumentNullException>(listenerRequest != null);
 
 			this.HttpMethod = listenerRequest.HttpMethod;
 			this.Url = listenerRequest.Url;
@@ -113,6 +120,8 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			this.InputStream = listenerRequest.InputStream;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -121,22 +130,25 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The WCF incoming request structure to get the HTTP information from.</param>
 		/// <param name="requestUri">The URI of the service endpoint.</param>
 		public HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
-			Contract.Requires(request != null);
-			Contract.Requires(requestUri != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(requestUri, "requestUri");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestUri != null);
 
 			this.HttpMethod = request.Method;
 			this.Headers = request.Headers;
 			this.Url = requestUri;
 			this.UrlBeforeRewriting = requestUri;
 			this.RawUrl = MakeUpRawUrlFromUrl(requestUri);
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
 		internal HttpRequestInfo() {
+			Contract.Ensures(this.HttpMethod == "GET");
+			Contract.Ensures(this.Headers != null);
+
 			this.HttpMethod = "GET";
 			this.Headers = new WebHeaderCollection();
 		}
@@ -146,8 +158,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The HttpWebRequest (that was never used) to copy from.</param>
 		internal HttpRequestInfo(WebRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 
 			this.HttpMethod = request.Method;
 			this.Url = request.RequestUri;
@@ -155,6 +166,8 @@ namespace DotNetOpenAuth.Messaging {
 			this.RawUrl = MakeUpRawUrlFromUrl(request.RequestUri);
 			this.Headers = GetHeaderCollection(request.Headers);
 			this.InputStream = null;
+
+			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
@@ -164,11 +177,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="httpMethod">The HTTP method that the incoming request came in on, whether or not <paramref name="message"/> is null.</param>
 		internal HttpRequestInfo(IDirectedProtocolMessage message, HttpDeliveryMethods httpMethod) {
 			this.message = message;
-			if ((httpMethod & HttpDeliveryMethods.GetRequest) != 0) {
-				this.HttpMethod = "GET";
-			} else if ((httpMethod & HttpDeliveryMethods.PostRequest) != 0) {
-				this.HttpMethod = "POST";
-			}
+			this.HttpMethod = MessagingUtilities.GetHttpVerb(httpMethod);
 		}
 
 		/// <summary>
@@ -225,7 +234,8 @@ namespace DotNetOpenAuth.Messaging {
 			get {
 				Contract.Ensures(Contract.Result<NameValueCollection>() != null);
 				if (this.form == null) {
-					if (this.HttpMethod == "POST" && this.Headers[HttpRequestHeader.ContentType] == Channel.HttpFormUrlEncoded) {
+					ContentType contentType = string.IsNullOrEmpty(this.Headers[HttpRequestHeader.ContentType]) ? null : new ContentType(this.Headers[HttpRequestHeader.ContentType]);
+					if (this.HttpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal)) {
 						StreamReader reader = new StreamReader(this.InputStream);
 						long originalPosition = 0;
 						if (this.InputStream.CanSeek) {
@@ -307,10 +317,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// is a read-only kind of <see cref="NameValueCollection"/>.
 		/// </remarks>
 		internal static Uri GetPublicFacingUrl(HttpRequest request, NameValueCollection serverVariables) {
-			Contract.Requires(request != null);
-			Contract.Requires(serverVariables != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-			ErrorUtilities.VerifyArgumentNotNull(serverVariables, "serverVariables");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(serverVariables != null);
 
 			// Due to URL rewriting, cloud computing (i.e. Azure)
 			// and web farms, etc., we have to be VERY careful about what
@@ -326,7 +334,7 @@ namespace DotNetOpenAuth.Messaging {
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
 				publicRequestUri.Scheme = scheme;
 				publicRequestUri.Host = hostAndPort.Host;
-				publicRequestUri.Port = hostAndPort.Port;
+				publicRequestUri.Port = hostAndPort.Port; // CC missing Uri.Port contract that's on UriBuilder.Port
 				return publicRequestUri.Uri;
 			} else {
 				// Failover to the method that works for non-web farm enviroments.
@@ -362,9 +370,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request.</param>
 		/// <returns>The URI that the outside world used to create this request.</returns>
 		private static Uri GetPublicFacingUrl(HttpRequest request) {
-			Contract.Requires(request != null);
-			ErrorUtilities.VerifyArgumentNotNull(request, "request");
-
+			Contract.Requires<ArgumentNullException>(request != null);
 			return GetPublicFacingUrl(request, request.ServerVariables);
 		}
 
@@ -374,7 +380,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="url">A full URL.</param>
 		/// <returns>A raw URL that might have come in on the HTTP verb.</returns>
 		private static string MakeUpRawUrlFromUrl(Uri url) {
-			Contract.Requires(url != null);
+			Contract.Requires<ArgumentNullException>(url != null);
 			return url.AbsolutePath + url.Query + url.Fragment;
 		}
 
@@ -384,7 +390,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="pairs">The collection a HTTP headers.</param>
 		/// <returns>A new collection of the given headers.</returns>
 		private static WebHeaderCollection GetHeaderCollection(NameValueCollection pairs) {
-			Debug.Assert(pairs != null, "pairs == null");
+			Contract.Requires<ArgumentNullException>(pairs != null);
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			foreach (string key in pairs) {
@@ -402,5 +408,16 @@ namespace DotNetOpenAuth.Messaging {
 
 			return headers;
 		}
+
+#if CONTRACTS_FULL
+		/// <summary>
+		/// Verifies conditions that should be true for any valid state of this object.
+		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
+		[ContractInvariantMethod]
+		private void ObjectInvariant() {
+		}
+#endif
 	}
 }

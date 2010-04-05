@@ -16,11 +16,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public sealed class RelyingPartySecuritySettings : SecuritySettings {
 		/// <summary>
+		/// The default value for the <see cref="ProtectDownlevelReplayAttacks"/> property.
+		/// </summary>
+		internal const bool ProtectDownlevelReplayAttacksDefault = true;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RelyingPartySecuritySettings"/> class.
 		/// </summary>
 		internal RelyingPartySecuritySettings()
 			: base(false) {
 			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
+			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
+			this.AllowApproximateIdentifierDiscovery = true;
 		}
 
 		/// <summary>
@@ -111,11 +118,51 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public bool RequireAssociation { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether identifiers that are both OP Identifiers and Claimed Identifiers
+		/// should ever be recognized as claimed identifiers.
+		/// </summary>
+		/// <value>
+		/// 	The default value is <c>false</c>, per the OpenID 2.0 spec.
+		/// </value>
+		/// <remarks>
+		/// OpenID 2.0 sections 7.3.2.2 and 11.2 specify that OP Identifiers never be recognized as Claimed Identifiers.
+		/// However, for some scenarios it may be desirable for an RP to override this behavior and allow this.
+		/// The security ramifications of setting this property to <c>true</c> have not been fully explored and
+		/// therefore this setting should only be changed with caution.
+		/// </remarks>
+		public bool AllowDualPurposeIdentifiers { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether certain Claimed Identifiers that exploit
+		/// features that .NET does not have the ability to send exact HTTP requests for will
+		/// still be allowed by using an approximate HTTP request.
+		/// </summary>
+		/// <value>
+		/// 	The default value is <c>true</c>.
+		/// </value>
+		public bool AllowApproximateIdentifierDiscovery { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether special measures are taken to
+		/// protect users from replay attacks when those users' identities are hosted
+		/// by OpenID 1.x Providers.
+		/// </summary>
+		/// <value>The default value is <c>true</c>.</value>
+		/// <remarks>
+		/// <para>Nonces for protection against replay attacks were not mandated
+		/// by OpenID 1.x, which leaves users open to replay attacks.</para>
+		/// <para>This feature works by adding a signed nonce to the authentication request.
+		/// This might increase the request size beyond what some OpenID 1.1 Providers
+		/// (such as Blogger) are capable of handling.</para>
+		/// </remarks>
+		internal bool ProtectDownlevelReplayAttacks { get; set; }
+
+		/// <summary>
 		/// Filters out any disallowed endpoints.
 		/// </summary>
 		/// <param name="endpoints">The endpoints discovered on an Identifier.</param>
 		/// <returns>A sequence of endpoints that satisfy all security requirements.</returns>
-		internal IEnumerable<ServiceEndpoint> FilterEndpoints(IEnumerable<ServiceEndpoint> endpoints) {
+		internal IEnumerable<IdentifierDiscoveryResult> FilterEndpoints(IEnumerable<IdentifierDiscoveryResult> endpoints) {
 			return endpoints
 				.Where(se => !this.RejectDelegatingIdentifiers || se.ClaimedIdentifier == se.ProviderLocalIdentifier)
 				.Where(se => !this.RequireDirectedIdentity || se.ClaimedIdentifier == se.Protocol.ClaimedIdentifierForOPIdentifier);
