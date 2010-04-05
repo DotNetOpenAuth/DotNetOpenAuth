@@ -176,7 +176,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			var matches = this.responseMessageTypes.Keys
 				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
-				.Where(message => FindMatchingResponseConstructors(message, request.GetType()).Any())
+				.Where(message => this.FindMatchingResponseConstructors(message, request.GetType()).Any())
 				.OrderByDescending(message => message.Mapping.Count)
 				.CacheGeneratedResults();
 			var match = matches.FirstOrDefault();

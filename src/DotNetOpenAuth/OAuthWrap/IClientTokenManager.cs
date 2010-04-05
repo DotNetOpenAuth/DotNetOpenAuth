@@ -22,6 +22,9 @@ namespace DotNetOpenAuth.OAuthWrap {
 		IWrapAuthorization GetAuthorizationState(Uri callbackUrl, string clientState);
 	}
 
+	/// <summary>
+	/// Contract class for the <see cref="IClientTokenManager"/> interface.
+	/// </summary>
 	[ContractClassFor(typeof(IClientTokenManager))]
 	internal abstract class IClientTokenManagerContract : IClientTokenManager {
 		private IClientTokenManagerContract() {

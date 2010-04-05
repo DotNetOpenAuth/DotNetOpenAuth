@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		WebHeaderCollection IHttpDirectResponse.Headers {
 			get { return new WebHeaderCollection(); }
 		}
-		
+
 		#endregion
 
 		/// <summary>

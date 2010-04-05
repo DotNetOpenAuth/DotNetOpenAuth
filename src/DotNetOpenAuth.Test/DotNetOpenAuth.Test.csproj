@@ -222,6 +222,7 @@
     <Compile Include="Mocks\TestChannel.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Mocks\TestMessageFactory.cs" />
+    <Compile Include="OAuthWrap\MessageFactoryTests.cs" />
     <Compile Include="OAuthWrap\OAuthWrapChannelTests.cs" />
     <Compile Include="OAuthWrap\OAuthWrapTestBase.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElementTests.cs" />
