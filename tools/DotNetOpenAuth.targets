@@ -17,6 +17,7 @@
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
+		<AssemblySearchPaths>$(AssemblySearchPaths);$(ProjectRoot)lib</AssemblySearchPaths>
 	</PropertyGroup>
 
 	<ItemGroup>
