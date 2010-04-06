@@ -18,7 +18,7 @@
 				<Edition>Ultimate</Edition>
 			</VisualStudio>
 		</SupportedProducts>
-		<SupportedFrameworkRuntimeEdition MinVersion="3.5" MaxVersion="3.5" />
+		<SupportedFrameworkRuntimeEdition MinVersion="3.5" MaxVersion="4.0" />
 	</Identifier>
 	<References />
 	<Content>
