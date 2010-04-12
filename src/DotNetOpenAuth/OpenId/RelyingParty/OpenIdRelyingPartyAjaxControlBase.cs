@@ -321,7 +321,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="identifiers">The identifiers to perform discovery on.</param>
 		protected void PreloadDiscovery(IEnumerable<Identifier> identifiers) {
 			string script = this.AjaxRelyingParty.AsAjaxPreloadedDiscoveryResult(
-				identifiers.Select(id => this.CreateRequests(id)).Flatten());
+				identifiers.SelectMany(id => this.CreateRequests(id)));
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyAjaxControlBase), this.ClientID, script, true);
 		}
 

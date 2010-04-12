@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
 		/// </summary>
-		/// <param name="response">The response to send to the uesr agent.</param>
+		/// <param name="response">The response to send to the user agent.</param>
 		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
 		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
 			Contract.Requires<ArgumentNullException>(response != null);
@@ -181,7 +181,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <typeparam name="T">The type of element contained in the sequence.</typeparam>
 		/// <param name="sequence">The sequence of sequences to flatten.</param>
 		/// <returns>A sequence of the contained items.</returns>
+		[Obsolete("Use Enumerable.SelectMany instead.")]
 		public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> sequence) {
+			ErrorUtilities.VerifyArgumentNotNull(sequence, "sequence");
+
 			foreach (IEnumerable<T> subsequence in sequence) {
 				foreach (T item in subsequence) {
 					yield return item;
