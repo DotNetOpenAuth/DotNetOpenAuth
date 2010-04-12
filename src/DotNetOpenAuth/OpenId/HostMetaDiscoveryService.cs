@@ -234,10 +234,13 @@ namespace DotNetOpenAuth.OpenId {
 			// Verify that we trust the signer of the certificates.
 			// Start by trying to validate just the certificate used to sign the XRDS document,
 			// since we can do that with partial trust.
+			Logger.OpenId.Debug("Verifying that we trust the certificate used to sign the discovery document.");
 			if (!certs[0].Verify()) {
 				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
 				try {
+					Logger.OpenId.Debug("Verifying the whole certificate chain.");
 					VerifyCertChain(certs);
+					Logger.OpenId.Debug("Certificate chain verified.");
 				} catch (SecurityException) {
 					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
 					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
