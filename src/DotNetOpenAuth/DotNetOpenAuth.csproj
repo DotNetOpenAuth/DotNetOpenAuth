@@ -163,7 +163,7 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
@@ -736,7 +736,7 @@ http://opensource.org/licenses/ms-pl.html
   <ItemGroup>
     <SignDependsOn Include="BuildUnifiedProduct" />
     <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
-                                    $(OutputPath)$(ProductName).Contracts.dll;
+                                    $(OutputPath)CodeContracts\$(ProductName).Contracts.dll;
                                    " />
   </ItemGroup>
 	<PropertyGroup>

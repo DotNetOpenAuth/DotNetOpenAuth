@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 	using log4net;
 	using log4net.Appender;
@@ -117,7 +118,15 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 						switch (checkidRequestList.SelectedIndex) {
 							case 0:
 								if (authRequest.IsDirectedIdentity) {
-									authRequest.ClaimedIdentifier = new Uri(this.hostedProvider.UserIdentityPageBase, "directedidentity");
+									string userIdentityPageBase = this.hostedProvider.UserIdentityPageBase.AbsoluteUri;
+									if (capitalizedHostName.IsChecked.Value) {
+										userIdentityPageBase = (this.hostedProvider.UserIdentityPageBase.Scheme + Uri.SchemeDelimiter + this.hostedProvider.UserIdentityPageBase.Authority).ToUpperInvariant() + this.hostedProvider.UserIdentityPageBase.PathAndQuery;
+									}
+									string leafPath = "directedidentity";
+									if (directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
+										leafPath += ".";
+									}
+									authRequest.ClaimedIdentifier = Identifier.Parse(userIdentityPageBase + leafPath, true);
 									authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
 								}
 								authRequest.IsAuthenticated = true;
@@ -168,6 +177,15 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			} catch (COMException ex) {
 				MessageBox.Show(this, ex.Message, "Error while copying OP Identifier to the clipboard", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the ClearLogButton control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
+		private void ClearLogButton_Click(object sender, RoutedEventArgs e) {
+			logBox.Clear();
 		}
 	}
 }

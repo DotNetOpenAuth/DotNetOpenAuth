@@ -151,6 +151,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="eventName">Name of the event.</param>
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "PersistentCounter instances are stored in a table for later use.")]
 		internal static void RecordEventOccurrence(string eventName, string category) {
 			Contract.Requires(!String.IsNullOrEmpty(eventName));
 
@@ -318,6 +319,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Initializes Reporting if it has not been initialized yet.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "This method must never throw.")]
 		private static void Initialize() {
 			lock (initializationSync) {
 				if (!broken && !initialized) {
@@ -355,44 +357,49 @@ namespace DotNetOpenAuth {
 		/// <returns>A stream that contains the report.</returns>
 		private static Stream GetReport() {
 			var stream = new MemoryStream();
-			var writer = new StreamWriter(stream, Encoding.UTF8);
-			writer.WriteLine(reportOriginIdentity.ToString("B"));
-			writer.WriteLine(Util.LibraryVersion);
-			writer.WriteLine(".NET Framework {0}", Environment.Version);
+			try {
+				var writer = new StreamWriter(stream, Encoding.UTF8);
+				writer.WriteLine(reportOriginIdentity.ToString("B"));
+				writer.WriteLine(Util.LibraryVersion);
+				writer.WriteLine(".NET Framework {0}", Environment.Version);
 
-			foreach (var observation in observations) {
-				observation.Flush();
-				writer.WriteLine("====================================");
-				writer.WriteLine(observation.FileName);
-				try {
-					using (var fileStream = new IsolatedStorageFileStream(observation.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, file)) {
+				foreach (var observation in observations) {
+					observation.Flush();
+					writer.WriteLine("====================================");
+					writer.WriteLine(observation.FileName);
+					try {
+						using (var fileStream = new IsolatedStorageFileStream(observation.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, file)) {
+							writer.Flush();
+							fileStream.CopyTo(writer.BaseStream);
+						}
+					} catch (FileNotFoundException) {
+						writer.WriteLine("(missing)");
+					}
+				}
+
+				// Not all event counters may have even loaded in this app instance.
+				// We flush the ones in memory, and then read all of them off disk.
+				foreach (var counter in events.Values) {
+					counter.Flush();
+				}
+
+				foreach (string eventFile in file.GetFileNames("event-*.txt")) {
+					writer.WriteLine("====================================");
+					writer.WriteLine(eventFile);
+					using (var fileStream = new IsolatedStorageFileStream(eventFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, file)) {
 						writer.Flush();
 						fileStream.CopyTo(writer.BaseStream);
 					}
-				} catch (FileNotFoundException) {
-					writer.WriteLine("(missing)");
 				}
-			}
 
-			// Not all event counters may have even loaded in this app instance.
-			// We flush the ones in memory, and then read all of them off disk.
-			foreach (var counter in events.Values) {
-				counter.Flush();
+				// Make sure the stream is positioned at the beginning.
+				writer.Flush();
+				stream.Position = 0;
+				return stream;
+			} catch {
+				stream.Dispose();
+				throw;
 			}
-
-			foreach (string eventFile in file.GetFileNames("event-*.txt")) {
-				writer.WriteLine("====================================");
-				writer.WriteLine(eventFile);
-				using (var fileStream = new IsolatedStorageFileStream(eventFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, file)) {
-					writer.Flush();
-					fileStream.CopyTo(writer.BaseStream);
-				}
-			}
-
-			// Make sure the stream is positioned at the beginning.
-			writer.Flush();
-			stream.Position = 0;
-			return stream;
 		}
 
 		/// <summary>

@@ -126,7 +126,7 @@ namespace DotNetOpenAuth {
 							sb.Append("\t");
 							sb.Append(objString);
 
-							if (!objString.EndsWith(Environment.NewLine)) {
+							if (!objString.EndsWith(Environment.NewLine, StringComparison.Ordinal)) {
 								sb.AppendLine();
 							}
 							sb.AppendLine("}, {");

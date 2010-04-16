@@ -695,27 +695,28 @@ namespace DotNetOpenAuth.Messaging {
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			headers.Add(HttpResponseHeader.ContentType, "text/html");
-			StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture);
-			StringBuilder hiddenFields = new StringBuilder();
-			foreach (var field in fields) {
-				hiddenFields.AppendFormat(
-					"\t<input type=\"hidden\" name=\"{0}\" value=\"{1}\" />\r\n",
-					HttpUtility.HtmlEncode(field.Key),
-					HttpUtility.HtmlEncode(field.Value));
-			}
-			bodyWriter.WriteLine(
-				IndirectMessageFormPostFormat,
-				HttpUtility.HtmlEncode(message.Recipient.AbsoluteUri),
-				hiddenFields);
-			bodyWriter.Flush();
-			OutgoingWebResponse response = new OutgoingWebResponse {
-				Status = HttpStatusCode.OK,
-				Headers = headers,
-				Body = bodyWriter.ToString(),
-				OriginalMessage = message
-			};
+			using (StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture)) {
+				StringBuilder hiddenFields = new StringBuilder();
+				foreach (var field in fields) {
+					hiddenFields.AppendFormat(
+						"\t<input type=\"hidden\" name=\"{0}\" value=\"{1}\" />\r\n",
+						HttpUtility.HtmlEncode(field.Key),
+						HttpUtility.HtmlEncode(field.Value));
+				}
+				bodyWriter.WriteLine(
+					IndirectMessageFormPostFormat,
+					HttpUtility.HtmlEncode(message.Recipient.AbsoluteUri),
+					hiddenFields);
+				bodyWriter.Flush();
+				OutgoingWebResponse response = new OutgoingWebResponse {
+					Status = HttpStatusCode.OK,
+					Headers = headers,
+					Body = bodyWriter.ToString(),
+					OriginalMessage = message
+				};
 
-			return response;
+				return response;
+			}
 		}
 
 		/// <summary>

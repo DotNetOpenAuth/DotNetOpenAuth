@@ -258,6 +258,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// 	<c>true</c> if the signature on the message is valid; otherwise, <c>false</c>.
 		/// </returns>
 		protected virtual bool IsSignatureValid(ITamperResistantOAuthMessage message) {
+			Contract.Requires<ArgumentNullException>(message != null);
+
 			string signature = this.GetSignature(message);
 			return message.Signature == signature;
 		}

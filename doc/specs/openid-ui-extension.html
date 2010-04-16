@@ -1,11 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en"><head>
-<title>Implementers' Draft: OpenID User Interface Extension 1.0 - DRAFT 0.4</title>
-<meta http-equiv="Expires" content="Tue, 19 May 2009 02:37:11 +0000">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="description" content="OpenID User Interface Extension 1.0 - DRAFT 0.4">
+<!-- test -->
+<html lang="en"><head><title>Implementers' Draft: OpenID User Interface Extension 1.0 - DRAFT 0.5</title>
+<meta http-equiv="Expires" content="Tue, 23 Jun 2009 20:52:02 +0000">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="OpenID User Interface Extension 1.0 - DRAFT 0.5">
 <meta name="generator" content="xml2rfc v1.33 (http://xml.resource.org/)">
-<style type="text/css"><!--
+<style type='text/css'><!--
         body {
                 font-family: verdana, charcoal, helvetica, arial, sans-serif;
                 font-size: small; color: #000; background-color: #FFF;
@@ -139,16 +139,17 @@
                 color: #CCC; background-color: #CCC;
         }
 --></style>
-</head><body>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
-<table summary="layout" border="0" cellpadding="0" cellspacing="0" width="66%"><tbody><tr><td><table summary="layout" border="0" cellpadding="2" cellspacing="1" width="100%">
-<tbody><tr><td class="header">Implementers' Draft</td><td class="header">A. Tom</td></tr>
+</head>
+<body>
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<table summary="layout" width="66%" border="0" cellpadding="0" cellspacing="0"><tr><td><table summary="layout" width="100%" border="0" cellpadding="2" cellspacing="1">
+<tr><td class="header">Implementers' Draft</td><td class="header">A. Tom</td></tr>
 <tr><td class="header">&nbsp;</td><td class="header">Yahoo!</td></tr>
 <tr><td class="header">&nbsp;</td><td class="header">B. de Medeiros</td></tr>
 <tr><td class="header">&nbsp;</td><td class="header">Google</td></tr>
 <tr><td class="header">&nbsp;</td><td class="header">May 18, 2009</td></tr>
-</tbody></table></td></tr></tbody></table>
-<h1><br>OpenID User Interface Extension 1.0 - DRAFT 0.4</h1>
+</table></td></tr></table>
+<h1><br />OpenID User Interface Extension 1.0 - DRAFT 0.5</h1>
 
 <h3>Abstract</h3>
 
@@ -156,53 +157,57 @@
 	This specification defines a mechanism to support OpenID user interfaces 
 	optimized for different environments and languages.
       
-</p><a name="toc"></a><br><hr>
+</p><a name="toc"></a><br /><hr />
 <h3>Table of Contents</h3>
 <p class="toc">
 <a href="#conv">1.</a>&nbsp;
-Notation and Conventions<br>
+Notation and Conventions<br />
 <a href="#anchor1">2.</a>&nbsp;
-Overview<br>
+Overview<br />
 <a href="#anchor2">3.</a>&nbsp;
-Extension Namespace<br>
+Extension Namespace<br />
 <a href="#anchor3">4.</a>&nbsp;
-Language Preference<br>
+Language Preference<br />
 <a href="#anchor4">5.</a>&nbsp;
-Requesting Authentication in a Popup<br>
+Requesting Authentication in a Popup<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor5">5.1.</a>&nbsp;
-Authentication Response in a Fragment<br>
+Authentication Response in a Fragment<br />
 <a href="#anchor6">6.</a>&nbsp;
-Discovery<br>
+Requesting Display of RP icons in the OP Approval UI<br />
 <a href="#anchor7">7.</a>&nbsp;
-Considerations<br>
+Discovery<br />
 <a href="#anchor8">8.</a>&nbsp;
-Acknowledgements<br>
-<a href="#rfc.references1">9.</a>&nbsp;
-References<br>
-<a href="#rfc.authors">§</a>&nbsp;
-Authors' Addresses<br>
+Considerations<br />
+<a href="#anchor9">9.</a>&nbsp;
+Acknowledgements<br />
+<a href="#rfc.references1">10.</a>&nbsp;
+References<br />
+<a href="#anchor11">Appendix&nbsp;A.</a>&nbsp;
+Example Use of Experimental Mode<br />
+<a href="#rfc.authors">&#167;</a>&nbsp;
+Authors' Addresses<br />
 </p>
-<br clear="all">
+<br clear="all" />
 
-<a name="conv"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="conv"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.1"></a><h3>1.&nbsp;
 Notation and Conventions</h3>
 
 <p>The keywords MUST, MUST NOT, REQUIRED, SHALL, 
 	    SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, 
 	    and OPTIONAL in this document are to be interpreted as 
-	    described in <a class="info" href="#RFC2119">[RFC2119]<span> (</span><span class="info">Bradner, B., “Key words for use in RFCs to Indicate Requirement Levels,” .</span><span>)</span></a>. 
+	    described in <a class='info' href='#RFC2119'>[RFC2119]<span> (</span><span class='info'>Bradner, B., &ldquo;Key words for use in RFCs to Indicate Requirement Levels,&rdquo; .</span><span>)</span></a>. 
            
 </p>
 <p>
             Unless otherwise noted, this specification is written as a direct
-            continuation of <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>, inheriting the definitions and
+            continuation of <a class='info' href='#OpenID 2.0'>[OpenID 2.0]<span> (</span><span class='info'>OpenID 2.0 Workgroup, &ldquo;OpenID 2.0,&rdquo; .</span><span>)</span></a>, inheriting the definitions and
             guidelines set by it.
 	  
 </p>
-<a name="anchor1"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="anchor1"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.2"></a><h3>2.&nbsp;
 Overview</h3>
 
@@ -231,17 +236,18 @@ Overview</h3>
 	to the user.
 	
 </p>
-<a name="anchor2"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="anchor2"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.3"></a><h3>3.&nbsp;
 Extension Namespace</h3>
 
 <p>
 	    All OpenID 2.0 messages that contain a UI Extension element MUST 
 	    contain the following extension namespace declaration, as specified in the 
-	    Extensions section of <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>.
+	    Extensions section of <a class='info' href='#OpenID 2.0'>[OpenID 2.0]<span> (</span><span class='info'>OpenID 2.0 Workgroup, &ldquo;OpenID 2.0,&rdquo; .</span><span>)</span></a>.
 	    
-</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre> openid.ns.&lt;alias&gt;=http://specs.openid.net/extensions/ui/1.0
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+ openid.ns.&lt;alias&gt;=http://specs.openid.net/extensions/ui/1.0
 </pre></div>
 <p>
 	  The actual extension namespace alias should be determined on a per-message basis
@@ -250,8 +256,8 @@ Extension Namespace</h3>
 	  for all examples is "ui". 
 	
 </p>
-<a name="anchor3"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="anchor3"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.4"></a><h3>4.&nbsp;
 Language Preference</h3>
 
@@ -270,7 +276,7 @@ Language Preference</h3>
 </dd>
 <dt>openid.ui.lang</dt>
 <dd>
-	    REQUIRED. The user's preferred languages as a <a class="info" href="#BCP%2047">[BCP 47]<span> (</span><span class="info">Phillips, A. and M. Davis, “Tags for Identifying Languages,” .</span><span>)</span></a> language priority list, 
+	    REQUIRED. The user's preferred languages as a <a class='info' href='#BCP 47'>[BCP 47]<span> (</span><span class='info'>Phillips, A. and M. Davis, &ldquo;Tags for Identifying Languages,&rdquo; .</span><span>)</span></a> language priority list, 
 	    represented as a comma-separated list of BCP 47 basic language ranges in descending priority order. 
 	    For instance, the value "fr-CA,fr-FR,en-CA" represents the preference for French spoken in Canada, 
 	    French spoken in France, followed by English spoken in Canada. 
@@ -285,8 +291,8 @@ Language Preference</h3>
 	preference inferred by the user's IP address. 
       
 </p>
-<a name="anchor4"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="anchor4"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.5"></a><h3>5.&nbsp;
 Requesting Authentication in a Popup</h3>
 
@@ -312,7 +318,11 @@ Requesting Authentication in a Popup</h3>
 <dt>openid.ui.mode</dt>
 <dd>
 	      REQUIRED. Value: "popup".
-	      New modes may be defined in future versions of this extension.
+	      New modes may be defined in future versions of this extension. Any mode starting with the prefix "x-" should be
+              considered experimental. If an OpenID provider receives a request containing an experimental mode, and it does
+              not recognize that mode, it SHOULD NOT throw an error or invalidate further processing of this extension. If no other
+              parameters are present, then the OpenID provider receiving an experimental mode SHOULD continue processing the OpenID
+              request as if this extension were not included in it. 
 	    
 </dd>
 </dl></blockquote><p>
@@ -347,13 +357,13 @@ Requesting Authentication in a Popup</h3>
 </p>
 <p>
       The response to an authentication request in a popup is unchanged from 
-      <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>.
+      <a class='info' href='#OpenID 2.0'>[OpenID 2.0]<span> (</span><span class='info'>OpenID 2.0 Workgroup, &ldquo;OpenID 2.0,&rdquo; .</span><span>)</span></a>.
       Relying Parties detecting that the popup was closed without receiving an authentication response
       SHOULD interpret the close event to be a negative assertion.
       
 </p>
-<a name="anchor5"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="anchor5"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.5.1"></a><h3>5.1.&nbsp;
 Authentication Response in a Fragment</h3>
 
@@ -365,17 +375,66 @@ Authentication Response in a Fragment</h3>
 	  URL in the authentication request. If the fragment delimiter character is present in the return_to URL, 
 	  the OpenID Provider SHOULD return the response parameters in the fragment portion of the URL. If the
 	  return_to URL already contains a question mark "?", the first response parameter MUST be prefixed 
-	  with an ampersand "&amp;", otherwise the first response parameter MUST be prefixed with a question mark "?".
+	  with an ampersand "&", otherwise the first response parameter MUST be prefixed with a question mark "?".
 	
 </p>
-<a name="anchor6"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="anchor6"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <a name="rfc.section.6"></a><h3>6.&nbsp;
+Requesting Display of RP icons in the OP Approval UI</h3>
+
+<p>
+        When requesting authentication, the Relying Party MAY indicate to the OpenID Provider
+	the availability of graphical resources to represent the Relying Party brand at the OpenID Provider's approval UI.
+        This is indicated by including the following parameter:
+        </p>
+<blockquote class="text"><dl>
+<dt>openid.ui.icon</dt>
+<dd>
+            REQUIRED. Value: "true" 
+          
+</dd>
+</dl></blockquote><p>
+        In order to retrieve the indicated graphical resources, the OpenID Provider performs discovery on the Relying Party, as specified
+        in  <a class='info' href='#OpenID 2.0'>[OpenID 2.0]<span> (</span><span class='info'>OpenID 2.0 Workgroup, &ldquo;OpenID 2.0,&rdquo; .</span><span>)</span></a> (or future versions of the OpenID protocol specification).
+	The RP SHOULD indicate the location of the graphical resource by adding an entry to its XRDS document:
+      
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+
+&lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
+  &lt;Type&gt;http://specs.openid.net/extensions/ui/icon&lt;/Type&gt;
+  &lt;URI&gt;http://consumer.example.com/images/image.jpg&lt;/URI&gt;
+&lt;/Service&gt;
+
+&lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
+  &lt;Type&gt;http://specs.openid.net/extensions/ui/icon&lt;/Type&gt;
+  &lt;URI&gt;http://consumer.example.com/favicon.ico&lt;/URI&gt;
+&lt;/Service&gt;
+
+</pre></div>
+<p>
+        If the Relying Party indicates availability of graphical resources using the "icon" parameter but the OpenID Provider
+        does not succeed in obtaining a discovery document at the Relying Party, the OpenID Provider MAY attempt to locate a graphical
+        resource at the domain indicated by "openid.realm", under the path "/favicon.ico". If the realm contains the wildcard "*" for the host,
+        the OpenID Provider should replace it with "www".
+        In this case, the OpenID provider MAY restrict
+        the display of the resource to 16x16 format, and the Relying Party SHOULD ensure that the resource displays well in 16x16 format.
+      
+</p>
+<p>
+        It is RECOMMENDED that the OpenID Provider do not inline graphical resources from the Relying Party without verification. Instead,
+        the OpenID Provider SHOULD proxy the icons after performing appropriate sanitization. Proxying is also necessary to avoid mixed-content
+        warnings if the OpenID Provider approval page is served over HTTPS but the graphical resource is only available over HTTP.
+      
+</p>
+<a name="anchor7"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.7"></a><h3>7.&nbsp;
 Discovery</h3>
 
 <p>
 	  OpenID Providers supporting the User Interface Extension SHOULD advertise their support of the
-	  Extension using OpenID Discovery as defined in Section 7.3 of <a class="info" href="#OpenID%202.0">[OpenID 2.0]<span> (</span><span class="info">OpenID 2.0 Workgroup, “OpenID 2.0,” .</span><span>)</span></a>.
+	  Extension using OpenID Discovery as defined in Section 7.3 of <a class='info' href='#OpenID 2.0'>[OpenID 2.0]<span> (</span><span class='info'>OpenID 2.0 Workgroup, &ldquo;OpenID 2.0,&rdquo; .</span><span>)</span></a>.
 	
 </p>
 <p>
@@ -383,7 +442,8 @@ Discovery</h3>
 	  http://specs.openid.net/extensions/ui/1.0/lang-pref as a &lt;xrd:Type&gt; child element of the &lt;xrd:Service&gt; element 
 	  in the XRDS discovery document.
 	
-</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;Type&gt;http://specs.openid.net/extensions/ui/1.0/lang-pref&lt;/Type&gt;
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+&lt;Type&gt;http://specs.openid.net/extensions/ui/1.0/lang-pref&lt;/Type&gt;
 </pre></div>
 <p>
 	  OpenID Providers supporting the popup functionality SHOULD define
@@ -391,11 +451,20 @@ Discovery</h3>
 	  of the &lt;xrd:Service&gt; element in the 
 	  XRDS discovery document.
 	
-</p><div style="display: table; width: 0pt; margin-left: 3em; margin-right: auto;"><pre>&lt;Type&gt;http://specs.openid.net/extensions/ui/1.0/mode/popup&lt;/Type&gt;
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+&lt;Type&gt;http://specs.openid.net/extensions/ui/1.0/mode/popup&lt;/Type&gt;
 </pre></div>
-<a name="anchor7"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
-<a name="rfc.section.7"></a><h3>7.&nbsp;
+<p>
+	  OpenID Providers supporting the graphical RP representation functionality SHOULD define
+	  http://specs.openid.net/extensions/ui/1.0/icon as a &lt;xrd:Type&gt; child element of the &lt;xrd:Service&gt; element 
+	  in the XRDS discovery document.
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>
+&lt;Type&gt;http://specs.openid.net/extensions/ui/1.0/icon&lt;/Type&gt;
+</pre></div>
+<a name="anchor8"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.8"></a><h3>8.&nbsp;
 Considerations</h3>
 
 <p>
@@ -410,9 +479,9 @@ Considerations</h3>
 	window to protect the user's credentials and approval from clickjacking exploits.
       
 </p>
-<a name="anchor8"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
-<a name="rfc.section.8"></a><h3>8.&nbsp;
+<a name="anchor9"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.9"></a><h3>9.&nbsp;
 Acknowledgements</h3>
 
 <p>
@@ -435,27 +504,89 @@ Acknowledgements</h3>
 	David Recordon (david@sixapart.com)
       
 </p>
-<a name="rfc.references1"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
-<h3>9.&nbsp;References</h3>
-<table border="0" width="99%">
-<tbody><tr><td class="author-text" valign="top"><a name="BCP 47">[BCP 47]</a></td>
-<td class="author-text">Phillips, A. and M. Davis, “Tags for Identifying Languages,” BCP&nbsp;47.</td></tr>
+<a name="rfc.references1"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<h3>10.&nbsp;References</h3>
+<table width="99%" border="0">
+<tr><td class="author-text" valign="top"><a name="BCP 47">[BCP 47]</a></td>
+<td class="author-text">Phillips, A. and M. Davis, &ldquo;Tags for Identifying Languages,&rdquo; BCP&nbsp;47.</td></tr>
 <tr><td class="author-text" valign="top"><a name="Language Preference Attribute">[Language Preference Attribute]</a></td>
-<td class="author-text">axschema.org, “<a href="http://axschema.org/pref/language">Language Preference Attribute</a>.”</td></tr>
+<td class="author-text">axschema.org, &ldquo;<a href="http://axschema.org/pref/language">Language Preference Attribute</a>.&rdquo;</td></tr>
 <tr><td class="author-text" valign="top"><a name="OpenID 2.0">[OpenID 2.0]</a></td>
-<td class="author-text">OpenID 2.0 Workgroup, “<a href="http://openid.net/">OpenID 2.0</a>.”</td></tr>
+<td class="author-text">OpenID 2.0 Workgroup, &ldquo;<a href="http://openid.net">OpenID 2.0</a>.&rdquo;</td></tr>
 <tr><td class="author-text" valign="top"><a name="OpenID Attribute Exchange">[OpenID Attribute Exchange]</a></td>
-<td class="author-text">Hardt, D., Bufu, J., and J. Hoyt, “<a href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID Attribute Exchange 1.0</a>.”</td></tr>
+<td class="author-text">Hardt, D., Bufu, J., and J. Hoyt, &ldquo;<a href="http://openid.net/specs/openid-attribute-exchange-1_0.html">OpenID Attribute Exchange 1.0</a>.&rdquo;</td></tr>
 <tr><td class="author-text" valign="top"><a name="RFC2119">[RFC2119]</a></td>
-<td class="author-text">Bradner, B., “<a href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>,” RFC&nbsp;2119.</td></tr>
-</tbody></table>
+<td class="author-text">Bradner, B., &ldquo;<a href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>,&rdquo; RFC&nbsp;2119.</td></tr>
+</table>
 
-<a name="rfc.authors"></a><br><hr>
-<table summary="layout" class="TOCbug" align="right" cellpadding="0" cellspacing="2"><tbody><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></tbody></table>
+<a name="anchor11"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.A"></a><h3>Appendix A.&nbsp;
+Example Use of Experimental Mode</h3>
+
+<p> 
+	In OpenID authentication, when using the checkid_immediate mode, there is no mechanism to indicate that there is a user logged in at the OpenID Provider.
+        Therefore, the Relying Party does not know if the checkid_immediate request failed because:
+        </p>
+<ol class="text">
+<li>The user does not have an account at the OpenID Provider (or is not logged in at the Provider), or:
+</li>
+<li>The user is logged in to the OpenID Provider but has not yet approved transparent login with the Relying Party.
+</li>
+</ol><p>
+        This makes it difficult for the RP to optimize the OpenID
+        user experience by, for instance, displaying a prominent button for the OpenID Provider in case (2). The following example shows how an experimental mode can be sent with
+        checkid_immediate requests to obtain this information.
+      
+</p>
+<p>
+	</p>
+<blockquote class="text"><dl>
+<dt>openid.ns.ui</dt>
+<dd>
+	    REQUIRED. Value: "http://specs.openid.net/extensions/ui/1.0"
+	  
+</dd>
+<dt>openid.ui.mode</dt>
+<dd>
+	    REQUIRED. Value: "x-has-session".
+	  
+</dd>
+</dl></blockquote><p>
+      
+</p>
+<p>
+       To respond, the OpenID provider sends identical parameters in the "setup_needed" response to answer affirmatively (i.e., there IS an authenticated browser session):
+	</p>
+<blockquote class="text"><dl>
+<dt>openid.ns.ui</dt>
+<dd>
+	    REQUIRED. Value: "http://specs.openid.net/extensions/ui/1.0"
+	  
+</dd>
+<dt>openid.ui.mode</dt>
+<dd>
+	    REQUIRED. Value: "x-has-session".
+	  
+</dd>
+</dl></blockquote><p>
+       Alternative, if the OpenID provider needs to indicate the LACK of a session, it sends simply the UI namespace, without a mode, in the "setup_needed" response:
+	</p>
+<blockquote class="text"><dl>
+<dt>openid.ns.ui</dt>
+<dd>
+	    REQUIRED. Value: "http://specs.openid.net/extensions/ui/1.0"
+	  
+</dd>
+</dl></blockquote><p>      
+      
+</p>
+<a name="rfc.authors"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
 <h3>Authors' Addresses</h3>
-<table border="0" cellpadding="0" cellspacing="0" width="99%">
-<tbody><tr><td class="author-text">&nbsp;</td>
+<table width="99%" border="0" cellpadding="0" cellspacing="0">
+<tr><td class="author-text">&nbsp;</td>
 <td class="author-text">Allen Tom</td></tr>
 <tr><td class="author-text">&nbsp;</td>
 <td class="author-text">Yahoo!</td></tr>
@@ -468,5 +599,5 @@ Acknowledgements</h3>
 <td class="author-text">Google</td></tr>
 <tr><td class="author" align="right">Email:&nbsp;</td>
 <td class="author-text"><a href="mailto:breno@google.com">breno@google.com</a></td></tr>
-</tbody></table>
+</table>
 </body></html>

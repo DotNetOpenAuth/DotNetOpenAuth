@@ -6,6 +6,7 @@
 		<AutomatedBuild>true</AutomatedBuild>
 		<SolutionPath>$(ProjectRoot)src\$(ProductName).sln</SolutionPath>
 		<BuildInParallel Condition=" '$(BuildInParallel)' == '' ">true</BuildInParallel>
+		<DowngradeMvc2ToMvc1 Condition=" '$(DowngradeMvc2ToMvc1)' == '' ">false</DowngradeMvc2ToMvc1>
 		<!-- Validation controls whether extra builds are done in order to fully validate what we're distributing,
 		     even if we're not distributing the built bits (as is the case for project templates). -->
 		<Validation Condition=" '$(Validation)' == '' ">Full</Validation>

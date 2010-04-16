@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// </summary>
 		[TestCase]
 		public void SignaturesMatchKnownGood() {
-			Protocol protocol = Protocol.Default;
+			Protocol protocol = Protocol.V20;
 			var settings = new ProviderSecuritySettings();
 			var store = new AssociationMemoryStore<AssociationRelyingPartyType>();
 			byte[] associationSecret = Convert.FromBase64String("rsSwv1zPWfjPRQU80hciu8FPDC+GONAMJQ/AvSo1a2M=");

@@ -144,6 +144,7 @@ using System.Reflection;
 		/// The conversion cannot be performed.
 		/// </exception>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
+			Contract.Assume(destinationType != null, "Missing contract.");
 			if (destinationType.IsInstanceOfType(value)) {
 				return value;
 			}
