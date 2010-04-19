@@ -1,5 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"
-	CodeFile="SampleWcf.aspx.cs" Inherits="SampleWcf" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" Inherits="SampleWcf" Codebehind="SampleWcf.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
 	<fieldset title="Authorization">

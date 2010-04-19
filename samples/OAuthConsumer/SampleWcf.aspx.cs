@@ -12,7 +12,7 @@ using DotNetOpenAuth.ApplicationBlock;
 using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OAuth;
 using DotNetOpenAuth.OAuth.ChannelElements;
-using SampleServiceProvider;
+using OAuthConsumer.SampleServiceProvider;
 
 /// <summary>
 /// Sample consumer of our Service Provider sample's WCF service.
@@ -99,7 +99,7 @@ public partial class SampleWcf : System.Web.UI.Page {
 			Session["WcfTokenManager"] = tokenManager;
 		}
 		MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
-			new Uri("http://localhost:65169/OAuthServiceProvider/OAuth.ashx"),
+			new Uri("http://localhost:65169/OAuth.ashx"),
 			HttpDeliveryMethods.PostRequest);
 		WebConsumer consumer = new WebConsumer(
 			new ServiceProviderDescription {

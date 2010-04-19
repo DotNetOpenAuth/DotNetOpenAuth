@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Gmail address book demo" Language="C#" MasterPageFile="~/MasterPage.master"
-	AutoEventWireup="true" CodeFile="GoogleAddressBook.aspx.cs" Inherits="GoogleAddressBook" %>
+	AutoEventWireup="true" Inherits="GoogleAddressBook" Codebehind="GoogleAddressBook.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
