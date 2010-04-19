@@ -1,4 +1,4 @@
-﻿<%@ Page Title="DotNetOpenAuth Service Provider Sample" Language="C#" MasterPageFile="~/MasterPage.master" CodeBehind="~/Default.aspx.cs" Inherits="_Default" AutoEventWireup="True" %>
+﻿<%@ Page Title="DotNetOpenAuth Service Provider Sample" Language="C#" MasterPageFile="~/MasterPage.master" CodeBehind="~/Default.aspx.cs" Inherits="OAuthServiceProvider._Default" AutoEventWireup="True" %>
 
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Data.SqlClient" %>

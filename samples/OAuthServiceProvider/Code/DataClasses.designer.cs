@@ -9,134 +9,135 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-
-
-
-[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="Database")]
-public partial class DataClassesDataContext : System.Data.Linq.DataContext
+namespace OAuthServiceProvider.Code
 {
+	using System.Data.Linq;
+	using System.Data.Linq.Mapping;
+	using System.Data;
+	using System.Collections.Generic;
+	using System.Reflection;
+	using System.Linq;
+	using System.Linq.Expressions;
+	using System.ComponentModel;
+	using System;
 	
-	private static System.Data.Linq.Mapping.MappingSource mappingSource = new AttributeMappingSource();
 	
-  #region Extensibility Method Definitions
-  partial void OnCreated();
-  partial void InsertUser(User instance);
-  partial void UpdateUser(User instance);
-  partial void DeleteUser(User instance);
-  partial void InsertFavoriteSite(FavoriteSite instance);
-  partial void UpdateFavoriteSite(FavoriteSite instance);
-  partial void DeleteFavoriteSite(FavoriteSite instance);
-  partial void InsertOAuthConsumer(OAuthConsumer instance);
-  partial void UpdateOAuthConsumer(OAuthConsumer instance);
-  partial void DeleteOAuthConsumer(OAuthConsumer instance);
-  partial void InsertOAuthToken(OAuthToken instance);
-  partial void UpdateOAuthToken(OAuthToken instance);
-  partial void DeleteOAuthToken(OAuthToken instance);
-  partial void InsertNonce(Nonce instance);
-  partial void UpdateNonce(Nonce instance);
-  partial void DeleteNonce(Nonce instance);
-  #endregion
-	
-	public DataClassesDataContext() : 
-			base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DatabaseConnectionString"].ConnectionString, mappingSource)
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="Database")]
+	public partial class DataClassesDataContext : System.Data.Linq.DataContext
 	{
-		OnCreated();
-	}
-	
-	public DataClassesDataContext(string connection) : 
-			base(connection, mappingSource)
-	{
-		OnCreated();
-	}
-	
-	public DataClassesDataContext(System.Data.IDbConnection connection) : 
-			base(connection, mappingSource)
-	{
-		OnCreated();
-	}
-	
-	public DataClassesDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
-			base(connection, mappingSource)
-	{
-		OnCreated();
-	}
-	
-	public DataClassesDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
-			base(connection, mappingSource)
-	{
-		OnCreated();
-	}
-	
-	public System.Data.Linq.Table<User> Users
-	{
-		get
+		
+		private static System.Data.Linq.Mapping.MappingSource mappingSource = new AttributeMappingSource();
+		
+    #region Extensibility Method Definitions
+    partial void OnCreated();
+    partial void InsertUser(User instance);
+    partial void UpdateUser(User instance);
+    partial void DeleteUser(User instance);
+    partial void InsertFavoriteSite(FavoriteSite instance);
+    partial void UpdateFavoriteSite(FavoriteSite instance);
+    partial void DeleteFavoriteSite(FavoriteSite instance);
+    partial void InsertOAuthConsumer(OAuthConsumer instance);
+    partial void UpdateOAuthConsumer(OAuthConsumer instance);
+    partial void DeleteOAuthConsumer(OAuthConsumer instance);
+    partial void InsertOAuthToken(OAuthToken instance);
+    partial void UpdateOAuthToken(OAuthToken instance);
+    partial void DeleteOAuthToken(OAuthToken instance);
+    partial void InsertNonce(Nonce instance);
+    partial void UpdateNonce(Nonce instance);
+    partial void DeleteNonce(Nonce instance);
+    #endregion
+		
+		public DataClassesDataContext() : 
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DatabaseConnectionString"].ConnectionString, mappingSource)
 		{
-			return this.GetTable<User>();
+			OnCreated();
+		}
+		
+		public DataClassesDataContext(string connection) : 
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+		
+		public DataClassesDataContext(System.Data.IDbConnection connection) : 
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+		
+		public DataClassesDataContext(string connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+		
+		public DataClassesDataContext(System.Data.IDbConnection connection, System.Data.Linq.Mapping.MappingSource mappingSource) : 
+				base(connection, mappingSource)
+		{
+			OnCreated();
+		}
+		
+		public System.Data.Linq.Table<User> Users
+		{
+			get
+			{
+				return this.GetTable<User>();
+			}
+		}
+		
+		public System.Data.Linq.Table<FavoriteSite> FavoriteSites
+		{
+			get
+			{
+				return this.GetTable<FavoriteSite>();
+			}
+		}
+		
+		public System.Data.Linq.Table<OAuthConsumer> OAuthConsumers
+		{
+			get
+			{
+				return this.GetTable<OAuthConsumer>();
+			}
+		}
+		
+		public System.Data.Linq.Table<OAuthToken> OAuthTokens
+		{
+			get
+			{
+				return this.GetTable<OAuthToken>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Nonce> Nonces
+		{
+			get
+			{
+				return this.GetTable<Nonce>();
+			}
 		}
 	}
 	
-	public System.Data.Linq.Table<FavoriteSite> FavoriteSites
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.[User]")]
+	public partial class User : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		get
-		{
-			return this.GetTable<FavoriteSite>();
-		}
-	}
-	
-	public System.Data.Linq.Table<OAuthConsumer> OAuthConsumers
-	{
-		get
-		{
-			return this.GetTable<OAuthConsumer>();
-		}
-	}
-	
-	public System.Data.Linq.Table<OAuthToken> OAuthTokens
-	{
-		get
-		{
-			return this.GetTable<OAuthToken>();
-		}
-	}
-	
-	public System.Data.Linq.Table<Nonce> Nonces
-	{
-		get
-		{
-			return this.GetTable<Nonce>();
-		}
-	}
-}
-
-[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.[User]")]
-public partial class User : INotifyPropertyChanging, INotifyPropertyChanged
-{
-	
-	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-	
-	private int _UserId;
-	
-	private string _OpenIDClaimedIdentifier;
-	
-	private string _OpenIDFriendlyIdentifier;
-	
-	private string _FullName;
-	
-	private System.Nullable<int> _Age;
-	
-	private EntitySet<FavoriteSite> _FavoriteSites;
-	
-	private EntitySet<OAuthToken> _OAuthTokens;
-	
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _UserId;
+		
+		private string _OpenIDClaimedIdentifier;
+		
+		private string _OpenIDFriendlyIdentifier;
+		
+		private string _FullName;
+		
+		private System.Nullable<int> _Age;
+		
+		private EntitySet<FavoriteSite> _FavoriteSites;
+		
+		private EntitySet<OAuthToken> _OAuthTokens;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -152,199 +153,199 @@ public partial class User : INotifyPropertyChanging, INotifyPropertyChanged
     partial void OnAgeChanging(System.Nullable<int> value);
     partial void OnAgeChanged();
     #endregion
-	
-	public User()
-	{
-		this._FavoriteSites = new EntitySet<FavoriteSite>(new Action<FavoriteSite>(this.attach_FavoriteSites), new Action<FavoriteSite>(this.detach_FavoriteSites));
-		this._OAuthTokens = new EntitySet<OAuthToken>(new Action<OAuthToken>(this.attach_OAuthTokens), new Action<OAuthToken>(this.detach_OAuthTokens));
-		OnCreated();
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-	public int UserId
-	{
-		get
+		
+		public User()
 		{
-			return this._UserId;
+			this._FavoriteSites = new EntitySet<FavoriteSite>(new Action<FavoriteSite>(this.attach_FavoriteSites), new Action<FavoriteSite>(this.detach_FavoriteSites));
+			this._OAuthTokens = new EntitySet<OAuthToken>(new Action<OAuthToken>(this.attach_OAuthTokens), new Action<OAuthToken>(this.detach_OAuthTokens));
+			OnCreated();
 		}
-		set
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int UserId
 		{
-			if ((this._UserId != value))
+			get
 			{
-				this.OnUserIdChanging(value);
-				this.SendPropertyChanging();
-				this._UserId = value;
-				this.SendPropertyChanged("UserId");
-				this.OnUserIdChanged();
+				return this._UserId;
+			}
+			set
+			{
+				if ((this._UserId != value))
+				{
+					this.OnUserIdChanging(value);
+					this.SendPropertyChanging();
+					this._UserId = value;
+					this.SendPropertyChanged("UserId");
+					this.OnUserIdChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OpenIDClaimedIdentifier", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
-	public string OpenIDClaimedIdentifier
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OpenIDClaimedIdentifier", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
+		public string OpenIDClaimedIdentifier
 		{
-			return this._OpenIDClaimedIdentifier;
-		}
-		set
-		{
-			if ((this._OpenIDClaimedIdentifier != value))
+			get
 			{
-				this.OnOpenIDClaimedIdentifierChanging(value);
-				this.SendPropertyChanging();
-				this._OpenIDClaimedIdentifier = value;
-				this.SendPropertyChanged("OpenIDClaimedIdentifier");
-				this.OnOpenIDClaimedIdentifierChanged();
+				return this._OpenIDClaimedIdentifier;
+			}
+			set
+			{
+				if ((this._OpenIDClaimedIdentifier != value))
+				{
+					this.OnOpenIDClaimedIdentifierChanging(value);
+					this.SendPropertyChanging();
+					this._OpenIDClaimedIdentifier = value;
+					this.SendPropertyChanged("OpenIDClaimedIdentifier");
+					this.OnOpenIDClaimedIdentifierChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OpenIDFriendlyIdentifier", DbType="NVarChar(150)")]
-	public string OpenIDFriendlyIdentifier
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OpenIDFriendlyIdentifier", DbType="NVarChar(150)")]
+		public string OpenIDFriendlyIdentifier
 		{
-			return this._OpenIDFriendlyIdentifier;
-		}
-		set
-		{
-			if ((this._OpenIDFriendlyIdentifier != value))
+			get
 			{
-				this.OnOpenIDFriendlyIdentifierChanging(value);
-				this.SendPropertyChanging();
-				this._OpenIDFriendlyIdentifier = value;
-				this.SendPropertyChanged("OpenIDFriendlyIdentifier");
-				this.OnOpenIDFriendlyIdentifierChanged();
+				return this._OpenIDFriendlyIdentifier;
+			}
+			set
+			{
+				if ((this._OpenIDFriendlyIdentifier != value))
+				{
+					this.OnOpenIDFriendlyIdentifierChanging(value);
+					this.SendPropertyChanging();
+					this._OpenIDFriendlyIdentifier = value;
+					this.SendPropertyChanged("OpenIDFriendlyIdentifier");
+					this.OnOpenIDFriendlyIdentifierChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FullName", DbType="NVarChar(150)", CanBeNull=false)]
-	public string FullName
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FullName", DbType="NVarChar(150)", CanBeNull=false)]
+		public string FullName
 		{
-			return this._FullName;
-		}
-		set
-		{
-			if ((this._FullName != value))
+			get
 			{
-				this.OnFullNameChanging(value);
-				this.SendPropertyChanging();
-				this._FullName = value;
-				this.SendPropertyChanged("FullName");
-				this.OnFullNameChanged();
+				return this._FullName;
+			}
+			set
+			{
+				if ((this._FullName != value))
+				{
+					this.OnFullNameChanging(value);
+					this.SendPropertyChanging();
+					this._FullName = value;
+					this.SendPropertyChanged("FullName");
+					this.OnFullNameChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Age", DbType="int")]
-	public System.Nullable<int> Age
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Age", DbType="int")]
+		public System.Nullable<int> Age
 		{
-			return this._Age;
-		}
-		set
-		{
-			if ((this._Age != value))
+			get
 			{
-				this.OnAgeChanging(value);
-				this.SendPropertyChanging();
-				this._Age = value;
-				this.SendPropertyChanged("Age");
-				this.OnAgeChanged();
+				return this._Age;
+			}
+			set
+			{
+				if ((this._Age != value))
+				{
+					this.OnAgeChanging(value);
+					this.SendPropertyChanging();
+					this._Age = value;
+					this.SendPropertyChanged("Age");
+					this.OnAgeChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_FavoriteSite", Storage="_FavoriteSites", ThisKey="UserId", OtherKey="UserId")]
-	public EntitySet<FavoriteSite> FavoriteSites
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_FavoriteSite", Storage="_FavoriteSites", ThisKey="UserId", OtherKey="UserId")]
+		public EntitySet<FavoriteSite> FavoriteSites
 		{
-			return this._FavoriteSites;
+			get
+			{
+				return this._FavoriteSites;
+			}
+			set
+			{
+				this._FavoriteSites.Assign(value);
+			}
 		}
-		set
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_OAuthToken", Storage="_OAuthTokens", ThisKey="UserId", OtherKey="UserId")]
+		public EntitySet<OAuthToken> OAuthTokens
 		{
-			this._FavoriteSites.Assign(value);
+			get
+			{
+				return this._OAuthTokens;
+			}
+			set
+			{
+				this._OAuthTokens.Assign(value);
+			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_OAuthToken", Storage="_OAuthTokens", ThisKey="UserId", OtherKey="UserId")]
-	public EntitySet<OAuthToken> OAuthTokens
-	{
-		get
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
 		{
-			return this._OAuthTokens;
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
 		}
-		set
+		
+		protected virtual void SendPropertyChanged(String propertyName)
 		{
-			this._OAuthTokens.Assign(value);
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
-	}
-	
-	public event PropertyChangingEventHandler PropertyChanging;
-	
-	public event PropertyChangedEventHandler PropertyChanged;
-	
-	protected virtual void SendPropertyChanging()
-	{
-		if ((this.PropertyChanging != null))
+		
+		private void attach_FavoriteSites(FavoriteSite entity)
 		{
-			this.PropertyChanging(this, emptyChangingEventArgs);
+			this.SendPropertyChanging();
+			entity.User = this;
 		}
-	}
-	
-	protected virtual void SendPropertyChanged(String propertyName)
-	{
-		if ((this.PropertyChanged != null))
+		
+		private void detach_FavoriteSites(FavoriteSite entity)
 		{
-			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			this.SendPropertyChanging();
+			entity.User = null;
+		}
+		
+		private void attach_OAuthTokens(OAuthToken entity)
+		{
+			this.SendPropertyChanging();
+			entity.User = this;
+		}
+		
+		private void detach_OAuthTokens(OAuthToken entity)
+		{
+			this.SendPropertyChanging();
+			entity.User = null;
 		}
 	}
 	
-	private void attach_FavoriteSites(FavoriteSite entity)
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FavoriteSite")]
+	public partial class FavoriteSite : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		this.SendPropertyChanging();
-		entity.User = this;
-	}
-	
-	private void detach_FavoriteSites(FavoriteSite entity)
-	{
-		this.SendPropertyChanging();
-		entity.User = null;
-	}
-	
-	private void attach_OAuthTokens(OAuthToken entity)
-	{
-		this.SendPropertyChanging();
-		entity.User = this;
-	}
-	
-	private void detach_OAuthTokens(OAuthToken entity)
-	{
-		this.SendPropertyChanging();
-		entity.User = null;
-	}
-}
-
-[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FavoriteSite")]
-public partial class FavoriteSite : INotifyPropertyChanging, INotifyPropertyChanged
-{
-	
-	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-	
-	private int _FavoriteSiteId;
-	
-	private int _UserId;
-	
-	private string _SiteUrl;
-	
-	private EntityRef<User> _User;
-	
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _FavoriteSiteId;
+		
+		private int _UserId;
+		
+		private string _SiteUrl;
+		
+		private EntityRef<User> _User;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -356,152 +357,152 @@ public partial class FavoriteSite : INotifyPropertyChanging, INotifyPropertyChan
     partial void OnSiteUrlChanging(string value);
     partial void OnSiteUrlChanged();
     #endregion
-	
-	public FavoriteSite()
-	{
-		this._User = default(EntityRef<User>);
-		OnCreated();
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FavoriteSiteId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-	public int FavoriteSiteId
-	{
-		get
+		
+		public FavoriteSite()
 		{
-			return this._FavoriteSiteId;
+			this._User = default(EntityRef<User>);
+			OnCreated();
 		}
-		set
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FavoriteSiteId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int FavoriteSiteId
 		{
-			if ((this._FavoriteSiteId != value))
+			get
 			{
-				this.OnFavoriteSiteIdChanging(value);
-				this.SendPropertyChanging();
-				this._FavoriteSiteId = value;
-				this.SendPropertyChanged("FavoriteSiteId");
-				this.OnFavoriteSiteIdChanged();
+				return this._FavoriteSiteId;
+			}
+			set
+			{
+				if ((this._FavoriteSiteId != value))
+				{
+					this.OnFavoriteSiteIdChanging(value);
+					this.SendPropertyChanging();
+					this._FavoriteSiteId = value;
+					this.SendPropertyChanged("FavoriteSiteId");
+					this.OnFavoriteSiteIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="Int NOT NULL")]
+		public int UserId
+		{
+			get
+			{
+				return this._UserId;
+			}
+			set
+			{
+				if ((this._UserId != value))
+				{
+					if (this._User.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUserIdChanging(value);
+					this.SendPropertyChanging();
+					this._UserId = value;
+					this.SendPropertyChanged("UserId");
+					this.OnUserIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SiteUrl", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string SiteUrl
+		{
+			get
+			{
+				return this._SiteUrl;
+			}
+			set
+			{
+				if ((this._SiteUrl != value))
+				{
+					this.OnSiteUrlChanging(value);
+					this.SendPropertyChanging();
+					this._SiteUrl = value;
+					this.SendPropertyChanged("SiteUrl");
+					this.OnSiteUrlChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_FavoriteSite", Storage="_User", ThisKey="UserId", OtherKey="UserId", IsForeignKey=true, DeleteOnNull=true, DeleteRule="CASCADE")]
+		public User User
+		{
+			get
+			{
+				return this._User.Entity;
+			}
+			set
+			{
+				User previousValue = this._User.Entity;
+				if (((previousValue != value) 
+							|| (this._User.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._User.Entity = null;
+						previousValue.FavoriteSites.Remove(this);
+					}
+					this._User.Entity = value;
+					if ((value != null))
+					{
+						value.FavoriteSites.Add(this);
+						this._UserId = value.UserId;
+					}
+					else
+					{
+						this._UserId = default(int);
+					}
+					this.SendPropertyChanged("User");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="Int NOT NULL")]
-	public int UserId
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.OAuthConsumer")]
+	public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		get
-		{
-			return this._UserId;
-		}
-		set
-		{
-			if ((this._UserId != value))
-			{
-				if (this._User.HasLoadedOrAssignedValue)
-				{
-					throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-				}
-				this.OnUserIdChanging(value);
-				this.SendPropertyChanging();
-				this._UserId = value;
-				this.SendPropertyChanged("UserId");
-				this.OnUserIdChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SiteUrl", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
-	public string SiteUrl
-	{
-		get
-		{
-			return this._SiteUrl;
-		}
-		set
-		{
-			if ((this._SiteUrl != value))
-			{
-				this.OnSiteUrlChanging(value);
-				this.SendPropertyChanging();
-				this._SiteUrl = value;
-				this.SendPropertyChanged("SiteUrl");
-				this.OnSiteUrlChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_FavoriteSite", Storage="_User", ThisKey="UserId", OtherKey="UserId", IsForeignKey=true, DeleteOnNull=true, DeleteRule="CASCADE")]
-	public User User
-	{
-		get
-		{
-			return this._User.Entity;
-		}
-		set
-		{
-			User previousValue = this._User.Entity;
-			if (((previousValue != value) 
-						|| (this._User.HasLoadedOrAssignedValue == false)))
-			{
-				this.SendPropertyChanging();
-				if ((previousValue != null))
-				{
-					this._User.Entity = null;
-					previousValue.FavoriteSites.Remove(this);
-				}
-				this._User.Entity = value;
-				if ((value != null))
-				{
-					value.FavoriteSites.Add(this);
-					this._UserId = value.UserId;
-				}
-				else
-				{
-					this._UserId = default(int);
-				}
-				this.SendPropertyChanged("User");
-			}
-		}
-	}
-	
-	public event PropertyChangingEventHandler PropertyChanging;
-	
-	public event PropertyChangedEventHandler PropertyChanged;
-	
-	protected virtual void SendPropertyChanging()
-	{
-		if ((this.PropertyChanging != null))
-		{
-			this.PropertyChanging(this, emptyChangingEventArgs);
-		}
-	}
-	
-	protected virtual void SendPropertyChanged(String propertyName)
-	{
-		if ((this.PropertyChanged != null))
-		{
-			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-	}
-}
-
-[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.OAuthConsumer")]
-public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyChanged
-{
-	
-	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-	
-	private int _ConsumerId;
-	
-	private string _ConsumerKey;
-	
-	private string _ConsumerSecret;
-	
-	private string _Callback;
-	
-	private DotNetOpenAuth.OAuth.VerificationCodeFormat _VerificationCodeFormat;
-	
-	private int _VerificationCodeLength;
-	
-	private EntitySet<OAuthToken> _OAuthTokens;
-	
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _ConsumerId;
+		
+		private string _ConsumerKey;
+		
+		private string _ConsumerSecret;
+		
+		private string _Callback;
+		
+		private DotNetOpenAuth.OAuth.VerificationCodeFormat _VerificationCodeFormat;
+		
+		private int _VerificationCodeLength;
+		
+		private EntitySet<OAuthToken> _OAuthTokens;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -519,211 +520,211 @@ public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyCha
     partial void OnVerificationCodeLengthChanging(int value);
     partial void OnVerificationCodeLengthChanged();
     #endregion
-	
-	public OAuthConsumer()
-	{
-		this._OAuthTokens = new EntitySet<OAuthToken>(new Action<OAuthToken>(this.attach_OAuthTokens), new Action<OAuthToken>(this.detach_OAuthTokens));
-		OnCreated();
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-	public int ConsumerId
-	{
-		get
+		
+		public OAuthConsumer()
 		{
-			return this._ConsumerId;
+			this._OAuthTokens = new EntitySet<OAuthToken>(new Action<OAuthToken>(this.attach_OAuthTokens), new Action<OAuthToken>(this.detach_OAuthTokens));
+			OnCreated();
 		}
-		set
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ConsumerId
 		{
-			if ((this._ConsumerId != value))
+			get
 			{
-				this.OnConsumerIdChanging(value);
-				this.SendPropertyChanging();
-				this._ConsumerId = value;
-				this.SendPropertyChanged("ConsumerId");
-				this.OnConsumerIdChanged();
+				return this._ConsumerId;
+			}
+			set
+			{
+				if ((this._ConsumerId != value))
+				{
+					this.OnConsumerIdChanging(value);
+					this.SendPropertyChanging();
+					this._ConsumerId = value;
+					this.SendPropertyChanged("ConsumerId");
+					this.OnConsumerIdChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerKey", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-	public string ConsumerKey
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerKey", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string ConsumerKey
 		{
-			return this._ConsumerKey;
-		}
-		set
-		{
-			if ((this._ConsumerKey != value))
+			get
 			{
-				this.OnConsumerKeyChanging(value);
-				this.SendPropertyChanging();
-				this._ConsumerKey = value;
-				this.SendPropertyChanged("ConsumerKey");
-				this.OnConsumerKeyChanged();
+				return this._ConsumerKey;
+			}
+			set
+			{
+				if ((this._ConsumerKey != value))
+				{
+					this.OnConsumerKeyChanging(value);
+					this.SendPropertyChanging();
+					this._ConsumerKey = value;
+					this.SendPropertyChanged("ConsumerKey");
+					this.OnConsumerKeyChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerSecret", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-	public string ConsumerSecret
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerSecret", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string ConsumerSecret
 		{
-			return this._ConsumerSecret;
-		}
-		set
-		{
-			if ((this._ConsumerSecret != value))
+			get
 			{
-				this.OnConsumerSecretChanging(value);
-				this.SendPropertyChanging();
-				this._ConsumerSecret = value;
-				this.SendPropertyChanged("ConsumerSecret");
-				this.OnConsumerSecretChanged();
+				return this._ConsumerSecret;
+			}
+			set
+			{
+				if ((this._ConsumerSecret != value))
+				{
+					this.OnConsumerSecretChanging(value);
+					this.SendPropertyChanging();
+					this._ConsumerSecret = value;
+					this.SendPropertyChanged("ConsumerSecret");
+					this.OnConsumerSecretChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Callback")]
-	public string Callback
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Callback")]
+		public string Callback
 		{
-			return this._Callback;
-		}
-		set
-		{
-			if ((this._Callback != value))
+			get
 			{
-				this.OnCallbackChanging(value);
-				this.SendPropertyChanging();
-				this._Callback = value;
-				this.SendPropertyChanged("Callback");
-				this.OnCallbackChanged();
+				return this._Callback;
+			}
+			set
+			{
+				if ((this._Callback != value))
+				{
+					this.OnCallbackChanging(value);
+					this.SendPropertyChanging();
+					this._Callback = value;
+					this.SendPropertyChanged("Callback");
+					this.OnCallbackChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_VerificationCodeFormat", CanBeNull=false)]
-	public DotNetOpenAuth.OAuth.VerificationCodeFormat VerificationCodeFormat
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_VerificationCodeFormat")]
+		public DotNetOpenAuth.OAuth.VerificationCodeFormat VerificationCodeFormat
 		{
-			return this._VerificationCodeFormat;
-		}
-		set
-		{
-			if ((this._VerificationCodeFormat != value))
+			get
 			{
-				this.OnVerificationCodeFormatChanging(value);
-				this.SendPropertyChanging();
-				this._VerificationCodeFormat = value;
-				this.SendPropertyChanged("VerificationCodeFormat");
-				this.OnVerificationCodeFormatChanged();
+				return this._VerificationCodeFormat;
+			}
+			set
+			{
+				if ((this._VerificationCodeFormat != value))
+				{
+					this.OnVerificationCodeFormatChanging(value);
+					this.SendPropertyChanging();
+					this._VerificationCodeFormat = value;
+					this.SendPropertyChanged("VerificationCodeFormat");
+					this.OnVerificationCodeFormatChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_VerificationCodeLength")]
-	public int VerificationCodeLength
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_VerificationCodeLength")]
+		public int VerificationCodeLength
 		{
-			return this._VerificationCodeLength;
-		}
-		set
-		{
-			if ((this._VerificationCodeLength != value))
+			get
 			{
-				this.OnVerificationCodeLengthChanging(value);
-				this.SendPropertyChanging();
-				this._VerificationCodeLength = value;
-				this.SendPropertyChanged("VerificationCodeLength");
-				this.OnVerificationCodeLengthChanged();
+				return this._VerificationCodeLength;
+			}
+			set
+			{
+				if ((this._VerificationCodeLength != value))
+				{
+					this.OnVerificationCodeLengthChanging(value);
+					this.SendPropertyChanging();
+					this._VerificationCodeLength = value;
+					this.SendPropertyChanged("VerificationCodeLength");
+					this.OnVerificationCodeLengthChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="OAuthConsumer_OAuthToken", Storage="_OAuthTokens", ThisKey="ConsumerId", OtherKey="ConsumerId")]
-	public EntitySet<OAuthToken> OAuthTokens
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="OAuthConsumer_OAuthToken", Storage="_OAuthTokens", ThisKey="ConsumerId", OtherKey="ConsumerId")]
+		public EntitySet<OAuthToken> OAuthTokens
 		{
-			return this._OAuthTokens;
+			get
+			{
+				return this._OAuthTokens;
+			}
+			set
+			{
+				this._OAuthTokens.Assign(value);
+			}
 		}
-		set
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
 		{
-			this._OAuthTokens.Assign(value);
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
 		}
-	}
-	
-	public event PropertyChangingEventHandler PropertyChanging;
-	
-	public event PropertyChangedEventHandler PropertyChanged;
-	
-	protected virtual void SendPropertyChanging()
-	{
-		if ((this.PropertyChanging != null))
+		
+		protected virtual void SendPropertyChanged(String propertyName)
 		{
-			this.PropertyChanging(this, emptyChangingEventArgs);
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
-	}
-	
-	protected virtual void SendPropertyChanged(String propertyName)
-	{
-		if ((this.PropertyChanged != null))
+		
+		private void attach_OAuthTokens(OAuthToken entity)
 		{
-			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			this.SendPropertyChanging();
+			entity.OAuthConsumer = this;
+		}
+		
+		private void detach_OAuthTokens(OAuthToken entity)
+		{
+			this.SendPropertyChanging();
+			entity.OAuthConsumer = null;
 		}
 	}
 	
-	private void attach_OAuthTokens(OAuthToken entity)
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.OAuthToken")]
+	public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		this.SendPropertyChanging();
-		entity.OAuthConsumer = this;
-	}
-	
-	private void detach_OAuthTokens(OAuthToken entity)
-	{
-		this.SendPropertyChanging();
-		entity.OAuthConsumer = null;
-	}
-}
-
-[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.OAuthToken")]
-public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChanged
-{
-	
-	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-	
-	private int _TokenId;
-	
-	private string _Token;
-	
-	private string _TokenSecret;
-	
-	private TokenAuthorizationState _State;
-	
-	private System.DateTime _IssueDate;
-	
-	private int _ConsumerId;
-	
-	private System.Nullable<int> _UserId;
-	
-	private string _Scope;
-	
-	private string _RequestTokenVerifier;
-	
-	private string _RequestTokenCallback;
-	
-	private string _ConsumerVersion;
-	
-	private EntityRef<OAuthConsumer> _OAuthConsumer;
-	
-	private EntityRef<User> _User;
-	
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _TokenId;
+		
+		private string _Token;
+		
+		private string _TokenSecret;
+		
+		private OAuthServiceProvider.Code.TokenAuthorizationState _State;
+		
+		private System.DateTime _IssueDate;
+		
+		private int _ConsumerId;
+		
+		private System.Nullable<int> _UserId;
+		
+		private string _Scope;
+		
+		private string _RequestTokenVerifier;
+		
+		private string _RequestTokenCallback;
+		
+		private string _ConsumerVersion;
+		
+		private EntityRef<OAuthConsumer> _OAuthConsumer;
+		
+		private EntityRef<User> _User;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -734,7 +735,7 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
     partial void OnTokenChanged();
     partial void OnTokenSecretChanging(string value);
     partial void OnTokenSecretChanged();
-    partial void OnStateChanging(TokenAuthorizationState value);
+    partial void OnStateChanging(OAuthServiceProvider.Code.TokenAuthorizationState value);
     partial void OnStateChanged();
     partial void OnIssueDateChanging(System.DateTime value);
     partial void OnIssueDateChanged();
@@ -751,343 +752,343 @@ public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChange
     partial void OnConsumerVersionChanging(string value);
     partial void OnConsumerVersionChanged();
     #endregion
-	
-	public OAuthToken()
-	{
-		this._OAuthConsumer = default(EntityRef<OAuthConsumer>);
-		this._User = default(EntityRef<User>);
-		OnCreated();
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TokenId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-	public int TokenId
-	{
-		get
+		
+		public OAuthToken()
 		{
-			return this._TokenId;
+			this._OAuthConsumer = default(EntityRef<OAuthConsumer>);
+			this._User = default(EntityRef<User>);
+			OnCreated();
 		}
-		set
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TokenId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int TokenId
 		{
-			if ((this._TokenId != value))
+			get
 			{
-				this.OnTokenIdChanging(value);
-				this.SendPropertyChanging();
-				this._TokenId = value;
-				this.SendPropertyChanged("TokenId");
-				this.OnTokenIdChanged();
+				return this._TokenId;
 			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Token", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-	public string Token
-	{
-		get
-		{
-			return this._Token;
-		}
-		set
-		{
-			if ((this._Token != value))
+			set
 			{
-				this.OnTokenChanging(value);
-				this.SendPropertyChanging();
-				this._Token = value;
-				this.SendPropertyChanged("Token");
-				this.OnTokenChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TokenSecret", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-	public string TokenSecret
-	{
-		get
-		{
-			return this._TokenSecret;
-		}
-		set
-		{
-			if ((this._TokenSecret != value))
-			{
-				this.OnTokenSecretChanging(value);
-				this.SendPropertyChanging();
-				this._TokenSecret = value;
-				this.SendPropertyChanged("TokenSecret");
-				this.OnTokenSecretChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_State", DbType="INT NOT NULL", CanBeNull=false)]
-	public TokenAuthorizationState State
-	{
-		get
-		{
-			return this._State;
-		}
-		set
-		{
-			if ((this._State != value))
-			{
-				this.OnStateChanging(value);
-				this.SendPropertyChanging();
-				this._State = value;
-				this.SendPropertyChanged("State");
-				this.OnStateChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IssueDate", DbType="DateTime NOT NULL")]
-	public System.DateTime IssueDate
-	{
-		get
-		{
-			return this._IssueDate;
-		}
-		set
-		{
-			if ((this._IssueDate != value))
-			{
-				this.OnIssueDateChanging(value);
-				this.SendPropertyChanging();
-				this._IssueDate = value;
-				this.SendPropertyChanged("IssueDate");
-				this.OnIssueDateChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerId", DbType="Int NOT NULL")]
-	public int ConsumerId
-	{
-		get
-		{
-			return this._ConsumerId;
-		}
-		set
-		{
-			if ((this._ConsumerId != value))
-			{
-				if (this._OAuthConsumer.HasLoadedOrAssignedValue)
+				if ((this._TokenId != value))
 				{
-					throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					this.OnTokenIdChanging(value);
+					this.SendPropertyChanging();
+					this._TokenId = value;
+					this.SendPropertyChanged("TokenId");
+					this.OnTokenIdChanged();
 				}
-				this.OnConsumerIdChanging(value);
-				this.SendPropertyChanging();
-				this._ConsumerId = value;
-				this.SendPropertyChanged("ConsumerId");
-				this.OnConsumerIdChanged();
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="Int")]
-	public System.Nullable<int> UserId
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Token", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string Token
 		{
-			return this._UserId;
-		}
-		set
-		{
-			if ((this._UserId != value))
+			get
 			{
-				if (this._User.HasLoadedOrAssignedValue)
-				{
-					throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-				}
-				this.OnUserIdChanging(value);
-				this.SendPropertyChanging();
-				this._UserId = value;
-				this.SendPropertyChanged("UserId");
-				this.OnUserIdChanged();
+				return this._Token;
 			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Scope", DbType="nvarchar(MAX)", CanBeNull=false)]
-	public string Scope
-	{
-		get
-		{
-			return this._Scope;
-		}
-		set
-		{
-			if ((this._Scope != value))
+			set
 			{
-				this.OnScopeChanging(value);
-				this.SendPropertyChanging();
-				this._Scope = value;
-				this.SendPropertyChanged("Scope");
-				this.OnScopeChanged();
+				if ((this._Token != value))
+				{
+					this.OnTokenChanging(value);
+					this.SendPropertyChanging();
+					this._Token = value;
+					this.SendPropertyChanged("Token");
+					this.OnTokenChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RequestTokenVerifier")]
-	public string RequestTokenVerifier
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TokenSecret", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string TokenSecret
 		{
-			return this._RequestTokenVerifier;
-		}
-		set
-		{
-			if ((this._RequestTokenVerifier != value))
+			get
 			{
-				this.OnRequestTokenVerifierChanging(value);
-				this.SendPropertyChanging();
-				this._RequestTokenVerifier = value;
-				this.SendPropertyChanged("RequestTokenVerifier");
-				this.OnRequestTokenVerifierChanged();
+				return this._TokenSecret;
 			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RequestTokenCallback")]
-	public string RequestTokenCallback
-	{
-		get
-		{
-			return this._RequestTokenCallback;
-		}
-		set
-		{
-			if ((this._RequestTokenCallback != value))
+			set
 			{
-				this.OnRequestTokenCallbackChanging(value);
-				this.SendPropertyChanging();
-				this._RequestTokenCallback = value;
-				this.SendPropertyChanged("RequestTokenCallback");
-				this.OnRequestTokenCallbackChanged();
+				if ((this._TokenSecret != value))
+				{
+					this.OnTokenSecretChanging(value);
+					this.SendPropertyChanging();
+					this._TokenSecret = value;
+					this.SendPropertyChanged("TokenSecret");
+					this.OnTokenSecretChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerVersion")]
-	public string ConsumerVersion
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_State", DbType="INT NOT NULL", CanBeNull=false)]
+		public OAuthServiceProvider.Code.TokenAuthorizationState State
 		{
-			return this._ConsumerVersion;
-		}
-		set
-		{
-			if ((this._ConsumerVersion != value))
+			get
 			{
-				this.OnConsumerVersionChanging(value);
-				this.SendPropertyChanging();
-				this._ConsumerVersion = value;
-				this.SendPropertyChanged("ConsumerVersion");
-				this.OnConsumerVersionChanged();
+				return this._State;
 			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="OAuthConsumer_OAuthToken", Storage="_OAuthConsumer", ThisKey="ConsumerId", OtherKey="ConsumerId", IsForeignKey=true, DeleteOnNull=true, DeleteRule="CASCADE")]
-	public OAuthConsumer OAuthConsumer
-	{
-		get
-		{
-			return this._OAuthConsumer.Entity;
-		}
-		set
-		{
-			OAuthConsumer previousValue = this._OAuthConsumer.Entity;
-			if (((previousValue != value) 
-						|| (this._OAuthConsumer.HasLoadedOrAssignedValue == false)))
+			set
 			{
-				this.SendPropertyChanging();
-				if ((previousValue != null))
+				if ((this._State != value))
 				{
-					this._OAuthConsumer.Entity = null;
-					previousValue.OAuthTokens.Remove(this);
+					this.OnStateChanging(value);
+					this.SendPropertyChanging();
+					this._State = value;
+					this.SendPropertyChanged("State");
+					this.OnStateChanged();
 				}
-				this._OAuthConsumer.Entity = value;
-				if ((value != null))
-				{
-					value.OAuthTokens.Add(this);
-					this._ConsumerId = value.ConsumerId;
-				}
-				else
-				{
-					this._ConsumerId = default(int);
-				}
-				this.SendPropertyChanged("OAuthConsumer");
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_OAuthToken", Storage="_User", ThisKey="UserId", OtherKey="UserId", IsForeignKey=true, DeleteRule="CASCADE")]
-	public User User
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IssueDate", DbType="DateTime NOT NULL")]
+		public System.DateTime IssueDate
 		{
-			return this._User.Entity;
-		}
-		set
-		{
-			User previousValue = this._User.Entity;
-			if (((previousValue != value) 
-						|| (this._User.HasLoadedOrAssignedValue == false)))
+			get
 			{
-				this.SendPropertyChanging();
-				if ((previousValue != null))
+				return this._IssueDate;
+			}
+			set
+			{
+				if ((this._IssueDate != value))
 				{
-					this._User.Entity = null;
-					previousValue.OAuthTokens.Remove(this);
+					this.OnIssueDateChanging(value);
+					this.SendPropertyChanging();
+					this._IssueDate = value;
+					this.SendPropertyChanged("IssueDate");
+					this.OnIssueDateChanged();
 				}
-				this._User.Entity = value;
-				if ((value != null))
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerId", DbType="Int NOT NULL")]
+		public int ConsumerId
+		{
+			get
+			{
+				return this._ConsumerId;
+			}
+			set
+			{
+				if ((this._ConsumerId != value))
 				{
-					value.OAuthTokens.Add(this);
-					this._UserId = value.UserId;
+					if (this._OAuthConsumer.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnConsumerIdChanging(value);
+					this.SendPropertyChanging();
+					this._ConsumerId = value;
+					this.SendPropertyChanged("ConsumerId");
+					this.OnConsumerIdChanged();
 				}
-				else
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="Int")]
+		public System.Nullable<int> UserId
+		{
+			get
+			{
+				return this._UserId;
+			}
+			set
+			{
+				if ((this._UserId != value))
 				{
-					this._UserId = default(Nullable<int>);
+					if (this._User.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUserIdChanging(value);
+					this.SendPropertyChanging();
+					this._UserId = value;
+					this.SendPropertyChanged("UserId");
+					this.OnUserIdChanged();
 				}
-				this.SendPropertyChanged("User");
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Scope", DbType="nvarchar(MAX)", CanBeNull=false)]
+		public string Scope
+		{
+			get
+			{
+				return this._Scope;
+			}
+			set
+			{
+				if ((this._Scope != value))
+				{
+					this.OnScopeChanging(value);
+					this.SendPropertyChanging();
+					this._Scope = value;
+					this.SendPropertyChanged("Scope");
+					this.OnScopeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RequestTokenVerifier")]
+		public string RequestTokenVerifier
+		{
+			get
+			{
+				return this._RequestTokenVerifier;
+			}
+			set
+			{
+				if ((this._RequestTokenVerifier != value))
+				{
+					this.OnRequestTokenVerifierChanging(value);
+					this.SendPropertyChanging();
+					this._RequestTokenVerifier = value;
+					this.SendPropertyChanged("RequestTokenVerifier");
+					this.OnRequestTokenVerifierChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RequestTokenCallback")]
+		public string RequestTokenCallback
+		{
+			get
+			{
+				return this._RequestTokenCallback;
+			}
+			set
+			{
+				if ((this._RequestTokenCallback != value))
+				{
+					this.OnRequestTokenCallbackChanging(value);
+					this.SendPropertyChanging();
+					this._RequestTokenCallback = value;
+					this.SendPropertyChanged("RequestTokenCallback");
+					this.OnRequestTokenCallbackChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerVersion")]
+		public string ConsumerVersion
+		{
+			get
+			{
+				return this._ConsumerVersion;
+			}
+			set
+			{
+				if ((this._ConsumerVersion != value))
+				{
+					this.OnConsumerVersionChanging(value);
+					this.SendPropertyChanging();
+					this._ConsumerVersion = value;
+					this.SendPropertyChanged("ConsumerVersion");
+					this.OnConsumerVersionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="OAuthConsumer_OAuthToken", Storage="_OAuthConsumer", ThisKey="ConsumerId", OtherKey="ConsumerId", IsForeignKey=true, DeleteOnNull=true, DeleteRule="CASCADE")]
+		public OAuthConsumer OAuthConsumer
+		{
+			get
+			{
+				return this._OAuthConsumer.Entity;
+			}
+			set
+			{
+				OAuthConsumer previousValue = this._OAuthConsumer.Entity;
+				if (((previousValue != value) 
+							|| (this._OAuthConsumer.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._OAuthConsumer.Entity = null;
+						previousValue.OAuthTokens.Remove(this);
+					}
+					this._OAuthConsumer.Entity = value;
+					if ((value != null))
+					{
+						value.OAuthTokens.Add(this);
+						this._ConsumerId = value.ConsumerId;
+					}
+					else
+					{
+						this._ConsumerId = default(int);
+					}
+					this.SendPropertyChanged("OAuthConsumer");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_OAuthToken", Storage="_User", ThisKey="UserId", OtherKey="UserId", IsForeignKey=true, DeleteRule="CASCADE")]
+		public User User
+		{
+			get
+			{
+				return this._User.Entity;
+			}
+			set
+			{
+				User previousValue = this._User.Entity;
+				if (((previousValue != value) 
+							|| (this._User.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._User.Entity = null;
+						previousValue.OAuthTokens.Remove(this);
+					}
+					this._User.Entity = value;
+					if ((value != null))
+					{
+						value.OAuthTokens.Add(this);
+						this._UserId = value.UserId;
+					}
+					else
+					{
+						this._UserId = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("User");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 	}
 	
-	public event PropertyChangingEventHandler PropertyChanging;
-	
-	public event PropertyChangedEventHandler PropertyChanged;
-	
-	protected virtual void SendPropertyChanging()
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="")]
+	public partial class Nonce : INotifyPropertyChanging, INotifyPropertyChanged
 	{
-		if ((this.PropertyChanging != null))
-		{
-			this.PropertyChanging(this, emptyChangingEventArgs);
-		}
-	}
-	
-	protected virtual void SendPropertyChanged(String propertyName)
-	{
-		if ((this.PropertyChanged != null))
-		{
-			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-	}
-}
-
-[global::System.Data.Linq.Mapping.TableAttribute(Name="")]
-public partial class Nonce : INotifyPropertyChanging, INotifyPropertyChanged
-{
-	
-	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-	
-	private string _Context;
-	
-	private string _Code;
-	
-	private System.DateTime _Timestamp;
-	
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _Context;
+		
+		private string _Code;
+		
+		private System.DateTime _Timestamp;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -1099,89 +1100,90 @@ public partial class Nonce : INotifyPropertyChanging, INotifyPropertyChanged
     partial void OnTimestampChanging(System.DateTime value);
     partial void OnTimestampChanged();
     #endregion
-	
-	public Nonce()
-	{
-		OnCreated();
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Context", CanBeNull=false, IsPrimaryKey=true)]
-	public string Context
-	{
-		get
+		
+		public Nonce()
 		{
-			return this._Context;
+			OnCreated();
 		}
-		set
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Context", CanBeNull=false, IsPrimaryKey=true)]
+		public string Context
 		{
-			if ((this._Context != value))
+			get
 			{
-				this.OnContextChanging(value);
-				this.SendPropertyChanging();
-				this._Context = value;
-				this.SendPropertyChanged("Context");
-				this.OnContextChanged();
+				return this._Context;
+			}
+			set
+			{
+				if ((this._Context != value))
+				{
+					this.OnContextChanging(value);
+					this.SendPropertyChanging();
+					this._Context = value;
+					this.SendPropertyChanged("Context");
+					this.OnContextChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Code", CanBeNull=false, IsPrimaryKey=true)]
-	public string Code
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Code", CanBeNull=false, IsPrimaryKey=true)]
+		public string Code
 		{
-			return this._Code;
-		}
-		set
-		{
-			if ((this._Code != value))
+			get
 			{
-				this.OnCodeChanging(value);
-				this.SendPropertyChanging();
-				this._Code = value;
-				this.SendPropertyChanged("Code");
-				this.OnCodeChanged();
+				return this._Code;
+			}
+			set
+			{
+				if ((this._Code != value))
+				{
+					this.OnCodeChanging(value);
+					this.SendPropertyChanging();
+					this._Code = value;
+					this.SendPropertyChanged("Code");
+					this.OnCodeChanged();
+				}
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Timestamp", IsPrimaryKey=true)]
-	public System.DateTime Timestamp
-	{
-		get
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Timestamp", IsPrimaryKey=true)]
+		public System.DateTime Timestamp
 		{
-			return this._Timestamp;
-		}
-		set
-		{
-			if ((this._Timestamp != value))
+			get
 			{
-				this.OnTimestampChanging(value);
-				this.SendPropertyChanging();
-				this._Timestamp = value;
-				this.SendPropertyChanged("Timestamp");
-				this.OnTimestampChanged();
+				return this._Timestamp;
+			}
+			set
+			{
+				if ((this._Timestamp != value))
+				{
+					this.OnTimestampChanging(value);
+					this.SendPropertyChanging();
+					this._Timestamp = value;
+					this.SendPropertyChanged("Timestamp");
+					this.OnTimestampChanged();
+				}
 			}
 		}
-	}
-	
-	public event PropertyChangingEventHandler PropertyChanging;
-	
-	public event PropertyChangedEventHandler PropertyChanged;
-	
-	protected virtual void SendPropertyChanging()
-	{
-		if ((this.PropertyChanging != null))
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
 		{
-			this.PropertyChanging(this, emptyChangingEventArgs);
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
 		}
-	}
-	
-	protected virtual void SendPropertyChanged(String propertyName)
-	{
-		if ((this.PropertyChanged != null))
+		
+		protected virtual void SendPropertyChanged(String propertyName)
 		{
-			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
 		}
 	}
 }

@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-/// <summary>
-/// Various states an OAuth token can be in.
-/// </summary>
-public enum TokenAuthorizationState : int {
-	/// <summary>
-	/// An unauthorized request token.
-	/// </summary>
-	UnauthorizedRequestToken = 0,
+﻿namespace OAuthServiceProvider.Code {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Web;
 
 	/// <summary>
-	/// An authorized request token.
+	/// Various states an OAuth token can be in.
 	/// </summary>
-	AuthorizedRequestToken = 1,
+	public enum TokenAuthorizationState : int {
+		/// <summary>
+		/// An unauthorized request token.
+		/// </summary>
+		UnauthorizedRequestToken = 0,
 
-	/// <summary>
-	/// An authorized access token.
-	/// </summary>
-	AccessToken = 2,
+		/// <summary>
+		/// An authorized request token.
+		/// </summary>
+		AuthorizedRequestToken = 1,
+
+		/// <summary>
+		/// An authorized access token.
+		/// </summary>
+		AccessToken = 2,
+	}
 }

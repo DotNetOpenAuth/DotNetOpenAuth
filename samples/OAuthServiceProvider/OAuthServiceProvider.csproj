@@ -82,7 +82,6 @@
     <Compile Include="Code\Constants.cs" />
     <Compile Include="Code\CustomOAuthTypeProvider.cs" />
     <Compile Include="Code\DatabaseTokenManager.cs" />
-    <Compile Include="Code\DataClasses.designer.cs" />
     <Compile Include="Code\Global.cs" />
     <Compile Include="Code\IDataApi.cs" />
     <Compile Include="Code\OAuthAuthorizationManager.cs" />
@@ -93,7 +92,7 @@
     <Compile Include="Code\TokenAuthorizationState.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\Utilities.cs" />
-    <Compile Include="Code\DataClasses1.designer.cs">
+    <Compile Include="Code\DataClasses.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DataClasses.dbml</DependentUpon>
@@ -130,7 +129,7 @@
   <ItemGroup>
     <None Include="Code\DataClasses.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
-      <LastGenOutput>DataClasses1.designer.cs</LastGenOutput>
+      <LastGenOutput>DataClasses.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
     <Content Include="Members\Web.config" />

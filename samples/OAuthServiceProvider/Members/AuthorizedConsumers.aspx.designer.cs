@@ -7,7 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
-
-public partial class AuthorizedConsumers {
+namespace OAuthServiceProvider {
+    
+    
+    public partial class AuthorizedConsumers {
+    }
 }

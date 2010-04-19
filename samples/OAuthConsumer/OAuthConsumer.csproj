@@ -78,6 +78,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="GoogleAddressBook.aspx.designer.cs">
       <DependentUpon>GoogleAddressBook.aspx</DependentUpon>
     </Compile>
