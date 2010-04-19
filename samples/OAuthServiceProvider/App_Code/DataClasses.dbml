@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Database Name="Database" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="Database" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
   <Connection Mode="WebSettings" ConnectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True;User Instance=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DatabaseConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.[User]" Member="Users">
     <Type Name="User">
@@ -46,6 +45,13 @@
       <Column Name="ConsumerVersion" Type="System.String" CanBeNull="true" />
       <Association Name="OAuthConsumer_OAuthToken" Member="OAuthConsumer" ThisKey="ConsumerId" OtherKey="ConsumerId" Type="OAuthConsumer" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
       <Association Name="User_OAuthToken" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="" Member="Nonces">
+    <Type Name="Nonce">
+      <Column Member="Context" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="Code" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="Timestamp" Type="System.DateTime" IsPrimaryKey="true" CanBeNull="false" />
     </Type>
   </Table>
 </Database>

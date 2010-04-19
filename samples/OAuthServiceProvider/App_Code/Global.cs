@@ -38,6 +38,8 @@ public class Global : HttpApplication {
 
 	public static DatabaseTokenManager TokenManager { get; set; }
 
+	public static DatabaseNonceStore NonceStore { get; set; }
+
 	public static User LoggedInUser {
 		get { return Global.DataContext.Users.SingleOrDefault(user => user.OpenIDClaimedIdentifier == HttpContext.Current.User.Identity.Name); }
 	}
@@ -101,8 +103,8 @@ public class Global : HttpApplication {
 		// start before the first incoming request context is available.
 		// TODO: fix this.
 		Constants.WebRootUrl = new Uri(HttpContext.Current.Request.Url, appPath);
-		var tokenManager = new DatabaseTokenManager();
-		Global.TokenManager = tokenManager;
+		Global.TokenManager = new DatabaseTokenManager();
+		Global.NonceStore = new DatabaseNonceStore();
 	}
 
 	private void Application_End(object sender, EventArgs e) {

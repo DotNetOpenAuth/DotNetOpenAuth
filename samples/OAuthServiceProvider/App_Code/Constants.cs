@@ -25,6 +25,6 @@ public static class Constants {
 	}
 
 	public static ServiceProvider CreateServiceProvider() {
-		return new ServiceProvider(SelfDescription, Global.TokenManager);
+		return new ServiceProvider(SelfDescription, Global.TokenManager, Global.NonceStore);
 	}
 }
