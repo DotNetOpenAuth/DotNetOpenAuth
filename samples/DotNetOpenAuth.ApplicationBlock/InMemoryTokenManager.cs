@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OpenId.Extensions.OAuth;
 
+#if SAMPLESONLY
 	/// <summary>
 	/// A token manager that only retains tokens in memory. 
 	/// Meant for SHORT TERM USE TOKENS ONLY.
@@ -21,7 +22,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	/// where the user only signs in without providing any authorization to access
 	/// Twitter APIs except to authenticate, since that access token is only useful once.
 	/// </remarks>
-	public class InMemoryTokenManager : IConsumerTokenManager, IOpenIdOAuthTokenManager {
+	internal class InMemoryTokenManager : IConsumerTokenManager, IOpenIdOAuthTokenManager {
 		private Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
 
 		/// <summary>
@@ -140,4 +141,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 
 		#endregion
 	}
+#else
+#error The InMemoryTokenManager class is only for samples as it forgets all tokens whenever the application restarts!  You should implement IConsumerTokenManager in your own app that stores tokens in a persistent store (like a SQL database).
+#endif
 }
