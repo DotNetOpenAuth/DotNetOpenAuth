@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Specs", "Specs", "{CD57219F-24F4-4136-8741-6063D0D7A031}"
 	ProjectSection(SolutionItems) = preProject
-		..\doc\specs\draft-hardt-oauth-01.htm = ..\doc\specs\draft-hardt-oauth-01.htm
+		..\doc\specs\draft-ietf-oauth.html = ..\doc\specs\draft-ietf-oauth.html
 		..\doc\specs\ICAM_OpenID20Profile.pdf = ..\doc\specs\ICAM_OpenID20Profile.pdf
 		..\doc\specs\OAuth Core 1.0.htm = ..\doc\specs\OAuth Core 1.0.htm
 		..\doc\specs\OAuth Core 1.0a (Draft 3).htm = ..\doc\specs\OAuth Core 1.0a (Draft 3).htm
@@ -341,7 +341,6 @@ Global
 		{BBACD972-014D-478F-9B07-56B9E1D4CC73} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{B64A1E7E-6A15-4B91-AF13-7D48F7DA5942} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{0B4EB2A8-283D-48FB-BCD0-85B8DFFE05E4} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
-		{6EB90284-BD15-461C-BBF2-131CF55F7C8B} = {8A5CEDB9-7F8A-4BE2-A1B9-97130F453277}
 		{F289B925-4307-4BEC-B411-885CE70E3379} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{6EC36418-DBC5-4AD1-A402-413604AA7A08} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{9ADBE36D-9960-48F6-82E9-B4AC559E9AC3} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
