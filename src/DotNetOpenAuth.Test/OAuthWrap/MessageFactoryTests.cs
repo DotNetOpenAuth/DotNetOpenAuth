@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 	public class MessageFactoryTests : OAuthWrapTestBase {
 		private OAuthWrapChannel channel;
 		private IMessageFactory messageFactory;
-		private MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
+		private readonly MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
 
 		public override void SetUp() {
 			base.SetUp();
@@ -117,7 +117,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 
 		[TestCase, Ignore("Not implemented")]
 		public void WebAppAccessTokenBadClientResponse() {
-			//   HTTP 401 Unauthorized
+			// HTTP 401 Unauthorized
+			// WWW-Authenticate: WRAP
 		}
 
 		[TestCase]
@@ -221,6 +222,116 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			var request = new RichAppRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
 				typeof(RichAppResponse),
+				this.messageFactory.GetNewResponseMessage(request, fields));
+		}
+
+		[TestCase]
+		public void RichAppAccessTokenRequest() {
+			// include just required parameters
+			var fields = new Dictionary<string, string> {
+				{ Protocol.wrap_client_id, "abc" },
+				{ Protocol.wrap_verification_code, "abc" },
+			};
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(RichAppAccessTokenRequest), request);
+		}
+
+		[TestCase]
+		public void RichAppAccessTokenSuccessResponse() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.wrap_refresh_token, "abc" },
+				{ Protocol.wrap_access_token, "abc" },
+			};
+			var request = new RichAppAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
+			Assert.IsInstanceOf(
+				typeof(RichAppAccessTokenSuccessResponse),
+				this.messageFactory.GetNewResponseMessage(request, fields));
+		}
+
+		[TestCase]
+		public void RichAppAccessTokenFailedResponse() {
+			// HTTP 401 Unauthorized
+			// WWW-Authenticate: WRAP
+			var fields = new Dictionary<string, string> {
+			};
+			var request = new RichAppAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
+			Assert.IsInstanceOf(
+				typeof(RichAppAccessTokenFailedResponse),
+				this.messageFactory.GetNewResponseMessage(request, fields));
+		}
+
+		#endregion
+
+		#region Client Account and Password profile messages
+
+		[TestCase]
+		public void ClientAccountUsernamePasswordRequest() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.wrap_name, "abc" },
+				{ Protocol.wrap_password, "abc" },
+			};
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(ClientAccountUsernamePasswordRequest), request);
+		}
+
+		[TestCase]
+		public void ClientAccountUsernamePasswordSuccessResponse() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.wrap_refresh_token, "abc" },
+				{ Protocol.wrap_access_token, "abc" },
+			};
+			var request = new ClientAccountUsernamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
+			Assert.IsInstanceOf(
+				typeof(ClientAccountUsernamePasswordSuccessResponse),
+				this.messageFactory.GetNewResponseMessage(request, fields));
+		}
+
+		[TestCase]
+		public void ClientAccountUsernamePasswordFailedResponse() {
+			// HTTP 401 Unauthorized
+			// WWW-Authenticate: WRAP
+			var fields = new Dictionary<string, string> {
+			};
+			var request = new ClientAccountUsernamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
+			Assert.IsInstanceOf(
+				typeof(ClientAccountUsernamePasswordFailedResponse),
+				this.messageFactory.GetNewResponseMessage(request, fields));
+		}
+
+		#endregion
+
+		#region Assertion profile messages
+
+		[TestCase]
+		public void AssertionRequest() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.wrap_assertion_format, "abc" },
+				{ Protocol.wrap_assertion, "abc" },
+			};
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(AssertionRequest), request);
+		}
+
+		[TestCase]
+		public void AssertionSuccessResponse() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.wrap_access_token, "abc" },
+			};
+			var request = new AssertionRequest(this.recipient.Location, Protocol.Default.Version);
+			Assert.IsInstanceOf(
+				typeof(AssertionSuccessResponse),
+				this.messageFactory.GetNewResponseMessage(request, fields));
+		}
+
+		[TestCase]
+		public void AssertionFailedResponse() {
+			// HTTP 401 Unauthorized
+			// WWW-Authenticate: WRAP
+			var fields = new Dictionary<string, string> {
+			};
+			var request = new AssertionRequest(this.recipient.Location, Protocol.Default.Version);
+			Assert.IsInstanceOf(
+				typeof(AssertionFailedResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));
 		}
 
