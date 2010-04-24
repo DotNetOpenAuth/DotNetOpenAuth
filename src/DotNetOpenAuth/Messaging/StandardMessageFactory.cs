@@ -174,11 +174,14 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(fields != null);
 
-			var matches = this.responseMessageTypes.Keys
-				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
-				.Where(message => this.FindMatchingResponseConstructors(message, request.GetType()).Any())
-				.OrderByDescending(message => message.Mapping.Count)
-				.CacheGeneratedResults();
+			var matches = (from responseMessageType in this.responseMessageTypes
+			               let message = responseMessageType.Key
+			               where message.CheckMessagePartsPassBasicValidation(fields)
+			               let ctors = this.FindMatchingResponseConstructors(message, request.GetType())
+			               where ctors.Any()
+			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType())
+			               orderby message.Mapping.Count descending
+			               select message).CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
 			if (match != null) {
 				if (Logger.Messaging.IsWarnEnabled && matches.Count() > 1) {
@@ -233,6 +236,27 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 			return (IDirectResponseProtocolMessage)ctor.Invoke(new object[] { request });
+		}
+
+		private static int GetDerivationDistance(Type assignableType, Type derivedType) {
+			Contract.Requires<ArgumentNullException>(assignableType != null, "assignableType");
+			Contract.Requires<ArgumentNullException>(derivedType != null, "derivedType");
+			Contract.Requires<ArgumentException>(assignableType.IsAssignableFrom(derivedType));
+
+			// If this is the two types are equivalent...
+			if (derivedType.IsAssignableFrom(assignableType))
+			{
+				return 0;
+			}
+
+			int steps;
+			derivedType = derivedType.BaseType;
+			for (steps = 1; assignableType.IsAssignableFrom(derivedType); steps++)
+			{
+				derivedType = derivedType.BaseType;
+			}
+
+			return steps;
 		}
 
 		private IEnumerable<ConstructorInfo> FindMatchingResponseConstructors(MessageDescription messageDescription, Type requestType) {
