@@ -219,10 +219,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.wrap_refresh_token, "abc" },
 				{ Protocol.wrap_access_token, "abc" },
 			};
-			var request = new RichAppRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(RichAppResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(RichAppResponse), request);
 		}
 
 		[TestCase]
