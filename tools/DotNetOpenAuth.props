@@ -25,6 +25,9 @@
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
+
+		<!-- Always use our own toolset's copy of Code Contracts for reliably reproducible builds. -->
+		<CodeContractsInstallDir>$(ProjectRoot)tools\Contracts\</CodeContractsInstallDir>
 	</PropertyGroup>
 
 	<ItemGroup>
