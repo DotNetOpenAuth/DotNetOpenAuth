@@ -193,6 +193,28 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the <see cref="HttpDeliveryMethods"/> enum value for a given HTTP verb.
+		/// </summary>
+		/// <param name="httpVerb">The HTTP verb.</param>
+		/// <returns>A <see cref="HttpDeliveryMethods"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
+		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
+		public static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
+			if (httpVerb == "GET") {
+				return HttpDeliveryMethods.GetRequest;
+			} else if (httpVerb == "POST") {
+				return HttpDeliveryMethods.PostRequest;
+			} else if (httpVerb == "PUT") {
+				return HttpDeliveryMethods.PutRequest;
+			} else if (httpVerb == "DELETE") {
+				return HttpDeliveryMethods.DeleteRequest;
+			} else if (httpVerb == "HEAD") {
+				return HttpDeliveryMethods.HeadRequest;
+			} else {
+				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
+			}
+		}
+
+		/// <summary>
 		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
@@ -680,28 +702,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
 			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, GetHttpDeliveryMethod(request.HttpMethod));
-		}
-
-		/// <summary>
-		/// Gets the <see cref="HttpDeliveryMethods"/> enum value for a given HTTP verb.
-		/// </summary>
-		/// <param name="httpVerb">The HTTP verb.</param>
-		/// <returns>A <see cref="HttpDeliveryMethods"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
-		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
-		internal static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
-			if (httpVerb == "GET") {
-				return HttpDeliveryMethods.GetRequest;
-			} else if (httpVerb == "POST") {
-				return HttpDeliveryMethods.PostRequest;
-			} else if (httpVerb == "PUT") {
-				return HttpDeliveryMethods.PutRequest;
-			} else if (httpVerb == "DELETE") {
-				return HttpDeliveryMethods.DeleteRequest;
-			} else if (httpVerb == "HEAD") {
-				return HttpDeliveryMethods.HeadRequest;
-			} else {
-				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
-			}
 		}
 
 		/// <summary>

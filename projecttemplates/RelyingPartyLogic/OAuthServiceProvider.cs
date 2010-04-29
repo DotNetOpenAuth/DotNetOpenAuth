@@ -107,17 +107,23 @@ namespace RelyingPartyLogic {
 		/// Initializes the <see cref="serviceProvider"/> field if it has not yet been initialized.
 		/// </summary>
 		private static void EnsureInitialized() {
-			if (serviceProvider == null) {
+			if (serviceProvider == null || serviceDescription == null) {
 				lock (initializerLock) {
 					if (serviceDescription == null) {
-						var postEndpoint = new MessageReceivingEndpoint(new Uri(Utilities.ApplicationRoot, "OAuth.ashx"), HttpDeliveryMethods.PostRequest);
-						var getEndpoint = new MessageReceivingEndpoint(postEndpoint.Location, HttpDeliveryMethods.GetRequest);
+						//var postEndpoint = new MessageReceivingEndpoint(new Uri(Utilities.ApplicationRoot, "OAuth.ashx"), HttpDeliveryMethods.PostRequest);
+						//var getEndpoint = new MessageReceivingEndpoint(postEndpoint.Location, HttpDeliveryMethods.GetRequest);
+
 						serviceDescription = new ServiceProviderDescription {
 							TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-							RequestTokenEndpoint = postEndpoint,
-							AccessTokenEndpoint = postEndpoint,
-							UserAuthorizationEndpoint = getEndpoint,
+							RequestTokenEndpoint = _requestTokenEndpoint,
+							AccessTokenEndpoint = _accessTokenEndpoint,
+							UserAuthorizationEndpoint = _userAuthorizationEndpoint,
 						};
+
+						if (tokenManager == null) {
+							tokenManager = new OAuthServiceProviderTokenManager();
+						}
+						serviceProvider = new ServiceProvider(serviceDescription, tokenManager);
 					}
 
 					if (tokenManager == null) {
@@ -128,6 +134,40 @@ namespace RelyingPartyLogic {
 						serviceProvider = new ServiceProvider(serviceDescription, tokenManager);
 					}
 				}
+			}
+		}
+
+		private static MessageReceivingEndpoint _requestTokenEndpoint;
+		private static MessageReceivingEndpoint _accessTokenEndpoint;
+		private static MessageReceivingEndpoint _userAuthorizationEndpoint;
+
+		public static MessageReceivingEndpoint RequestTokenEndpoint {
+			get {
+				return _requestTokenEndpoint;
+			}
+			set {
+				_requestTokenEndpoint = value;
+				serviceDescription = null;
+			}
+		}
+
+		public static MessageReceivingEndpoint AccessTokenEndpoint {
+			get {
+				return _accessTokenEndpoint;
+			}
+			set {
+				_accessTokenEndpoint = value;
+				serviceDescription = null;
+			}
+		}
+
+		public static MessageReceivingEndpoint UserAuthorizationEndpoint {
+			get {
+				return _userAuthorizationEndpoint;
+			}
+			set {
+				_userAuthorizationEndpoint = value;
+				serviceDescription = null;
 			}
 		}
 	}

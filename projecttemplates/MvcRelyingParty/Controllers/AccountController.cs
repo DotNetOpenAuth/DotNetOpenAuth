@@ -1,4 +1,6 @@
-﻿namespace MvcRelyingParty.Controllers {
+﻿using MvcRelyingParty.Code;
+
+namespace MvcRelyingParty.Controllers {
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
@@ -20,7 +22,7 @@
 
 	[HandleError]
 	public class AccountController : Controller {
-		[Authorize]
+		[OAuthAuthorize]
 		public ActionResult Edit() {
 			return View(GetAccountInfoModel());
 		}
@@ -35,7 +37,7 @@
 		/// <remarks>
 		/// This action accepts PUT because this operation is idempotent in nature.
 		/// </remarks>
-		[Authorize, AcceptVerbs(HttpVerbs.Put), ValidateAntiForgeryToken]
+		[OAuthAuthorize, AcceptVerbs(HttpVerbs.Put), ValidateAntiForgeryToken]
 		public ActionResult Update(string firstName, string lastName, string emailAddress) {
 			Database.LoggedInUser.FirstName = firstName;
 			Database.LoggedInUser.LastName = lastName;
@@ -49,6 +51,9 @@
 		}
 
 		[Authorize]
+		[OAuthUserAuthorizationEndpoint]
+		[ActionName("authorize")]
+		[AcceptVerbs(HttpVerbs.Get)]
 		public ActionResult Authorize() {
 			if (OAuthServiceProvider.PendingAuthorizationRequest == null) {
 				return RedirectToAction("Edit");
@@ -109,6 +114,27 @@
 			Database.DataContext.SaveChanges(); // make changes now so the model we fill up reflects the change
 
 			return PartialView("AuthorizedApps", GetAccountInfoModel());
+		}
+
+		[OAuthRequestTokenEndpoint]
+		[AcceptVerbs(HttpVerbs.Post)]
+		[ActionName("request_token")]
+		public ActionResult GetRequestToken()
+		{
+			var serviceProvider = OAuthServiceProvider.ServiceProvider;
+			var requestMessage = serviceProvider.ReadTokenRequest();
+			var response = serviceProvider.PrepareUnauthorizedTokenMessage(requestMessage);
+			return serviceProvider.Channel.PrepareResponse(response).AsActionResult();
+		}
+
+		[OAuthAccessTokenEndpoint]
+		[ActionName("access_token")]
+		[AcceptVerbs(HttpVerbs.Post)]
+		public ActionResult GetAccessToken() {
+			var serviceProvider = OAuthServiceProvider.ServiceProvider;
+			var requestMessage = serviceProvider.ReadAccessTokenRequest();
+			var response = serviceProvider.PrepareAccessTokenMessage(requestMessage);
+			return serviceProvider.Channel.PrepareResponse(response).AsActionResult();
 		}
 
 		private static AccountInfoModel GetAccountInfoModel() {
