@@ -115,12 +115,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
 			var extensionRequest = request as Provider.HostProcessedRequest;
 			if (extensionRequest != null) {
-				if (extensionRequest.GetExtension<ClaimsRequest>() == null) {
-					ClaimsRequest sreg = extensionRequest.UnifyExtensionsAsSreg();
-					if (sreg != null) {
-						((IProtocolMessageWithExtensions)extensionRequest.RequestMessage).Extensions.Add(sreg);
-					}
-				}
+				extensionRequest.UnifyExtensionsAsSreg();
 			}
 
 			return false;

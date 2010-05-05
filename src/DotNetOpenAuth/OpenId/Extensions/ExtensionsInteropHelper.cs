@@ -132,7 +132,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 		/// <summary>
 		/// Looks for Simple Registration and Attribute Exchange (all known formats)
-		/// request extensions and returns them as a Simple Registration extension.
+		/// request extensions and returns them as a Simple Registration extension,
+		/// and adds the new extension to the original request message if it was absent.
 		/// </summary>
 		/// <param name="request">The authentication request.</param>
 		/// <returns>
