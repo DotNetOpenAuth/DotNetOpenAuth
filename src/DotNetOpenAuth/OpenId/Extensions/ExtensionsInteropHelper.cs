@@ -130,7 +130,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 		/// <summary>
 		/// Looks for Simple Registration and Attribute Exchange (all known formats)
-		/// request extensions and returns them as a Simple Registration extension.
+		/// request extensions and returns them as a Simple Registration extension,
+		/// and adds the new extension to the original request message if it was absent.
 		/// </summary>
 		/// <param name="request">The authentication request.</param>
 		/// <returns>
@@ -140,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		internal static ClaimsRequest UnifyExtensionsAsSreg(this Provider.IHostProcessedRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
 
-			var req = (Provider.AuthenticationRequest)request;
+			var req = (Provider.HostProcessedRequest)request;
 			var sreg = req.GetExtension<ClaimsRequest>();
 			if (sreg != null) {
 				return sreg;
