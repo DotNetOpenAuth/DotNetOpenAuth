@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			var req = (Provider.AuthenticationRequest)request;
+			var req = (Provider.HostProcessedRequest)request;
 			var sreg = req.GetExtension<ClaimsRequest>();
 			if (sreg != null) {
 				return sreg;
