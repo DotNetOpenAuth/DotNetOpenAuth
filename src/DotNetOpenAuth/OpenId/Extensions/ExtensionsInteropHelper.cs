@@ -152,7 +152,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 			var ax = req.GetExtension<FetchRequest>();
 			if (ax != null) {
-				sreg = new ClaimsRequest();
+				sreg = new ClaimsRequest(SimpleRegistration.Constants.sreg_ns);
 				sreg.Synthesized = true;
 				((IProtocolMessageWithExtensions)req.RequestMessage).Extensions.Add(sreg);
 				sreg.BirthDate = GetDemandLevelFor(ax, WellKnownAttributes.BirthDate.WholeBirthDate);
