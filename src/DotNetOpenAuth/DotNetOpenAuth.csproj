@@ -304,27 +304,26 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
+    <Compile Include="OAuthWrap\AuthorizationState.cs" />
     <Compile Include="OAuthWrap\IClientTokenManager.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\ClientAccountAndPassword\ClientAccountUsernamePasswordSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\ClientCredentials\ClientAccountUsernamePasswordFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\ClientCredentials\ClientAccountUsernamePasswordRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\ClientCredentials\ClientAccountUsernamePasswordSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\IMessageWithClientState.cs" />
-    <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\RichApp\RichAppRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\RichApp\RichAppResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenSuccessResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\RichApp\RichAppAccessTokenFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\UnauthorizedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\RefreshAccessTokenFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\RefreshAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\RefreshAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\UserAgent\RichAppAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\UserAgent\RichAppRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\UserAgent\RichAppResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UserAgent\RichAppAccessTokenSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UserAgent\RichAppAccessTokenFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\UnauthorizedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\AccessTokenFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\AccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordCaptchaResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenBadClientResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenFailedResponse.cs" />
     <Compile Include="OAuthWrap\WrapUtilities.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
@@ -612,12 +611,11 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Reporting.cs" />
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapChannel.cs" />
     <Compile Include="OAuthWrap\ClientBase.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\MessageBase.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppAccessTokenRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\WebApp\WebAppSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebAppAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebAppFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebAppRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebAppSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRequest.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordSuccessResponse.cs" />
@@ -775,31 +773,21 @@ http://opensource.org/licenses/ms-pl.html
     </BootstrapperPackage>
     <Content Include="DotNetOpenAuth.ico" />
   </ItemGroup>
-
   <ItemGroup>
     <SignDependsOn Include="BuildUnifiedProduct" />
-    <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
-                                    $(OutputPath)$(ProductName).Contracts.dll;
-                                   " />
+    <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);&#xD;&#xA;                                    $(OutputPath)$(ProductName).Contracts.dll;&#xD;&#xA;                                   " />
   </ItemGroup>
-	<PropertyGroup>
-		<!-- Don't sign the non-unified version of the assembly. -->
-		<SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
-	</PropertyGroup>
-
-  <Target Name="BuildUnifiedProduct"
-        DependsOnTargets="Build"
-        Inputs="@(ILMergeInputAssemblies)"
-        Outputs="$(ILMergeOutputAssembly)">
+  <ItemGroup>
+    <Folder Include="OAuthWrap\Messages\Device\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <!-- Don't sign the non-unified version of the assembly. -->
+    <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
+  </PropertyGroup>
+  <Target Name="BuildUnifiedProduct" DependsOnTargets="Build" Inputs="@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly)">
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
-    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-             InputAssemblies="@(ILMergeInputAssemblies)"
-             OutputFile="$(ILMergeOutputAssembly)"
-             KeyFile="$(PublicKeyFile)"
-             DelaySign="true"
-             />
+    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeInputAssemblies)" OutputFile="$(ILMergeOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" />
   </Target>
-
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
 </Project>

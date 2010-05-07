@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
-		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
 		internal string ClientIdentifier { get; set; }
 
 		/// <summary>
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// in <see cref="RichAppResponse.VerificationCode"/>.
 		/// </summary>
 		/// <value>The verification code.</value>
-		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
 		internal string VerificationCode { get; set; }
 
 		/// <summary>

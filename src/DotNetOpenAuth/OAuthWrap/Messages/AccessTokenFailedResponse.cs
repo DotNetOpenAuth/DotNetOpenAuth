@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using DotNetOpenAuth.Messaging;
+
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <summary>
 	/// A response from the Authorization Server to the Client to indicate that a
@@ -13,13 +15,23 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
 	/// </remarks>
-	internal class RefreshAccessTokenFailedResponse : UnauthorizedResponse {
+	internal class AccessTokenFailedResponse : UnauthorizedResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RefreshAccessTokenFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal RefreshAccessTokenFailedResponse(RefreshAccessTokenRequest request)
+		internal AccessTokenFailedResponse(IDirectedProtocolMessage request)
 			: base(request) {
 		}
+
+		/// <summary>
+		/// Gets or sets the error.
+		/// </summary>
+		/// <value>The error.</value>
+		/// <remarks>
+		/// REQUIRED. The parameter value MUST be set to one of the values specified by each flow. 
+		/// </remarks>
+		[MessagePart(Protocol.error, IsRequired = true, AllowEmpty = false)]
+		internal string Error { get; set; }
 	}
 }

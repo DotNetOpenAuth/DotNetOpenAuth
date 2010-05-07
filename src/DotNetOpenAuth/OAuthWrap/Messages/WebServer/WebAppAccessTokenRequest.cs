@@ -19,6 +19,12 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// </remarks>
 	internal class WebAppAccessTokenRequest : MessageBase {
 		/// <summary>
+		/// The type of message.
+		/// </summary>
+		[MessagePart(Protocol.type, IsRequired = true)]
+		private const string Type = "web_server";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppAccessTokenRequest"/> class.
 		/// </summary>
 		/// <param name="accessTokenEndpoint">The Authorization Server's access token endpoint URL.</param>
@@ -33,32 +39,35 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		internal WebAppAccessTokenRequest(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.AccessTokenEndpoint, authorizationServer.Version) {
+			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
-			Contract.Requires<ArgumentException>(authorizationServer.AccessTokenEndpoint != null);
+			Contract.Requires<ArgumentException>(authorizationServer.TokenEndpoint != null);
 		}
 
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
-		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
 		internal string ClientIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the client secret.
 		/// </summary>
 		/// <value>The client secret.</value>
-		[MessagePart(Protocol.wrap_client_secret, IsRequired = true, AllowEmpty = false)]
+		/// <remarks>
+		/// REQUIRED if the client identifier has a matching secret. The client secret as described in Section 3.4  (Client Credentials). 
+		/// </remarks>
+		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
 		internal string ClientSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
 		/// in <see cref="WebAppSuccessResponse.VerificationCode"/>.
 		/// </summary>
-		/// <value>The verification code.</value>
-		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = false)]
+		/// <value>The verification code received from the authorization server.</value>
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
 		internal string VerificationCode { get; set; }
 
 		/// <summary>
@@ -67,8 +76,18 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <value>
 		/// The Callback URL used to obtain the Verification Code.
 		/// </value>
-		[MessagePart(Protocol.wrap_callback, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.redirect_uri, IsRequired = true, AllowEmpty = false)]
 		internal Uri Callback { get; set; }
+
+		/// <summary>
+		/// Gets or sets the type of the secret.
+		/// </summary>
+		/// <value>The type of the secret.</value>
+		/// <remarks>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
+		/// </remarks>
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		internal string SecretType { get; set;  }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

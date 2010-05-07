@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Net;
+
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
@@ -38,66 +40,67 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		public IClientTokenManager TokenManager { get; set; }
 
-		public WebAppRequest PrepareRequestUserAuthorization(IWrapAuthorization authorizationState) {
-			Contract.Requires<ArgumentNullException>(authorizationState != null);
-			Contract.Requires<InvalidOperationException>(authorizationState.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
+		public WebAppRequest PrepareRequestUserAuthorization() {
+			return PrepareRequestUserAuthorization(new AuthorizationState());
+		}
+
+		public WebAppRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {
+			Contract.Requires<ArgumentNullException>(authorization != null);
+			Contract.Requires<InvalidOperationException>(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 			Contract.Ensures(Contract.Result<WebAppRequest>() != null);
-			Contract.Ensures(Contract.Result<WebAppRequest>().Callback == authorizationState.Callback);
 			Contract.Ensures(Contract.Result<WebAppRequest>().ClientIdentifier == this.ClientIdentifier);
+			Contract.Ensures(Contract.Result<WebAppRequest>().Callback == authorization.Callback);
 
-			if (authorizationState.Callback == null) {
-				authorizationState.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting;
-				authorizationState.SaveChanges();
+			if (authorization.Callback == null) {
+				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting;
+				authorization.SaveChanges();
 			}
 
 			var request = new WebAppRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
-				Callback = authorizationState.Callback,
-				Scope = authorizationState.Scope,
+				Callback = authorization.Callback,
 			};
 
 			return request;
 		}
 
-		public IWrapAuthorization ProcessUserAuthorization() {
+		public IAuthorizationState ProcessUserAuthorization() {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return this.ProcessUserAuthorization(this.Channel.GetRequestFromContext());
 		}
 
-		public IWrapAuthorization ProcessUserAuthorization(HttpRequestInfo request) {
+		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientSecret));
+
 			var response = this.Channel.ReadFromRequest<IMessageWithClientState>(request);
 			if (response != null) {
-				IWrapAuthorization authorizationState = this.TokenManager.GetAuthorizationState(request.UrlBeforeRewriting, response.ClientState);
-				ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth WRAP authorization response received with callback and client state that does not match an expected value.");
+				IAuthorizationState authorizationState = this.TokenManager.GetAuthorizationState(request.UrlBeforeRewriting, response.ClientState);
+				ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
 				var success = response as WebAppSuccessResponse;
 				var failure = response as WebAppFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 				if (success != null) {
 					var accessTokenRequest = new WebAppAccessTokenRequest(this.AuthorizationServer) {
-						ClientSecret = this.ClientSecret,
 						ClientIdentifier = this.ClientIdentifier,
+						ClientSecret = this.ClientSecret,
 						Callback = authorizationState.Callback,
 						VerificationCode = success.VerificationCode,
 					};
 					IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
-					var accessTokenSuccess = accessTokenResponse as WebAppAccessTokenSuccessResponse;
-					var badClientAccessTokenResponse = accessTokenResponse as WebAppAccessTokenBadClientResponse;
-					var failedAccessTokenResponse = accessTokenResponse as WebAppAccessTokenFailedResponse;
+					var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
+					var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
 					if (accessTokenSuccess != null) {
 						authorizationState.AccessToken = accessTokenSuccess.AccessToken;
+						authorizationState.AccessTokenSecret = accessTokenSuccess.AccessTokenSecret;
 						authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
 						authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
 						authorizationState.SaveChanges();
-					} else if (badClientAccessTokenResponse != null) {
+					} else {
 						authorizationState.Delete();
-						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.InvalidClientCredentials);
-					} else { // failedAccessTokenResponse != null
-						authorizationState.Delete();
-						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.CannotObtainAccessTokenWithReason, failedAccessTokenResponse.ErrorReason);
+						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.CannotObtainAccessTokenWithReason, failedAccessTokenResponse.Error);
 					}
 				} else { // failure
 					Logger.Wrap.Info("User refused to grant the requested authorization at the Authorization Server.");

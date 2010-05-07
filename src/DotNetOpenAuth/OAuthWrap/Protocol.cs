@@ -14,9 +14,9 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// </summary>
 	public enum ProtocolVersion {
 		/// <summary>
-		/// The OAuth WRAP 1.0 specification.
+		/// The OAuth 2.0 specification.
 		/// </summary>
-		V10,
+		V20,
 	}
 
 	/// <summary>
@@ -34,19 +34,24 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string HttpAuthorizationHeaderFormat = "WRAP access_token=\"{0}\"";
 
 		/// <summary>
-		/// The "wrap_client_state" string.
+		/// The "type" string.
 		/// </summary>
-		internal const string wrap_client_state = "wrap_client_state";
+		internal const string type = "type";
 
 		/// <summary>
-		/// The "wrap_callback" string.
+		/// The "state" string.
 		/// </summary>
-		internal const string wrap_callback = "wrap_callback";
+		internal const string state = "state";
 
 		/// <summary>
-		/// The "wrap_client_id" string.
+		/// The "redirect_uri" string.
 		/// </summary>
-		internal const string wrap_client_id = "wrap_client_id";
+		internal const string redirect_uri = "redirect_uri";
+
+		/// <summary>
+		/// The "client_id" string.
+		/// </summary>
+		internal const string client_id = "client_id";
 
 		/// <summary>
 		/// The "wrap_scope" string.
@@ -54,14 +59,19 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string wrap_scope = "wrap_scope";
 
 		/// <summary>
-		/// The "wrap_client_secret" string.
+		/// The "immediate" string.
 		/// </summary>
-		internal const string wrap_client_secret = "wrap_client_secret";
+		internal const string immediate = "immediate";
+
+		/// <summary>
+		/// The "client_secret" string.
+		/// </summary>
+		internal const string client_secret = "client_secret";
 
 		/// <summary>
 		/// The "wrap_verification_code" string.
 		/// </summary>
-		internal const string wrap_verification_code = "wrap_verification_code";
+		internal const string code = "code";
 
 		/// <summary>
 		/// The "wrap_verification_url" string.
@@ -69,24 +79,29 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string wrap_verification_url = "wrap_verification_url";
 
 		/// <summary>
-		/// The "wrap_error_reason" string.
+		/// The "error" string.
 		/// </summary>
-		internal const string wrap_error_reason = "wrap_error_reason";
+		internal const string error = "error";
 
 		/// <summary>
-		/// The "wrap_access_token" string.
+		/// The "access_token" string.
 		/// </summary>
-		internal const string wrap_access_token = "wrap_access_token";
+		internal const string access_token = "access_token";
 
 		/// <summary>
-		/// The "wrap_refresh_token" string.
+		/// The "access_token_secret" string.
 		/// </summary>
-		internal const string wrap_refresh_token = "wrap_refresh_token";
+		internal const string access_token_secret = "access_token_secret";
 
 		/// <summary>
-		/// The "wrap_access_token_expires_in" string.
+		/// The "refresh_token" string.
 		/// </summary>
-		internal const string wrap_access_token_expires_in = "wrap_access_token_expires_in";
+		internal const string refresh_token = "refresh_token";
+
+		/// <summary>
+		/// The "expires_in" string.
+		/// </summary>
+		internal const string expires_in = "expires_in";
 
 		/// <summary>
 		/// The "expired_delegation_code" string.
@@ -144,17 +159,22 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string user_denied = "user_denied";
 
 		/// <summary>
+		/// The "secret_type" string.
+		/// </summary>
+		internal const string secret_type = "secret_type";
+
+		/// <summary>
 		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0 of the protocol.
 		/// </summary>
-		internal static readonly Protocol V10 = new Protocol {
-			Version = new Version(1, 0),
-			ProtocolVersion = ProtocolVersion.V10,
+		internal static readonly Protocol V20 = new Protocol {
+			Version = new Version(2, 0),
+			ProtocolVersion = ProtocolVersion.V20,
 		};
 
 		/// <summary>
 		/// A list of all supported OAuth versions, in order starting from newest version.
 		/// </summary>
-		internal static readonly List<Protocol> AllVersions = new List<Protocol>() { V10 };
+		internal static readonly List<Protocol> AllVersions = new List<Protocol>() { V20 };
 
 		/// <summary>
 		/// The default (or most recent) supported version of the OpenID protocol.
@@ -180,7 +200,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
 		public static Protocol Lookup(ProtocolVersion version) {
 			switch (version) {
-				case ProtocolVersion.V10: return Protocol.V10;
+				case ProtocolVersion.V20: return Protocol.V20;
 				default: throw new ArgumentOutOfRangeException("version");
 			}
 		}

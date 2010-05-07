@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void RefreshAccessTokenRequest() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_refresh_token, "abc" },
+				{ Protocol.refresh_token, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(RefreshAccessTokenRequest), request);
@@ -44,11 +44,11 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void RefreshAccessTokenSuccessResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_access_token, "abc" },
+				{ Protocol.access_token, "abc" },
 			};
 			var request = new RefreshAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
-				typeof(RefreshAccessTokenSuccessResponse),
+				typeof(AccessTokenSuccessResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));
 		}
 
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			};
 			var request = new RefreshAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
-				typeof(RefreshAccessTokenFailedResponse),
+				typeof(AccessTokenFailedResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));
 		}
 
@@ -69,8 +69,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void WebAppRequestRequest() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_client_id, "abc" },
-				{ Protocol.wrap_callback, "abc" },
+				{ Protocol.client_id, "abc" },
+				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(WebAppRequest), request);
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void WebAppFailedResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_error_reason, "user_denied" },
+				{ Protocol.error, "user_denied" },
 			};
 			var request = new WebAppRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void WebAppSuccessResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_verification_code, "abc" },
+				{ Protocol.code, "abc" },
 			};
 			var request = new WebAppRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
@@ -101,10 +101,10 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void WebAppAccessTokenRequest() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_client_id, "abc" },
-				{ Protocol.wrap_client_secret, "abc" },
-				{ Protocol.wrap_verification_code, "abc" },
-				{ Protocol.wrap_callback, "abc" },
+				{ Protocol.client_id, "abc" },
+				{ Protocol.client_secret, "abc" },
+				{ Protocol.code, "abc" },
+				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(WebAppAccessTokenRequest), request);
@@ -121,18 +121,6 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			// WWW-Authenticate: WRAP
 		}
 
-		[TestCase]
-		public void WebAppAccessTokenSuccessResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_refresh_token, "abc" },
-				{ Protocol.wrap_access_token, "abc" },
-			};
-			var request = new WebAppAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(WebAppAccessTokenSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
 		#endregion
 
 		#region Username and Password profile messages
@@ -140,7 +128,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void UserNamePasswordRequest() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_client_id, "abc" },
+				{ Protocol.client_id, "abc" },
 				{ Protocol.wrap_username, "abc" },
 				{ Protocol.wrap_password, "abc" },
 			};
@@ -151,7 +139,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void UserNamePasswordSuccessResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_access_token, "abc" },
+				{ Protocol.access_token, "abc" },
 			};
 			var request = new UserNamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
@@ -197,16 +185,16 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		public void RichAppRequest() {
 			// include just required parameters
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_client_id, "abc" },
+				{ Protocol.client_id, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(RichAppRequest), request);
 
 			// including optional parts
 			fields = new Dictionary<string, string> {
-				{ Protocol.wrap_client_id, "abc" },
-				{ Protocol.wrap_callback, "abc" },
-				{ Protocol.wrap_client_state, "abc" },
+				{ Protocol.client_id, "abc" },
+				{ Protocol.redirect_uri, "abc" },
+				{ Protocol.state, "abc" },
 				{ Protocol.wrap_scope, "abc" },
 			};
 			request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
@@ -216,8 +204,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void RichAppResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_refresh_token, "abc" },
-				{ Protocol.wrap_access_token, "abc" },
+				{ Protocol.refresh_token, "abc" },
+				{ Protocol.access_token, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(RichAppResponse), request);
@@ -227,8 +215,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		public void RichAppAccessTokenRequest() {
 			// include just required parameters
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_client_id, "abc" },
-				{ Protocol.wrap_verification_code, "abc" },
+				{ Protocol.client_id, "abc" },
+				{ Protocol.code, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(RichAppAccessTokenRequest), request);
@@ -237,8 +225,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void RichAppAccessTokenSuccessResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_refresh_token, "abc" },
-				{ Protocol.wrap_access_token, "abc" },
+				{ Protocol.refresh_token, "abc" },
+				{ Protocol.access_token, "abc" },
 			};
 			var request = new RichAppAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
@@ -275,8 +263,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void ClientAccountUsernamePasswordSuccessResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_refresh_token, "abc" },
-				{ Protocol.wrap_access_token, "abc" },
+				{ Protocol.refresh_token, "abc" },
+				{ Protocol.access_token, "abc" },
 			};
 			var request = new ClientAccountUsernamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
@@ -313,7 +301,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void AssertionSuccessResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_access_token, "abc" },
+				{ Protocol.access_token, "abc" },
 			};
 			var request = new AssertionRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(

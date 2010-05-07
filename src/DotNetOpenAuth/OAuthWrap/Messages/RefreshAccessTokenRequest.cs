@@ -6,52 +6,57 @@
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A request from the client to the authorization server for a new access token
-	/// using a refresh token, after a previously supplied access token has expired.
+	/// A request from the client to the token endpoint for a new access token
+	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
-	/// <remarks>
-	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
-	/// </remarks>
 	internal class RefreshAccessTokenRequest : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
 		/// </summary>
-		/// <param name="refreshTokenEndpoint">The authorization server's Refresh Token endpoint.</param>
+		/// <param name="tokenEndpoint">The token endpoint.</param>
 		/// <param name="version">The version.</param>
-		internal RefreshAccessTokenRequest(Uri refreshTokenEndpoint, Version version)
-			: base(version, MessageTransport.Direct, refreshTokenEndpoint) {
-			this.HttpMethods = HttpDeliveryMethods.PostRequest;
+		internal RefreshAccessTokenRequest(Uri tokenEndpoint, Version version)
+			: base(version, MessageTransport.Direct, tokenEndpoint) {
 		}
 
 		/// <summary>
-		/// Gets or sets the refresh token that was received in
-		/// <see cref="UserNamePasswordSuccessResponse.RefreshToken"/>.
+		/// Gets or sets the identifier by which this client is known to the Authorization Server.
+		/// </summary>
+		/// <value>The client identifier.</value>
+		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
+		internal string ClientIdentifier { get; set; }
+
+		/// <summary>
+		/// Gets or sets the client secret.
+		/// </summary>
+		/// <value>The client secret.</value>
+		/// <remarks>
+		/// REQUIRED if the client identifier has a matching secret. The client secret as described in Section 3.4  (Client Credentials). 
+		/// </remarks>
+		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
+		internal string ClientSecret { get; set; }
+
+		/// <summary>
+		/// Gets or sets the refresh token.
 		/// </summary>
 		/// <value>The refresh token.</value>
-		[MessagePart(Protocol.wrap_refresh_token, IsRequired = true, AllowEmpty = false)]
+		/// <remarks>
+		/// REQUIRED. The refresh token associated with the access token to be refreshed. 
+		/// </remarks>
+		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
 		internal string RefreshToken { get; set; }
 
 		/// <summary>
-		/// Checks the message state for conformity to the protocol specification
-		/// and throws an exception if the message is invalid.
+		/// Gets or sets the type of the secret.
 		/// </summary>
+		/// <value>The type of the secret.</value>
 		/// <remarks>
-		/// 	<para>Some messages have required fields, or combinations of fields that must relate to each other
-		/// in specialized ways.  After deserializing a message, this method checks the state of the
-		/// message to see if it conforms to the protocol.</para>
-		/// 	<para>Note that this property should <i>not</i> check signatures or perform any state checks
-		/// outside this scope of this particular message.</para>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
 		/// </remarks>
-		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
-		protected override void EnsureValidMessage() {
-			base.EnsureValidMessage();
-			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthWrapStrings.HttpsRequired);
-		}
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		internal string SecretType { get; set; }
 	}
 }

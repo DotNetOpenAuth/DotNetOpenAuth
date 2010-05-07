@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <remarks>
 		/// REQUIRED if the Client sent the value in the <see cref="WebAppRequest"/>.
 		/// </remarks>
-		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		public string ClientState { get; set; }
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// The long-lived credential assigned by the Authorization Server to this Consumer for
 		/// use in accessing the authorizing user's protected resources.
 		/// </value>
-		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = true)]
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = true)]
 		internal string VerificationCode { get; set; }
 	}
 }

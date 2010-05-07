@@ -6,10 +6,7 @@
 
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
-	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
-	using System.Linq;
-	using System.Text;
 
 	[ContractClass(typeof(IClientTokenManagerContract))]
 	public interface IClientTokenManager {
@@ -19,7 +16,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// <param name="callbackUrl">The callback URL.</param>
 		/// <param name="clientState">State of the client stored at the beginning of an authorization request.</param>
 		/// <returns>The authorization state; may be <c>null</c> if no authorization state matches.</returns>
-		IWrapAuthorization GetAuthorizationState(Uri callbackUrl, string clientState);
+		IAuthorizationState GetAuthorizationState(Uri callbackUrl, string clientState);
 	}
 
 	/// <summary>
@@ -32,7 +29,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		#region IClientTokenManager Members
 
-		IWrapAuthorization IClientTokenManager.GetAuthorizationState(Uri callbackUrl, string clientState) {
+		IAuthorizationState IClientTokenManager.GetAuthorizationState(Uri callbackUrl, string clientState) {
 			Contract.Requires<ArgumentNullException>(callbackUrl != null);
 			throw new NotImplementedException();
 		}
@@ -43,7 +40,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// <summary>
 	/// Provides access to a persistent object that tracks the state of an authorization.
 	/// </summary>
-	public interface IWrapAuthorization {
+	public interface IAuthorizationState {
 		/// <summary>
 		/// Gets or sets the callback URL used to obtain authorization.
 		/// </summary>
@@ -63,6 +60,12 @@ namespace DotNetOpenAuth.OAuthWrap {
 		string AccessToken { get; set; }
 
 		/// <summary>
+		/// Gets or sets the access token secret.
+		/// </summary>
+		/// <value>The access token secret.</value>
+		string AccessTokenSecret { get; set; }
+
+		/// <summary>
 		/// Gets or sets the access token UTC expiration date.
 		/// </summary>
 		DateTime? AccessTokenExpirationUtc { get; set; }
@@ -74,7 +77,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		string Scope { get; set; }
 
 		/// <summary>
-		/// Deletes this authorization, including access token and refresh token were applicable.
+		/// Deletes this authorization, including access token and refresh token where applicable.
 		/// </summary>
 		/// <remarks>
 		/// This method is invoked when an authorization attempt fails, is rejected, is revoked, or

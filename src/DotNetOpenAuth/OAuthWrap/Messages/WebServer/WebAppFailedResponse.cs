@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>
-		[MessagePart(Protocol.wrap_error_reason, IsRequired = true)]
+		[MessagePart(Protocol.error, IsRequired = true)]
 		private const string ErrorReason = Protocol.user_denied;
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <remarks>
 		/// If this value is present, the Authorization Server MUST return it to the Client's callback URL.
 		/// </remarks>
-		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		public string ClientState { get; set; }
 	}
 }

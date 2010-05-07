@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// </summary>
 		/// <param name="request">The request for protected resources from the service provider.</param>
 		/// <param name="authorization">The authorization for this request previously obtained via OAuth WRAP.</param>
-		public static void AuthorizeRequest(HttpWebRequest request, IWrapAuthorization authorization) {
+		public static void AuthorizeRequest(HttpWebRequest request, IAuthorizationState authorization) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(authorization.AccessToken));

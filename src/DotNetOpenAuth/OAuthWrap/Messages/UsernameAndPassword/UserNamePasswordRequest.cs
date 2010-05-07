@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the client identifier previously obtained from the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
-		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
 		internal string ClientIdentifier { get; set; }
 
 		/// <summary>

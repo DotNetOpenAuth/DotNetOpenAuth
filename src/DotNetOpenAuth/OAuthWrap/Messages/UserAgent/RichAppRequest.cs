@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the client identifier previously obtained from the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
-		[MessagePart(Protocol.wrap_client_id, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
 		internal string ClientIdentifier { get; set; }
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Authorization Servers MAY require that the wrap_callback URL match the previously
 		/// registered value for the Client Identifier.
 		/// </remarks>
-		[MessagePart(Protocol.wrap_callback, IsRequired = false, AllowEmpty = false)]
+		[MessagePart(Protocol.redirect_uri, IsRequired = false, AllowEmpty = false)]
 		internal Uri Callback { get; set; }
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <remarks>
 		/// If this value is present, the Authorization Server MUST return it to the Client's Callback URL.
 		/// </remarks>
-		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		internal string ClientState { get; set; }
 
 		/// <summary>

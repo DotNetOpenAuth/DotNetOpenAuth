@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// The long-lived credential assigned by the Authorization Server to this Client for
 		/// use in accessing the authorizing user's protected resources.
 		/// </value>
-		[MessagePart(Protocol.wrap_verification_code, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
 		internal string VerificationCode { get; set; }
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <remarks>
 		/// This parameter is required if the Client included it in <see cref="RichAppRequest.ClientState"/>.
 		/// </remarks>
-		[MessagePart(Protocol.wrap_client_state, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		internal string ClientState { get; set; }
 
 		/// <summary>

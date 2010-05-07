@@ -22,31 +22,29 @@ namespace DotNetOpenAuth.OAuthWrap {
 		}
 
 		/// <summary>
-		/// Gets or sets the Authorization Server URL at which an Access Token is requested by the Client.
-		/// A refresh token may also be returned to the Client.
+		/// Gets or sets the Authorization Server URL from which an Access Token is requested by the Client.
 		/// </summary>
 		/// <value>An HTTPS URL.</value>
 		/// <remarks>
-		/// Messages sent to this URL must always be sent by the POST HTTP method.
+		/// <para>After obtaining authorization from the resource owner, clients request an access token from the authorization server's token endpoint.</para>
+		/// <para>The URI of the token endpoint can be found in the service documentation, or can be obtained by the client by making an unauthorized protected resource request (from the WWW-Authenticate response header token-uri (The 'authorization-uri' Attribute) attribute).</para>
+		/// <para>The token endpoint advertised by the resource server MAY include a query component as defined by [RFC3986] (Berners-Lee, T., Fielding, R., and L. Masinter, “Uniform Resource Identifier (URI): Generic Syntax,” January 2005.) section 3.</para>
+		/// <para>Since requests to the token endpoint result in the transmission of plain text credentials in the HTTP request and response, the authorization server MUST require the use of a transport-layer mechanism such as TLS/SSL (or a secure channel with equivalent protections) when sending requests to the token endpoints. </para>
 		/// </remarks>
-		public Uri AccessTokenEndpoint { get; set; }
-
-		/// <summary>
-		/// Gets or sets the Authorization Server URL at which a Refresh Token is presented in exchange
-		/// for a new Access Token.
-		/// </summary>
-		/// <value>An HTTPS URL.</value>
-		/// <remarks>
-		/// Messages sent to this URL must always be sent by the POST HTTP method.
-		/// </remarks>
-		public Uri RefreshTokenEndpoint { get; set; }
+		public Uri TokenEndpoint { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Authorization Server URL where the Client (re)directs the User
 		/// to make an authorization request.
 		/// </summary>
 		/// <value>An HTTP or HTTPS URL.</value>
-		public Uri UserAuthorizationEndpoint { get; set; }
+		/// <remarks>
+		/// <para>Clients direct the resource owner to the authorization endpoint to approve their access request. Before granting access, the resource owner first authenticates with the authorization server. The way in which the authorization server authenticates the end-user (e.g. username and password login, OpenID, session cookies) and in which the authorization server obtains the end-user's authorization, including whether it uses a secure channel such as TLS/SSL, is beyond the scope of this specification. However, the authorization server MUST first verify the identity of the end-user.</para>
+		/// <para>The URI of the authorization endpoint can be found in the service documentation, or can be obtained by the client by making an unauthorized protected resource request (from the WWW-Authenticate response header auth-uri (The 'authorization-uri' Attribute) attribute).</para>
+		/// <para>The authorization endpoint advertised by the resource server MAY include a query component as defined by [RFC3986] (Berners-Lee, T., Fielding, R., and L. Masinter, “Uniform Resource Identifier (URI): Generic Syntax,” January 2005.) section 3.</para>
+		/// <para>Since requests to the authorization endpoint result in user authentication and the transmission of sensitive values, the authorization server SHOULD require the use of a transport-layer mechanism such as TLS/SSL (or a secure channel with equivalent protections) when sending requests to the authorization endpoints.</para>
+		/// </remarks>
+		public Uri AuthorizationEndpoint { get; set; }
 
 		/// <summary>
 		/// Gets or sets the OAuth WRAP version supported by the Authorization Server.
