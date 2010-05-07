@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
+    <Content Include="Facebook.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="GoogleAddressBook.aspx" />
@@ -83,6 +84,13 @@
   <ItemGroup>
     <Compile Include="..\DotNetOpenAuth.ApplicationBlock\InMemoryTokenManager.cs">
       <Link>Code\InMemoryTokenManager.cs</Link>
+    </Compile>
+    <Compile Include="Facebook.aspx.cs">
+      <DependentUpon>Facebook.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Facebook.aspx.designer.cs">
+      <DependentUpon>Facebook.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
