@@ -104,7 +104,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				typeof(Messages.WebAppSuccessResponse),
 				typeof(Messages.WebAppFailedResponse),
 				typeof(Messages.WebAppAccessTokenRequest),
-				typeof(Messages.RefreshAccessTokenRequest),
 			};
 
 			// Get all the MessageDescription objects through the standard cache,

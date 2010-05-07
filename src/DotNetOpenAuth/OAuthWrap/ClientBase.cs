@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	/// <summary>
 	/// A base class for common OAuth WRAP Consumer behaviors.
@@ -25,6 +26,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		protected ClientBase(AuthorizationServerDescription authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			this.AuthorizationServer = authorizationServer;
+			this.Channel = new OAuthWrapChannel();
 		}
 
 		/// <summary>

@@ -83,6 +83,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// OPTIONAL. The parameter value must be set to true or false. If set to true, the authorization server MUST NOT prompt the end-user to authenticate or approve access. Instead, the authorization server attempts to establish the end-user's identity via other means (e.g. browser cookies) and checks if the end-user has previously approved an identical access request by the same client and if that access grant is still active. If the authorization server does not support an immediate check or if it is unable to establish the end-user's identity or approval status, it MUST deny the request without prompting the end-user. Defaults to false  if omitted. 
 		/// </remarks>
 		[MessagePart(Protocol.immediate, IsRequired = false, AllowEmpty = false)]
-		internal bool Immediate { get; set; }
+		internal bool? Immediate { get; set; }
 	}
 }
