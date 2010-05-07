@@ -26,6 +26,9 @@
 				"Default",
 				"{controller}/{action}/{id}",
 				new { controller = "Home", action = "Index", id = string.Empty });
+			routes.MapRoute(
+				"OpenIdDiscover",
+				"Auth/Discover");
 		}
 
 		protected void Application_Start() {

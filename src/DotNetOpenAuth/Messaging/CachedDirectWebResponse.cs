@@ -90,11 +90,16 @@ namespace DotNetOpenAuth.Messaging {
 		public override StreamReader GetResponseReader() {
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);
 			string contentEncoding = this.Headers[HttpResponseHeader.ContentEncoding];
-			if (string.IsNullOrEmpty(contentEncoding)) {
-				return new StreamReader(this.ResponseStream);
-			} else {
-				return new StreamReader(this.ResponseStream, Encoding.GetEncoding(contentEncoding));
+			Encoding encoding = null;
+			if (!string.IsNullOrEmpty(contentEncoding)) {
+				try {
+					encoding = Encoding.GetEncoding(contentEncoding);
+				} catch (ArgumentException ex) {
+					Logger.Messaging.ErrorFormat("Encoding.GetEncoding(\"{0}\") threw ArgumentException: {1}", contentEncoding, ex);
+				}
 			}
+
+			return encoding != null ? new StreamReader(this.ResponseStream, encoding) : new StreamReader(this.ResponseStream);
 		}
 
 		/// <summary>

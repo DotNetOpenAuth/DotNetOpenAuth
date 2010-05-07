@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
+    <Content Include="images\openid_login.png" />
     <Content Include="Login.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -177,7 +178,6 @@
     <Content Include="favicon.ico" />
     <Content Include="images\attention.png" />
     <Content Include="images\DotNetOpenAuth.png" />
-    <Content Include="images\openid_login.gif" />
     <Content Include="images\yahoo.png" />
     <Content Include="MembersOnly\Default.aspx" />
     <Content Include="PrivacyPolicy.aspx" />

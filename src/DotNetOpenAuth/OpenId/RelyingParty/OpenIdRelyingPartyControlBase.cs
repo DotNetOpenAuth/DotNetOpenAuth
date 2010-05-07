@@ -92,6 +92,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal const string ReturnToReceivingControlId = OpenIdUtilities.CustomParameterPrefix + "receiver";
 
+		#region Protected internal callback parameter names
+
+		/// <summary>
+		/// The callback parameter to use for recognizing when the callback is in a popup window or hidden iframe.
+		/// </summary>
+		protected internal const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
+
+		/// <summary>
+		/// The parameter name to include in the formulated auth request so that javascript can know whether
+		/// the OP advertises support for the UI extension.
+		/// </summary>
+		protected internal const string PopupUISupportedJSHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
+
+		#endregion
+
 		#region Property category constants
 
 		/// <summary>
@@ -111,18 +126,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
-		#region Callback parameter names
-
-		/// <summary>
-		/// The callback parameter to use for recognizing when the callback is in a popup window or hidden iframe.
-		/// </summary>
-		protected const string UIPopupCallbackKey = OpenIdUtilities.CustomParameterPrefix + "uipopup";
-
-		/// <summary>
-		/// The parameter name to include in the formulated auth request so that javascript can know whether
-		/// the OP advertises support for the UI extension.
-		/// </summary>
-		protected const string PopupUISupportedJSHint = OpenIdUtilities.CustomParameterPrefix + "popupUISupported";
+		#region Private callback parameter names
 
 		/// <summary>
 		/// The callback parameter for use with persisting the <see cref="UsePersistentCookie"/> property.
@@ -293,10 +297,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// heavily trafficked web pages.
 		/// </remarks>
 		[Browsable(false)]
-		public OpenIdRelyingParty RelyingParty {
+		public virtual OpenIdRelyingParty RelyingParty {
 			get {
 				if (this.relyingParty == null) {
 					this.relyingParty = this.CreateRelyingParty();
+					this.ConfigureRelyingParty(this.relyingParty);
 					this.relyingPartyOwned = true;
 				}
 				return this.relyingParty;
@@ -353,6 +358,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
+				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
+
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Realm object based on it.
 					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, this.RelyingParty.Channel.GetRequestFromContext())); // throws an exception on failure.
@@ -556,8 +563,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected internal virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
 			Contract.Requires<ArgumentNullException>(identifier != null);
 
-			// Delegate to a private method to keep 'yield return' and Code Contract separate.
-			return this.CreateRequestsCore(identifier);
+			// If this control is actually a member of another OpenID RP control,
+			// delegate creation of requests to the parent control.
+			var parentOwner = this.ParentControls.OfType<OpenIdRelyingPartyControlBase>().FirstOrDefault();
+			if (parentOwner != null) {
+				return parentOwner.CreateRequests(identifier);
+			} else {
+				// Delegate to a private method to keep 'yield return' and Code Contract separate.
+				return this.CreateRequestsCore(identifier);
+			}
 		}
 
 		/// <summary>
@@ -631,6 +645,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					response != null ? response.Status.ToString() : "nothing");
 				this.ProcessResponse(response);
 			}
+		}
+
+		/// <summary>
+		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
+		/// </summary>
+		protected virtual void ScriptClosingPopupOrIFrame() {
+			this.RelyingParty.ProcessResponseFromPopup();
 		}
 
 		/// <summary>
@@ -769,29 +790,32 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the relying party instance used to generate authentication requests.
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
-		protected virtual OpenIdRelyingParty CreateRelyingParty() {
-			return this.CreateRelyingParty(true);
+		protected OpenIdRelyingParty CreateRelyingParty() {
+			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
+			return this.CreateRelyingParty(store);
 		}
 
 		/// <summary>
 		/// Creates the relying party instance used to generate authentication requests.
 		/// </summary>
-		/// <param name="verifySignature">
-		/// A value indicating whether message protections should be applied to the processed messages.
-		/// Use <c>false</c> to postpone verification to a later time without invalidating nonces.
-		/// </param>
+		/// <param name="store">The store to pass to the relying party constructor.</param>
 		/// <returns>The instantiated relying party.</returns>
-		protected virtual OpenIdRelyingParty CreateRelyingParty(bool verifySignature) {
-			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
-			var rp = verifySignature ? new OpenIdRelyingParty(store) : OpenIdRelyingParty.CreateNonVerifying();
+		protected virtual OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store) {
+			return new OpenIdRelyingParty(store);
+		}
+
+		/// <summary>
+		/// Configures the relying party.
+		/// </summary>
+		/// <param name="relyingParty">The relying party.</param>
+		protected virtual void ConfigureRelyingParty(OpenIdRelyingParty relyingParty) {
+			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
 			// Only set RequireSsl to true, as we don't want to override 
 			// a .config setting of true with false.
 			if (this.RequireSsl) {
-				rp.SecuritySettings.RequireSsl = true;
+				relyingParty.SecuritySettings.RequireSsl = true;
 			}
-
-			return rp;
 		}
 
 		/// <summary>
@@ -838,21 +862,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				writer.AddAttribute("onMouseOver", "window.status = " + MessagingUtilities.GetSafeJavascriptValue(windowStatus));
 				writer.AddAttribute("onMouseOut", "window.status = null");
 			}
-		}
-
-		/// <summary>
-		/// Wires the popup window to close itself and pass the authentication result to the parent window.
-		/// </summary>
-		protected virtual void ScriptClosingPopupOrIFrame() {
-			StringBuilder startupScript = new StringBuilder();
-			startupScript.AppendLine("window.opener.dnoa_internal.processAuthorizationResult(document.URL);");
-			startupScript.AppendLine("window.close();");
-
-			this.Page.ClientScript.RegisterStartupScript(typeof(OpenIdRelyingPartyControlBase), "loginPopupClose", startupScript.ToString(), true);
-
-			// TODO: alternately we should probably take over rendering this page here to avoid
-			// a lot of unnecessary work on the server and possible momentary display of the 
-			// page in the popup window.
 		}
 
 		/// <summary>
@@ -939,7 +948,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 					if (req.DiscoveryResult.IsExtensionSupported<UIRequest>()) {
 						// Inform the OP that we'll be using a popup window consistent with the UI extension.
-						req.AddExtension(new UIRequest());
+						// But beware that the extension MAY have already been added if we're using
+						// the OpenIdAjaxRelyingParty class.
+						if (!((AuthenticationRequest)req).Extensions.OfType<UIRequest>().Any()) {
+							req.AddExtension(new UIRequest());
+						}
 
 						// Provide a hint for the client javascript about whether the OP supports the UI extension.
 						// This is so the window can be made the correct size for the extension.
@@ -1028,68 +1041,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// An authentication request comparer that judges equality solely on the OP endpoint hostname.
-		/// </summary>
-		private class DuplicateRequestedHostsComparer : IEqualityComparer<IAuthenticationRequest> {
-			/// <summary>
-			/// The singleton instance of this comparer.
-			/// </summary>
-			private static IEqualityComparer<IAuthenticationRequest> instance = new DuplicateRequestedHostsComparer();
-
-			/// <summary>
-			/// Prevents a default instance of the <see cref="DuplicateRequestedHostsComparer"/> class from being created.
-			/// </summary>
-			private DuplicateRequestedHostsComparer() {
-			}
-
-			/// <summary>
-			/// Gets the singleton instance of this comparer.
-			/// </summary>
-			internal static IEqualityComparer<IAuthenticationRequest> Instance {
-				get { return instance; }
-			}
-
-			#region IEqualityComparer<IAuthenticationRequest> Members
-
-			/// <summary>
-			/// Determines whether the specified objects are equal.
-			/// </summary>
-			/// <param name="x">The first object to compare.</param>
-			/// <param name="y">The second object to compare.</param>
-			/// <returns>
-			/// true if the specified objects are equal; otherwise, false.
-			/// </returns>
-			public bool Equals(IAuthenticationRequest x, IAuthenticationRequest y) {
-				if (x == null && y == null) {
-					return true;
-				}
-
-				if (x == null || y == null) {
-					return false;
-				}
-
-				// We'll distinguish based on the host name only, which
-				// admittedly is only a heuristic, but if we remove one that really wasn't a duplicate, well,
-				// this multiple OP attempt thing was just a convenience feature anyway.
-				return string.Equals(x.Provider.Uri.Host, y.Provider.Uri.Host, StringComparison.OrdinalIgnoreCase);
-			}
-
-			/// <summary>
-			/// Returns a hash code for the specified object.
-			/// </summary>
-			/// <param name="obj">The <see cref="T:System.Object"/> for which a hash code is to be returned.</param>
-			/// <returns>A hash code for the specified object.</returns>
-			/// <exception cref="T:System.ArgumentNullException">
-			/// The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is null.
-			/// </exception>
-			public int GetHashCode(IAuthenticationRequest obj) {
-				return obj.Provider.Uri.Host.GetHashCode();
-			}
-
-			#endregion
 		}
 	}
 }

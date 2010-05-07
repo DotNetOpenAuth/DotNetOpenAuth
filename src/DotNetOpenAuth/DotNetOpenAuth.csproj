@@ -163,7 +163,7 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
@@ -303,6 +303,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="Mvc\OpenIdHelper.cs" />
+    <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
     <Compile Include="OAuthWrap\AuthorizationState.cs" />
     <Compile Include="OAuthWrap\IClientTokenManager.cs" />
@@ -552,7 +554,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
+    <Compile Include="OpenId\RelyingParty\DuplicateRequestedHostsComparer.cs" />
     <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
@@ -688,7 +692,7 @@ http://opensource.org/licenses/ms-pl.html
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\openid_login.gif" />
+    <EmbeddedResource Include="OpenId\RelyingParty\openid_login.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OpenId\RelyingParty\login_failure.png" />
@@ -775,15 +779,15 @@ http://opensource.org/licenses/ms-pl.html
   </ItemGroup>
   <ItemGroup>
     <SignDependsOn Include="BuildUnifiedProduct" />
-    <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);&#xD;&#xA;                                    $(OutputPath)$(ProductName).Contracts.dll;&#xD;&#xA;                                   " />
-  </ItemGroup>
-  <ItemGroup>
+    <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);
+                                    $(OutputPath)CodeContracts\$(ProductName).Contracts.dll;
+                                   " />
     <Folder Include="OAuthWrap\Messages\Device\" />
   </ItemGroup>
-  <PropertyGroup>
-    <!-- Don't sign the non-unified version of the assembly. -->
-    <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
-  </PropertyGroup>
+	<PropertyGroup>
+		<!-- Don't sign the non-unified version of the assembly. -->
+		<SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
+	</PropertyGroup>
   <Target Name="BuildUnifiedProduct" DependsOnTargets="Build" Inputs="@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly)">
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
     <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeInputAssemblies)" OutputFile="$(ILMergeOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" />

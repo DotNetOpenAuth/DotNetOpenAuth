@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdTextBox.EmbeddedLogoResourceName, "image/gif")]
+[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdTextBox.EmbeddedLogoResourceName, "image/png")]
 
 #pragma warning disable 0809 // marking inherited, unsupported properties as obsolete to discourage their use
 
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The name of the manifest stream containing the
 		/// OpenID logo that is placed inside the text box.
 		/// </summary>
-		internal const string EmbeddedLogoResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.openid_login.gif";
+		internal const string EmbeddedLogoResourceName = Util.DefaultNamespace + ".OpenId.RelyingParty.openid_login.png";
 
 		/// <summary>
 		/// Default value for <see cref="TabIndex"/> property.
@@ -584,6 +584,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		protected override void Render(HtmlTextWriter writer) {
+			Contract.Assume(writer != null, "Missing contract.");
+
 			if (this.ShowLogo) {
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
 					typeof(OpenIdTextBox), EmbeddedLogoResourceName);
@@ -625,6 +627,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// true if the server control's state changes as a result of the postback; otherwise, false.
 		/// </returns>
 		protected virtual bool LoadPostData(string postDataKey, NameValueCollection postCollection) {
+			Contract.Assume(postCollection != null, "Missing contract");
+
 			// If the control was temporarily hidden, it won't be in the Form data,
 			// and we'll just implicitly keep the last Text setting.
 			if (postCollection[this.Name] != null) {

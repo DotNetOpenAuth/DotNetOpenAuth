@@ -3,7 +3,7 @@
 	<Import Project="ProjectTemplates.props"/>
 
 	<PropertyGroup>
-		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">6</ProjectTemplateMaxPath>
+		<ProjectTemplateMaxPath Condition=" '$(ProjectTemplateMaxPath)' == '' ">10</ProjectTemplateMaxPath>
 
 		<LayoutDependsOn>
 			BuildUnifiedProduct;
@@ -209,7 +209,7 @@
 		<DowngradeProjects
 			Projects="@(ProjectTemplates2008Layout)"
 			Condition="'%(Extension)' == '.csproj'"
-			DowngradeMvc2ToMvc1="true"
+			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
 			/>
 
 		<Purge Directories="$(ProjectTemplates2008LayoutPath)" 

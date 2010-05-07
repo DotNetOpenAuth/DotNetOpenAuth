@@ -12,7 +12,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
+	using System.Net;
+	using System.Net.Mime;
+	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -33,10 +37,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	public delegate bool EndpointSelector(IProviderEndpoint endpoint);
 
 	/// <summary>
-	/// Provides the programmatic facilities to act as an OpenId consumer.
+	/// Provides the programmatic facilities to act as an OpenID relying party.
 	/// </summary>
 	[ContractVerification(true)]
-	public sealed class OpenIdRelyingParty : IDisposable {
+	public class OpenIdRelyingParty : IDisposable {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
@@ -52,6 +56,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Backing field for the <see cref="DiscoveryServices"/> property.
 		/// </summary>
 		private readonly IList<IIdentifierDiscoveryService> discoveryServices = new List<IIdentifierDiscoveryService>(2);
+
+		/// <summary>
+		/// Backing field for the <see cref="NonVerifyingRelyingParty"/> property.
+		/// </summary>
+		private OpenIdRelyingParty nonVerifyingRelyingParty;
+
+		/// <summary>
+		/// The lock to obtain when initializing the <see cref="nonVerifyingRelyingParty"/> member.
+		/// </summary>
+		private object nonVerifyingRelyingPartyInitLock = new object();
+
+		/// <summary>
+		/// A dictionary of extension response types and the javascript member 
+		/// name to map them to on the user agent.
+		/// </summary>
+		private Dictionary<Type, string> clientScriptExtensions = new Dictionary<Type, string>();
 
 		/// <summary>
 		/// Backing field for the <see cref="SecuritySettings"/> property.
@@ -78,7 +98,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="applicationStore">The application store.  If null, the relying party will always operate in "dumb mode".</param>
+		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
 		public OpenIdRelyingParty(IRelyingPartyApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
 		}
@@ -108,11 +128,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Without a nonce store, we must rely on the Provider to protect against
 			// replay attacks.  But only 2.0+ Providers can be expected to provide 
 			// replay protection.
-			if (nonceStore == null) {
-				if (this.SecuritySettings.MinimumRequiredOpenIdVersion < ProtocolVersion.V20) {
-					Logger.OpenId.Warn("Raising minimum OpenID version requirement for Providers to 2.0 to protect this stateless RP from replay attacks.");
-					this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
-				}
+			if (nonceStore == null &&
+				this.SecuritySettings.ProtectDownlevelReplayAttacks &&
+				this.SecuritySettings.MinimumRequiredOpenIdVersion < ProtocolVersion.V20) {
+				Logger.OpenId.Warn("Raising minimum OpenID version requirement for Providers to 2.0 to protect this stateless RP from replay attacks.");
+				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
 			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
@@ -270,6 +290,24 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal AssociationManager AssociationManager { get; private set; }
 
 		/// <summary>
+		/// Gets the <see cref="OpenIdRelyingParty"/> instance used to process authentication responses
+		/// without verifying the assertion or consuming nonces.
+		/// </summary>
+		protected OpenIdRelyingParty NonVerifyingRelyingParty {
+			get {
+				if (this.nonVerifyingRelyingParty == null) {
+					lock (this.nonVerifyingRelyingPartyInitLock) {
+						if (this.nonVerifyingRelyingParty == null) {
+							this.nonVerifyingRelyingParty = OpenIdRelyingParty.CreateNonVerifying();
+						}
+					}
+				}
+
+				return this.nonVerifyingRelyingParty;
+			}
+		}
+
+		/// <summary>
 		/// Creates an authentication request to verify that a user controls
 		/// some given Identifier.
 		/// </summary>
@@ -389,13 +427,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+		public virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
 			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(realm != null);
 			Contract.Requires<ArgumentNullException>(returnToUrl != null);
 			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>();
+			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>().CacheGeneratedResults();
 		}
 
 		/// <summary>
@@ -487,6 +525,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		public IAuthenticationResponse GetResponse() {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return this.GetResponse(this.Channel.GetRequestFromContext());
 		}
 
@@ -531,6 +570,52 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			} catch (ProtocolException ex) {
 				return new FailedAuthenticationResponse(ex);
 			}
+		}
+
+		/// <summary>
+		/// Processes the response received in a popup window or iframe to an AJAX-directed OpenID authentication.
+		/// </summary>
+		/// <returns>The HTTP response to send to this HTTP request.</returns>
+		/// <remarks>
+		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
+		/// </remarks>
+		public OutgoingWebResponse ProcessResponseFromPopup() {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+
+			return this.ProcessResponseFromPopup(this.Channel.GetRequestFromContext());
+		}
+
+		/// <summary>
+		/// Processes the response received in a popup window or iframe to an AJAX-directed OpenID authentication.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request that is expected to carry an OpenID authentication response.</param>
+		/// <returns>The HTTP response to send to this HTTP request.</returns>
+		public OutgoingWebResponse ProcessResponseFromPopup(HttpRequestInfo request) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+
+			return this.ProcessResponseFromPopup(request, null);
+		}
+
+		/// <summary>
+		/// Allows an OpenID extension to read data out of an unverified positive authentication assertion
+		/// and send it down to the client browser so that Javascript running on the page can perform
+		/// some preprocessing on the extension data.
+		/// </summary>
+		/// <typeparam name="T">The extension <i>response</i> type that will read data from the assertion.</typeparam>
+		/// <param name="propertyName">The property name on the openid_identifier input box object that will be used to store the extension data.  For example: sreg</param>
+		/// <remarks>
+		/// This method should be called before <see cref="ProcessResponseFromPopup()"/>.
+		/// </remarks>
+		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
+		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
+			ErrorUtilities.VerifyArgumentNamed(!this.clientScriptExtensions.ContainsValue(propertyName), "propertyName", OpenIdStrings.ClientScriptExtensionPropertyNameCollision, propertyName);
+			foreach (var ext in this.clientScriptExtensions.Keys) {
+				ErrorUtilities.VerifyArgument(ext != typeof(T), OpenIdStrings.ClientScriptExtensionTypeCollision, typeof(T).FullName);
+			}
+			this.clientScriptExtensions.Add(typeof(T), propertyName);
 		}
 
 		#region IDisposable Members
@@ -580,6 +665,66 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Processes the response received in a popup window or iframe to an AJAX-directed OpenID authentication.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request that is expected to carry an OpenID authentication response.</param>
+		/// <param name="callback">The callback fired after the response status has been determined but before the Javascript response is formulated.</param>
+		/// <returns>
+		/// The HTTP response to send to this HTTP request.
+		/// </returns>
+		internal OutgoingWebResponse ProcessResponseFromPopup(HttpRequestInfo request, Action<AuthenticationStatus> callback) {
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+
+			string extensionsJson = null;
+			var authResponse = this.NonVerifyingRelyingParty.GetResponse();
+			ErrorUtilities.VerifyProtocol(authResponse != null, "OpenID popup window or iframe did not recognize an OpenID response in the request.");
+
+			// Give the caller a chance to notify the hosting page and fill up the clientScriptExtensions collection.
+			if (callback != null) {
+				callback(authResponse.Status);
+			}
+
+			Logger.OpenId.DebugFormat("Popup or iframe callback from OP: {0}", request.Url);
+			Logger.Controls.DebugFormat(
+				"An authentication response was found in a popup window or iframe using a non-verifying RP with status: {0}",
+				authResponse.Status);
+			if (authResponse.Status == AuthenticationStatus.Authenticated) {
+				var extensionsDictionary = new Dictionary<string, string>();
+				foreach (var pair in this.clientScriptExtensions) {
+					IClientScriptExtensionResponse extension = (IClientScriptExtensionResponse)authResponse.GetExtension(pair.Key);
+					if (extension == null) {
+						continue;
+					}
+					var positiveResponse = (PositiveAuthenticationResponse)authResponse;
+					string js = extension.InitializeJavaScriptData(positiveResponse.Response);
+					if (!string.IsNullOrEmpty(js)) {
+						extensionsDictionary[pair.Value] = js;
+					}
+				}
+
+				extensionsJson = MessagingUtilities.CreateJsonObject(extensionsDictionary, true);
+			}
+
+			string payload = "document.URL";
+			if (request.HttpMethod == "POST") {
+				// Promote all form variables to the query string, but since it won't be passed
+				// to any server (this is a javascript window-to-window transfer) the length of
+				// it can be arbitrarily long, whereas it was POSTed here probably because it
+				// was too long for HTTP transit.
+				UriBuilder payloadUri = new UriBuilder(request.Url);
+				payloadUri.AppendQueryArgs(request.Form.ToDictionary());
+				payload = MessagingUtilities.GetSafeJavascriptValue(payloadUri.Uri.AbsoluteUri);
+			}
+
+			if (!string.IsNullOrEmpty(extensionsJson)) {
+				payload += ", " + extensionsJson;
+			}
+
+			return InvokeParentPageScript("dnoa_internal.processAuthorizationResult(" + payload + ")");
+		}
+
+		/// <summary>
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to discover services for.</param>
@@ -619,14 +764,55 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing) {
+		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
+				if (this.nonVerifyingRelyingParty != null) {
+					this.nonVerifyingRelyingParty.Dispose();
+					this.nonVerifyingRelyingParty = null;
+				}
+
 				// Tear off the instance member as a local variable for thread safety.
 				IDisposable disposableChannel = this.channel as IDisposable;
 				if (disposableChannel != null) {
 					disposableChannel.Dispose();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Invokes a method on a parent frame or window and closes the calling popup window if applicable.
+		/// </summary>
+		/// <param name="methodCall">The method to call on the parent window, including
+		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
+		/// <returns>The entire HTTP response to send to the popup window or iframe to perform the invocation.</returns>
+		private static OutgoingWebResponse InvokeParentPageScript(string methodCall) {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(methodCall));
+
+			Logger.OpenId.DebugFormat("Sending Javascript callback: {0}", methodCall);
+			StringBuilder builder = new StringBuilder();
+			builder.AppendLine("<html><body><script type='text/javascript' language='javascript'><!--");
+			builder.AppendLine("//<![CDATA[");
+			builder.Append(@"	var inPopup = !window.frameElement;
+	var objSrc = inPopup ? window.opener : window.frameElement;
+");
+
+			// Something about calling objSrc.{0} can somehow cause FireFox to forget about the inPopup variable,
+			// so we have to actually put the test for it ABOVE the call to objSrc.{0} so that it already 
+			// whether to call window.self.close() after the call.
+			string htmlFormat = @"	if (inPopup) {{
+		objSrc.{0};
+		window.self.close();
+	}} else {{
+		objSrc.{0};
+	}}";
+			builder.AppendFormat(CultureInfo.InvariantCulture, htmlFormat, methodCall);
+			builder.AppendLine("//]]>--></script>");
+			builder.AppendLine("</body></html>");
+
+			var response = new OutgoingWebResponse();
+			response.Body = builder.ToString();
+			response.Headers.Add(HttpResponseHeader.ContentType, new ContentType("text/html").ToString());
+			return response;
 		}
 
 		/// <summary>

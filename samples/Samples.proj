@@ -13,7 +13,7 @@
 
 	<ItemGroup>
 		<SampleProjects Include="**\*.csproj;**\*.vbproj" />
-		<SampleSites Include="OAuthConsumer;OAuthServiceProvider;InfoCardRelyingParty" />
+		<SampleSites Include="InfoCardRelyingParty" />
 
 		<ProjectsToClean Include="@(SampleProjects)" />
 		<ProjectsToClean Include="$(SolutionPath)">

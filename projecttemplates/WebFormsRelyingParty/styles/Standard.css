@@ -58,7 +58,7 @@ div.OpenIdBox
 
 ul.AuthTokens li.OpenID
 {
-	list-style-image: url(../images/openid_login.gif);
+	list-style-image: url(../images/openid_login.png);
 }
 
 ul.AuthTokens li.InfoCard

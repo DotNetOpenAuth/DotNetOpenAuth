@@ -50,7 +50,12 @@ namespace OpenIdProviderWebForms {
 				this.profileFields.SetRequiredFieldsFromRequest(requestedFields);
 				if (!IsPostBack) {
 					var sregResponse = requestedFields.CreateResponse();
-					sregResponse.Email = Membership.GetUser().Email;
+
+					// We MAY not have an entry for this user if they used Yubikey to log in.
+					MembershipUser user = Membership.GetUser();
+					if (user != null) {
+						sregResponse.Email = Membership.GetUser().Email;
+					}
 					this.profileFields.SetOpenIdProfileFields(sregResponse);
 				}
 			}

@@ -17,6 +17,12 @@ namespace DotNetOpenAuth.Yadis {
 	/// </summary>
 	internal class DiscoveryResult {
 		/// <summary>
+		/// The original web response, backed up here if the final web response is the preferred response to use
+		/// in case it turns out to not work out.
+		/// </summary>
+		private CachedDirectWebResponse htmlFallback;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="DiscoveryResult"/> class.
 		/// </summary>
 		/// <param name="requestUri">The user-supplied identifier.</param>
@@ -25,10 +31,8 @@ namespace DotNetOpenAuth.Yadis {
 		public DiscoveryResult(Uri requestUri, CachedDirectWebResponse initialResponse, CachedDirectWebResponse finalResponse) {
 			this.RequestUri = requestUri;
 			this.NormalizedUri = initialResponse.FinalUri;
-			if (finalResponse == null) {
-				this.ContentType = initialResponse.ContentType;
-				this.ResponseText = initialResponse.GetResponseString();
-				this.IsXrds = this.ContentType != null && this.ContentType.MediaType == ContentTypes.Xrds;
+			if (finalResponse == null || finalResponse.Status != System.Net.HttpStatusCode.OK) {
+				this.ApplyHtmlResponse(initialResponse);
 			} else {
 				this.ContentType = finalResponse.ContentType;
 				this.ResponseText = finalResponse.GetResponseString();
@@ -36,6 +40,9 @@ namespace DotNetOpenAuth.Yadis {
 				if (initialResponse != finalResponse) {
 					this.YadisLocation = finalResponse.RequestUri;
 				}
+
+				// Back up the initial HTML response in case the XRDS is not useful.
+				this.htmlFallback = initialResponse;
 			}
 		}
 
@@ -77,13 +84,23 @@ namespace DotNetOpenAuth.Yadis {
 		public bool IsXrds { get; private set; }
 
 		/// <summary>
-		/// Gets a value indicating whether discovery resulted in an 
-		/// XRDS document at a referred location.
+		/// Reverts to the HTML response after the XRDS response didn't work out.
 		/// </summary>
-		/// <value><c>true</c> if the response to the userSuppliedIdentifier 
-		/// pointed to a different URL for the XRDS document.</value>
-		public bool UsedYadisLocation {
-			get { return this.YadisLocation != null; }
+		internal void TryRevertToHtmlResponse() {
+			if (this.htmlFallback != null) {
+				this.ApplyHtmlResponse(this.htmlFallback);
+				this.htmlFallback = null;
+			}
+		}
+
+		/// <summary>
+		/// Applies the HTML response to the object.
+		/// </summary>
+		/// <param name="initialResponse">The initial response.</param>
+		private void ApplyHtmlResponse(CachedDirectWebResponse initialResponse) {
+			this.ContentType = initialResponse.ContentType;
+			this.ResponseText = initialResponse.GetResponseString();
+			this.IsXrds = this.ContentType != null && this.ContentType.MediaType == ContentTypes.Xrds;
 		}
 	}
 }

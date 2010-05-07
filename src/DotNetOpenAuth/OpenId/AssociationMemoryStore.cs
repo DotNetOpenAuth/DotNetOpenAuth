@@ -20,10 +20,20 @@ namespace DotNetOpenAuth.OpenId {
 	/// </remarks>
 	internal class AssociationMemoryStore<TKey> : IAssociationStore<TKey> {
 		/// <summary>
+		/// How many association store requests should occur between each spring cleaning.
+		/// </summary>
+		private const int PeriodicCleaningFrequency = 10;
+
+		/// <summary>
 		/// For Relying Parties, this maps OP Endpoints to a set of associations with that endpoint.
 		/// For Providers, this keeps smart and dumb associations in two distinct pools.
 		/// </summary>
 		private Dictionary<TKey, Associations> serverAssocsTable = new Dictionary<TKey, Associations>();
+
+		/// <summary>
+		/// A counter to track how close we are to an expired association cleaning run.
+		/// </summary>
+		private int periodicCleaning;
 
 		/// <summary>
 		/// Stores a given association for later recall.
@@ -38,6 +48,13 @@ namespace DotNetOpenAuth.OpenId {
 				Associations server_assocs = this.serverAssocsTable[distinguishingFactor];
 
 				server_assocs.Set(association);
+
+				unchecked {
+					this.periodicCleaning++;
+				}
+				if (this.periodicCleaning % PeriodicCleaningFrequency == 0) {
+					this.ClearExpiredAssociations();
+				}
 			}
 		}
 
@@ -88,17 +105,6 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Clears all expired associations from the store.
-		/// </summary>
-		public void ClearExpiredAssociations() {
-			lock (this) {
-				foreach (Associations assocs in this.serverAssocsTable.Values) {
-					assocs.ClearExpired();
-				}
-			}
-		}
-
-		/// <summary>
 		/// Gets the server associations for a given OP Endpoint or dumb/smart mode.
 		/// </summary>
 		/// <param name="distinguishingFactor">The distinguishing factor, either an OP Endpoint (for relying parties) or smart/dumb (for providers).</param>
@@ -110,6 +116,17 @@ namespace DotNetOpenAuth.OpenId {
 				}
 
 				return this.serverAssocsTable[distinguishingFactor];
+			}
+		}
+
+		/// <summary>
+		/// Clears all expired associations from the store.
+		/// </summary>
+		private void ClearExpiredAssociations() {
+			lock (this) {
+				foreach (Associations assocs in this.serverAssocsTable.Values) {
+					assocs.ClearExpired();
+				}
 			}
 		}
 	}

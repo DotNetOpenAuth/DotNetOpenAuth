@@ -8,6 +8,7 @@
 	<ul>
 		<li><a href="GoogleAddressBook.aspx">Download your Gmail address book</a></li>
 		<li><a href="Twitter.aspx">Get your Twitter updates</a></li>
+		<li><a href="SignInWithTwitter.aspx">Sign In With Twitter</a></li>
 		<li><a href="SampleWcf.aspx">Interop with Service Provider sample using WCF w/ OAuth</a></li>
 	</ul>
 </asp:Content>

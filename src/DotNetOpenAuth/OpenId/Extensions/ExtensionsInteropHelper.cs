@@ -130,7 +130,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 		/// <summary>
 		/// Looks for Simple Registration and Attribute Exchange (all known formats)
-		/// request extensions and returns them as a Simple Registration extension.
+		/// request extensions and returns them as a Simple Registration extension,
+		/// and adds the new extension to the original request message if it was absent.
 		/// </summary>
 		/// <param name="request">The authentication request.</param>
 		/// <returns>
@@ -140,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		internal static ClaimsRequest UnifyExtensionsAsSreg(this Provider.IHostProcessedRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
 
-			var req = (Provider.AuthenticationRequest)request;
+			var req = (Provider.HostProcessedRequest)request;
 			var sreg = req.GetExtension<ClaimsRequest>();
 			if (sreg != null) {
 				return sreg;
@@ -148,7 +149,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 			var ax = req.GetExtension<FetchRequest>();
 			if (ax != null) {
-				sreg = new ClaimsRequest();
+				sreg = new ClaimsRequest(SimpleRegistration.Constants.sreg_ns);
 				sreg.Synthesized = true;
 				((IProtocolMessageWithExtensions)req.RequestMessage).Extensions.Add(sreg);
 				sreg.BirthDate = GetDemandLevelFor(ax, WellKnownAttributes.BirthDate.WholeBirthDate);
@@ -176,9 +177,9 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </remarks>
 		internal static void ConvertSregToMatchRequest(this Provider.IHostProcessedRequest request) {
 			var req = (Provider.HostProcessedRequest)request;
-			var response = (IProtocolMessageWithExtensions)req.Response;
+			var response = req.Response as IProtocolMessageWithExtensions; // negative responses don't support extensions.
 			var sregRequest = request.GetExtension<ClaimsRequest>();
-			if (sregRequest != null) {
+			if (sregRequest != null && response != null) {
 				if (sregRequest.Synthesized) {
 					var axRequest = request.GetExtension<FetchRequest>();
 					ErrorUtilities.VerifyInternal(axRequest != null, "How do we have a synthesized Sreg request without an AX request?");

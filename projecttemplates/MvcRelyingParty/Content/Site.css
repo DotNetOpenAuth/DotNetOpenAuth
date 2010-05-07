@@ -318,7 +318,7 @@ div#title
 
 ul.AuthTokens li.OpenID
 {
-	list-style-image: url(../../content/images/openid_login.gif);
+	list-style-image: url(../../content/images/openid_login.png);
 }
 
 ul.AuthTokens li.InfoCard
