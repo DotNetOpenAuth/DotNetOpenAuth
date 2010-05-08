@@ -28,7 +28,12 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 
 		[TestMethod]
 		public void OptionalNullableStruct() {
-			this.ParameterizedMessageTypeTest(typeof(MessageWithNullableOptionalStruct));
+			var message = new MessageWithNullableOptionalStruct();
+			var part = this.ParameterizedMessageTypeTest(message.GetType());
+
+			Assert.IsNull(part.GetValue(message));
+			part.SetValue(message, "3");
+			Assert.AreEqual("3", part.GetValue(message));
 		}
 
 		[TestMethod]
