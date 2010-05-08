@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -41,6 +42,30 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				factory.AddMessageTypes(GetWrapMessageDescriptions(value));
 				this.MessageFactory = factory;
 			}
+		}
+
+		/// <summary>
+		/// Prepares an HTTP request that carries a given message.
+		/// </summary>
+		/// <param name="request">The message to send.</param>
+		/// <returns>
+		/// The <see cref="HttpWebRequest"/> prepared to send the request.
+		/// </returns>
+		/// <remarks>
+		/// This method must be overridden by a derived class, unless the <see cref="RequestCore"/> method
+		/// is overridden and does not require this method.
+		/// </remarks>
+		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+			HttpWebRequest httpRequest;
+			if ((request.HttpMethods & HttpDeliveryMethods.GetRequest) != 0) {
+				httpRequest = InitializeRequestAsGet(request);
+			} else if ((request.HttpMethods & HttpDeliveryMethods.PostRequest) != 0) {
+				httpRequest = InitializeRequestAsPost(request);
+			} else {
+				throw new NotSupportedException();
+			}
+
+			return httpRequest;
 		}
 
 		/// <summary>
@@ -86,10 +111,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				typeof(Messages.UnauthorizedResponse),
 				typeof(Messages.AssertionRequest),
 				typeof(Messages.AssertionSuccessResponse),
-				typeof(Messages.AssertionFailedResponse),
-				typeof(Messages.ClientAccountUsernamePasswordRequest),
-				typeof(Messages.ClientAccountUsernamePasswordSuccessResponse),
-				typeof(Messages.ClientAccountUsernamePasswordFailedResponse),
+				typeof(Messages.ClientCredentialsRequest),
 				typeof(Messages.RichAppRequest),
 				typeof(Messages.RichAppResponse),
 				typeof(Messages.RichAppAccessTokenRequest),

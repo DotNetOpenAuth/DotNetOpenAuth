@@ -25,12 +25,13 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
 		/// </summary>
-		/// <param name="userAuthorizationEndpoint">The Authorization Server's user authorization URL to direct the user to.</param>
+		/// <param name="authorizationEndpoint">The Authorization Server's user authorization URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		internal WebAppRequest(Uri userAuthorizationEndpoint, Version version)
-			: base(version, MessageTransport.Indirect, userAuthorizationEndpoint) {
-			Contract.Requires<ArgumentNullException>(userAuthorizationEndpoint != null);
+		internal WebAppRequest(Uri authorizationEndpoint, Version version)
+			: base(version, MessageTransport.Indirect, authorizationEndpoint) {
+			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
 			Contract.Requires<ArgumentNullException>(version != null);
+			this.HttpMethods = HttpDeliveryMethods.GetRequest;
 		}
 
 		/// <summary>

@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Initializes a new instance of the <see cref="AssertionSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AssertionSuccessResponse(ClientAccountUsernamePasswordRequest request)
+		internal AssertionSuccessResponse(ClientCredentialsRequest request)
 			: base(request) {
 		}
 

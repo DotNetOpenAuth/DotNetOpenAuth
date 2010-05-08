@@ -635,6 +635,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+			Contract.Requires<ArgumentException>((message.HttpMethods & (HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest)) != 0, "Neither GET nor POST are allowed for this message.");
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			Contract.Assert(message != null && message.Recipient != null);
@@ -642,10 +643,25 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Assert(message != null && message.Recipient != null);
 			var fields = messageAccessor.Serialize();
 
-			// First try creating a 301 redirect, and fallback to a form POST
-			// if the message is too big.
-			OutgoingWebResponse response = this.Create301RedirectResponse(message, fields);
-			if (response.Headers[HttpResponseHeader.Location].Length > IndirectMessageGetToPostThreshold) {
+			OutgoingWebResponse response = null;
+			bool tooLargeForGet = false;
+			if ((message.HttpMethods & HttpDeliveryMethods.GetRequest) == HttpDeliveryMethods.GetRequest) {
+				// First try creating a 301 redirect, and fallback to a form POST
+				// if the message is too big.
+				response = this.Create301RedirectResponse(message, fields);
+				tooLargeForGet = response.Headers[HttpResponseHeader.Location].Length > IndirectMessageGetToPostThreshold;
+			}
+
+			// Make sure that if the message is too large for GET that POST is allowed.
+			if (tooLargeForGet) {
+				ErrorUtilities.VerifyProtocol(
+					(message.HttpMethods & HttpDeliveryMethods.PostRequest) == HttpDeliveryMethods.PostRequest,
+					"Message too large for a HTTP GET, and HTTP POST is not allowed for this message type.");
+			}
+
+			// If GET didn't work out, for whatever reason...
+			if (response == null || tooLargeForGet)
+			{
 				response = this.CreateFormPostResponse(message, fields);
 			}
 
@@ -871,7 +887,7 @@ namespace DotNetOpenAuth.Messaging {
 			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
 			var fields = messageAccessor.Serialize();
 
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			var httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
 
