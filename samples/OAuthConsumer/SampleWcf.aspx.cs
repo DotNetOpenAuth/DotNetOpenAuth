@@ -26,7 +26,7 @@
 					var accessTokenMessage = consumer.ProcessUserAuthorization();
 					if (accessTokenMessage != null) {
 						Session["WcfAccessToken"] = accessTokenMessage.AccessToken;
-						authorizationLabel.Text = "Authorized!  Access token: " + accessTokenMessage.AccessToken;
+						this.authorizationLabel.Text = "Authorized!  Access token: " + accessTokenMessage.AccessToken;
 					}
 				}
 			}
@@ -36,7 +36,7 @@
 			WebConsumer consumer = this.CreateConsumer();
 			UriBuilder callback = new UriBuilder(Request.Url);
 			callback.Query = null;
-			string[] scopes = (from item in scopeList.Items.OfType<ListItem>()
+			string[] scopes = (from item in this.scopeList.Items.OfType<ListItem>()
 							   where item.Selected
 							   select item.Value).ToArray();
 			string scope = string.Join("|", scopes);
@@ -49,27 +49,27 @@
 
 		protected void getNameButton_Click(object sender, EventArgs e) {
 			try {
-				nameLabel.Text = CallService(client => client.GetName());
+				this.nameLabel.Text = CallService(client => client.GetName());
 			} catch (SecurityAccessDeniedException) {
-				nameLabel.Text = "Access denied!";
+				this.nameLabel.Text = "Access denied!";
 			}
 		}
 
 		protected void getAgeButton_Click(object sender, EventArgs e) {
 			try {
 				int? age = CallService(client => client.GetAge());
-				ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
+				this.ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
 			} catch (SecurityAccessDeniedException) {
-				ageLabel.Text = "Access denied!";
+				this.ageLabel.Text = "Access denied!";
 			}
 		}
 
 		protected void getFavoriteSites_Click(object sender, EventArgs e) {
 			try {
 				string[] favoriteSites = CallService(client => client.GetFavoriteSites());
-				favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
+				this.favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
 			} catch (SecurityAccessDeniedException) {
-				favoriteSitesLabel.Text = "Access denied!";
+				this.favoriteSitesLabel.Text = "Access denied!";
 			}
 		}
 

@@ -4,8 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Threading;
-
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
@@ -13,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;

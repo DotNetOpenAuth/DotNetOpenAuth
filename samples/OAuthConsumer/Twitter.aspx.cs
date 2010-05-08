@@ -36,7 +36,7 @@
 
 		protected void Page_Load(object sender, EventArgs e) {
 			if (this.TokenManager != null) {
-				MultiView1.ActiveViewIndex = 1;
+				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
 					var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
@@ -79,8 +79,8 @@
 
 		protected void uploadProfilePhotoButton_Click(object sender, EventArgs e) {
 			if (profilePhoto.PostedFile.ContentType == null) {
-				photoUploadedLabel.Visible = true;
-				photoUploadedLabel.Text = "Select a file first.";
+				this.photoUploadedLabel.Visible = true;
+				this.photoUploadedLabel.Text = "Select a file first.";
 				return;
 			}
 
@@ -88,9 +88,9 @@
 			XDocument imageResult = TwitterConsumer.UpdateProfileImage(
 				twitter,
 				this.AccessToken,
-				profilePhoto.PostedFile.InputStream,
-				profilePhoto.PostedFile.ContentType);
-			photoUploadedLabel.Visible = true;
+				this.profilePhoto.PostedFile.InputStream,
+				this.profilePhoto.PostedFile.ContentType);
+			this.photoUploadedLabel.Visible = true;
 		}
 	}
 }

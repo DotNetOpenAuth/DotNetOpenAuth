@@ -15,7 +15,7 @@
 	public partial class SignInWithTwitter : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
 			if (TwitterConsumer.IsTwitterConsumerConfigured) {
-				MultiView1.ActiveViewIndex = 1;
+				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
 					string screenName;

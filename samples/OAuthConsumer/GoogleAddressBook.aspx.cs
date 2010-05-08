@@ -37,7 +37,7 @@
 
 		protected void Page_Load(object sender, EventArgs e) {
 			if (this.TokenManager != null) {
-				MultiView1.ActiveViewIndex = 1;
+				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
 					var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
@@ -69,7 +69,7 @@
 					HttpUtility.HtmlEncode(contact.Email));
 			}
 			tableBuilder.Append("</table>");
-			resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
+			this.resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
 		}
 	}
 }
