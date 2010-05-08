@@ -21,8 +21,8 @@
 					string screenName;
 					int userId;
 					if (TwitterConsumer.TryFinishSignInWithTwitter(out screenName, out userId)) {
-						loggedInPanel.Visible = true;
-						loggedInName.Text = screenName;
+						this.loggedInPanel.Visible = true;
+						this.loggedInName.Text = screenName;
 
 						// In a real app, the Twitter username would likely be used
 						// to log the user into the application.

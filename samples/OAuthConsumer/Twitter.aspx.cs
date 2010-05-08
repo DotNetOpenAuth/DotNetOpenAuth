@@ -74,11 +74,11 @@
 					HttpUtility.HtmlEncode(update.Status));
 			}
 			tableBuilder.Append("</table>");
-			resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
+			this.resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
 		}
 
 		protected void uploadProfilePhotoButton_Click(object sender, EventArgs e) {
-			if (profilePhoto.PostedFile.ContentType == null) {
+			if (this.profilePhoto.PostedFile.ContentType == null) {
 				this.photoUploadedLabel.Visible = true;
 				this.photoUploadedLabel.Text = "Select a file first.";
 				return;

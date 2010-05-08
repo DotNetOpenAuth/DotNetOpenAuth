@@ -60,10 +60,10 @@
 				sp.Channel.Send(response);
 			} else {
 				if (pending.IsUnsafeRequest) {
-					verifierMultiView.ActiveViewIndex = 1;
+					this.verifierMultiView.ActiveViewIndex = 1;
 				} else {
 					string verifier = ServiceProvider.CreateVerificationCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 10);
-					verificationCodeLabel.Text = verifier;
+					this.verificationCodeLabel.Text = verifier;
 					ITokenContainingMessage requestTokenMessage = pending;
 					var requestToken = Global.TokenManager.GetRequestToken(requestTokenMessage.Token);
 					requestToken.VerificationCode = verifier;
