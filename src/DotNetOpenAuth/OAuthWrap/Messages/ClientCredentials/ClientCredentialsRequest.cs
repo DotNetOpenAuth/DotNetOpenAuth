@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ClientAccountUsernamePasswordRequest.cs" company="Andrew Arnott">
+// <copyright file="ClientCredentialsRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -18,13 +18,13 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// This is somewhat analogous to 2-legged OAuth.
 	/// </remarks>
-	internal class ClientAccountUsernamePasswordRequest : MessageBase {
+	internal class ClientCredentialsRequest : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientAccountUsernamePasswordRequest"/> class.
+		/// Initializes a new instance of the <see cref="ClientCredentialsRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		/// <param name="version">The version.</param>
-		internal ClientAccountUsernamePasswordRequest(Uri authorizationServer, Version version)
+		internal ClientCredentialsRequest(Uri authorizationServer, Version version)
 			: base(version, MessageTransport.Direct, authorizationServer) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// Gets or sets an optional authorization scope as defined by the Authorization Server.
 		/// </summary>
-		[MessagePart(Protocol.wrap_scope, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
 
 		/// <summary>

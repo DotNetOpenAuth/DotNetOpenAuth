@@ -16,6 +16,12 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// </summary>
 	internal class AssertionRequest : MessageBase {
 		/// <summary>
+		/// The type of message.
+		/// </summary>
+		[MessagePart(Protocol.type, IsRequired = true)]
+		private const string Type = "assertion";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AssertionRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
@@ -29,21 +35,31 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the format of the assertion as defined by the Authorization Server.
 		/// </summary>
 		/// <value>The assertion format.</value>
-		[MessagePart(Protocol.wrap_assertion_format, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.format, IsRequired = true, AllowEmpty = false)]
 		internal string AssertionFormat { get; set; }
 
 		/// <summary>
 		/// Gets or sets the assertion.
 		/// </summary>
 		/// <value>The assertion.</value>
-		[MessagePart(Protocol.wrap_assertion, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.assertion, IsRequired = true, AllowEmpty = false)]
 		internal string Assertion { get; set; }
 
 		/// <summary>
 		/// Gets or sets an optional authorization scope as defined by the Authorization Server.
 		/// </summary>
-		[MessagePart(Protocol.wrap_scope, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
+
+		/// <summary>
+		/// Gets or sets the type of the secret.
+		/// </summary>
+		/// <value>The type of the secret.</value>
+		/// <remarks>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
+		/// </remarks>
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		internal string SecretType { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

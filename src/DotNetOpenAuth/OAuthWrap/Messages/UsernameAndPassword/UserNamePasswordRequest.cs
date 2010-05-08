@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the scope.
 		/// </summary>
 		/// <value>The scope.</value>
-		[MessagePart(Protocol.wrap_scope, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
 
 		/// <summary>

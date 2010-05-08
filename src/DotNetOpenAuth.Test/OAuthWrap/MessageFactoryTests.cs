@@ -195,7 +195,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.client_id, "abc" },
 				{ Protocol.redirect_uri, "abc" },
 				{ Protocol.state, "abc" },
-				{ Protocol.wrap_scope, "abc" },
+				{ Protocol.scope, "abc" },
 			};
 			request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(RichAppRequest), request);
@@ -291,8 +291,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void AssertionRequest() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_assertion_format, "abc" },
-				{ Protocol.wrap_assertion, "abc" },
+				{ Protocol.format, "abc" },
+				{ Protocol.assertion, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(AssertionRequest), request);

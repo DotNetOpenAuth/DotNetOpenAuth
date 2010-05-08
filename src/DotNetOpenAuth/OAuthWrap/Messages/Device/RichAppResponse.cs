@@ -19,10 +19,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RichAppResponse"/> class.
 		/// </summary>
-		/// <param name="clientCallback">The client callback.</param>
-		/// <param name="version">The version.</param>
-		internal RichAppResponse(Uri clientCallback, Version version)
-			: base(version, MessageTransport.Indirect, clientCallback) {
+		/// <param name="request">The request.</param>
+		internal RichAppResponse(RichAppRequest request)
+			: base(request) {
 		}
 
 		/// <summary>
@@ -36,16 +35,30 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		internal string VerificationCode { get; set; }
 
 		/// <summary>
-		/// Gets or sets state of the client that should be sent back with the authorization response.
+		/// Gets or sets the code the user must enter on the authorization page.
 		/// </summary>
-		/// <value>
-		/// An opaque value that Clients can use to maintain state associated with this request. 
-		/// </value>
-		/// <remarks>
-		/// This parameter is required if the Client included it in <see cref="RichAppRequest.ClientState"/>.
-		/// </remarks>
-		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
-		internal string ClientState { get; set; }
+		/// <value>The user code.</value>
+		[MessagePart(Protocol.user_code, IsRequired = true, AllowEmpty = false)]
+		internal string UserCode { get; set; }
+
+		/// <summary>
+		/// Gets or sets the user authorization URI on the authorization server. 
+		/// </summary>
+		[MessagePart(Protocol.user_uri, IsRequired = true)]
+		internal Uri AuthorizationUri { get; set; }
+
+		/// <summary>
+		/// Gets or sets the lifetime.
+		/// </summary>
+		/// <value>The lifetime.</value>
+		[MessagePart(Protocol.expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
+		internal TimeSpan? Lifetime { get; set; }
+
+		/// <summary>
+		/// Gets or sets the minimum amount of time that the client SHOULD wait between polling requests to the token endpoint. 
+		/// </summary>
+		[MessagePart(Protocol.interval, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
+		internal TimeSpan? PollingInterval { get; set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the user granted the authorization request.

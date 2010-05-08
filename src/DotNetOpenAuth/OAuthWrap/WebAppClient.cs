@@ -75,8 +75,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientSecret));
 
-			var response = this.Channel.ReadFromRequest<IMessageWithClientState>(request);
-			if (response != null) {
+			IMessageWithClientState response;
+			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {
 				IAuthorizationState authorizationState = this.TokenManager.GetAuthorizationState(request.UrlBeforeRewriting, response.ClientState);
 				ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
 				var success = response as WebAppSuccessResponse;

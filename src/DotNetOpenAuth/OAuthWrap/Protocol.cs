@@ -54,9 +54,9 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string client_id = "client_id";
 
 		/// <summary>
-		/// The "wrap_scope" string.
+		/// The "scope" string.
 		/// </summary>
-		internal const string wrap_scope = "wrap_scope";
+		internal const string scope = "scope";
 
 		/// <summary>
 		/// The "immediate" string.
@@ -72,6 +72,21 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// The "wrap_verification_code" string.
 		/// </summary>
 		internal const string code = "code";
+
+		/// <summary>
+		/// The "user_code" string.
+		/// </summary>
+		internal const string user_code = "user_code";
+
+		/// <summary>
+		/// The "user_uri" string.
+		/// </summary>
+		internal const string user_uri = "user_uri";
+
+		/// <summary>
+		/// The "interval" string.
+		/// </summary>
+		internal const string interval = "interval";
 
 		/// <summary>
 		/// The "wrap_verification_url" string.
@@ -124,14 +139,14 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string wrap_name = "wrap_name";
 
 		/// <summary>
-		/// The "wrap_assertion_format" string.
+		/// The "format" string.
 		/// </summary>
-		internal const string wrap_assertion_format = "wrap_assertion_format";
+		internal const string format = "format";
 
 		/// <summary>
-		/// The "wrap_assertion" string.
+		/// The "assertion" string.
 		/// </summary>
-		internal const string wrap_assertion = "wrap_assertion";
+		internal const string assertion = "assertion";
 
 		/// <summary>
 		/// The "wrap_SAML" string.
