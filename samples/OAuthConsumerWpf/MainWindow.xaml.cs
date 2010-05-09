@@ -66,7 +66,7 @@
 			this.wcfTokenManager.ConsumerKey = "sampleconsumer";
 			this.wcfTokenManager.ConsumerSecret = "samplesecret";
 			MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
-				new Uri("http://localhost:65169/OAuthServiceProvider/OAuth.ashx"),
+				new Uri("http://localhost:65169/OAuth.ashx"),
 				HttpDeliveryMethods.PostRequest);
 			this.wcf = new DesktopConsumer(
 				new ServiceProviderDescription {
