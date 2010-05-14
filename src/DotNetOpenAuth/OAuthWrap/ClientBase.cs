@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(authorization.AccessToken));
-			Contract.Requires<ProtocolException>(authorization.AccessTokenExpirationUtc < DateTime.UtcNow);
+			Contract.Requires<ProtocolException>(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow);
 			AuthorizeRequest(request, authorization.AccessToken);
 		}
 	}

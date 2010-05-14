@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// <summary>
 		/// The format of the HTTP Authorization header value that authorizes OAuth WRAP requests.
 		/// </summary>
-		internal const string HttpAuthorizationHeaderFormat = "WRAP access_token=\"{0}\"";
+		internal const string HttpAuthorizationHeaderFormat = "Token token=\"{0}\"";
 
 		/// <summary>
 		/// The "type" string.

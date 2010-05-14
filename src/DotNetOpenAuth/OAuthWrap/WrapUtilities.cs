@@ -16,13 +16,13 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// <summary>
 	/// Some common utility methods for OAuth WRAP.
 	/// </summary>
-	public static class WrapUtilities {
+	internal static class WrapUtilities {
 		/// <summary>
 		/// Authorizes an HTTP request using an OAuth WRAP access token in an HTTP Authorization header.
 		/// </summary>
 		/// <param name="request">The request to authorize.</param>
 		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
-		public static void AuthorizeWithOAuthWrap(this HttpWebRequest request, string accessToken) {
+		internal static void AuthorizeWithOAuthWrap(this HttpWebRequest request, string accessToken) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
 			request.Headers[HttpRequestHeader.Authorization] = string.Format(
