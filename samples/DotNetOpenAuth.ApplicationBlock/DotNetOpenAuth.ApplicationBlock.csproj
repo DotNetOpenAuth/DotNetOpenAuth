@@ -72,6 +72,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -86,7 +88,8 @@
     <Compile Include="CustomExtensions\Acme.cs" />
     <Compile Include="CustomExtensions\AcmeRequest.cs" />
     <Compile Include="CustomExtensions\AcmeResponse.cs" />
-    <Compile Include="FacebookClient.cs" />
+    <Compile Include="Facebook\FacebookClient.cs" />
+    <Compile Include="Facebook\FacebookGraph.cs" />
     <Compile Include="GoogleConsumer.cs" />
     <Compile Include="InMemoryTokenManager.cs">
       <SubType>Code</SubType>

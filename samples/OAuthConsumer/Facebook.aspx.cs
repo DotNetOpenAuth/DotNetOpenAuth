@@ -1,15 +1,10 @@
 ﻿namespace OAuthConsumer {
 	using System;
-	using System.Collections.Generic;
 	using System.Configuration;
-	using System.IO;
-	using System.Linq;
 	using System.Net;
 	using System.Web;
-	using System.Web.Script.Serialization;
-	using System.Web.UI;
-	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.ApplicationBlock;
+	using DotNetOpenAuth.ApplicationBlock.Facebook;
 	using DotNetOpenAuth.OAuthWrap;
 
 	public partial class Facebook : System.Web.UI.Page {
@@ -26,11 +21,11 @@
 			} else {
 				var request = WebRequest.Create("https://graph.facebook.com/me?access_token=" + Uri.EscapeDataString(authorization.AccessToken));
 				using (var response = request.GetResponse()) {
-					using (var responseReader = new StreamReader(response.GetResponseStream())) {
-						string data = responseReader.ReadToEnd();
+					using (var responseStream = response.GetResponseStream()) {
+						var graph = FacebookGraph.Deserialize(responseStream);
+						nameLabel.Text = HttpUtility.HtmlEncode(graph.Name);
 					}
 				}
-				nameLabel.Text = "Success!  Access token: " + HttpUtility.HtmlEncode(authorization.AccessToken);
 			}
 		}
 	}
