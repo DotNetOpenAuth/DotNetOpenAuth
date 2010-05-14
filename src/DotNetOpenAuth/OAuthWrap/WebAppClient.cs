@@ -77,7 +77,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 			IMessageWithClientState response;
 			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {
-				IAuthorizationState authorizationState = this.TokenManager.GetAuthorizationState(request.UrlBeforeRewriting, response.ClientState);
+				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.UrlBeforeRewriting, this.Channel.MessageDescriptions.Get(response));
+				IAuthorizationState authorizationState = this.TokenManager.GetAuthorizationState(callback, response.ClientState);
 				ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
 				var success = response as WebAppSuccessResponse;
 				var failure = response as WebAppFailedResponse;

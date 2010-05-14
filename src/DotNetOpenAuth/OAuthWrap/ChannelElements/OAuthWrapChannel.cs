@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Linq;
 	using System.Net;
 	using System.Text;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 
@@ -77,7 +78,15 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
-			throw new NotImplementedException();
+			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
+			if (response.ContentType.MediaType == JsonEncoded) {
+				throw new NotImplementedException();
+			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
+				string body = response.GetResponseReader().ReadToEnd();
+				return HttpUtility.ParseQueryString(body).ToDictionary();
+			} else {
+				throw ErrorUtilities.ThrowProtocol("Unexpected response Content-Type {0}", response.ContentType.MediaType);
+			}
 		}
 
 		/// <summary>

@@ -193,6 +193,30 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Strips any and all URI query parameters that serve as parts of a message.
+		/// </summary>
+		/// <param name="uri">The URI that may contain query parameters to remove.</param>
+		/// <param name="messageDescription">The message description whose parts should be removed from the URL.</param>
+		/// <returns>A cleaned URL.</returns>
+		internal static Uri StripMessagePartsFromQueryString(this Uri uri, MessageDescription messageDescription) {
+			Contract.Requires<ArgumentNullException>(uri != null, "uri");
+			Contract.Requires<ArgumentNullException>(messageDescription != null, "messageDescription");
+
+			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
+			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => messageDescription.Mapping.ContainsKey(key)).ToList();
+			if (matchingKeys.Count > 0) {
+				var builder = new UriBuilder(uri);
+				foreach (string key in matchingKeys) {
+					queryArgs.Remove(key);
+				}
+				builder.Query = CreateQueryString(queryArgs.ToDictionary());
+				return builder.Uri;
+			} else {
+				return uri;
+			}
+		}
+
+		/// <summary>
 		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>

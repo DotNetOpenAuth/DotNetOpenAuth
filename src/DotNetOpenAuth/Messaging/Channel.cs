@@ -40,6 +40,16 @@ namespace DotNetOpenAuth.Messaging {
 		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
 
 		/// <summary>
+		/// The content-type used for JSON serialized objects.
+		/// </summary>
+		protected internal const string JsonEncoded = "application/json";
+
+		/// <summary>
+		/// The content-type for plain text.
+		/// </summary>
+		protected internal const string PlainTextEncoded = "text/plain";
+
+		/// <summary>
 		/// The content-type used on HTTP POST requests where the POST entity is a
 		/// URL-encoded series of key=value pairs.
 		/// This includes the <see cref="PostEntityEncoding"/> character encoding.

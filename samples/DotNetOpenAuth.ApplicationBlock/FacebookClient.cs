@@ -1,12 +1,17 @@
-﻿using System.Web;
-using DotNetOpenAuth.OAuthWrap;
+﻿//-----------------------------------------------------------------------
+// <copyright file="FacebookClient.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap;
 
 	public class FacebookClient : WebAppClient {
 		private static readonly AuthorizationServerDescription FacebookDescription = new AuthorizationServerDescription {
