@@ -4,13 +4,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Net;
-
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -41,7 +40,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public IClientTokenManager TokenManager { get; set; }
 
 		public WebAppRequest PrepareRequestUserAuthorization() {
-			return PrepareRequestUserAuthorization(new AuthorizationState());
+			return this.PrepareRequestUserAuthorization(new AuthorizationState());
 		}
 
 		public WebAppRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {

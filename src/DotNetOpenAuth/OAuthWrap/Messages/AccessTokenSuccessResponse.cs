@@ -4,10 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Net;
-
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
+	using System.Net;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -24,6 +23,27 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="request">The request.</param>
 		internal AccessTokenSuccessResponse(IDirectedProtocolMessage request)
 			: base(request) {
+		}
+
+		/// <summary>
+		/// Gets the HTTP status code that the direct response should be sent with.
+		/// </summary>
+		/// <value>Always HttpStatusCode.OK</value>
+		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
+			get { return HttpStatusCode.OK; }
+		}
+
+		/// <summary>
+		/// Gets the HTTP headers to add to the response.
+		/// </summary>
+		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
+		WebHeaderCollection IHttpDirectResponse.Headers {
+			get {
+				return new WebHeaderCollection
+				{
+					{ HttpResponseHeader.CacheControl, "no-store" },
+				};
+			}
 		}
 
 		/// <summary>
@@ -59,26 +79,5 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </remarks>
 		[MessagePart(Protocol.access_token_secret, IsRequired = false, AllowEmpty = false)]
 		internal string AccessTokenSecret { get; set; }
-
-		/// <summary>
-		/// Gets the HTTP status code that the direct response should be sent with.
-		/// </summary>
-		/// <value>HttpStatusCode.OK</value>
-		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
-			get { return HttpStatusCode.OK; }
-		}
-
-		/// <summary>
-		/// Gets the HTTP headers to add to the response.
-		/// </summary>
-		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
-		WebHeaderCollection IHttpDirectResponse.Headers {
-			get {
-				return new WebHeaderCollection
-				{
-					{ HttpResponseHeader.CacheControl, "no-store" },
-				};
-			}
-		}
 	}
 }

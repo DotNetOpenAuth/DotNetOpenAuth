@@ -23,7 +23,7 @@
 				using (var response = request.GetResponse()) {
 					using (var responseStream = response.GetResponseStream()) {
 						var graph = FacebookGraph.Deserialize(responseStream);
-						nameLabel.Text = HttpUtility.HtmlEncode(graph.Name);
+						this.nameLabel.Text = HttpUtility.HtmlEncode(graph.Name);
 					}
 				}
 			}

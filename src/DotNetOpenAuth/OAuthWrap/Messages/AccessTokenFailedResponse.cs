@@ -1,12 +1,12 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RefreshAccessTokenFailedResponse.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-using DotNetOpenAuth.Messaging;
-
 namespace DotNetOpenAuth.OAuthWrap.Messages {
+	using DotNetOpenAuth.Messaging;
+
 	/// <summary>
 	/// A response from the Authorization Server to the Client to indicate that a
 	/// request for an access token renewal failed, probably due to an invalid

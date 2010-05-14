@@ -18,6 +18,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.error, IsRequired = true)]
 		private const string ErrorReason = Protocol.user_denied;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UserAgentFailedResponse"/> class.
+		/// </summary>
+		/// <param name="clientCallback">The client callback.</param>
+		/// <param name="version">The version.</param>
 		internal UserAgentFailedResponse(Uri clientCallback, Version version)
 			: base(version, MessageTransport.Indirect, clientCallback) {
 		}

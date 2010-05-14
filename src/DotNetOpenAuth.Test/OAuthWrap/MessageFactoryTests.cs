@@ -19,9 +19,9 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 	/// Verifies that the WRAP message types are recognized.
 	/// </summary>
 	public class MessageFactoryTests : OAuthWrapTestBase {
+		private readonly MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
 		private OAuthWrapChannel channel;
 		private IMessageFactory messageFactory;
-		private readonly MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
 
 		public override void SetUp() {
 			base.SetUp();
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 
 		[TestCase, Ignore("Not implemented")]
 		public void WebAppAccessTokenFailedResponse() {
-			//   HTTP 400 Bad Request
+			// HTTP 400 Bad Request
 		}
 
 		[TestCase, Ignore("Not implemented")]

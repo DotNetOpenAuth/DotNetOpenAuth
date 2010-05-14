@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="version">The version.</param>
 		internal UserAgentSuccessResponse(Uri clientCallback, Version version)
-			: base (version, MessageTransport.Indirect, clientCallback)
+			: base(version, MessageTransport.Indirect, clientCallback)
 		{
 		}
 
