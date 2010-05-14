@@ -251,37 +251,13 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		#region Client Account and Password profile messages
 
 		[TestCase]
-		public void ClientAccountUsernamePasswordRequest() {
+		public void ClientCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.wrap_name, "abc" },
 				{ Protocol.wrap_password, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(ClientAccountUsernamePasswordRequest), request);
-		}
-
-		[TestCase]
-		public void ClientAccountUsernamePasswordSuccessResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.refresh_token, "abc" },
-				{ Protocol.access_token, "abc" },
-			};
-			var request = new ClientAccountUsernamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(ClientAccountUsernamePasswordSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase]
-		public void ClientAccountUsernamePasswordFailedResponse() {
-			// HTTP 401 Unauthorized
-			// WWW-Authenticate: WRAP
-			var fields = new Dictionary<string, string> {
-			};
-			var request = new ClientAccountUsernamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(ClientAccountUsernamePasswordFailedResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
+			Assert.IsInstanceOf(typeof(ClientCredentialsRequest), request);
 		}
 
 		#endregion
@@ -306,18 +282,6 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			var request = new AssertionRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
 				typeof(AssertionSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase]
-		public void AssertionFailedResponse() {
-			// HTTP 401 Unauthorized
-			// WWW-Authenticate: WRAP
-			var fields = new Dictionary<string, string> {
-			};
-			var request = new AssertionRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(AssertionFailedResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));
 		}
 
