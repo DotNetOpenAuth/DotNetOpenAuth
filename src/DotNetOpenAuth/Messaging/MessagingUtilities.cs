@@ -804,7 +804,10 @@ namespace DotNetOpenAuth.Messaging {
 					if (throwOnNullKey) {
 						throw new ArgumentException(MessagingStrings.UnexpectedNullKey);
 					} else {
-						Logger.OpenId.WarnFormat("Null key with value {0} encountered while translating NameValueCollection to Dictionary.", nvc[key]);
+						// Only emit a warning if there was a non-empty value.
+						if (!string.IsNullOrEmpty(nvc[key])) {
+							Logger.OpenId.WarnFormat("Null key with value {0} encountered while translating NameValueCollection to Dictionary.", nvc[key]);
+						}
 					}
 				} else {
 					dictionary.Add(key, nvc[key]);

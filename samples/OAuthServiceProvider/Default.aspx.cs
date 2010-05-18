@@ -38,7 +38,7 @@
 				});
 
 				dc.SubmitChanges();
-				databaseStatus.Visible = true;
+				this.databaseStatus.Visible = true;
 			} catch (System.Data.SqlClient.SqlException ex) {
 				foreach (System.Data.SqlClient.SqlError error in ex.Errors) {
 					Response.Write(error.Message);

@@ -38,15 +38,15 @@
 					byte[] randomData = new byte[8];
 					CryptoRandomDataGenerator.GetBytes(randomData);
 					this.AuthorizationSecret = Convert.ToBase64String(randomData);
-					OAuthAuthorizationSecToken.Value = this.AuthorizationSecret;
+					this.OAuthAuthorizationSecToken.Value = this.AuthorizationSecret;
 
-					OAuth10ConsumerWarning.Visible = Global.PendingOAuthAuthorization.IsUnsafeRequest;
+					this.OAuth10ConsumerWarning.Visible = Global.PendingOAuthAuthorization.IsUnsafeRequest;
 				}
 			}
 		}
 
 		protected void allowAccessButton_Click(object sender, EventArgs e) {
-			if (this.AuthorizationSecret != OAuthAuthorizationSecToken.Value) {
+			if (this.AuthorizationSecret != this.OAuthAuthorizationSecToken.Value) {
 				throw new ArgumentException(); // probably someone trying to hack in.
 			}
 			this.AuthorizationSecret = null; // clear one time use secret
@@ -60,10 +60,10 @@
 				sp.Channel.Send(response);
 			} else {
 				if (pending.IsUnsafeRequest) {
-					verifierMultiView.ActiveViewIndex = 1;
+					this.verifierMultiView.ActiveViewIndex = 1;
 				} else {
 					string verifier = ServiceProvider.CreateVerificationCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 10);
-					verificationCodeLabel.Text = verifier;
+					this.verificationCodeLabel.Text = verifier;
 					ITokenContainingMessage requestTokenMessage = pending;
 					var requestToken = Global.TokenManager.GetRequestToken(requestTokenMessage.Token);
 					requestToken.VerificationCode = verifier;
@@ -74,7 +74,7 @@
 
 		protected void denyAccessButton_Click(object sender, EventArgs e) {
 			// erase the request token.
-			multiView.ActiveViewIndex = 2;
+			this.multiView.ActiveViewIndex = 2;
 		}
 	}
 }

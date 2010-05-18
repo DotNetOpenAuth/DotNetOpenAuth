@@ -15,14 +15,14 @@
 	public partial class SignInWithTwitter : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
 			if (TwitterConsumer.IsTwitterConsumerConfigured) {
-				MultiView1.ActiveViewIndex = 1;
+				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
 					string screenName;
 					int userId;
 					if (TwitterConsumer.TryFinishSignInWithTwitter(out screenName, out userId)) {
-						loggedInPanel.Visible = true;
-						loggedInName.Text = screenName;
+						this.loggedInPanel.Visible = true;
+						this.loggedInName.Text = screenName;
 
 						// In a real app, the Twitter username would likely be used
 						// to log the user into the application.
