@@ -978,7 +978,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(message != null);
 
 			if (Logger.Channel.IsInfoEnabled) {
-				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
+				var messageAccessor = this.MessageDescriptions.GetAccessor(message, true);
 				Logger.Channel.InfoFormat(
 					"Processing incoming {0} ({1}) message:{2}{3}",
 					message.GetType().Name,
