@@ -168,7 +168,6 @@ http://opensource.org/licenses/ms-pl.html
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -197,7 +196,6 @@ http://opensource.org/licenses/ms-pl.html
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions">
-      <HintPath>..\..\lib\System.Web.Abstractions.dll</HintPath>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Web.Extensions">
@@ -208,7 +206,6 @@ http://opensource.org/licenses/ms-pl.html
     </Reference>
     <Reference Include="System.Web.Mobile" Condition=" '$(ClrVersion)' != '4' " />
     <Reference Include="System.Web.Routing">
-      <HintPath>..\..\lib\System.Web.Routing.dll</HintPath>
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xaml" Condition=" '$(ClrVersion)' == '4' " />
