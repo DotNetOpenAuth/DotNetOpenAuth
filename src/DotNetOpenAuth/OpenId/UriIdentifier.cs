@@ -616,6 +616,21 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			/// <summary>
+			/// Returns a hash code for this instance.
+			/// </summary>
+			/// <returns>
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+			/// </returns>
+			public override int GetHashCode() {
+				int hashCode = 0;
+				hashCode += StringComparer.OrdinalIgnoreCase.GetHashCode(this.Scheme);
+				hashCode += StringComparer.OrdinalIgnoreCase.GetHashCode(this.Authority);
+				hashCode += StringComparer.Ordinal.GetHashCode(this.Path);
+				hashCode += StringComparer.Ordinal.GetHashCode(this.Query);
+				return hashCode;
+			}
+
+			/// <summary>
 			/// Normalizes the characters that are escaped in the given URI path.
 			/// </summary>
 			/// <param name="path">The path to normalize.</param>
