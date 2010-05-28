@@ -298,6 +298,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="Mvc\OpenIdHelper.cs" />
     <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
