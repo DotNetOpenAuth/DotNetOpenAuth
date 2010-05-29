@@ -760,7 +760,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="RequestCore"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCore"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
 		protected virtual HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {

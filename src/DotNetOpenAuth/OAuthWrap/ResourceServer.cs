@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 				};
 
 				var authenticate = new StringBuilder();
-				authenticate.Append("Token ");
+				authenticate.Append(Protocol.HttpAuthorizationScheme + " ");
 				authenticate.AppendFormat("realm='{0}'", "Service");
 				authenticate.Append(",");
 				authenticate.AppendFormat("error=\"{0}\"", ex.Message);
