@@ -27,24 +27,14 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// Reads in a client's request for the Authorization Server to obtain permission from
 		/// the user to authorize the Client's access of some protected resource(s).
 		/// </summary>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		/// <remarks>
-		/// Requires HttpContext.Current.
-		/// </remarks>
-		public WebAppRequest ReadAuthorizationRequest() {
-			return this.ReadAuthorizationRequest(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Reads in a client's request for the Authorization Server to obtain permission from
-		/// the user to authorize the Client's access of some protected resource(s).
-		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public WebAppRequest ReadAuthorizationRequest(HttpRequestInfo request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+		public WebAppRequest ReadAuthorizationRequest(HttpRequestInfo request = null) {
+			if (request == null) {
+				request = this.Channel.GetRequestFromContext();
+			}
+
 			WebAppRequest message;
 			this.Channel.TryReadFromRequest(request, out message);
 			return message;
@@ -64,6 +54,27 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 			var response = this.PrepareRejectAuthorizationRequest(authorizationRequest, callback);
 			this.Channel.Send(response);
+		}
+
+		public bool TryPrepareAccessTokenResponse(out IDirectResponseProtocolMessage response)
+		{
+			return this.TryPrepareAccessTokenResponse(this.Channel.GetRequestFromContext(), out response);
+		}
+
+
+		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response)
+		{
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
+
+			var request = ReadAccessTokenRequest(httpRequestInfo);
+			if (request != null)
+			{
+				response = PrepareAccessTokenResponse(request);
+				return true;
+			}
+
+			response = null;
+			return false;
 		}
 
 		internal WebAppFailedResponse PrepareRejectAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
@@ -91,6 +102,24 @@ namespace DotNetOpenAuth.OAuthWrap {
 				VerificationCode = OAuth.ServiceProvider.CreateVerificationCode(client.VerificationCodeFormat, client.VerificationCodeLength),
 			};
 
+			return response;
+		}
+
+		internal WebAppAccessTokenRequest ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
+			if (requestInfo == null) {
+				requestInfo = this.Channel.GetRequestFromContext();
+			}
+
+			WebAppAccessTokenRequest request;
+			this.Channel.TryReadFromRequest(requestInfo, out request);
+			return request;
+		}
+
+		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(WebAppAccessTokenRequest request) {
+			Contract.Requires<ArgumentNullException>(request != null, "request");
+			var response = new AccessTokenSuccessResponse(request) {
+				// TODO: code here to initialize the response
+			};
 			return response;
 		}
 

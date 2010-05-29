@@ -1,12 +1,12 @@
-﻿using System.Net;
-using DotNetOpenAuth.OAuthWrap;
-using OAuthServiceProvider.Code;
-
-namespace OAuthServiceProvider {
+﻿namespace OAuthServiceProvider {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Web;
+	using Code;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap;
 
 	/// <summary>
 	/// Summary description for OAuth2
@@ -17,19 +17,24 @@ namespace OAuthServiceProvider {
 		/// </summary>
 		/// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to the intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
 		public void ProcessRequest(HttpContext context) {
-			var request = Global.AuthorizationServer.ReadAuthorizationRequest();
-			if (request == null) {
-				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
-			}
+			IDirectResponseProtocolMessage response;
+			if (Global.AuthorizationServer.TryPrepareAccessTokenResponse(out response)) {
+				Global.AuthorizationServer.Channel.Send(response);
+			} else {
+				var request = Global.AuthorizationServer.ReadAuthorizationRequest();
+				if (request == null) {
+					throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
+				}
 
-			// This sample doesn't implement support for immediate mode.
-			if (!request.IsUserInteractionAllowed) {
-				Global.AuthorizationServer.RejectAuthorizationRequest(request);
-			}
+				// This sample doesn't implement support for immediate mode.
+				if (!request.IsUserInteractionAllowed) {
+					Global.AuthorizationServer.RejectAuthorizationRequest(request);
+				}
 
-			// Redirect the user to a page that requires the user to be logged in.
-			Global.PendingOAuth2Authorization = request;
-			context.Response.Redirect("~/Members/Authorize2.aspx");
+				// Redirect the user to a page that requires the user to be logged in.
+				Global.PendingOAuth2Authorization = request;
+				context.Response.Redirect("~/Members/Authorize2.aspx");
+			}
 		}
 
 		/// <summary>
