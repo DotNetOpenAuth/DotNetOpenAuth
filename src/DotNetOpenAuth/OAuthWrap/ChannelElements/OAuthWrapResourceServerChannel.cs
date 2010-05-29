@@ -10,10 +10,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	/// <summary>
 	/// The channel for the OAuth WRAP protocol.
@@ -26,45 +28,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>
-		/// A character array containing just the = character.
-		/// </summary>
-		private static readonly char[] EqualsArray = new char[] { '=' };
-
-		/// <summary>
-		/// A character array containing just the , character.
-		/// </summary>
-		private static readonly char[] CommaArray = new char[] { ',' };
-
-		/// <summary>
-		/// A character array containing just the " character.
-		/// </summary>
-		private static readonly char[] QuoteArray = new char[] { '"' };
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthWrapResourceServerChannel"/> class.
 		/// </summary>
 		protected internal OAuthWrapResourceServerChannel()
 			: base(MessageTypes, Versions) {
 			// TODO: add signing (authenticated request) binding element.
-		}
-
-		private IEnumerable<KeyValuePair<string, string>> ParseAuthorizationHeader(string authorizationHeader) {
-			const string Prefix = Protocol.HttpAuthorizationScheme + " ";
-			if (authorizationHeader != null) {
-				string[] authorizationSections = authorizationHeader.Split(';'); // TODO: is this the right delimiter?
-				foreach (string authorization in authorizationSections) {
-					if (authorizationHeader.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase)) {
-						string data = authorizationHeader.Substring(Prefix.Length);
-						return from element in data.Split(CommaArray)
-							   let parts = element.Split(EqualsArray, 2)
-							   let key = Uri.UnescapeDataString(parts[0])
-							   let value = Uri.UnescapeDataString(parts[1].Trim(QuoteArray))
-							   select new KeyValuePair<string, string>(key, value);
-					}
-				}
-			}
-
-			return Enumerable.Empty<KeyValuePair<string, string>>();
 		}
 
 		/// <summary>
@@ -75,12 +43,42 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			var fields = new Dictionary<string, string>();
-
 			// First search the Authorization header.
-			var data = this.ParseAuthorizationHeader(request.Headers[HttpRequestHeader.Authorization])
-				.ToDictionary(pair => pair.Key, pair => pair.Value);
-			if (data.Count > 0) {
+			var fields = MessagingUtilities.ParseAuthorizationHeader(
+				Protocol.HttpAuthorizationScheme,
+				request.Headers[HttpRequestHeader.Authorization]).ToDictionary();
+
+			// Failing that, try the query string (for GET or POST or any other method)
+			if (fields.Count == 0) {
+				if (request.QueryStringBeforeRewriting["oauth_token"] != null) {
+					// We're only interested in the oauth_token parameter -- not the others that can appear in an Authorization header.
+					// Note that we intentionally change the name of the key here
+					// because depending on the method used to obtain the token, the token's key changes
+					// but we need to consolidate to one name so it works with the rest of the system.
+					fields.Add("token", request.QueryStringBeforeRewriting["oauth_token"]);
+				}
+			}
+
+			// Failing that, scan the entity
+			if (fields.Count == 0) {
+				// The spec calls out that this is allowed only for these three HTTP methods.
+				if (request.HttpMethod == "POST" || request.HttpMethod == "DELETE" || request.HttpMethod == "PUT") {
+					if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
+						var contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
+						if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
+							if (request.Form["oauth_token"] != null) {
+								// We're only interested in the oauth_token parameter -- not the others that can appear in an Authorization header.
+								// Note that we intentionally change the name of the key here
+								// because depending on the method used to obtain the token, the token's key changes
+								// but we need to consolidate to one name so it works with the rest of the system.
+								fields.Add("token", request.Form["oauth_token"]);
+							}
+						}
+					}
+				}
+			}
+
+			if (fields.Count > 0) {
 				MessageReceivingEndpoint recipient;
 				try {
 					recipient = request.GetRecipient();
@@ -97,7 +95,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				return message;
 			}
 
-			return base.ReadFromRequestCore(request);
+			return null;
 		}
 
 		/// <summary>
@@ -126,8 +124,23 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			throw new NotImplementedException();
-		}
+			var webResponse = new OutgoingWebResponse();
 
+			// The only direct response from a resource server is a 401 Unauthorized error.
+			var unauthorizedResponse = response as UnauthorizedResponse;
+			ErrorUtilities.VerifyInternal(unauthorizedResponse != null, "Only unauthorized responses are expected.");
+
+			// First initialize based on the specifics within the message.
+			var httpResponse = response as IHttpDirectResponse;
+			webResponse.Status = httpResponse != null ? httpResponse.HttpStatusCode : HttpStatusCode.Unauthorized;
+			foreach (string headerName in httpResponse.Headers) {
+				webResponse.Headers.Add(headerName);
+			}
+
+			// Now serialize all the message parts into the WWW-Authenticate header.
+			var fields = this.MessageDescriptions.GetAccessor(response);
+			webResponse.Headers[HttpResponseHeader.WwwAuthenticate] = MessagingUtilities.AssembleAuthorizationHeader(Protocol.HttpAuthorizationScheme, fields);
+			return webResponse;
+		}
 	}
 }

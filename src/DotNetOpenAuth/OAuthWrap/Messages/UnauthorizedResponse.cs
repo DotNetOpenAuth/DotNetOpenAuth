@@ -5,7 +5,10 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
+	using System;
+	using System.Diagnostics.Contracts;
 	using System.Net;
+	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -19,6 +22,18 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="request">The request.</param>
 		internal UnauthorizedResponse(IDirectedProtocolMessage request)
 			: base(request) {
+			this.Realm = "Service";
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UnauthorizedResponse"/> class.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="exception">The exception.</param>
+		internal UnauthorizedResponse(IDirectedProtocolMessage request, ProtocolException exception)
+			: this(request) {
+			Contract.Requires<ArgumentNullException>(exception != null, "exception");
+			this.ErrorMessage = exception.Message;
 		}
 
 		#region IHttpDirectResponse Members
@@ -43,5 +58,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		#endregion
+
+		[MessagePart("error")]
+		internal string ErrorMessage { get; set; }
+
+		[MessagePart("realm")]
+		internal string Realm { get; set; }
 	}
 }

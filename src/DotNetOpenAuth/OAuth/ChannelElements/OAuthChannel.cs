@@ -116,34 +116,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="request">The HTTP request to search.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			var fields = new Dictionary<string, string>();
-
 			// First search the Authorization header.
 			string authorization = request.Headers[HttpRequestHeader.Authorization];
-			if (authorization != null) {
-				string[] authorizationSections = authorization.Split(';'); // TODO: is this the right delimiter?
-				string oauthPrefix = Protocol.AuthorizationHeaderScheme + " ";
-
-				// The Authorization header may have multiple uses, and OAuth may be just one of them.
-				// Go through each one looking for an OAuth one.
-				foreach (string auth in authorizationSections) {
-					string trimmedAuth = auth.Trim();
-					if (trimmedAuth.StartsWith(oauthPrefix, StringComparison.Ordinal)) {
-						// We found an Authorization: OAuth header.  
-						// Parse it according to the rules in section 5.4.1 of the V1.0 spec.
-						foreach (string stringPair in trimmedAuth.Substring(oauthPrefix.Length).Split(',')) {
-							string[] keyValueStringPair = stringPair.Trim().Split('=');
-							string key = Uri.UnescapeDataString(keyValueStringPair[0]);
-							string value = Uri.UnescapeDataString(keyValueStringPair[1].Trim('"'));
-							fields.Add(key, value);
-						}
-					}
-				}
-			}
+			var fields = MessagingUtilities.ParseAuthorizationHeader(Protocol.AuthorizationHeaderScheme, authorization).ToDictionary();
 
 			// Scrape the entity
 			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
-				ContentType contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
+				var contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
 				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
 					foreach (string key in request.Form) {
 						if (key != null) {
@@ -344,20 +323,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			httpRequest = (HttpWebRequest)WebRequest.Create(recipientBuilder.Uri);
 			httpRequest.Method = GetHttpMethod(requestMessage);
 
-			StringBuilder authorization = new StringBuilder();
-			authorization.Append(Protocol.AuthorizationHeaderScheme);
-			authorization.Append(" ");
-			foreach (var pair in fields) {
-				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
-				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
-				authorization.Append(key);
-				authorization.Append("=\"");
-				authorization.Append(value);
-				authorization.Append("\",");
-			}
-			authorization.Length--; // remove trailing comma
-
-			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
+			httpRequest.Headers.Add(HttpRequestHeader.Authorization, MessagingUtilities.AssembleAuthorizationHeader(Protocol.AuthorizationHeaderScheme, fields));
 
 			if (hasEntity) {
 				// WARNING: We only set up the request stream for the caller if there is

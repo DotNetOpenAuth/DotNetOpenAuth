@@ -75,20 +75,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 					throw ErrorUtilities.ThrowProtocol("Missing access token.");
 				}
 			} catch (ProtocolException ex) {
-				var unauthorizedError = new OutgoingWebResponse {
-					Status = HttpStatusCode.Unauthorized,
-				};
-
-				var authenticate = new StringBuilder();
-				authenticate.Append(Protocol.HttpAuthorizationScheme + " ");
-				authenticate.AppendFormat("realm='{0}'", "Service");
-				authenticate.Append(",");
-				authenticate.AppendFormat("error=\"{0}\"", ex.Message);
-				unauthorizedError.Headers.Add(HttpResponseHeader.WwwAuthenticate, authenticate.ToString());
+				var response = new UnauthorizedResponse(null, ex);
 
 				username = null;
 				scope = null;
-				return unauthorizedError;
+				return this.Channel.PrepareResponse(response);
 			}
 		}
 	}

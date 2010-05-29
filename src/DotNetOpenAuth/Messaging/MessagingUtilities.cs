@@ -59,6 +59,21 @@ namespace DotNetOpenAuth.Messaging {
 		internal const string AlphaNumericNoLookAlikes = "23456789abcdefghjkmnpqrstwxyzABCDEFGHJKMNPQRSTWXYZ";
 
 		/// <summary>
+		/// A character array containing just the = character.
+		/// </summary>
+		private static readonly char[] EqualsArray = new char[] { '=' };
+
+		/// <summary>
+		/// A character array containing just the , character.
+		/// </summary>
+		private static readonly char[] CommaArray = new char[] { ',' };
+
+		/// <summary>
+		/// A character array containing just the " character.
+		/// </summary>
+		private static readonly char[] QuoteArray = new char[] { '"' };
+
+		/// <summary>
 		/// The set of characters that are unreserved in RFC 2396 but are NOT unreserved in RFC 3986.
 		/// </summary>
 		private static readonly string[] UriRfc3986CharsToEscape = new[] { "!", "*", "'", "(", ")" };
@@ -267,6 +282,61 @@ namespace DotNetOpenAuth.Messaging {
 					requestStream.Dispose();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Assembles the content of the HTTP Authorization or WWW-Authenticate header.
+		/// </summary>
+		/// <param name="scheme">The scheme.</param>
+		/// <param name="fields">The fields to include.</param>
+		/// <returns>A value prepared for an HTTP header.</returns>
+		internal static string AssembleAuthorizationHeader(string scheme, IEnumerable<KeyValuePair<string, string>> fields) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(scheme));
+			Contract.Requires<ArgumentNullException>(fields != null, "fields");
+
+			var authorization = new StringBuilder();
+			authorization.Append(scheme);
+			authorization.Append(" ");
+			foreach (var pair in fields) {
+				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
+				authorization.Append(key);
+				authorization.Append("=\"");
+				authorization.Append(value);
+				authorization.Append("\",");
+			}
+			authorization.Length--; // remove trailing comma
+			return authorization.ToString();
+		}
+
+		/// <summary>
+		/// Parses the authorization header.
+		/// </summary>
+		/// <param name="scheme">The scheme.  Must not be null or empty.</param>
+		/// <param name="authorizationHeader">The authorization header.  May be null or empty.</param>
+		/// <returns>A sequence of key=value pairs discovered in the header.  Never null, but may be empty.</returns>
+		internal static IEnumerable<KeyValuePair<string, string>> ParseAuthorizationHeader(string scheme, string authorizationHeader) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(scheme));
+			Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, string>>>() != null);
+
+			string prefix = scheme + " ";
+			if (authorizationHeader != null) {
+				// The authorization header may have multiple sections.  Look for the appropriate one.
+				string[] authorizationSections = authorizationHeader.Split(';'); // TODO: is this the right delimiter?
+				foreach (string authorization in authorizationSections) {
+					string trimmedAuth = authorization.Trim();
+					if (trimmedAuth.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
+						string data = trimmedAuth.Substring(prefix.Length);
+						return from element in data.Split(CommaArray)
+							   let parts = element.Split(EqualsArray, 2)
+							   let key = Uri.UnescapeDataString(parts[0])
+							   let value = Uri.UnescapeDataString(parts[1].Trim(QuoteArray))
+							   select new KeyValuePair<string, string>(key, value);
+					}
+				}
+			}
+
+			return Enumerable.Empty<KeyValuePair<string, string>>();
 		}
 
 		/// <summary>
@@ -764,6 +834,19 @@ namespace DotNetOpenAuth.Messaging {
 					messageDictionary.Add(pair);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Collects a sequence of key=value pairs into a dictionary.
+		/// </summary>
+		/// <typeparam name="TKey">The type of the key.</typeparam>
+		/// <typeparam name="TValue">The type of the value.</typeparam>
+		/// <param name="sequence">The sequence.</param>
+		/// <returns>A dictionary.</returns>
+		internal static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> sequence)
+		{
+			Contract.Requires<ArgumentNullException>(sequence != null, "sequence");
+			return sequence.ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
 
 		/// <summary>
