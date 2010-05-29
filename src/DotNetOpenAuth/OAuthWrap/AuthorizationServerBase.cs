@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			try {
 				return this.AuthorizationServer.GetClient(clientIdentifier);
 			} catch (KeyNotFoundException ex) {
-				throw ErrorUtilities.Wrap(ex, DotNetOpenAuth.OAuth.OAuthStrings.ConsumerOrTokenSecretNotFound);
+				throw ErrorUtilities.Wrap(ex, OAuth.OAuthStrings.ConsumerOrTokenSecretNotFound);
 			}
 		}
 	}

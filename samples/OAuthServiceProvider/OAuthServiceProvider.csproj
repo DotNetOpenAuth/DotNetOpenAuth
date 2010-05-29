@@ -59,6 +59,7 @@
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
     <Content Include="Members\Authorize.aspx" />
+    <Content Include="Members\Authorize2.aspx" />
     <Content Include="Members\AuthorizedConsumers.aspx" />
     <Content Include="Members\Logoff.aspx" />
     <Content Include="TracePage.aspx" />
@@ -66,8 +67,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\DatabaseNonceStore.cs" />
+    <Compile Include="Code\OAuth2AuthorizationServer.cs" />
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Members\Authorize2.aspx.cs">
+      <DependentUpon>Authorize2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Members\Authorize2.aspx.designer.cs">
+      <DependentUpon>Authorize2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="OAuth2.ashx.cs">
+      <DependentUpon>OAuth2.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataApi.cs">
@@ -133,6 +145,7 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Members\Web.config" />
+    <Content Include="OAuth2.ashx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\DataClasses.dbml.layout">

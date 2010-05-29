@@ -64,5 +64,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 		[MessagePart("realm")]
 		internal string Realm { get; set; }
+
+		[MessagePart("scope")]
+		internal string Scope { get; set; }
+
+		[MessagePart("algorithms")]
+		internal string Algorithms { get; set; }
+
+		[MessagePart("user-uri")]
+		internal Uri UserEndpoint { get; set; }
+
+		[MessagePart("token-uri")]
+		internal Uri TokenEndpoint { get; set; }
 	}
 }

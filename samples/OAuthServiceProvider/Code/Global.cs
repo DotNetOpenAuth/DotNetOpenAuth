@@ -5,6 +5,8 @@
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	/// <summary>
 	/// The web application global events and properties.
@@ -49,6 +51,14 @@
 			get { return HttpContext.Current.Session["authrequest"] as UserAuthorizationRequest; }
 			set { HttpContext.Current.Session["authrequest"] = value; }
 		}
+
+		public static WebAppRequest PendingOAuth2Authorization
+		{
+			get { return HttpContext.Current.Session["authrequest"] as WebAppRequest; }
+			set { HttpContext.Current.Session["authrequest"] = value; }
+		}
+
+		public static WebAppAuthorizationServer AuthorizationServer = new WebAppAuthorizationServer(new OAuth2AuthorizationServer());
 
 		private static DataClassesDataContext dataContextSimple {
 			get {

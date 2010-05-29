@@ -1,8 +1,9 @@
-﻿<%@ Page Title="Authorize Access" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" Inherits="OAuthServiceProvider.Authorize" Codebehind="Authorize.aspx.cs" %>
+﻿<%@ Page Title="Authorize Access" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"
+	CodeBehind="Authorize2.aspx.cs" Inherits="OAuthServiceProvider.Members.Authorize2" %>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
+<asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="server">
 	<asp:MultiView runat="server" ActiveViewIndex="0" ID="multiView">
-		<asp:View runat="server">
+		<asp:View ID="AuthRequest" runat="server">
 			<div style="background-color: Yellow">
 				<b>Warning</b>: Never give your login credentials to another web site or application.
 			</div>
@@ -16,18 +17,15 @@
 				<asp:Button ID="denyAccessButton" runat="server" Text="No" OnClick="denyAccessButton_Click" />
 			</div>
 			<div id="javascriptDisabled">
-				<b>Javascript appears to be disabled in your browser. </b>This page requires Javascript
+				<b>JavaScript appears to be disabled in your browser. </b>This page requires Javascript
 				to be enabled to better protect your security.
 			</div>
 			<p>If you grant access now, you can revoke it at any time by returning to this page.
 			</p>
-			<asp:Panel runat="server" BackColor="Red" ForeColor="White" Font-Bold="true" Visible="false" ID="OAuth10ConsumerWarning">
-				This website is registered with service_PROVIDER_DOMAIN_NAME to make authorization requests, but has not been configured to send requests securely. If you grant access but you did not initiate this request at consumer_DOMAIN_NAME, it may be possible for other users of consumer_DOMAIN_NAME to access your data. We recommend you deny access unless you are certain that you initiated this request directly with consumer_DOMAIN_NAME.
-			</asp:Panel>
 			<script language="javascript" type="text/javascript">
 				//<![CDATA[
-				// we use HTML to hide the action buttons and Javascript to show them
-				// to protect against click-jacking in an iframe whose javascript is disabled.
+				// we use HTML to hide the action buttons and JavaScript to show them
+				// to protect against click-jacking in an iframe whose JavaScript is disabled.
 				document.getElementById('responseButtonsDiv').style.display = 'block';
 				document.getElementById('javascriptDisabled').style.display = 'none';
 
@@ -39,20 +37,17 @@
 				//]]>
 			</script>
 		</asp:View>
-		<asp:View runat="server">
+		<asp:View ID="AuthGranted" runat="server">
 			<p>Authorization has been granted.</p>
 			<asp:MultiView runat="server" ID="verifierMultiView" ActiveViewIndex="0">
-				<asp:View runat="server">
+				<asp:View ID="View3" runat="server">
 					<p>You must enter this verification code at the Consumer: <asp:Label runat="server"
 						ID="verificationCodeLabel" /> </p>
 				</asp:View>
-				<asp:View ID="View1" runat="server">
+				<asp:View ID="View4" runat="server">
 					<p>You may now close this window and return to the Consumer. </p>
 				</asp:View>
 			</asp:MultiView>
-		</asp:View>
-		<asp:View runat="server">
-			<p>Authorization has been denied. You're free to do whatever now. </p>
 		</asp:View>
 	</asp:MultiView>
 </asp:Content>

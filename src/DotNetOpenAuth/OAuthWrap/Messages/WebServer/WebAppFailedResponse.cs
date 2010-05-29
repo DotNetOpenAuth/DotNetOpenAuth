@@ -33,6 +33,18 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="WebAppFailedResponse"/> class.
+		/// </summary>
+		/// <param name="clientCallback">The client callback.</param>
+		/// <param name="request">The request.</param>
+		internal WebAppFailedResponse(Uri clientCallback, WebAppRequest request)
+			: this(clientCallback, ((IMessage)request).Version) {
+			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
+			Contract.Requires<ArgumentNullException>(request != null, "request");
+			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
+		}
+
+		/// <summary>
 		/// Gets or sets the state of the client that was supplied to the Authorization Server.
 		/// </summary>
 		/// <value>

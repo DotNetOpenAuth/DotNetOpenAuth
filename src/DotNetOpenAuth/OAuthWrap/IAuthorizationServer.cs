@@ -4,11 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Diagnostics.Contracts;
-
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -24,6 +23,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		}
 
 		IConsumerDescription IAuthorizationServer.GetClient(string clientIdentifier) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
 			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
 			throw new NotImplementedException();
 		}

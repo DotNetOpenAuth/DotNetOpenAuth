@@ -27,6 +27,18 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="WebAppSuccessResponse"/> class.
+		/// </summary>
+		/// <param name="clientCallback">The client callback.</param>
+		/// <param name="request">The request.</param>
+		internal WebAppSuccessResponse(Uri clientCallback, WebAppRequest request)
+			: this(clientCallback, ((IMessage)request).Version) {
+			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
+			Contract.Requires<ArgumentNullException>(request != null, "request");
+			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
+		}
+
+		/// <summary>
 		/// Gets or sets some state as provided by the client in the authorization request.
 		/// </summary>
 		/// <value>An opaque value defined by the client.</value>
@@ -34,7 +46,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// REQUIRED if the Client sent the value in the <see cref="WebAppRequest"/>.
 		/// </remarks>
 		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
-		public string ClientState { get; set; }
+		string IMessageWithClientState.ClientState { get; set; }
 
 		/// <summary>
 		/// Gets or sets the verification code.
