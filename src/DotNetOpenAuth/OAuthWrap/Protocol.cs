@@ -24,9 +24,9 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// </summary>
 	internal class Protocol {
 		/// <summary>
-		/// The HTTP authorization scheme "WRAP";
+		/// The HTTP authorization scheme "Token";
 		/// </summary>
-		internal const string HttpAuthorizationScheme = "WRAP";
+		internal const string HttpAuthorizationScheme = "Token";
 
 		/// <summary>
 		/// The format of the HTTP Authorization header value that authorizes OAuth WRAP requests.

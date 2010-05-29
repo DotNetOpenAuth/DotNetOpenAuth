@@ -214,7 +214,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets or sets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
-		protected IMessageFactory MessageFactory {
+		protected virtual IMessageFactory MessageFactory {
 			get { return this.messageTypeProvider; }
 			set { this.messageTypeProvider = value; }
 		}

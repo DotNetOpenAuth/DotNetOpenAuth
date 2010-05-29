@@ -14,6 +14,10 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	public class WebAppAuthorizationServer : AuthorizationServerBase {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebAppAuthorizationServer"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
 		public WebAppAuthorizationServer(IAuthorizationServer authorizationServer)
 			: base(authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
@@ -67,7 +71,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return this.Channel.PrepareResponse(response);
 		}
 
-		public OutgoingWebResponse RejectAuthorizationRequest(WebAppRequest authorizationRequest) {
+		public OutgoingWebResponse RejectAuthorizationRequest(WebAppRequest authorizationRequest, bool a=false) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 

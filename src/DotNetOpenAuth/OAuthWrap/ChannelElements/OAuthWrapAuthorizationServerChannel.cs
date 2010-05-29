@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthWrapChannel.cs" company="Andrew Arnott">
+// <copyright file="OAuthWrapAuthorizationServerChannel.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -18,31 +18,41 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// <summary>
 	/// The channel for the OAuth WRAP protocol.
 	/// </summary>
-	internal class OAuthWrapChannel : Channel {
+	internal class OAuthWrapAuthorizationServerChannel : StandardMessageFactoryChannel {
+		private static readonly Type[] MessageTypes = new Type[] {
+				typeof(Messages.RefreshAccessTokenRequest),
+				typeof(Messages.AccessTokenSuccessResponse),
+				typeof(Messages.AccessTokenFailedResponse),
+				typeof(Messages.UnauthorizedResponse),
+				typeof(Messages.AssertionRequest),
+				typeof(Messages.AssertionSuccessResponse),
+				typeof(Messages.ClientCredentialsRequest),
+				typeof(Messages.RichAppRequest),
+				typeof(Messages.RichAppResponse),
+				typeof(Messages.RichAppAccessTokenRequest),
+				typeof(Messages.RichAppAccessTokenSuccessResponse),
+				typeof(Messages.RichAppAccessTokenFailedResponse),
+				typeof(Messages.UserNamePasswordRequest),
+				typeof(Messages.UserNamePasswordSuccessResponse),
+				typeof(Messages.UserNamePasswordVerificationResponse),
+				typeof(Messages.UserNamePasswordFailedResponse),
+				typeof(Messages.UsernamePasswordCaptchaResponse),
+				typeof(Messages.WebAppRequest),
+				typeof(Messages.WebAppSuccessResponse),
+				typeof(Messages.WebAppFailedResponse),
+				typeof(Messages.WebAppAccessTokenRequest),
+				typeof(Messages.UserAgentRequest),
+				typeof(Messages.UserAgentSuccessResponse),
+				typeof(Messages.UserAgentFailedResponse),
+			};
+
+		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthWrapChannel"/> class.
 		/// </summary>
-		protected internal OAuthWrapChannel()
-			: base(new StandardMessageFactory()) {
-			((StandardMessageFactory)this.MessageFactory).AddMessageTypes(GetWrapMessageDescriptions(this.MessageDescriptions));
-		}
-
-		/// <summary>
-		/// Gets or sets the message descriptions.
-		/// </summary>
-		internal override MessageDescriptionCollection MessageDescriptions {
-			get {
-				return base.MessageDescriptions;
-			}
-
-			set {
-				base.MessageDescriptions = value;
-
-				// We must reinitialize the message factory so it can use the new message descriptions.
-				var factory = new StandardMessageFactory();
-				factory.AddMessageTypes(GetWrapMessageDescriptions(value));
-				this.MessageFactory = factory;
-			}
+		protected internal OAuthWrapAuthorizationServerChannel()
+			: base(MessageTypes, Versions) {
 		}
 
 		/// <summary>
@@ -102,55 +112,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Gets the message types that come standard with OAuth WRAP.
-		/// </summary>
-		/// <param name="descriptionsCache">The descriptions cache from which to draw.</param>
-		/// <returns>A collection of WRAP message types.</returns>
-		private static IEnumerable<MessageDescription> GetWrapMessageDescriptions(MessageDescriptionCollection descriptionsCache) {
-			Contract.Requires<ArgumentNullException>(descriptionsCache != null);
-			Contract.Ensures(Contract.Result<IEnumerable<MessageDescription>>() != null);
-
-			var messageTypes = new Type[] {
-				typeof(Messages.RefreshAccessTokenRequest),
-				typeof(Messages.AccessTokenSuccessResponse),
-				typeof(Messages.AccessTokenFailedResponse),
-				typeof(Messages.UnauthorizedResponse),
-				typeof(Messages.AssertionRequest),
-				typeof(Messages.AssertionSuccessResponse),
-				typeof(Messages.ClientCredentialsRequest),
-				typeof(Messages.RichAppRequest),
-				typeof(Messages.RichAppResponse),
-				typeof(Messages.RichAppAccessTokenRequest),
-				typeof(Messages.RichAppAccessTokenSuccessResponse),
-				typeof(Messages.RichAppAccessTokenFailedResponse),
-				typeof(Messages.UserNamePasswordRequest),
-				typeof(Messages.UserNamePasswordSuccessResponse),
-				typeof(Messages.UserNamePasswordVerificationResponse),
-				typeof(Messages.UserNamePasswordFailedResponse),
-				typeof(Messages.UsernamePasswordCaptchaResponse),
-				typeof(Messages.WebAppRequest),
-				typeof(Messages.WebAppSuccessResponse),
-				typeof(Messages.WebAppFailedResponse),
-				typeof(Messages.WebAppAccessTokenRequest),
-				typeof(Messages.UserAgentRequest),
-				typeof(Messages.UserAgentSuccessResponse),
-				typeof(Messages.UserAgentFailedResponse),
-			};
-
-			// Get all the MessageDescription objects through the standard cache,
-			// so that perhaps it will be a quick lookup, or at least it will be
-			// stored there for a quick lookup later.
-			var messageDescriptions = new List<MessageDescription>(messageTypes.Length * Protocol.AllVersions.Count);
-			foreach (Protocol protocol in Protocol.AllVersions) {
-				foreach (Type messageType in messageTypes) {
-					messageDescriptions.Add(descriptionsCache.Get(messageType, protocol.Version));
-				}
-			}
-
-			return messageDescriptions;
 		}
 	}
 }

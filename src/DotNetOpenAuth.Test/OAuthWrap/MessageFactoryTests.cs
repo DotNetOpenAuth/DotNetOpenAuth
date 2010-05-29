@@ -20,14 +20,14 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 	/// </summary>
 	public class MessageFactoryTests : OAuthWrapTestBase {
 		private readonly MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
-		private OAuthWrapChannel channel;
+		private OAuthWrapAuthorizationServerChannel channel;
 		private IMessageFactory messageFactory;
 
 		public override void SetUp() {
 			base.SetUp();
 
-			this.channel = new OAuthWrapChannel();
-			this.messageFactory = OAuthWrapChannel_Accessor.AttachShadow(this.channel).MessageFactory;
+			this.channel = new OAuthWrapAuthorizationServerChannel();
+			this.messageFactory = OAuthWrapAuthorizationServerChannel_Accessor.AttachShadow(this.channel).MessageFactory;
 		}
 
 		#region Refresh Access Token messages
