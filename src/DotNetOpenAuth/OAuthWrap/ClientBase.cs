@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		protected ClientBase(AuthorizationServerDescription authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			this.AuthorizationServer = authorizationServer;
-			this.Channel = new OAuthWrapAuthorizationServerChannel();
+			this.Channel = new OAuthWrapAuthorizationServerChannel(authorizationServer);
 		}
 
 		/// <summary>

@@ -29,7 +29,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// The <paramref name="value"/> in string form, ready for message transport.
 		/// </returns>
 		public string Encode(object value) {
-			var timestamp = (DateTime) value;
+			if (value == null) {
+				return null;
+			}
+
+			var timestamp = (DateTime)value;
 			TimeSpan secondsSinceEpoch = timestamp - Epoch;
 			return secondsSinceEpoch.TotalSeconds.ToString(CultureInfo.InvariantCulture);
 		}
@@ -43,6 +47,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </returns>
 		/// <exception cref="FormatException">Thrown when the string value given cannot be decoded into the required object type.</exception>
 		public object Decode(string value) {
+			if (value == null) {
+				return null;
+			}
+
 			var secondsSinceEpoch = Convert.ToInt32(value, CultureInfo.InvariantCulture);
 			return Epoch.AddSeconds(secondsSinceEpoch);
 		}

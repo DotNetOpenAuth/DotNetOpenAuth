@@ -392,6 +392,64 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Computes the hash of a string.
+		/// </summary>
+		/// <param name="algorithm">The hash algorithm to use.</param>
+		/// <param name="value">The value to hash.</param>
+		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
+		/// <returns>A base64 encoded string.</returns>
+		internal static string ComputeHash(this HashAlgorithm algorithm, string value, Encoding encoding = null)
+		{
+			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
+			Contract.Requires<ArgumentNullException>(value != null, "value");
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			encoding = encoding ?? Encoding.UTF8;
+			byte[] bytesToHash = encoding.GetBytes(value);
+			byte[] hash = algorithm.ComputeHash(bytesToHash);
+			string base64Hash = Convert.ToBase64String(hash);
+			return base64Hash;
+		}
+
+		/// <summary>
+		/// Computes the hash of a sequence of key=value pairs.
+		/// </summary>
+		/// <param name="algorithm">The hash algorithm to use.</param>
+		/// <param name="data">The data to hash.</param>
+		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
+		/// <returns>A base64 encoded string.</returns>
+		internal static string ComputeHash(this HashAlgorithm algorithm, IDictionary<string, string> data, Encoding encoding = null)
+		{
+			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
+			Contract.Requires<ArgumentNullException>(data != null, "data");
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			// Assemble the dictionary to sign, taking care to remove the signature itself
+			// in order to accurately reproduce the original signature (which of course didn't include
+			// the signature).
+			// Also we need to sort the dictionary's keys so that we sign in the same order as we did
+			// the last time.
+			var sortedData = new SortedDictionary<string, string>(data, StringComparer.OrdinalIgnoreCase);
+			return ComputeHash(algorithm, sortedData, encoding);
+		}
+
+				/// <summary>
+		/// Computes the hash of a sequence of key=value pairs.
+		/// </summary>
+		/// <param name="algorithm">The hash algorithm to use.</param>
+		/// <param name="sortedData">The data to hash.</param>
+		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
+		/// <returns>A base64 encoded string.</returns>
+		internal static string ComputeHash(this HashAlgorithm algorithm, IEnumerable<KeyValuePair<string, string>> sortedData, Encoding encoding = null)
+		{
+			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
+			Contract.Requires<ArgumentNullException>(sortedData != null, "sortedData");
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			return ComputeHash(algorithm, CreateQueryString(sortedData), encoding);
+		}
+
+/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
 		/// <see cref="HttpResponse" />

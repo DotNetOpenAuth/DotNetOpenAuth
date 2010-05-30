@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using DotNetOpenAuth.Messaging.Bindings;
+
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
@@ -15,6 +17,10 @@ namespace DotNetOpenAuth.OAuthWrap {
 	[ContractClass(typeof(IAuthorizationServerContract))]
 	public interface IAuthorizationServer {
 		IConsumerDescription GetClient(string clientIdentifier);
+
+		byte[] Secret { get; }
+
+		INonceStore VerificationCodeNonceStore { get; }
 	}
 
 	[ContractClassFor(typeof(IAuthorizationServer))]
@@ -26,6 +32,20 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
 			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
 			throw new NotImplementedException();
+		}
+
+		byte[] IAuthorizationServer.Secret {
+			get {
+				Contract.Ensures(Contract.Result<byte[]>() != null);
+				throw new NotImplementedException();
+			}
+		}
+
+		INonceStore IAuthorizationServer.VerificationCodeNonceStore {
+			get {
+				Contract.Ensures(Contract.Result<INonceStore>() != null);
+				throw new NotImplementedException();
+			}
 		}
 	}
 

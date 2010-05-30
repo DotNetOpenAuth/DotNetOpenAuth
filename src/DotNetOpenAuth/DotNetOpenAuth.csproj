@@ -308,9 +308,12 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\StandardMessageFactory.cs" />
     <Compile Include="OAuthWrap\AuthorizationServerBase.cs" />
     <Compile Include="OAuthWrap\AuthorizationState.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\IAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapResourceServerChannel.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
     <Compile Include="OAuthWrap\ChannelElements\TimestampEncoder.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\VerificationCode.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\WebAppAccessTokenRequestVerifier.cs" />
     <Compile Include="OAuthWrap\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuthWrap\IAuthorizationServer.cs" />
     <Compile Include="OAuthWrap\IAuthorizationState.cs" />
@@ -320,6 +323,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\ClientCredentials\ClientCredentialsRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\IMessageWithClientState.cs" />
+    <Compile Include="OAuthWrap\Messages\IOAuthDirectResponseFormat.cs" />
     <Compile Include="OAuthWrap\Messages\RefreshAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\RichAppAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\RichAppRequest.cs" />
@@ -334,6 +338,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\UserAgent\UserAgentSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordCaptchaResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\ResponseFormat.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\ResponseFormatEncoder.cs" />
     <Compile Include="OAuthWrap\ResourceServer.cs" />
     <Compile Include="OAuthWrap\WebAppAuthorizationServer.cs" />
     <Compile Include="OAuthWrap\WrapUtilities.cs" />

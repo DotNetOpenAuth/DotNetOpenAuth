@@ -44,6 +44,21 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string state = "state";
 
 		/// <summary>
+		/// The "redirect_uri_mismatch" string.
+		/// </summary>
+		internal const string redirect_uri_mismatch = "redirect_uri_mismatch";
+
+		/// <summary>
+		/// The "bad_verification_code" string.
+		/// </summary>
+		internal const string bad_verification_code = "bad_verification_code";
+
+		/// <summary>
+		/// The "incorrect_client_credentials" string.
+		/// </summary>
+		internal const string incorrect_client_credentials = "incorrect_client_credentials";
+
+		/// <summary>
 		/// The "redirect_uri" string.
 		/// </summary>
 		internal const string redirect_uri = "redirect_uri";
@@ -218,6 +233,13 @@ namespace DotNetOpenAuth.OAuthWrap {
 				case ProtocolVersion.V20: return Protocol.V20;
 				default: throw new ArgumentOutOfRangeException("version");
 			}
+		}
+
+		internal static class ResponseFormats
+		{
+			internal const string Json = "json";
+			internal const string Xml = "xml";
+			internal const string Form = "form";
 		}
 	}
 }

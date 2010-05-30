@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using DotNetOpenAuth.OAuthWrap.ChannelElements;
+
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Net;
@@ -21,7 +23,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenSuccessResponse(IDirectedProtocolMessage request)
+		internal AccessTokenSuccessResponse(IAccessTokenRequest request)
 			: base(request) {
 		}
 

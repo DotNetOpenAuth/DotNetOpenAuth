@@ -5,7 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap.Messages {
-	using DotNetOpenAuth.Messaging;
+	using ChannelElements;
+	using Messaging;
 
 	/// <summary>
 	/// A response from the Authorization Server to the Client to indicate that a
@@ -20,7 +21,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenFailedResponse(IDirectedProtocolMessage request)
+		internal AccessTokenFailedResponse(IAccessTokenRequest request)
 			: base(request) {
 		}
 

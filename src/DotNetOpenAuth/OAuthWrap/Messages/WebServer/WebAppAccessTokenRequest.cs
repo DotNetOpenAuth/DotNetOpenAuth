@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
+
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Diagnostics.Contracts;
@@ -17,7 +19,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// Used by the Web App (and Rich App?) profiles.
 	/// </remarks>
-	internal class WebAppAccessTokenRequest : MessageBase {
+	internal class WebAppAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
@@ -50,7 +52,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <value>The client identifier.</value>
 		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
-		internal string ClientIdentifier { get; set; }
+		public string ClientIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the client secret.
@@ -87,7 +89,16 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
 		/// </remarks>
 		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
-		internal string SecretType { get; set;  }
+		internal string SecretType { get; set; }
+
+		public string Scope { get; internal set; }
+
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
+		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

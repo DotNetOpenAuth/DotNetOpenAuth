@@ -98,10 +98,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			}
 
 			var client = GetClient(authorizationRequest.ClientIdentifier);
-			var response = new WebAppSuccessResponse(callback, authorizationRequest) {
-				VerificationCode = OAuth.ServiceProvider.CreateVerificationCode(client.VerificationCodeFormat, client.VerificationCodeLength),
-			};
-
+			var response = new WebAppSuccessResponse(callback, authorizationRequest);
 			return response;
 		}
 
@@ -117,10 +114,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(WebAppAccessTokenRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
-			var response = new AccessTokenSuccessResponse(request) {
-				// TODO: code here to initialize the response
-			};
-			return response;
+			return this.OAuthChannel.PrepareAccessToken(request);
 		}
 
 		protected Uri GetCallback(WebAppRequest authorizationRequest) {

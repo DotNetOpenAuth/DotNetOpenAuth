@@ -4,6 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using DotNetOpenAuth.Messaging.Bindings;
+using DotNetOpenAuth.OAuthWrap.Messages;
+
 namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
@@ -19,6 +22,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// The channel for the OAuth WRAP protocol.
 	/// </summary>
 	internal class OAuthWrapAuthorizationServerChannel : StandardMessageFactoryChannel {
+		public IAuthorizationServer AuthorizationServer { get; set; }
+
 		private static readonly Type[] MessageTypes = new Type[] {
 				typeof(Messages.RefreshAccessTokenRequest),
 				typeof(Messages.AccessTokenSuccessResponse),
@@ -49,10 +54,23 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthWrapChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuthWrapAuthorizationServerChannel"/> class.
 		/// </summary>
-		protected internal OAuthWrapAuthorizationServerChannel()
-			: base(MessageTypes, Versions) {
+		protected internal OAuthWrapAuthorizationServerChannel(IAuthorizationServer authorizationServer)
+			: base(MessageTypes, Versions, InitializeBindingElements(authorizationServer)) {
+			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
+
+			this.AuthorizationServer = authorizationServer;
+		}
+
+		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request) {
+			Contract.Requires<ArgumentNullException>(request != null, "request");
+
+			var response = new AccessTokenSuccessResponse(request) {
+				// TODO: code here to initialize the response
+			};
+
+			return response;
 		}
 
 		/// <summary>
@@ -111,7 +129,42 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+			var directResponse = (IDirectResponseProtocolMessage)response;
+			var formatSpecifyingRequest = directResponse.OriginatingRequest as IOAuthDirectResponseFormat;
+			if (formatSpecifyingRequest != null)
+			{
+				ResponseFormat format = formatSpecifyingRequest.Format;
+				switch (format)
+				{
+					case ResponseFormat.Xml:
+						throw new NotImplementedException();
+					case ResponseFormat.Form:
+						throw new NotImplementedException();
+					case ResponseFormat.Json:
+						throw new NotImplementedException();
+					default:
+						throw ErrorUtilities.ThrowInternal("Unrecognized value of ResponseFormat enum: " + format);
+				}
+			}
+
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Initializes the binding elements for the OAuth channel.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		/// <returns>
+		/// An array of binding elements used to initialize the channel.
+		/// </returns>
+		private static IChannelBindingElement[] InitializeBindingElements(IAuthorizationServer authorizationServer) {
+			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
+
+			var bindingElements = new List<IChannelBindingElement> {
+				new WebAppAccessTokenRequestVerifier(),
+			};
+
+			return bindingElements.ToArray();
 		}
 	}
 }

@@ -4,15 +4,15 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Diagnostics.Contracts;
-using DotNetOpenAuth.OAuth.ChannelElements;
-
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using ChannelElements;
 	using DotNetOpenAuth.Messaging;
+	using OAuth.ChannelElements;
 
 	public abstract class AuthorizationServerBase {
 		protected AuthorizationServerBase(IAuthorizationServer authorizationServer) {
@@ -21,6 +21,10 @@ namespace DotNetOpenAuth.OAuthWrap {
 		}
 
 		public Channel Channel { get; set; }
+
+		internal OAuthWrapAuthorizationServerChannel OAuthChannel {
+			get { return (OAuthWrapAuthorizationServerChannel)this.Channel; }
+		}
 
 		public IAuthorizationServer AuthorizationServer { get; set; }
 
