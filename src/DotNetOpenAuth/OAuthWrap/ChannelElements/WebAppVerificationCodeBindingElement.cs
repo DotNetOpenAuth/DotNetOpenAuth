@@ -1,10 +1,8 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppAccessTokenRequestVerifier.cs" company="Andrew Arnott">
+// <copyright file="WebAppVerificationCodeBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-
-using DotNetOpenAuth.Messaging.Bindings;
 
 namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
@@ -13,14 +11,19 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Text;
 	using Messages;
 	using Messaging;
+	using Messaging.Bindings;
 
-	internal class WebAppAccessTokenRequestVerifier : IChannelBindingElement {
+	/// <summary>
+	/// A binding element for OAuth 2.0 authorization servers that create/verify
+	/// issued verification codes as part of obtaining access/refresh tokens.
+	/// </summary>
+	internal class WebAppVerificationCodeBindingElement : IChannelBindingElement {
 		private const string VerificationCodeContext = "{VerificationCode}";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppAccessTokenRequestVerifier"/> class.
+		/// Initializes a new instance of the <see cref="WebAppVerificationCodeBindingElement"/> class.
 		/// </summary>
-		internal WebAppAccessTokenRequestVerifier() {
+		internal WebAppVerificationCodeBindingElement() {
 		}
 
 		/// <summary>

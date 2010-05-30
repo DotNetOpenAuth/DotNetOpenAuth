@@ -42,7 +42,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		public void ApproveAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, callback);
 			this.Channel.Send(response);
@@ -50,7 +49,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		public void RejectAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			var response = this.PrepareRejectAuthorizationRequest(authorizationRequest, callback);
 			this.Channel.Send(response);
@@ -79,7 +77,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		internal WebAppFailedResponse PrepareRejectAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+			Contract.Ensures(Contract.Result<WebAppFailedResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
@@ -91,7 +89,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		internal WebAppSuccessResponse PrepareApproveAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+			Contract.Ensures(Contract.Result<WebAppSuccessResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
@@ -114,6 +112,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(WebAppAccessTokenRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
+			Contract.Ensures(Contract.Result<AccessTokenSuccessResponse>() != null);
+
 			return this.OAuthChannel.PrepareAccessToken(request);
 		}
 

@@ -22,8 +22,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// The channel for the OAuth WRAP protocol.
 	/// </summary>
 	internal class OAuthWrapAuthorizationServerChannel : StandardMessageFactoryChannel {
-		public IAuthorizationServer AuthorizationServer { get; set; }
-
 		private static readonly Type[] MessageTypes = new Type[] {
 				typeof(Messages.RefreshAccessTokenRequest),
 				typeof(Messages.AccessTokenSuccessResponse),
@@ -56,12 +54,16 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthWrapAuthorizationServerChannel"/> class.
 		/// </summary>
-		protected internal OAuthWrapAuthorizationServerChannel(IAuthorizationServer authorizationServer)
+		protected internal OAuthWrapAuthorizationServerChannel(IAuthorizationServer authorizationServer = null)
 			: base(MessageTypes, Versions, InitializeBindingElements(authorizationServer)) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
-
 			this.AuthorizationServer = authorizationServer;
 		}
+
+		/// <summary>
+		/// Gets or sets the authorization server.
+		/// </summary>
+		/// <value>The authorization server.  Will be null for channels serving clients.</value>
+		public IAuthorizationServer AuthorizationServer { get; set; }
 
 		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
@@ -131,11 +133,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			var directResponse = (IDirectResponseProtocolMessage)response;
 			var formatSpecifyingRequest = directResponse.OriginatingRequest as IOAuthDirectResponseFormat;
-			if (formatSpecifyingRequest != null)
-			{
+			if (formatSpecifyingRequest != null) {
 				ResponseFormat format = formatSpecifyingRequest.Format;
-				switch (format)
-				{
+				switch (format) {
 					case ResponseFormat.Xml:
 						throw new NotImplementedException();
 					case ResponseFormat.Form:
@@ -158,11 +158,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
 		private static IChannelBindingElement[] InitializeBindingElements(IAuthorizationServer authorizationServer) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
+			var bindingElements = new List<IChannelBindingElement>();
 
-			var bindingElements = new List<IChannelBindingElement> {
-				new WebAppAccessTokenRequestVerifier(),
-			};
+			if (authorizationServer != null) {
+				bindingElements.Add(new WebAppVerificationCodeBindingElement());
+			}
 
 			return bindingElements.ToArray();
 		}
