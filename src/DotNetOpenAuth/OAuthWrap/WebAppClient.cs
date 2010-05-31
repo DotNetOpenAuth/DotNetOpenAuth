@@ -100,7 +100,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 						authorizationState.SaveChanges();
 					} else {
 						authorizationState.Delete();
-						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.CannotObtainAccessTokenWithReason, failedAccessTokenResponse.Error);
+						string error = failedAccessTokenResponse != null ? failedAccessTokenResponse.Error : "(unknown)";
+						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.CannotObtainAccessTokenWithReason, error);
 					}
 				} else { // failure
 					Logger.Wrap.Info("User refused to grant the requested authorization at the Authorization Server.");

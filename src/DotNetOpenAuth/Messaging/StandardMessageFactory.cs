@@ -179,8 +179,9 @@ namespace DotNetOpenAuth.Messaging {
 			               where message.CheckMessagePartsPassBasicValidation(fields)
 			               let ctors = this.FindMatchingResponseConstructors(message, request.GetType())
 			               where ctors.Any()
-			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType())
-			               orderby message.Mapping.Count descending
+			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType()) ,
+			               	CountInCommon(message.Mapping.Keys, fields.Keys) descending ,
+			               	message.Mapping.Count descending
 			               select message).CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
 			if (match != null) {
@@ -264,6 +265,21 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(requestType != null);
 
 			return this.responseMessageTypes[messageDescription].Where(pair => pair.Key.IsAssignableFrom(requestType)).Select(pair => pair.Value);
+		}
+
+		/// <summary>
+		/// Counts how many strings are in the intersection of two collections.
+		/// </summary>
+		/// <param name="collection1">The first collection.</param>
+		/// <param name="collection2">The second collection.</param>
+		/// <param name="comparison">The string comparison method to use.</param>
+		/// <returns>A non-negative integer no greater than the count of elements in the smallest collection.</returns>
+		private int CountInCommon(ICollection<string> collection1, ICollection<string> collection2, StringComparison comparison = StringComparison.Ordinal) {
+			Contract.Requires<ArgumentNullException>(collection1 != null, "collection1");
+			Contract.Requires<ArgumentNullException>(collection2 != null, "collection2");
+			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= Math.Min(collection1.Count, collection2.Count));
+
+			return collection1.Count(value1 => collection2.Any(value2 => string.Equals(value1, value2, comparison)));
 		}
 	}
 }
