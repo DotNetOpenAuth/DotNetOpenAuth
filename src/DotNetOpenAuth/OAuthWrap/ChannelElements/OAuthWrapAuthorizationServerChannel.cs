@@ -70,7 +70,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
 			var response = new AccessTokenSuccessResponse(request) {
+				Scope = request.Scope,
 				// TODO: code here to initialize the response
+				AccessToken = "TODO",
+				RefreshToken = "TODO",
 			};
 
 			return response;

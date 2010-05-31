@@ -109,6 +109,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 					throw new ReplayedMessageException(message);
 				}
 
+				request.Scope = verificationCode.Scope;
+
 				return MessageProtections.None;
 			}
 

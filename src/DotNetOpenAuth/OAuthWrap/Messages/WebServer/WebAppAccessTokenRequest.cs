@@ -45,6 +45,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
 			Contract.Requires<ArgumentException>(authorizationServer.TokenEndpoint != null);
+
+			// We prefer URL encoding of the data.
+			this.Format = ResponseFormat.Form;
 		}
 
 		/// <summary>
