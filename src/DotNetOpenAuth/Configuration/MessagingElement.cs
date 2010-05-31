@@ -32,6 +32,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string MaximumClockSkewConfigName = "clockSkew";
 
 		/// <summary>
+		/// The name of the attribute that indicates whether to disable SSL requirements across the library.
+		/// </summary>
+		private const string RelaxSslRequirementsConfigName = "relaxSslRequirements";
+
+		/// <summary>
 		/// Gets the actual maximum message lifetime that a program should allow.
 		/// </summary>
 		/// <value>The sum of the <see cref="MaximumMessageLifetime"/> and 
@@ -80,6 +85,16 @@ namespace DotNetOpenAuth.Configuration {
 		internal TimeSpan MaximumClockSkew {
 			get { return (TimeSpan)this[MaximumClockSkewConfigName]; }
 			set { this[MaximumClockSkewConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether SSL requirements within the library are disabled/relaxed.
+		/// Use for TESTING ONLY.
+		/// </summary>
+		[ConfigurationProperty(RelaxSslRequirementsConfigName, DefaultValue = false)]
+		internal bool RelaxSslRequirements {
+			get { return (bool)this[RelaxSslRequirementsConfigName]; }
+			set { this[RelaxSslRequirementsConfigName] = value; }
 		}
 
 		/// <summary>

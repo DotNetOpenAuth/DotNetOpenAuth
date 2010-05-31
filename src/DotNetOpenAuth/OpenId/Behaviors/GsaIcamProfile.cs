@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
@@ -32,6 +33,13 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// The maximum time a shared association can live.
 		/// </summary>
 		private static readonly TimeSpan MaximumAssociationLifetime = TimeSpan.FromSeconds(86400);
+
+		/// <summary>
+		/// Initializes static members of the <see cref="GsaIcamProfile"/> class.
+		/// </summary>
+		static GsaIcamProfile() {
+			DisableSslRequirement = DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.

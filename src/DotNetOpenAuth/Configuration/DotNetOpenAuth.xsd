@@ -206,6 +206,14 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="relaxSslRequirements" type="xs:boolean" default="false">
+							<xs:annotation>
+								<xs:documentation>
+									Whether SSL requirements within the library are disabled/relaxed.
+									Use for TESTING ONLY.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="openid">
