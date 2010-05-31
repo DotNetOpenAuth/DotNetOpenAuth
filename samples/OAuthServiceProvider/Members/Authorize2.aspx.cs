@@ -43,7 +43,7 @@
 			this.AuthorizationSecret = null; // clear one time use secret
 			this.multiView.SetActiveView(this.AuthGranted);
 
-			Global.AuthorizationServer.ApproveAuthorizationRequest(Global.PendingOAuth2Authorization);
+			Global.AuthorizationServer.ApproveAuthorizationRequest(Global.PendingOAuth2Authorization, User.Identity.Name);
 		}
 
 		protected void denyAccessButton_Click(object sender, EventArgs e) {

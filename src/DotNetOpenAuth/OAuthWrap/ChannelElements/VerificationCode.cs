@@ -74,10 +74,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			// Encrypt the authorizing username so as to not expose unintended private user data
 			// to the client or any eavesdropping third party.
 			if (this.User != null) {
-				// TODO: code here
+				this.User = MessagingUtilities.Encrypt(this.User, this.Channel.AuthorizationServer.Secret);
 			}
 
-			this.Signature = CalculateSignature();
+			this.Signature = this.CalculateSignature();
 		}
 
 		/// <summary>
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			// Decrypt the authorizing username.
 			if (this.User != null) {
-				// TODO: code here
+				this.User = MessagingUtilities.Decrypt(this.User, this.Channel.AuthorizationServer.Secret);
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			Contract.Ensures(Contract.Result<VerificationCode>() != null);
 
 			// Construct a new instance of this type.
-			VerificationCode self = new VerificationCode(channel);
+			var self = new VerificationCode(channel);
 			var fields = channel.MessageDescriptions.GetAccessor(self);
 
 			// Deserialize into this newly created instance.
