@@ -83,6 +83,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\DotNetOpenAuth.ApplicationBlock\InMemoryClientTokenManager.cs">
+      <Link>Code\InMemoryClientTokenManager.cs</Link>
+    </Compile>
     <Compile Include="..\DotNetOpenAuth.ApplicationBlock\InMemoryTokenManager.cs">
       <Link>Code\InMemoryTokenManager.cs</Link>
     </Compile>

@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// REQUIRED. The client identifier as described in Section 3.4  (Client Credentials). 
 		/// </remarks>
 		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
-		string IMessageWithClientState.ClientState { get; set; }
+		public string ClientState { get; set; }
 
 		/// <summary>
 		/// Gets or sets the scope of access being requested.

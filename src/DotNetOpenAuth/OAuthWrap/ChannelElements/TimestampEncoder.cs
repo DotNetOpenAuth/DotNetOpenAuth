@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			var timestamp = (DateTime)value;
 			TimeSpan secondsSinceEpoch = timestamp - Epoch;
-			return secondsSinceEpoch.TotalSeconds.ToString(CultureInfo.InvariantCulture);
+			return ((int)secondsSinceEpoch.TotalSeconds).ToString(CultureInfo.InvariantCulture);
 		}
 
 		/// <summary>
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				return null;
 			}
 
-			var secondsSinceEpoch = Convert.ToInt32(value, CultureInfo.InvariantCulture);
+			var secondsSinceEpoch = int.Parse(value, CultureInfo.InvariantCulture);
 			return Epoch.AddSeconds(secondsSinceEpoch);
 		}
 	}

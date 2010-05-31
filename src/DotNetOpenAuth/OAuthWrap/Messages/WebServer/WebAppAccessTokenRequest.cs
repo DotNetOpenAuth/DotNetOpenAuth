@@ -4,13 +4,13 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
-
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Diagnostics.Contracts;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuthWrap.ChannelElements;
+	using ChannelElements;
+	using Configuration;
+	using Messaging;
+	using WebServer;
 
 	/// <summary>
 	/// A message sent by the Client directly to the Authorization Server to exchange
@@ -114,7 +114,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
-			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthWrapStrings.HttpsRequired);
+			ErrorUtilities.VerifyProtocol(
+				DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
+				OAuthWrapStrings.HttpsRequired);
 		}
 	}
 }

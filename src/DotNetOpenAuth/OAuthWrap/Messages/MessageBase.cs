@@ -43,6 +43,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			Contract.Requires<ArgumentNullException>(version != null);
 			this.messageTransport = MessageTransport.Direct;
 			this.version = version;
+			this.HttpMethods = HttpDeliveryMethods.GetRequest;
 		}
 
 		/// <summary>
@@ -53,9 +54,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		protected MessageBase(IDirectedProtocolMessage request, Uri recipient = null) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			this.originatingRequest = request;
-			this.messageTransport = MessageTransport.Direct;
+			this.messageTransport = request.Transport;
 			this.version = request.Version;
 			this.Recipient = recipient;
+			this.HttpMethods = HttpDeliveryMethods.GetRequest;
 		}
 
 		/// <summary>

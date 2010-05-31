@@ -12,8 +12,8 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A response from the Authorization Server to the Consumer containing a delegation code
-	/// that the Consumer should use to obtain an access token.
+	/// A response from the Authorization Server to the Client containing a delegation code
+	/// that the Client should use to obtain an access token.
 	/// </summary>
 	/// <remarks>
 	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
@@ -81,5 +81,12 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </remarks>
 		[MessagePart(Protocol.access_token_secret, IsRequired = false, AllowEmpty = false)]
 		internal string AccessTokenSecret { get; set; }
+
+		/// <summary>
+		/// Gets or sets the scope of access being requested.
+		/// </summary>
+		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
+		public string Scope { get; set; }
 	}
 }

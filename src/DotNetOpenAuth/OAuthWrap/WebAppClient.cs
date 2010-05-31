@@ -59,6 +59,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			var request = new WebAppRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
+				Scope = authorization.Scope,
 			};
 
 			return request;
@@ -67,6 +68,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request = null) {
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientSecret));
+			Contract.Requires<InvalidOperationException>(this.TokenManager != null);
 
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
@@ -95,6 +97,16 @@ namespace DotNetOpenAuth.OAuthWrap {
 						authorizationState.AccessTokenSecret = accessTokenSuccess.AccessTokenSecret;
 						authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
 						authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
+						if (accessTokenSuccess.Scope != null && accessTokenSuccess.Scope != authorizationState.Scope) {
+							if (authorizationState.Scope != null) {
+								Logger.Wrap.InfoFormat("Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",
+								                       authorizationState.Scope,
+								                       accessTokenSuccess.Scope);
+							}
+
+							authorizationState.Scope = accessTokenSuccess.Scope;
+						}
+
 						authorizationState.SaveChanges();
 					} else {
 						authorizationState.Delete();

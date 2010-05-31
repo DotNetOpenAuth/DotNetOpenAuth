@@ -4,19 +4,20 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using DotNetOpenAuth.Messaging.Bindings;
-using DotNetOpenAuth.OAuthWrap.Messages;
-
 namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Mime;
 	using System.Text;
 	using System.Web;
+	using System.Web.Script.Serialization;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	/// <summary>
 	/// The channel for the OAuth WRAP protocol.
@@ -109,10 +110,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
+			string body = response.GetResponseReader().ReadToEnd();
 			if (response.ContentType.MediaType == JsonEncoded) {
-				throw new NotImplementedException();
+				var jsonSerializer = new JavaScriptSerializer();
+				return jsonSerializer.Deserialize<Dictionary<string, string>>(body);
 			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
-				string body = response.GetResponseReader().ReadToEnd();
 				return HttpUtility.ParseQueryString(body).ToDictionary();
 			} else {
 				throw ErrorUtilities.ThrowProtocol("Unexpected response Content-Type {0}", response.ContentType.MediaType);
@@ -131,23 +133,32 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+			var webResponse = new OutgoingWebResponse();
+			var fields = this.MessageDescriptions.GetAccessor(response);
+
 			var directResponse = (IDirectResponseProtocolMessage)response;
 			var formatSpecifyingRequest = directResponse.OriginatingRequest as IOAuthDirectResponseFormat;
 			if (formatSpecifyingRequest != null) {
 				ResponseFormat format = formatSpecifyingRequest.Format;
 				switch (format) {
 					case ResponseFormat.Xml:
+						// NOTE: the spec is missing details on how to formulate this.
 						throw new NotImplementedException();
 					case ResponseFormat.Form:
-						throw new NotImplementedException();
+						string form = MessagingUtilities.CreateQueryString(fields);
+						webResponse.SetResponse(form, HttpFormUrlEncodedContentType);
+						break;
 					case ResponseFormat.Json:
-						throw new NotImplementedException();
+						var jsonSerializer = new JavaScriptSerializer();
+						string json = jsonSerializer.Serialize(fields);
+						webResponse.SetResponse(json, new ContentType(JsonEncoded));
+						break;
 					default:
 						throw ErrorUtilities.ThrowInternal("Unrecognized value of ResponseFormat enum: " + format);
 				}
 			}
 
-			throw new NotImplementedException();
+			return webResponse;
 		}
 
 		/// <summary>
