@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
@@ -229,6 +230,14 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Be careful to not try to change the HTTP headers that have already gone out.
 			if (preparingPost || request.Method == "GET") {
+				// Set/override a few properties of the request to apply our policies for requests.
+				if (Debugger.IsAttached) {
+					// Since a debugger is attached, requests may be MUCH slower,
+					// so give ourselves huge timeouts.
+					request.ReadWriteTimeout = (int)TimeSpan.FromHours(1).TotalMilliseconds;
+					request.Timeout = (int)TimeSpan.FromHours(1).TotalMilliseconds;
+				}
+
 				// Some sites, such as Technorati, return 403 Forbidden on identity
 				// pages unless a User-Agent header is included.
 				if (string.IsNullOrEmpty(request.UserAgent)) {
