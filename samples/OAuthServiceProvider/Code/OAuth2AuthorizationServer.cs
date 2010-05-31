@@ -1,4 +1,5 @@
-﻿using DotNetOpenAuth.OAuth.ChannelElements;
+﻿using DotNetOpenAuth.Messaging.Bindings;
+using DotNetOpenAuth.OAuth.ChannelElements;
 
 namespace OAuthServiceProvider.Code {
 	using System;
@@ -8,47 +9,28 @@ namespace OAuthServiceProvider.Code {
 	using DotNetOpenAuth.OAuthWrap;
 
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
+		private static readonly byte[] secret = new byte[] { 0x33, 0x55 }; // TODO: make this cryptographically strong and unique per app.
+		private readonly INonceStore nonceStore = new DatabaseNonceStore();
 		#region Implementation of IAuthorizationServer
 
-		public IConsumerDescription GetClient(string clientIdentifier)
-		{
-			throw new NotImplementedException();
-		}
-
-		#endregion
-
 		public byte[] Secret {
-			get { throw new NotImplementedException(); }
+			get { return secret; }
 		}
 
 		public DotNetOpenAuth.Messaging.Bindings.INonceStore VerificationCodeNonceStore {
-			get { throw new NotImplementedException(); }
+			get { return this.nonceStore; }
 		}
 
-		private class ConsumerDescription : IConsumerDescription {
-			public string Key {
-				get { throw new NotImplementedException(); }
+		public IConsumerDescription GetClient(string clientIdentifier) {
+			var consumerRow = Global.DataContext.OAuthConsumers.SingleOrDefault(
+				consumerCandidate => consumerCandidate.ConsumerKey == clientIdentifier);
+			if (consumerRow == null) {
+				throw new ArgumentOutOfRangeException("clientIdentifier");
 			}
 
-			public string Secret {
-				get { throw new NotImplementedException(); }
-			}
-
-			public System.Security.Cryptography.X509Certificates.X509Certificate2 Certificate {
-				get { throw new NotImplementedException(); }
-			}
-
-			public Uri Callback {
-				get { throw new NotImplementedException(); }
-			}
-
-			public DotNetOpenAuth.OAuth.VerificationCodeFormat VerificationCodeFormat {
-				get { throw new NotImplementedException(); }
-			}
-
-			public int VerificationCodeLength {
-				get { throw new NotImplementedException(); }
-			}
+			return consumerRow;
 		}
+
+		#endregion
 	}
 }

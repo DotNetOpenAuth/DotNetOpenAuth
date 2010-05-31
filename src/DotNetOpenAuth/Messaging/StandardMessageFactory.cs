@@ -144,7 +144,8 @@ namespace DotNetOpenAuth.Messaging {
 
 			var matches = this.requestMessageTypes.Keys
 				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
-				.OrderByDescending(message => message.Mapping.Count)
+				.OrderByDescending(message => CountInCommon(message.Mapping.Keys, fields.Keys))
+				.ThenByDescending(message => message.Mapping.Count)
 				.CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
 			if (match != null) {

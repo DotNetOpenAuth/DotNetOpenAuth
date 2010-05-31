@@ -306,4 +306,7 @@
   <data name="StandardMessageFactoryUnsupportedMessageType" xml:space="preserve">
     <value>This message factory does not support message type(s): {0}</value>
   </data>
+  <data name="RequiredMessagePartConstantIncorrect" xml:space="preserve">
+    <value>The following message parts had constant value requirements that were unsatisfied: {0}</value>
+  </data>
 </root>

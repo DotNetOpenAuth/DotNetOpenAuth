@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// A binding element for OAuth 2.0 authorization servers that create/verify
 	/// issued verification codes as part of obtaining access/refresh tokens.
 	/// </summary>
-	internal class WebAppVerificationCodeBindingElement : IChannelBindingElement {
+	internal class WebAppVerificationCodeBindingElement : AuthServerBindingElementBase {
 		private const string VerificationCodeContext = "{VerificationCode}";
 
 		/// <summary>
@@ -27,26 +27,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		/// <summary>
-		/// Gets or sets the channel that this binding element belongs to.
-		/// </summary>
-		/// <remarks>
-		/// This property is set by the channel when it is first constructed.
-		/// </remarks>
-		public Channel Channel { get; set; }
-
-		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
 		/// <value>Always <c>MessageProtections.None</c></value>
 		/// <remarks>
 		/// This value is used to assist in sorting binding elements in the channel stack.
 		/// </remarks>
-		public MessageProtections Protection {
+		public override MessageProtections Protection {
 			get { return MessageProtections.None; }
-		}
-
-		protected OAuthWrapAuthorizationServerChannel OAuthChannel {
-			get { return (OAuthWrapAuthorizationServerChannel)this.Channel; }
 		}
 
 		/// <summary>
@@ -54,14 +42,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		private static TimeSpan MaximumMessageAge {
 			get { return StandardExpirationBindingElement.MaximumMessageAge; }
-		}
-
-		/// <summary>
-		/// Gets the authorization server hosting this channel.
-		/// </summary>
-		/// <value>The authorization server.</value>
-		private IAuthorizationServer AuthorizationServer {
-			get { return this.OAuthChannel.AuthorizationServer; }
 		}
 
 		/// <summary>
@@ -76,13 +56,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var response = message as WebAppSuccessResponse;
 			if (response != null) {
-				var directResponse = response as IDirectResponseProtocolMessage;
-				var request = directResponse.OriginatingRequest as WebAppRequest;
+				var directResponse = (IDirectResponseProtocolMessage)response;
+				var request = (WebAppRequest)directResponse.OriginatingRequest;
 
-				var code = new VerificationCode(this.OAuthChannel, request.Callback, request.Scope);
+				var code = new VerificationCode(this.OAuthChannel, request.Callback, request.Scope, response.AuthorizingUsername);
 				response.VerificationCode = code.Encode();
 
 				return MessageProtections.None;
@@ -108,7 +88,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var request = message as WebAppAccessTokenRequest;
 			if (request != null) {
 				var client = this.AuthorizationServer.GetClient(request.ClientIdentifier);

@@ -159,6 +159,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				(this.field.Attributes & FieldAttributes.InitOnly) == FieldAttributes.InitOnly ||
 				(this.field.Attributes & constAttributes) == constAttributes)) {
 				this.IsConstantValue = true;
+				this.IsConstantValueAvailableStatically = this.field.IsStatic;
 			} else if (this.property != null && !this.property.CanWrite) {
 				this.IsConstantValue = true;
 			}
@@ -192,6 +193,21 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Gets or sets a value indicating whether the field or property must remain its default value.
 		/// </summary>
 		internal bool IsConstantValue { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this part is defined as a constant field and can be read without a message instance.
+		/// </summary>
+		internal bool IsConstantValueAvailableStatically { get; set; }
+
+		/// <summary>
+		/// Gets the static constant value for this message part without a message instance.
+		/// </summary>
+		internal string StaticConstantValue {
+			get {
+				Contract.Requires<InvalidOperationException>(this.IsConstantValueAvailableStatically);
+				return this.ToString(this.field.GetValue(null));
+			}
+		}
 
 		/// <summary>
 		/// Sets the member of a given message to some given value.

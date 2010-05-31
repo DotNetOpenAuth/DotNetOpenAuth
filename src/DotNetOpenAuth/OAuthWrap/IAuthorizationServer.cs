@@ -16,6 +16,12 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 	[ContractClass(typeof(IAuthorizationServerContract))]
 	public interface IAuthorizationServer {
+		/// <summary>
+		/// Gets the client with a given identifier.
+		/// </summary>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <returns>The client registration.  Never null.</returns>
+		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
 		IConsumerDescription GetClient(string clientIdentifier);
 
 		byte[] Secret { get; }

@@ -200,6 +200,12 @@
 		}
 
 		private void wrapBeginButton_Click(object sender, RoutedEventArgs e) {
+			var authServer = new DotNetOpenAuth.OAuthWrap.AuthorizationServerDescription {
+				TokenEndpoint = new Uri(wrapTokenUrlBox.Text),
+				AuthorizationEndpoint = new Uri(wrapAuthorizationUrlBox.Text),
+			};
+			//var client = new DotNetOpenAuth.OAuthWrap.WebAppClient(authServer);
+			//client.PrepareRequestUserAuthorization();
 		}
 	}
 }

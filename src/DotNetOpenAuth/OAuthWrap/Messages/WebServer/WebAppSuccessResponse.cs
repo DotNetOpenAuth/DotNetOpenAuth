@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="request">The request.</param>
 		internal WebAppSuccessResponse(Uri clientCallback, WebAppRequest request)
-			: this(clientCallback, ((IMessage)request).Version) {
+			: base(request, clientCallback) {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
@@ -57,5 +57,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </value>
 		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = true)]
 		internal string VerificationCode { get; set; }
+
+		/// <summary>
+		/// Gets or sets the authorizing user's account name.
+		/// </summary>
+		internal string AuthorizingUsername { get; set; }
 	}
 }

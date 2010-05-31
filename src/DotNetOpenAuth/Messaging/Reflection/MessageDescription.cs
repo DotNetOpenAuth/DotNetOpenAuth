@@ -93,6 +93,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			try {
 				this.CheckRequiredMessagePartsArePresent(parts.Keys, true);
 				this.CheckRequiredProtocolMessagePartsAreNotEmpty(parts, true);
+				this.CheckMessagePartsConstantValues(parts, true);
 			} catch (ProtocolException) {
 				Logger.Messaging.ErrorFormat(
 					"Error while performing basic validation of {0} with these message parts:{1}{2}",
@@ -112,7 +113,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Contract.Requires<ArgumentNullException>(parts != null);
 
 			return this.CheckRequiredMessagePartsArePresent(parts.Keys, false) &&
-				   this.CheckRequiredProtocolMessagePartsAreNotEmpty(parts, false);
+			       this.CheckRequiredProtocolMessagePartsAreNotEmpty(parts, false) &&
+			       this.CheckMessagePartsConstantValues(parts, false);
 		}
 
 		/// <summary>
@@ -178,6 +180,33 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						MessagingStrings.RequiredNonEmptyParameterWasEmpty,
 						this.MessageType.FullName,
 						emptyValuedKeys.ToStringDeferred());
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		private bool CheckMessagePartsConstantValues(IDictionary<string, string> partValues, bool throwOnFailure)
+		{
+			Contract.Requires<ArgumentNullException>(partValues != null);
+
+			var badConstantValues = (from part in this.Mapping.Values
+			                         where part.IsConstantValueAvailableStatically
+			                         where partValues.ContainsKey(part.Name)
+			                         where !string.Equals(partValues[part.Name], part.StaticConstantValue, StringComparison.Ordinal)
+			                         select part.Name).ToArray();
+			if (badConstantValues.Length > 0) {
+				if (throwOnFailure) {
+					ErrorUtilities.ThrowProtocol(
+						MessagingStrings.RequiredMessagePartConstantIncorrect,
+						this.MessageType.FullName,
+						string.Join(", ", badConstantValues));
+				} else {
+					Logger.Messaging.DebugFormat(
+						MessagingStrings.RequiredMessagePartConstantIncorrect,
+						this.MessageType.FullName,
+						badConstantValues.ToStringDeferred());
 					return false;
 				}
 			}

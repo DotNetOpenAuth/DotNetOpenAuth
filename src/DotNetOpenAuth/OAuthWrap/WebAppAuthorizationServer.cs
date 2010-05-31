@@ -40,10 +40,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return message;
 		}
 
-		public void ApproveAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
+		public void ApproveAuthorizationRequest(WebAppRequest authorizationRequest, string username, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
 			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, callback);
+			response.AuthorizingUsername = username;
 			this.Channel.Send(response);
 		}
 
@@ -58,7 +59,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 		{
 			return this.TryPrepareAccessTokenResponse(this.Channel.GetRequestFromContext(), out response);
 		}
-
 
 		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response)
 		{
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 				callback = this.GetCallback(authorizationRequest);
 			}
 
-			var client = GetClient(authorizationRequest.ClientIdentifier);
+			var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 			var response = new WebAppSuccessResponse(callback, authorizationRequest);
 			return response;
 		}

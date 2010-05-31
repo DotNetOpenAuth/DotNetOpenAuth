@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CallbackMismatch" xml:space="preserve">
+    <value>Client's pre-registered callback URL ({0}) does not match the one found in the authorization request ({1}).</value>
+  </data>
   <data name="CannotObtainAccessTokenWithReason" xml:space="preserve">
     <value>Failed to obtain access token.  Authorization Server reports reason: {0}</value>
   </data>

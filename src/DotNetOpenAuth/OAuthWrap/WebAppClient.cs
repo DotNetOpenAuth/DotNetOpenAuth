@@ -64,15 +64,13 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return request;
 		}
 
-		public IAuthorizationState ProcessUserAuthorization() {
-			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			return this.ProcessUserAuthorization(this.Channel.GetRequestFromContext());
-		}
-
-		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request = null) {
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientSecret));
+
+			if (request == null) {
+				request = this.Channel.GetRequestFromContext();
+			}
 
 			IMessageWithClientState response;
 			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {

@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		protected AuthorizationServerBase(IAuthorizationServer authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
+			this.Channel = new OAuthWrapAuthorizationServerChannel(authorizationServer);
 		}
 
 		public Channel Channel { get; set; }
@@ -27,16 +28,5 @@ namespace DotNetOpenAuth.OAuthWrap {
 		}
 
 		public IAuthorizationServer AuthorizationServer { get; set; }
-
-		protected IConsumerDescription GetClient(string clientIdentifier) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
-			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
-
-			try {
-				return this.AuthorizationServer.GetClient(clientIdentifier);
-			} catch (KeyNotFoundException ex) {
-				throw ErrorUtilities.Wrap(ex, OAuth.OAuthStrings.ConsumerOrTokenSecretNotFound);
-			}
-		}
 	}
 }

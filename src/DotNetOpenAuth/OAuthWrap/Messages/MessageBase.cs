@@ -49,11 +49,13 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Initializes a new instance of the <see cref="MessageBase"/> class.
 		/// </summary>
 		/// <param name="request">The originating request.</param>
-		protected MessageBase(IDirectedProtocolMessage request) {
+		/// <param name="recipient">The recipient of the directed message.  Null if not applicable.</param>
+		protected MessageBase(IDirectedProtocolMessage request, Uri recipient = null) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			this.originatingRequest = request;
 			this.messageTransport = MessageTransport.Direct;
 			this.version = request.Version;
+			this.Recipient = recipient;
 		}
 
 		/// <summary>

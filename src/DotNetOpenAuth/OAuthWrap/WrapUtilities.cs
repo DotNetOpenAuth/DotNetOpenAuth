@@ -4,6 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using DotNetOpenAuth.Messaging;
+
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
@@ -29,6 +31,19 @@ namespace DotNetOpenAuth.OAuthWrap {
 				CultureInfo.InvariantCulture,
 				Protocol.HttpAuthorizationHeaderFormat,
 				accessToken);
+		}
+
+		internal static DotNetOpenAuth.OAuth.ChannelElements.IConsumerDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
+			Contract.Ensures(Contract.Result<DotNetOpenAuth.OAuth.ChannelElements.IConsumerDescription>() != null);
+
+			try {
+				return authorizationServer.GetClient(clientIdentifier);
+			} catch (KeyNotFoundException ex) {
+				throw ErrorUtilities.Wrap(ex, OAuth.OAuthStrings.ConsumerOrTokenSecretNotFound);
+			} catch (ArgumentException ex) {
+				throw ErrorUtilities.Wrap(ex, OAuth.OAuthStrings.ConsumerOrTokenSecretNotFound);
+			}
 		}
 	}
 }

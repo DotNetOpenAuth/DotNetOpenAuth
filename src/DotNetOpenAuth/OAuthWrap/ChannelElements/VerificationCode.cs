@@ -20,13 +20,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <param name="channel">The channel.</param>
 		/// <param name="callback">The callback.</param>
-		internal VerificationCode(OAuthWrapAuthorizationServerChannel channel, Uri callback, string scope)
+		internal VerificationCode(OAuthWrapAuthorizationServerChannel channel, Uri callback, string scope, string username)
 			: this(channel) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
 			Contract.Requires<ArgumentNullException>(callback != null, "callback");
 
 			this.CallbackHash = this.CalculateCallbackHash(callback);
 			this.Scope = scope;
+			this.User = username;
 			this.CreationDateUtc = DateTime.UtcNow;
 			this.Nonce = Convert.ToBase64String(MessagingUtilities.GetNonCryptoRandomData(NonceLength));
 		}
@@ -50,10 +51,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		[MessagePart("cb")]
 		private string CallbackHash { get; set; }
 
-		[MessagePart("scope")]
+		[MessagePart]
 		internal string Scope { get; set; }
 
-		[MessagePart("nonce")]
+		[MessagePart]
+		internal string User { get; set; }
+
+		[MessagePart]
 		internal string Nonce { get; set; }
 
 		[MessagePart("timestamp", Encoder = typeof(TimestampEncoder))]
@@ -67,6 +71,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// before it passes through the channel binding elements.
 		/// </summary>
 		void IMessageWithEvents.OnSending() {
+			// Encrypt the authorizing username so as to not expose unintended private user data
+			// to the client or any eavesdropping third party.
+			if (this.User != null) {
+				// TODO: code here
+			}
+
 			this.Signature = CalculateSignature();
 		}
 
@@ -77,6 +87,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		void IMessageWithEvents.OnReceiving() {
 			// Verify that the verification code was issued by this authorization server.
 			ErrorUtilities.VerifyProtocol(string.Equals(this.Signature, this.CalculateSignature(), StringComparison.Ordinal), Protocol.bad_verification_code);
+
+			// Decrypt the authorizing username.
+			if (this.User != null) {
+				// TODO: code here
+			}
 		}
 
 		internal static VerificationCode Decode(OAuthWrapAuthorizationServerChannel channel, string value) {

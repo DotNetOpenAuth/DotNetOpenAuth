@@ -61,6 +61,15 @@ namespace DotNetOpenAuth.OAuthWrap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Client&apos;s pre-registered callback URL ({0}) does not match the one found in the authorization request ({1})..
+        /// </summary>
+        internal static string CallbackMismatch {
+            get {
+                return ResourceManager.GetString("CallbackMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to obtain access token.  Authorization Server reports reason: {0}.
         /// </summary>
         internal static string CannotObtainAccessTokenWithReason {
