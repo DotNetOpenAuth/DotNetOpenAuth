@@ -433,7 +433,7 @@ namespace DotNetOpenAuth.Messaging {
 			return ComputeHash(algorithm, sortedData, encoding);
 		}
 
-				/// <summary>
+		/// <summary>
 		/// Computes the hash of a sequence of key=value pairs.
 		/// </summary>
 		/// <param name="algorithm">The hash algorithm to use.</param>
@@ -449,7 +449,87 @@ namespace DotNetOpenAuth.Messaging {
 			return ComputeHash(algorithm, CreateQueryString(sortedData), encoding);
 		}
 
-/// <summary>
+		/// <summary>
+		/// Encrypts a byte buffer.
+		/// </summary>
+		/// <param name="buffer">The buffer to encrypt.</param>
+		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, and 256.</param>
+		/// <returns>The encrypted buffer</returns>
+		internal static byte[] Encrypt(byte[] buffer, byte[] key)
+		{
+			SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key);
+
+			var ms = new MemoryStream();
+			var binaryWriter = new BinaryWriter(ms);
+			binaryWriter.Write(crypto.IV.Length);
+			binaryWriter.Write(crypto.IV);
+			binaryWriter.Flush();
+
+			using(var cryptoStream = new CryptoStream(ms, crypto.CreateEncryptor(), CryptoStreamMode.Write))
+			{
+				cryptoStream.Write(buffer, 0, buffer.Length);
+			}
+
+			return ms.ToArray();
+		}
+
+		/// <summary>
+		/// Decrypts a byte buffer.
+		/// </summary>
+		/// <param name="buffer">The buffer to decrypt.</param>
+		/// <param name="key">The symmetric secret to use to decrypt the buffer.  Allowed values are 128, 192, and 256.</param>
+		/// <returns>The encrypted buffer</returns>
+		internal static byte[] Decrypt(byte[] buffer, byte[] key)
+		{
+			SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key);
+
+			var ms = new MemoryStream(buffer);
+			var binaryReader = new BinaryReader(ms);
+			int ivLength = binaryReader.ReadInt32();
+			crypto.IV = binaryReader.ReadBytes(ivLength);
+
+			// Allocate space for the decrypted buffer.  We don't know how long it will be yet,
+			// but it will never be larger than the encrypted buffer.
+			var decryptedBuffer = new byte[buffer.Length];
+			int actualDecryptedLength;
+
+			using (var cryptoStream = new CryptoStream(ms, crypto.CreateDecryptor(), CryptoStreamMode.Read)) {
+				actualDecryptedLength = cryptoStream.Read(decryptedBuffer, 0, decryptedBuffer.Length);
+			}
+
+			// Create a new buffer with only the decrypted data.
+			var finalDecryptedBuffer = new byte[actualDecryptedLength];
+			Array.Copy(decryptedBuffer, finalDecryptedBuffer, actualDecryptedLength);
+			return finalDecryptedBuffer;
+		}
+
+		/// <summary>
+		/// Encrypts a string.
+		/// </summary>
+		/// <param name="plainText">The text to encrypt.</param>
+		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, and 256.</param>
+		/// <returns>The encrypted buffer</returns>
+		internal static string Encrypt(string plainText, byte[] key)
+		{
+			byte[] buffer = Encoding.UTF8.GetBytes(plainText);
+			byte[] cipher = Encrypt(buffer, key);
+			return Convert.ToBase64String(cipher);
+		}
+
+		/// <summary>
+		/// Decrypts a string previously encrypted with <see cref="Encrypt(string, byte[])"/>.
+		/// </summary>
+		/// <param name="cipherText">The text to decrypt.</param>
+		/// <param name="key">The symmetric secret to use to decrypt the buffer.  Allowed values are 128, 192, and 256.</param>
+		/// <returns>The encrypted buffer</returns>
+		internal static string Decrypt(string cipherText, byte[] key)
+		{
+			byte[] cipher = Convert.FromBase64String(cipherText);
+			byte[] plainText = Decrypt(cipher, key);
+			return Encoding.UTF8.GetString(plainText);
+		}
+
+		/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
 		/// <see cref="HttpResponse" />
@@ -517,6 +597,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
 			return CopyUpTo(copyFrom, copyTo, int.MaxValue);
 		}
+
 #endif
 
 		/// <summary>
@@ -1110,6 +1191,20 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return value.ToUniversalTime();
+		}
+
+		/// <summary>
+		/// Creates a symmetric algorithm for use in encryption/decryption.
+		/// </summary>
+		/// <param name="key">The symmetric key to use for encryption/decryption.</param>
+		/// <returns>A symmetric algorithm.</returns>
+		private static SymmetricAlgorithm CreateSymmetricAlgorithm(byte[] key)
+		{
+			return new RijndaelManaged
+			       	{
+			       		Mode = CipherMode.CBC,
+			       		Key = key,
+			       	};
 		}
 
 		/// <summary>

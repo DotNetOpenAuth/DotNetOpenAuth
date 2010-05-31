@@ -4,8 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.Messaging
-{
+namespace DotNetOpenAuth.Test.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
@@ -215,6 +214,18 @@ namespace DotNetOpenAuth.Test.Messaging
 		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void GetHttpDeliveryMethodOutOfRangeTest() {
 			MessagingUtilities.GetHttpDeliveryMethod("UNRECOGNIZED");
+		}
+
+		[TestCase]
+		public void EncryptDecrypt() {
+			const string PlainText = "Hi folks!";
+			byte[] key = MessagingUtilities.GetCryptoRandomData(128 / 8);
+			var cipher = MessagingUtilities.Encrypt(PlainText, key);
+
+			Console.WriteLine("Encrypted \"{0}\" ({1} length) to {2} encrypted bytes.", PlainText, PlainText.Length, cipher.Length);
+
+			string roundTripped = MessagingUtilities.Decrypt(cipher, key);
+			Assert.AreEqual(PlainText, roundTripped);
 		}
 	}
 }
