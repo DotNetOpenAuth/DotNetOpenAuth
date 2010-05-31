@@ -17,6 +17,14 @@ namespace OAuthServiceProvider.Code {
 
 		#endregion
 
+		public byte[] Secret {
+			get { throw new NotImplementedException(); }
+		}
+
+		public DotNetOpenAuth.Messaging.Bindings.INonceStore VerificationCodeNonceStore {
+			get { throw new NotImplementedException(); }
+		}
+
 		private class ConsumerDescription : IConsumerDescription {
 			public string Key {
 				get { throw new NotImplementedException(); }
@@ -42,6 +50,5 @@ namespace OAuthServiceProvider.Code {
 				get { throw new NotImplementedException(); }
 			}
 		}
-
 	}
 }
