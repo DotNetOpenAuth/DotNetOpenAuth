@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		[MessagePart]
 		internal string Nonce { get; set; }
 
-		[MessagePart("timestamp", Encoder = typeof(TimestampEncoder))]
+		[MessagePart("timestamp", IsRequired = true, Encoder = typeof(TimestampEncoder))]
 		internal DateTime CreationDateUtc { get; set; }
 
 		[MessagePart("sig")]

@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TimestampEncoder"/> class.
 		/// </summary>
-		internal TimestampEncoder() {
+		public TimestampEncoder() {
 		}
 
 		/// <summary>

@@ -11,7 +11,7 @@ using DotNetOpenAuth.Messaging;
 using OAuthServiceProvider.Code;
 
 public class OAuth : IHttpHandler, IRequiresSessionState {
-	ServiceProvider sp;
+	private ServiceProvider sp;
 
 	public OAuth() {
 		sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager, new CustomOAuthMessageFactory(Global.TokenManager));

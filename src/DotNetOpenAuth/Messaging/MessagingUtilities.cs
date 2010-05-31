@@ -430,7 +430,7 @@ namespace DotNetOpenAuth.Messaging {
 			// Also we need to sort the dictionary's keys so that we sign in the same order as we did
 			// the last time.
 			var sortedData = new SortedDictionary<string, string>(data, StringComparer.OrdinalIgnoreCase);
-			return ComputeHash(algorithm, sortedData, encoding);
+			return ComputeHash(algorithm, (IEnumerable<KeyValuePair<string, string>>)sortedData, encoding);
 		}
 
 		/// <summary>
