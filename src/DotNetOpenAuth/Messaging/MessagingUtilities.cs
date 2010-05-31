@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
+	using System.IO.Compression;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Mime;
@@ -530,6 +531,35 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Compresses a given buffer.
+		/// </summary>
+		/// <param name="buffer">The buffer to compress.</param>
+		/// <returns>The compressed data.</returns>
+		internal static byte[] Compress(byte[] buffer) {
+			var ms = new MemoryStream();
+			using (var compressingStream = new GZipStream(ms, CompressionMode.Compress, true)) {
+				compressingStream.Write(buffer, 0, buffer.Length);
+			}
+
+			return ms.ToArray();
+		}
+
+		/// <summary>
+		/// Decompresses a given buffer.
+		/// </summary>
+		/// <param name="buffer">The buffer to decompress.</param>
+		/// <returns>The decompressed data.</returns>
+		internal static byte[] Decompress(byte[] buffer) {
+			var compressedDataStream = new MemoryStream(buffer);
+			var decompressedDataStream = new MemoryStream();
+			using (var decompressingStream = new GZipStream(compressedDataStream, CompressionMode.Decompress, true)) {
+				decompressingStream.CopyTo(decompressedDataStream);
+			}
+
+			return decompressedDataStream.ToArray();
+		}
+
+		/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
 		/// <see cref="HttpResponse" />
@@ -597,7 +627,6 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
 			return CopyUpTo(copyFrom, copyTo, int.MaxValue);
 		}
-
 #endif
 
 		/// <summary>

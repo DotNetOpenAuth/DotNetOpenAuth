@@ -18,8 +18,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// issued verification codes as part of obtaining access/refresh tokens.
 	/// </summary>
 	internal class WebAppVerificationCodeBindingElement : AuthServerBindingElementBase {
-		private const string VerificationCodeContext = "{VerificationCode}";
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppVerificationCodeBindingElement"/> class.
 		/// </summary>
@@ -35,13 +33,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </remarks>
 		public override MessageProtections Protection {
 			get { return MessageProtections.None; }
-		}
-
-		/// <summary>
-		/// Gets the maximum message age from the standard expiration binding element.
-		/// </summary>
-		private static TimeSpan MaximumMessageAge {
-			get { return StandardExpirationBindingElement.MaximumMessageAge; }
 		}
 
 		/// <summary>
@@ -94,20 +85,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				var client = this.AuthorizationServer.GetClient(request.ClientIdentifier);
 				ErrorUtilities.VerifyProtocol(string.Equals(client.Secret, request.ClientSecret, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
 
-				var verificationCode = VerificationCode.Decode(this.OAuthChannel, request.VerificationCode);
+				var verificationCode = VerificationCode.Decode(this.OAuthChannel, request.VerificationCode, message);
 				verificationCode.VerifyCallback(request.Callback);
-
-				// Has this verification code expired?
-				DateTime expirationDate = verificationCode.CreationDateUtc + MaximumMessageAge;
-				if (expirationDate < DateTime.UtcNow) {
-					throw new ExpiredMessageException(expirationDate, message);
-				}
-
-				// Has this verification code already been used to obtain an access/refresh token?
-				if (!this.AuthorizationServer.VerificationCodeNonceStore.StoreNonce(VerificationCodeContext, verificationCode.Nonce, verificationCode.CreationDateUtc)) {
-					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", verificationCode.Nonce, verificationCode.CreationDateUtc);
-					throw new ReplayedMessageException(message);
-				}
 
 				request.Scope = verificationCode.Scope;
 

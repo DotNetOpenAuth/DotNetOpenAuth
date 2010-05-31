@@ -16,5 +16,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		string ClientIdentifier { get; }
 		
 		string Scope { get; }
+
+		string SecretType { get; set; }
 	}
 }

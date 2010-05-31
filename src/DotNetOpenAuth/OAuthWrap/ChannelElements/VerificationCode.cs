@@ -1,25 +1,23 @@
-﻿using System.Diagnostics.Contracts;
-using System.Security.Cryptography;
-using System.Web;
-using DotNetOpenAuth.Messaging;
+﻿//-----------------------------------------------------------------------
+// <copyright file="VerificationCode.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using DotNetOpenAuth.OAuthWrap.Messages;
+	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 
-	internal class VerificationCode : MessageBase, IMessageWithEvents {
-		private HashAlgorithm hasher;
-
-		private const int NonceLength = 6;
-
+	internal class VerificationCode : DataBag {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
 		/// </summary>
 		/// <param name="channel">The channel.</param>
 		/// <param name="callback">The callback.</param>
+		/// <param name="scope">The scope.</param>
+		/// <param name="username">The username.</param>
 		internal VerificationCode(OAuthWrapAuthorizationServerChannel channel, Uri callback, string scope, string username)
 			: this(channel) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
@@ -28,8 +26,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			this.CallbackHash = this.CalculateCallbackHash(callback);
 			this.Scope = scope;
 			this.User = username;
-			this.CreationDateUtc = DateTime.UtcNow;
-			this.Nonce = Convert.ToBase64String(MessagingUtilities.GetNonCryptoRandomData(NonceLength));
 		}
 
 		/// <summary>
@@ -37,19 +33,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <param name="channel">The channel.</param>
 		private VerificationCode(OAuthWrapAuthorizationServerChannel channel)
-			: base(Protocol.Default.Version) {
+			: base(channel, true, true, true, MaximumMessageAge, channel.AuthorizationServer.VerificationCodeNonceStore) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
-			this.Channel = channel;
-			this.hasher = new HMACSHA256(this.Channel.AuthorizationServer.Secret);
+			Contract.Requires<ArgumentException>(channel.AuthorizationServer != null);
 		}
-
-		/// <summary>
-		/// Gets or sets the channel.
-		/// </summary>
-		public OAuthWrapAuthorizationServerChannel Channel { get; set; }
-
-		[MessagePart("cb")]
-		private string CallbackHash { get; set; }
 
 		[MessagePart]
 		internal string Scope { get; set; }
@@ -57,70 +44,25 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		[MessagePart]
 		internal string User { get; set; }
 
-		[MessagePart]
-		internal string Nonce { get; set; }
-
-		[MessagePart("timestamp", IsRequired = true, Encoder = typeof(TimestampEncoder))]
-		internal DateTime CreationDateUtc { get; set; }
-
-		[MessagePart("sig")]
-		private string Signature { get; set; }
+		[MessagePart("cb")]
+		private string CallbackHash { get; set; }
 
 		/// <summary>
-		/// Called when the message is about to be transmitted,
-		/// before it passes through the channel binding elements.
+		/// Gets the maximum message age from the standard expiration binding element.
 		/// </summary>
-		void IMessageWithEvents.OnSending() {
-			// Encrypt the authorizing username so as to not expose unintended private user data
-			// to the client or any eavesdropping third party.
-			if (this.User != null) {
-				this.User = MessagingUtilities.Encrypt(this.User, this.Channel.AuthorizationServer.Secret);
-			}
-
-			this.Signature = this.CalculateSignature();
+		private static TimeSpan MaximumMessageAge {
+			get { return StandardExpirationBindingElement.MaximumMessageAge; }
 		}
 
-		/// <summary>
-		/// Called when the message has been received,
-		/// after it passes through the channel binding elements.
-		/// </summary>
-		void IMessageWithEvents.OnReceiving() {
-			// Verify that the verification code was issued by this authorization server.
-			ErrorUtilities.VerifyProtocol(string.Equals(this.Signature, this.CalculateSignature(), StringComparison.Ordinal), Protocol.bad_verification_code);
-
-			// Decrypt the authorizing username.
-			if (this.User != null) {
-				this.User = MessagingUtilities.Decrypt(this.User, this.Channel.AuthorizationServer.Secret);
-			}
-		}
-
-		internal static VerificationCode Decode(OAuthWrapAuthorizationServerChannel channel, string value) {
+		internal static VerificationCode Decode(OAuthWrapAuthorizationServerChannel channel, string value, IProtocolMessage containingMessage) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
+			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
 			Contract.Ensures(Contract.Result<VerificationCode>() != null);
 
-			// Construct a new instance of this type.
 			var self = new VerificationCode(channel);
-			var fields = channel.MessageDescriptions.GetAccessor(self);
-
-			// Deserialize into this newly created instance.
-			var nvc = HttpUtility.ParseQueryString(value);
-			foreach (string key in nvc) {
-				fields[key] = nvc[key];
-			}
-
-			((IMessageWithEvents)self).OnReceiving();
-
+			self.Decode(value, containingMessage);
 			return self;
-		}
-
-		internal string Encode() {
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
-
-			((IMessageWithEvents)this).OnSending();
-
-			var fields = this.Channel.MessageDescriptions.GetAccessor(this);
-			return MessagingUtilities.CreateQueryString(fields);
 		}
 
 		internal void VerifyCallback(Uri callback) {
@@ -128,19 +70,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		private string CalculateCallbackHash(Uri callback) {
-			return this.hasher.ComputeHash(callback.AbsoluteUri);
-		}
-
-		/// <summary>
-		/// Calculates the signature for the data in this verification code.
-		/// </summary>
-		/// <returns>The calculated signature.</returns>
-		private string CalculateSignature() {
-			// Sign the data, being sure to avoid any impact of the signature field itself.
-			var fields = this.Channel.MessageDescriptions.GetAccessor(this);
-			var fieldsCopy = fields.ToDictionary();
-			fieldsCopy.Remove("sig");
-			return this.hasher.ComputeHash(fieldsCopy);
+			return this.Hasher.ComputeHash(callback.AbsoluteUri);
 		}
 	}
 }

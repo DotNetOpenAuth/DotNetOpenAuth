@@ -7,12 +7,20 @@
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
+	using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
 
 	/// <summary>
 	/// A request from the client to the token endpoint for a new access token
 	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
-	internal class RefreshAccessTokenRequest : MessageBase {
+	internal class RefreshAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+		/// <summary>
+		/// The type of message.
+		/// </summary>
+		[MessagePart(Protocol.type, IsRequired = true)]
+		private const string Type = "refresh";
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
 		/// </summary>
@@ -23,11 +31,23 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Gets or sets the type of the secret.
+		/// </summary>
+		/// <value>The type of the secret.</value>
+		/// <remarks>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
+		/// </remarks>
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		public string SecretType { get; set; }
+
+		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
 		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
-		internal string ClientIdentifier { get; set; }
+		public string ClientIdentifier { get; set; }
+
+		public string Scope { get; set; }
 
 		/// <summary>
 		/// Gets or sets the client secret.
@@ -49,14 +69,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
 		internal string RefreshToken { get; set; }
 
-		/// <summary>
-		/// Gets or sets the type of the secret.
-		/// </summary>
-		/// <value>The type of the secret.</value>
-		/// <remarks>
-		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
-		/// </remarks>
-		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
-		internal string SecretType { get; set; }
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
+		private ResponseFormat? Format { get; set; }
 	}
 }

@@ -313,6 +313,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\IAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapResourceServerChannel.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\RefreshAccessTokenBindingElement.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\RefreshToken.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\SignedDataBag.cs" />
     <Compile Include="OAuthWrap\ChannelElements\TimestampEncoder.cs" />
     <Compile Include="OAuthWrap\ChannelElements\VerificationCode.cs" />
     <Compile Include="OAuthWrap\ChannelElements\WebAppVerificationCodeBindingElement.cs" />

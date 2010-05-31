@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
 		/// </remarks>
 		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
-		internal string SecretType { get; set; }
+		public string SecretType { get; set; }
 
 		public string Scope { get; internal set; }
 
