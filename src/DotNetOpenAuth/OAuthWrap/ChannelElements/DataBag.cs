@@ -32,10 +32,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		protected DataBag(OAuthWrapAuthorizationServerChannel channel, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(Protocol.Default.Version) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+			Contract.Requires<ArgumentException>(channel.AuthorizationServer != null);
 			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
 			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
 
-			this.Hasher = new HMACSHA256(this.Channel.AuthorizationServer.Secret);
+			this.Hasher = new HMACSHA256(channel.AuthorizationServer.Secret);
 			this.Channel = channel;
 			this.signed = signed;
 			this.maximumAge = maximumAge;
