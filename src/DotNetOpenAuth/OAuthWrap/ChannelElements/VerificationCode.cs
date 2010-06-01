@@ -10,7 +10,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
-	internal class VerificationCode : DataBag {
+	internal class VerificationCode : AuthorizationDataBag {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
 		/// </summary>
@@ -18,11 +18,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <param name="callback">The callback.</param>
 		/// <param name="scope">The scope.</param>
 		/// <param name="username">The username.</param>
-		internal VerificationCode(OAuthWrapAuthorizationServerChannel channel, Uri callback, string scope, string username)
+		internal VerificationCode(OAuthWrapAuthorizationServerChannel channel, string clientIdentifier, Uri callback, string scope, string username)
 			: this(channel) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
 			Contract.Requires<ArgumentNullException>(callback != null, "callback");
 
+			this.ClientIdentifier = clientIdentifier;
 			this.CallbackHash = this.CalculateCallbackHash(callback);
 			this.Scope = scope;
 			this.User = username;
@@ -37,12 +39,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
 			Contract.Requires<ArgumentException>(channel.AuthorizationServer != null);
 		}
-
-		[MessagePart]
-		internal string Scope { get; set; }
-
-		[MessagePart]
-		internal string User { get; set; }
 
 		[MessagePart("cb")]
 		private string CallbackHash { get; set; }

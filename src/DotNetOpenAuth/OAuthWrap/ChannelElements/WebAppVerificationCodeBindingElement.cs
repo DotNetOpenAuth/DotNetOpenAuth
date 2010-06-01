@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (WebAppRequest)directResponse.OriginatingRequest;
 
-				var code = new VerificationCode(this.OAuthChannel, request.Callback, request.Scope, response.AuthorizingUsername);
+				var code = new VerificationCode(this.OAuthChannel, request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
 				response.VerificationCode = code.Encode();
 
 				return MessageProtections.None;
@@ -86,6 +86,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				ErrorUtilities.VerifyProtocol(string.Equals(client.Secret, request.ClientSecret, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
 
 				var verificationCode = VerificationCode.Decode(this.OAuthChannel, request.VerificationCode, message);
+				ErrorUtilities.VerifyProtocol(string.Equals(verificationCode.ClientIdentifier, request.ClientIdentifier, StringComparison.Ordinal), Protocol.bad_verification_code);
 				verificationCode.VerifyCallback(request.Callback);
 
 				request.Scope = verificationCode.Scope;

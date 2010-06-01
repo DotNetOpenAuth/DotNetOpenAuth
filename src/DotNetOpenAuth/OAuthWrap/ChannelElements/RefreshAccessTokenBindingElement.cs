@@ -31,11 +31,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			var request = message as RefreshAccessTokenRequest;
 			if (request != null) {
 				// Decode and validate the refresh token
-				//request.RefreshToken
+				var refreshToken = RefreshToken.Decode(this.OAuthChannel, request.RefreshToken, message);
 
 				// Fill in the authorized access scope from the refresh token and fill in the property
 				// on the message so that others can read it later.
-				//request.Scope =
+				request.Scope = refreshToken.Scope;
 
 				return MessageProtections.None;
 			}

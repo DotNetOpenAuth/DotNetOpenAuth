@@ -71,6 +71,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			var response = new AccessTokenSuccessResponse(request) {
 				Scope = request.Scope,
+				Lifetime = TimeSpan.FromDays(1), // reasonable default for access token lifetime
 				// TODO: code here to initialize the response
 				AccessToken = "TODO",
 				RefreshToken = "TODO",

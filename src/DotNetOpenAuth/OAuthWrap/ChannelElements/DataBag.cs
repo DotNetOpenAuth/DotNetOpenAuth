@@ -55,12 +55,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		internal string Nonce { get; set; }
 
 		[MessagePart("timestamp", IsRequired = true, Encoder = typeof(TimestampEncoder))]
-		internal DateTime CreationDateUtc { get; set; }
+		internal DateTime UtcCreationDate { get; set; }
 
 		internal virtual string Encode() {
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
-			this.CreationDateUtc = DateTime.UtcNow;
+			this.UtcCreationDate = DateTime.UtcNow;
 
 			if (decodeOnceOnly != null) {
 				this.Nonce = Convert.ToBase64String(MessagingUtilities.GetNonCryptoRandomData(NonceLength));
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			}
 
 			var fields = this.Channel.MessageDescriptions.GetAccessor(this);
-			string value = MessagingUtilities.CreateQueryString(fields);
+			string value = Uri.EscapeDataString(this.BagTypeName) + "&" + MessagingUtilities.CreateQueryString(fields);
 
 			byte[] encoded = Encoding.UTF8.GetBytes(value);
 
@@ -104,6 +104,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			// Deserialize into this newly created instance.
 			var fields = this.Channel.MessageDescriptions.GetAccessor(this);
+			string[] halves = value.Split(new char[] { '&' }, 2);
+			ErrorUtilities.VerifyProtocol(string.Equals(halves[0], Uri.EscapeDataString(this.BagTypeName), StringComparison.Ordinal), "Unexpected type of message while decoding.");
+			value = halves[1];
+
 			var nvc = HttpUtility.ParseQueryString(value);
 			foreach (string key in nvc) {
 				fields[key] = nvc[key];
@@ -116,7 +120,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			if (maximumAge.HasValue) {
 				// Has this verification code expired?
-				DateTime expirationDate = this.CreationDateUtc + this.maximumAge.Value;
+				DateTime expirationDate = this.UtcCreationDate + this.maximumAge.Value;
 				if (expirationDate < DateTime.UtcNow) {
 					throw new ExpiredMessageException(expirationDate, containingMessage);
 				}
@@ -126,11 +130,15 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			if (decodeOnceOnly != null) {
 				ErrorUtilities.VerifyInternal(this.maximumAge.HasValue, "Oops!  How can we validate a nonce without a maximum message age?");
 				string context = "{" + GetType().FullName + "}";
-				if (!this.decodeOnceOnly.StoreNonce(context, this.Nonce, this.CreationDateUtc)) {
-					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", this.Nonce, this.CreationDateUtc);
+				if (!this.decodeOnceOnly.StoreNonce(context, this.Nonce, this.UtcCreationDate)) {
+					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", this.Nonce, this.UtcCreationDate);
 					throw new ReplayedMessageException(containingMessage);
 				}
 			}
+		}
+
+		private string BagTypeName {
+			get { return this.GetType().Name; }
 		}
 
 		/// <summary>
