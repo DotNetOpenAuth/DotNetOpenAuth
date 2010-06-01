@@ -50,6 +50,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			this.Format = ResponseFormat.Form;
 		}
 
+		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+			get { return CodeOrTokenType.VerificationCode; }
+		}
+
+		string ITokenCarryingRequest.CodeOrToken {
+			get { return this.VerificationCode; }
+			set { this.VerificationCode = value; }
+		}
+
+		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
@@ -65,7 +76,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// REQUIRED if the client identifier has a matching secret. The client secret as described in Section 3.4  (Client Credentials). 
 		/// </remarks>
 		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
-		internal string ClientSecret { get; set; }
+		public string ClientSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
@@ -93,8 +104,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </remarks>
 		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
 		public string SecretType { get; set; }
-
-		public string Scope { get; internal set; }
 
 		ResponseFormat IOAuthDirectResponseFormat.Format {
 			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }

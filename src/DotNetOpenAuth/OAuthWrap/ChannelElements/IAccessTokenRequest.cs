@@ -12,11 +12,27 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using Messages;
 	using Messaging;
 
-	internal interface IAccessTokenRequest : IDirectedProtocolMessage {
-		string ClientIdentifier { get; }
-		
-		string Scope { get; }
+	internal interface ITokenCarryingRequest : IDirectedProtocolMessage {
+		string CodeOrToken { get; set;  }
 
-		string SecretType { get; set; }
+		CodeOrTokenType CodeOrTokenType { get; }
+
+		IAuthorizationDescription AuthorizationDescription { get; set; }
+	}
+
+	internal interface IAccessTokenRequest : ITokenCarryingRequest {
+		string ClientIdentifier { get; }
+
+		string ClientSecret { get; }
+
+		string SecretType { get; }
+	}
+
+	internal enum CodeOrTokenType {
+		VerificationCode,
+
+		RefreshToken,
+
+		AccessToken,
 	}
 }

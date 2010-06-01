@@ -52,9 +52,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			if (response != null) {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (WebAppRequest)directResponse.OriginatingRequest;
-
-				var code = new VerificationCode(this.OAuthChannel, request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
-				response.VerificationCode = code.Encode();
+				ITokenCarryingRequest tokenCarryingResponse = response;
+				tokenCarryingResponse.AuthorizationDescription = new VerificationCode(this.OAuthChannel, request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
 
 				return MessageProtections.None;
 			}
@@ -82,14 +81,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var request = message as WebAppAccessTokenRequest;
 			if (request != null) {
-				var client = this.AuthorizationServer.GetClient(request.ClientIdentifier);
-				ErrorUtilities.VerifyProtocol(string.Equals(client.Secret, request.ClientSecret, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
-
-				var verificationCode = VerificationCode.Decode(this.OAuthChannel, request.VerificationCode, message);
-				ErrorUtilities.VerifyProtocol(string.Equals(verificationCode.ClientIdentifier, request.ClientIdentifier, StringComparison.Ordinal), Protocol.bad_verification_code);
-				verificationCode.VerifyCallback(request.Callback);
-
-				request.Scope = verificationCode.Scope;
+				IAccessTokenRequest accessRequest = request;
+				((VerificationCode)accessRequest.AuthorizationDescription).VerifyCallback(request.Callback);
 
 				return MessageProtections.None;
 			}

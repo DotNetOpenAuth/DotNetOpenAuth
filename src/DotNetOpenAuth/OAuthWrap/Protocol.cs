@@ -59,6 +59,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string incorrect_client_credentials = "incorrect_client_credentials";
 
 		/// <summary>
+		/// The "authorization_expired" string.
+		/// </summary>
+		internal const string authorization_expired = "authorization_expired";
+
+		/// <summary>
 		/// The "redirect_uri" string.
 		/// </summary>
 		internal const string redirect_uri = "redirect_uri";

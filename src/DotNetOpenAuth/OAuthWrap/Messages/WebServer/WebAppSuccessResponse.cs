@@ -8,13 +8,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	/// <summary>
 	/// The message sent by the Authorization Server to the Client via the user agent
 	/// to indicate that user authorization was granted, and to return the user
 	/// to the Client where they started their experience.
 	/// </summary>
-	internal class WebAppSuccessResponse : MessageBase, IMessageWithClientState {
+	internal class WebAppSuccessResponse : MessageBase, IMessageWithClientState, ITokenCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebAppSuccessResponse"/> class.
 		/// </summary>
@@ -37,6 +38,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
 		}
+
+		string ITokenCarryingRequest.CodeOrToken {
+			get { return this.VerificationCode; }
+			set { this.VerificationCode = value; }
+		}
+
+		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+			get { return CodeOrTokenType.VerificationCode; }
+		}
+
+		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
 		/// Gets or sets some state as provided by the client in the authorization request.

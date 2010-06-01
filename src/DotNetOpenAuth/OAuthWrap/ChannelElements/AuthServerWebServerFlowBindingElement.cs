@@ -69,6 +69,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 				ErrorUtilities.VerifyProtocol(client.Callback == null || client.Callback == authorizationRequest.Callback, OAuthWrapStrings.CallbackMismatch, client.Callback, authorizationRequest.Callback);
 			}
+
 			return null;
 		}
 	}

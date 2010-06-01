@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
 			var response = new AccessTokenSuccessResponse(request) {
-				Scope = request.Scope,
+				Scope = request.AuthorizationDescription.Scope,
 				Lifetime = TimeSpan.FromDays(1), // reasonable default for access token lifetime
 				// TODO: code here to initialize the response
 				AccessToken = "TODO",
@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			if (authorizationServer != null) {
 				bindingElements.Add(new AuthServerWebServerFlowBindingElement());
 				bindingElements.Add(new WebAppVerificationCodeBindingElement());
-				bindingElements.Add(new RefreshAccessTokenBindingElement());
+				bindingElements.Add(new AccessRequestBindingElement());
 			}
 
 			return bindingElements.ToArray();

@@ -8,6 +8,7 @@
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
 		private static readonly byte[] secret;
@@ -42,5 +43,10 @@
 		}
 
 		#endregion
+
+		public bool IsAuthorizationValid(IAuthorizationDescription authorization) {
+			// We don't support revoking tokens yet.
+			return true;
+		}
 	}
 }

@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using ChannelElements;
 	using Messaging;
 
-	internal class AccessProtectedResourceRequest : MessageBase {
+	internal class AccessProtectedResourceRequest : MessageBase, ITokenCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
 		/// </summary>
@@ -21,6 +21,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		internal AccessProtectedResourceRequest(Version version, Uri recipient)
 			: base(version, MessageTransport.Direct, recipient) {
 		}
+
+		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+			get { return CodeOrTokenType.AccessToken; }
+		}
+
+		string ITokenCarryingRequest.CodeOrToken {
+			get { return this.AccessToken; }
+			set { this.AccessToken = value; }
+		}
+
+		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		[MessagePart("token", IsRequired = true, AllowEmpty = false)]
 		internal string AccessToken { get; set; }

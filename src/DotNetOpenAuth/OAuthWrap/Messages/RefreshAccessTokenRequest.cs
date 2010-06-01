@@ -30,6 +30,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			: base(version, MessageTransport.Direct, tokenEndpoint) {
 		}
 
+		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+			get { return CodeOrTokenType.RefreshToken; }
+		}
+
+		string ITokenCarryingRequest.CodeOrToken {
+			get { return this.RefreshToken; }
+			set { this.RefreshToken = value; }
+		}
+
+		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+
 		/// <summary>
 		/// Gets or sets the type of the secret.
 		/// </summary>
@@ -47,8 +58,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
 		public string ClientIdentifier { get; set; }
 
-		public string Scope { get; set; }
-
 		/// <summary>
 		/// Gets or sets the client secret.
 		/// </summary>
@@ -57,7 +66,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// REQUIRED if the client identifier has a matching secret. The client secret as described in Section 3.4  (Client Credentials). 
 		/// </remarks>
 		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
-		internal string ClientSecret { get; set; }
+		public string ClientSecret { get; set; }
 
 		/// <summary>
 		/// Gets or sets the refresh token.
