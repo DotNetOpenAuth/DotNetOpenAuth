@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Security.Cryptography;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -24,6 +25,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		private readonly byte[] secret;
 
+		private readonly RSACryptoServiceProvider asymmetricSigning;
+
+		private readonly HashAlgorithm hasherForAsymmetricSigning;
+
 		private readonly bool signed;
 
 		private readonly INonceStore decodeOnceOnly;
@@ -34,12 +39,18 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		private readonly bool compressed;
 
-		protected DataBag(byte[] secret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+		protected DataBag(byte[] secret = null, RSAParameters? asymmetricSignatureKey = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(Protocol.Default.Version) {
 			Contract.Requires<ArgumentException>(secret != null || (signed == null && encrypted == null), "A secret is required when signing or encrypting is required.");
 			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
 			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
 
+			if (asymmetricSignatureKey.HasValue) {
+				this.asymmetricSigning = new RSACryptoServiceProvider();
+				this.asymmetricSigning.ImportParameters(asymmetricSignatureKey.Value);
+				this.hasherForAsymmetricSigning = new SHA1CryptoServiceProvider();
+			} 
+			
 			if (secret != null) {
 				this.Hasher = new HMACSHA256(secret);
 			}
@@ -120,7 +131,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			if (signed) {
 				// Verify that the verification code was issued by this authorization server.
-				ErrorUtilities.VerifyProtocol(string.Equals(this.Signature, this.CalculateSignature(), StringComparison.Ordinal), Protocol.bad_verification_code);
+				ErrorUtilities.VerifyProtocol(this.IsSignatureValid(), Protocol.bad_verification_code);
 			}
 
 			if (maximumAge.HasValue) {
@@ -146,6 +157,16 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			get { return this.GetType().Name; }
 		}
 
+		private bool IsSignatureValid() {
+			if (this.asymmetricSigning != null) {
+				byte[] bytesToSign = this.GetBytesToSign();
+				byte[] signature = Convert.FromBase64String(this.Signature);
+				return this.asymmetricSigning.VerifyData(bytesToSign, this.hasherForAsymmetricSigning, signature);
+			} else {
+				return string.Equals(this.Signature, this.CalculateSignature(), StringComparison.Ordinal);
+			}
+		}
+
 		/// <summary>
 		/// Calculates the signature for the data in this verification code.
 		/// </summary>
@@ -153,11 +174,25 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		private string CalculateSignature() {
 			Contract.Requires<InvalidOperationException>(this.Hasher != null);
 
+			byte[] bytesToSign = this.GetBytesToSign();
+			if (this.asymmetricSigning != null) {
+				byte[] signature = this.asymmetricSigning.SignData(bytesToSign, this.hasherForAsymmetricSigning);
+				return Convert.ToBase64String(signature);
+			} else {
+				return Convert.ToBase64String(this.Hasher.ComputeHash(bytesToSign));
+			}
+		}
+
+		private byte[] GetBytesToSign() {
 			// Sign the data, being sure to avoid any impact of the signature field itself.
 			var fields = MessageDescriptions.GetAccessor(this);
 			var fieldsCopy = fields.ToDictionary();
 			fieldsCopy.Remove("sig");
-			return this.Hasher.ComputeHash(fieldsCopy);
+
+			var sortedData = new SortedDictionary<string, string>(fieldsCopy, StringComparer.OrdinalIgnoreCase);
+			string value = MessagingUtilities.CreateQueryString(sortedData);
+			byte[] bytesToSign = Encoding.UTF8.GetBytes(value);
+			return bytesToSign;
 		}
 	}
 }

@@ -9,13 +9,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	internal abstract class AuthorizationDataBag : DataBag, IAuthorizationDescription {
-		protected AuthorizationDataBag(byte[] secret, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
-			: base(secret, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
+		protected AuthorizationDataBag(byte[] secret, RSAParameters? asymmetricSignatureKey = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: base(secret, asymmetricSignatureKey, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
 		}
 
 		[MessagePart]

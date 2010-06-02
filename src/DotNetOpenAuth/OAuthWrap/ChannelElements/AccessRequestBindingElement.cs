@@ -49,7 +49,7 @@
 							tokenRequest.AuthorizationDescription = RefreshToken.Decode(this.AuthorizationServer.Secret, tokenRequest.CodeOrToken, message);
 							break;
 						case CodeOrTokenType.AccessToken:
-							tokenRequest.AuthorizationDescription = AccessToken.Decode(this.AuthorizationServer.Secret, tokenRequest.CodeOrToken, message);
+							tokenRequest.AuthorizationDescription = AccessToken.Decode(this.AuthorizationServer.Secret, tokenRequest.CodeOrToken, this.AuthorizationServer.AccessTokenSigningPrivateKey, message);
 							break;
 						default:
 							throw ErrorUtilities.ThrowInternal("Unexpected value for CodeOrTokenType: " + tokenRequest.CodeOrTokenType);

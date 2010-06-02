@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
@@ -51,6 +52,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		byte[] Secret { get; }
 
+		RSAParameters? AccessTokenSigningPrivateKey { get; }
+
 		INonceStore VerificationCodeNonceStore { get; }
 	}
 
@@ -70,6 +73,10 @@ namespace DotNetOpenAuth.OAuthWrap {
 				Contract.Ensures(Contract.Result<byte[]>() != null);
 				throw new NotImplementedException();
 			}
+		}
+
+		RSAParameters? IAuthorizationServer.AccessTokenSigningPrivateKey {
+			get { throw new NotImplementedException(); }
 		}
 
 		INonceStore IAuthorizationServer.VerificationCodeNonceStore {
