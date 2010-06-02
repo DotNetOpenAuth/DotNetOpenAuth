@@ -14,9 +14,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	internal abstract class AuthorizationDataBag : DataBag, IAuthorizationDescription {
-		protected AuthorizationDataBag(OAuthWrapAuthorizationServerChannel channel, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
-			: base(channel, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		protected AuthorizationDataBag(byte[] secret, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: base(secret, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
 		}
 
 		[MessagePart]

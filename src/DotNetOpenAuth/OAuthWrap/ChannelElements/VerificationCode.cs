@@ -18,10 +18,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <param name="callback">The callback.</param>
 		/// <param name="scope">The scope.</param>
 		/// <param name="username">The username.</param>
-		internal VerificationCode(OAuthWrapAuthorizationServerChannel channel, string clientIdentifier, Uri callback, string scope, string username)
-			: this(channel) {
+		internal VerificationCode(byte[] secret, INonceStore nonceStore, string clientIdentifier, Uri callback, string scope, string username)
+			: this(secret, nonceStore) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
+			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentNullException>(callback != null, "callback");
 
 			this.ClientIdentifier = clientIdentifier;
@@ -34,10 +36,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
 		/// </summary>
 		/// <param name="channel">The channel.</param>
-		private VerificationCode(OAuthWrapAuthorizationServerChannel channel)
-			: base(channel, true, true, false, MaximumMessageAge, channel.AuthorizationServer.VerificationCodeNonceStore) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
-			Contract.Requires<ArgumentException>(channel.AuthorizationServer != null);
+		private VerificationCode(byte[] secret, INonceStore nonceStore)
+			: base(secret, true, true, false, MaximumMessageAge, nonceStore) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
+			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
 		}
 
 		[MessagePart("cb")]
@@ -50,13 +52,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			get { return StandardExpirationBindingElement.MaximumMessageAge; }
 		}
 
-		internal static VerificationCode Decode(OAuthWrapAuthorizationServerChannel channel, string value, IProtocolMessage containingMessage) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		internal static VerificationCode Decode(byte[] secret, INonceStore nonceStore, string value, IProtocolMessage containingMessage) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
+			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
 			Contract.Ensures(Contract.Result<VerificationCode>() != null);
 
-			var self = new VerificationCode(channel);
+			var self = new VerificationCode(secret, nonceStore);
 			self.Decode(value, containingMessage);
 			return self;
 		}

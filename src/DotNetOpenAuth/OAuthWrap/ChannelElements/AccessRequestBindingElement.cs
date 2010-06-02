@@ -43,13 +43,13 @@
 				try {
 					switch (tokenRequest.CodeOrTokenType) {
 						case CodeOrTokenType.VerificationCode:
-							tokenRequest.AuthorizationDescription = VerificationCode.Decode(this.OAuthChannel, tokenRequest.CodeOrToken, message);
+							tokenRequest.AuthorizationDescription = VerificationCode.Decode(this.AuthorizationServer.Secret, this.AuthorizationServer.VerificationCodeNonceStore, tokenRequest.CodeOrToken, message);
 							break;
 						case CodeOrTokenType.RefreshToken:
-							tokenRequest.AuthorizationDescription = RefreshToken.Decode(this.OAuthChannel, tokenRequest.CodeOrToken, message);
+							tokenRequest.AuthorizationDescription = RefreshToken.Decode(this.AuthorizationServer.Secret, tokenRequest.CodeOrToken, message);
 							break;
 						case CodeOrTokenType.AccessToken:
-							tokenRequest.AuthorizationDescription = AccessToken.Decode(this.OAuthChannel, tokenRequest.CodeOrToken, message);
+							tokenRequest.AuthorizationDescription = AccessToken.Decode(this.AuthorizationServer.Secret, tokenRequest.CodeOrToken, message);
 							break;
 						default:
 							throw ErrorUtilities.ThrowInternal("Unexpected value for CodeOrTokenType: " + tokenRequest.CodeOrTokenType);

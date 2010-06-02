@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (WebAppRequest)directResponse.OriginatingRequest;
 				ITokenCarryingRequest tokenCarryingResponse = response;
-				tokenCarryingResponse.AuthorizationDescription = new VerificationCode(this.OAuthChannel, request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
+				tokenCarryingResponse.AuthorizationDescription = new VerificationCode(this.AuthorizationServer.Secret, this.AuthorizationServer.VerificationCodeNonceStore, request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
 
 				return MessageProtections.None;
 			}

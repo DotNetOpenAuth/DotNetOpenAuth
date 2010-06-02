@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
-			var accessToken = new AccessToken(this, request.AuthorizationDescription, accessTokenLifetime);
+			var accessToken = new AccessToken(this.AuthorizationServer.Secret, request.AuthorizationDescription, accessTokenLifetime);
 			var response = new AccessTokenSuccessResponse(request) {
 				Scope = request.AuthorizationDescription.Scope,
 				AccessToken = accessToken.Encode(),
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			};
 
 			if (includeRefreshToken) {
-				var refreshToken = new RefreshToken(this, request.AuthorizationDescription);
+				var refreshToken = new RefreshToken(this.AuthorizationServer.Secret, request.AuthorizationDescription);
 				response.RefreshToken = refreshToken.Encode();
 			}
 

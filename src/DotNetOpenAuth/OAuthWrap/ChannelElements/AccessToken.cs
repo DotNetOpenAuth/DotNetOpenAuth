@@ -18,14 +18,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.
 		/// </summary>
 		/// <param name="channel">The channel.</param>
-		private AccessToken(OAuthWrapAuthorizationServerChannel channel)
-			: base(channel, true, true) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		private AccessToken(byte[] secret)
+			: base(secret, true, true) {
+			Contract.Requires<ArgumentNullException>(secret != null, "channel");
 		}
 
-		internal AccessToken(OAuthWrapAuthorizationServerChannel channel, IAuthorizationDescription authorization, TimeSpan? lifetime)
-			: this(channel) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		internal AccessToken(byte[] secret, IAuthorizationDescription authorization, TimeSpan? lifetime)
+			: this(secret) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
@@ -37,12 +37,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		internal TimeSpan? Lifetime { get; set; }
 
-		internal static AccessToken Decode(OAuthWrapAuthorizationServerChannel channel, string value, IProtocolMessage containingMessage = null) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		internal static AccessToken Decode(byte[] secret, string value, IProtocolMessage containingMessage = null) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 			Contract.Ensures(Contract.Result<AccessToken>() != null);
 
-			var self = new AccessToken(channel);
+			var self = new AccessToken(secret);
 			self.Decode(value, containingMessage);
 			return self;
 		}

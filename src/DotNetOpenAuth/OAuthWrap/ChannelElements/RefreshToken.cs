@@ -17,14 +17,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Initializes a new instance of the <see cref="RefreshToken"/> class.
 		/// </summary>
 		/// <param name="channel">The channel.</param>
-		private RefreshToken(OAuthWrapAuthorizationServerChannel channel)
-			: base(channel, true, true) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		private RefreshToken(byte[] secret)
+			: base(secret, true, true) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 		}
 
-		internal RefreshToken(OAuthWrapAuthorizationServerChannel channel, IAuthorizationDescription authorization)
-			: this(channel) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		internal RefreshToken(byte[] secret, IAuthorizationDescription authorization)
+			: this(secret) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
@@ -33,12 +33,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			this.Scope = authorization.Scope;
 		}
 
-		internal static RefreshToken Decode(OAuthWrapAuthorizationServerChannel channel, string value, IProtocolMessage containingMessage = null) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		internal static RefreshToken Decode(byte[] secret, string value, IProtocolMessage containingMessage = null) {
+			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 			Contract.Ensures(Contract.Result<RefreshToken>() != null);
 
-			var self = new RefreshToken(channel);
+			var self = new RefreshToken(secret);
 			self.Decode(value, containingMessage);
 			return self;
 		}

@@ -14,10 +14,15 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	internal abstract class DataBag : MessageBase {
+		private static readonly MessageDescriptionCollection MessageDescriptions = new MessageDescriptionCollection();
+
 		private const int NonceLength = 6;
+
+		private readonly byte[] secret;
 
 		private readonly bool signed;
 
@@ -29,23 +34,23 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		private readonly bool compressed;
 
-		protected DataBag(OAuthWrapAuthorizationServerChannel channel, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+		protected DataBag(byte[] secret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(Protocol.Default.Version) {
-			Contract.Requires<ArgumentNullException>(channel != null, "channel");
-			Contract.Requires<ArgumentException>(channel.AuthorizationServer != null);
+			Contract.Requires<ArgumentException>(secret != null || (signed == null && encrypted == null), "A secret is required when signing or encrypting is required.");
 			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
 			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
 
-			this.Hasher = new HMACSHA256(channel.AuthorizationServer.Secret);
-			this.Channel = channel;
+			if (secret != null) {
+				this.Hasher = new HMACSHA256(secret);
+			}
+
+			this.secret = secret;
 			this.signed = signed;
 			this.maximumAge = maximumAge;
 			this.decodeOnceOnly = decodeOnceOnly;
 			this.encrypted = encrypted;
 			this.compressed = compressed;
 		}
-
-		protected OAuthWrapAuthorizationServerChannel Channel { get; set; }
 
 		protected HashAlgorithm Hasher { get; set; }
 
@@ -71,7 +76,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				this.Signature = this.CalculateSignature();
 			}
 
-			var fields = this.Channel.MessageDescriptions.GetAccessor(this);
+			var fields = MessageDescriptions.GetAccessor(this);
 			string value = Uri.EscapeDataString(this.BagTypeName) + "&" + MessagingUtilities.CreateQueryString(fields);
 
 			byte[] encoded = Encoding.UTF8.GetBytes(value);
@@ -81,7 +86,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			}
 
 			if (encrypted) {
-				encoded = MessagingUtilities.Encrypt(encoded, this.Channel.AuthorizationServer.Secret);
+				encoded = MessagingUtilities.Encrypt(encoded, this.secret);
 			}
 
 			return Convert.ToBase64String(encoded);
@@ -93,7 +98,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			byte[] encoded = Convert.FromBase64String(value);
 
 			if (encrypted) {
-				encoded = MessagingUtilities.Decrypt(encoded, this.Channel.AuthorizationServer.Secret);
+				encoded = MessagingUtilities.Decrypt(encoded, this.secret);
 			}
 
 			if (compressed) {
@@ -103,7 +108,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			value = Encoding.UTF8.GetString(encoded);
 
 			// Deserialize into this newly created instance.
-			var fields = this.Channel.MessageDescriptions.GetAccessor(this);
+			var fields = MessageDescriptions.GetAccessor(this);
 			string[] halves = value.Split(new char[] { '&' }, 2);
 			ErrorUtilities.VerifyProtocol(string.Equals(halves[0], Uri.EscapeDataString(this.BagTypeName), StringComparison.Ordinal), "Unexpected type of message while decoding.");
 			value = halves[1];
@@ -146,8 +151,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <returns>The calculated signature.</returns>
 		private string CalculateSignature() {
+			Contract.Requires<InvalidOperationException>(this.Hasher != null);
+
 			// Sign the data, being sure to avoid any impact of the signature field itself.
-			var fields = this.Channel.MessageDescriptions.GetAccessor(this);
+			var fields = MessageDescriptions.GetAccessor(this);
 			var fieldsCopy = fields.ToDictionary();
 			fieldsCopy.Remove("sig");
 			return this.Hasher.ComputeHash(fieldsCopy);
