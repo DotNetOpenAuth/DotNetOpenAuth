@@ -25,10 +25,6 @@
 			get { return MessageProtections.None; }
 		}
 
-		protected TimeSpan AccessTokenLifetime {
-			get { return TimeSpan.FromHours(1); }
-		}
-
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var tokenRequest = message as ITokenCarryingRequest;
 			if (tokenRequest != null) {
@@ -53,7 +49,7 @@
 							tokenRequest.AuthorizationDescription = RefreshToken.Decode(this.OAuthChannel, tokenRequest.CodeOrToken, message);
 							break;
 						case CodeOrTokenType.AccessToken:
-							tokenRequest.AuthorizationDescription = AccessToken.Decode(this.OAuthChannel, tokenRequest.CodeOrToken, this.AccessTokenLifetime, message);
+							tokenRequest.AuthorizationDescription = AccessToken.Decode(this.OAuthChannel, tokenRequest.CodeOrToken, message);
 							break;
 						default:
 							throw ErrorUtilities.ThrowInternal("Unexpected value for CodeOrTokenType: " + tokenRequest.CodeOrTokenType);
