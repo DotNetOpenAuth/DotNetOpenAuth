@@ -399,8 +399,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="value">The value to hash.</param>
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
-		internal static string ComputeHash(this HashAlgorithm algorithm, string value, Encoding encoding = null)
-		{
+		internal static string ComputeHash(this HashAlgorithm algorithm, string value, Encoding encoding = null) {
 			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
 			Contract.Requires<ArgumentNullException>(value != null, "value");
 			Contract.Ensures(Contract.Result<string>() != null);
@@ -419,8 +418,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="data">The data to hash.</param>
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
-		internal static string ComputeHash(this HashAlgorithm algorithm, IDictionary<string, string> data, Encoding encoding = null)
-		{
+		internal static string ComputeHash(this HashAlgorithm algorithm, IDictionary<string, string> data, Encoding encoding = null) {
 			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
 			Contract.Requires<ArgumentNullException>(data != null, "data");
 			Contract.Ensures(Contract.Result<string>() != null);
@@ -441,8 +439,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="sortedData">The data to hash.</param>
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
-		internal static string ComputeHash(this HashAlgorithm algorithm, IEnumerable<KeyValuePair<string, string>> sortedData, Encoding encoding = null)
-		{
+		internal static string ComputeHash(this HashAlgorithm algorithm, IEnumerable<KeyValuePair<string, string>> sortedData, Encoding encoding = null) {
 			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
 			Contract.Requires<ArgumentNullException>(sortedData != null, "sortedData");
 			Contract.Ensures(Contract.Result<string>() != null);
@@ -456,8 +453,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to encrypt.</param>
 		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, and 256.</param>
 		/// <returns>The encrypted buffer</returns>
-		internal static byte[] Encrypt(byte[] buffer, byte[] key)
-		{
+		internal static byte[] Encrypt(byte[] buffer, byte[] key) {
 			SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key);
 
 			var ms = new MemoryStream();
@@ -466,8 +462,7 @@ namespace DotNetOpenAuth.Messaging {
 			binaryWriter.Write(crypto.IV);
 			binaryWriter.Flush();
 
-			using(var cryptoStream = new CryptoStream(ms, crypto.CreateEncryptor(), CryptoStreamMode.Write))
-			{
+			using (var cryptoStream = new CryptoStream(ms, crypto.CreateEncryptor(), CryptoStreamMode.Write)) {
 				cryptoStream.Write(buffer, 0, buffer.Length);
 			}
 
@@ -480,8 +475,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to decrypt.</param>
 		/// <param name="key">The symmetric secret to use to decrypt the buffer.  Allowed values are 128, 192, and 256.</param>
 		/// <returns>The encrypted buffer</returns>
-		internal static byte[] Decrypt(byte[] buffer, byte[] key)
-		{
+		internal static byte[] Decrypt(byte[] buffer, byte[] key) {
 			SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key);
 
 			var ms = new MemoryStream(buffer);
@@ -510,8 +504,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="plainText">The text to encrypt.</param>
 		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, and 256.</param>
 		/// <returns>The encrypted buffer</returns>
-		internal static string Encrypt(string plainText, byte[] key)
-		{
+		internal static string Encrypt(string plainText, byte[] key) {
 			byte[] buffer = Encoding.UTF8.GetBytes(plainText);
 			byte[] cipher = Encrypt(buffer, key);
 			return Convert.ToBase64String(cipher);
@@ -523,8 +516,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="cipherText">The text to decrypt.</param>
 		/// <param name="key">The symmetric secret to use to decrypt the buffer.  Allowed values are 128, 192, and 256.</param>
 		/// <returns>The encrypted buffer</returns>
-		internal static string Decrypt(string cipherText, byte[] key)
-		{
+		internal static string Decrypt(string cipherText, byte[] key) {
 			byte[] cipher = Convert.FromBase64String(cipherText);
 			byte[] plainText = Decrypt(cipher, key);
 			return Encoding.UTF8.GetString(plainText);
@@ -1011,8 +1003,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <typeparam name="TValue">The type of the value.</typeparam>
 		/// <param name="sequence">The sequence.</param>
 		/// <returns>A dictionary.</returns>
-		internal static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> sequence)
-		{
+		internal static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> sequence) {
 			Contract.Requires<ArgumentNullException>(sequence != null, "sequence");
 			return sequence.ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
@@ -1227,13 +1218,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="key">The symmetric key to use for encryption/decryption.</param>
 		/// <returns>A symmetric algorithm.</returns>
-		private static SymmetricAlgorithm CreateSymmetricAlgorithm(byte[] key)
-		{
-			return new RijndaelManaged
-			       	{
-			       		Mode = CipherMode.CBC,
-			       		Key = key,
-			       	};
+		private static SymmetricAlgorithm CreateSymmetricAlgorithm(byte[] key) {
+			return new RijndaelManaged {
+				Mode = CipherMode.CBC,
+				Key = key,
+			};
 		}
 
 		/// <summary>
