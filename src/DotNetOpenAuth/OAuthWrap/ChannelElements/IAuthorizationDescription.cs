@@ -7,12 +7,14 @@
 namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 
 	/// <summary>
 	/// Describes a delegated authorization between a resource server, a client, and a user.
 	/// </summary>
+	[ContractClass(typeof(IAuthorizationDescriptionContract))]
 	public interface IAuthorizationDescription {
 		/// <summary>
 		/// Gets the identifier of the client authorized to access protected data.
@@ -35,4 +37,33 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		string Scope { get; }
 	}
+
+	[ContractClassFor(typeof(IAuthorizationDescription))]
+	internal abstract class IAuthorizationDescriptionContract : IAuthorizationDescription {
+		private IAuthorizationDescriptionContract() {
+		}
+
+		string IAuthorizationDescription.ClientIdentifier {
+			get {
+				Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
+				throw new NotImplementedException();
+			}
+		}
+
+		DateTime IAuthorizationDescription.UtcIssued {
+			get { throw new NotImplementedException(); }
+		}
+
+		string IAuthorizationDescription.User {
+			get {
+				Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
+				throw new NotImplementedException();
+			}
+		}
+
+		string IAuthorizationDescription.Scope {
+			get { throw new NotImplementedException(); }
+		}
+	}
+
 }

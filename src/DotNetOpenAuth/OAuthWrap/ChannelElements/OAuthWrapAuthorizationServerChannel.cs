@@ -69,12 +69,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
+			var accessToken = new AccessToken(this, request.AuthorizationDescription);
+			var refreshToken = new RefreshToken(this, request.AuthorizationDescription);
 			var response = new AccessTokenSuccessResponse(request) {
 				Scope = request.AuthorizationDescription.Scope,
-				Lifetime = TimeSpan.FromDays(1), // reasonable default for access token lifetime
-				// TODO: code here to initialize the response
-				AccessToken = "TODO",
-				RefreshToken = "TODO",
+				AccessToken = accessToken.Encode(),
+				RefreshToken = refreshToken.Encode(),
+				////Lifetime = TimeSpan.FromDays(1), // reasonable default for access token lifetime
 			};
 
 			return response;

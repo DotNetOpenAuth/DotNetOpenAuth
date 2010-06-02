@@ -17,9 +17,20 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Initializes a new instance of the <see cref="RefreshToken"/> class.
 		/// </summary>
 		/// <param name="channel">The channel.</param>
-		internal RefreshToken(OAuthWrapAuthorizationServerChannel channel)
+		private RefreshToken(OAuthWrapAuthorizationServerChannel channel)
 			: base(channel, true, true, true) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		}
+
+		internal RefreshToken(OAuthWrapAuthorizationServerChannel channel, IAuthorizationDescription authorization)
+			: this(channel) {
+			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
+
+			this.ClientIdentifier = authorization.ClientIdentifier;
+			this.UtcCreationDate = authorization.UtcIssued;
+			this.User = authorization.User;
+			this.Scope = authorization.Scope;
 		}
 
 		internal static RefreshToken Decode(OAuthWrapAuthorizationServerChannel channel, string value, IProtocolMessage containingMessage) {

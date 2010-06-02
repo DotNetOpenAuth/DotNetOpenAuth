@@ -17,9 +17,20 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.
 		/// </summary>
 		/// <param name="channel">The channel.</param>
-		internal AccessToken(OAuthWrapAuthorizationServerChannel channel, TimeSpan lifetime)
+		private AccessToken(OAuthWrapAuthorizationServerChannel channel, TimeSpan? lifetime = null)
 			: base(channel, true, true, true, lifetime) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+		}
+
+		internal AccessToken(OAuthWrapAuthorizationServerChannel channel, IAuthorizationDescription authorization)
+			: this(channel) {
+			Contract.Requires<ArgumentNullException>(channel != null, "channel");
+			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
+
+			this.ClientIdentifier = authorization.ClientIdentifier;
+			this.UtcCreationDate = authorization.UtcIssued;
+			this.User = authorization.User;
+			this.Scope = authorization.Scope;
 		}
 
 		internal static AccessToken Decode(OAuthWrapAuthorizationServerChannel channel, string value, TimeSpan lifetime, IProtocolMessage containingMessage) {
