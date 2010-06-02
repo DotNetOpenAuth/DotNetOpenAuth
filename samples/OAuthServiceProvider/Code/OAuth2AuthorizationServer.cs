@@ -36,7 +36,7 @@
 			get { return this.nonceStore; }
 		}
 
-		public RSAParameters? AccessTokenSigningPrivateKey {
+		public RSAParameters AccessTokenSigningPrivateKey {
 			get { return asymmetricKey; }
 		}
 

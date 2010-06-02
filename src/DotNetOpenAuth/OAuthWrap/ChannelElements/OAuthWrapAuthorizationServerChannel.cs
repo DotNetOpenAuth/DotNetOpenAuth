@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuthWrap.Messages;
+using System.Security.Cryptography;
 
 	/// <summary>
 	/// The channel for the OAuth WRAP protocol.
@@ -66,14 +67,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <value>The authorization server.  Will be null for channels serving clients.</value>
 		public IAuthorizationServer AuthorizationServer { get; set; }
 
-		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
+		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request, RSAParameters accessTokenEncryptingPublicKey, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
 			var accessToken = new AccessToken(
-				this.AuthorizationServer.Secret,
+				this.AuthorizationServer.AccessTokenSigningPrivateKey,
+				accessTokenEncryptingPublicKey,
 				request.AuthorizationDescription,
-				accessTokenLifetime,
-				this.AuthorizationServer.AccessTokenSigningPrivateKey);
+				accessTokenLifetime);
 
 			var response = new AccessTokenSuccessResponse(request) {
 				Scope = request.AuthorizationDescription.Scope,

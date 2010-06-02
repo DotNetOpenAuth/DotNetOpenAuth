@@ -350,6 +350,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\WebServer\ResponseFormat.cs" />
     <Compile Include="OAuthWrap\Messages\WebServer\ResponseFormatEncoder.cs" />
     <Compile Include="OAuthWrap\ResourceServer.cs" />
+    <Compile Include="OAuthWrap\StandardAccessTokenAnalyzer.cs" />
     <Compile Include="OAuthWrap\WebAppAuthorizationServer.cs" />
     <Compile Include="OAuthWrap\WrapUtilities.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />

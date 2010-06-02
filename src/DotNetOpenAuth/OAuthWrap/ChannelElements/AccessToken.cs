@@ -19,14 +19,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.
 		/// </summary>
 		/// <param name="channel">The channel.</param>
-		private AccessToken(byte[] secret, RSAParameters? asymmetricSignatureKey = null)
-			: base(secret, asymmetricSignatureKey, true, true) {
-			Contract.Requires<ArgumentNullException>(secret != null, "channel");
+		private AccessToken(RSAParameters signingKey, RSAParameters encryptingKey)
+			: base(signingKey, encryptingKey) {
 		}
 
-		internal AccessToken(byte[] secret, IAuthorizationDescription authorization, TimeSpan? lifetime, RSAParameters? asymmetricSignatureKey = null)
-			: this(secret, asymmetricSignatureKey) {
-			Contract.Requires<ArgumentNullException>(secret != null, "secret");
+		internal AccessToken(RSAParameters signingKey, RSAParameters encryptingKey, IAuthorizationDescription authorization, TimeSpan? lifetime)
+			: this(signingKey, encryptingKey) {
 			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
@@ -38,12 +36,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		internal TimeSpan? Lifetime { get; set; }
 
-		internal static AccessToken Decode(byte[] secret, string value, RSAParameters? asymmetricSignatureKey = null, IProtocolMessage containingMessage = null) {
-			Contract.Requires<ArgumentNullException>(secret != null, "secret");
+		internal static AccessToken Decode(RSAParameters signingKey, RSAParameters encryptingKey, string value, IProtocolMessage containingMessage = null) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 			Contract.Ensures(Contract.Result<AccessToken>() != null);
 
-			var self = new AccessToken(secret, asymmetricSignatureKey);
+			var self = new AccessToken(signingKey, encryptingKey);
 			self.Decode(value, containingMessage);
 			return self;
 		}

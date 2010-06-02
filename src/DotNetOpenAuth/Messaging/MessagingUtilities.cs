@@ -462,9 +462,9 @@ namespace DotNetOpenAuth.Messaging {
 			binaryWriter.Write(crypto.IV);
 			binaryWriter.Flush();
 
-			using (var cryptoStream = new CryptoStream(ms, crypto.CreateEncryptor(), CryptoStreamMode.Write)) {
-				cryptoStream.Write(buffer, 0, buffer.Length);
-			}
+			var cryptoStream = new CryptoStream(ms, crypto.CreateEncryptor(), CryptoStreamMode.Write);
+			cryptoStream.Write(buffer, 0, buffer.Length);
+			cryptoStream.FlushFinalBlock();
 
 			return ms.ToArray();
 		}
@@ -520,6 +520,69 @@ namespace DotNetOpenAuth.Messaging {
 			byte[] cipher = Convert.FromBase64String(cipherText);
 			byte[] plainText = Decrypt(cipher, key);
 			return Encoding.UTF8.GetString(plainText);
+		}
+
+		internal static byte[] EncryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
+			Contract.Requires<ArgumentNullException>(crypto != null, "crypto");
+			Contract.Requires<ArgumentNullException>(buffer != null, "buffer");
+
+			var symmetricCrypto = new RijndaelManaged {
+				Mode = CipherMode.CBC,
+			};
+
+			var encryptedStream = new MemoryStream();
+			var encryptedStreamWriter = new BinaryWriter(encryptedStream);
+
+			byte[] prequel = new byte[symmetricCrypto.Key.Length + symmetricCrypto.IV.Length];
+			Array.Copy(symmetricCrypto.Key, prequel, symmetricCrypto.Key.Length);
+			Array.Copy(symmetricCrypto.IV, 0, prequel, symmetricCrypto.Key.Length, symmetricCrypto.IV.Length);
+			byte[] encryptedPrequel = crypto.Encrypt(prequel, false);
+
+			encryptedStreamWriter.Write(encryptedPrequel.Length);
+			encryptedStreamWriter.Write(encryptedPrequel);
+			encryptedStreamWriter.Flush();
+
+			var cryptoStream = new CryptoStream(encryptedStream, symmetricCrypto.CreateEncryptor(), CryptoStreamMode.Write);
+			cryptoStream.Write(buffer, 0, buffer.Length);
+			cryptoStream.FlushFinalBlock();
+
+			return encryptedStream.ToArray();
+		}
+
+		internal static byte[] DecryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
+			Contract.Requires<ArgumentNullException>(crypto != null, "crypto");
+			Contract.Requires<ArgumentNullException>(buffer != null, "buffer");
+
+			var encryptedStream = new MemoryStream(buffer);
+			var encryptedStreamReader = new BinaryReader(encryptedStream);
+
+			byte[] encryptedPrequel = encryptedStreamReader.ReadBytes(encryptedStreamReader.ReadInt32());
+			byte[] prequel = crypto.Decrypt(encryptedPrequel, false);
+
+			var symmetricCrypto = new RijndaelManaged {
+				Mode = CipherMode.CBC,
+			};
+
+			byte[] symmetricKey = new byte[symmetricCrypto.Key.Length];
+			byte[] symmetricIV = new byte[symmetricCrypto.IV.Length];
+			Array.Copy(prequel, symmetricKey, symmetricKey.Length);
+			Array.Copy(prequel, symmetricKey.Length, symmetricIV, 0, symmetricIV.Length);
+			symmetricCrypto.Key = symmetricKey;
+			symmetricCrypto.IV = symmetricIV;
+
+			// Allocate space for the decrypted buffer.  We don't know how long it will be yet,
+			// but it will never be larger than the encrypted buffer.
+			var decryptedBuffer = new byte[encryptedStream.Length - encryptedStream.Position];
+			int actualDecryptedLength;
+
+			using (var cryptoStream = new CryptoStream(encryptedStream, symmetricCrypto.CreateDecryptor(), CryptoStreamMode.Read)) {
+				actualDecryptedLength = cryptoStream.Read(decryptedBuffer, 0, decryptedBuffer.Length);
+			}
+
+			// Create a new buffer with only the decrypted data.
+			var finalDecryptedBuffer = new byte[actualDecryptedLength];
+			Array.Copy(decryptedBuffer, finalDecryptedBuffer, actualDecryptedLength);
+			return finalDecryptedBuffer;
 		}
 
 		/// <summary>

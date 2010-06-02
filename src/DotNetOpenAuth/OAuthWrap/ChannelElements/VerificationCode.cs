@@ -7,10 +7,13 @@
 namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Diagnostics.Contracts;
+	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	internal class VerificationCode : AuthorizationDataBag {
+		private HashAlgorithm hasher = new SHA256Managed();
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
 		/// </summary>
@@ -37,7 +40,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <param name="channel">The channel.</param>
 		private VerificationCode(byte[] secret, INonceStore nonceStore)
-			: base(secret, null, true, true, false, MaximumMessageAge, nonceStore) {
+			: base(secret, true, true, false, MaximumMessageAge, nonceStore) {
 			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
 		}
@@ -69,7 +72,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		private string CalculateCallbackHash(Uri callback) {
-			return this.Hasher.ComputeHash(callback.AbsoluteUri);
+			return this.hasher.ComputeHash(callback.AbsoluteUri);
 		}
 	}
 }

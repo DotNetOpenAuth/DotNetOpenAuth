@@ -27,9 +27,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		private readonly RSACryptoServiceProvider asymmetricSigning;
 
+		private readonly RSACryptoServiceProvider asymmetricEncrypting;
+
 		private readonly HashAlgorithm hasherForAsymmetricSigning;
 
 		private readonly bool signed;
+
+		protected HashAlgorithm hasher;
 
 		private readonly INonceStore decodeOnceOnly;
 
@@ -39,23 +43,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		private readonly bool compressed;
 
-		protected DataBag(byte[] secret = null, RSAParameters? asymmetricSignatureKey = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+		protected DataBag(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(Protocol.Default.Version) {
-			Contract.Requires<ArgumentException>(secret != null || (signed == null && encrypted == null), "A secret is required when signing or encrypting is required.");
 			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
 			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
 
-			if (asymmetricSignatureKey.HasValue) {
-				this.asymmetricSigning = new RSACryptoServiceProvider();
-				this.asymmetricSigning.ImportParameters(asymmetricSignatureKey.Value);
-				this.hasherForAsymmetricSigning = new SHA1CryptoServiceProvider();
-			} 
-			
-			if (secret != null) {
-				this.Hasher = new HMACSHA256(secret);
-			}
-
-			this.secret = secret;
 			this.signed = signed;
 			this.maximumAge = maximumAge;
 			this.decodeOnceOnly = decodeOnceOnly;
@@ -63,7 +55,31 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			this.compressed = compressed;
 		}
 
-		protected HashAlgorithm Hasher { get; set; }
+		protected DataBag(RSAParameters? signingKey = null, RSAParameters? encryptingKey = null, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: this(signingKey.HasValue, encryptingKey.HasValue, compressed, maximumAge, decodeOnceOnly) {
+			if (signingKey.HasValue) {
+				this.asymmetricSigning = new RSACryptoServiceProvider();
+				this.asymmetricSigning.ImportParameters(signingKey.Value);
+			}
+
+			if (encryptingKey.HasValue) {
+				this.asymmetricEncrypting = new RSACryptoServiceProvider();
+				this.asymmetricEncrypting.ImportParameters(encryptingKey.Value);
+			}
+
+			this.hasherForAsymmetricSigning = new SHA1CryptoServiceProvider();
+		}
+
+		protected DataBag(byte[] secret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
+			Contract.Requires<ArgumentException>(secret != null || (signed == null && encrypted == null), "A secret is required when signing or encrypting is required.");
+
+			if (secret != null) {
+				this.hasher = new HMACSHA256(secret);
+			}
+
+			this.secret = secret;
+		}
 
 		[MessagePart("sig")]
 		private string Signature { get; set; }
@@ -97,7 +113,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			}
 
 			if (encrypted) {
-				encoded = MessagingUtilities.Encrypt(encoded, this.secret);
+				encoded = this.Encrypt(encoded);
 			}
 
 			return Convert.ToBase64String(encoded);
@@ -109,7 +125,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			byte[] encoded = Convert.FromBase64String(value);
 
 			if (encrypted) {
-				encoded = MessagingUtilities.Decrypt(encoded, this.secret);
+				encoded = this.Decrypt(encoded);
 			}
 
 			if (compressed) {
@@ -172,14 +188,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <returns>The calculated signature.</returns>
 		private string CalculateSignature() {
-			Contract.Requires<InvalidOperationException>(this.Hasher != null);
+			Contract.Requires<InvalidOperationException>(this.asymmetricSigning != null || this.hasher != null);
 
 			byte[] bytesToSign = this.GetBytesToSign();
 			if (this.asymmetricSigning != null) {
 				byte[] signature = this.asymmetricSigning.SignData(bytesToSign, this.hasherForAsymmetricSigning);
 				return Convert.ToBase64String(signature);
 			} else {
-				return Convert.ToBase64String(this.Hasher.ComputeHash(bytesToSign));
+				return Convert.ToBase64String(this.hasher.ComputeHash(bytesToSign));
 			}
 		}
 
@@ -193,6 +209,26 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			string value = MessagingUtilities.CreateQueryString(sortedData);
 			byte[] bytesToSign = Encoding.UTF8.GetBytes(value);
 			return bytesToSign;
+		}
+
+		private byte[] Encrypt(byte[] value) {
+			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.secret != null);
+
+			if (this.asymmetricEncrypting != null) {
+				return this.asymmetricEncrypting.EncryptWithRandomSymmetricKey(value);
+			} else {
+				return MessagingUtilities.Encrypt(value, this.secret);
+			}
+		}
+
+		private byte[] Decrypt(byte[] value) {
+			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.secret != null);
+
+			if (this.asymmetricEncrypting != null) {
+				return this.asymmetricEncrypting.DecryptWithRandomSymmetricKey(value);
+			} else {
+				return MessagingUtilities.Decrypt(value, this.secret);
+			}
 		}
 	}
 }

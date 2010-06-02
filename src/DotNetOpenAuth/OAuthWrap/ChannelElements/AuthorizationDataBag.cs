@@ -15,8 +15,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	internal abstract class AuthorizationDataBag : DataBag, IAuthorizationDescription {
-		protected AuthorizationDataBag(byte[] secret, RSAParameters? asymmetricSignatureKey = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
-			: base(secret, asymmetricSignatureKey, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
+		protected AuthorizationDataBag(byte[] secret, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: base(secret, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
+		}
+
+		protected AuthorizationDataBag(RSAParameters? signingKey = null, RSAParameters? encryptingKey = null, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: base(signingKey, encryptingKey, compressed, maximumAge, decodeOnceOnly) {
 		}
 
 		[MessagePart]

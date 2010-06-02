@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.Messages;
@@ -67,7 +68,9 @@ namespace DotNetOpenAuth.OAuthWrap {
 			var request = ReadAccessTokenRequest(httpRequestInfo);
 			if (request != null)
 			{
-				response = PrepareAccessTokenResponse(request);
+				// This convenience method only encrypts access tokens assuming that this auth server
+				// doubles as the resource server.
+				response = PrepareAccessTokenResponse(request, this.AuthorizationServer.AccessTokenSigningPrivateKey);
 				return true;
 			}
 
@@ -110,11 +113,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return request;
 		}
 
-		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(WebAppAccessTokenRequest request) {
+		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(WebAppAccessTokenRequest request, RSAParameters resourceServerPublicKey) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 			Contract.Ensures(Contract.Result<AccessTokenSuccessResponse>() != null);
 
-			return this.OAuthChannel.PrepareAccessToken(request);
+			return this.OAuthChannel.PrepareAccessToken(request, resourceServerPublicKey);
 		}
 
 		protected Uri GetCallback(WebAppRequest authorizationRequest) {

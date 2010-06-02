@@ -4,8 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using DotNetOpenAuth.Messaging.Bindings;
-
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
@@ -13,6 +11,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
@@ -50,9 +49,24 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// </remarks>
 		bool IsAuthorizationValid(IAuthorizationDescription authorization);
 
+		/// <summary>
+		/// Gets the secret used to symmetrically encrypt and sign verification codes and refresh tokens.
+		/// </summary>
+		/// <remarks>
+		/// This secret should be kept strictly confidential in the authorization server(s)
+		/// and NOT shared with the resource server.  Anyone with this secret can mint
+		/// tokens to essentially grant themselves access to anything they want.
+		/// </remarks>
 		byte[] Secret { get; }
 
-		RSAParameters? AccessTokenSigningPrivateKey { get; }
+		/// <summary>
+		/// Gets the asymmetric private key to use for signing access tokens.
+		/// </summary>
+		/// <remarks>
+		/// The public key in the private/public key pair will be used by the resource
+		/// servers to validate that the access token is minted by a trusted authorization server.
+		/// </remarks>
+		RSAParameters AccessTokenSigningPrivateKey { get; }
 
 		INonceStore VerificationCodeNonceStore { get; }
 	}
@@ -75,7 +89,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			}
 		}
 
-		RSAParameters? IAuthorizationServer.AccessTokenSigningPrivateKey {
+		RSAParameters IAuthorizationServer.AccessTokenSigningPrivateKey {
 			get { throw new NotImplementedException(); }
 		}
 
