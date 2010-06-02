@@ -66,17 +66,20 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <value>The authorization server.  Will be null for channels serving clients.</value>
 		public IAuthorizationServer AuthorizationServer { get; set; }
 
-		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request) {
+		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
 			var accessToken = new AccessToken(this, request.AuthorizationDescription);
-			var refreshToken = new RefreshToken(this, request.AuthorizationDescription);
 			var response = new AccessTokenSuccessResponse(request) {
 				Scope = request.AuthorizationDescription.Scope,
 				AccessToken = accessToken.Encode(),
-				RefreshToken = refreshToken.Encode(),
-				////Lifetime = TimeSpan.FromDays(1), // reasonable default for access token lifetime
+				Lifetime = accessTokenLifetime,
 			};
+
+			if (includeRefreshToken) {
+				var refreshToken = new RefreshToken(this, request.AuthorizationDescription);
+				response.RefreshToken = refreshToken.Encode();
+			}
 
 			return response;
 		}
