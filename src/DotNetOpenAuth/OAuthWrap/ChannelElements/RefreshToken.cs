@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <param name="channel">The channel.</param>
 		private RefreshToken(OAuthWrapAuthorizationServerChannel channel)
-			: base(channel, true, true, true) {
+			: base(channel, true, true) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
 		}
 

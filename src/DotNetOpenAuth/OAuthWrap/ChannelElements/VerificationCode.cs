@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <param name="channel">The channel.</param>
 		private VerificationCode(OAuthWrapAuthorizationServerChannel channel)
-			: base(channel, true, true, true, MaximumMessageAge, channel.AuthorizationServer.VerificationCodeNonceStore) {
+			: base(channel, true, true, false, MaximumMessageAge, channel.AuthorizationServer.VerificationCodeNonceStore) {
 			Contract.Requires<ArgumentNullException>(channel != null, "channel");
 			Contract.Requires<ArgumentException>(channel.AuthorizationServer != null);
 		}
