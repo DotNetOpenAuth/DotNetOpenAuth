@@ -33,8 +33,8 @@
 					var principal = sp.CreatePrincipal(auth);
 					var policy = new OAuthPrincipalAuthorizationPolicy(principal);
 					var policies = new List<IAuthorizationPolicy> {
-					policy,
-				};
+						policy,
+					};
 
 					var securityContext = new ServiceSecurityContext(policies.AsReadOnly());
 					if (operationContext.IncomingMessageProperties.Security != null) {
