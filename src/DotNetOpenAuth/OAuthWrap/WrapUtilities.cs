@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			request.Headers[HttpRequestHeader.Authorization] = string.Format(
 				CultureInfo.InvariantCulture,
 				Protocol.HttpAuthorizationHeaderFormat,
-				accessToken);
+				Uri.EscapeDataString(accessToken));
 		}
 
 		internal static DotNetOpenAuth.OAuth.ChannelElements.IConsumerDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
