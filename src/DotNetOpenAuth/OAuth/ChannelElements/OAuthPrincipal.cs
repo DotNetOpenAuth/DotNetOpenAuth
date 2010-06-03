@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="username">The username.</param>
 		/// <param name="roles">The roles this user belongs to.</param>
-		internal OAuthPrincipal(string username, string[] roles)
+		public OAuthPrincipal(string username, string[] roles)
 			: this(new OAuthIdentity(username), roles) {
 		}
 

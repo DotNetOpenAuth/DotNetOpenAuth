@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" Inherits="OAuthConsumer.SampleWcf" Codebehind="SampleWcf.aspx.cs" %>
+﻿<%@ Page Title="OAuth 1.0a consumer" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" Inherits="OAuthConsumer.SampleWcf" Codebehind="SampleWcf.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
 	<fieldset title="Authorization">

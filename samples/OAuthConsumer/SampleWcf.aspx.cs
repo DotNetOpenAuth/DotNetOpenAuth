@@ -39,10 +39,10 @@
 			string[] scopes = (from item in this.scopeList.Items.OfType<ListItem>()
 							   where item.Selected
 							   select item.Value).ToArray();
-			string scope = string.Join("|", scopes);
+			string scope = string.Join(" ", scopes);
 			var requestParams = new Dictionary<string, string> {
-			{ "scope", scope },
-		};
+				{ "scope", scope },
+			};
 			var response = consumer.PrepareRequestUserAuthorization(callback.Uri, requestParams, null);
 			consumer.Channel.Send(response);
 		}
@@ -83,7 +83,7 @@
 			WebConsumer consumer = this.CreateConsumer();
 			WebRequest httpRequest = consumer.PrepareAuthorizedRequest(serviceEndpoint, accessToken);
 
-			HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
+			var httpDetails = new HttpRequestMessageProperty();
 			httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];
 			using (OperationContextScope scope = new OperationContextScope(client.InnerChannel)) {
 				OperationContext.Current.OutgoingMessageProperties[HttpRequestMessageProperty.Name] = httpDetails;

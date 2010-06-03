@@ -52,7 +52,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Ensures(Contract.Result<WebAppRequest>().Callback == authorization.Callback);
 
 			if (authorization.Callback == null) {
-				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting;
+				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting
+					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(WebAppSuccessResponse), Protocol.Default.Version));
 				authorization.SaveChanges();
 			}
 

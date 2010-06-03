@@ -14,13 +14,15 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
-	internal class StandardAccessTokenAnalyzer : IAccessTokenAnalyzer {
-		internal StandardAccessTokenAnalyzer() {
+	public class StandardAccessTokenAnalyzer : IAccessTokenAnalyzer {
+		public StandardAccessTokenAnalyzer(RSAParameters authorizationServerPublicSigningKey, RSAParameters resourceServerPrivateEncryptionKey) {
+			this.AuthorizationServerPublicSigningKey = authorizationServerPublicSigningKey;
+			this.ResourceServerPrivateEncryptionKey = resourceServerPrivateEncryptionKey;
 		}
 
-		internal RSAParameters AuthorizationServerPublicSigningKey { get; set; }
+		public RSAParameters AuthorizationServerPublicSigningKey { get; private set; }
 
-		internal RSAParameters ResourceServerPrivateEncryptionKey { get; set; }
+		public RSAParameters ResourceServerPrivateEncryptionKey { get; private set; }
 
 		public bool TryValidateAccessToken(string accessToken, out string user, out string scope) {
 			var token = AccessToken.Decode(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey, accessToken);

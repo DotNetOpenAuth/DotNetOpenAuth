@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <param name="version">The version.</param>
 		/// <param name="recipient">The recipient.</param>
-		internal AccessProtectedResourceRequest(Version version, Uri recipient)
+		internal AccessProtectedResourceRequest(Uri recipient, Version version)
 			: base(version, MessageTransport.Direct, recipient) {
 		}
 

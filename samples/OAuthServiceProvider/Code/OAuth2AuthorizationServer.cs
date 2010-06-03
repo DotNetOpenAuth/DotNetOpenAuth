@@ -13,7 +13,7 @@
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
 		private static readonly byte[] secret;
 
-		private static readonly RSAParameters asymmetricKey;
+		internal static readonly RSAParameters asymmetricKey;
 
 		private readonly INonceStore nonceStore = new DatabaseNonceStore();
 
