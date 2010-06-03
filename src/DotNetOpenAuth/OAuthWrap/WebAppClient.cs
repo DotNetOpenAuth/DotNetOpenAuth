@@ -27,16 +27,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 			: base(authorizationServer) {
 		}
 
-		/// <summary>
-		/// Gets or sets the identifier by which this client is known to the Authorization Server.
-		/// </summary>
-		public string ClientIdentifier { get; set; }
-
-		/// <summary>
-		/// Gets or sets the client secret shared with the Authorization Server.
-		/// </summary>
-		public string ClientSecret { get; set; }
-
 		public IClientTokenManager TokenManager { get; set; }
 
 		public WebAppRequest PrepareRequestUserAuthorization() {
@@ -98,6 +88,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 						authorizationState.AccessTokenSecret = accessTokenSuccess.AccessTokenSecret;
 						authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
 						authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
+						authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;
 						if (accessTokenSuccess.Scope != null && accessTokenSuccess.Scope != authorizationState.Scope) {
 							if (authorizationState.Scope != null) {
 								Logger.Wrap.InfoFormat("Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",

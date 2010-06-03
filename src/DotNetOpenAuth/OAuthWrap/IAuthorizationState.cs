@@ -36,6 +36,10 @@ namespace DotNetOpenAuth.OAuthWrap
 		/// <value>The access token secret.</value>
 		string AccessTokenSecret { get; set; }
 
+		string AccessTokenSecretType { get; set; }
+
+		DateTime? AccessTokenIssueDateUtc { get; set; }
+
 		/// <summary>
 		/// Gets or sets the access token UTC expiration date.
 		/// </summary>

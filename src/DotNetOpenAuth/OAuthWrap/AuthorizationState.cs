@@ -25,7 +25,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		public string AccessTokenSecret { get; set; }
 
+		public string AccessTokenSecretType { get; set; }
+
 		public DateTime? AccessTokenExpirationUtc { get; set; }
+
+		public DateTime? AccessTokenIssueDateUtc { get; set; }
 
 		public string Scope { get; set; }
 
@@ -37,11 +41,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// </value>
 		public bool IsDeleted { get; set; }
 
-		public void Delete() {
+		public virtual void Delete() {
 			this.IsDeleted = true;
 		}
 
-		public void SaveChanges() {
+		public virtual void SaveChanges() {
 		}
 	}
 }

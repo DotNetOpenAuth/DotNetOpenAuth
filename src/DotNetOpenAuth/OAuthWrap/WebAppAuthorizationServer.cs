@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 	using DotNetOpenAuth.OAuthWrap.Messages;
 
 	public class WebAppAuthorizationServer : AuthorizationServerBase {
@@ -103,17 +104,17 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return response;
 		}
 
-		internal WebAppAccessTokenRequest ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
+		internal IAccessTokenRequest ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
 			if (requestInfo == null) {
 				requestInfo = this.Channel.GetRequestFromContext();
 			}
 
-			WebAppAccessTokenRequest request;
+			IAccessTokenRequest request;
 			this.Channel.TryReadFromRequest(requestInfo, out request);
 			return request;
 		}
 
-		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(WebAppAccessTokenRequest request, RSAParameters resourceServerPublicKey) {
+		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(IAccessTokenRequest request, RSAParameters resourceServerPublicKey) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 			Contract.Ensures(Contract.Result<AccessTokenSuccessResponse>() != null);
 

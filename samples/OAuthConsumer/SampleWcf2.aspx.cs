@@ -23,14 +23,16 @@
 		}
 
 		protected void Page_Load(object sender, EventArgs e) {
-			if (!IsPostBack)
-			{
-				var client = CreateClient();
+			var client = CreateClient();
+			if (!IsPostBack) {
 				var authorization = client.ProcessUserAuthorization();
-				if (authorization != null)
-				{
+				if (authorization != null) {
 					Authorization = authorization;
 				}
+			}
+
+			if (Authorization != null) {
+				client.RefreshToken(Authorization, TimeSpan.FromMinutes(1));
 			}
 		}
 
@@ -81,7 +83,8 @@
 			}
 
 			var httpRequest = (HttpWebRequest)WebRequest.Create(client.Endpoint.Address.Uri);
-			WebAppClient.AuthorizeRequest(httpRequest, Authorization);
+			var oauthClient = CreateClient();
+			oauthClient.AuthorizeRequest(httpRequest, Authorization.AccessToken);
 
 			var httpDetails = new HttpRequestMessageProperty();
 			httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];

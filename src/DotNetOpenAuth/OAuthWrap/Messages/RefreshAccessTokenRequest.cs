@@ -28,6 +28,17 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="version">The version.</param>
 		internal RefreshAccessTokenRequest(Uri tokenEndpoint, Version version)
 			: base(version, MessageTransport.Direct, tokenEndpoint) {
+
+			// We prefer URL encoding of the data.
+			this.Format = ResponseFormat.Form;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		internal RefreshAccessTokenRequest(AuthorizationServerDescription authorizationServer)
+			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 		}
 
 		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
