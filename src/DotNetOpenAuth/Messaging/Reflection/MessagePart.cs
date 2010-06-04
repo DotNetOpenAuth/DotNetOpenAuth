@@ -209,6 +209,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			}
 		}
 
+		internal Type MemberDeclaredType {
+			get { return this.memberDeclaredType; }
+		}
+
 		/// <summary>
 		/// Sets the member of a given message to some given value.
 		/// Used in deserialization.

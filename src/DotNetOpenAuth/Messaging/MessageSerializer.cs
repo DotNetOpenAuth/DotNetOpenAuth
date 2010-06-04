@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Reflection;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
@@ -52,6 +53,24 @@ namespace DotNetOpenAuth.Messaging {
 			return new MessageSerializer(messageType);
 		}
 
+		internal static void DeserializeJsonAsFlatDictionary(IDictionary<string, string> messageDictionary, XmlDictionaryReader reader) {
+			Contract.Requires<ArgumentNullException>(messageDictionary != null, "messageDictionary");
+			Contract.Requires<ArgumentNullException>(reader != null, "reader");
+
+			reader.Read(); // one extra one to skip the root node.
+			while (reader.Read()) {
+				if (reader.NodeType == XmlNodeType.EndElement) {
+					// This is likely the closing </root> tag.
+					continue;
+				}
+
+				string key = reader.Name;
+				reader.Read();
+				string value = reader.ReadContentAsString();
+				messageDictionary[key] = value;
+			}
+		}
+
 		/// <summary>
 		/// Reads the data from a message instance and returns a series of name=value pairs for the fields that must be included in the message.
 		/// </summary>
@@ -85,6 +104,51 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Reads the data from a message instance and writes a XML/JSON encoding of it.
+		/// </summary>
+		/// <param name="messageDictionary">The message to be serialized.</param>
+		/// <remarks>
+		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter"/>
+		/// to create the <see cref="XmlDictionaryWriter"/> instance capable of emitting JSON.
+		/// </remarks>
+		[Pure]
+		internal void Serialize(MessageDictionary messageDictionary, XmlDictionaryWriter writer) {
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Contract.Requires<ArgumentNullException>(writer != null, "writer");
+
+			writer.WriteStartElement("root");
+			writer.WriteAttributeString("type", "object");
+			foreach (var pair in messageDictionary) {
+				bool include = false;
+				string type = "string";
+				MessagePart partDescription;
+				if (messageDictionary.Description.Mapping.TryGetValue(pair.Key, out partDescription)) {
+					Contract.Assume(partDescription != null);
+					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
+						include = true;
+						if (IsNumeric(partDescription.MemberDeclaredType)) {
+							type = "number";
+						} else if (partDescription.MemberDeclaredType.IsAssignableFrom(typeof(bool))) {
+							type = "boolean";
+						}
+					}
+				} else {
+					// This is extra data.  We always write it out.
+					include = true;
+				}
+
+				if (include) {
+					writer.WriteStartElement(pair.Key);
+					writer.WriteAttributeString("type", type);
+					writer.WriteString(pair.Value);
+					writer.WriteEndElement();
+				}
+			}
+
+			writer.WriteEndElement();
+		}
+
+		/// <summary>
 		/// Reads name=value pairs into a message.
 		/// </summary>
 		/// <param name="fields">The name=value pairs that were read in from the transport.</param>
@@ -107,6 +171,45 @@ namespace DotNetOpenAuth.Messaging {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorDeserializingMessage, this.messageType.Name);
 			}
 			messageDictionary.Message.EnsureValidMessage();
+		}
+
+		/// <summary>
+		/// Reads XML/JSON into a message dictionary.
+		/// </summary>
+		/// <param name="messageDictionary">The message to deserialize into.</param>
+		/// <param name="reader">The XML/JSON to read into the message.</param>
+		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
+		/// <remarks>
+		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader"/>
+		/// to create the <see cref="XmlDictionaryReader"/> instance capable of reading JSON.
+		/// </remarks>
+		internal void Deserialize(MessageDictionary messageDictionary, XmlDictionaryReader reader) {
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Contract.Requires<ArgumentNullException>(reader != null, "reader");
+
+			DeserializeJsonAsFlatDictionary(messageDictionary, reader);
+
+			// Make sure all the required parts are present and valid.
+			messageDictionary.Description.EnsureMessagePartsPassBasicValidation(messageDictionary);
+			messageDictionary.Message.EnsureValidMessage();
+		}
+
+		/// <summary>
+		/// Determines whether the specified type is numeric.
+		/// </summary>
+		/// <param name="type">The type.</param>
+		/// <returns>
+		/// 	<c>true</c> if the specified type is numeric; otherwise, <c>false</c>.
+		/// </returns>
+		private static bool IsNumeric(Type type) {
+			return type.IsAssignableFrom(typeof(Double))
+				|| type.IsAssignableFrom(typeof(Single))
+				|| type.IsAssignableFrom(typeof(Int16))
+				|| type.IsAssignableFrom(typeof(Int32))
+				|| type.IsAssignableFrom(typeof(Int64))
+				|| type.IsAssignableFrom(typeof(UInt16))
+				|| type.IsAssignableFrom(typeof(UInt32))
+				|| type.IsAssignableFrom(typeof(UInt64));
 		}
 
 #if CONTRACTS_FULL

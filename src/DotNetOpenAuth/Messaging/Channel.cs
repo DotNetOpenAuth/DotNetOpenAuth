@@ -17,9 +17,11 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Net;
 	using System.Net.Cache;
 	using System.Net.Mime;
+	using System.Runtime.Serialization.Json;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -134,6 +136,13 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
+			this.XmlDictionaryReaderQuotas = new XmlDictionaryReaderQuotas {
+				MaxArrayLength = 1,
+				MaxDepth = 2,
+				MaxBytesPerRead = 8 * 1024,
+				MaxStringContentLength = 16 * 1024,
+			};
+
 			this.outgoingBindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
 			this.incomingBindingElements = new List<IChannelBindingElement>(this.outgoingBindingElements);
 			this.incomingBindingElements.Reverse();
@@ -781,6 +790,31 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		protected abstract OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response);
 
+		protected virtual string SerializeAsJson(IMessage message) {
+			Contract.Requires<ArgumentNullException>(message != null, "message");
+
+			MessageDictionary messageDictionary = this.MessageDescriptions.GetAccessor(message);
+			var memoryStream = new MemoryStream();
+			var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, Encoding.UTF8);
+			var serializer = MessageSerializer.Get(message.GetType());
+			serializer.Serialize(messageDictionary, jsonWriter);
+			jsonWriter.Flush();
+
+			string json = Encoding.UTF8.GetString(memoryStream.ToArray());
+			return json;
+		}
+
+		protected virtual XmlDictionaryReaderQuotas XmlDictionaryReaderQuotas { get; set; }
+
+		protected virtual IDictionary<string, string> DeserializeFromJson(string json) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(json));
+
+			var dictionary = new Dictionary<string, string>();
+			var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), this.XmlDictionaryReaderQuotas);
+			MessageSerializer.DeserializeJsonAsFlatDictionary(dictionary, jsonReader);
+			return dictionary;
+		}
+	
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>

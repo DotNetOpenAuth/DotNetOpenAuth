@@ -11,6 +11,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Mime;
+	using System.Runtime.Serialization.Json;
+	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
 	using System.Web.Script.Serialization;
@@ -18,7 +20,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuthWrap.Messages;
-using System.Security.Cryptography;
 
 	/// <summary>
 	/// The channel for the OAuth WRAP protocol.
@@ -103,8 +104,7 @@ using System.Security.Cryptography;
 			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
 			string body = response.GetResponseReader().ReadToEnd();
 			if (response.ContentType.MediaType == JsonEncoded) {
-				var jsonSerializer = new JavaScriptSerializer();
-				return jsonSerializer.Deserialize<Dictionary<string, string>>(body);
+				return this.DeserializeFromJson(body);
 			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
 				return HttpUtility.ParseQueryString(body).ToDictionary();
 			} else {
@@ -140,8 +140,7 @@ using System.Security.Cryptography;
 						webResponse.SetResponse(form, HttpFormUrlEncodedContentType);
 						break;
 					case ResponseFormat.Json:
-						var jsonSerializer = new JavaScriptSerializer();
-						string json = jsonSerializer.Serialize(fields);
+						string json = this.SerializeAsJson(response);
 						webResponse.SetResponse(json, new ContentType(JsonEncoded));
 						break;
 					default:
