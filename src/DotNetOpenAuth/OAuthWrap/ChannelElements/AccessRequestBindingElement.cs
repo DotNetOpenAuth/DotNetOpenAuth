@@ -55,10 +55,10 @@
 					throw ErrorUtilities.Wrap(ex, Protocol.authorization_expired);
 				}
 
-				var accessRequest = message as IAccessTokenRequest;
+				var accessRequest = tokenRequest as IAccessTokenRequest;
 				if (accessRequest != null) {
 					// Make sure the client sending us this token is the client we issued the token to.
-					ErrorUtilities.VerifyProtocol(string.Equals(accessRequest.ClientIdentifier, accessRequest.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
+					ErrorUtilities.VerifyProtocol(string.Equals(accessRequest.ClientIdentifier, tokenRequest.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
 
 					// Check that the client secret is correct.
 					var client = this.AuthorizationServer.GetClientOrThrow(accessRequest.ClientIdentifier);

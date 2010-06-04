@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// A request from the client to the token endpoint for a new access token
 	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
-	internal class RefreshAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+	internal class RefreshAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest, IOAuthDirectResponseFormat {
 		/// <summary>
 		/// The type of message.
 		/// </summary>

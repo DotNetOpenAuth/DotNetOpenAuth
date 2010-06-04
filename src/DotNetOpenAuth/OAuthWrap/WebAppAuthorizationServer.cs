@@ -71,12 +71,22 @@ namespace DotNetOpenAuth.OAuthWrap {
 			{
 				// This convenience method only encrypts access tokens assuming that this auth server
 				// doubles as the resource server.
-				response = PrepareAccessTokenResponse(request, this.AuthorizationServer.AccessTokenSigningPrivateKey);
+				response = this.PrepareAccessTokenResponse(request, this.AuthorizationServer.AccessTokenSigningPrivateKey);
 				return true;
 			}
 
 			response = null;
 			return false;
+		}
+
+		public IAccessTokenRequest ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
+			if (requestInfo == null) {
+				requestInfo = this.Channel.GetRequestFromContext();
+			}
+
+			IAccessTokenRequest request;
+			this.Channel.TryReadFromRequest(requestInfo, out request);
+			return request;
 		}
 
 		internal WebAppFailedResponse PrepareRejectAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
@@ -102,23 +112,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 			var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 			var response = new WebAppSuccessResponse(callback, authorizationRequest);
 			return response;
-		}
-
-		internal IAccessTokenRequest ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
-			if (requestInfo == null) {
-				requestInfo = this.Channel.GetRequestFromContext();
-			}
-
-			IAccessTokenRequest request;
-			this.Channel.TryReadFromRequest(requestInfo, out request);
-			return request;
-		}
-
-		internal AccessTokenSuccessResponse PrepareAccessTokenResponse(IAccessTokenRequest request, RSAParameters resourceServerPublicKey) {
-			Contract.Requires<ArgumentNullException>(request != null, "request");
-			Contract.Ensures(Contract.Result<AccessTokenSuccessResponse>() != null);
-
-			return this.OAuthChannel.PrepareAccessToken(request, resourceServerPublicKey);
 		}
 
 		protected Uri GetCallback(WebAppRequest authorizationRequest) {

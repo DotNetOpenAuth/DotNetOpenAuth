@@ -81,8 +81,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var request = message as WebAppAccessTokenRequest;
 			if (request != null) {
-				IAccessTokenRequest accessRequest = request;
-				((VerificationCode)accessRequest.AuthorizationDescription).VerifyCallback(request.Callback);
+				ITokenCarryingRequest tokenRequest = request;
+				((VerificationCode)tokenRequest.AuthorizationDescription).VerifyCallback(request.Callback);
 
 				return MessageProtections.None;
 			}

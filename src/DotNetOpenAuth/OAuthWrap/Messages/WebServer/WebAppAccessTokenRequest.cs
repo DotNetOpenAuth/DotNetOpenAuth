@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// Used by the Web App (and Rich App?) profiles.
 	/// </remarks>
-	internal class WebAppAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+	internal class WebAppAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest, IOAuthDirectResponseFormat {
 		/// <summary>
 		/// The type of message.
 		/// </summary>

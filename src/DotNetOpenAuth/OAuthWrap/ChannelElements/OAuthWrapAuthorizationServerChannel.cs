@@ -65,30 +65,7 @@ using System.Security.Cryptography;
 		/// Gets or sets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.  Will be null for channels serving clients.</value>
-		public IAuthorizationServer AuthorizationServer { get; set; }
-
-		public virtual AccessTokenSuccessResponse PrepareAccessToken(IAccessTokenRequest request, RSAParameters accessTokenEncryptingPublicKey, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
-			Contract.Requires<ArgumentNullException>(request != null, "request");
-
-			var accessToken = new AccessToken(
-				this.AuthorizationServer.AccessTokenSigningPrivateKey,
-				accessTokenEncryptingPublicKey,
-				request.AuthorizationDescription,
-				accessTokenLifetime);
-
-			var response = new AccessTokenSuccessResponse(request) {
-				Scope = request.AuthorizationDescription.Scope,
-				AccessToken = accessToken.Encode(),
-				Lifetime = accessToken.Lifetime,
-			};
-
-			if (includeRefreshToken) {
-				var refreshToken = new RefreshToken(this.AuthorizationServer.Secret, request.AuthorizationDescription);
-				response.RefreshToken = refreshToken.Encode();
-			}
-
-			return response;
-		}
+		public IAuthorizationServer AuthorizationServer { get; private set; }
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.

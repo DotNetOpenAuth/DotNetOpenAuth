@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		IAuthorizationDescription AuthorizationDescription { get; set; }
 	}
 
-	internal interface IAccessTokenRequest : ITokenCarryingRequest {
+	public interface IAccessTokenRequest : IDirectedProtocolMessage {
 		string ClientIdentifier { get; }
 
 		string ClientSecret { get; }
