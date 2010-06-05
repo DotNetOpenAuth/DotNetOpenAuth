@@ -43,6 +43,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		private readonly bool compressed;
 
+		[MessagePart("t", IsRequired = true, AllowEmpty = false)]
+		private string BagType {
+			get { return this.GetType().Name; }
+		}
+
 		protected DataBag(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(Protocol.Default.Version) {
 			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
@@ -104,7 +109,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			}
 
 			var fields = MessageDescriptions.GetAccessor(this);
-			string value = Uri.EscapeDataString(this.BagTypeName) + "&" + MessagingUtilities.CreateQueryString(fields);
+			string value = MessagingUtilities.CreateQueryString(fields);
 
 			byte[] encoded = Encoding.UTF8.GetBytes(value);
 
@@ -135,15 +140,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			value = Encoding.UTF8.GetString(encoded);
 
 			// Deserialize into this newly created instance.
+			var serializer = MessageSerializer.Get(this.GetType());
 			var fields = MessageDescriptions.GetAccessor(this);
-			string[] halves = value.Split(new char[] { '&' }, 2);
-			ErrorUtilities.VerifyProtocol(string.Equals(halves[0], Uri.EscapeDataString(this.BagTypeName), StringComparison.Ordinal), "Unexpected type of message while decoding.");
-			value = halves[1];
-
-			var nvc = HttpUtility.ParseQueryString(value);
-			foreach (string key in nvc) {
-				fields[key] = nvc[key];
-			}
+			serializer.Deserialize(HttpUtility.ParseQueryString(value).ToDictionary(), fields);
 
 			if (signed) {
 				// Verify that the verification code was issued by this authorization server.
@@ -167,10 +166,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 					throw new ReplayedMessageException(containingMessage);
 				}
 			}
-		}
-
-		private string BagTypeName {
-			get { return this.GetType().Name; }
 		}
 
 		private bool IsSignatureValid() {
