@@ -967,6 +967,21 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+		internal static void AppendFragmentArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
+			Contract.Requires<ArgumentNullException>(builder != null);
+
+			if (args != null && args.Count() > 0) {
+				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
+				if (!string.IsNullOrEmpty(builder.Fragment)) {
+					sb.Append(builder.Fragment);
+					sb.Append('&');
+				}
+				sb.Append(CreateQueryString(args));
+
+				builder.Fragment = sb.ToString();
+			}
+		}
+
 		/// <summary>
 		/// Adds parameters to a query string, replacing parameters that
 		/// match ones that already exist in the query string.

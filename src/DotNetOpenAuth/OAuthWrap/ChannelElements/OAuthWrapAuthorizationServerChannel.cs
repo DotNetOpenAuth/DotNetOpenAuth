@@ -113,8 +113,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		/// <summary>
-		/// Queues a message for sending in the response stream where the fields
-		/// are sent in the response stream in querystring style.
+		/// Queues a message for sending in the response stream.
 		/// </summary>
 		/// <param name="response">The message to send as a response.</param>
 		/// <returns>
@@ -151,6 +150,24 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			return webResponse;
 		}
 
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
+			if (!string.IsNullOrEmpty(request.Url.Fragment)) {
+				var fields = HttpUtility.ParseQueryString(request.Url.Fragment.Substring(1)).ToDictionary();
+
+				MessageReceivingEndpoint recipient;
+				try {
+					recipient = request.GetRecipient();
+				} catch (ArgumentException ex) {
+					Logger.Messaging.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+					return null;
+				}
+
+				return (IDirectedProtocolMessage)this.Receive(fields, recipient);
+			}
+			
+			return base.ReadFromRequestCore(request);
+		}
+
 		/// <summary>
 		/// Initializes the binding elements for the OAuth channel.
 		/// </summary>
@@ -162,7 +179,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			var bindingElements = new List<IChannelBindingElement>();
 
 			if (authorizationServer != null) {
-				bindingElements.Add(new AuthServerWebServerFlowBindingElement());
+				bindingElements.Add(new AuthServerAllFlowsBindingElement());
 				bindingElements.Add(new WebAppVerificationCodeBindingElement());
 				bindingElements.Add(new AccessRequestBindingElement());
 			}

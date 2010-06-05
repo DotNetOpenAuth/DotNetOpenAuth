@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebServerFlowBindingElement.cs" company="Andrew Arnott">
+// <copyright file="AuthServerAllFlowsBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -13,11 +13,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.OAuthWrap.Messages;
 	using Messaging;
 
-	internal class AuthServerWebServerFlowBindingElement : AuthServerBindingElementBase {
+	internal class AuthServerAllFlowsBindingElement : AuthServerBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthServerWebServerFlowBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="AuthServerAllFlowsBindingElement"/> class.
 		/// </summary>
-		internal AuthServerWebServerFlowBindingElement() {
+		internal AuthServerAllFlowsBindingElement() {
 		}
 
 		/// <summary>
@@ -64,10 +64,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var authorizationRequest = message as WebAppRequest;
+			var authorizationRequest = message as IRequestWithRedirectUri;
 			if (authorizationRequest != null) {
 				var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 				ErrorUtilities.VerifyProtocol(client.Callback == null || client.Callback == authorizationRequest.Callback, OAuthWrapStrings.CallbackMismatch, client.Callback, authorizationRequest.Callback);
+				ErrorUtilities.VerifyProtocol(client.Callback != null || authorizationRequest.Callback != null, OAuthWrapStrings.NoCallback);
+
+				return MessageProtections.None;
 			}
 
 			return null;

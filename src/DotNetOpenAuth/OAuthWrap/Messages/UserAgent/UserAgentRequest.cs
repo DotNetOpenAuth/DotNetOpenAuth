@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
-	internal class UserAgentRequest : MessageBase {
+	internal class UserAgentRequest : MessageBase, IRequestWithRedirectUri {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
@@ -28,14 +28,19 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="UserAgentRequest"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		internal UserAgentRequest(AuthorizationServerDescription authorizationServer)
+			: this(authorizationServer.AuthorizationEndpoint, authorizationServer.Version) {
+		}
+
+		/// <summary>
 		/// Gets or sets state of the client that should be sent back with the authorization response.
 		/// </summary>
 		/// <value>
 		/// An opaque value that Clients can use to maintain state associated with this request. 
 		/// </value>
-		/// <remarks>
-		/// REQUIRED. The client identifier as described in Section 3.4  (Client Credentials). 
-		/// </remarks>
 		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		public string ClientState { get; set; }
 
@@ -43,7 +48,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
 		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
-		internal string ClientIdentifier { get; set; }
+		public string ClientIdentifier { get; set; }
 
 		/// <summary>
 		/// Gets or sets the callback URL.
@@ -56,7 +61,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// REQUIRED unless a redirection URI has been established between the client and authorization server via other means. An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed. The authorization server MAY require the client to pre-register their redirection URI. The redirection URI MUST NOT include a query component as defined by [RFC3986]  (Berners-Lee, T., Fielding, R., and L. Masinter, “Uniform Resource Identifier (URI): Generic Syntax,” January 2005.) section 3 if the state parameter is present. 
 		/// </remarks>
 		[MessagePart(Protocol.redirect_uri, IsRequired = false, AllowEmpty = false)]
-		internal Uri Callback { get; set; }
+		public Uri Callback { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the authorization server is

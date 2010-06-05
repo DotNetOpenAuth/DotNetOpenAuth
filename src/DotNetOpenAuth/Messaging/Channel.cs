@@ -665,9 +665,15 @@ namespace DotNetOpenAuth.Messaging {
 			OutgoingWebResponse response = null;
 			bool tooLargeForGet = false;
 			if ((message.HttpMethods & HttpDeliveryMethods.GetRequest) == HttpDeliveryMethods.GetRequest) {
+				bool payloadInFragment = false;
+				var httpIndirect = message as IHttpIndirectResponse;
+				if (httpIndirect != null) {
+					payloadInFragment = httpIndirect.Include301RedirectPayloadInFragment;
+				}
+
 				// First try creating a 301 redirect, and fallback to a form POST
 				// if the message is too big.
-				response = this.Create301RedirectResponse(message, fields);
+				response = this.Create301RedirectResponse(message, fields, payloadInFragment);
 				tooLargeForGet = response.Headers[HttpResponseHeader.Location].Length > IndirectMessageGetToPostThreshold;
 			}
 
@@ -695,7 +701,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		[Pure]
-		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
+		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields, bool payloadInFragment = false) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
 			Contract.Requires<ArgumentNullException>(fields != null);
@@ -703,7 +709,12 @@ namespace DotNetOpenAuth.Messaging {
 
 			WebHeaderCollection headers = new WebHeaderCollection();
 			UriBuilder builder = new UriBuilder(message.Recipient);
-			MessagingUtilities.AppendQueryArgs(builder, fields);
+			if (payloadInFragment) {
+				builder.AppendFragmentArgs(fields);
+			} else {
+				builder.AppendQueryArgs(fields);
+			}
+
 			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
 			Logger.Http.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
 			OutgoingWebResponse response = new OutgoingWebResponse {

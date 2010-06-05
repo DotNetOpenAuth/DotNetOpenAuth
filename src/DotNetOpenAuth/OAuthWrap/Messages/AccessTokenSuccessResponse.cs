@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
 	/// </remarks>
-	internal class AccessTokenSuccessResponse : MessageBase, IHttpDirectResponse {
+	internal class AccessTokenSuccessResponse : MessageBase, IHttpDirectResponse, IAccessTokenSuccessResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
 		/// </summary>
@@ -53,14 +53,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <value>The access token.</value>
 		[MessagePart(Protocol.access_token, IsRequired = true, AllowEmpty = false)]
-		internal string AccessToken { get; set; }
+		public string AccessToken { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the lifetime of the access token.
 		/// </summary>
 		/// <value>The lifetime.</value>
 		[MessagePart(Protocol.expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
-		internal TimeSpan? Lifetime { get; set; }
+		public TimeSpan? Lifetime { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the refresh token.
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// OPTIONAL. The refresh token used to obtain new access tokens using the same end-user access grant as described in Section 6  (Refreshing an Access Token). 
 		/// </remarks>
 		[MessagePart(Protocol.refresh_token, IsRequired = false, AllowEmpty = false)]
-		internal string RefreshToken { get; set; }
+		public string RefreshToken { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the access token secret.
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// REQUIRED if requested by the client. The corresponding access token secret as requested by the client. 
 		/// </remarks>
 		[MessagePart(Protocol.access_token_secret, IsRequired = false, AllowEmpty = false)]
-		internal string AccessTokenSecret { get; set; }
+		public string AccessTokenSecret { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the scope of access being requested.

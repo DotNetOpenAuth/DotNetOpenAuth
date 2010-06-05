@@ -84,22 +84,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 					var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
 					var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
 					if (accessTokenSuccess != null) {
-						authorizationState.AccessToken = accessTokenSuccess.AccessToken;
-						authorizationState.AccessTokenSecret = accessTokenSuccess.AccessTokenSecret;
-						authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
-						authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
-						authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;
-						if (accessTokenSuccess.Scope != null && accessTokenSuccess.Scope != authorizationState.Scope) {
-							if (authorizationState.Scope != null) {
-								Logger.Wrap.InfoFormat("Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",
-								                       authorizationState.Scope,
-								                       accessTokenSuccess.Scope);
-							}
-
-							authorizationState.Scope = accessTokenSuccess.Scope;
-						}
-
-						authorizationState.SaveChanges();
+						this.UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
 					} else {
 						authorizationState.Delete();
 						string error = failedAccessTokenResponse != null ? failedAccessTokenResponse.Error : "(unknown)";

@@ -280,6 +280,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="InfoCard\WellKnownIssuers.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
+    <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
     <Compile Include="Messaging\EnumerableCache.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
@@ -322,7 +323,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\TimestampEncoder.cs" />
     <Compile Include="OAuthWrap\ChannelElements\VerificationCode.cs" />
     <Compile Include="OAuthWrap\ChannelElements\WebAppVerificationCodeBindingElement.cs" />
-    <Compile Include="OAuthWrap\ChannelElements\AuthServerWebServerFlowBindingElement.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
     <Compile Include="OAuthWrap\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuthWrap\IAuthorizationServer.cs" />
     <Compile Include="OAuthWrap\IAuthorizationState.cs" />
@@ -331,8 +332,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionRequest.cs" />
     <Compile Include="OAuthWrap\Messages\ClientCredentials\ClientCredentialsRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\IAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\IMessageWithClientState.cs" />
     <Compile Include="OAuthWrap\Messages\IOAuthDirectResponseFormat.cs" />
+    <Compile Include="OAuthWrap\Messages\IRequestWithRedirectUri.cs" />
     <Compile Include="OAuthWrap\Messages\RefreshAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\RichAppAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\RichAppRequest.cs" />
@@ -351,6 +354,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\WebServer\ResponseFormatEncoder.cs" />
     <Compile Include="OAuthWrap\ResourceServer.cs" />
     <Compile Include="OAuthWrap\StandardAccessTokenAnalyzer.cs" />
+    <Compile Include="OAuthWrap\UserAgentClient.cs" />
     <Compile Include="OAuthWrap\WebAppAuthorizationServer.cs" />
     <Compile Include="OAuthWrap\WrapUtilities.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />

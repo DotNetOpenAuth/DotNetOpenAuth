@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Diagnostics;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Security.Cryptography.X509Certificates;
@@ -28,6 +29,7 @@
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Samples.OAuthConsumerWpf.WcfSampleService;
+	using OAuth2 = DotNetOpenAuth.OAuthWrap;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -201,11 +203,44 @@
 
 		private void wrapBeginButton_Click(object sender, RoutedEventArgs e) {
 			var authServer = new DotNetOpenAuth.OAuthWrap.AuthorizationServerDescription {
-				TokenEndpoint = new Uri(wrapTokenUrlBox.Text),
 				AuthorizationEndpoint = new Uri(wrapAuthorizationUrlBox.Text),
 			};
-			//var client = new DotNetOpenAuth.OAuthWrap.WebAppClient(authServer);
-			//client.PrepareRequestUserAuthorization();
+			if (wrapTokenUrlBox.Text.Length > 0) {
+				authServer.TokenEndpoint = new Uri(wrapTokenUrlBox.Text);
+			}
+
+			try {
+				////var client = new DotNetOpenAuth.OAuthWrap.WebAppClient(authServer);
+				////client.PrepareRequestUserAuthorization();
+				var client = new OAuth2.UserAgentClient(authServer) {
+					ClientIdentifier = wrapClientIdentifierBox.Text,
+				};
+
+				var authorizePopup = new Authorize2(client);
+				authorizePopup.Owner = this;
+				bool? result = authorizePopup.ShowDialog();
+				if (result.HasValue && result.Value) {
+					// One method of OAuth authorization is to tack the ?access_token= onto the query string.
+					var address = new Uri(wrapResourceUrlBox.Text);
+					address = new Uri(wrapResourceUrlBox.Text + (string.IsNullOrEmpty(address.Query) ? "?" : string.Empty) + "access_token=" + Uri.EscapeDataString(authorizePopup.Authorization.AccessToken));
+					var request = (HttpWebRequest)WebRequest.Create(address);
+					
+					// This method tacks on the Authorization header
+					client.AuthorizeRequest(request, authorizePopup.Authorization);
+
+					request.Method = wrapResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
+					using (var resourceResponse = request.GetResponse()) {
+						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
+							wrapResultsBox.Text = responseStream.ReadToEnd();
+						}
+					}
+				} else {
+					return;
+				}
+			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
+				MessageBox.Show(this, ex.Message);
+			}
+
 		}
 	}
 }

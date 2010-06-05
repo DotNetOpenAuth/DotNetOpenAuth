@@ -151,25 +151,25 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0">Token Endpoint URL</Label>
-                <TextBox Grid.Column="1" x:Name="wrapTokenUrlBox" />
-                <Label Grid.Column="2">POST</Label>
-                <Label Grid.Row="1">User Authorization URL</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" />
-                <Label Grid.Row="1" Grid.Column="2">GET</Label>
-                <Label Grid.Row="2">Flow</Label>
-                <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="0">
+                <Label Grid.Row="1">Token Endpoint URL</Label>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapTokenUrlBox" />
+                <Label Grid.Row="1" Grid.Column="2">POST</Label>
+                <Label Grid.Row="2">User Authorization URL</Label>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" Text="https://graph.facebook.com/oauth/authorize?display=popup" />
+                <Label Grid.Row="2" Grid.Column="2">GET</Label>
+                <Label Grid.Row="0">Flow</Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="1">
                     <ComboBox.Items>
                         <ComboBoxItem>Web Server</ComboBoxItem>
-                        <ComboBoxItem>Device</ComboBoxItem>
                         <ComboBoxItem>User Agent</ComboBoxItem>
+                        <ComboBoxItem>Device</ComboBoxItem>
                         <ComboBoxItem>Username and Password</ComboBoxItem>
                         <ComboBoxItem>Assertion</ComboBoxItem>
                         <ComboBoxItem>Client Credentials</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="3">Resource URL</Label>
-                <TextBox Grid.Row="3" Grid.Column="1" x:Name="wrapResourceUrlBox" />
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="wrapResourceUrlBox" Text="https://graph.facebook.com/me" />
                 <ComboBox Grid.Row="3" Grid.Column="2" x:Name="wrapResourceHttpMethodList" SelectedIndex="0">
                     <ComboBox.Items>
                         <ComboBoxItem>GET w/ header</ComboBoxItem>
@@ -178,7 +178,7 @@
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="4">Client Identifier</Label>
-                <TextBox Grid.Row="4" Grid.Column="1" x:Name="wrapClientIdentifierBox" Grid.ColumnSpan="2"/>
+                <TextBox Grid.Row="4" Grid.Column="1" x:Name="wrapClientIdentifierBox" Grid.ColumnSpan="2" Text="367207604173" />
                 <Label Grid.Row="5">Client Secret</Label>
                 <TextBox Grid.Row="5" Grid.Column="1" x:Name="wrapClientSecretBox" Grid.ColumnSpan="2"/>
                 <Label Grid.Row="6">OAuth 2.0 version</Label>

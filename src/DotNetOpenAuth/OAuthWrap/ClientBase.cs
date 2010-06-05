@@ -61,6 +61,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public void AuthorizeRequest(HttpWebRequest request, string accessToken) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
+
 			WrapUtilities.AuthorizeWithOAuthWrap(request, accessToken);
 		}
 
@@ -126,6 +127,28 @@ namespace DotNetOpenAuth.OAuthWrap {
 			}
 
 			authorization.SaveChanges();
+		}
+
+		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, IAccessTokenSuccessResponse accessTokenSuccess) {
+			Contract.Requires<ArgumentNullException>(authorizationState != null, "authorizationState");
+			Contract.Requires<ArgumentNullException>(accessTokenSuccess != null, "accessTokenSuccess");
+
+			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
+			authorizationState.AccessTokenSecret = accessTokenSuccess.AccessTokenSecret;
+			authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
+			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
+			authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;
+			if (accessTokenSuccess.Scope != null && accessTokenSuccess.Scope != authorizationState.Scope) {
+				if (authorizationState.Scope != null) {
+					Logger.Wrap.InfoFormat("Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",
+					                       authorizationState.Scope,
+					                       accessTokenSuccess.Scope);
+				}
+
+				authorizationState.Scope = accessTokenSuccess.Scope;
+			}
+
+			authorizationState.SaveChanges();
 		}
 
 		private double ProportionalLifeRemaining(IAuthorizationState authorization) {
