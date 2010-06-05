@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -208,13 +209,20 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// </summary>
 		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
 		/// <param name="accessToken">The access token previously retrieved.</param>
+		/// <param name="maxResults">The maximum number of entries to return. If you want to receive all of the contacts, rather than only the default maximum, you can specify a very large number here.</param>
+		/// <param name="startIndex">The 1-based index of the first result to be retrieved (for paging).</param>
 		/// <returns>An XML document returned by Google.</returns>
-		public static XDocument GetContacts(ConsumerBase consumer, string accessToken) {
+		public static XDocument GetContacts(ConsumerBase consumer, string accessToken, int maxResults = 25, int startIndex = 1) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
 			}
 
-			var response = consumer.PrepareAuthorizedRequestAndSend(GetContactsEndpoint, accessToken);
+			var extraData = new Dictionary<string, string>() {
+				{ "start-index", startIndex.ToString(CultureInfo.InvariantCulture) },
+				{ "max-results", maxResults.ToString(CultureInfo.InvariantCulture) },
+			};
+			var request = consumer.PrepareAuthorizedRequest(GetContactsEndpoint, accessToken, extraData);
+			var response = consumer.Channel.WebRequestHandler.GetResponse(request);
 			string body = response.GetResponseReader().ReadToEnd();
 			XDocument result = XDocument.Parse(body);
 			return result;
