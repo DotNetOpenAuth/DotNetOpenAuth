@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
+	using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
 
 	/// <summary>
 	/// A request for an access token for a client application that has its
@@ -18,7 +20,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// This is somewhat analogous to 2-legged OAuth.
 	/// </remarks>
-	internal class ClientCredentialsRequest : MessageBase {
+	internal class ClientCredentialsRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClientCredentialsRequest"/> class.
 		/// </summary>
@@ -33,21 +35,38 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// Gets or sets the account name.
 		/// </summary>
 		/// <value>The name on the account.</value>
-		[MessagePart(Protocol.wrap_name, IsRequired = true, AllowEmpty = false)]
-		internal string Name { get; set; }
+		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
+		public string ClientIdentifier { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the user's password.
 		/// </summary>
 		/// <value>The password.</value>
-		[MessagePart(Protocol.wrap_password, IsRequired = true, AllowEmpty = false)]
-		internal string Password { get; set; }
+		[MessagePart(Protocol.client_secret, IsRequired = true, AllowEmpty = false)]
+		public string ClientSecret { get; internal set; }
+
+		/// <summary>
+		/// Gets or sets the type of the secret.
+		/// </summary>
+		/// <value>The type of the secret.</value>
+		/// <remarks>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
+		/// </remarks>
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		public string SecretType { get; set; }
 
 		/// <summary>
 		/// Gets or sets an optional authorization scope as defined by the Authorization Server.
 		/// </summary>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
+
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
+		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

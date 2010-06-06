@@ -7,27 +7,47 @@
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
+	using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
 
 	/// <summary>
-	/// A request for a delegation code in exchnage for a user's confidential 
+	/// A request for a delegation code in exchange for a user's confidential 
 	/// username and password.
 	/// </summary>
 	/// <remarks>
 	/// After this request has been sent, the consumer application MUST discard
 	/// the confidential user credentials and use the delegation code going forward.
 	/// </remarks>
-	internal class UserNamePasswordRequest : MessageBase {
+	internal class UserNamePasswordRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+		[MessagePart(Protocol.type, IsRequired = true)]
+		private const string Type = "username";
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UserNamePasswordRequest"/> class.
+		/// </summary>
+		/// <param name="tokenEndpoint">The authorization server.</param>
+		/// <param name="version">The version.</param>
+		internal UserNamePasswordRequest(Uri tokenEndpoint, Version version)
+			: base(version, MessageTransport.Direct, tokenEndpoint) {
+			this.HttpMethods = HttpDeliveryMethods.PostRequest;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserNamePasswordRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		/// <param name="version">The version.</param>
-		internal UserNamePasswordRequest(Uri authorizationServer, Version version)
-			: base(version, MessageTransport.Direct, authorizationServer) {
-			this.HttpMethods = HttpDeliveryMethods.PostRequest;
+		internal UserNamePasswordRequest(AuthorizationServerDescription authorizationServer)
+			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
+			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
+			Contract.Requires<ArgumentException>(authorizationServer.TokenEndpoint != null);
+
+			// We prefer URL encoding of the data.
+			this.Format = ResponseFormat.Form;
 		}
 
 		/// <summary>
@@ -35,20 +55,30 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <value>The client identifier.</value>
 		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
-		internal string ClientIdentifier { get; set; }
+		public string ClientIdentifier { get; internal set; }
+
+		/// <summary>
+		/// Gets or sets the client secret.
+		/// </summary>
+		/// <value>The client secret.</value>
+		/// <remarks>
+		/// REQUIRED. The client secret as described in Section 3.1  (Client Credentials). OPTIONAL if no client secret was issued. 
+		/// </remarks>
+		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
+		public string ClientSecret { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the user's account username.
 		/// </summary>
 		/// <value>The username on the user's account.</value>
-		[MessagePart(Protocol.wrap_username, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.username, IsRequired = true, AllowEmpty = false)]
 		internal string UserName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the user's password.
 		/// </summary>
 		/// <value>The password.</value>
-		[MessagePart(Protocol.wrap_password, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.password, IsRequired = true, AllowEmpty = true)]
 		internal string Password { get; set; }
 
 		/// <summary>
@@ -71,6 +101,23 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <value>The scope.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
+
+		/// <summary>
+		/// Gets or sets the type of the secret.
+		/// </summary>
+		/// <value>The type of the secret.</value>
+		/// <remarks>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
+		/// </remarks>
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		public string SecretType { get; set; }
+
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
+		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

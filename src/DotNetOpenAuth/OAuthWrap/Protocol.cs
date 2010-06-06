@@ -144,14 +144,14 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string expired_delegation_code = "expired_delegation_code";
 
 		/// <summary>
-		/// The "wrap_username" string.
+		/// The "username" string.
 		/// </summary>
-		internal const string wrap_username = "wrap_username";
+		internal const string username = "username";
 
 		/// <summary>
-		/// The "wrap_password" string.
+		/// The "password" string.
 		/// </summary>
-		internal const string wrap_password = "wrap_password";
+		internal const string password = "password";
 
 		/// <summary>
 		/// The "wrap_name" string.
