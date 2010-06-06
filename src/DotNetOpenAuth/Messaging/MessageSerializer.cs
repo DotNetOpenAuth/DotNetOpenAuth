@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.Messaging {
 			// Rather than hand back the whole message dictionary (which 
 			// includes keys with blank values), create a new dictionary
 			// that only has required keys, and optional keys whose
-			// values are not empty.
+			// values are not empty (or default).
 			var result = new Dictionary<string, string>();
 			foreach (var pair in messageDictionary) {
 				MessagePart partDescription;

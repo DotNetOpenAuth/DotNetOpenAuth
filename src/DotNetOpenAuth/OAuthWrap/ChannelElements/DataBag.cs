@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				this.Signature = this.CalculateSignature();
 			}
 
-			var fields = MessageDescriptions.GetAccessor(this);
+			var fields = MessageSerializer.Get(this.GetType()).Serialize(MessageDescriptions.GetAccessor(this));
 			string value = MessagingUtilities.CreateQueryString(fields);
 
 			byte[] encoded = Encoding.UTF8.GetBytes(value);
