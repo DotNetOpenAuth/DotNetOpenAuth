@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 		private const int NonceLength = 6;
 
-		private readonly byte[] secret;
+		private readonly byte[] symmetricSecret;
 
 		private readonly RSACryptoServiceProvider asymmetricSigning;
 
@@ -75,15 +75,15 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			this.hasherForAsymmetricSigning = new SHA1CryptoServiceProvider();
 		}
 
-		protected DataBag(byte[] secret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+		protected DataBag(byte[] symmetricSecret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Contract.Requires<ArgumentException>(secret != null || (signed == null && encrypted == null), "A secret is required when signing or encrypting is required.");
+			Contract.Requires<ArgumentException>(symmetricSecret != null || (signed == null && encrypted == null), "A secret is required when signing or encrypting is required.");
 
-			if (secret != null) {
-				this.hasher = new HMACSHA256(secret);
+			if (symmetricSecret != null) {
+				this.hasher = new HMACSHA256(symmetricSecret);
 			}
 
-			this.secret = secret;
+			this.symmetricSecret = symmetricSecret;
 		}
 
 		[MessagePart("sig")]
@@ -207,22 +207,22 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		private byte[] Encrypt(byte[] value) {
-			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.secret != null);
+			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.symmetricSecret != null);
 
 			if (this.asymmetricEncrypting != null) {
 				return this.asymmetricEncrypting.EncryptWithRandomSymmetricKey(value);
 			} else {
-				return MessagingUtilities.Encrypt(value, this.secret);
+				return MessagingUtilities.Encrypt(value, this.symmetricSecret);
 			}
 		}
 
 		private byte[] Decrypt(byte[] value) {
-			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.secret != null);
+			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.symmetricSecret != null);
 
 			if (this.asymmetricEncrypting != null) {
 				return this.asymmetricEncrypting.DecryptWithRandomSymmetricKey(value);
 			} else {
-				return MessagingUtilities.Decrypt(value, this.secret);
+				return MessagingUtilities.Decrypt(value, this.symmetricSecret);
 			}
 		}
 	}
