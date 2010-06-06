@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
-	using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
 
 	/// <summary>
 	/// A request from a Client to an Authorization Server with some assertion for an access token.

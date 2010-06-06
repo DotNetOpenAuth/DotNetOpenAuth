@@ -44,8 +44,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// Gets or sets the user authorization URI on the authorization server. 
 		/// </summary>
-		[MessagePart(Protocol.user_uri, IsRequired = true)]
-		internal Uri AuthorizationUri { get; set; }
+		/// <value>
+		/// REQUIRED. The end-user verification URI on the authorization server. The URI should be short and easy to remember as end-users will be asked to manually type it into their user-agent.
+		/// </value>
+		[MessagePart(Protocol.verification_uri, IsRequired = true)]
+		internal Uri VerificationUri { get; set; }
 
 		/// <summary>
 		/// Gets or sets the lifetime.

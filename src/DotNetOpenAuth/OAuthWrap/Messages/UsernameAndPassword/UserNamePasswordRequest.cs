@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
-	using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
 
 	/// <summary>
 	/// A request for a delegation code in exchange for a user's confidential 

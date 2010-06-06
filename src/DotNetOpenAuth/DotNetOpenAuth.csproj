@@ -339,8 +339,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\Device\RichAppAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\RichAppRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\RichAppResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\Device\RichAppAccessTokenSuccessResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\Device\RichAppAccessTokenFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UnauthorizedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\AccessTokenFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\AccessTokenSuccessResponse.cs" />
@@ -349,8 +347,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\UserAgent\UserAgentSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordCaptchaResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebServer\ResponseFormat.cs" />
-    <Compile Include="OAuthWrap\Messages\WebServer\ResponseFormatEncoder.cs" />
+    <Compile Include="OAuthWrap\Messages\ResponseFormat.cs" />
+    <Compile Include="OAuthWrap\Messages\ResponseFormatEncoder.cs" />
     <Compile Include="OAuthWrap\ResourceServer.cs" />
     <Compile Include="OAuthWrap\StandardAccessTokenAnalyzer.cs" />
     <Compile Include="OAuthWrap\UserAgentClient.cs" />

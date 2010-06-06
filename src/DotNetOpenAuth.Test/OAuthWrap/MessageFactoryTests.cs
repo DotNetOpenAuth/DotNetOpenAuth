@@ -221,30 +221,6 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			Assert.IsInstanceOf(typeof(RichAppAccessTokenRequest), request);
 		}
 
-		[TestCase]
-		public void RichAppAccessTokenSuccessResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.refresh_token, "abc" },
-				{ Protocol.access_token, "abc" },
-			};
-			var request = new RichAppAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(RichAppAccessTokenSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase]
-		public void RichAppAccessTokenFailedResponse() {
-			// HTTP 401 Unauthorized
-			// WWW-Authenticate: WRAP
-			var fields = new Dictionary<string, string> {
-			};
-			var request = new RichAppAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(RichAppAccessTokenFailedResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
 		#endregion
 
 		#region Client Account and Password profile messages

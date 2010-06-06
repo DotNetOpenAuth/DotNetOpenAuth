@@ -99,9 +99,9 @@ namespace DotNetOpenAuth.OAuthWrap {
 		internal const string user_code = "user_code";
 
 		/// <summary>
-		/// The "user_uri" string.
+		/// The "verification_uri" string.
 		/// </summary>
-		internal const string user_uri = "user_uri";
+		internal const string verification_uri = "verification_uri";
 
 		/// <summary>
 		/// The "interval" string.

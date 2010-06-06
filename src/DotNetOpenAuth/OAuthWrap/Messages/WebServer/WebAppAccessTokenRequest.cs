@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using ChannelElements;
 	using Configuration;
 	using Messaging;
-	using WebServer;
 
 	/// <summary>
 	/// A message sent by the Client directly to the Authorization Server to exchange

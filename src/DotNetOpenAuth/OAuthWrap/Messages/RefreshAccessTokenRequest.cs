@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
-	using DotNetOpenAuth.OAuthWrap.Messages.WebServer;
 
 	/// <summary>
 	/// A request from the client to the token endpoint for a new access token
