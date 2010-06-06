@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// to complete some step to defeat automated attacks.
 		/// </summary>
 		/// <value>The verification URL.</value>
-		[MessagePart(Protocol.wrap_verification_url, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
 		internal Uri VerificationUrl { get; set; }
 	}
 }

@@ -31,7 +31,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				typeof(Messages.AccessTokenFailedResponse),
 				typeof(Messages.UnauthorizedResponse),
 				typeof(Messages.AssertionRequest),
-				typeof(Messages.AssertionSuccessResponse),
 				typeof(Messages.ClientCredentialsRequest),
 				typeof(Messages.RichAppRequest),
 				typeof(Messages.RichAppResponse),

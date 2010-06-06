@@ -129,8 +129,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		public void UserNamePasswordRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
-				{ Protocol.wrap_username, "abc" },
-				{ Protocol.wrap_password, "abc" },
+				{ Protocol.client_secret, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(UserNamePasswordRequest), request);
@@ -151,7 +150,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		public void UserNamePasswordVerificationResponse() {
 			// HTTP 400 Bad Request
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_verification_url, "abc" },
+				{ Protocol.code, "abc" },
 			};
 			var request = new UserNamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
@@ -253,8 +252,8 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 		[TestCase]
 		public void ClientCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_name, "abc" },
-				{ Protocol.wrap_password, "abc" },
+				{ Protocol.client_id, "abc" },
+				{ Protocol.client_secret, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(ClientCredentialsRequest), request);
@@ -272,17 +271,6 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(AssertionRequest), request);
-		}
-
-		[TestCase]
-		public void AssertionSuccessResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.access_token, "abc" },
-			};
-			var request = new AssertionRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(AssertionSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
 		}
 
 		#endregion

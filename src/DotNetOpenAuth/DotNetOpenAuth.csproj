@@ -331,7 +331,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\AccessProtectedResourceRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Assertion\AssertionRequest.cs" />
     <Compile Include="OAuthWrap\Messages\ClientCredentials\ClientCredentialsRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\Assertion\AssertionSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\IAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\IMessageWithClientState.cs" />
     <Compile Include="OAuthWrap\Messages\IOAuthDirectResponseFormat.cs" />
