@@ -33,9 +33,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			this.Scope = authorization.Scope;
 		}
 
-		internal static RefreshToken Decode(byte[] secret, string value, IProtocolMessage containingMessage = null) {
+		internal static RefreshToken Decode(byte[] secret, string value, IProtocolMessage containingMessage) {
 			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
+			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
 			Contract.Ensures(Contract.Result<RefreshToken>() != null);
 
 			var self = new RefreshToken(secret);

@@ -34,10 +34,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			this.Lifetime = lifetime;
 		}
 
+		[MessagePart]
 		internal TimeSpan? Lifetime { get; set; }
 
-		internal static AccessToken Decode(RSAParameters signingKey, RSAParameters encryptingKey, string value, IProtocolMessage containingMessage = null) {
+		internal static AccessToken Decode(RSAParameters signingKey, RSAParameters encryptingKey, string value, IProtocolMessage containingMessage) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
+			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
 			Contract.Ensures(Contract.Result<AccessToken>() != null);
 
 			var self = new AccessToken(signingKey, encryptingKey);

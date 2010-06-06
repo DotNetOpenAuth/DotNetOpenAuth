@@ -134,7 +134,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			var httpResponse = response as IHttpDirectResponse;
 			webResponse.Status = httpResponse != null ? httpResponse.HttpStatusCode : HttpStatusCode.Unauthorized;
 			foreach (string headerName in httpResponse.Headers) {
-				webResponse.Headers.Add(headerName);
+				webResponse.Headers.Add(headerName, httpResponse.Headers[headerName]);
 			}
 
 			// Now serialize all the message parts into the WWW-Authenticate header.

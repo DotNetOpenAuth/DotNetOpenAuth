@@ -124,8 +124,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			return Convert.ToBase64String(encoded);
 		}
 
-		protected virtual void Decode(string value, IProtocolMessage containingMessage = null) {
+		protected virtual void Decode(string value, IProtocolMessage containingMessage) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
+			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
 
 			byte[] encoded = Convert.FromBase64String(value);
 

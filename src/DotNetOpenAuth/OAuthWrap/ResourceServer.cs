@@ -62,10 +62,10 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string username, out string scope) {
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
 
+			AccessProtectedResourceRequest request = null;
 			try {
-				AccessProtectedResourceRequest request;
 				if (this.Channel.TryReadFromRequest<AccessProtectedResourceRequest>(httpRequestInfo, out request)) {
-					if (this.AccessTokenAnalyzer.TryValidateAccessToken(request.AccessToken, out username, out scope)) {
+					if (this.AccessTokenAnalyzer.TryValidateAccessToken(request, request.AccessToken, out username, out scope)) {
 						// No errors to return.
 						return null;
 					}
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 					throw ErrorUtilities.ThrowProtocol("Missing access token.");
 				}
 			} catch (ProtocolException ex) {
-				var response = new UnauthorizedResponse(null, ex);
+				var response = new UnauthorizedResponse(request, ex);
 
 				username = null;
 				scope = null;

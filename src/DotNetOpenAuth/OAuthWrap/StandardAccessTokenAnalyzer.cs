@@ -24,8 +24,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		public RSAParameters ResourceServerPrivateEncryptionKey { get; private set; }
 
-		public bool TryValidateAccessToken(string accessToken, out string user, out string scope) {
-			var token = AccessToken.Decode(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey, accessToken);
+		public bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out string scope) {
+			var token = AccessToken.Decode(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey, accessToken, message);
 			user = token.User;
 			scope = token.Scope;
 			return true;

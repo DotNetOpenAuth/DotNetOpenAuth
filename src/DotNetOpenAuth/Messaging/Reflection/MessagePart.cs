@@ -92,6 +92,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			};
 			Map<Uri>(uri => uri.AbsoluteUri, safeUri);
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
+			Map<TimeSpan>(ts => ts.ToString(), str => TimeSpan.Parse(str));
 			Map<byte[]>(safeFromByteArray, safeToByteArray);
 			Map<Realm>(realm => realm.ToString(), safeRealm);
 			Map<Identifier>(id => id.SerializedString, safeIdentifier);
