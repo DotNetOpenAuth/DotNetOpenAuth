@@ -18,12 +18,12 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// <summary>
 	/// An OAuth WRAP consumer designed for web applications.
 	/// </summary>
-	public class WebAppClient : ClientBase {
+	public class WebServerClient : ClientBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppClient"/> class.
+		/// Initializes a new instance of the <see cref="WebServerClient"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		public WebAppClient(AuthorizationServerDescription authorizationServer)
+		public WebServerClient(AuthorizationServerDescription authorizationServer)
 			: base(authorizationServer) {
 		}
 

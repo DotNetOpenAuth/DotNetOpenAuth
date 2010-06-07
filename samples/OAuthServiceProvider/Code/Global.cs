@@ -58,7 +58,7 @@
 			set { HttpContext.Current.Session["authrequest"] = value; }
 		}
 
-		public static WebAppAuthorizationServer AuthorizationServer = new WebAppAuthorizationServer(new OAuth2AuthorizationServer());
+		public static WebServerAuthorizationServer AuthorizationServer = new WebServerAuthorizationServer(new OAuth2AuthorizationServer());
 
 		private static DataClassesDataContext dataContextSimple {
 			get {

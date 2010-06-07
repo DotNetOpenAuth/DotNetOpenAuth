@@ -15,12 +15,12 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 	using DotNetOpenAuth.OAuthWrap.Messages;
 
-	public class WebAppAuthorizationServer : AuthorizationServerBase {
+	public class WebServerAuthorizationServer : AuthorizationServerBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppAuthorizationServer"/> class.
+		/// Initializes a new instance of the <see cref="WebServerAuthorizationServer"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		public WebAppAuthorizationServer(IAuthorizationServer authorizationServer)
+		public WebServerAuthorizationServer(IAuthorizationServer authorizationServer)
 			: base(authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
 		}

@@ -94,12 +94,12 @@
 			}
 		}
 
-		private static WebAppClient CreateClient() {
+		private static WebServerClient CreateClient() {
 			var authServerDescription = new AuthorizationServerDescription {
 				TokenEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/token"),
 				AuthorizationEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/auth"),
 			};
-			var client = new WebAppClient(authServerDescription) {
+			var client = new WebServerClient(authServerDescription) {
 				ClientIdentifier = "sampleconsumer",
 				ClientSecret = "samplesecret",
 				TokenManager = TokenManager,

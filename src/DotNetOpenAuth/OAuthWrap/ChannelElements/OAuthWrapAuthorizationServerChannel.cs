@@ -177,7 +177,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 			if (authorizationServer != null) {
 				bindingElements.Add(new AuthServerAllFlowsBindingElement());
-				bindingElements.Add(new WebAppVerificationCodeBindingElement());
+				bindingElements.Add(new WebServerVerificationCodeBindingElement());
 				bindingElements.Add(new AccessRequestBindingElement());
 			}
 

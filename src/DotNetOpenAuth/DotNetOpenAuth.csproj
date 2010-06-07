@@ -322,7 +322,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\DataBag.cs" />
     <Compile Include="OAuthWrap\ChannelElements\TimestampEncoder.cs" />
     <Compile Include="OAuthWrap\ChannelElements\VerificationCode.cs" />
-    <Compile Include="OAuthWrap\ChannelElements\WebAppVerificationCodeBindingElement.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\WebServerVerificationCodeBindingElement.cs" />
     <Compile Include="OAuthWrap\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
     <Compile Include="OAuthWrap\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuthWrap\IAuthorizationServer.cs" />
@@ -352,7 +352,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ResourceServer.cs" />
     <Compile Include="OAuthWrap\StandardAccessTokenAnalyzer.cs" />
     <Compile Include="OAuthWrap\UserAgentClient.cs" />
-    <Compile Include="OAuthWrap\WebAppAuthorizationServer.cs" />
+    <Compile Include="OAuthWrap\WebServerAuthorizationServer.cs" />
     <Compile Include="OAuthWrap\WrapUtilities.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
@@ -657,7 +657,7 @@ http://opensource.org/licenses/ms-pl.html
       <DependentUpon>OAuthWrapStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuthWrap\AuthorizationServerDescription.cs" />
-    <Compile Include="OAuthWrap\WebAppClient.cs" />
+    <Compile Include="OAuthWrap\WebServerClient.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="OAuth\Protocol.cs" />
     <Compile Include="OAuth\ServiceProvider.cs" />

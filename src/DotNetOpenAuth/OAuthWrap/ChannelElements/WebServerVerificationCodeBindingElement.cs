@@ -17,11 +17,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// A binding element for OAuth 2.0 authorization servers that create/verify
 	/// issued verification codes as part of obtaining access/refresh tokens.
 	/// </summary>
-	internal class WebAppVerificationCodeBindingElement : AuthServerBindingElementBase {
+	internal class WebServerVerificationCodeBindingElement : AuthServerBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppVerificationCodeBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="WebServerVerificationCodeBindingElement"/> class.
 		/// </summary>
-		internal WebAppVerificationCodeBindingElement() {
+		internal WebServerVerificationCodeBindingElement() {
 		}
 
 		/// <summary>
