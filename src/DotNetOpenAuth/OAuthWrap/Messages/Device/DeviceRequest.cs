@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RichAppRequest.cs" company="Andrew Arnott">
+// <copyright file="DeviceRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -16,25 +16,25 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// A request from a rich app Client to an Authorization Server requested 
 	/// authorization to access user Protected Data.
 	/// </summary>
-	internal class RichAppRequest : MessageBase, IOAuthDirectResponseFormat {
+	internal class DeviceRequest : MessageBase, IOAuthDirectResponseFormat {
 		[MessagePart(Protocol.type, IsRequired = true)]
 		private const string MessageType = "device_code";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RichAppRequest"/> class.
+		/// Initializes a new instance of the <see cref="DeviceRequest"/> class.
 		/// </summary>
 		/// <param name="tokenEndpoint">The authorization server.</param>
 		/// <param name="version">The version.</param>
-		internal RichAppRequest(Uri tokenEndpoint, Version version)
+		internal DeviceRequest(Uri tokenEndpoint, Version version)
 			: base(version, MessageTransport.Direct, tokenEndpoint) {
 			this.HttpMethods = HttpDeliveryMethods.GetRequest;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RichAppRequest"/> class.
+		/// Initializes a new instance of the <see cref="DeviceRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		internal RichAppRequest(AuthorizationServerDescription authorizationServer)
+		internal DeviceRequest(AuthorizationServerDescription authorizationServer)
 			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);

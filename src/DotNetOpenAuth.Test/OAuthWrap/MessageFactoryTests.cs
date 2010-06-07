@@ -187,7 +187,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.client_id, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(RichAppRequest), request);
+			Assert.IsInstanceOf(typeof(DeviceRequest), request);
 
 			// including optional parts
 			fields = new Dictionary<string, string> {
@@ -197,7 +197,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.scope, "abc" },
 			};
 			request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(RichAppRequest), request);
+			Assert.IsInstanceOf(typeof(DeviceRequest), request);
 		}
 
 		[TestCase]
@@ -207,7 +207,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.access_token, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(RichAppResponse), request);
+			Assert.IsInstanceOf(typeof(DeviceResponse), request);
 		}
 
 		[TestCase]
@@ -218,7 +218,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.code, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(RichAppAccessTokenRequest), request);
+			Assert.IsInstanceOf(typeof(DeviceAccessTokenRequest), request);
 		}
 
 		#endregion

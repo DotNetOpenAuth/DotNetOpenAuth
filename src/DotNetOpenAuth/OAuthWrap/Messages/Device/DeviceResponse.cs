@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RichAppResponse.cs" company="Andrew Arnott">
+// <copyright file="DeviceResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,12 +15,12 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// An indirect response from the Authorization Server to the rich app Client
 	/// with the verification code.
 	/// </summary>
-	internal class RichAppResponse : MessageBase {
+	internal class DeviceResponse : MessageBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RichAppResponse"/> class.
+		/// Initializes a new instance of the <see cref="DeviceResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal RichAppResponse(RichAppRequest request)
+		internal DeviceResponse(DeviceRequest request)
 			: base(request) {
 		}
 

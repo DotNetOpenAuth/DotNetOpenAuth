@@ -336,9 +336,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\IOAuthDirectResponseFormat.cs" />
     <Compile Include="OAuthWrap\Messages\IRequestWithRedirectUri.cs" />
     <Compile Include="OAuthWrap\Messages\RefreshAccessTokenRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\Device\RichAppAccessTokenRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\Device\RichAppRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\Device\RichAppResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\Device\DeviceAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\Device\DeviceRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\Device\DeviceResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UnauthorizedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\AccessTokenFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\AccessTokenSuccessResponse.cs" />

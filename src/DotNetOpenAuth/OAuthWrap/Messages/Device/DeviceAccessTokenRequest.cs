@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RichAppAccessTokenRequest.cs" company="Andrew Arnott">
+// <copyright file="DeviceAccessTokenRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,25 +17,25 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// A message from the Client to the Authorization Server exchanging a
 	/// verification code for refresh and access tokens.
 	/// </summary>
-	internal class RichAppAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+	internal class DeviceAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
 		[MessagePart(Protocol.type, IsRequired = true)]
 		private const string MessageType = "device_token";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RichAppAccessTokenRequest"/> class.
+		/// Initializes a new instance of the <see cref="DeviceAccessTokenRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		/// <param name="version">The version.</param>
-		internal RichAppAccessTokenRequest(Uri authorizationServer, Version version)
+		internal DeviceAccessTokenRequest(Uri authorizationServer, Version version)
 			: base(version, MessageTransport.Direct, authorizationServer) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RichAppAccessTokenRequest"/> class.
+		/// Initializes a new instance of the <see cref="DeviceAccessTokenRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		internal RichAppAccessTokenRequest(AuthorizationServerDescription authorizationServer)
+		internal DeviceAccessTokenRequest(AuthorizationServerDescription authorizationServer)
 			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
-		/// in <see cref="RichAppResponse.VerificationCode"/>.
+		/// in <see cref="DeviceResponse.VerificationCode"/>.
 		/// </summary>
 		/// <value>The verification code.</value>
 		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
