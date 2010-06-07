@@ -29,25 +29,25 @@ namespace DotNetOpenAuth.OAuthWrap {
 
 		public IClientTokenManager TokenManager { get; set; }
 
-		public WebAppRequest PrepareRequestUserAuthorization() {
+		public WebServerRequest PrepareRequestUserAuthorization() {
 			return this.PrepareRequestUserAuthorization(new AuthorizationState());
 		}
 
-		public WebAppRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {
+		public WebServerRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<InvalidOperationException>(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
-			Contract.Ensures(Contract.Result<WebAppRequest>() != null);
-			Contract.Ensures(Contract.Result<WebAppRequest>().ClientIdentifier == this.ClientIdentifier);
-			Contract.Ensures(Contract.Result<WebAppRequest>().Callback == authorization.Callback);
+			Contract.Ensures(Contract.Result<WebServerRequest>() != null);
+			Contract.Ensures(Contract.Result<WebServerRequest>().ClientIdentifier == this.ClientIdentifier);
+			Contract.Ensures(Contract.Result<WebServerRequest>().Callback == authorization.Callback);
 
 			if (authorization.Callback == null) {
 				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting
-					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(WebAppSuccessResponse), Protocol.Default.Version));
+					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(WebServerSuccessResponse), Protocol.Default.Version));
 				authorization.SaveChanges();
 			}
 
-			var request = new WebAppRequest(this.AuthorizationServer) {
+			var request = new WebServerRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
 				Scope = authorization.Scope,
@@ -70,11 +70,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.UrlBeforeRewriting, this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState = this.TokenManager.GetAuthorizationState(callback, response.ClientState);
 				ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
-				var success = response as WebAppSuccessResponse;
-				var failure = response as WebAppFailedResponse;
+				var success = response as WebServerSuccessResponse;
+				var failure = response as WebServerFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 				if (success != null) {
-					var accessTokenRequest = new WebAppAccessTokenRequest(this.AuthorizationServer) {
+					var accessTokenRequest = new WebServerAccessTokenRequest(this.AuthorizationServer) {
 						ClientIdentifier = this.ClientIdentifier,
 						ClientSecret = this.ClientSecret,
 						Callback = authorizationState.Callback,

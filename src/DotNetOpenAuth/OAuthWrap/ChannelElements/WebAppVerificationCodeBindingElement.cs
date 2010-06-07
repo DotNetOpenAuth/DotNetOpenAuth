@@ -48,10 +48,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as WebAppSuccessResponse;
+			var response = message as WebServerSuccessResponse;
 			if (response != null) {
 				var directResponse = (IDirectResponseProtocolMessage)response;
-				var request = (WebAppRequest)directResponse.OriginatingRequest;
+				var request = (WebServerRequest)directResponse.OriginatingRequest;
 				ITokenCarryingRequest tokenCarryingResponse = response;
 				tokenCarryingResponse.AuthorizationDescription = new VerificationCode(this.AuthorizationServer.Secret, this.AuthorizationServer.VerificationCodeNonceStore, request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
 
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var request = message as WebAppAccessTokenRequest;
+			var request = message as WebServerAccessTokenRequest;
 			if (request != null) {
 				ITokenCarryingRequest tokenRequest = request;
 				((VerificationCode)tokenRequest.AuthorizationDescription).VerifyCallback(request.Callback);

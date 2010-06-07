@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppFailedResponse.cs" company="Andrew Arnott">
+// <copyright file="WebServerFailedResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// following the user's denial to grant Consumer with authorization of 
 	/// access to requested resources.
 	/// </summary>
-	internal class WebAppFailedResponse : MessageBase, IMessageWithClientState {
+	internal class WebServerFailedResponse : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
 		/// </summary>
@@ -22,22 +22,22 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		private const string ErrorReason = Protocol.user_denied;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebServerFailedResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The recipient of the message.</param>
 		/// <param name="version">The version.</param>
-		internal WebAppFailedResponse(Uri clientCallback, Version version) :
+		internal WebServerFailedResponse(Uri clientCallback, Version version) :
 			base(version, MessageTransport.Indirect, clientCallback) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppFailedResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebServerFailedResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="request">The request.</param>
-		internal WebAppFailedResponse(Uri clientCallback, WebAppRequest request)
+		internal WebServerFailedResponse(Uri clientCallback, WebServerRequest request)
 			: this(clientCallback, ((IMessage)request).Version) {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");

@@ -52,9 +52,9 @@
 			set { HttpContext.Current.Session["authrequest"] = value; }
 		}
 
-		public static WebAppRequest PendingOAuth2Authorization
+		public static WebServerRequest PendingOAuth2Authorization
 		{
-			get { return HttpContext.Current.Session["authrequest"] as WebAppRequest; }
+			get { return HttpContext.Current.Session["authrequest"] as WebServerRequest; }
 			set { HttpContext.Current.Session["authrequest"] = value; }
 		}
 

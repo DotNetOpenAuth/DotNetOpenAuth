@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppRequest.cs" company="Andrew Arnott">
+// <copyright file="WebServerRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
 	[Serializable]
-	public class WebAppRequest : MessageBase, IMessageWithClientState, IRequestWithRedirectUri {
+	public class WebServerRequest : MessageBase, IMessageWithClientState, IRequestWithRedirectUri {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
@@ -25,11 +25,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 #pragma warning restore 169
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebServerRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationEndpoint">The Authorization Server's user authorization URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		internal WebAppRequest(Uri authorizationEndpoint, Version version)
+		internal WebServerRequest(Uri authorizationEndpoint, Version version)
 			: base(version, MessageTransport.Indirect, authorizationEndpoint) {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
 			Contract.Requires<ArgumentNullException>(version != null);
@@ -37,10 +37,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebServerRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		internal WebAppRequest(AuthorizationServerDescription authorizationServer)
+		internal WebServerRequest(AuthorizationServerDescription authorizationServer)
 			: this(authorizationServer.AuthorizationEndpoint, authorizationServer.Version) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);

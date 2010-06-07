@@ -32,17 +32,17 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public WebAppRequest ReadAuthorizationRequest(HttpRequestInfo request = null) {
+		public WebServerRequest ReadAuthorizationRequest(HttpRequestInfo request = null) {
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
 			}
 
-			WebAppRequest message;
+			WebServerRequest message;
 			this.Channel.TryReadFromRequest(request, out message);
 			return message;
 		}
 
-		public void ApproveAuthorizationRequest(WebAppRequest authorizationRequest, string username, Uri callback = null) {
+		public void ApproveAuthorizationRequest(WebServerRequest authorizationRequest, string username, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
 			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, callback);
@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 			this.Channel.Send(response);
 		}
 
-		public void RejectAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
+		public void RejectAuthorizationRequest(WebServerRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
 			var response = this.PrepareRejectAuthorizationRequest(authorizationRequest, callback);
@@ -89,32 +89,32 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return request;
 		}
 
-		internal WebAppFailedResponse PrepareRejectAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
+		internal WebServerFailedResponse PrepareRejectAuthorizationRequest(WebServerRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<WebAppFailedResponse>() != null);
+			Contract.Ensures(Contract.Result<WebServerFailedResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
 			}
 
-			var response = new WebAppFailedResponse(callback, authorizationRequest);
+			var response = new WebServerFailedResponse(callback, authorizationRequest);
 			return response;
 		}
 
-		internal WebAppSuccessResponse PrepareApproveAuthorizationRequest(WebAppRequest authorizationRequest, Uri callback = null) {
+		internal WebServerSuccessResponse PrepareApproveAuthorizationRequest(WebServerRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<WebAppSuccessResponse>() != null);
+			Contract.Ensures(Contract.Result<WebServerSuccessResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
 			}
 
 			var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
-			var response = new WebAppSuccessResponse(callback, authorizationRequest);
+			var response = new WebServerSuccessResponse(callback, authorizationRequest);
 			return response;
 		}
 
-		protected Uri GetCallback(WebAppRequest authorizationRequest) {
+		protected Uri GetCallback(WebServerRequest authorizationRequest) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Ensures(Contract.Result<Uri>() != null);
 

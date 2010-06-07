@@ -643,10 +643,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\OAuthWrapAuthorizationServerChannel.cs" />
     <Compile Include="OAuthWrap\ClientBase.cs" />
     <Compile Include="OAuthWrap\Messages\MessageBase.cs" />
-    <Compile Include="OAuthWrap\Messages\WebServer\WebAppAccessTokenRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\WebServer\WebAppFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebServer\WebAppRequest.cs" />
-    <Compile Include="OAuthWrap\Messages\WebServer\WebAppSuccessResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebServerAccessTokenRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebServerFailedResponse.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebServerRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebServerSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRequest.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordSuccessResponse.cs" />

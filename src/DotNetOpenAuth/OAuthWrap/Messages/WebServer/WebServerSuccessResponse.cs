@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppSuccessResponse.cs" company="Andrew Arnott">
+// <copyright file="WebServerSuccessResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,24 +15,24 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// to indicate that user authorization was granted, and to return the user
 	/// to the Client where they started their experience.
 	/// </summary>
-	internal class WebAppSuccessResponse : MessageBase, IMessageWithClientState, ITokenCarryingRequest {
+	internal class WebServerSuccessResponse : MessageBase, IMessageWithClientState, ITokenCarryingRequest {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppSuccessResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebServerSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="version">The protocol version.</param>
-		internal WebAppSuccessResponse(Uri clientCallback, Version version)
+		internal WebServerSuccessResponse(Uri clientCallback, Version version)
 			: base(version, MessageTransport.Indirect, clientCallback) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppSuccessResponse"/> class.
+		/// Initializes a new instance of the <see cref="WebServerSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="request">The request.</param>
-		internal WebAppSuccessResponse(Uri clientCallback, WebAppRequest request)
+		internal WebServerSuccessResponse(Uri clientCallback, WebServerRequest request)
 			: base(request, clientCallback) {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <value>An opaque value defined by the client.</value>
 		/// <remarks>
-		/// REQUIRED if the Client sent the value in the <see cref="WebAppRequest"/>.
+		/// REQUIRED if the Client sent the value in the <see cref="WebServerRequest"/>.
 		/// </remarks>
 		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		string IMessageWithClientState.ClientState { get; set; }

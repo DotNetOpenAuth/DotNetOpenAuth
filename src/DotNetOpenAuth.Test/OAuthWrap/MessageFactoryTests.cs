@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(WebAppRequest), request);
+			Assert.IsInstanceOf(typeof(WebServerRequest), request);
 		}
 
 		[TestCase]
@@ -81,9 +81,9 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.error, "user_denied" },
 			};
-			var request = new WebAppRequest(this.recipient.Location, Protocol.Default.Version);
+			var request = new WebServerRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
-				typeof(WebAppFailedResponse),
+				typeof(WebServerFailedResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));
 		}
 
@@ -92,9 +92,9 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.code, "abc" },
 			};
-			var request = new WebAppRequest(this.recipient.Location, Protocol.Default.Version);
+			var request = new WebServerRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
-				typeof(WebAppSuccessResponse),
+				typeof(WebServerSuccessResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));
 		}
 
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(WebAppAccessTokenRequest), request);
+			Assert.IsInstanceOf(typeof(WebServerAccessTokenRequest), request);
 		}
 
 		[TestCase, Ignore("Not implemented")]

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppAccessTokenRequest.cs" company="Andrew Arnott">
+// <copyright file="WebServerAccessTokenRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <remarks>
 	/// Used by the Web App (and Rich App?) profiles.
 	/// </remarks>
-	internal class WebAppAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest, IOAuthDirectResponseFormat {
+	internal class WebServerAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest, IOAuthDirectResponseFormat {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
@@ -26,20 +26,20 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		private const string Type = "web_server";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppAccessTokenRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebServerAccessTokenRequest"/> class.
 		/// </summary>
 		/// <param name="accessTokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
-		internal WebAppAccessTokenRequest(Uri accessTokenEndpoint, Version version)
+		internal WebServerAccessTokenRequest(Uri accessTokenEndpoint, Version version)
 			: base(version, MessageTransport.Direct, accessTokenEndpoint) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebAppAccessTokenRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebServerAccessTokenRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		internal WebAppAccessTokenRequest(AuthorizationServerDescription authorizationServer)
+		internal WebServerAccessTokenRequest(AuthorizationServerDescription authorizationServer)
 			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
@@ -79,14 +79,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
-		/// in <see cref="WebAppSuccessResponse.VerificationCode"/>.
+		/// in <see cref="WebServerSuccessResponse.VerificationCode"/>.
 		/// </summary>
 		/// <value>The verification code received from the authorization server.</value>
 		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
 		internal string VerificationCode { get; set; }
 
 		/// <summary>
-		/// Gets or sets the callback URL used in <see cref="WebAppRequest.Callback"/>
+		/// Gets or sets the callback URL used in <see cref="WebServerRequest.Callback"/>
 		/// </summary>
 		/// <value>
 		/// The Callback URL used to obtain the Verification Code.
