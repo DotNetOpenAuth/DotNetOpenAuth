@@ -207,7 +207,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets or sets the association handle that the Provider wants the Relying Party to not use any more.
 		/// </summary>
 		/// <value>If the Relying Party sent an invalid association handle with the request, it SHOULD be included here.</value>
-		[MessagePart("openid.invalidate_handle", IsRequired = false, AllowEmpty = false)]
+		/// <remarks>
+		/// For OpenID 1.1, we allow this to be present but empty to put up with poor implementations such as Blogger.
+		/// </remarks>
+		[MessagePart("openid.invalidate_handle", IsRequired = false, AllowEmpty = true, MaxVersion = "1.1")]
+		[MessagePart("openid.invalidate_handle", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
 		string ITamperResistantOpenIdMessage.InvalidateHandle { get; set; }
 
 		/// <summary>
