@@ -27,7 +27,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="version">The version.</param>
 		internal RefreshAccessTokenRequest(Uri tokenEndpoint, Version version)
 			: base(version, MessageTransport.Direct, tokenEndpoint) {
-
 			// We prefer URL encoding of the data.
 			this.Format = ResponseFormat.Form;
 		}
@@ -40,15 +39,26 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 		}
 
+		/// <summary>
+		/// Gets the type of the code or token.
+		/// </summary>
+		/// <value>The type of the code or token.</value>
 		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.RefreshToken; }
 		}
 
+		/// <summary>
+		/// Gets or sets the verification code or refresh/access token.
+		/// </summary>
+		/// <value>The code or token.</value>
 		string ITokenCarryingRequest.CodeOrToken {
 			get { return this.RefreshToken; }
 			set { this.RefreshToken = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the authorization that the token describes.
+		/// </summary>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
@@ -79,6 +89,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		public string ClientSecret { get; set; }
 
 		/// <summary>
+		/// Gets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		/// <summary>
 		/// Gets or sets the refresh token.
 		/// </summary>
 		/// <value>The refresh token.</value>
@@ -88,10 +106,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
 		internal string RefreshToken { get; set; }
 
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
+		/// <summary>
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
 		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
 		private ResponseFormat? Format { get; set; }
 	}

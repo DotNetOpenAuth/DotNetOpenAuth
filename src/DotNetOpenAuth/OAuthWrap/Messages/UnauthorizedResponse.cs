@@ -59,21 +59,45 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 
 		#endregion
 
+		/// <summary>
+		/// Gets or sets the error message.
+		/// </summary>
+		/// <value>The error message.</value>
 		[MessagePart("error")]
 		internal string ErrorMessage { get; set; }
 
+		/// <summary>
+		/// Gets or sets the realm.
+		/// </summary>
+		/// <value>The realm.</value>
 		[MessagePart("realm")]
 		internal string Realm { get; set; }
 
+		/// <summary>
+		/// Gets or sets the scope.
+		/// </summary>
+		/// <value>The scope.</value>
 		[MessagePart("scope")]
 		internal string Scope { get; set; }
 
+		/// <summary>
+		/// Gets or sets the algorithms.
+		/// </summary>
+		/// <value>The algorithms.</value>
 		[MessagePart("algorithms")]
 		internal string Algorithms { get; set; }
 
+		/// <summary>
+		/// Gets or sets the user endpoint.
+		/// </summary>
+		/// <value>The user endpoint.</value>
 		[MessagePart("user-uri")]
 		internal Uri UserEndpoint { get; set; }
 
+		/// <summary>
+		/// Gets or sets the token endpoint.
+		/// </summary>
+		/// <value>The token endpoint.</value>
 		[MessagePart("token-uri")]
 		internal Uri TokenEndpoint { get; set; }
 	}

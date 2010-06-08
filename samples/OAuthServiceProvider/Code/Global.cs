@@ -22,6 +22,8 @@
 		/// </summary>
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthServiceProvider");
 
+		public static WebServerAuthorizationServer AuthorizationServer = new WebServerAuthorizationServer(new OAuth2AuthorizationServer());
+
 		/// <summary>
 		/// Gets the transaction-protected database connection for the current request.
 		/// </summary>
@@ -57,8 +59,6 @@
 			get { return HttpContext.Current.Session["authrequest"] as WebServerRequest; }
 			set { HttpContext.Current.Session["authrequest"] = value; }
 		}
-
-		public static WebServerAuthorizationServer AuthorizationServer = new WebServerAuthorizationServer(new OAuth2AuthorizationServer());
 
 		private static DataClassesDataContext dataContextSimple {
 			get {

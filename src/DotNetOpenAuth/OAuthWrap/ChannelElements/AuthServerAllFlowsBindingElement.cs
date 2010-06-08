@@ -13,6 +13,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.OAuthWrap.Messages;
 	using Messaging;
 
+	/// <summary>
+	/// A binding element that should be applied for authorization server channels regardless of which flows
+	/// are supported.
+	/// </summary>
 	internal class AuthServerAllFlowsBindingElement : AuthServerBindingElementBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthServerAllFlowsBindingElement"/> class.

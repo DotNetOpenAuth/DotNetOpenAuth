@@ -11,9 +11,9 @@
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
-		private static readonly byte[] secret;
+		internal static readonly RSAParameters AsymmetricKey;
 
-		internal static readonly RSAParameters asymmetricKey;
+		private static readonly byte[] secret;
 
 		private readonly INonceStore nonceStore = new DatabaseNonceStore();
 
@@ -23,7 +23,7 @@
 			secret = new byte[16];
 			crypto.GetBytes(secret);
 
-			asymmetricKey = new RSACryptoServiceProvider().ExportParameters(true);
+			AsymmetricKey = new RSACryptoServiceProvider().ExportParameters(true);
 		}
 
 		#region Implementation of IAuthorizationServer
@@ -37,7 +37,7 @@
 		}
 
 		public RSAParameters AccessTokenSigningPrivateKey {
-			get { return asymmetricKey; }
+			get { return AsymmetricKey; }
 		}
 
 		public IConsumerDescription GetClient(string clientIdentifier) {

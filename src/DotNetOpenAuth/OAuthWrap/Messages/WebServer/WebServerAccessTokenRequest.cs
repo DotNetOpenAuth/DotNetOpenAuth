@@ -49,15 +49,26 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 			this.Format = ResponseFormat.Form;
 		}
 
+		/// <summary>
+		/// Gets the type of the code or token.
+		/// </summary>
+		/// <value>The type of the code or token.</value>
 		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.VerificationCode; }
 		}
 
+		/// <summary>
+		/// Gets or sets the verification code or refresh/access token.
+		/// </summary>
+		/// <value>The code or token.</value>
 		string ITokenCarryingRequest.CodeOrToken {
 			get { return this.VerificationCode; }
 			set { this.VerificationCode = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the authorization that the token describes.
+		/// </summary>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
@@ -78,6 +89,20 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		public string ClientSecret { get; set; }
 
 		/// <summary>
+		/// Gets or sets the type of the secret.
+		/// </summary>
+		/// <value>The type of the secret.</value>
+		/// <remarks>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
+		/// </remarks>
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		public string SecretType { get; set; }
+
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
 		/// in <see cref="WebServerSuccessResponse.VerificationCode"/>.
 		/// </summary>
@@ -95,19 +120,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		internal Uri Callback { get; set; }
 
 		/// <summary>
-		/// Gets or sets the type of the secret.
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
 		/// </summary>
-		/// <value>The type of the secret.</value>
-		/// <remarks>
-		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
-		/// </remarks>
-		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
-		public string SecretType { get; set; }
-
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
+		/// <value>The format.</value>
 		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
 		private ResponseFormat? Format { get; set; }
 

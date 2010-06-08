@@ -187,6 +187,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			return true;
 		}
 
+		/// <summary>
+		/// Checks that a bunch of message part values meet the constant value requirements of this message description.
+		/// </summary>
+		/// <param name="partValues">The part values.</param>
+		/// <param name="throwOnFailure">if set to <c>true</c>, this method will throw on failure.</param>
+		/// <returns>A value indicating whether all the requirements are met.</returns>
 		private bool CheckMessagePartsConstantValues(IDictionary<string, string> partValues, bool throwOnFailure)
 		{
 			Contract.Requires<ArgumentNullException>(partValues != null);

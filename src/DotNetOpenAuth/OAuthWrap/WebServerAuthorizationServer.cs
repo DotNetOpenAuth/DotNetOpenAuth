@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppAuthorizationServer.cs" company="Andrew Arnott">
+// <copyright file="WebServerAuthorizationServer.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,6 +15,9 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 	using DotNetOpenAuth.OAuthWrap.Messages;
 
+	/// <summary>
+	/// Authorization Server supporting the web server flow.
+	/// </summary>
 	public class WebServerAuthorizationServer : AuthorizationServerBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebServerAuthorizationServer"/> class.
@@ -66,7 +69,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		{
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
 
-			var request = ReadAccessTokenRequest(httpRequestInfo);
+			var request = this.ReadAccessTokenRequest(httpRequestInfo);
 			if (request != null)
 			{
 				// This convenience method only encrypts access tokens assuming that this auth server

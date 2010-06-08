@@ -7,10 +7,9 @@
 	using System.ServiceModel;
 	using System.ServiceModel.Channels;
 	using System.ServiceModel.Security;
-	using DotNetOpenAuth;
 	using DotNetOpenAuth.OAuth;
-	using DotNetOpenAuth.OAuthWrap;
 	using DotNetOpenAuth.OAuth.ChannelElements;
+	using DotNetOpenAuth.OAuthWrap;
 
 	/// <summary>
 	/// A WCF extension to authenticate incoming messages using OAuth.
@@ -28,7 +27,7 @@
 			Uri requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
 
 			try {
-				var principal = VerifyOAuth2(httpDetails, requestUri);
+				var principal = this.VerifyOAuth2(httpDetails, requestUri);
 				if (principal != null) {
 					var policy = new OAuthPrincipalAuthorizationPolicy(principal);
 					var policies = new List<IAuthorizationPolicy> {
@@ -77,8 +76,8 @@
 			// we use the same public/private key.
 			var resourceServer = new ResourceServer(
 				new StandardAccessTokenAnalyzer(
-					OAuth2AuthorizationServer.asymmetricKey,
-					OAuth2AuthorizationServer.asymmetricKey));
+					OAuth2AuthorizationServer.AsymmetricKey,
+					OAuth2AuthorizationServer.AsymmetricKey));
 
 			string username, scope;
 			var error = resourceServer.VerifyAccess(new DotNetOpenAuth.Messaging.HttpRequestInfo(httpDetails, requestUri), out username, out scope);

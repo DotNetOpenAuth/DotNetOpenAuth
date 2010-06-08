@@ -12,39 +12,73 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using ChannelElements;
 	using Messaging;
 
+	/// <summary>
+	/// A message that accompanies an HTTP request to a resource server that provides authorization.
+	/// </summary>
 	internal class AccessProtectedResourceRequest : MessageBase, ITokenCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
 		/// </summary>
-		/// <param name="version">The version.</param>
 		/// <param name="recipient">The recipient.</param>
+		/// <param name="version">The version.</param>
 		internal AccessProtectedResourceRequest(Uri recipient, Version version)
 			: base(version, MessageTransport.Direct, recipient) {
 		}
 
+		/// <summary>
+		/// Gets the type of the code or token.
+		/// </summary>
+		/// <value>The type of the code or token.</value>
 		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.AccessToken; }
 		}
 
+		/// <summary>
+		/// Gets or sets the verification code or refresh/access token.
+		/// </summary>
+		/// <value>The code or token.</value>
 		string ITokenCarryingRequest.CodeOrToken {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the authorization that the token describes.
+		/// </summary>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
+		/// <summary>
+		/// Gets or sets the access token.
+		/// </summary>
+		/// <value>The access token.</value>
 		[MessagePart("token", IsRequired = true, AllowEmpty = false)]
 		internal string AccessToken { get; set; }
 
+		/// <summary>
+		/// Gets or sets the nonce.
+		/// </summary>
+		/// <value>The nonce.</value>
 		[MessagePart("nonce")]
 		internal string Nonce { get; set; }
 
+		/// <summary>
+		/// Gets or sets the timestamp.
+		/// </summary>
+		/// <value>The timestamp.</value>
 		[MessagePart("timestamp", Encoder = typeof(TimestampEncoder))]
 		internal DateTime? Timestamp { get; set; }
 
+		/// <summary>
+		/// Gets or sets the signature.
+		/// </summary>
+		/// <value>The signature.</value>
 		[MessagePart("signature")]
 		internal string Signature { get; set; }
 
+		/// <summary>
+		/// Gets or sets the algorithm.
+		/// </summary>
+		/// <value>The algorithm.</value>
 		[MessagePart("algorithm")]
 		internal string Algorithm { get; set; }
 

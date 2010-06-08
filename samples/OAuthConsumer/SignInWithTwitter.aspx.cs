@@ -33,7 +33,7 @@
 		}
 
 		protected void signInButton_Click(object sender, ImageClickEventArgs e) {
-			TwitterConsumer.StartSignInWithTwitter(forceLoginCheckbox.Checked).Send();
+			TwitterConsumer.StartSignInWithTwitter(this.forceLoginCheckbox.Checked).Send();
 		}
 	}
 }

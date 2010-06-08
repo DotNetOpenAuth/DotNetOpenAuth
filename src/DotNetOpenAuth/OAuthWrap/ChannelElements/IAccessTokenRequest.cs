@@ -12,27 +12,25 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using Messages;
 	using Messaging;
 
-	internal interface ITokenCarryingRequest : IDirectedProtocolMessage {
-		string CodeOrToken { get; set;  }
-
-		CodeOrTokenType CodeOrTokenType { get; }
-
-		IAuthorizationDescription AuthorizationDescription { get; set; }
-	}
-
+	/// <summary>
+	/// A message from the client to the authorization server requesting an access token.
+	/// </summary>
 	public interface IAccessTokenRequest : IDirectedProtocolMessage {
+		/// <summary>
+		/// Gets the client identifier.
+		/// </summary>
+		/// <value>The client identifier.</value>
 		string ClientIdentifier { get; }
 
+		/// <summary>
+		/// Gets the client secret.
+		/// </summary>
+		/// <value>The client secret.</value>
 		string ClientSecret { get; }
 
+		/// <summary>
+		/// Gets the type of access token secret requested.
+		/// </summary>
 		string SecretType { get; }
-	}
-
-	internal enum CodeOrTokenType {
-		VerificationCode,
-
-		RefreshToken,
-
-		AccessToken,
 	}
 }

@@ -7,16 +7,21 @@
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OAuthWrap.Messages;
 	using DotNetOpenAuth.Messaging;
-	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.OAuthWrap.Messages;
 
+	/// <summary>
+	/// The OAuth client for the user-agent flow, providing services for installed apps
+	/// and in-browser Javascript widgets.
+	/// </summary>
 	public class UserAgentClient : ClientBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
 		/// </summary>
+		/// <param name="authorizationServer">The token issuer.</param>
 		public UserAgentClient(AuthorizationServerDescription authorizationServer)
 			: base(authorizationServer) {
 		}
@@ -30,6 +35,13 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null, "authorizationEndpoint");
 		}
 
+		/// <summary>
+		/// Generates a URL that the user's browser can be directed to in order to authorize
+		/// this client to access protected data at some resource server.
+		/// </summary>
+		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
+		/// <param name="immediate">If set to <c>true</c>, the authorization server will return immediately instead of interacting with the user.  Authorization will only be granted if the authorization server determines it is safe to do so without asking the user first.</param>
+		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
 		public Uri RequestUserAuthorization(IAuthorizationState authorization = null, bool immediate = false) {
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 
@@ -52,6 +64,12 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);
 		}
 
+		/// <summary>
+		/// Scans the incoming request for an authorization response message.
+		/// </summary>
+		/// <param name="actualRedirectUrl">The actual URL of the incoming HTTP request.</param>
+		/// <param name="authorization">The authorization.</param>
+		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
 		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorization = null) {
 			Contract.Requires<ArgumentNullException>(actualRedirectUrl != null, "actualRedirectUrl");
 

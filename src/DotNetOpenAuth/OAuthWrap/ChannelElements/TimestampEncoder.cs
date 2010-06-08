@@ -9,6 +9,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging.Reflection;
 
+	/// <summary>
+	/// Translates between a <see cref="DateTime"/> and the number of seconds between it and 1/1/1970 12 AM
+	/// </summary>
 	internal class TimestampEncoder : IMessagePartEncoder {
 		/// <summary>
 		/// The reference date and time for calculating time stamps.

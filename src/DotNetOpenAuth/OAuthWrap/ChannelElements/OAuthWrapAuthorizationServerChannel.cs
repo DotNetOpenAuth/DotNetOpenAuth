@@ -25,42 +25,49 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// The channel for the OAuth WRAP protocol.
 	/// </summary>
 	internal class OAuthWrapAuthorizationServerChannel : StandardMessageFactoryChannel {
+		/// <summary>
+		/// The messages receivable by this channel.
+		/// </summary>
 		private static readonly Type[] MessageTypes = new Type[] {
-				typeof(Messages.RefreshAccessTokenRequest),
-				typeof(Messages.AccessTokenSuccessResponse),
-				typeof(Messages.AccessTokenFailedResponse),
-				typeof(Messages.UnauthorizedResponse),
-				typeof(Messages.AssertionRequest),
-				typeof(Messages.ClientCredentialsRequest),
-				typeof(Messages.DeviceRequest),
-				typeof(Messages.DeviceResponse),
-				typeof(Messages.DeviceAccessTokenRequest),
-				typeof(Messages.UserNamePasswordRequest),
-				typeof(Messages.UserNamePasswordSuccessResponse),
-				typeof(Messages.UserNamePasswordVerificationResponse),
-				typeof(Messages.UserNamePasswordFailedResponse),
-				typeof(Messages.UsernamePasswordCaptchaResponse),
-				typeof(Messages.WebServerRequest),
-				typeof(Messages.WebServerSuccessResponse),
-				typeof(Messages.WebServerFailedResponse),
-				typeof(Messages.WebServerAccessTokenRequest),
-				typeof(Messages.UserAgentRequest),
-				typeof(Messages.UserAgentSuccessResponse),
-				typeof(Messages.UserAgentFailedResponse),
-			};
+			typeof(Messages.RefreshAccessTokenRequest),
+			typeof(Messages.AccessTokenSuccessResponse),
+			typeof(Messages.AccessTokenFailedResponse),
+			typeof(Messages.UnauthorizedResponse),
+			typeof(Messages.AssertionRequest),
+			typeof(Messages.ClientCredentialsRequest),
+			typeof(Messages.DeviceRequest),
+			typeof(Messages.DeviceResponse),
+			typeof(Messages.DeviceAccessTokenRequest),
+			typeof(Messages.UserNamePasswordRequest),
+			typeof(Messages.UserNamePasswordSuccessResponse),
+			typeof(Messages.UserNamePasswordVerificationResponse),
+			typeof(Messages.UserNamePasswordFailedResponse),
+			typeof(Messages.UsernamePasswordCaptchaResponse),
+			typeof(Messages.WebServerRequest),
+			typeof(Messages.WebServerSuccessResponse),
+			typeof(Messages.WebServerFailedResponse),
+			typeof(Messages.WebServerAccessTokenRequest),
+			typeof(Messages.UserAgentRequest),
+			typeof(Messages.UserAgentSuccessResponse),
+			typeof(Messages.UserAgentFailedResponse),
+		};
 
+		/// <summary>
+		/// The protocol versions supported by this channel.
+		/// </summary>
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthWrapAuthorizationServerChannel"/> class.
 		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
 		protected internal OAuthWrapAuthorizationServerChannel(IAuthorizationServer authorizationServer = null)
 			: base(MessageTypes, Versions, InitializeBindingElements(authorizationServer)) {
 			this.AuthorizationServer = authorizationServer;
 		}
 
 		/// <summary>
-		/// Gets or sets the authorization server.
+		/// Gets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.  Will be null for channels serving clients.</value>
 		public IAuthorizationServer AuthorizationServer { get; private set; }
@@ -147,6 +154,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			return webResponse;
 		}
 
+		/// <summary>
+		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// </summary>
+		/// <param name="request">The request to search for an embedded message.</param>
+		/// <returns>
+		/// The deserialized message, if one is found.  Null otherwise.
+		/// </returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
 			if (!string.IsNullOrEmpty(request.Url.Fragment)) {
 				var fields = HttpUtility.ParseQueryString(request.Url.Fragment.Substring(1)).ToDictionary();

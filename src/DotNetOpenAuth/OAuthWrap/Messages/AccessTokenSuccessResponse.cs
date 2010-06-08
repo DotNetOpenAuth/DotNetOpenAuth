@@ -4,12 +4,11 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using DotNetOpenAuth.OAuthWrap.ChannelElements;
-
 namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuthWrap.ChannelElements;
 
 	/// <summary>
 	/// A response from the Authorization Server to the Client containing a delegation code

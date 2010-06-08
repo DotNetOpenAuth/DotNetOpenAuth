@@ -11,16 +11,25 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
+	/// <summary>
+	/// Represents the verification code created when a user approves authorization that
+	/// allows the client to request an access/refresh token.
+	/// </summary>
 	internal class VerificationCode : AuthorizationDataBag {
-		private HashAlgorithm hasher = new SHA256Managed();
+		/// <summary>
+		/// The hash algorithm used on the callback URI.
+		/// </summary>
+		private readonly HashAlgorithm hasher = new SHA256Managed();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
 		/// </summary>
-		/// <param name="channel">The channel.</param>
-		/// <param name="callback">The callback.</param>
+		/// <param name="secret">The symmetric secret to use in signing/encryption.</param>
+		/// <param name="nonceStore">The nonce store to use to ensure verification codes are used only once.</param>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="callback">The callback the client used to obtain authorization.</param>
 		/// <param name="scope">The scope.</param>
-		/// <param name="username">The username.</param>
+		/// <param name="username">The name on the account that authorized access.</param>
 		internal VerificationCode(byte[] secret, INonceStore nonceStore, string clientIdentifier, Uri callback, string scope, string username)
 			: this(secret, nonceStore) {
 			Contract.Requires<ArgumentNullException>(secret != null, "secret");
@@ -38,15 +47,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
 		/// </summary>
-		/// <param name="channel">The channel.</param>
+		/// <param name="secret">The symmetric secret to use in signing/encryption.</param>
+		/// <param name="nonceStore">The nonce store to use to ensure verification codes are used only once.</param>
 		private VerificationCode(byte[] secret, INonceStore nonceStore)
 			: base(secret, true, true, false, MaximumMessageAge, nonceStore) {
 			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
 		}
-
-		[MessagePart("cb")]
-		private string CallbackHash { get; set; }
 
 		/// <summary>
 		/// Gets the maximum message age from the standard expiration binding element.
@@ -55,6 +62,20 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			get { return StandardExpirationBindingElement.MaximumMessageAge; }
 		}
 
+		/// <summary>
+		/// Gets or sets the hash of the callback URL.
+		/// </summary>
+		[MessagePart("cb")]
+		private string CallbackHash { get; set; }
+
+		/// <summary>
+		/// Deserializes a verification code.
+		/// </summary>
+		/// <param name="secret">The symmetric secret used to sign and encrypt the token.</param>
+		/// <param name="nonceStore">The nonce store to use to ensure verification codes can only be exchanged once.</param>
+		/// <param name="value">The verification token.</param>
+		/// <param name="containingMessage">The message containing this verification code.</param>
+		/// <returns>The verification code.</returns>
 		internal static VerificationCode Decode(byte[] secret, INonceStore nonceStore, string value, IProtocolMessage containingMessage) {
 			Contract.Requires<ArgumentNullException>(secret != null, "secret");
 			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
@@ -67,10 +88,26 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			return self;
 		}
 
+		/// <summary>
+		/// Verifies the the given callback URL matches the callback originally given in the authorization request.
+		/// </summary>
+		/// <param name="callback">The callback.</param>
+		/// <remarks>
+		/// This method serves to verify that the callback URL given in the original authorization request
+		/// and the callback URL given in the access token request match.
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown when the callback URLs do not match.</exception>
 		internal void VerifyCallback(Uri callback) {
 			ErrorUtilities.VerifyProtocol(string.Equals(this.CallbackHash, this.CalculateCallbackHash(callback), StringComparison.Ordinal), Protocol.redirect_uri_mismatch);
 		}
 
+		/// <summary>
+		/// Calculates the hash of the callback URL.
+		/// </summary>
+		/// <param name="callback">The callback whose hash should be calculated.</param>
+		/// <returns>
+		/// A base64 encoding of the hash of the URL.
+		/// </returns>
 		private string CalculateCallbackHash(Uri callback) {
 			return this.hasher.ComputeHash(callback.AbsoluteUri);
 		}

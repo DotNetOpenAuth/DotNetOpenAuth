@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthWrapChannel.cs" company="Andrew Arnott">
+// <copyright file="OAuthWrapResourceServerChannel.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -21,10 +21,16 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// The channel for the OAuth WRAP protocol.
 	/// </summary>
 	internal class OAuthWrapResourceServerChannel : StandardMessageFactoryChannel {
+		/// <summary>
+		/// The messages receivable by this channel.
+		/// </summary>
 		private static readonly Type[] MessageTypes = new Type[] {
 			typeof(Messages.AccessProtectedResourceRequest),
 		};
 
+		/// <summary>
+		/// The protocol versions supported by this channel.
+		/// </summary>
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>

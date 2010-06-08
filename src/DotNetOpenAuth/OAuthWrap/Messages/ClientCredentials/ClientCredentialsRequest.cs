@@ -55,15 +55,23 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		public string SecretType { get; set; }
 
 		/// <summary>
+		/// Gets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		/// <summary>
 		/// Gets or sets an optional authorization scope as defined by the Authorization Server.
 		/// </summary>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
 
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
+		/// <summary>
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
 		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
 		private ResponseFormat? Format { get; set; }
 

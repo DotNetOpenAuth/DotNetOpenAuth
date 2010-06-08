@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// A message from the authorization server to a user-agent client indicating that authorization has been granted.
+	/// </summary>
 	internal class UserAgentSuccessResponse : MessageBase, IHttpIndirectResponse, IAccessTokenSuccessResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAgentSuccessResponse"/> class.
@@ -22,10 +25,18 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		{
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether the payload for the message should be included
+		/// in the redirect fragment instead of the query string or POST entity.
+		/// </summary>
 		bool IHttpIndirectResponse.Include301RedirectPayloadInFragment {
 			get { return true; }
 		}
 
+		/// <summary>
+		/// Gets the access token.
+		/// </summary>
+		/// <value>The access token.</value>
 		[MessagePart(Protocol.access_token, IsRequired = true, AllowEmpty = false)]
 		public string AccessToken { get; internal set; }
 
@@ -56,6 +67,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.access_token_secret, IsRequired = false, AllowEmpty = false)]
 		public string AccessTokenSecret { get; internal set; }
 
+		/// <summary>
+		/// Gets the scope.
+		/// </summary>
+		/// <value>The scope.</value>
 		string IAccessTokenSuccessResponse.Scope {
 			get { return null; }
 		}

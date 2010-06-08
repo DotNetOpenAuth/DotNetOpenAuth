@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			var matches = this.requestMessageTypes.Keys
 				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
-				.OrderByDescending(message => CountInCommon(message.Mapping.Keys, fields.Keys))
+				.OrderByDescending(message => this.CountInCommon(message.Mapping.Keys, fields.Keys))
 				.ThenByDescending(message => message.Mapping.Count)
 				.CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
@@ -180,8 +180,8 @@ namespace DotNetOpenAuth.Messaging {
 			               where message.CheckMessagePartsPassBasicValidation(fields)
 			               let ctors = this.FindMatchingResponseConstructors(message, request.GetType())
 			               where ctors.Any()
-			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType()) ,
-			               	CountInCommon(message.Mapping.Keys, fields.Keys) descending ,
+			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType()),
+			               	this.CountInCommon(message.Mapping.Keys, fields.Keys) descending,
 			               	message.Mapping.Count descending
 			               select message).CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
@@ -240,6 +240,12 @@ namespace DotNetOpenAuth.Messaging {
 			return (IDirectResponseProtocolMessage)ctor.Invoke(new object[] { request });
 		}
 
+		/// <summary>
+		/// Gets the hierarchical distance between a type and a type it derives from or implements.
+		/// </summary>
+		/// <param name="assignableType">The base type or interface.</param>
+		/// <param name="derivedType">The concrete class that implements the <paramref name="assignableType"/>.</param>
+		/// <returns>The distance between the two types.  0 if the types are equivalent, 1 if the type immediately derives from or implements the base type, or progressively higher integers.</returns>
 		private static int GetDerivationDistance(Type assignableType, Type derivedType) {
 			Contract.Requires<ArgumentNullException>(assignableType != null, "assignableType");
 			Contract.Requires<ArgumentNullException>(derivedType != null, "derivedType");
@@ -261,6 +267,12 @@ namespace DotNetOpenAuth.Messaging {
 			return steps;
 		}
 
+		/// <summary>
+		/// Finds constructors for response messages that take a given request message type.
+		/// </summary>
+		/// <param name="messageDescription">The message description.</param>
+		/// <param name="requestType">Type of the request message.</param>
+		/// <returns>A sequence of matching constructors.</returns>
 		private IEnumerable<ConstructorInfo> FindMatchingResponseConstructors(MessageDescription messageDescription, Type requestType) {
 			Contract.Requires<ArgumentNullException>(messageDescription != null);
 			Contract.Requires<ArgumentNullException>(requestType != null);

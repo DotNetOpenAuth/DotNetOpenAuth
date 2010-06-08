@@ -50,20 +50,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		public string ClientSecret { get; set; }
 
 		/// <summary>
-		/// Gets or sets the format of the assertion as defined by the Authorization Server.
-		/// </summary>
-		/// <value>The assertion format.</value>
-		[MessagePart(Protocol.assertion_format, IsRequired = true, AllowEmpty = false)]
-		internal string AssertionFormat { get; set; }
-
-		/// <summary>
-		/// Gets or sets the assertion.
-		/// </summary>
-		/// <value>The assertion.</value>
-		[MessagePart(Protocol.assertion, IsRequired = true, AllowEmpty = false)]
-		internal string Assertion { get; set; }
-
-		/// <summary>
 		/// Gets or sets an optional authorization scope as defined by the Authorization Server.
 		/// </summary>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
@@ -79,10 +65,32 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
 		public string SecretType { get; internal set; }
 
+		/// <summary>
+		/// Gets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
 		ResponseFormat IOAuthDirectResponseFormat.Format {
 			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
 		}
 
+		/// <summary>
+		/// Gets or sets the format of the assertion as defined by the Authorization Server.
+		/// </summary>
+		/// <value>The assertion format.</value>
+		[MessagePart(Protocol.assertion_format, IsRequired = true, AllowEmpty = false)]
+		internal string AssertionFormat { get; set; }
+
+		/// <summary>
+		/// Gets or sets the assertion.
+		/// </summary>
+		/// <value>The assertion.</value>
+		[MessagePart(Protocol.assertion, IsRequired = true, AllowEmpty = false)]
+		internal string Assertion { get; set; }
+
+		/// <summary>
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
 		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
 		private ResponseFormat? Format { get; set; }
 

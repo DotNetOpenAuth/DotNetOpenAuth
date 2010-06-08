@@ -22,6 +22,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// the confidential user credentials and use the delegation code going forward.
 	/// </remarks>
 	internal class UserNamePasswordRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+		/// <summary>
+		/// A constant that identifies the flow this request belongs to.
+		/// </summary>
 		[MessagePart(Protocol.type, IsRequired = true)]
 		private const string Type = "username";
 
@@ -67,6 +70,24 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		public string ClientSecret { get; internal set; }
 
 		/// <summary>
+		/// Gets or sets the type of the secret.
+		/// </summary>
+		/// <value>The type of the secret.</value>
+		/// <remarks>
+		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
+		/// </remarks>
+		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
+		public string SecretType { get; set; }
+
+		/// <summary>
+		/// Gets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		/// <summary>
 		/// Gets or sets the user's account username.
 		/// </summary>
 		/// <value>The username on the user's account.</value>
@@ -102,19 +123,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		internal string Scope { get; set; }
 
 		/// <summary>
-		/// Gets or sets the type of the secret.
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
 		/// </summary>
-		/// <value>The type of the secret.</value>
-		/// <remarks>
-		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
-		/// </remarks>
-		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
-		public string SecretType { get; set; }
-
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
+		/// <value>The format.</value>
 		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
 		private ResponseFormat? Format { get; set; }
 

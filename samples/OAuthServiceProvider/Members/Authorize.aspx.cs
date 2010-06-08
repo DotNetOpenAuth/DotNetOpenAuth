@@ -29,8 +29,8 @@
 				} else {
 					ITokenContainingMessage pendingToken = Global.PendingOAuthAuthorization;
 					var token = Global.DataContext.OAuthTokens.Single(t => t.Token == pendingToken.Token);
-					desiredAccessLabel.Text = token.Scope;
-					consumerLabel.Text = Global.TokenManager.GetConsumerForToken(token.Token).ConsumerKey;
+					this.desiredAccessLabel.Text = token.Scope;
+					this.consumerLabel.Text = Global.TokenManager.GetConsumerForToken(token.Token).ConsumerKey;
 
 					// Generate an unpredictable secret that goes to the user agent and must come back
 					// with authorization to guarantee the user interacted with this page rather than
@@ -52,7 +52,7 @@
 			this.AuthorizationSecret = null; // clear one time use secret
 			var pending = Global.PendingOAuthAuthorization;
 			Global.AuthorizePendingRequestToken();
-			multiView.ActiveViewIndex = 1;
+			this.multiView.ActiveViewIndex = 1;
 
 			ServiceProvider sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager);
 			var response = sp.PrepareAuthorizationResponse(pending);

@@ -4,8 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using DotNetOpenAuth.Messaging;
-
 namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 	using System.Collections.Generic;
@@ -14,6 +12,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 	using System.Linq;
 	using System.Net;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth.ChannelElements;
 
 	/// <summary>
 	/// Some common utility methods for OAuth WRAP.
@@ -33,7 +33,13 @@ namespace DotNetOpenAuth.OAuthWrap {
 				Uri.EscapeDataString(accessToken));
 		}
 
-		internal static DotNetOpenAuth.OAuth.ChannelElements.IConsumerDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
+		/// <summary>
+		/// Gets information about the client with a given identifier.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <returns>The client information.  Never null.</returns>
+		internal static IConsumerDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
 			Contract.Ensures(Contract.Result<DotNetOpenAuth.OAuth.ChannelElements.IConsumerDescription>() != null);
 

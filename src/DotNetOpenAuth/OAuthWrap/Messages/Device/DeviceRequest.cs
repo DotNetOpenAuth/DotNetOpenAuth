@@ -17,6 +17,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// authorization to access user Protected Data.
 	/// </summary>
 	internal class DeviceRequest : MessageBase, IOAuthDirectResponseFormat {
+		/// <summary>
+		/// A constant that identifies the type of message coming into the auth server.
+		/// </summary>
 		[MessagePart(Protocol.type, IsRequired = true)]
 		private const string MessageType = "device_code";
 
@@ -45,6 +48,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
+		/// Gets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		/// <summary>
 		/// Gets or sets the client identifier previously obtained from the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
@@ -58,10 +69,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
 
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
+		/// <summary>
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
 		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
 		private ResponseFormat? Format { get; set; }
 	}

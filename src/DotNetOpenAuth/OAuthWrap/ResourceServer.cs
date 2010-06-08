@@ -50,15 +50,30 @@ namespace DotNetOpenAuth.OAuthWrap {
 		public AuthorizationServerDescription AuthorizationServerDescription { get; set; }
 
 		/// <summary>
-		/// Gets or sets the channel.
+		/// Gets the channel.
 		/// </summary>
 		/// <value>The channel.</value>
 		internal OAuthWrapResourceServerChannel Channel { get; private set; }
 
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="username">The name on the account the client has access to.</param>
+		/// <param name="scope">The set of operations the client is authorized for.</param>
+		/// <returns>An error to return to the client if access is not authorized; <c>null</c> if access is granted.</returns>
 		public OutgoingWebResponse VerifyAccess(out string username, out string scope) {
 			return this.VerifyAccess(this.Channel.GetRequestFromContext(), out username, out scope);
 		}
 
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="httpRequestInfo">The HTTP request info.</param>
+		/// <param name="username">The name on the account the client has access to.</param>
+		/// <param name="scope">The set of operations the client is authorized for.</param>
+		/// <returns>
+		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// </returns>
 		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string username, out string scope) {
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
 

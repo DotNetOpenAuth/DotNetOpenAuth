@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System.Text;
 	using Messaging;
 
+	/// <summary>
+	/// The base class for any authorization server channel binding element.
+	/// </summary>
 	internal abstract class AuthServerBindingElementBase : IChannelBindingElement {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthServerBindingElementBase"/> class.
@@ -27,6 +30,20 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </remarks>
 		public Channel Channel { get; set; }
 
+		/// <summary>
+		/// Gets the protection commonly offered (if any) by this binding element.
+		/// </summary>
+		/// <remarks>
+		/// This value is used to assist in sorting binding elements in the channel stack.
+		/// </remarks>
+		public abstract MessageProtections Protection { get; }
+
+		/// <summary>
+		/// Gets the channel that this binding element belongs to.
+		/// </summary>
+		/// <remarks>
+		/// This property is set by the channel when it is first constructed.
+		/// </remarks>
 		protected OAuthWrapAuthorizationServerChannel OAuthChannel {
 			get { return (OAuthWrapAuthorizationServerChannel)this.Channel; }
 		}
@@ -38,15 +55,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		protected IAuthorizationServer AuthorizationServer {
 			get { return this.OAuthChannel.AuthorizationServer; }
 		}
-
-		/// <summary>
-		/// Gets the protection commonly offered (if any) by this binding element.
-		/// </summary>
-		/// <value></value>
-		/// <remarks>
-		/// This value is used to assist in sorting binding elements in the channel stack.
-		/// </remarks>
-		public abstract MessageProtections Protection { get; }
 
 		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.

@@ -522,6 +522,12 @@ namespace DotNetOpenAuth.Messaging {
 			return Encoding.UTF8.GetString(plainText);
 		}
 
+		/// <summary>
+		/// Performs asymmetric encryption of a given buffer.
+		/// </summary>
+		/// <param name="crypto">The asymmetric encryption provider to use for encryption.</param>
+		/// <param name="buffer">The buffer to encrypt.</param>
+		/// <returns>The encrypted data.</returns>
 		internal static byte[] EncryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
 			Contract.Requires<ArgumentNullException>(crypto != null, "crypto");
 			Contract.Requires<ArgumentNullException>(buffer != null, "buffer");
@@ -549,6 +555,12 @@ namespace DotNetOpenAuth.Messaging {
 			return encryptedStream.ToArray();
 		}
 
+		/// <summary>
+		/// Performs asymmetric decryption of a given buffer.
+		/// </summary>
+		/// <param name="crypto">The asymmetric encryption provider to use for decryption.</param>
+		/// <param name="buffer">The buffer to decrypt.</param>
+		/// <returns>The decrypted data.</returns>
 		internal static byte[] DecryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
 			Contract.Requires<ArgumentNullException>(crypto != null, "crypto");
 			Contract.Requires<ArgumentNullException>(buffer != null, "buffer");
@@ -967,6 +979,20 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+		/// <summary>
+		/// Adds a set of name-value pairs to the end of a given URL
+		/// as part of the fragment piece.  Prefixes a # or &amp; before
+		/// first element as necessary.
+		/// </summary>
+		/// <param name="builder">The UriBuilder to add arguments to.</param>
+		/// <param name="args">
+		/// The arguments to add to the query.  
+		/// If null, <paramref name="builder"/> is not changed.
+		/// </param>
+		/// <remarks>
+		/// If the parameters to add match names of parameters that already are defined
+		/// in the fragment, the existing ones are <i>not</i> replaced.
+		/// </remarks>
 		internal static void AppendFragmentArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
 			Contract.Requires<ArgumentNullException>(builder != null);
 

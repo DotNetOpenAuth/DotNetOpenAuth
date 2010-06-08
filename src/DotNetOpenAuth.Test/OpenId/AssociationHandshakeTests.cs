@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SecuritySettings.MaximumHashBitLength = 160; // Force OP to reject HMAC-SHA256
 
 					// Receive initial request for an HMAC-SHA256 association.
-					AutoResponsiveRequest req = (AutoResponsiveRequest) op.GetRequest();
+					AutoResponsiveRequest req = (AutoResponsiveRequest)op.GetRequest();
 					AutoResponsiveRequest_Accessor reqAccessor = AutoResponsiveRequest_Accessor.AttachShadow(req);
 					AssociateRequest associateRequest = (AssociateRequest)reqAccessor.RequestMessage;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA256, associateRequest.AssociationType);

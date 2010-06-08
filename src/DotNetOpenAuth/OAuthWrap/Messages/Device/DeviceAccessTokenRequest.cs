@@ -18,6 +18,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// verification code for refresh and access tokens.
 	/// </summary>
 	internal class DeviceAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+		/// <summary>
+		/// A constant that identifies the flow this message belongs to.
+		/// </summary>
 		[MessagePart(Protocol.type, IsRequired = true)]
 		private const string MessageType = "device_token";
 
@@ -52,17 +55,13 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
 		public string ClientIdentifier { get; internal set; }
 
+		/// <summary>
+		/// Gets the client secret.
+		/// </summary>
+		/// <value>The client secret.</value>
 		string IAccessTokenRequest.ClientSecret {
 			get { return null; }
 		}
-
-		/// <summary>
-		/// Gets or sets the verification code previously communicated to the Client
-		/// in <see cref="DeviceResponse.VerificationCode"/>.
-		/// </summary>
-		/// <value>The verification code.</value>
-		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
-		internal string VerificationCode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the type of the secret.
@@ -74,10 +73,26 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
 		public string SecretType { get; set; }
 
+		/// <summary>
+		/// Gets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
 		ResponseFormat IOAuthDirectResponseFormat.Format {
 			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
 		}
 
+		/// <summary>
+		/// Gets or sets the verification code previously communicated to the Client
+		/// in <see cref="DeviceResponse.VerificationCode"/>.
+		/// </summary>
+		/// <value>The verification code.</value>
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
+		internal string VerificationCode { get; set; }
+
+		/// <summary>
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
 		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
 		private ResponseFormat? Format { get; set; }
 

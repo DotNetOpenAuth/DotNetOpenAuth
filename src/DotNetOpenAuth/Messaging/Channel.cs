@@ -244,6 +244,12 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets or sets the XML dictionary reader quotas.
+		/// </summary>
+		/// <value>The XML dictionary reader quotas.</value>
+		protected virtual XmlDictionaryReaderQuotas XmlDictionaryReaderQuotas { get; set; }
+
+		/// <summary>
 		/// Sends an indirect message (either a request or response) 
 		/// or direct message response for transmission to a remote party
 		/// and ends execution on the current page or handler.
@@ -699,6 +705,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to forward.</param>
 		/// <param name="fields">The pre-serialized fields from the message.</param>
+		/// <param name="payloadInFragment">if set to <c>true</c> the redirect will contain the message payload in the #fragment portion of the URL rather than the ?querystring.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		[Pure]
 		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields, bool payloadInFragment = false) {
@@ -801,6 +808,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		protected abstract OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response);
 
+		/// <summary>
+		/// Serializes the given message as a JSON string.
+		/// </summary>
+		/// <param name="message">The message to serialize.</param>
+		/// <returns>A JSON string.</returns>
 		protected virtual string SerializeAsJson(IMessage message) {
 			Contract.Requires<ArgumentNullException>(message != null, "message");
 
@@ -815,8 +827,11 @@ namespace DotNetOpenAuth.Messaging {
 			return json;
 		}
 
-		protected virtual XmlDictionaryReaderQuotas XmlDictionaryReaderQuotas { get; set; }
-
+		/// <summary>
+		/// Deserializes from flat data from a JSON object.
+		/// </summary>
+		/// <param name="json">A JSON string.</param>
+		/// <returns>The simple "key":"value" pairs from a JSON-encoded object.</returns>
 		protected virtual IDictionary<string, string> DeserializeFromJson(string json) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(json));
 

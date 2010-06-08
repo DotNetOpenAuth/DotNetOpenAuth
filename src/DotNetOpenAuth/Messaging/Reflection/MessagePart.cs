@@ -210,6 +210,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			}
 		}
 
+		/// <summary>
+		/// Gets the type of the declared member.
+		/// </summary>
 		internal Type MemberDeclaredType {
 			get { return this.memberDeclaredType; }
 		}

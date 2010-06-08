@@ -53,6 +53,11 @@ namespace DotNetOpenAuth.Messaging {
 			return new MessageSerializer(messageType);
 		}
 
+		/// <summary>
+		/// Reads JSON as a flat dictionary into a message.
+		/// </summary>
+		/// <param name="messageDictionary">The message dictionary to fill with the JSON-deserialized data.</param>
+		/// <param name="reader">The JSON reader.</param>
 		internal static void DeserializeJsonAsFlatDictionary(IDictionary<string, string> messageDictionary, XmlDictionaryReader reader) {
 			Contract.Requires<ArgumentNullException>(messageDictionary != null, "messageDictionary");
 			Contract.Requires<ArgumentNullException>(reader != null, "reader");
@@ -107,6 +112,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Reads the data from a message instance and writes a XML/JSON encoding of it.
 		/// </summary>
 		/// <param name="messageDictionary">The message to be serialized.</param>
+		/// <param name="writer">The writer to use for the serialized form.</param>
 		/// <remarks>
 		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter"/>
 		/// to create the <see cref="XmlDictionaryWriter"/> instance capable of emitting JSON.
@@ -197,19 +203,19 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Determines whether the specified type is numeric.
 		/// </summary>
-		/// <param name="type">The type.</param>
+		/// <param name="type">The type to test.</param>
 		/// <returns>
 		/// 	<c>true</c> if the specified type is numeric; otherwise, <c>false</c>.
 		/// </returns>
 		private static bool IsNumeric(Type type) {
-			return type.IsAssignableFrom(typeof(Double))
-				|| type.IsAssignableFrom(typeof(Single))
-				|| type.IsAssignableFrom(typeof(Int16))
-				|| type.IsAssignableFrom(typeof(Int32))
-				|| type.IsAssignableFrom(typeof(Int64))
-				|| type.IsAssignableFrom(typeof(UInt16))
-				|| type.IsAssignableFrom(typeof(UInt32))
-				|| type.IsAssignableFrom(typeof(UInt64));
+			return type.IsAssignableFrom(typeof(double))
+				|| type.IsAssignableFrom(typeof(float))
+				|| type.IsAssignableFrom(typeof(short))
+				|| type.IsAssignableFrom(typeof(int))
+				|| type.IsAssignableFrom(typeof(long))
+				|| type.IsAssignableFrom(typeof(ushort))
+				|| type.IsAssignableFrom(typeof(uint))
+				|| type.IsAssignableFrom(typeof(ulong));
 		}
 
 #if CONTRACTS_FULL

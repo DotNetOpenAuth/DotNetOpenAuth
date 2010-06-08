@@ -4,8 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuthWrap
-{
+namespace DotNetOpenAuth.OAuthWrap {
 	using System;
 
 	/// <summary>
@@ -36,8 +35,16 @@ namespace DotNetOpenAuth.OAuthWrap
 		/// <value>The access token secret.</value>
 		string AccessTokenSecret { get; set; }
 
+		/// <summary>
+		/// Gets or sets the type of the access token secret.
+		/// </summary>
+		/// <value>The type of the access token secret.</value>
 		string AccessTokenSecretType { get; set; }
 
+		/// <summary>
+		/// Gets or sets the access token issue date UTC.
+		/// </summary>
+		/// <value>The access token issue date UTC.</value>
 		DateTime? AccessTokenIssueDateUtc { get; set; }
 
 		/// <summary>

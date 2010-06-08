@@ -11,6 +11,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// A message requesting user authorization to access protected data on behalf
+	/// of an installed application or browser-hosted Javascript.
+	/// </summary>
 	internal class UserAgentRequest : MessageBase, IRequestWithRedirectUri {
 		/// <summary>
 		/// The type of message.

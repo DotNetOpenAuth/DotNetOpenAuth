@@ -9,10 +9,17 @@
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap;
 
-	/// <summary>
-	/// Summary description for OAuth2
-	/// </summary>
 	public class OAuth2 : IHttpHandler, IRequiresSessionState {
+		/// <summary>
+		/// Gets a value indicating whether another request can use the <see cref="T:System.Web.IHttpHandler"/> instance.
+		/// </summary>
+		/// <value>Always <c>true</c></value>
+		/// <returns>true if the <see cref="T:System.Web.IHttpHandler"/> instance is reusable; otherwise, false.
+		/// </returns>
+		public bool IsReusable {
+			get { return true; }
+		}
+
 		/// <summary>
 		/// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="T:System.Web.IHttpHandler"/> interface.
 		/// </summary>
@@ -41,16 +48,6 @@
 					context.Response.Redirect("~/Members/Authorize2.aspx");
 					break;
 			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether another request can use the <see cref="T:System.Web.IHttpHandler"/> instance.
-		/// </summary>
-		/// <value>Always <c>true</c></value>
-		/// <returns>true if the <see cref="T:System.Web.IHttpHandler"/> instance is reusable; otherwise, false.
-		/// </returns>
-		public bool IsReusable {
-			get { return true; }
 		}
 	}
 }

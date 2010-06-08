@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebAppClient.cs" company="Andrew Arnott">
+// <copyright file="WebServerClient.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -27,12 +27,25 @@ namespace DotNetOpenAuth.OAuthWrap {
 			: base(authorizationServer) {
 		}
 
+		/// <summary>
+		/// Gets or sets the token manager.
+		/// </summary>
+		/// <value>The token manager.</value>
 		public IClientTokenManager TokenManager { get; set; }
 
+		/// <summary>
+		/// Prepares a request for user authorization from an authorization server.
+		/// </summary>
+		/// <returns>The authorization request.</returns>
 		public WebServerRequest PrepareRequestUserAuthorization() {
 			return this.PrepareRequestUserAuthorization(new AuthorizationState());
 		}
 
+		/// <summary>
+		/// Prepares a request for user authorization from an authorization server.
+		/// </summary>
+		/// <param name="authorization">The authorization state to associate with this particular request.</param>
+		/// <returns>The authorization request.</returns>
 		public WebServerRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<InvalidOperationException>(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
@@ -56,6 +69,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 			return request;
 		}
 
+		/// <summary>
+		/// Processes the authorization response from an authorization server, if available.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
+		/// <returns>The authorization state that contains the details of the authorization.</returns>
 		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request = null) {
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientSecret));

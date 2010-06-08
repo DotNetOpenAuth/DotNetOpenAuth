@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// An authorization denied response message in the user-agent flow.
+	/// </summary>
 	internal class UserAgentFailedResponse : MessageBase, IHttpIndirectResponse {
 		/// <summary>
 		/// A constant parameter that indicates the user refused to grant the requested authorization.
@@ -39,6 +42,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		public string ClientState { get; set; }
 
+		/// <summary>
+		/// Gets a value indicating whether the payload for the message should be included
+		/// in the redirect fragment instead of the query string or POST entity.
+		/// </summary>
 		bool IHttpIndirectResponse.Include301RedirectPayloadInFragment {
 			get { return true; }
 		}

@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using DotNetOpenAuth.OAuthWrap;
-using System.Diagnostics.Contracts;
-using System.Windows.Navigation;
+﻿namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Linq;
+	using System.Text;
+	using System.Windows;
+	using System.Windows.Controls;
+	using System.Windows.Data;
+	using System.Windows.Documents;
+	using System.Windows.Input;
+	using System.Windows.Media;
+	using System.Windows.Media.Imaging;
+	using System.Windows.Navigation;
+	using System.Windows.Shapes;
+	using DotNetOpenAuth.OAuthWrap;
 
-namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 	/// <summary>
 	/// Interaction logic for Authorize2.xaml
 	/// </summary>
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 		public IAuthorizationState Authorization { get; set; }
 
 		private void webBrowser_Navigating(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) {
-			locationChanged(e.Url);
+			this.locationChanged(e.Url);
 		}
 
 		private void locationChanged(Uri location) {
@@ -46,12 +46,11 @@ namespace DotNetOpenAuth.Samples.OAuthConsumerWpf {
 		}
 
 		private void webBrowser_Navigated(object sender, System.Windows.Forms.WebBrowserNavigatedEventArgs e) {
-			locationChanged(e.Url);
+			this.locationChanged(e.Url);
 		}
 
 		private void webBrowser_LocationChanged(object sender, EventArgs e) {
-			locationChanged(webBrowser.Url);
+			this.locationChanged(webBrowser.Url);
 		}
-
 	}
 }

@@ -224,7 +224,7 @@
 					var address = new Uri(wrapResourceUrlBox.Text);
 					address = new Uri(wrapResourceUrlBox.Text + (string.IsNullOrEmpty(address.Query) ? "?" : string.Empty) + "access_token=" + Uri.EscapeDataString(authorizePopup.Authorization.AccessToken));
 					var request = (HttpWebRequest)WebRequest.Create(address);
-					
+
 					// This method tacks on the Authorization header
 					client.AuthorizeRequest(request, authorizePopup.Authorization);
 
@@ -240,7 +240,6 @@
 			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);
 			}
-
 		}
 	}
 }

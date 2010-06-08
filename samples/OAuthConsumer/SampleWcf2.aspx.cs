@@ -15,7 +15,7 @@
 	using OAuthConsumer.SampleServiceProvider;
 
 	public partial class SampleWcf2 : System.Web.UI.Page {
-		private static InMemoryClientTokenManager TokenManager = new InMemoryClientTokenManager();
+		private static InMemoryClientTokenManager tokenManager = new InMemoryClientTokenManager();
 
 		private static IAuthorizationState Authorization {
 			get { return (AuthorizationState)HttpContext.Current.Session["Authorization"]; }
@@ -44,7 +44,7 @@
 
 			var client = CreateClient();
 			string clientState;
-			var response = client.PrepareRequestUserAuthorization(TokenManager.NewAuthorization(scope, out clientState));
+			var response = client.PrepareRequestUserAuthorization(tokenManager.NewAuthorization(scope, out clientState));
 			response.ClientState = clientState;
 			client.Channel.Send(response);
 		}
@@ -75,9 +75,24 @@
 			}
 		}
 
+		private static WebServerClient CreateClient() {
+			var authServerDescription = new AuthorizationServerDescription {
+				TokenEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/token"),
+				AuthorizationEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/auth"),
+			};
+
+			var client = new WebServerClient(authServerDescription) {
+				ClientIdentifier = "sampleconsumer",
+				ClientSecret = "samplesecret",
+				TokenManager = tokenManager,
+			};
+
+			return client;
+		}
+
 		private T CallService<T>(Func<DataApiClient, T> predicate) {
 			DataApiClient client = new DataApiClient();
-			//var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest);
+			////var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest);
 			if (Authorization == null) {
 				throw new InvalidOperationException("No access token!");
 			}
@@ -92,19 +107,6 @@
 				OperationContext.Current.OutgoingMessageProperties[HttpRequestMessageProperty.Name] = httpDetails;
 				return predicate(client);
 			}
-		}
-
-		private static WebServerClient CreateClient() {
-			var authServerDescription = new AuthorizationServerDescription {
-				TokenEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/token"),
-				AuthorizationEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/auth"),
-			};
-			var client = new WebServerClient(authServerDescription) {
-				ClientIdentifier = "sampleconsumer",
-				ClientSecret = "samplesecret",
-				TokenManager = TokenManager,
-			};
-			return client;
 		}
 	}
 }
