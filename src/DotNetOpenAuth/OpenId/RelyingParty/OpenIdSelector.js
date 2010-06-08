@@ -178,15 +178,15 @@ $(function() {
 				ajaxbox.focus();
 			}
 		});
-	}
 
-	// Make popup window close on escape (the dialog style is already taken care of)
-	$(document).keydown(function(e) {
-		if (e.keyCode == $.ui.keyCode.ESCAPE) {
-			window.close();
-		} else if (e.keyCode == $.ui.keyCode.ENTER) {
-			// we do NOT want to submit the form on ENTER.
-			e.preventDefault();
-		}
-	});
+		// Make popup window close on escape (the dialog style is already taken care of)
+		$(ajaxbox.form).keydown(function(e) {
+			if (e.keyCode == $.ui.keyCode.ESCAPE) {
+				window.close();
+			} else if (e.keyCode == $.ui.keyCode.ENTER) {
+				// we do NOT want to submit the form on ENTER.
+				e.preventDefault();
+			}
+		});
+	}
 });
