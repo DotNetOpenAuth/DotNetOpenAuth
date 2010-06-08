@@ -15,8 +15,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	[ContractClassFor(typeof(SigningBindingElementBase))]
 	internal abstract class SigningBindingElementBaseContract : SigningBindingElementBase {
 		/// <summary>
-		/// Prevents a default instance of the SigningBindingElementBaseContract
-		/// class from being created.
+		/// Prevents a default instance of the SigningBindingElementBaseContract class from being created.
 		/// </summary>
 		private SigningBindingElementBaseContract()
 			: base(string.Empty) {

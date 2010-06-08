@@ -101,7 +101,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// </remarks>
 		[ConfigurationProperty(StrictConfigName, DefaultValue = true)]
 		internal bool Strict {
-			get { return (bool) this[StrictConfigName]; }
+			get { return (bool)this[StrictConfigName]; }
 			set { this[StrictConfigName] = value; }
 		}
 
