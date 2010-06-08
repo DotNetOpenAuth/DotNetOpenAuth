@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Net.Security;
 	using System.Reflection;
 	using System.Xml;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.OpenId;
 
 	/// <summary>
@@ -189,7 +190,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			try {
 				if (this.IsConstantValue) {
 					string constantValue = this.GetValue(message);
-					if (!string.Equals(constantValue, value, StringComparison.OrdinalIgnoreCase)) {
+					var caseSensitivity = DotNetOpenAuthSection.Configuration.Messaging.Strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+					if (!string.Equals(constantValue, value, caseSensitivity)) {
 						throw new ArgumentException(string.Format(
 							CultureInfo.CurrentCulture,
 							MessagingStrings.UnexpectedMessagePartValueForConstant,
