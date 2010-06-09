@@ -30,6 +30,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// whether to use a standard full window redirect or a popup) via the
 	/// <see cref="IdentifierDiscoveryResult.IsExtensionSupported&lt;T&gt;()"/> method.</para>
 	/// </remarks>
+	[Serializable]
 	public sealed class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
