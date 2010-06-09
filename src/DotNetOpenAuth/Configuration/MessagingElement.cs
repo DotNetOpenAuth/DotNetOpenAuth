@@ -37,6 +37,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string RelaxSslRequirementsConfigName = "relaxSslRequirements";
 
 		/// <summary>
+		/// The name of the attribute that controls whether messaging rules are strictly followed.
+		/// </summary>
+		private const string StrictConfigName = "strict";
+
+		/// <summary>
 		/// Gets the actual maximum message lifetime that a program should allow.
 		/// </summary>
 		/// <value>The sum of the <see cref="MaximumMessageLifetime"/> and 
@@ -95,6 +100,24 @@ namespace DotNetOpenAuth.Configuration {
 		internal bool RelaxSslRequirements {
 			get { return (bool)this[RelaxSslRequirementsConfigName]; }
 			set { this[RelaxSslRequirementsConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether messaging rules are strictly
+		/// adhered to.
+		/// </summary>
+		/// <value><c>true</c> by default.</value>
+		/// <remarks>
+		/// Strict will require that remote parties adhere strictly to the specifications,
+		/// even when a loose interpretation would not compromise security.
+		/// <c>true</c> is a good default because it shakes out interoperability bugs in remote services
+		/// so they can be identified and corrected.  But some web sites want things to Just Work
+		/// more than they want to file bugs against others, so <c>false</c> is the setting for them.
+		/// </remarks>
+		[ConfigurationProperty(StrictConfigName, DefaultValue = true)]
+		internal bool Strict {
+			get { return (bool)this[StrictConfigName]; }
+			set { this[StrictConfigName] = value; }
 		}
 
 		/// <summary>

@@ -82,7 +82,20 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal MessageDictionary GetDictionary(IMessage message) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
-			return new MessageDictionary(message, this);
+			return this.GetDictionary(message, false);
+		}
+
+		/// <summary>
+		/// Gets a dictionary that provides read/write access to a message.
+		/// </summary>
+		/// <param name="message">The message the dictionary should provide access to.</param>
+		/// <param name="getOriginalValues">A value indicating whether this message dictionary will retrieve original values instead of normalized ones.</param>
+		/// <returns>The dictionary accessor to the message</returns>
+		[Pure]
+		internal MessageDictionary GetDictionary(IMessage message, bool getOriginalValues) {
+			Contract.Requires<ArgumentNullException>(message != null);
+			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
+			return new MessageDictionary(message, this, getOriginalValues);
 		}
 
 		/// <summary>

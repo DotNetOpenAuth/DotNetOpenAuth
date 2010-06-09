@@ -1245,7 +1245,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// by using appropriate character escaping.
 		/// </summary>
 		/// <param name="value">The untrusted string value to be escaped to protected against XSS attacks.  May be null.</param>
-		/// <returns>The escaped string.</returns>
+		/// <returns>The escaped string, surrounded by single-quotes.</returns>
 		internal static string GetSafeJavascriptValue(string value) {
 			if (value == null) {
 				return "null";

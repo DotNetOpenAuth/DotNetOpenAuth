@@ -16,7 +16,7 @@
 		<asp:View runat="server">
 			<h2>Updates</h2>
 			<p>Ok, Google has authorized us to download your contacts. Click &#39;Get address book&#39;
-				to download the first 25 contacts to this sample. Notice how we never asked you
+				to download the first 5 contacts to this sample. Notice how we never asked you
 				for your Google username or password. </p>
 			<asp:Button ID="getAddressBookButton" runat="server" OnClick="getAddressBookButton_Click"
 				Text="Get address book" />

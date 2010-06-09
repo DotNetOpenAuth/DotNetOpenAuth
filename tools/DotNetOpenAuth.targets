@@ -18,7 +18,8 @@
 		<CodeContractsInstallDir>$(ProjectRoot)tools\Contracts\</CodeContractsInstallDir>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
-		<AssemblySearchPaths>$(AssemblySearchPaths);$(ProjectRoot)lib</AssemblySearchPaths>
+		<AssemblySearchPaths>$(ProjectRoot)lib;$(AssemblySearchPaths)</AssemblySearchPaths>
+		<AssemblySearchPaths Condition="Exists('$(ProjectRoot)lib\net-$(TargetFrameworkVersion)')">$(ProjectRoot)lib\net-$(TargetFrameworkVersion);$(AssemblySearchPaths)</AssemblySearchPaths>
 	</PropertyGroup>
 
 	<ItemGroup>
