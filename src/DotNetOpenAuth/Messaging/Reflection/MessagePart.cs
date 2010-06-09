@@ -210,7 +210,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal string StaticConstantValue {
 			get {
 				Contract.Requires<InvalidOperationException>(this.IsConstantValueAvailableStatically);
-				return this.ToString(this.field.GetValue(null));
+				return this.ToString(this.field.GetValue(null), false);
 			}
 		}
 
