@@ -31,6 +31,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// <see cref="IProviderEndpoint.IsExtensionSupported"/> method on the <see cref="DotNetOpenAuth.OpenId.RelyingParty.IAuthenticationRequest.Provider"/>
 	/// object.</para>
 	/// </remarks>
+	[Serializable]
 	public sealed class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
