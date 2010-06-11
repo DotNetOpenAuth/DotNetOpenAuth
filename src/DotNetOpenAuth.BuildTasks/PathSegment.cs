@@ -16,7 +16,6 @@ namespace DotNetOpenAuth.BuildTasks {
 
 	internal class PathSegment {
 		private const float ParentChildResizeThreshold = 0.30f;
-		private readonly PathSegment parent;
 		private readonly string originalName;
 		private string currentName;
 		private bool minimized;
@@ -34,14 +33,16 @@ namespace DotNetOpenAuth.BuildTasks {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(originalName));
 			Contract.Requires<ArgumentNullException>(parent != null);
 			this.currentName = this.originalName = originalName;
-			this.parent = parent;
+			this.Parent = parent;
 			this.minimized = false;
 		}
 
+		internal PathSegment Parent { get; private set; }
+
 		internal string OriginalPath {
 			get {
-				if (this.parent != null) {
-					return Path.Combine(this.parent.OriginalPath, this.originalName);
+				if (this.Parent != null) {
+					return Path.Combine(this.Parent.OriginalPath, this.originalName);
 				} else {
 					return this.originalName;
 				}
@@ -50,8 +51,8 @@ namespace DotNetOpenAuth.BuildTasks {
 
 		internal string CurrentPath {
 			get {
-				if (this.parent != null) {
-					return Path.Combine(this.parent.CurrentPath, this.currentName);
+				if (this.Parent != null) {
+					return Path.Combine(this.Parent.CurrentPath, this.currentName);
 				} else {
 					return this.currentName;
 				}
@@ -68,15 +69,15 @@ namespace DotNetOpenAuth.BuildTasks {
 
 		private int SegmentCount {
 			get {
-				int parents = this.parent != null ? this.parent.SegmentCount : 0;
+				int parents = this.Parent != null ? this.Parent.SegmentCount : 0;
 				return parents + 1;
 			}
 		}
 
 		internal int FullLength {
 			get {
-				if (this.parent != null) {
-					int parentLength = this.parent.FullLength;
+				if (this.Parent != null) {
+					int parentLength = this.Parent.FullLength;
 					if (parentLength > 0) {
 						parentLength++; // allow for an in between slash
 					}
@@ -108,10 +109,10 @@ namespace DotNetOpenAuth.BuildTasks {
 
 		internal IEnumerable<PathSegment> Ancestors {
 			get {
-				PathSegment parent = this.parent;
+				PathSegment parent = this.Parent;
 				while (parent != null) {
 					yield return parent;
-					parent = parent.parent;
+					parent = parent.Parent;
 				}
 			}
 		}
@@ -143,7 +144,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		}
 
 		internal IEnumerable<PathSegment> Siblings {
-			get { return this.parent != null ? this.parent.Children : Enumerable.Empty<PathSegment>(); }
+			get { return this.Parent != null ? this.Parent.Children : Enumerable.Empty<PathSegment>(); }
 		}
 
 		internal Collection<PathSegment> Children { get; private set; }
@@ -160,8 +161,8 @@ namespace DotNetOpenAuth.BuildTasks {
 				path += "\\";
 			}
 
-			if (this.parent != null) {
-				path = parent.ToString() + path;
+			if (this.Parent != null) {
+				path = Parent.ToString() + path;
 			}
 
 			return path;
@@ -182,7 +183,7 @@ namespace DotNetOpenAuth.BuildTasks {
 
 		internal int EnsureSelfAndChildrenNoLongerThan(int maxLength) {
 			Contract.Requires<ArgumentOutOfRangeException>(maxLength > 0, "A path can only have a positive length.");
-			Contract.Requires<ArgumentOutOfRangeException>(this.parent == null || maxLength > this.parent.FullLength + 1, "A child path cannot possibly be made shorter than its parent.");
+			Contract.Requires<ArgumentOutOfRangeException>(this.Parent == null || maxLength > this.Parent.FullLength + 1, "A child path cannot possibly be made shorter than its parent.");
 			Contract.Ensures(Contract.Result<int>() <= maxLength);
 			const int uniqueBase = 16;
 
