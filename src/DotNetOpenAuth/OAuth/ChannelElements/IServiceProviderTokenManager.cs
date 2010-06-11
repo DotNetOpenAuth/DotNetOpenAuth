@@ -84,11 +84,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// Code contract class for the <see cref="IServiceProviderTokenManager"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IServiceProviderTokenManager))]
-	internal class IServiceProviderTokenManagerContract : IServiceProviderTokenManager {
+	internal abstract class IServiceProviderTokenManagerContract : IServiceProviderTokenManager {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="IServiceProviderTokenManagerContract"/> class.
+		/// Prevents a default instance of the <see cref="IServiceProviderTokenManagerContract"/> class from being created.
 		/// </summary>
-		internal IServiceProviderTokenManagerContract() {
+		private IServiceProviderTokenManagerContract() {
 		}
 
 		#region IServiceProviderTokenManager Members

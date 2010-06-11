@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// Code contract class for the IOpenIdMessageExtension interface.
 	/// </summary>
 	[ContractClassFor(typeof(IOpenIdMessageExtension))]
-	internal class IOpenIdMessageExtensionContract : IOpenIdMessageExtension {
+	internal abstract class IOpenIdMessageExtensionContract : IOpenIdMessageExtension {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="IOpenIdMessageExtensionContract"/> class from being created.
 		/// </summary>

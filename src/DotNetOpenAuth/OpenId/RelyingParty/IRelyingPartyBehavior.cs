@@ -45,11 +45,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// Contract class for the <see cref="IRelyingPartyBehavior"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IRelyingPartyBehavior))]
-	internal class IRelyingPartyBehaviorContract : IRelyingPartyBehavior {
+	internal abstract class IRelyingPartyBehaviorContract : IRelyingPartyBehavior {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="IRelyingPartyBehaviorContract"/> class.
+		/// Prevents a default instance of the <see cref="IRelyingPartyBehaviorContract"/> class from being created.
 		/// </summary>
-		protected IRelyingPartyBehaviorContract() {
+		private IRelyingPartyBehaviorContract() {
 		}
 
 		#region IRelyingPartyBehavior Members
