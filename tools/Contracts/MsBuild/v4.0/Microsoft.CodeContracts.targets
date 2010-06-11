@@ -1,14 +1,13 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- Multiple Import Guard -->
+  <PropertyGroup>
+    <CodeContractsImported>True</CodeContractsImported>
+  </PropertyGroup>
 
   <!--=====================================================================
       Begin Microsoft Code Contracts 
   ======================================================================-->
-
-  <!--== Multiple Import Guard -->
-  <PropertyGroup>
-    <CodeContractsImported>True</CodeContractsImported>
-  </PropertyGroup>
 
   <PropertyGroup>
     <CodeContractsDeclDir>$(IntermediateOutputPath)Decl\</CodeContractsDeclDir>
@@ -50,20 +49,41 @@
   <!--=====================================================================
       Build Contract reference assemblies on all builds.
       (rather than recursively on demand)
+
+      Also define CONTRACTS_FULL and CODE_ANALYSIS dynamically, otherwise
+      VS property build pane picks it up and may persist it into the project
+      settings!
     =====================================================================-->
   
   <PropertyGroup>
-    <CompileDependsOn>$(CompileDependsOn);CodeContractReferenceAssembly</CompileDependsOn>
+    <CompileDependsOn>CodeContractsSlipInDefineSymbolDynamically;$(CompileDependsOn);CodeContractReferenceAssembly</CompileDependsOn>
   </PropertyGroup>
 
+  <Target
+     Name="CodeContractsSlipInDefineSymbolDynamically"
+     Condition="'$(CodeContractsEnableRuntimeChecking)' == 'true'"
+     >
+
+    <CreateProperty
+       Condition="'$(Language)'=='C#'"
+       Value="CONTRACTS_FULL;CODE_ANALYSIS;$(DefineConstants)">
+      <Output
+         TaskParameter="Value"
+         PropertyName="DefineConstants" />
+    </CreateProperty>
+    <CreateProperty
+       Condition="'$(Language)'=='VB'"
+       Value="CONTRACTS_FULL=-1,CODE_ANALYSIS=-1,$(FinalDefineConstants)">
+      <Output
+         TaskParameter="Value"
+         PropertyName="FinalDefineConstants" />
+    </CreateProperty>
+
+  </Target>
 
   <!--=====================================================================
         Determine level of runtime checking
     ======================================================================-->
-  <PropertyGroup 
-     Condition="'$(CodeContractsEnableRuntimeChecking)' == 'true'">
-    <CodeContractsRuntimeDefineSymbol>CONTRACTS_FULL</CodeContractsRuntimeDefineSymbol>
-  </PropertyGroup>
   <Choose>
     <When Condition="'$(CodeContractsRuntimeCheckingLevel)'=='Full'">
       <PropertyGroup>
@@ -116,18 +136,6 @@
     ======================================================================-->
     
     <PrepareForRunDependsOn>CodeContractInstrument; $(PrepareForRunDependsOn)</PrepareForRunDependsOn>
-    <DefineConstants Condition="'$(Language)'=='C#' and '$(CodeContractsRuntimeDefineSymbol)' != ''">$(CodeContractsRuntimeDefineSymbol);$(DefineConstants)</DefineConstants>
-    <FinalDefineConstants Condition="'$(Language)'=='VB' and '$(CodeContractsRuntimeDefineSymbol)' != ''">$(CodeContractsRuntimeDefineSymbol)=-1,$(FinalDefineConstants)</FinalDefineConstants>
-  </PropertyGroup>
-
-
-  <!--=====================================================================
-       NOTE: this is old and needs to be removed eventually
-       Add post build step for contract reference assembly generation
-    ======================================================================-->
-  <PropertyGroup
-      Condition="'$(CodeContractsBuildReferenceAssembly)' == 'true'">
-    <PrepareForRunDependsOn>$(PrepareForRunDependsOn);CodeContractReferenceAssembly</PrepareForRunDependsOn>
   </PropertyGroup>
 
   <!--=====================================================================
@@ -155,6 +163,9 @@
        Condition="'$(CodeContractsClassLibrary)' != ''"
        >$(CodeContractRewriteOptions) "/contractLibrary:$(CodeContractsClassLibrary)"</CodeContractRewriteOptions>
     <CodeContractRewriteOptions
+       Condition="'$(CodeContractsAssemblyMode)' == '1'"
+       >$(CodeContractRewriteOptions) "/assemblyMode=standard"</CodeContractRewriteOptions>
+    <CodeContractRewriteOptions
        Condition="'$(CodeContractsRuntimeOnlyPublicSurface)' == 'true'"
        >$(CodeContractRewriteOptions) /publicsurface</CodeContractRewriteOptions>
     <CodeContractRewriteOptions
@@ -166,6 +177,9 @@
     <CodeContractRewriteOptions
        Condition="'$(CodeContractsCustomRewriterAssembly)' != '' and '$(CodeContractsCustomRewriterClass)' != ''"
        >$(CodeContractRewriteOptions) "/rewriterMethods:$(CodeContractsCustomRewriterAssembly),$(CodeContractsCustomRewriterClass)"</CodeContractRewriteOptions>
+    <CodeContractRewriteOptions
+       Condition="'$(CodeContractsExtraRewriteOptions)' != ''"
+       >$(CodeContractRewriteOptions) $(CodeContractsExtraRewriteOptions)</CodeContractRewriteOptions>
     <CodeContractRewriteOptions>$(CodeContractRewriteOptions) /libpaths:"$(CodeContractsRewriteLibPaths) "</CodeContractRewriteOptions>
     <CodeContractRewriteCommand>"$(CodeContractsInstallDir)Bin\ccrewrite" /level:$(CodeContractsRuntimeLevel) /rewrite $(CodeContractRewriteOptions) "$(TargetName)$(TargetExt)"</CodeContractRewriteCommand>
 
@@ -289,6 +303,7 @@
      Outputs="@(ContractDummyReferenceAssembly)">
 
     <Touch
+       Condition="!Exists(@(ContractDummyReferenceAssembly))"
        AlwaysCreate="true"
        Files="@(ContractDummyReferenceAssembly)"
        />
@@ -300,12 +315,12 @@
 
   <Target
      Name="MakeCodeContractOutputDirectory"
+     Condition="!Exists(@(CodeContractOutputDirectory))"
      >
     <Message 
        Text="Making directory @(CodeContractOutputDirectory)"
        />
     <MakeDir
-       Condition="!Exists(@(CodeContractOutputDirectory))"
        Directories="@(CodeContractOutputDirectory)"/>
   </Target>
 

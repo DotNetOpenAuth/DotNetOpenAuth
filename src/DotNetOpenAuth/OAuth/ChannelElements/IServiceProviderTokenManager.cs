@@ -84,11 +84,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// Code contract class for the <see cref="IServiceProviderTokenManager"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IServiceProviderTokenManager))]
-	internal class IServiceProviderTokenManagerContract : IServiceProviderTokenManager {
+	internal abstract class IServiceProviderTokenManagerContract : IServiceProviderTokenManager {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="IServiceProviderTokenManagerContract"/> class.
+		/// Prevents a default instance of the <see cref="IServiceProviderTokenManagerContract"/> class from being created.
 		/// </summary>
-		internal IServiceProviderTokenManagerContract() {
+		private IServiceProviderTokenManagerContract() {
 		}
 
 		#region IServiceProviderTokenManager Members
@@ -188,8 +188,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		/// <exception cref="ArgumentException">Thrown if the secret cannot be found for the given token.</exception>
 		string ITokenManager.GetTokenSecret(string token) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
-			Contract.Ensures(Contract.Result<string>() != null);
 			throw new NotImplementedException();
 		}
 
@@ -207,8 +205,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// method.
 		/// </remarks>
 		void ITokenManager.StoreNewRequestToken(DotNetOpenAuth.OAuth.Messages.UnauthorizedTokenRequest request, DotNetOpenAuth.OAuth.Messages.ITokenSecretContainingMessage response) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(response != null);
 			throw new NotImplementedException();
 		}
 
@@ -236,10 +232,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </para>
 		/// </remarks>
 		void ITokenManager.ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(consumerKey));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(requestToken));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
-			Contract.Requires<ArgumentNullException>(accessTokenSecret != null);
 			throw new NotImplementedException();
 		}
 
@@ -251,7 +243,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Request or Access token, or invalid if the token is not recognized.
 		/// </returns>
 		TokenType ITokenManager.GetTokenType(string token) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
 			throw new NotImplementedException();
 		}
 
