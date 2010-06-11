@@ -206,6 +206,18 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="strict" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether remote parties will be held strictly to the protocol specifications.
+									Strict will require that remote parties adhere strictly to the specifications,
+									even when a loose interpretation would not compromise security.
+									true is a good default because it shakes out interoperability bugs in remote services
+									so they can be identified and corrected.  But some web sites want things to Just Work
+									more than they want to file bugs against others, so false is the setting for them.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="openid">
