@@ -121,6 +121,7 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ParseMaster.cs" />
     <Compile Include="PathSegment.cs" />
+    <Compile Include="PrepareOhlohRelease.cs" />
     <Compile Include="Publicize.cs" />
     <Compile Include="Purge.cs" />
     <Compile Include="ReSignDelaySignedAssemblies.cs" />

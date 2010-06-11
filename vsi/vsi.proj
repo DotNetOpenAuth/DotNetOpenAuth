@@ -11,7 +11,7 @@
 		<ProjectTemplates Include="$(ProjectRoot)projecttemplates\**\*.*proj" />
 	</ItemGroup>
 
-	<Target Name="Build" Returns="$(ProjectTemplatesVsi)">
+	<Target Name="Build" Returns="@(RedistributableFiles)">
 		<MSBuild Projects="..\projecttemplates\projecttemplates.proj" Targets="Zip2008" BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="ProjectTemplate2008ZipSource"/>
 		</MSBuild>
@@ -20,6 +20,9 @@
 			<ProjectTemplatesVsi>$(DropDirectoryNoSlash).vsi</ProjectTemplatesVsi>
 		</PropertyGroup>
 		<ItemGroup>
+			<RedistributableFiles Include="$(ProjectTemplatesVsi)">
+				<Platform>Visual Studio 2008, .NET $(TargetFrameworkVersion)</Platform>
+			</RedistributableFiles>
 			<VsiTransformSource Include="*.vscontent">
 				<BeforeTokens>$version$</BeforeTokens>
 				<AfterTokens>$(BuildVersion)</AfterTokens>

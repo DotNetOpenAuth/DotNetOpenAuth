@@ -22,6 +22,9 @@
 			<DropSpecsDirectory>$(DropDirectory)Specs\</DropSpecsDirectory>
 		</PropertyGroup>
 		<ItemGroup>
+			<RedistributableFiles Include="@(DropLayoutDependencies)">
+				<Package>DotNetOpenAuth project templates</Package>
+			</RedistributableFiles>
 			<ExtensionVsix Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsix\vsix.proj' " />
 			<ProjectTemplatesVsi Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsi\vsi.proj' " />
 			<DropDirectories Include="
@@ -139,10 +142,15 @@
 			/>
 	</Target>
 
-	<Target Name="Build" DependsOnTargets="Layout">
+	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
 		<PropertyGroup>
 			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
 		</PropertyGroup>
+		<ItemGroup>
+			<RedistributableFiles Include="$(DropZip)">
+				<Package>DotNetOpenAuth</Package>
+			</RedistributableFiles>
+		</ItemGroup>
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" ZipLevel="$(ZipLevel)" />
 	</Target>
 
