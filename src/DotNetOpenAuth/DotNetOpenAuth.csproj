@@ -333,7 +333,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\IAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\IMessageWithClientState.cs" />
     <Compile Include="OAuthWrap\Messages\IOAuthDirectResponseFormat.cs" />
-    <Compile Include="OAuthWrap\Messages\IRequestWithRedirectUri.cs" />
     <Compile Include="OAuthWrap\Messages\RefreshAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\DeviceAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\Device\DeviceRequest.cs" />
@@ -348,6 +347,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
     <Compile Include="OAuthWrap\Messages\ResponseFormat.cs" />
     <Compile Include="OAuthWrap\Messages\ResponseFormatEncoder.cs" />
+    <Compile Include="OAuthWrap\Messages\WebServer\WebServerRequest.cs" />
     <Compile Include="OAuthWrap\ResourceServer.cs" />
     <Compile Include="OAuthWrap\StandardAccessTokenAnalyzer.cs" />
     <Compile Include="OAuthWrap\UserAgentClient.cs" />
@@ -644,7 +644,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\MessageBase.cs" />
     <Compile Include="OAuthWrap\Messages\WebServer\WebServerAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\Messages\WebServer\WebServerFailedResponse.cs" />
-    <Compile Include="OAuthWrap\Messages\WebServer\WebServerRequest.cs" />
+    <Compile Include="OAuthWrap\Messages\EndUserAuthorizationRequest.cs" />
     <Compile Include="OAuthWrap\Messages\WebServer\WebServerSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordFailedResponse.cs" />
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordRequest.cs" />

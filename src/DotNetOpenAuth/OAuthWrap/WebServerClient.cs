@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <returns>The authorization request.</returns>
-		public WebServerRequest PrepareRequestUserAuthorization() {
+		public EndUserAuthorizationRequest PrepareRequestUserAuthorization() {
 			return this.PrepareRequestUserAuthorization(new AuthorizationState());
 		}
 
@@ -46,13 +46,13 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// </summary>
 		/// <param name="authorization">The authorization state to associate with this particular request.</param>
 		/// <returns>The authorization request.</returns>
-		public WebServerRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {
+		public EndUserAuthorizationRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<InvalidOperationException>(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
-			Contract.Ensures(Contract.Result<WebServerRequest>() != null);
-			Contract.Ensures(Contract.Result<WebServerRequest>().ClientIdentifier == this.ClientIdentifier);
-			Contract.Ensures(Contract.Result<WebServerRequest>().Callback == authorization.Callback);
+			Contract.Ensures(Contract.Result<EndUserAuthorizationRequest>() != null);
+			Contract.Ensures(Contract.Result<EndUserAuthorizationRequest>().ClientIdentifier == this.ClientIdentifier);
+			Contract.Ensures(Contract.Result<EndUserAuthorizationRequest>().Callback == authorization.Callback);
 
 			if (authorization.Callback == null) {
 				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 				authorization.SaveChanges();
 			}
 
-			var request = new WebServerRequest(this.AuthorizationServer) {
+			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
 				Scope = authorization.Scope,

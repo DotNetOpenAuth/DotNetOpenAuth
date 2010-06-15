@@ -32,22 +32,34 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="request">The request.</param>
-		internal WebServerSuccessResponse(Uri clientCallback, WebServerRequest request)
+		internal WebServerSuccessResponse(Uri clientCallback, EndUserAuthorizationRequest request)
 			: base(request, clientCallback) {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
 		}
 
+		/// <summary>
+		/// Gets or sets the verification code or refresh/access token.
+		/// </summary>
+		/// <value>The code or token.</value>
 		string ITokenCarryingRequest.CodeOrToken {
 			get { return this.VerificationCode; }
 			set { this.VerificationCode = value; }
 		}
 
+		/// <summary>
+		/// Gets the type of the code or token.
+		/// </summary>
+		/// <value>The type of the code or token.</value>
 		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.VerificationCode; }
 		}
 
+		/// <summary>
+		/// Gets or sets the authorization that the token describes.
+		/// </summary>
+		/// <value></value>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
@@ -55,7 +67,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <value>An opaque value defined by the client.</value>
 		/// <remarks>
-		/// REQUIRED if the Client sent the value in the <see cref="WebServerRequest"/>.
+		/// REQUIRED if the Client sent the value in the <see cref="EndUserAuthorizationRequest"/>.
 		/// </remarks>
 		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
 		string IMessageWithClientState.ClientState { get; set; }

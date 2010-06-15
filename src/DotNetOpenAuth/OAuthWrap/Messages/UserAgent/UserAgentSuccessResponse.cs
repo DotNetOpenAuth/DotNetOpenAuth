@@ -48,26 +48,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		public TimeSpan? Lifetime { get; internal set; }
 
 		/// <summary>
-		/// Gets or sets the refresh token.
-		/// </summary>
-		/// <value>The refresh token.</value>
-		/// <remarks>
-		/// OPTIONAL. The refresh token used to obtain new access tokens using the same end-user access grant as described in Section 6  (Refreshing an Access Token). 
-		/// </remarks>
-		[MessagePart(Protocol.refresh_token, IsRequired = false, AllowEmpty = false)]
-		public string RefreshToken { get; internal set; }
-
-		/// <summary>
-		/// Gets or sets the access token secret.
-		/// </summary>
-		/// <value>The access token secret.</value>
-		/// <remarks>
-		/// REQUIRED if requested by the client. The corresponding access token secret as requested by the client. 
-		/// </remarks>
-		[MessagePart(Protocol.access_token_secret, IsRequired = false, AllowEmpty = false)]
-		public string AccessTokenSecret { get; internal set; }
-
-		/// <summary>
 		/// Gets the scope.
 		/// </summary>
 		/// <value>The scope.</value>

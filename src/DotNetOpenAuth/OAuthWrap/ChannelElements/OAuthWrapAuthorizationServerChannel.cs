@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			typeof(Messages.UserNamePasswordVerificationResponse),
 			typeof(Messages.UserNamePasswordFailedResponse),
 			typeof(Messages.UsernamePasswordCaptchaResponse),
-			typeof(Messages.WebServerRequest),
+			typeof(Messages.EndUserAuthorizationRequest),
 			typeof(Messages.WebServerSuccessResponse),
 			typeof(Messages.WebServerFailedResponse),
 			typeof(Messages.WebServerAccessTokenRequest),

@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="request">The request.</param>
-		internal WebServerFailedResponse(Uri clientCallback, WebServerRequest request)
+		internal WebServerFailedResponse(Uri clientCallback, EndUserAuthorizationRequest request)
 			: this(clientCallback, ((IMessage)request).Version) {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");

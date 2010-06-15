@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var authorizationRequest = message as IRequestWithRedirectUri;
+			var authorizationRequest = message as EndUserAuthorizationRequest;
 			if (authorizationRequest != null) {
 				var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 				ErrorUtilities.VerifyProtocol(client.Callback == null || client.Callback == authorizationRequest.Callback, OAuthWrapStrings.CallbackMismatch, client.Callback, authorizationRequest.Callback);

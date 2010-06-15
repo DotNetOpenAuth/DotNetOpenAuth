@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		internal string VerificationCode { get; set; }
 
 		/// <summary>
-		/// Gets or sets the callback URL used in <see cref="WebServerRequest.Callback"/>
+		/// Gets or sets the callback URL used in <see cref="EndUserAuthorizationRequest.Callback"/>
 		/// </summary>
 		/// <value>
 		/// The Callback URL used to obtain the Verification Code.
