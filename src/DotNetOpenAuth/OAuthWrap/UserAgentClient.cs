@@ -56,7 +56,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 			var request = new UserAgentRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Scope = authorization.Scope,
-				SecretType = authorization.AccessTokenSecretType,
 				Callback = authorization.Callback,
 				Immediate = immediate,
 			};

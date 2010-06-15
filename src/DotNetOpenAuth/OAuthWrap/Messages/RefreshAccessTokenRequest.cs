@@ -62,16 +62,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
-		/// Gets or sets the type of the secret.
-		/// </summary>
-		/// <value>The type of the secret.</value>
-		/// <remarks>
-		/// OPTIONAL. The access token secret type as described by Section 5.3  (Cryptographic Tokens Requests). If omitted, the authorization server will issue a bearer token (an access token without a matching secret) as described by Section 5.2  (Bearer Token Requests). 
-		/// </remarks>
-		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
-		public string SecretType { get; set; }
-
-		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>

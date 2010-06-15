@@ -14,15 +14,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <summary>
 	/// A message from the authorization server to a user-agent client indicating that authorization has been granted.
 	/// </summary>
-	internal class UserAgentSuccessResponse : MessageBase, IHttpIndirectResponse, IAccessTokenSuccessResponse {
+	internal class UserAgentSuccessResponse : EndUserAuthorizationSuccessResponse, IHttpIndirectResponse, IAccessTokenSuccessResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAgentSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="version">The version.</param>
 		internal UserAgentSuccessResponse(Uri clientCallback, Version version)
-			: base(version, MessageTransport.Indirect, clientCallback)
-		{
+			: base(clientCallback, version) {
 		}
 
 		/// <summary>
@@ -31,6 +30,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// </summary>
 		bool IHttpIndirectResponse.Include301RedirectPayloadInFragment {
 			get { return true; }
+		}
+
+		string IAccessTokenSuccessResponse.RefreshToken {
+			get { return null; }
 		}
 
 		/// <summary>
@@ -46,14 +49,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <value>The lifetime.</value>
 		[MessagePart(Protocol.expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
 		public TimeSpan? Lifetime { get; internal set; }
-
-		/// <summary>
-		/// Gets the scope.
-		/// </summary>
-		/// <value>The scope.</value>
-		string IAccessTokenSuccessResponse.Scope {
-			get { return null; }
-		}
 
 		/// <summary>
 		/// Gets or sets the state.

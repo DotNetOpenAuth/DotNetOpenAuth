@@ -107,13 +107,11 @@ namespace DotNetOpenAuth.OAuthWrap {
 				ClientIdentifier = this.ClientIdentifier,
 				ClientSecret = this.ClientSecret,
 				RefreshToken = authorization.RefreshToken,
-				SecretType = authorization.AccessTokenSecretType,
 			};
 
 			var response = this.Channel.Request<AccessTokenSuccessResponse>(request);
 			authorization.AccessToken = response.AccessToken;
 			authorization.AccessTokenExpirationUtc = DateTime.UtcNow + response.Lifetime;
-			authorization.AccessTokenSecret = response.AccessTokenSecret;
 			authorization.AccessTokenIssueDateUtc = DateTime.UtcNow;
 
 			// Just in case the scope has changed...
@@ -139,7 +137,6 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Requires<ArgumentNullException>(accessTokenSuccess != null, "accessTokenSuccess");
 
 			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
-			authorizationState.AccessTokenSecret = accessTokenSuccess.AccessTokenSecret;
 			authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
 			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
 			authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;

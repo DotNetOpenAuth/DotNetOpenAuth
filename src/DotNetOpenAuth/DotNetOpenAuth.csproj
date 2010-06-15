@@ -347,6 +347,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
     <Compile Include="OAuthWrap\Messages\ResponseFormat.cs" />
     <Compile Include="OAuthWrap\Messages\ResponseFormatEncoder.cs" />
+    <Compile Include="OAuthWrap\Messages\EndUserAuthorizationSuccessResponse.cs" />
     <Compile Include="OAuthWrap\Messages\WebServer\WebServerRequest.cs" />
     <Compile Include="OAuthWrap\ResourceServer.cs" />
     <Compile Include="OAuthWrap\StandardAccessTokenAnalyzer.cs" />

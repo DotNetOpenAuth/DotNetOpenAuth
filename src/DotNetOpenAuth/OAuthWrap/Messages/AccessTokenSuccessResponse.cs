@@ -72,16 +72,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		public string RefreshToken { get; internal set; }
 
 		/// <summary>
-		/// Gets or sets the access token secret.
-		/// </summary>
-		/// <value>The access token secret.</value>
-		/// <remarks>
-		/// REQUIRED if requested by the client. The corresponding access token secret as requested by the client. 
-		/// </remarks>
-		[MessagePart(Protocol.access_token_secret, IsRequired = false, AllowEmpty = false)]
-		public string AccessTokenSecret { get; internal set; }
-
-		/// <summary>
 		/// Gets or sets the scope of access being requested.
 		/// </summary>
 		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>

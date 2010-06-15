@@ -27,10 +27,5 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <value>The client secret.</value>
 		string ClientSecret { get; }
-
-		/// <summary>
-		/// Gets the type of access token secret requested.
-		/// </summary>
-		string SecretType { get; }
 	}
 }

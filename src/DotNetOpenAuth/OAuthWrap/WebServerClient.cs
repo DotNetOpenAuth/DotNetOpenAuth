@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 				authorization.SaveChanges();
 			}
 
-			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
+			var request = new WebServerRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
 				Scope = authorization.Scope,

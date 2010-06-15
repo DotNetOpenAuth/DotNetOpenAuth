@@ -77,23 +77,23 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		public string Scope { get; set; }
 
-		/////// <summary>
-		/////// Gets or sets a value indicating whether the authorization server is
-		/////// allowed to interact with the user before responding to the client's request.
-		/////// </summary>
-		////public bool IsUserInteractionAllowed {
-		////    get { return !this.Immediate.HasValue || !this.Immediate.Value; }
-		////    set { this.Immediate = value ? (bool?)null : true; }
-		////}
+		/// <summary>
+		/// Gets or sets a value indicating whether the authorization server is
+		/// allowed to interact with the user before responding to the client's request.
+		/// </summary>
+		public bool IsUserInteractionAllowed {
+			get { return !this.Immediate.HasValue || !this.Immediate.Value; }
+			set { this.Immediate = value ? (bool?)null : true; }
+		}
 
-		/////// <summary>
-		/////// Gets or sets a value indicating whether the authorization server is
-		/////// required to redirect the browser back to the client immediately.
-		/////// </summary>
-		/////// <remarks>
-		/////// OPTIONAL. The parameter value must be set to true or false. If set to true, the authorization server MUST NOT prompt the end-user to authenticate or approve access. Instead, the authorization server attempts to establish the end-user's identity via other means (e.g. browser cookies) and checks if the end-user has previously approved an identical access request by the same client and if that access grant is still active. If the authorization server does not support an immediate check or if it is unable to establish the end-user's identity or approval status, it MUST deny the request without prompting the end-user. Defaults to false  if omitted. 
-		/////// </remarks>
-		////[MessagePart(Protocol.immediate, IsRequired = false, AllowEmpty = false)]
-		////internal bool? Immediate { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether the authorization server is
+		/// required to redirect the browser back to the client immediately.
+		/// </summary>
+		/// <remarks>
+		/// OPTIONAL. The parameter value must be set to true or false. If set to true, the authorization server MUST NOT prompt the end-user to authenticate or approve access. Instead, the authorization server attempts to establish the end-user's identity via other means (e.g. browser cookies) and checks if the end-user has previously approved an identical access request by the same client and if that access grant is still active. If the authorization server does not support an immediate check or if it is unable to establish the end-user's identity or approval status, it MUST deny the request without prompting the end-user. Defaults to false  if omitted. 
+		/// </remarks>
+		[MessagePart(Protocol.immediate, IsRequired = false, AllowEmpty = false)]
+		internal bool? Immediate { get; set; }
 	}
 }

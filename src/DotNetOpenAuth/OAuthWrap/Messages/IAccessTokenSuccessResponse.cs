@@ -22,12 +22,6 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		string AccessToken { get; }
 
 		/// <summary>
-		/// Gets the access token secret.
-		/// </summary>
-		/// <value>The access token secret.</value>
-		string AccessTokenSecret { get; }
-
-		/// <summary>
 		/// Gets the refresh token.
 		/// </summary>
 		/// <value>The refresh token.</value>

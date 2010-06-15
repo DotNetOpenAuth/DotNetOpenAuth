@@ -15,14 +15,14 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// to indicate that user authorization was granted, and to return the user
 	/// to the Client where they started their experience.
 	/// </summary>
-	internal class WebServerSuccessResponse : MessageBase, IMessageWithClientState, ITokenCarryingRequest {
+	internal class WebServerSuccessResponse : EndUserAuthorizationSuccessResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebServerSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="version">The protocol version.</param>
 		internal WebServerSuccessResponse(Uri clientCallback, Version version)
-			: base(version, MessageTransport.Indirect, clientCallback) {
+			: base(clientCallback, version) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
 		}
@@ -33,44 +33,11 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <param name="clientCallback">The client callback.</param>
 		/// <param name="request">The request.</param>
 		internal WebServerSuccessResponse(Uri clientCallback, EndUserAuthorizationRequest request)
-			: base(request, clientCallback) {
+			: base(clientCallback, request) {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
 		}
-
-		/// <summary>
-		/// Gets or sets the verification code or refresh/access token.
-		/// </summary>
-		/// <value>The code or token.</value>
-		string ITokenCarryingRequest.CodeOrToken {
-			get { return this.VerificationCode; }
-			set { this.VerificationCode = value; }
-		}
-
-		/// <summary>
-		/// Gets the type of the code or token.
-		/// </summary>
-		/// <value>The type of the code or token.</value>
-		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.VerificationCode; }
-		}
-
-		/// <summary>
-		/// Gets or sets the authorization that the token describes.
-		/// </summary>
-		/// <value></value>
-		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
-
-		/// <summary>
-		/// Gets or sets some state as provided by the client in the authorization request.
-		/// </summary>
-		/// <value>An opaque value defined by the client.</value>
-		/// <remarks>
-		/// REQUIRED if the Client sent the value in the <see cref="EndUserAuthorizationRequest"/>.
-		/// </remarks>
-		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
-		string IMessageWithClientState.ClientState { get; set; }
 
 		/// <summary>
 		/// Gets or sets the verification code.
@@ -79,12 +46,10 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// The long-lived credential assigned by the Authorization Server to this Consumer for
 		/// use in accessing the authorizing user's protected resources.
 		/// </value>
-		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = true)]
-		internal string VerificationCode { get; set; }
-
-		/// <summary>
-		/// Gets or sets the authorizing user's account name.
-		/// </summary>
-		internal string AuthorizingUsername { get; set; }
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
+		internal new string VerificationCode {
+			get { return base.VerificationCode; }
+			set { base.VerificationCode = value; }
+		}
 	}
 }
