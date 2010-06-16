@@ -681,10 +681,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
-			EnsureChildControls();
-			EnsureID();
-			this.requiredValidator.ControlToValidate = this.ID;
-			this.identifierFormatValidator.ControlToValidate = this.ID;
+			this.EnsureChildControls();
 		}
 
 		/// <summary>
@@ -839,6 +836,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.Init"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnInit(EventArgs e) {
+			this.SetChildControlReferenceIds();
+
+			base.OnInit(e);
+		}
+
+		/// <summary>
 		/// Renders the child controls.
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the rendered content.</param>
@@ -942,6 +949,16 @@ idselector_input_id = '" + this.ClientID + @"';
 		/// <param name="writer">The writer.</param>
 		private void RenderControlInner(HtmlTextWriter writer) {
 			base.RenderControl(writer);
+		}
+
+		/// <summary>
+		/// Sets child control properties that depend on this control's ID.
+		/// </summary>
+		private void SetChildControlReferenceIds() {
+			this.EnsureID();
+			ErrorUtilities.VerifyInternal(!string.IsNullOrEmpty(this.ID), "No control ID available yet!");
+			this.requiredValidator.ControlToValidate = this.ID;
+			this.identifierFormatValidator.ControlToValidate = this.ID;
 		}
 
 		/// <summary>
