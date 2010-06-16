@@ -415,26 +415,15 @@ namespace DotNetOpenAuth.OpenId {
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(uri));
 
-			uri = uri.Trim();
 			canonicalUri = null;
-			schemePrepended = false;
 			try {
-				// Assume http:// scheme if an allowed scheme isn't given, and strip
-				// fragments off.  Consistent with spec section 7.2#3
-				if (!IsAllowedScheme(uri)) {
-					uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
-						Uri.SchemeDelimiter + uri;
-					schemePrepended = true;
-				}
-
-				if (schemeSubstitution) {
-					uri = NormalSchemeToSpecialRoundTrippingScheme(uri);
-				}
+				uri = DoSimpleCanonicalize(uri, forceHttpsDefaultScheme, out schemePrepended);
 
 				// Use a UriBuilder because it helps to normalize the URL as well.
 				return TryCanonicalize(uri, out canonicalUri);
 			} catch (UriFormatException) {
 				// We try not to land here with checks in the try block, but just in case.
+				schemePrepended = false;
 				return false;
 			}
 		}
@@ -442,7 +431,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Fixes up the scheme if appropriate.
 		/// </summary>
-		/// <param name="uri">The URI to canonicalize.</param>
+		/// <param name="uri">The URI, already in legal form (with http(s):// prepended if necessary).</param>
 		/// <param name="canonicalUri">The resulting canonical URI.</param>
 		/// <returns><c>true</c> if the canonicalization was successful; <c>false</c> otherwise.</returns>
 		/// <remarks>
@@ -494,6 +483,34 @@ namespace DotNetOpenAuth.OpenId {
 			return delimiterIndex < 0 ? nonCompressingScheme : nonCompressingScheme + normal.Substring(delimiterIndex);
 		}
 
+		/// <summary>
+		/// Performs the minimal URL normalization to allow a string to be passed to the <see cref="Uri"/> constructor.
+		/// </summary>
+		/// <param name="uri">The user-supplied identifier URI to normalize.</param>
+		/// <param name="forceHttpsDefaultScheme">if set to <c>true</c>, a missing scheme should result in HTTPS being prepended instead of HTTP.</param>
+		/// <param name="schemePrepended">if set to <c>true</c>, the scheme was prepended during normalization.</param>
+		/// <returns>The somewhat normalized URL.</returns>
+		private static string DoSimpleCanonicalize(string uri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
+
+			schemePrepended = false;
+			uri = uri.Trim();
+
+			// Assume http:// scheme if an allowed scheme isn't given, and strip
+			// fragments off.  Consistent with spec section 7.2#3
+			if (!IsAllowedScheme(uri)) {
+				uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
+					Uri.SchemeDelimiter + uri;
+				schemePrepended = true;
+			}
+
+			if (schemeSubstitution) {
+				uri = NormalSchemeToSpecialRoundTrippingScheme(uri);
+			}
+
+			return uri;
+		}
+
 #if CONTRACTS_FULL
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
@@ -522,6 +539,9 @@ namespace DotNetOpenAuth.OpenId {
 			/// <param name="value">The value.</param>
 			internal SimpleUri(string value) {
 				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
+
+				bool schemePrepended;
+				value = DoSimpleCanonicalize(value, false, out schemePrepended);
 
 				// Leverage the Uri class's parsing where we can.
 				Uri uri = new Uri(value);
