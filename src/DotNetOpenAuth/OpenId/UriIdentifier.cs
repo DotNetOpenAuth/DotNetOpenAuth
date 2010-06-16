@@ -418,6 +418,9 @@ namespace DotNetOpenAuth.OpenId {
 			canonicalUri = null;
 			try {
 				uri = DoSimpleCanonicalize(uri, forceHttpsDefaultScheme, out schemePrepended);
+				if (schemeSubstitution) {
+					uri = NormalSchemeToSpecialRoundTrippingScheme(uri);
+				}
 
 				// Use a UriBuilder because it helps to normalize the URL as well.
 				return TryCanonicalize(uri, out canonicalUri);
@@ -502,10 +505,6 @@ namespace DotNetOpenAuth.OpenId {
 				uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
 					Uri.SchemeDelimiter + uri;
 				schemePrepended = true;
-			}
-
-			if (schemeSubstitution) {
-				uri = NormalSchemeToSpecialRoundTrippingScheme(uri);
 			}
 
 			return uri;
