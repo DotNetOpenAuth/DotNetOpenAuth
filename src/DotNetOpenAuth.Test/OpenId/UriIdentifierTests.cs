@@ -133,6 +133,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 				Assert.AreEqual("http://abc/", new UriIdentifier("HTTP://ABC").ToString());
 				Assert.AreEqual("http://abc/?q", new UriIdentifier("HTTP://ABC?q").ToString());
 				Assert.AreEqual("http://abc/#f", new UriIdentifier("HTTP://ABC#f").ToString());
+
+				Assert.AreEqual("http://blog.nerdbank.net/", new UriIdentifier("blog.nerdbank.net").ToString());
+				Assert.AreEqual("http://blog.nerdbank.net/a", new UriIdentifier("BLOG.nerdbank.net/a").ToString());
+				Assert.AreEqual("https://blog.nerdbank.net/", new UriIdentifier("blog.nerdbank.net", true).ToString());
 			});
 		}
 
