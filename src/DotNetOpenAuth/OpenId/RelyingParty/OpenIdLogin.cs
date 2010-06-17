@@ -723,7 +723,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			cell = new TableCell();
 			try {
 				this.loginButton = new Button();
-				this.loginButton.ID = "loginButton";
+				this.loginButton.ID = this.ID + "_loginButton";
 				this.loginButton.Text = ButtonTextDefault;
 				this.loginButton.ToolTip = ButtonToolTipDefault;
 				this.loginButton.Click += this.LoginButton_Click;
@@ -959,7 +959,9 @@ idselector_input_id = '" + this.ClientID + @"';
 			this.EnsureID();
 			ErrorUtilities.VerifyInternal(!string.IsNullOrEmpty(this.ID), "No control ID available yet!");
 			this.requiredValidator.ControlToValidate = this.ID;
+			this.requiredValidator.ID = this.ID + "_requiredValidator";
 			this.identifierFormatValidator.ControlToValidate = this.ID;
+			this.identifierFormatValidator.ID = this.ID + "_identifierFormatValidator";
 		}
 
 		/// <summary>
