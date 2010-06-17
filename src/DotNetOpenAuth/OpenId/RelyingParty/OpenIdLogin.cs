@@ -955,6 +955,7 @@ idselector_input_id = '" + this.ClientID + @"';
 		/// Sets child control properties that depend on this control's ID.
 		/// </summary>
 		private void SetChildControlReferenceIds() {
+			this.EnsureChildControls();
 			this.EnsureID();
 			ErrorUtilities.VerifyInternal(!string.IsNullOrEmpty(this.ID), "No control ID available yet!");
 			this.requiredValidator.ControlToValidate = this.ID;
