@@ -47,14 +47,14 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			var customServiceDescription = new ServiceProviderDescription {
 				RequestTokenEndpoint = ServiceDescription.RequestTokenEndpoint,
 				UserAuthorizationEndpoint = ServiceDescription.UserAuthorizationEndpoint,
-				AccessTokenEndpoint = new MessageReceivingEndpoint(ServiceDescription.AccessTokenEndpoint.Location.AbsoluteUri + "?callback_token=" + Uri.EscapeDataString(userCode), HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest),
+				AccessTokenEndpoint = new MessageReceivingEndpoint(ServiceDescription.AccessTokenEndpoint.Location.AbsoluteUri + "?oauth_verifier=" + Uri.EscapeDataString(userCode), HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest),
 				TamperProtectionElements = ServiceDescription.TamperProtectionElements,
 				ProtocolVersion = ProtocolVersion.V10,
 			};
 
 			// To use a custom service description we also must create a new WebConsumer.
 			var customConsumer = new DesktopConsumer(customServiceDescription, consumer.TokenManager);
-			var response = customConsumer.ProcessUserAuthorization(requestToken);
+			var response = customConsumer.ProcessUserAuthorization(requestToken, userCode);
 			return response;
 		}
 	}
