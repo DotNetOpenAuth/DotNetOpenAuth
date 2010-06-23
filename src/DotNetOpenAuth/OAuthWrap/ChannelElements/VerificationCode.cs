@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
+	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
@@ -15,10 +16,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// Represents the verification code created when a user approves authorization that
 	/// allows the client to request an access/refresh token.
 	/// </summary>
+	[Serializable]
 	internal class VerificationCode : AuthorizationDataBag {
 		/// <summary>
 		/// The hash algorithm used on the callback URI.
 		/// </summary>
+		[NonSerialized]
 		private readonly HashAlgorithm hasher = new SHA256Managed();
 
 		/// <summary>
@@ -66,7 +69,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Gets or sets the hash of the callback URL.
 		/// </summary>
 		[MessagePart("cb")]
-		private string CallbackHash { get; set; }
+		private byte[] CallbackHash { get; set; }
 
 		/// <summary>
 		/// Deserializes a verification code.
@@ -98,7 +101,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown when the callback URLs do not match.</exception>
 		internal void VerifyCallback(Uri callback) {
-			ErrorUtilities.VerifyProtocol(string.Equals(this.CallbackHash, this.CalculateCallbackHash(callback), StringComparison.Ordinal), Protocol.redirect_uri_mismatch);
+			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalent(this.CallbackHash, this.CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
 		}
 
 		/// <summary>
@@ -108,8 +111,8 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <returns>
 		/// A base64 encoding of the hash of the URL.
 		/// </returns>
-		private string CalculateCallbackHash(Uri callback) {
-			return this.hasher.ComputeHash(callback.AbsoluteUri);
+		private byte[] CalculateCallbackHash(Uri callback) {
+			return this.hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
 		}
 	}
 }

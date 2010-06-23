@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <summary>
 	/// A common message base class for OAuth WRAP messages.
 	/// </summary>
+	[Serializable]
 	public class MessageBase : IDirectedProtocolMessage, IDirectResponseProtocolMessage {
 		/// <summary>
 		/// A dictionary to contain extra message data.
@@ -22,16 +23,19 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		/// <summary>
 		/// The originating request.
 		/// </summary>
+		[NonSerialized]
 		private IDirectedProtocolMessage originatingRequest;
 
 		/// <summary>
 		/// The backing field for the <see cref="IMessage.Version"/> property.
 		/// </summary>
+		[NonSerialized]
 		private Version version;
 
 		/// <summary>
 		/// A value indicating whether this message is a direct or indirect message.
 		/// </summary>
+		[NonSerialized]
 		private MessageTransport messageTransport;
 
 		/// <summary>
