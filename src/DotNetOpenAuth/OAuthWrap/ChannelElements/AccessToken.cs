@@ -17,7 +17,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// <summary>
 	/// A short-lived token that accompanies HTTP requests to protected data to authorize the request.
 	/// </summary>
-	[Serializable]
 	internal class AccessToken : AuthorizationDataBag {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.

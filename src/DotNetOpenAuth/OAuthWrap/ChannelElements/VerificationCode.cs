@@ -16,12 +16,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// Represents the verification code created when a user approves authorization that
 	/// allows the client to request an access/refresh token.
 	/// </summary>
-	[Serializable]
 	internal class VerificationCode : AuthorizationDataBag {
 		/// <summary>
 		/// The hash algorithm used on the callback URI.
 		/// </summary>
-		[NonSerialized]
 		private readonly HashAlgorithm hasher = new SHA256Managed();
 
 		/// <summary>

@@ -8,9 +8,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
-	using System.IO;
 	using System.Linq;
-	using System.Runtime.Serialization.Formatters.Binary;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
@@ -24,7 +22,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// A collection of message parts that will be serialized into a single string,
 	/// to be set into a larger message.
 	/// </summary>
-	[Serializable]
 	internal abstract class DataBag : MessageBase {
 		/// <summary>
 		/// The message description cache to use for data bag types.
@@ -39,61 +36,51 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// The symmetric secret used for signing/encryption of verification codes and refresh tokens.
 		/// </summary>
-		[NonSerialized]
 		private readonly byte[] symmetricSecret;
 
 		/// <summary>
 		/// The hashing algorithm to use while signing when using a symmetric secret.
 		/// </summary>
-		[NonSerialized]
 		private readonly HashAlgorithm symmetricHasher;
 
 		/// <summary>
 		/// The crypto to use for signing access tokens.
 		/// </summary>
-		[NonSerialized]
 		private readonly RSACryptoServiceProvider asymmetricSigning;
 
 		/// <summary>
 		/// The crypto to use for encrypting access tokens.
 		/// </summary>
-		[NonSerialized]
 		private readonly RSACryptoServiceProvider asymmetricEncrypting;
 
 		/// <summary>
 		/// The hashing algorithm to use for asymmetric signatures.
 		/// </summary>
-		[NonSerialized]
 		private readonly HashAlgorithm hasherForAsymmetricSigning;
 
 		/// <summary>
 		/// A value indicating whether the data in this instance will be protected against tampering.
 		/// </summary>
-		[NonSerialized]
 		private readonly bool signed;
 
 		/// <summary>
 		/// The nonce store to use to ensure that this instance is only decoded once.
 		/// </summary>
-		[NonSerialized]
 		private readonly INonceStore decodeOnceOnly;
 
 		/// <summary>
 		/// The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.
 		/// </summary>
-		[NonSerialized]
 		private readonly TimeSpan? maximumAge;
 
 		/// <summary>
 		/// A value indicating whether the data in this instance will be protected against eavesdropping.
 		/// </summary>
-		[NonSerialized]
 		private readonly bool encrypted;
 
 		/// <summary>
 		/// A value indicating whether the data in this instance will be GZip'd.
 		/// </summary>
-		[NonSerialized]
 		private readonly bool compressed;
 
 		/// <summary>
@@ -209,10 +196,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				this.Signature = this.CalculateSignature();
 			}
 
-			var memoryStream = new MemoryStream();
-			var formatter = new BinaryFormatter();
-			formatter.Serialize(memoryStream, this);
-			byte[] encoded = memoryStream.ToArray();
+			var fields = MessageSerializer.Get(this.GetType()).Serialize(MessageDescriptions.GetAccessor(this));
+			string value = MessagingUtilities.CreateQueryString(fields);
+
+			byte[] encoded = Encoding.UTF8.GetBytes(value);
 
 			if (this.compressed) {
 				encoded = MessagingUtilities.Compress(encoded);
@@ -244,12 +231,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				encoded = MessagingUtilities.Decompress(encoded);
 			}
 
-			var dataStream = new MemoryStream(encoded);
+			value = Encoding.UTF8.GetString(encoded);
 
 			// Deserialize into this newly created instance.
-			var formatter = new BinaryFormatter();
-			var bag = (DataBag) formatter.Deserialize(dataStream);
-			// TODO: deserialize into THIS instance
+			var serializer = MessageSerializer.Get(this.GetType());
+			var fields = MessageDescriptions.GetAccessor(this);
+			serializer.Deserialize(HttpUtility.ParseQueryString(value).ToDictionary(), fields);
 
 			if (this.signed) {
 				// Verify that the verification code was issued by this authorization server.

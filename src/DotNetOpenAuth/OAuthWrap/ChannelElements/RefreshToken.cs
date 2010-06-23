@@ -16,7 +16,6 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// The refresh token issued to a client by an authorization server that allows the client
 	/// to periodically obtain new short-lived access tokens.
 	/// </summary>
-	[Serializable]
 	internal class RefreshToken : AuthorizationDataBag {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RefreshToken"/> class.
