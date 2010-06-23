@@ -8,7 +8,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.IO;
 	using System.Linq;
+	using System.Runtime.Serialization.Formatters.Binary;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
@@ -22,6 +24,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 	/// A collection of message parts that will be serialized into a single string,
 	/// to be set into a larger message.
 	/// </summary>
+	[Serializable]
 	internal abstract class DataBag : MessageBase {
 		/// <summary>
 		/// The message description cache to use for data bag types.
@@ -36,51 +39,61 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// The symmetric secret used for signing/encryption of verification codes and refresh tokens.
 		/// </summary>
+		[NonSerialized]
 		private readonly byte[] symmetricSecret;
 
 		/// <summary>
 		/// The hashing algorithm to use while signing when using a symmetric secret.
 		/// </summary>
+		[NonSerialized]
 		private readonly HashAlgorithm symmetricHasher;
 
 		/// <summary>
 		/// The crypto to use for signing access tokens.
 		/// </summary>
+		[NonSerialized]
 		private readonly RSACryptoServiceProvider asymmetricSigning;
 
 		/// <summary>
 		/// The crypto to use for encrypting access tokens.
 		/// </summary>
+		[NonSerialized]
 		private readonly RSACryptoServiceProvider asymmetricEncrypting;
 
 		/// <summary>
 		/// The hashing algorithm to use for asymmetric signatures.
 		/// </summary>
+		[NonSerialized]
 		private readonly HashAlgorithm hasherForAsymmetricSigning;
 
 		/// <summary>
 		/// A value indicating whether the data in this instance will be protected against tampering.
 		/// </summary>
+		[NonSerialized]
 		private readonly bool signed;
 
 		/// <summary>
 		/// The nonce store to use to ensure that this instance is only decoded once.
 		/// </summary>
+		[NonSerialized]
 		private readonly INonceStore decodeOnceOnly;
 
 		/// <summary>
 		/// The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.
 		/// </summary>
+		[NonSerialized]
 		private readonly TimeSpan? maximumAge;
 
 		/// <summary>
 		/// A value indicating whether the data in this instance will be protected against eavesdropping.
 		/// </summary>
+		[NonSerialized]
 		private readonly bool encrypted;
 
 		/// <summary>
 		/// A value indicating whether the data in this instance will be GZip'd.
 		/// </summary>
+		[NonSerialized]
 		private readonly bool compressed;
 
 		/// <summary>
@@ -151,7 +164,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <value>The nonce.</value>
 		[MessagePart]
-		internal string Nonce { get; set; }
+		internal byte[] Nonce { get; set; }
 
 		/// <summary>
 		/// Gets or sets the UTC creation date of this token.
@@ -177,7 +190,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// </summary>
 		/// <value>The signature.</value>
 		[MessagePart("sig")]
-		private string Signature { get; set; }
+		private byte[] Signature { get; set; }
 
 		/// <summary>
 		/// Serializes this instance as a string that can be sent as part of a larger message.
@@ -189,17 +202,17 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			this.UtcCreationDate = DateTime.UtcNow;
 
 			if (this.decodeOnceOnly != null) {
-				this.Nonce = Convert.ToBase64String(MessagingUtilities.GetNonCryptoRandomData(NonceLength));
+				this.Nonce = MessagingUtilities.GetNonCryptoRandomData(NonceLength);
 			}
 
 			if (this.signed) {
 				this.Signature = this.CalculateSignature();
 			}
 
-			var fields = MessageSerializer.Get(this.GetType()).Serialize(MessageDescriptions.GetAccessor(this));
-			string value = MessagingUtilities.CreateQueryString(fields);
-
-			byte[] encoded = Encoding.UTF8.GetBytes(value);
+			var memoryStream = new MemoryStream();
+			var formatter = new BinaryFormatter();
+			formatter.Serialize(memoryStream, this);
+			byte[] encoded = memoryStream.ToArray();
 
 			if (this.compressed) {
 				encoded = MessagingUtilities.Compress(encoded);
@@ -231,12 +244,12 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				encoded = MessagingUtilities.Decompress(encoded);
 			}
 
-			value = Encoding.UTF8.GetString(encoded);
+			var dataStream = new MemoryStream(encoded);
 
 			// Deserialize into this newly created instance.
-			var serializer = MessageSerializer.Get(this.GetType());
-			var fields = MessageDescriptions.GetAccessor(this);
-			serializer.Deserialize(HttpUtility.ParseQueryString(value).ToDictionary(), fields);
+			var formatter = new BinaryFormatter();
+			var bag = (DataBag) formatter.Deserialize(dataStream);
+			// TODO: deserialize into THIS instance
 
 			if (this.signed) {
 				// Verify that the verification code was issued by this authorization server.
@@ -255,7 +268,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			if (this.decodeOnceOnly != null) {
 				ErrorUtilities.VerifyInternal(this.maximumAge.HasValue, "Oops!  How can we validate a nonce without a maximum message age?");
 				string context = "{" + GetType().FullName + "}";
-				if (!this.decodeOnceOnly.StoreNonce(context, this.Nonce, this.UtcCreationDate)) {
+				if (!this.decodeOnceOnly.StoreNonce(context, Convert.ToBase64String(this.Nonce), this.UtcCreationDate)) {
 					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", this.Nonce, this.UtcCreationDate);
 					throw new ReplayedMessageException(containingMessage);
 				}
@@ -271,10 +284,9 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		private bool IsSignatureValid() {
 			if (this.asymmetricSigning != null) {
 				byte[] bytesToSign = this.GetBytesToSign();
-				byte[] signature = Convert.FromBase64String(this.Signature);
-				return this.asymmetricSigning.VerifyData(bytesToSign, this.hasherForAsymmetricSigning, signature);
+				return this.asymmetricSigning.VerifyData(bytesToSign, this.hasherForAsymmetricSigning, this.Signature);
 			} else {
-				return string.Equals(this.Signature, this.CalculateSignature(), StringComparison.Ordinal);
+				return MessagingUtilities.AreEquivalent(this.Signature, this.CalculateSignature());
 			}
 		}
 
@@ -282,15 +294,15 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// Calculates the signature for the data in this verification code.
 		/// </summary>
 		/// <returns>The calculated signature.</returns>
-		private string CalculateSignature() {
+		private byte[] CalculateSignature() {
 			Contract.Requires<InvalidOperationException>(this.asymmetricSigning != null || this.symmetricHasher != null);
+			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] bytesToSign = this.GetBytesToSign();
 			if (this.asymmetricSigning != null) {
-				byte[] signature = this.asymmetricSigning.SignData(bytesToSign, this.hasherForAsymmetricSigning);
-				return Convert.ToBase64String(signature);
+				return this.asymmetricSigning.SignData(bytesToSign, this.hasherForAsymmetricSigning);
 			} else {
-				return Convert.ToBase64String(this.symmetricHasher.ComputeHash(bytesToSign));
+				return this.symmetricHasher.ComputeHash(bytesToSign);
 			}
 		}
 

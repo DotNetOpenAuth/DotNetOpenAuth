@@ -346,6 +346,7 @@
     <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\xrds20dual.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="OAuthWrap\ChannelElements\" />
     <Folder Include="OpenId\UI\" />
   </ItemGroup>
   <ItemGroup>
