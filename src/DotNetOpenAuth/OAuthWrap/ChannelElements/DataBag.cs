@@ -161,6 +161,11 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		internal DateTime UtcCreationDate { get; set; }
 
 		/// <summary>
+		/// Gets or sets the message that delivered this DataBag instance to this host.
+		/// </summary>
+		protected IProtocolMessage ContainingMessage { get; set; }
+
+		/// <summary>
 		/// Gets the type of this instance.
 		/// </summary>
 		/// <value>The type of the bag.</value>
@@ -221,6 +226,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
 
+			this.ContainingMessage = containingMessage;
 			byte[] encoded = Convert.FromBase64String(value);
 
 			if (this.encrypted) {
