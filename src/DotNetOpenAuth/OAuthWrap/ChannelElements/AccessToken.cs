@@ -21,12 +21,15 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.
 		/// </summary>
-		/// <param name="signingKey">The signing key.</param>
-		/// <param name="encryptingKey">The encrypting key.</param>
+		public AccessToken() {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AccessToken"/> class.
+		/// </summary>
 		/// <param name="authorization">The authorization to be described by the access token.</param>
 		/// <param name="lifetime">The lifetime of the access token.</param>
-		internal AccessToken(RSAParameters signingKey, RSAParameters encryptingKey, IAuthorizationDescription authorization, TimeSpan? lifetime)
-			: this(signingKey, encryptingKey) {
+		internal AccessToken(IAuthorizationDescription authorization, TimeSpan? lifetime) {
 			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
@@ -37,37 +40,17 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessToken"/> class.
-		/// </summary>
-		/// <param name="signingKey">The signing key.</param>
-		/// <param name="encryptingKey">The encrypting key.</param>
-		private AccessToken(RSAParameters signingKey, RSAParameters encryptingKey)
-			: base(signingKey, encryptingKey) {
-			}
-
-		/// <summary>
 		/// Gets or sets the lifetime of the access token.
 		/// </summary>
 		/// <value>The lifetime.</value>
 		[MessagePart]
 		internal TimeSpan? Lifetime { get; set; }
 
-		/// <summary>
-		/// Deserializes an access token.
-		/// </summary>
-		/// <param name="signingKey">The signing public key.</param>
-		/// <param name="encryptingKey">The encrypting private key.</param>
-		/// <param name="value">The access token.</param>
-		/// <param name="containingMessage">The message containing this token.</param>
-		/// <returns>The access token.</returns>
-		internal static AccessToken Decode(RSAParameters signingKey, RSAParameters encryptingKey, string value, IProtocolMessage containingMessage) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
-			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
-			Contract.Ensures(Contract.Result<AccessToken>() != null);
+		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSAParameters signingKey, RSAParameters encryptingKey)
+		{
+			Contract.Ensures(Contract.Result<IDataBagFormatter<AccessToken>>() != null);
 
-			var self = new AccessToken(signingKey, encryptingKey);
-			self.Decode(value, containingMessage);
-			return self;
+			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);
 		}
 
 		/// <summary>

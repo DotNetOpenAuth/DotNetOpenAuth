@@ -21,26 +21,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationDataBag"/> class.
 		/// </summary>
-		/// <param name="secret">The symmetric secret to use for signing and encrypting.</param>
-		/// <param name="signed">A value indicating whether the data in this instance will be protected against tampering.</param>
-		/// <param name="encrypted">A value indicating whether the data in this instance will be protected against eavesdropping.</param>
-		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
-		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
-		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
-		protected AuthorizationDataBag(byte[] secret, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
-			: base(secret, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthorizationDataBag"/> class.
-		/// </summary>
-		/// <param name="signingKey">The asymmetric private key to use for signing the token.</param>
-		/// <param name="encryptingKey">The asymmetric public key to use for encrypting the token.</param>
-		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
-		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
-		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
-		protected AuthorizationDataBag(RSAParameters? signingKey = null, RSAParameters? encryptingKey = null, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
-			: base(signingKey, encryptingKey, compressed, maximumAge, decodeOnceOnly) {
+		protected AuthorizationDataBag() {
 		}
 
 		/// <summary>

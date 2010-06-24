@@ -840,7 +840,7 @@ namespace DotNetOpenAuth.Messaging {
 			MessageSerializer.DeserializeJsonAsFlatDictionary(dictionary, jsonReader);
 			return dictionary;
 		}
-	
+
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>

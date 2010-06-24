@@ -312,6 +312,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuthWrap\ChannelElements\AccessToken.cs" />
     <Compile Include="OAuthWrap\ChannelElements\AuthorizationDataBag.cs" />
     <Compile Include="OAuthWrap\ChannelElements\AuthServerBindingElementBase.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\IDataBagFormatter.cs" />
+    <Compile Include="OAuthWrap\ChannelElements\UriStyleMessageFormatter.cs" />
     <Compile Include="OAuthWrap\ChannelElements\IAccessTokenRequest.cs" />
     <Compile Include="OAuthWrap\ChannelElements\IAuthorizationDescription.cs" />
     <Compile Include="OAuthWrap\ChannelElements\ITokenCarryingRequest.cs" />

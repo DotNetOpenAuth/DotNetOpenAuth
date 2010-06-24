@@ -12,6 +12,12 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// A message sent by a web application Client to the AuthorizationServer
+	/// via the user agent to obtain authorization from the user and prepare
+	/// to issue an access token to the Consumer if permission is granted.
+	/// </summary>
+	[Serializable]
 	public class WebServerRequest : EndUserAuthorizationRequest {
 		/// <summary>
 		/// The type of message.
@@ -20,7 +26,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		private const string Type = "web_server";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebServerRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationEndpoint">The Authorization Server's user authorization URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
@@ -31,7 +37,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequest"/> class.
+		/// Initializes a new instance of the <see cref="WebServerRequest"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		internal WebServerRequest(AuthorizationServerDescription authorizationServer)

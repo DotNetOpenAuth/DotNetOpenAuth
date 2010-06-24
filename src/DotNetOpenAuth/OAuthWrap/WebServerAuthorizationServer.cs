@@ -60,18 +60,15 @@ namespace DotNetOpenAuth.OAuthWrap {
 			this.Channel.Send(response);
 		}
 
-		public bool TryPrepareAccessTokenResponse(out IDirectResponseProtocolMessage response)
-		{
+		public bool TryPrepareAccessTokenResponse(out IDirectResponseProtocolMessage response) {
 			return this.TryPrepareAccessTokenResponse(this.Channel.GetRequestFromContext(), out response);
 		}
 
-		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response)
-		{
+		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response) {
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
 
 			var request = this.ReadAccessTokenRequest(httpRequestInfo);
-			if (request != null)
-			{
+			if (request != null) {
 				// This convenience method only encrypts access tokens assuming that this auth server
 				// doubles as the resource server.
 				response = this.PrepareAccessTokenResponse(request, this.AuthorizationServer.AccessTokenSigningPrivateKey);

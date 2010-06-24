@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 
 				return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 			}
-			
+
 			return base.ReadFromRequestCore(request);
 		}
 

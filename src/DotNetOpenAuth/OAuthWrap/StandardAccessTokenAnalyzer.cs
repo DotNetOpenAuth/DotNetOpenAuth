@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuthWrap {
+	using System;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuthWrap.ChannelElements;
@@ -46,7 +47,8 @@ namespace DotNetOpenAuth.OAuthWrap {
 		/// A value indicating whether this access token is valid.
 		/// </returns>
 		public bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out string scope) {
-			var token = AccessToken.Decode(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey, accessToken, message);
+			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
+			var token = accessTokenFormatter.Deserialize(message, accessToken);
 			user = token.User;
 			scope = token.Scope;
 			return true;
