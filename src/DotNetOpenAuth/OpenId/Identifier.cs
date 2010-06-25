@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the original string that was normalized to create this Identifier.
 		/// </summary>
-		public string OriginalString { get; private set; }
+		internal string OriginalString { get; private set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether <see cref="Identifier"/> instances are considered equal
