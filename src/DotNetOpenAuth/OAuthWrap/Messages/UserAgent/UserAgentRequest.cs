@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// A message requesting user authorization to access protected data on behalf
 	/// of an installed application or browser-hosted Javascript.
 	/// </summary>
+	[Serializable]
 	internal class UserAgentRequest : EndUserAuthorizationRequest {
 		/// <summary>
 		/// The type of message.

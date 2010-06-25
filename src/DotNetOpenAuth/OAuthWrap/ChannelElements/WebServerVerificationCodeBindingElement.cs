@@ -36,6 +36,13 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		/// <summary>
+		/// Gets the maximum message age from the standard expiration binding element.
+		/// </summary>
+		internal static TimeSpan MaximumMessageAge {
+			get { return StandardExpirationBindingElement.MaximumMessageAge; }
+		}
+
+		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
@@ -53,7 +60,7 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (EndUserAuthorizationRequest)directResponse.OriginatingRequest;
 				ITokenCarryingRequest tokenCarryingResponse = response;
-				tokenCarryingResponse.AuthorizationDescription = new VerificationCode(this.AuthorizationServer.Secret, this.AuthorizationServer.VerificationCodeNonceStore, request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
+				tokenCarryingResponse.AuthorizationDescription = new VerificationCode(request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
 
 				return MessageProtections.None;
 			}

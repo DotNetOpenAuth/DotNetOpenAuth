@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// An interface that resource server hosts should implement if they accept access tokens
 	/// issued by non-DotNetOpenAuth authorization servers.
 	/// </summary>
+	[ContractClass((typeof(IAccessTokenAnalyzerContract)))]
 	public interface IAccessTokenAnalyzer {
 		/// <summary>
 		/// Reads an access token to find out what data it authorizes access to.
@@ -31,6 +32,7 @@ namespace DotNetOpenAuth.OAuthWrap {
 	/// <summary>
 	/// Code contract for the <see cref="IAccessTokenAnalyzer"/> interface.
 	/// </summary>
+	[ContractClassFor(typeof(IAccessTokenAnalyzer))]
 	internal abstract class IAccessTokenAnalyzerContract : IAccessTokenAnalyzer {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="IAccessTokenAnalyzerContract"/> class from being created.

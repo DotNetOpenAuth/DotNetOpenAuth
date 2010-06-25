@@ -21,12 +21,15 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.
 		/// </summary>
-		/// <param name="signingKey">The signing key.</param>
-		/// <param name="encryptingKey">The encrypting key.</param>
+		public AccessToken() {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AccessToken"/> class.
+		/// </summary>
 		/// <param name="authorization">The authorization to be described by the access token.</param>
 		/// <param name="lifetime">The lifetime of the access token.</param>
-		internal AccessToken(RSAParameters signingKey, RSAParameters encryptingKey, IAuthorizationDescription authorization, TimeSpan? lifetime)
-			: this(signingKey, encryptingKey) {
+		internal AccessToken(IAuthorizationDescription authorization, TimeSpan? lifetime) {
 			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
@@ -37,52 +40,39 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessToken"/> class.
-		/// </summary>
-		/// <param name="signingKey">The signing key.</param>
-		/// <param name="encryptingKey">The encrypting key.</param>
-		private AccessToken(RSAParameters signingKey, RSAParameters encryptingKey)
-			: base(signingKey, encryptingKey) {
-			}
-
-		/// <summary>
 		/// Gets or sets the lifetime of the access token.
 		/// </summary>
 		/// <value>The lifetime.</value>
 		[MessagePart]
 		internal TimeSpan? Lifetime { get; set; }
 
-		/// <summary>
-		/// Deserializes an access token.
-		/// </summary>
-		/// <param name="signingKey">The signing public key.</param>
-		/// <param name="encryptingKey">The encrypting private key.</param>
-		/// <param name="value">The access token.</param>
-		/// <param name="containingMessage">The message containing this token.</param>
-		/// <returns>The access token.</returns>
-		internal static AccessToken Decode(RSAParameters signingKey, RSAParameters encryptingKey, string value, IProtocolMessage containingMessage) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
-			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
-			Contract.Ensures(Contract.Result<AccessToken>() != null);
+		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSAParameters signingKey, RSAParameters encryptingKey)
+		{
+			Contract.Ensures(Contract.Result<IDataBagFormatter<AccessToken>>() != null);
 
-			var self = new AccessToken(signingKey, encryptingKey);
-			self.Decode(value, containingMessage);
-			return self;
+			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);
 		}
 
 		/// <summary>
-		/// Populates this instance with data from a given string.
+		/// Checks the message state for conformity to the protocol specification
+		/// and throws an exception if the message is invalid.
 		/// </summary>
-		/// <param name="value">The value to deserialize from.</param>
-		/// <param name="containingMessage">The message that contained this token.</param>
-		protected override void Decode(string value, IProtocolMessage containingMessage) {
-			base.Decode(value, containingMessage);
+		/// <remarks>
+		/// 	<para>Some messages have required fields, or combinations of fields that must relate to each other
+		/// in specialized ways.  After deserializing a message, this method checks the state of the
+		/// message to see if it conforms to the protocol.</para>
+		/// 	<para>Note that this property should <i>not</i> check signatures or perform any state checks
+		/// outside this scope of this particular message.</para>
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
+		protected override void EnsureValidMessage() {
+			base.EnsureValidMessage();
 
 			// Has this token expired?
 			if (this.Lifetime.HasValue) {
 				DateTime expirationDate = this.UtcCreationDate + this.Lifetime.Value;
 				if (expirationDate < DateTime.UtcNow) {
-					throw new ExpiredMessageException(expirationDate, containingMessage);
+					throw new ExpiredMessageException(expirationDate, this.ContainingMessage);
 				}
 			}
 		}

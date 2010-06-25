@@ -62,21 +62,19 @@ namespace DotNetOpenAuth.OAuthWrap {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
 			var tokenRequest = (ITokenCarryingRequest)request;
-			var accessToken = new AccessToken(
-				this.AuthorizationServer.AccessTokenSigningPrivateKey,
-				accessTokenEncryptingPublicKey,
-				tokenRequest.AuthorizationDescription,
-				accessTokenLifetime);
+			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningPrivateKey, accessTokenEncryptingPublicKey);
+			var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
 
 			var response = new AccessTokenSuccessResponse(request) {
 				Scope = tokenRequest.AuthorizationDescription.Scope,
-				AccessToken = accessToken.Encode(),
+				AccessToken = accessTokenFormatter.Serialize(accessToken),
 				Lifetime = accessToken.Lifetime,
 			};
 
 			if (includeRefreshToken) {
-				var refreshToken = new RefreshToken(this.AuthorizationServer.Secret, tokenRequest.AuthorizationDescription);
-				response.RefreshToken = refreshToken.Encode();
+				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.Secret);
+				var refreshToken = new RefreshToken(tokenRequest.AuthorizationDescription);
+				response.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
 			}
 
 			return response;

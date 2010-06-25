@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 	/// <summary>
 	/// A common message base class for OAuth WRAP messages.
 	/// </summary>
+	[Serializable]
 	public class MessageBase : IDirectedProtocolMessage, IDirectResponseProtocolMessage {
 		/// <summary>
 		/// A dictionary to contain extra message data.

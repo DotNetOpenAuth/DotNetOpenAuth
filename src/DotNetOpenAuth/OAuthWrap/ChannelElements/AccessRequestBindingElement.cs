@@ -53,8 +53,10 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var tokenRequest = message as ITokenCarryingRequest;
 			if (tokenRequest != null) {
-				var tokenBag = (AuthorizationDataBag)tokenRequest.AuthorizationDescription;
-				tokenRequest.CodeOrToken = tokenBag.Encode();
+				ErrorUtilities.VerifyInternal(tokenRequest.CodeOrTokenType == CodeOrTokenType.VerificationCode, "Only verification codes are expected here.");
+				var tokenBag = (VerificationCode)tokenRequest.AuthorizationDescription;
+				var formatter = VerificationCode.CreateFormatter(this.AuthorizationServer);
+				tokenRequest.CodeOrToken = formatter.Serialize(tokenBag);
 
 				return MessageProtections.None;
 			}
@@ -85,10 +87,14 @@ namespace DotNetOpenAuth.OAuthWrap.ChannelElements {
 				try {
 					switch (tokenRequest.CodeOrTokenType) {
 						case CodeOrTokenType.VerificationCode:
-							tokenRequest.AuthorizationDescription = VerificationCode.Decode(this.AuthorizationServer.Secret, this.AuthorizationServer.VerificationCodeNonceStore, tokenRequest.CodeOrToken, message);
+							var verificationCodeFormatter = VerificationCode.CreateFormatter(this.AuthorizationServer);
+							var verificationCode = verificationCodeFormatter.Deserialize(message, tokenRequest.CodeOrToken);
+							tokenRequest.AuthorizationDescription = verificationCode;
 							break;
 						case CodeOrTokenType.RefreshToken:
-							tokenRequest.AuthorizationDescription = RefreshToken.Decode(this.AuthorizationServer.Secret, tokenRequest.CodeOrToken, message);
+							var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.Secret);
+							var refreshToken = refreshTokenFormatter.Deserialize(message, tokenRequest.CodeOrToken);
+							tokenRequest.AuthorizationDescription = refreshToken;
 							break;
 						default:
 							throw ErrorUtilities.ThrowInternal("Unexpected value for CodeOrTokenType: " + tokenRequest.CodeOrTokenType);

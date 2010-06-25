@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.error, "user_denied" },
 			};
-			var request = new EndUserAuthorizationRequest(this.recipient.Location, Protocol.Default.Version);
+			var request = new WebServerRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
 				typeof(WebServerFailedResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));
@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.code, "abc" },
 			};
-			var request = new EndUserAuthorizationRequest(this.recipient.Location, Protocol.Default.Version);
+			var request = new WebServerRequest(this.recipient.Location, Protocol.Default.Version);
 			Assert.IsInstanceOf(
 				typeof(WebServerSuccessResponse),
 				this.messageFactory.GetNewResponseMessage(request, fields));

@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuthWrap.Messages {
 		}
 
 		/// <summary>
-		/// Gets the access token.
+		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>
 		[MessagePart(Protocol.access_token, IsRequired = true, AllowEmpty = false)]
