@@ -15,6 +15,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetOpenAuth</RootNamespace>
     <AssemblyName>DotNetOpenAuth</AssemblyName>
+    <AssemblyName Condition=" '$(NoUIControls)' == 'true' ">DotNetOpenAuth.NoUI</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <StandardCopyright>
 Copyright (c) 2009, Andrew Arnott. All rights reserved.
@@ -42,7 +43,7 @@ http://opensource.org/licenses/ms-pl.html
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <ApplicationIcon>DotNetOpenAuth.ico</ApplicationIcon>
-    <DocumentationFile>$(OutputPath)DotNetOpenAuth.xml</DocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -125,6 +126,44 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeContractsExtraRewriteOptions />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNoUI|AnyCPU'">
+    <DefineConstants>TRACE;NoUIControls</DefineConstants>
+    <NoUIControls>true</NoUIControls>
+    <Optimize>true</Optimize>
+    <NoWarn>;1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsPlatformPath>
+    </CodeContractsPlatformPath>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsExtraRewriteOptions />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
@@ -263,16 +302,12 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
-    <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
-    <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
     <Compile Include="InfoCard\InfoCardImage.cs" />
-    <Compile Include="InfoCard\InfoCardSelector.cs" />
     <Compile Include="InfoCard\InfoCardStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>InfoCardStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="InfoCard\ReceivedTokenEventArgs.cs" />
     <Compile Include="InfoCard\Token\InformationCardException.cs" />
     <Compile Include="InfoCard\Token\Token.cs" />
     <Compile Include="InfoCard\Token\TokenUtility.cs" />
@@ -304,7 +339,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
-    <Compile Include="Mvc\OpenIdHelper.cs" />
     <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
@@ -491,8 +525,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
     <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
     <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IProviderBehavior.cs" />
@@ -535,23 +567,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\RelyingParty\DuplicateRequestedHostsComparer.cs" />
     <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorInfoCardButton.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' " />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
@@ -573,7 +592,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
     <Compile Include="OpenId\RelyingParty\PrivateSecretManager.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
@@ -601,7 +619,6 @@ http://opensource.org/licenses/ms-pl.html
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="UriUtil.cs" />
-    <Compile Include="XrdsPublisher.cs" />
     <Compile Include="Xrds\XrdsStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -617,6 +634,30 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Xrds\XrdsDocument.cs" />
     <Compile Include="Xrds\XrdsNode.cs" />
     <Compile Include="Yadis\Yadis.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(NoUIControls)' != 'true' ">
+    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs"/>
+    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs"/>
+    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs"/>
+    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs"/>
+    <Compile Include="XrdsPublisher.cs"/>
+    <Compile Include="InfoCard\ReceivingTokenEventArgs.cs"/>
+    <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs"/>
+    <Compile Include="InfoCard\InfoCardSelector.cs"/>
+    <Compile Include="InfoCard\ReceivedTokenEventArgs.cs"/>
+    <Compile Include="Mvc\OpenIdHelper.cs"/>
+    <Compile Include="OpenId\RelyingParty\SelectorButton.cs"/>
+    <Compile Include="OpenId\Provider\IdentityEndpoint.cs"/>
+    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs"/>
+    <Compile Include="OpenId\RelyingParty\SelectorInfoCardButton.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' "/>
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="Configuration\DotNetOpenAuth.xsd" />
