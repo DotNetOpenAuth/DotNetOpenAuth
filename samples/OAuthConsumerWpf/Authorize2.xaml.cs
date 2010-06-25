@@ -13,7 +13,7 @@
 	using System.Windows.Media.Imaging;
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 
 	/// <summary>
 	/// Interaction logic for Authorize2.xaml

@@ -29,7 +29,7 @@
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Samples.OAuthConsumerWpf.WcfSampleService;
-	using OAuth2 = DotNetOpenAuth.OAuthWrap;
+	using OAuth2 = DotNetOpenAuth.OAuth2;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -202,7 +202,7 @@
 		}
 
 		private void wrapBeginButton_Click(object sender, RoutedEventArgs e) {
-			var authServer = new DotNetOpenAuth.OAuthWrap.AuthorizationServerDescription {
+			var authServer = new DotNetOpenAuth.OAuth2.AuthorizationServerDescription {
 				AuthorizationEndpoint = new Uri(wrapAuthorizationUrlBox.Text),
 			};
 			if (wrapTokenUrlBox.Text.Length > 0) {
@@ -210,7 +210,7 @@
 			}
 
 			try {
-				////var client = new DotNetOpenAuth.OAuthWrap.WebAppClient(authServer);
+				////var client = new DotNetOpenAuth.OAuth2.WebAppClient(authServer);
 				////client.PrepareRequestUserAuthorization();
 				var client = new OAuth2.UserAgentClient(authServer) {
 					ClientIdentifier = wrapClientIdentifierBox.Text,

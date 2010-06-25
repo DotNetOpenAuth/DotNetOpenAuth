@@ -6,7 +6,7 @@
 
 namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 
 	public class TokenManager : IClientTokenManager {
 		public IAuthorizationState GetAuthorizationState(Uri callbackUrl, string clientState) {

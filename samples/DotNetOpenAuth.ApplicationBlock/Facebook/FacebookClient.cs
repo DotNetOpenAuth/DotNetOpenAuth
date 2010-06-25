@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 
 	public class FacebookClient : WebServerClient {
 		private static readonly AuthorizationServerDescription FacebookDescription = new AuthorizationServerDescription {

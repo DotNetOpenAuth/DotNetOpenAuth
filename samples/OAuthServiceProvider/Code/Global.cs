@@ -5,8 +5,8 @@
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.OAuth.Messages;
-	using DotNetOpenAuth.OAuthWrap;
-	using DotNetOpenAuth.OAuthWrap.Messages;
+	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
 	/// The web application global events and properties.

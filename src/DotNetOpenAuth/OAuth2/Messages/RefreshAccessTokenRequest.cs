@@ -1,0 +1,106 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="RefreshAccessTokenRequest.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OAuth2.Messages {
+	using System;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
+
+	/// <summary>
+	/// A request from the client to the token endpoint for a new access token
+	/// in exchange for a refresh token that the client has previously obtained.
+	/// </summary>
+	internal class RefreshAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest, IOAuthDirectResponseFormat {
+		/// <summary>
+		/// The type of message.
+		/// </summary>
+		[MessagePart(Protocol.type, IsRequired = true)]
+		private const string Type = "refresh";
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
+		/// </summary>
+		/// <param name="tokenEndpoint">The token endpoint.</param>
+		/// <param name="version">The version.</param>
+		internal RefreshAccessTokenRequest(Uri tokenEndpoint, Version version)
+			: base(version, MessageTransport.Direct, tokenEndpoint) {
+			// We prefer URL encoding of the data.
+			this.Format = ResponseFormat.Form;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		internal RefreshAccessTokenRequest(AuthorizationServerDescription authorizationServer)
+			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
+		}
+
+		/// <summary>
+		/// Gets the type of the code or token.
+		/// </summary>
+		/// <value>The type of the code or token.</value>
+		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+			get { return CodeOrTokenType.RefreshToken; }
+		}
+
+		/// <summary>
+		/// Gets or sets the verification code or refresh/access token.
+		/// </summary>
+		/// <value>The code or token.</value>
+		string ITokenCarryingRequest.CodeOrToken {
+			get { return this.RefreshToken; }
+			set { this.RefreshToken = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the authorization that the token describes.
+		/// </summary>
+		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets or sets the identifier by which this client is known to the Authorization Server.
+		/// </summary>
+		/// <value>The client identifier.</value>
+		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
+		public string ClientIdentifier { get; set; }
+
+		/// <summary>
+		/// Gets or sets the client secret.
+		/// </summary>
+		/// <value>The client secret.</value>
+		/// <remarks>
+		/// REQUIRED if the client identifier has a matching secret. The client secret as described in Section 3.4  (Client Credentials). 
+		/// </remarks>
+		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
+		public string ClientSecret { get; set; }
+
+		/// <summary>
+		/// Gets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
+		ResponseFormat IOAuthDirectResponseFormat.Format {
+			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
+		}
+
+		/// <summary>
+		/// Gets or sets the refresh token.
+		/// </summary>
+		/// <value>The refresh token.</value>
+		/// <remarks>
+		/// REQUIRED. The refresh token associated with the access token to be refreshed. 
+		/// </remarks>
+		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
+		internal string RefreshToken { get; set; }
+
+		/// <summary>
+		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
+		/// </summary>
+		/// <value>The format.</value>
+		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
+		private ResponseFormat? Format { get; set; }
+	}
+}

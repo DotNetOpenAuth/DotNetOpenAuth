@@ -7,7 +7,7 @@
 	using System.Web.SessionState;
 	using Code;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 
 	public class OAuth2 : IHttpHandler, IRequiresSessionState {
 		/// <summary>

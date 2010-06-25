@@ -5,7 +5,7 @@
 	using System.Web;
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.ApplicationBlock.Facebook;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 
 	public partial class Facebook : System.Web.UI.Page {
 		private static readonly FacebookClient client = new FacebookClient {

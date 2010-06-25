@@ -11,7 +11,7 @@
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.ApplicationBlock;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 	using OAuthConsumer.SampleServiceProvider;
 
 	public partial class SampleWcf2 : System.Web.UI.Page {

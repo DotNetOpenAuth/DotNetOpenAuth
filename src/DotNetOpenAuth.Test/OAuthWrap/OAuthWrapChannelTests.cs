@@ -10,9 +10,9 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuthWrap;
-	using DotNetOpenAuth.OAuthWrap.ChannelElements;
-	using DotNetOpenAuth.OAuthWrap.Messages;
+	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using DotNetOpenAuth.OAuth2.Messages;
 	using NUnit.Framework;
 
 	[TestFixture]

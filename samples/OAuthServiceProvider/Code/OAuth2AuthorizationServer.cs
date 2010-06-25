@@ -7,8 +7,8 @@
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
-	using DotNetOpenAuth.OAuthWrap;
-	using DotNetOpenAuth.OAuthWrap.ChannelElements;
+	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
 		internal static readonly RSAParameters AsymmetricKey;

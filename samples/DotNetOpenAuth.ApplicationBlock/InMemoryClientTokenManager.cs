@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.Text;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 
 #if SAMPLESONLY
 	internal class InMemoryClientTokenManager : IClientTokenManager {

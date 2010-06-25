@@ -9,7 +9,7 @@
 	using System.ServiceModel.Security;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
-	using DotNetOpenAuth.OAuthWrap;
+	using DotNetOpenAuth.OAuth2;
 
 	/// <summary>
 	/// A WCF extension to authenticate incoming messages using OAuth.
