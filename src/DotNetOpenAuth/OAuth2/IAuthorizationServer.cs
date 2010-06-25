@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
-	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	/// <summary>

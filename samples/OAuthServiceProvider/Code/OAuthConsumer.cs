@@ -11,7 +11,7 @@ namespace OAuthServiceProvider.Code {
 	using System.Web;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
-	public partial class OAuthConsumer : IConsumerDescription {
+	public partial class OAuthConsumer : IConsumerDescription, DotNetOpenAuth.OAuth2.IConsumerDescription {
 		#region IConsumerDescription Members
 
 		string IConsumerDescription.Key {
@@ -36,6 +36,18 @@ namespace OAuthServiceProvider.Code {
 
 		int IConsumerDescription.VerificationCodeLength {
 			get { return this.VerificationCodeLength; }
+		}
+
+		#endregion
+
+		#region IConsumerDescription Members
+
+		string DotNetOpenAuth.OAuth2.IConsumerDescription.Secret {
+			get { return this.ConsumerSecret; }
+		}
+
+		Uri DotNetOpenAuth.OAuth2.IConsumerDescription.Callback {
+			get { return string.IsNullOrEmpty(this.Callback) ? null : new Uri(this.Callback); }
 		}
 
 		#endregion

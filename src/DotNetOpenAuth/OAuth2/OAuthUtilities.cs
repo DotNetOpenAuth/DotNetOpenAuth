@@ -13,7 +13,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuth.ChannelElements;
 
 	/// <summary>
 	/// Some common utility methods for OAuth 2.0.
@@ -41,7 +40,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The client information.  Never null.</returns>
 		internal static IConsumerDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
-			Contract.Ensures(Contract.Result<DotNetOpenAuth.OAuth.ChannelElements.IConsumerDescription>() != null);
+			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
 
 			try {
 				return authorizationServer.GetClient(clientIdentifier);
