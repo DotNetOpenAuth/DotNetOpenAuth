@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <remarks>
 	/// This is somewhat analogous to 2-legged OAuth.
 	/// </remarks>
-	internal class ClientCredentialsRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+	internal class ClientCredentialsRequest : MessageBase, IAccessTokenRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ClientCredentialsRequest"/> class.
 		/// </summary>
@@ -55,25 +55,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public string SecretType { get; set; }
 
 		/// <summary>
-		/// Gets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
-		/// <summary>
 		/// Gets or sets an optional authorization scope as defined by the Authorization Server.
 		/// </summary>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
-
-		/// <summary>
-		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
-		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

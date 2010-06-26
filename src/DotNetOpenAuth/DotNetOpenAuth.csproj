@@ -335,7 +335,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\Messages\ClientCredentials\ClientCredentialsRequest.cs" />
     <Compile Include="OAuth2\Messages\IAccessTokenSuccessResponse.cs" />
     <Compile Include="OAuth2\Messages\IMessageWithClientState.cs" />
-    <Compile Include="OAuth2\Messages\IOAuthDirectResponseFormat.cs" />
     <Compile Include="OAuth2\Messages\RefreshAccessTokenRequest.cs" />
     <Compile Include="OAuth2\Messages\Device\DeviceAccessTokenRequest.cs" />
     <Compile Include="OAuth2\Messages\Device\DeviceRequest.cs" />
@@ -348,8 +347,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\Messages\UserAgent\UserAgentSuccessResponse.cs" />
     <Compile Include="OAuth2\Messages\UsernameAndPassword\UserNamePasswordCaptchaResponse.cs" />
     <Compile Include="OAuth2\Messages\UsernameAndPassword\UserNamePasswordVerificationResponse.cs" />
-    <Compile Include="OAuth2\Messages\ResponseFormat.cs" />
-    <Compile Include="OAuth2\Messages\ResponseFormatEncoder.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessResponse.cs" />
     <Compile Include="OAuth2\Messages\WebServer\WebServerRequest.cs" />
     <Compile Include="OAuth2\ResourceServer.cs" />

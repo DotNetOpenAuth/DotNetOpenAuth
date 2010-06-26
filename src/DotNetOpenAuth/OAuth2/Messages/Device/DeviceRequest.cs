@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A request from a rich app Client to an Authorization Server requested 
 	/// authorization to access user Protected Data.
 	/// </summary>
-	internal class DeviceRequest : MessageBase, IOAuthDirectResponseFormat {
+	internal class DeviceRequest : MessageBase {
 		/// <summary>
 		/// A constant that identifies the type of message coming into the auth server.
 		/// </summary>
@@ -42,17 +42,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
 			Contract.Requires<ArgumentException>(authorizationServer.TokenEndpoint != null);
-
-			// We prefer URL encoding of the data.
-			this.Format = ResponseFormat.Form;
-		}
-
-		/// <summary>
-		/// Gets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
 		}
 
 		/// <summary>
@@ -68,12 +57,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The Authorization Server MAY define authorization scope values for the Client to include.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
-
-		/// <summary>
-		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
-		private ResponseFormat? Format { get; set; }
 	}
 }

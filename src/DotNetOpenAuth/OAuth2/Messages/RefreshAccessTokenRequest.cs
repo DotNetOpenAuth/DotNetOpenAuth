@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A request from the client to the token endpoint for a new access token
 	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
-	internal class RefreshAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest, IOAuthDirectResponseFormat {
+	internal class RefreshAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
@@ -27,8 +27,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="version">The version.</param>
 		internal RefreshAccessTokenRequest(Uri tokenEndpoint, Version version)
 			: base(version, MessageTransport.Direct, tokenEndpoint) {
-			// We prefer URL encoding of the data.
-			this.Format = ResponseFormat.Form;
 		}
 
 		/// <summary>
@@ -79,14 +77,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public string ClientSecret { get; set; }
 
 		/// <summary>
-		/// Gets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
-		/// <summary>
 		/// Gets or sets the refresh token.
 		/// </summary>
 		/// <value>The refresh token.</value>
@@ -95,12 +85,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </remarks>
 		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
 		internal string RefreshToken { get; set; }
-
-		/// <summary>
-		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
-		private ResponseFormat? Format { get; set; }
 	}
 }

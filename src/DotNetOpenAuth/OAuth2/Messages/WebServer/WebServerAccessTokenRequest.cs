@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <remarks>
 	/// Used by the Web App (and Rich App?) profiles.
 	/// </remarks>
-	internal class WebServerAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest, IOAuthDirectResponseFormat {
+	internal class WebServerAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
@@ -44,9 +44,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
 			Contract.Requires<ArgumentException>(authorizationServer.TokenEndpoint != null);
-
-			// We prefer URL encoding of the data.
-			this.Format = ResponseFormat.Form;
 		}
 
 		/// <summary>
@@ -98,10 +95,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
 		public string SecretType { get; set; }
 
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
 		/// in <see cref="WebServerSuccessResponse.VerificationCode"/>.
@@ -118,13 +111,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </value>
 		[MessagePart(Protocol.redirect_uri, IsRequired = true, AllowEmpty = false)]
 		internal Uri Callback { get; set; }
-
-		/// <summary>
-		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
-		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

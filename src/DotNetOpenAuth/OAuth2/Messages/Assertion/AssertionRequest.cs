@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <summary>
 	/// A request from a Client to an Authorization Server with some assertion for an access token.
 	/// </summary>
-	internal class AssertionRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+	internal class AssertionRequest : MessageBase, IAccessTokenRequest {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
@@ -66,14 +66,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public string SecretType { get; internal set; }
 
 		/// <summary>
-		/// Gets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
-		/// <summary>
 		/// Gets or sets the format of the assertion as defined by the Authorization Server.
 		/// </summary>
 		/// <value>The assertion format.</value>
@@ -86,13 +78,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The assertion.</value>
 		[MessagePart(Protocol.assertion, IsRequired = true, AllowEmpty = false)]
 		internal string Assertion { get; set; }
-
-		/// <summary>
-		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
-		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

@@ -128,29 +128,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			var webResponse = new OutgoingWebResponse();
-			var fields = this.MessageDescriptions.GetAccessor(response);
-
-			var directResponse = (IDirectResponseProtocolMessage)response;
-			var formatSpecifyingRequest = directResponse.OriginatingRequest as IOAuthDirectResponseFormat;
-			if (formatSpecifyingRequest != null) {
-				ResponseFormat format = formatSpecifyingRequest.Format;
-				switch (format) {
-					case ResponseFormat.Xml:
-						// NOTE: the spec is missing details on how to formulate this.
-						throw new NotImplementedException();
-					case ResponseFormat.Form:
-						string form = MessagingUtilities.CreateQueryString(fields);
-						webResponse.SetResponse(form, HttpFormUrlEncodedContentType);
-						break;
-					case ResponseFormat.Json:
-						string json = this.SerializeAsJson(response);
-						webResponse.SetResponse(json, new ContentType(JsonEncoded));
-						break;
-					default:
-						throw ErrorUtilities.ThrowInternal("Unrecognized value of ResponseFormat enum: " + format);
-				}
-			}
-
+			string json = this.SerializeAsJson(response);
+			webResponse.SetResponse(json, new ContentType(JsonEncoded));
 			return webResponse;
 		}
 

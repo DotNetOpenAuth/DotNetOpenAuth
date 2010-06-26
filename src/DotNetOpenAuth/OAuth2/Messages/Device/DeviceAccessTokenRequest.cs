@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A message from the Client to the Authorization Server exchanging a
 	/// verification code for refresh and access tokens.
 	/// </summary>
-	internal class DeviceAccessTokenRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+	internal class DeviceAccessTokenRequest : MessageBase, IAccessTokenRequest {
 		/// <summary>
 		/// A constant that identifies the flow this message belongs to.
 		/// </summary>
@@ -43,9 +43,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
 			Contract.Requires<ArgumentException>(authorizationServer.TokenEndpoint != null);
-
-			// We prefer URL encoding of the data.
-			this.Format = ResponseFormat.Form;
 		}
 
 		/// <summary>
@@ -74,27 +71,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public string SecretType { get; set; }
 
 		/// <summary>
-		/// Gets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
-
-		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
 		/// in <see cref="DeviceResponse.VerificationCode"/>.
 		/// </summary>
 		/// <value>The verification code.</value>
 		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
 		internal string VerificationCode { get; set; }
-
-		/// <summary>
-		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
-		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

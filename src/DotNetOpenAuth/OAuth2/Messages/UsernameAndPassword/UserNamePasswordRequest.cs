@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// After this request has been sent, the consumer application MUST discard
 	/// the confidential user credentials and use the delegation code going forward.
 	/// </remarks>
-	internal class UserNamePasswordRequest : MessageBase, IAccessTokenRequest, IOAuthDirectResponseFormat {
+	internal class UserNamePasswordRequest : MessageBase, IAccessTokenRequest {
 		/// <summary>
 		/// A constant that identifies the flow this request belongs to.
 		/// </summary>
@@ -47,9 +47,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
 			Contract.Requires<ArgumentException>(authorizationServer.TokenEndpoint != null);
-
-			// We prefer URL encoding of the data.
-			this.Format = ResponseFormat.Form;
 		}
 
 		/// <summary>
@@ -78,14 +75,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </remarks>
 		[MessagePart(Protocol.secret_type, IsRequired = false, AllowEmpty = false)]
 		public string SecretType { get; set; }
-
-		/// <summary>
-		/// Gets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		ResponseFormat IOAuthDirectResponseFormat.Format {
-			get { return this.Format.HasValue ? this.Format.Value : ResponseFormat.Json; }
-		}
 
 		/// <summary>
 		/// Gets or sets the user's account username.
@@ -121,13 +110,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The scope.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
-
-		/// <summary>
-		/// Gets or sets the format the client is requesting the authorization server should deliver the request in.
-		/// </summary>
-		/// <value>The format.</value>
-		[MessagePart(Protocol.format, Encoder = typeof(ResponseFormatEncoder))]
-		private ResponseFormat? Format { get; set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
