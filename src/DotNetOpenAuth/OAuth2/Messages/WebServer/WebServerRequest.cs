@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
 	[Serializable]
-	public class WebServerRequest : EndUserAuthorizationRequest {
+	internal class WebServerRequest : EndUserAuthorizationRequest {
 		/// <summary>
 		/// The type of message.
 		/// </summary>
