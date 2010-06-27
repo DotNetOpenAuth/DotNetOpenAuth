@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.OAuthWrap {
+namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 	/// <summary>
 	/// Verifies that the WRAP message types are recognized.
 	/// </summary>
-	public class MessageFactoryTests : OAuthWrapTestBase {
+	public class MessageFactoryTests : OAuth2TestBase {
 		private readonly MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
 		private OAuthWrapAuthorizationServerChannel channel;
 		private IMessageFactory messageFactory;

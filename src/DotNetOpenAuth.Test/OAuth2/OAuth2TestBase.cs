@@ -4,12 +4,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.OAuthWrap {
+namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
 
-	public class OAuthWrapTestBase : TestBase {
+	public class OAuth2TestBase : TestBase {
 	}
 }

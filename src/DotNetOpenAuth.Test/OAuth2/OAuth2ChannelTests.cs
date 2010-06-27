@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.OAuthWrap {
+namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -16,6 +16,6 @@ namespace DotNetOpenAuth.Test.OAuthWrap {
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class OAuthWrapChannelTests : OAuthWrapTestBase {
+	public class OAuth2ChannelTests : OAuth2TestBase {
 	}
 }
