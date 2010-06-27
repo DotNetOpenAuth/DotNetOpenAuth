@@ -362,6 +362,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				{ "Name", "Andrew" },
 				{ "Location", "http://hostb/pathB" },
 				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
+				{ "realm" , "someValue" },
 			};
 			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(scheme, fields));
 			Assert.IsNotNull(requestMessage);
@@ -370,6 +371,12 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+			if (scheme == HttpDeliveryMethods.AuthorizationHeaderRequest) {
+				// The realm value should be ignored in the authorization header
+				Assert.IsFalse(((IMessage)testMessage).ExtraData.ContainsKey("realm"));
+			} else {
+				Assert.AreEqual("someValue", ((IMessage)testMessage).ExtraData["realm"]);
+			}
 		}
 	}
 }

@@ -119,6 +119,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			// First search the Authorization header.
 			string authorization = request.Headers[HttpRequestHeader.Authorization];
 			var fields = MessagingUtilities.ParseAuthorizationHeader(Protocol.AuthorizationHeaderScheme, authorization).ToDictionary();
+			fields.Remove("realm"); // ignore the realm parameter, since we don't use it, and it must be omitted from signature base string.
 
 			// Scrape the entity
 			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
