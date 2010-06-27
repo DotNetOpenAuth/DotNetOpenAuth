@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.ChannelElements {
+namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.Test.Mocks;

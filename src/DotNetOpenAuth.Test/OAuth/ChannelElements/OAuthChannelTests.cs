@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.ChannelElements {
+namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
