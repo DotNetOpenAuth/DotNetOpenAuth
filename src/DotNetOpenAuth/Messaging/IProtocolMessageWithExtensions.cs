@@ -79,7 +79,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		Version IMessage.Version {
 			get {
-				Contract.Ensures(Contract.Result<Version>() != null);
 				throw new NotImplementedException();
 			}
 		}
@@ -92,7 +91,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		IDictionary<string, string> IMessage.ExtraData {
 			get {
-				Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 				throw new NotImplementedException();
 			}
 		}

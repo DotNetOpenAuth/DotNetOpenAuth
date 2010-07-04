@@ -73,7 +73,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		Version IMessage.Version {
 			get {
-				Contract.Ensures(Contract.Result<Version>() != null);
 				return default(Version); // dummy return
 			}
 		}
@@ -87,7 +86,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		IDictionary<string, string> IMessage.ExtraData {
 			get {
-				Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 				return default(IDictionary<string, string>);
 			}
 		}

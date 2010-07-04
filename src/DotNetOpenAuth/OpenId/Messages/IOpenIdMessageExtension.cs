@@ -123,7 +123,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		Version IMessage.Version {
 			get {
-				Contract.Ensures(Contract.Result<Version>() != null);
 				throw new NotImplementedException();
 			}
 		}
@@ -136,7 +135,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		IDictionary<string, string> IMessage.ExtraData {
 			get {
-				Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 				throw new NotImplementedException();
 			}
 		}
