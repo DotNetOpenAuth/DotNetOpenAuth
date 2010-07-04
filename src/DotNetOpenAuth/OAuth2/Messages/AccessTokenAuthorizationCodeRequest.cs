@@ -1,40 +1,30 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RefreshAccessTokenRequest.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenAuthorizationCodeRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
-	/// <summary>
-	/// A request from the client to the token endpoint for a new access token
-	/// in exchange for a refresh token that the client has previously obtained.
-	/// </summary>
-	internal class RefreshAccessTokenRequest : MessageBase, IAccessTokenRequest, ITokenCarryingRequest {
+	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, ITokenCarryingRequest {
 		/// <summary>
-		/// The type of message.
+		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
 		/// </summary>
-		[MessagePart(Protocol.type, IsRequired = true)]
-		private const string Type = "refresh";
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
-		/// </summary>
-		/// <param name="tokenEndpoint">The token endpoint.</param>
+		/// <param name="accessTokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
-		internal RefreshAccessTokenRequest(Uri tokenEndpoint, Version version)
-			: base(version, MessageTransport.Direct, tokenEndpoint) {
+		internal AccessTokenAuthorizationCodeRequest(Uri accessTokenEndpoint, Version version)
+			: base(accessTokenEndpoint, version) {
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RefreshAccessTokenRequest"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The authorization server.</param>
-		internal RefreshAccessTokenRequest(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
+		internal override GrantType GrantType {
+			get { return Messages.GrantType.AuthorizationCode; }
 		}
 
 		/// <summary>
@@ -42,7 +32,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The type of the code or token.</value>
 		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.RefreshToken; }
+			get { return CodeOrTokenType.AuthorizationCode; }
 		}
 
 		/// <summary>
@@ -50,14 +40,31 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The code or token.</value>
 		string ITokenCarryingRequest.CodeOrToken {
-			get { return this.RefreshToken; }
-			set { this.RefreshToken = value; }
+			get { return this.AuthorizationCode; }
+			set { this.AuthorizationCode = value; }
 		}
 
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets or sets the verification code previously communicated to the Client
+		/// in <see cref="WebServerSuccessResponse.VerificationCode"/>.
+		/// </summary>
+		/// <value>The verification code received from the authorization server.</value>
+		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
+		internal string AuthorizationCode { get; set; }
+
+		/// <summary>
+		/// Gets or sets the callback URL used in <see cref="EndUserAuthorizationRequest.Callback"/>
+		/// </summary>
+		/// <value>
+		/// The Callback URL used to obtain the Verification Code.
+		/// </value>
+		[MessagePart(Protocol.redirect_uri, IsRequired = true, AllowEmpty = false)]
+		internal Uri Callback { get; set; }
 
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
@@ -75,15 +82,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </remarks>
 		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
 		public string ClientSecret { get; set; }
-
-		/// <summary>
-		/// Gets or sets the refresh token.
-		/// </summary>
-		/// <value>The refresh token.</value>
-		/// <remarks>
-		/// REQUIRED. The refresh token associated with the access token to be refreshed. 
-		/// </remarks>
-		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
-		internal string RefreshToken { get; set; }
 	}
 }

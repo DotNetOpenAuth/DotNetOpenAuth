@@ -159,39 +159,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal const string assertion = "assertion";
 
 		/// <summary>
-		/// The "assertion_format" string.
+		/// The "assertion_type" string.
 		/// </summary>
-		internal const string assertion_format = "assertion_format";
-
-		/// <summary>
-		/// The "wrap_SAML" string.
-		/// </summary>
-		internal const string wrap_saml = "wrap_SAML";
-
-		/// <summary>
-		/// The "wrap_SWT" string.
-		/// </summary>
-		internal const string wrap_swt = "wrap_SWT";
-
-		/// <summary>
-		/// The "wrap_captcha_url" string.
-		/// </summary>
-		internal const string wrap_captcha_url = "wrap_captcha_url";
-
-		/// <summary>
-		/// The "wrap_captcha_solution" string.
-		/// </summary>
-		internal const string wrap_captcha_solution = "wrap_captcha_solution";
+		internal const string assertion_type = "assertion_type";
 
 		/// <summary>
 		/// The "user_denied" string.
 		/// </summary>
 		internal const string user_denied = "user_denied";
-
-		/// <summary>
-		/// The "secret_type" string.
-		/// </summary>
-		internal const string secret_type = "secret_type";
 
 		/// <summary>
 		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0 of the protocol.
@@ -210,6 +185,26 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The default (or most recent) supported version of the OpenID protocol.
 		/// </summary>
 		internal static readonly Protocol Default = AllVersions[0];
+
+		/// <summary>
+		/// The "error_uri" string.
+		/// </summary>
+		public const string error_uri = "error_uri";
+
+		/// <summary>
+		/// The "error_description" string.
+		/// </summary>
+		internal const string error_description = "error_description";
+
+		/// <summary>
+		/// The "response_type" string.
+		/// </summary>
+		internal const string response_type = "response_type";
+
+		/// <summary>
+		/// The "grant_type" string.
+		/// </summary>
+		internal const string grant_type = "grant_type";
 
 		/// <summary>
 		/// Gets or sets the OAuth 2.0 version represented by this instance.
@@ -235,11 +230,60 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 		}
 
-		internal static class ResponseFormats
+		internal static class ResponseTypes
 		{
-			internal const string Json = "json";
-			internal const string Xml = "xml";
-			internal const string Form = "form";
+			internal const string Code = "code";
+			internal const string Token = "token";
+			internal const string CodeAndToken = "code-and-token";
+		}
+
+		internal static class GrantTypes
+		{
+			internal const string AuthorizationCode = "authorization-code";
+
+			internal const string BasicCredentials = "basic-credentials";
+
+			internal const string Assertion = "assertion";
+
+			internal const string RefreshToken = "refresh-token";
+
+			internal const string None = "none";
+		}
+
+		/// <summary>
+		/// Error codes that an authorization server can return to a client in response to a malformed or unsupported access token request.
+		/// </summary>
+		internal static class ErrorCodes
+		{
+			/// <summary>
+			/// The request is missing a required parameter, includes an unknown parameter or parameter value, repeats a parameter, includes multiple credentials, utilizes more than one mechanism for authenticating the client, or is otherwise malformed.
+			/// </summary>
+			internal const string InvalidRequest = "invalid-request";
+
+			/// <summary>
+			/// The client identifier provided is invalid, the client failed to authenticate, or the client provided multiple client credentials.
+			/// </summary>
+			internal const string InvalidClientCredentials = "invalid-client-credentials";
+
+			/// <summary>
+			/// The client is not authorized to use the access grant type provided.
+			/// </summary>
+			internal const string UnauthorizedClient = "unauthorized-client";
+
+			/// <summary>
+			/// The provided access grant is invalid, expired, or revoked (e.g. invalid assertion, expired authorization token, bad end-user basic credentials, or mismatching authorization code and redirection URI).
+			/// </summary>
+			internal const string InvalidGrant = "invalid-grant";
+
+			/// <summary>
+			/// The access grant included - its type or another attribute - is not supported by the authorization server.
+			/// </summary>
+			internal const string UnsupportedGrantType = "unsupported-grant-type";
+
+			/// <summary>
+			/// The requested scope is invalid, unknown, malformed, or exceeds the previously granted scope.
+			/// </summary>
+			internal const string InvalidScope = "invalid-scope";
 		}
 	}
 }

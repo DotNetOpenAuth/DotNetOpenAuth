@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	/// <summary>
 	/// A message sent by a web application Client to the AuthorizationServer
@@ -15,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
 	[Serializable]
-	public abstract class EndUserAuthorizationRequest : MessageBase, IMessageWithClientState {
+	public abstract class EndUserAuthorizationRequest : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequest"/> class.
 		/// </summary>
@@ -38,6 +39,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
 			Contract.Requires<ArgumentException>(authorizationServer.AuthorizationEndpoint != null);
 		}
+
+		/// <summary>
+		/// Gets or sets the type of the authorization that the client expects of the authorization server.
+		/// </summary>
+		[MessagePart(Protocol.response_type, IsRequired = true, AllowEmpty = false, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
+		public EndUserAuthorizationResponseType ResponseType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
@@ -81,7 +88,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets a value indicating whether the authorization server is
 		/// allowed to interact with the user before responding to the client's request.
 		/// </summary>
-		public bool IsUserInteractionAllowed {
+		/// <remarks>
+		/// This is internal because it doesn't appear in recent drafts of the spec.
+		/// </remarks>
+		internal bool IsUserInteractionAllowed {
 			get { return !this.Immediate.HasValue || !this.Immediate.Value; }
 			set { this.Immediate = value ? (bool?)null : true; }
 		}

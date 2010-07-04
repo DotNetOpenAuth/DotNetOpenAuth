@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorizationState">The authorization state maintained by the client.</param>
 		/// <param name="accessTokenSuccess">The access token containing response message.</param>
-		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, IAccessTokenSuccessResponse accessTokenSuccess) {
+		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, AccessTokenSuccessResponse accessTokenSuccess) {
 			Contract.Requires<ArgumentNullException>(authorizationState != null, "authorizationState");
 			Contract.Requires<ArgumentNullException>(accessTokenSuccess != null, "accessTokenSuccess");
 

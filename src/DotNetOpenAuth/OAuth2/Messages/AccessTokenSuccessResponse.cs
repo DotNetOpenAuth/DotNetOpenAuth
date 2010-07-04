@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <remarks>
 	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
 	/// </remarks>
-	internal class AccessTokenSuccessResponse : MessageBase, IHttpDirectResponse, IAccessTokenSuccessResponse {
+	internal class AccessTokenSuccessResponse : MessageBase, IHttpDirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
 		/// </summary>

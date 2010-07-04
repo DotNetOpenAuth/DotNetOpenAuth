@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// The code issued to the client after the user has approved authorization.
 		/// </summary>
-		VerificationCode,
+		AuthorizationCode,
 
 		/// <summary>
 		/// The long-lived token issued to the client that enables it to obtain

@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, and to return the user
 	/// to the Client where they started their experience.
 	/// </summary>
-	internal class EndUserAuthorizationSuccessResponse : MessageBase, IMessageWithClientState, ITokenCarryingRequest {
+	internal class EndUserAuthorizationSuccessResponse : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponse"/> class.
 		/// </summary>
@@ -39,16 +39,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
 		}
 
-		string ITokenCarryingRequest.CodeOrToken {
-			get { return this.VerificationCode; }
-			set { this.VerificationCode = value; }
-		}
+		[MessagePart(Protocol.code, AllowEmpty = false, IsRequired = false)]
+		internal string AuthorizationCode { get; set; }
 
-		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.VerificationCode; }
-		}
-
-		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+		[MessagePart(Protocol.access_token, AllowEmpty = false, IsRequired = false)]
+		internal string AccessToken { get; set; }
 
 		/// <summary>
 		/// Gets or sets some state as provided by the client in the authorization request.
@@ -61,21 +56,18 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		string IMessageWithClientState.ClientState { get; set; }
 
 		/// <summary>
+		/// Gets or sets the lifetime of the authorization.
+		/// </summary>
+		/// <value>The lifetime.</value>
+		[MessagePart(Protocol.expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
+		internal TimeSpan? Lifetime { get; set; }
+
+		/// <summary>
 		/// Gets or sets the scope.
 		/// </summary>
 		/// <value>The scope.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		public string Scope { get; set; }
-
-		/// <summary>
-		/// Gets or sets the verification code.
-		/// </summary>
-		/// <value>
-		/// The long-lived credential assigned by the Authorization Server to this Consumer for
-		/// use in accessing the authorizing user's protected resources.
-		/// </value>
-		[MessagePart(Protocol.code, IsRequired = false, AllowEmpty = false)]
-		internal string VerificationCode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the authorizing user's account name.

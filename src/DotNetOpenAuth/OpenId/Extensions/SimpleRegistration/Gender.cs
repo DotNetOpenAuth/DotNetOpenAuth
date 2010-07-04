@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// The <paramref name="value"/> in string form, ready for message transport.
 		/// </returns>
 		public string Encode(object value) {
-			Gender? gender = (Gender?)value;
+			var gender = (Gender?)value;
 			if (gender.HasValue) {
 				switch (gender.Value) {
 					case Gender.Male: return Constants.Genders.Male;
