@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
 	/// Decodes verification codes, refresh tokens and access tokens on incoming messages.
@@ -53,9 +54,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var tokenRequest = message as ITokenCarryingRequest;
 			if (tokenRequest != null) {
-				ErrorUtilities.VerifyInternal(tokenRequest.CodeOrTokenType == CodeOrTokenType.VerificationCode, "Only verification codes are expected here.");
-				var tokenBag = (VerificationCode)tokenRequest.AuthorizationDescription;
-				var formatter = VerificationCode.CreateFormatter(this.AuthorizationServer);
+				ErrorUtilities.VerifyInternal(tokenRequest.CodeOrTokenType == CodeOrTokenType.AuthorizationCode, "Only verification codes are expected here.");
+				var tokenBag = (AuthorizationCode)tokenRequest.AuthorizationDescription;
+				var formatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
 				tokenRequest.CodeOrToken = formatter.Serialize(tokenBag);
 
 				return MessageProtections.None;
@@ -86,8 +87,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (tokenRequest != null) {
 				try {
 					switch (tokenRequest.CodeOrTokenType) {
-						case CodeOrTokenType.VerificationCode:
-							var verificationCodeFormatter = VerificationCode.CreateFormatter(this.AuthorizationServer);
+						case CodeOrTokenType.AuthorizationCode:
+							var verificationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
 							var verificationCode = verificationCodeFormatter.Deserialize(message, tokenRequest.CodeOrToken);
 							tokenRequest.AuthorizationDescription = verificationCode;
 							break;
@@ -103,7 +104,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					throw ErrorUtilities.Wrap(ex, Protocol.authorization_expired);
 				}
 
-				var accessRequest = tokenRequest as IAccessTokenRequest;
+				var accessRequest = tokenRequest as AccessTokenRequestBase;
 				if (accessRequest != null) {
 					// Make sure the client sending us this token is the client we issued the token to.
 					ErrorUtilities.VerifyProtocol(string.Equals(accessRequest.ClientIdentifier, tokenRequest.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), Protocol.incorrect_client_credentials);

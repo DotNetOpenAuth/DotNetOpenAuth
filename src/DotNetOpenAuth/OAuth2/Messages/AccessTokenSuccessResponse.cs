@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal AccessTokenSuccessResponse(IAccessTokenRequest request)
+		internal AccessTokenSuccessResponse(AccessTokenRequestBase request)
 			: base(request) {
 		}
 

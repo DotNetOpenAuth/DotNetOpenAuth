@@ -79,38 +79,38 @@ namespace DotNetOpenAuth.OAuth2 {
 			return false;
 		}
 
-		public IAccessTokenRequest ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
+		public AccessTokenRequestBase ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
 			if (requestInfo == null) {
 				requestInfo = this.Channel.GetRequestFromContext();
 			}
 
-			IAccessTokenRequest request;
+			AccessTokenRequestBase request;
 			this.Channel.TryReadFromRequest(requestInfo, out request);
 			return request;
 		}
 
-		internal WebServerFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
+		internal EndUserAuthorizationFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<WebServerFailedResponse>() != null);
+			Contract.Ensures(Contract.Result<EndUserAuthorizationFailedResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
 			}
 
-			var response = new WebServerFailedResponse(callback, authorizationRequest);
+			var response = new EndUserAuthorizationFailedResponse(callback, authorizationRequest);
 			return response;
 		}
 
-		internal WebServerSuccessResponse PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
+		internal EndUserAuthorizationSuccessResponse PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
-			Contract.Ensures(Contract.Result<WebServerSuccessResponse>() != null);
+			Contract.Ensures(Contract.Result<EndUserAuthorizationSuccessResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
 			}
 
 			var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
-			var response = new WebServerSuccessResponse(callback, authorizationRequest);
+			var response = new EndUserAuthorizationSuccessResponse(callback, authorizationRequest);
 			return response;
 		}
 

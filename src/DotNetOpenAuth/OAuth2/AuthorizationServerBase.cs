@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="accessTokenLifetime">The access token's lifetime.</param>
 		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
-		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(IAccessTokenRequest request, RSAParameters accessTokenEncryptingPublicKey, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
+		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, RSAParameters accessTokenEncryptingPublicKey, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 
 			var tokenRequest = (ITokenCarryingRequest)request;

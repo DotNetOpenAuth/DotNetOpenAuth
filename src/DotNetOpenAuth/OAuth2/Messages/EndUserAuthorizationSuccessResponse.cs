@@ -15,11 +15,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, and to return the user
 	/// to the Client where they started their experience.
 	/// </summary>
-	internal class EndUserAuthorizationSuccessResponse : MessageBase {
+	internal class EndUserAuthorizationSuccessResponse : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponse"/> class.
 		/// </summary>
-		/// <param name="clientCallback">The client callback.</param>
+		/// <param name="clientCallback">The URL to redirect to so the client receives the message. This may not be built into the request message if the client pre-registered the URL with the authorization server.</param>
 		/// <param name="version">The protocol version.</param>
 		internal EndUserAuthorizationSuccessResponse(Uri clientCallback, Version version)
 			: base(version, MessageTransport.Indirect, clientCallback) {
@@ -30,13 +30,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponse"/> class.
 		/// </summary>
-		/// <param name="clientCallback">The client callback.</param>
-		/// <param name="request">The request.</param>
+		/// <param name="clientCallback">The URL to redirect to so the client receives the message. This may not be built into the request message if the client pre-registered the URL with the authorization server.</param>
+		/// <param name="request">The authorization request from the user agent on behalf of the client.</param>
 		internal EndUserAuthorizationSuccessResponse(Uri clientCallback, EndUserAuthorizationRequest request)
 			: base(request, clientCallback) {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");
-			((IMessageWithClientState)this).ClientState = ((IMessageWithClientState)request).ClientState;
+			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
 
 		[MessagePart(Protocol.code, AllowEmpty = false, IsRequired = false)]

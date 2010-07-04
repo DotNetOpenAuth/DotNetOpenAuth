@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
-	internal abstract class AccessTokenRequestBase : MessageBase, IAccessTokenRequest {
+	public abstract class AccessTokenRequestBase : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenRequestBase"/> class.
 		/// </summary>

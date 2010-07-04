@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
 		/// <param name="immediate">If set to <c>true</c>, the authorization server will return immediately instead of interacting with the user.  Authorization will only be granted if the authorization server determines it is safe to do so without asking the user first.</param>
 		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
-		public Uri RequestUserAuthorization(IAuthorizationState authorization = null, bool immediate = false) {
+		public Uri RequestUserAuthorization(IAuthorizationState authorization = null) {
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 
 			if (authorization == null) {
@@ -53,11 +53,10 @@ namespace DotNetOpenAuth.OAuth2 {
 				authorization.Callback = new Uri("http://localhost/");
 			}
 
-			var request = new UserAgentRequest(this.AuthorizationServer) {
+			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Scope = authorization.Scope,
 				Callback = authorization.Callback,
-				Immediate = immediate,
 			};
 
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);
@@ -82,11 +81,11 @@ namespace DotNetOpenAuth.OAuth2 {
 				return null;
 			}
 
-			UserAgentSuccessResponse success;
-			UserAgentFailedResponse failure;
-			if ((success = response as UserAgentSuccessResponse) != null) {
+			EndUserAuthorizationSuccessResponse success;
+			EndUserAuthorizationFailedResponse failure;
+			if ((success = response as EndUserAuthorizationSuccessResponse) != null) {
 				this.UpdateAuthorizationWithResponse(authorization, success);
-			} else if ((failure = response as UserAgentFailedResponse) != null) {
+			} else if ((failure = response as EndUserAuthorizationFailedResponse) != null) {
 				authorization.Delete();
 				return null;
 			} else {

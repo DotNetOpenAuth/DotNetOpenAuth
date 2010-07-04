@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the error.
 		/// </summary>
-		/// <value>One of the values given in <see cref="Protocol.ErrorCodes"/>.</value>
+		/// <value>One of the values given in <see cref="Protocol.AccessTokenRequestErrorCodes"/>.</value>
 		[MessagePart(Protocol.error, IsRequired = true, AllowEmpty = false)]
 		internal string Error { get; set; }
 

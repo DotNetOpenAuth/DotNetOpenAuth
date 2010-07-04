@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="VerificationCode.cs" company="Andrew Arnott">
+// <copyright file="AuthorizationCode.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -13,29 +13,29 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
-	/// Represents the verification code created when a user approves authorization that
+	/// Represents the authorization code created when a user approves authorization that
 	/// allows the client to request an access/refresh token.
 	/// </summary>
-	internal class VerificationCode : AuthorizationDataBag {
+	internal class AuthorizationCode : AuthorizationDataBag {
 		/// <summary>
 		/// The hash algorithm used on the callback URI.
 		/// </summary>
 		private readonly HashAlgorithm hasher = new SHA256Managed();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizationCode"/> class.
 		/// </summary>
-		public VerificationCode() {
+		public AuthorizationCode() {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VerificationCode"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizationCode"/> class.
 		/// </summary>
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="callback">The callback the client used to obtain authorization.</param>
 		/// <param name="scope">The scope.</param>
 		/// <param name="username">The name on the account that authorized access.</param>
-		internal VerificationCode(string clientIdentifier, Uri callback, string scope, string username) {
+		internal AuthorizationCode(string clientIdentifier, Uri callback, string scope, string username) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
 			Contract.Requires<ArgumentNullException>(callback != null, "callback");
 
@@ -51,11 +51,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[MessagePart("cb")]
 		private byte[] CallbackHash { get; set; }
 
-		internal static IDataBagFormatter<VerificationCode> CreateFormatter(IAuthorizationServer authorizationServer) {
+		internal static IDataBagFormatter<AuthorizationCode> CreateFormatter(IAuthorizationServer authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
-			Contract.Ensures(Contract.Result<IDataBagFormatter<VerificationCode>>() != null);
+			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);
 
-			return new UriStyleMessageFormatter<VerificationCode>(
+			return new UriStyleMessageFormatter<AuthorizationCode>(
 				authorizationServer.Secret,
 				true,
 				true,

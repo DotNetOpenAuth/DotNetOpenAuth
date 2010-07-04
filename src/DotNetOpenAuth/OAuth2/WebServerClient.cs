@@ -56,11 +56,12 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			if (authorization.Callback == null) {
 				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting
-					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(WebServerSuccessResponse), Protocol.Default.Version));
+					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(EndUserAuthorizationSuccessResponse), Protocol.Default.Version))
+					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(EndUserAuthorizationFailedResponse), Protocol.Default.Version));
 				authorization.SaveChanges();
 			}
 
-			var request = new WebServerRequest(this.AuthorizationServer) {
+			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
 				Scope = authorization.Scope,
@@ -88,15 +89,15 @@ namespace DotNetOpenAuth.OAuth2 {
 				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.UrlBeforeRewriting, this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState = this.TokenManager.GetAuthorizationState(callback, response.ClientState);
 				ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
-				var success = response as WebServerSuccessResponse;
-				var failure = response as WebServerFailedResponse;
+				var success = response as EndUserAuthorizationSuccessResponse;
+				var failure = response as EndUserAuthorizationFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 				if (success != null) {
-					var accessTokenRequest = new WebServerAccessTokenRequest(this.AuthorizationServer) {
+					var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
 						ClientIdentifier = this.ClientIdentifier,
 						ClientSecret = this.ClientSecret,
 						Callback = authorizationState.Callback,
-						VerificationCode = success.VerificationCode,
+						AuthorizationCode = success.AuthorizationCode,
 					};
 					IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
 					var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;

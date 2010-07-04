@@ -253,7 +253,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Error codes that an authorization server can return to a client in response to a malformed or unsupported access token request.
 		/// </summary>
-		internal static class ErrorCodes
+		internal static class AccessTokenRequestErrorCodes
 		{
 			/// <summary>
 			/// The request is missing a required parameter, includes an unknown parameter or parameter value, repeats a parameter, includes multiple credentials, utilizes more than one mechanism for authenticating the client, or is otherwise malformed.
@@ -284,6 +284,47 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// The requested scope is invalid, unknown, malformed, or exceeds the previously granted scope.
 			/// </summary>
 			internal const string InvalidScope = "invalid-scope";
+		}
+
+		/// <summary>
+		/// Error codes that an authorization server can return to a client in response to a malformed or unsupported end user authorization request.
+		/// </summary>
+		internal static class EndUserAuthorizationRequestErrorCodes
+		{
+			/// <summary>
+			/// The request is missing a required parameter, includes an unknown parameter or parameter value, or is otherwise malformed.
+			/// </summary>
+			internal const string InvalidRequest = "invalid-request";
+
+			/// <summary>
+			/// The client identifier provided is invalid.
+			/// </summary>
+			internal const string InvalidClientId = "invalid-client-id";
+
+			/// <summary>
+			/// The client is not authorized to use the requested response type.
+			/// </summary>
+			internal const string UnauthorizedClient = "unauthorized-client";
+
+			/// <summary>
+			/// The redirection URI provided does not match a pre-registered value.
+			/// </summary>
+			internal const string RedirectUriMismatch = "redirect-uri-mismatch";
+
+			/// <summary>
+			/// The end-user or authorization server denied the request.
+			/// </summary>
+			internal const string AccessDenied = "access-denied";
+
+			/// <summary>
+			/// The requested response type is not supported by the authorization server.
+			/// </summary>
+			internal const string UnsupportedResponseType = "unsupported-response-type";
+
+			/// <summary>
+			/// The requested scope is invalid, unknown, or malformed.
+			/// </summary>
+			internal const string InvalidScope = "invalid_scope";
 		}
 	}
 }

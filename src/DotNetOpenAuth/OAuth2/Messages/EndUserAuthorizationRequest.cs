@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
 	[Serializable]
-	public abstract class EndUserAuthorizationRequest : MessageBase {
+	public class EndUserAuthorizationRequest : MessageBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequest"/> class.
 		/// </summary>
@@ -27,6 +27,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
 			Contract.Requires<ArgumentNullException>(version != null);
 			this.HttpMethods = HttpDeliveryMethods.GetRequest;
+			this.ResponseType = EndUserAuthorizationResponseType.AuthorizationCode;
 		}
 
 		/// <summary>

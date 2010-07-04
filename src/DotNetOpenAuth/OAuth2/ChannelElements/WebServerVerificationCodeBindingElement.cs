@@ -55,12 +55,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as WebServerSuccessResponse;
+			var response = message as EndUserAuthorizationSuccessResponse;
 			if (response != null) {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (EndUserAuthorizationRequest)directResponse.OriginatingRequest;
 				ITokenCarryingRequest tokenCarryingResponse = response;
-				tokenCarryingResponse.AuthorizationDescription = new VerificationCode(request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
+				tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
 
 				return MessageProtections.None;
 			}
@@ -86,10 +86,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var request = message as WebServerAccessTokenRequest;
+			var request = message as AccessTokenAuthorizationCodeRequest;
 			if (request != null) {
 				ITokenCarryingRequest tokenRequest = request;
-				((VerificationCode)tokenRequest.AuthorizationDescription).VerifyCallback(request.Callback);
+				((AuthorizationCode)tokenRequest.AuthorizationDescription).VerifyCallback(request.Callback);
 
 				return MessageProtections.None;
 			}

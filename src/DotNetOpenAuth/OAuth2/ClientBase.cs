@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				}
 			}
 
-			var request = new RefreshAccessTokenRequest(this.AuthorizationServer) {
+			var request = new AccessTokenRefreshRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				ClientSecret = this.ClientSecret,
 				RefreshToken = authorization.RefreshToken,

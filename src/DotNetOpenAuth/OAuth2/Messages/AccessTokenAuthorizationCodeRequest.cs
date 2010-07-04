@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 
@@ -17,10 +18,17 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
 		/// </summary>
-		/// <param name="accessTokenEndpoint">The Authorization Server's access token endpoint URL.</param>
+		/// <param name="tokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
-		internal AccessTokenAuthorizationCodeRequest(Uri accessTokenEndpoint, Version version)
-			: base(accessTokenEndpoint, version) {
+		internal AccessTokenAuthorizationCodeRequest(Uri tokenEndpoint, Version version)
+			: base(tokenEndpoint, version) {
+		}
+
+
+		internal AccessTokenAuthorizationCodeRequest(AuthorizationServerDescription authorizationServer)
+			: this(authorizationServer.TokenEndpoint, authorizationServer.Version)
+		{
+			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
 		}
 
 		internal override GrantType GrantType {

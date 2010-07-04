@@ -29,5 +29,9 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The assertion.</value>
 		[MessagePart(Protocol.assertion, IsRequired = true, AllowEmpty = false)]
 		internal string Assertion { get; set; }
+
+		internal override GrantType GrantType {
+			get { return GrantType.Assertion; }
+		}
 	}
 }

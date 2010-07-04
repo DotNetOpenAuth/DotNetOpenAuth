@@ -29,27 +29,17 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The messages receivable by this channel.
 		/// </summary>
 		private static readonly Type[] MessageTypes = new Type[] {
-			typeof(Messages.RefreshAccessTokenRequest),
-			typeof(Messages.AccessTokenSuccessResponse),
-			typeof(Messages.AccessTokenFailedResponse),
-			typeof(Messages.UnauthorizedResponse),
-			typeof(Messages.AssertionRequest),
-			typeof(Messages.ClientCredentialsRequest),
-			typeof(Messages.DeviceRequest),
-			typeof(Messages.DeviceResponse),
-			typeof(Messages.DeviceAccessTokenRequest),
-			typeof(Messages.UserNamePasswordRequest),
-			typeof(Messages.UserNamePasswordSuccessResponse),
-			typeof(Messages.UserNamePasswordVerificationResponse),
-			typeof(Messages.UserNamePasswordFailedResponse),
-			typeof(Messages.UsernamePasswordCaptchaResponse),
-			typeof(Messages.WebServerRequest),
-			typeof(Messages.WebServerSuccessResponse),
-			typeof(Messages.WebServerFailedResponse),
-			typeof(Messages.WebServerAccessTokenRequest),
-			typeof(Messages.UserAgentRequest),
-			typeof(Messages.UserAgentSuccessResponse),
-			typeof(Messages.UserAgentFailedResponse),
+			typeof(AccessTokenRefreshRequest),
+			typeof(AccessTokenAuthorizationCodeRequest),
+			typeof(AccessTokenBasicCredentialsRequest),
+			typeof(AccessTokenAssertionRequest),
+			typeof(AccessTokenClientCredentialsRequest),
+			typeof(AccessTokenSuccessResponse),
+			typeof(AccessTokenFailedResponse),
+			typeof(EndUserAuthorizationRequest),
+			typeof(EndUserAuthorizationSuccessResponse),
+			typeof(EndUserAuthorizationFailedResponse),
+			typeof(UnauthorizedResponse),
 		};
 
 		/// <summary>
