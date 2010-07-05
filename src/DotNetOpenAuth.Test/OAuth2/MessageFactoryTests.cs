@@ -30,44 +30,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			this.messageFactory = OAuthWrapAuthorizationServerChannel_Accessor.AttachShadow(this.channel).MessageFactory;
 		}
 
-		#region Refresh Access Token messages
+		#region End user authorization messages
 
 		[TestCase]
-		public void RefreshAccessTokenRequest() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.refresh_token, "abc" },
-			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(RefreshAccessTokenRequest), request);
-		}
-
-		[TestCase]
-		public void RefreshAccessTokenSuccessResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.access_token, "abc" },
-			};
-			var request = new RefreshAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(AccessTokenSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase]
-		public void RefreshAccessTokenFailedResponse() {
-			var fields = new Dictionary<string, string> {
-			};
-			var request = new RefreshAccessTokenRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(AccessTokenFailedResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		#endregion
-
-		#region Web App profile messages
-
-		[TestCase]
-		public void WebAppRequestRequest() {
+		public void EndUserAuthorizationRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
 				{ Protocol.redirect_uri, "abc" },
@@ -77,176 +43,82 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		}
 
 		[TestCase]
-		public void WebAppFailedResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.error, "user_denied" },
-			};
-			var request = new WebServerRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(WebServerFailedResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase]
-		public void WebAppSuccessResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.code, "abc" },
-			};
-			var request = new WebServerRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(WebServerSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase]
-		public void WebAppAccessTokenRequest() {
+		public void EndUserAuthorizationSuccessResponse() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
-				{ Protocol.client_secret, "abc" },
-				{ Protocol.code, "abc" },
 				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(WebServerAccessTokenRequest), request);
+			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponse), request);
 		}
 
-		[TestCase, Ignore("Not implemented")]
-		public void WebAppAccessTokenFailedResponse() {
-			// HTTP 400 Bad Request
-		}
-
-		[TestCase, Ignore("Not implemented")]
-		public void WebAppAccessTokenBadClientResponse() {
-			// HTTP 401 Unauthorized
-			// WWW-Authenticate: WRAP
+		[TestCase]
+		public void EndUserAuthorizationFailedResponse() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.client_id, "abc" },
+				{ Protocol.redirect_uri, "abc" },
+			};
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(EndUserAuthorizationFailedResponse), request);
 		}
 
 		#endregion
 
-		#region Username and Password profile messages
+		#region Access token request messages
 
 		[TestCase]
-		public void UserNamePasswordRequest() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.client_id, "abc" },
-				{ Protocol.client_secret, "abc" },
-			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(UserNamePasswordRequest), request);
-		}
-
-		[TestCase]
-		public void UserNamePasswordSuccessResponse() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.access_token, "abc" },
-			};
-			var request = new UserNamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(UserNamePasswordSuccessResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase]
-		public void UserNamePasswordVerificationResponse() {
-			// HTTP 400 Bad Request
-			var fields = new Dictionary<string, string> {
-				{ Protocol.code, "abc" },
-			};
-			var request = new UserNamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(UserNamePasswordVerificationResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		[TestCase, Ignore("Not implemented")]
-		public void UserNamePasswordFailedResponse() {
-			// HTTP 401 Unauthorized
-			// WWW-Authenticate: WRAP
-		}
-
-		[TestCase]
-		public void UsernamePasswordCaptchaResponse() {
-			// HTTP 400 Bad Request
-			var fields = new Dictionary<string, string> {
-				{ Protocol.wrap_captcha_url, "abc" },
-			};
-			var request = new UserNamePasswordRequest(this.recipient.Location, Protocol.Default.Version);
-			Assert.IsInstanceOf(
-				typeof(UsernamePasswordCaptchaResponse),
-				this.messageFactory.GetNewResponseMessage(request, fields));
-		}
-
-		#endregion
-
-		#region Rich App profile messages
-
-		[TestCase]
-		public void RichAppRequest() {
-			// include just required parameters
-			var fields = new Dictionary<string, string> {
-				{ Protocol.client_id, "abc" },
-			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(DeviceRequest), request);
-
-			// including optional parts
-			fields = new Dictionary<string, string> {
-				{ Protocol.client_id, "abc" },
-				{ Protocol.redirect_uri, "abc" },
-				{ Protocol.state, "abc" },
-				{ Protocol.scope, "abc" },
-			};
-			request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(DeviceRequest), request);
-		}
-
-		[TestCase]
-		public void RichAppResponse() {
+		public void AccessTokenRefreshRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.refresh_token, "abc" },
-				{ Protocol.access_token, "abc" },
+				{ Protocol.grant_type, "refresh-token" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(DeviceResponse), request);
+			Assert.IsInstanceOf(typeof(AccessTokenRefreshRequest), request);
 		}
 
 		[TestCase]
-		public void RichAppAccessTokenRequest() {
-			// include just required parameters
+		public void AccessTokenAuthorizationCodeRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
-				{ Protocol.code, "abc" },
+				{ Protocol.grant_type, "authorization-code" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(DeviceAccessTokenRequest), request);
+			Assert.IsInstanceOf(typeof(AccessTokenAuthorizationCodeRequest), request);
 		}
 
-		#endregion
-
-		#region Client Account and Password profile messages
-
 		[TestCase]
-		public void ClientCredentialsRequest() {
+		public void AccessTokenBasicCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
 				{ Protocol.client_secret, "abc" },
+				{ Protocol.grant_type, "basic-credentials" },
+				{ Protocol.username, "abc" },
+				{ Protocol.password , "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(ClientCredentialsRequest), request);
+			Assert.IsInstanceOf(typeof(AccessTokenBasicCredentialsRequest), request);
 		}
 
-		#endregion
-
-		#region Assertion profile messages
-
 		[TestCase]
-		public void AssertionRequest() {
+		public void AccessTokenClientCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.format, "abc" },
-				{ Protocol.assertion, "abc" },
+				{ Protocol.client_id, "abc" },
+				{ Protocol.client_secret, "abc" },
+				{ Protocol.grant_type, "none" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AssertionRequest), request);
+			Assert.IsInstanceOf(typeof(AccessTokenClientCredentialsRequest), request);
+		}
+
+		[TestCase]
+		public void AccessTokenAssertionRequest() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.assertion_type, "abc" },
+				{ Protocol.assertion, "abc" },
+				{ Protocol.grant_type, "assertion" },
+			};
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(AccessTokenAssertionRequest), request);
 		}
 
 		#endregion
