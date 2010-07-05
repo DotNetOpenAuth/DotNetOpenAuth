@@ -24,10 +24,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Initializes a new instance of the <see cref="ClientBase"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
-		protected ClientBase(AuthorizationServerDescription authorizationServer) {
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="clientSecret">The client secret.</param>
+		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			this.AuthorizationServer = authorizationServer;
 			this.Channel = new OAuthWrapAuthorizationServerChannel();
+			this.ClientIdentifier = clientIdentifier;
+			this.ClientSecret = clientSecret;
 		}
 
 		/// <summary>

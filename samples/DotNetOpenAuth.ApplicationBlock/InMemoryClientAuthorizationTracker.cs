@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="InMemoryClientTokenManager.cs" company="Andrew Arnott">
+// <copyright file="InMemoryClientAuthorizationTracker.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using DotNetOpenAuth.OAuth2;
 
 #if SAMPLESONLY
-	internal class InMemoryClientTokenManager : IClientTokenManager {
+	internal class InMemoryClientAuthorizationTracker : IClientAuthorizationTracker {
 		private readonly Dictionary<int, IAuthorizationState> savedStates = new Dictionary<int, IAuthorizationState>();
 		private int stateCounter;
 

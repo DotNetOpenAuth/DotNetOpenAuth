@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IClientTokenManager.cs" company="Andrew Arnott">
+// <copyright file="IClientAuthorizationTracker.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,8 +11,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// A token manager implemented by some clients to assist in tracking authorization state.
 	/// </summary>
-	[ContractClass(typeof(IClientTokenManagerContract))]
-	public interface IClientTokenManager {
+	[ContractClass(typeof(IClientAuthorizationTrackerContract))]
+	public interface IClientAuthorizationTracker {
 		/// <summary>
 		/// Gets the state of the authorization for a given callback URL and client state.
 		/// </summary>
@@ -23,14 +23,14 @@ namespace DotNetOpenAuth.OAuth2 {
 	}
 
 	/// <summary>
-	/// Contract class for the <see cref="IClientTokenManager"/> interface.
+	/// Contract class for the <see cref="IClientAuthorizationTracker"/> interface.
 	/// </summary>
-	[ContractClassFor(typeof(IClientTokenManager))]
-	internal abstract class IClientTokenManagerContract : IClientTokenManager {
+	[ContractClassFor(typeof(IClientAuthorizationTracker))]
+	internal abstract class IClientAuthorizationTrackerContract : IClientAuthorizationTracker {
 		/// <summary>
-		/// Prevents a default instance of the <see cref="IClientTokenManagerContract"/> class from being created.
+		/// Prevents a default instance of the <see cref="IClientAuthorizationTrackerContract"/> class from being created.
 		/// </summary>
-		private IClientTokenManagerContract() {
+		private IClientAuthorizationTrackerContract() {
 		}
 
 		#region IClientTokenManager Members
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// The authorization state; may be <c>null</c> if no authorization state matches.
 		/// </returns>
-		IAuthorizationState IClientTokenManager.GetAuthorizationState(Uri callbackUrl, string clientState) {
+		IAuthorizationState IClientAuthorizationTracker.GetAuthorizationState(Uri callbackUrl, string clientState) {
 			Contract.Requires<ArgumentNullException>(callbackUrl != null);
 			throw new NotImplementedException();
 		}

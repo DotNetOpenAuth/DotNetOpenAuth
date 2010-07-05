@@ -23,22 +23,25 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Initializes a new instance of the <see cref="WebServerClient"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		public WebServerClient(AuthorizationServerDescription authorizationServer)
-			: base(authorizationServer) {
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="clientSecret">The client secret.</param>
+		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
+			: base(authorizationServer, clientIdentifier, clientSecret) {
 		}
 
 		/// <summary>
 		/// Gets or sets the token manager.
 		/// </summary>
 		/// <value>The token manager.</value>
-		public IClientTokenManager TokenManager { get; set; }
+		public IClientAuthorizationTracker TokenManager { get; set; }
 
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <returns>The authorization request.</returns>
-		public EndUserAuthorizationRequest PrepareRequestUserAuthorization() {
-			return this.PrepareRequestUserAuthorization(new AuthorizationState());
+		public EndUserAuthorizationRequest PrepareRequestUserAuthorization(string scope = null) {
+			var authorizationState = new AuthorizationState { Scope = scope };
+			return this.PrepareRequestUserAuthorization(authorizationState);
 		}
 
 		/// <summary>
@@ -78,7 +81,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request = null) {
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientSecret));
-			Contract.Requires<InvalidOperationException>(this.TokenManager != null);
 
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
@@ -87,8 +89,13 @@ namespace DotNetOpenAuth.OAuth2 {
 			IMessageWithClientState response;
 			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {
 				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.UrlBeforeRewriting, this.Channel.MessageDescriptions.Get(response));
-				IAuthorizationState authorizationState = this.TokenManager.GetAuthorizationState(callback, response.ClientState);
-				ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
+				IAuthorizationState authorizationState;
+				if (this.TokenManager != null) {
+					authorizationState = this.TokenManager.GetAuthorizationState(callback, response.ClientState);
+					ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
+				} else {
+					authorizationState = new AuthorizationState { Callback = callback };
+				}
 				var success = response as EndUserAuthorizationSuccessResponse;
 				var failure = response as EndUserAuthorizationFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);

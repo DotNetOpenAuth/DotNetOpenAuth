@@ -15,17 +15,25 @@
 	using OAuthConsumer.SampleServiceProvider;
 
 	public partial class SampleWcf2 : System.Web.UI.Page {
-		private static InMemoryClientTokenManager tokenManager = new InMemoryClientTokenManager();
+		private static AuthorizationServerDescription AuthServerDescription = new AuthorizationServerDescription {
+			TokenEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/token"),
+			AuthorizationEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/auth"),
+		};
 
 		private static IAuthorizationState Authorization {
 			get { return (AuthorizationState)HttpContext.Current.Session["Authorization"]; }
 			set { HttpContext.Current.Session["Authorization"] = value; }
 		}
 
+		private static WebServerClient Client;
+
+		static SampleWcf2() {
+			Client = new WebServerClient(AuthServerDescription, "sampleconsumer", "samplesecret");
+		}
+
 		protected void Page_Load(object sender, EventArgs e) {
-			var client = CreateClient();
 			if (!IsPostBack) {
-				var authorization = client.ProcessUserAuthorization();
+				var authorization = Client.ProcessUserAuthorization();
 				if (authorization != null) {
 					Authorization = authorization;
 				}
@@ -33,7 +41,7 @@
 
 			// Refresh the access token if it expires and if its lifetime is too short to be of use.
 			if (Authorization != null && Authorization.AccessTokenExpirationUtc.HasValue) {
-				client.RefreshToken(Authorization, TimeSpan.FromMinutes(1));
+				Client.RefreshToken(Authorization, TimeSpan.FromMinutes(1));
 			}
 		}
 
@@ -43,11 +51,8 @@
 							   select item.Value).ToArray();
 			string scope = string.Join(" ", scopes);
 
-			var client = CreateClient();
-			string clientState;
-			var response = client.PrepareRequestUserAuthorization(tokenManager.NewAuthorization(scope, out clientState));
-			response.ClientState = clientState;
-			client.Channel.Send(response);
+			var response = Client.PrepareRequestUserAuthorization(scope);
+			Client.Channel.Send(response);
 		}
 
 		protected void getNameButton_Click(object sender, EventArgs e) {
@@ -76,21 +81,6 @@
 			}
 		}
 
-		private static WebServerClient CreateClient() {
-			var authServerDescription = new AuthorizationServerDescription {
-				TokenEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/token"),
-				AuthorizationEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/auth"),
-			};
-
-			var client = new WebServerClient(authServerDescription) {
-				ClientIdentifier = "sampleconsumer",
-				ClientSecret = "samplesecret",
-				TokenManager = tokenManager,
-			};
-
-			return client;
-		}
-
 		private T CallService<T>(Func<DataApiClient, T> predicate) {
 			DataApiClient client = new DataApiClient();
 			////var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest);
@@ -99,8 +89,7 @@
 			}
 
 			var httpRequest = (HttpWebRequest)WebRequest.Create(client.Endpoint.Address.Uri);
-			var oauthClient = CreateClient();
-			oauthClient.AuthorizeRequest(httpRequest, Authorization.AccessToken);
+			Client.AuthorizeRequest(httpRequest, Authorization.AccessToken);
 
 			var httpDetails = new HttpRequestMessageProperty();
 			httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];

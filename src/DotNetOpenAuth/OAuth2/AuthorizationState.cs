@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// A simple memory-only copy of an authorization state.
 	/// </summary>
+	[Serializable]
 	public class AuthorizationState : IAuthorizationState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationState"/> class.

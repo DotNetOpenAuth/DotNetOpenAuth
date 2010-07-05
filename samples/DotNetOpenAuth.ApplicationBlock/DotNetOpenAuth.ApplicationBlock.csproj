@@ -91,7 +91,7 @@
     <Compile Include="Facebook\FacebookClient.cs" />
     <Compile Include="Facebook\FacebookGraph.cs" />
     <Compile Include="GoogleConsumer.cs" />
-    <Compile Include="InMemoryClientTokenManager.cs" />
+    <Compile Include="InMemoryClientAuthorizationTracker.cs" />
     <Compile Include="InMemoryTokenManager.cs">
       <SubType>Code</SubType>
     </Compile>
