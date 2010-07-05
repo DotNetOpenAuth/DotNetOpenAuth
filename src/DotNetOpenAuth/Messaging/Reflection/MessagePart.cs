@@ -361,7 +361,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 
 			IMessagePartEncoder encoder;
 			if (!encoders.TryGetValue(messagePartEncoder, out encoder)) {
-				encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
+				try {
+					encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
+				} catch (MissingMethodException ex) {
+					throw ErrorUtilities.Wrap(ex, MessagingStrings.EncoderInstantiationFailed, messagePartEncoder.FullName);
+				}
 			}
 
 			return encoder;

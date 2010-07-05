@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				true,
 				true,
 				false,
-				WebServerVerificationCodeBindingElement.MaximumMessageAge,
+				AuthorizationCodeBindingElement.MaximumMessageAge,
 				authorizationServer.VerificationCodeNonceStore);
 		}
 

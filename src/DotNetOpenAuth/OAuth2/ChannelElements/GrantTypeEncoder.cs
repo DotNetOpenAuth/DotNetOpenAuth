@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GrantTypeEncoder"/> class.
 		/// </summary>
-		internal GrantTypeEncoder() {
+		public GrantTypeEncoder() {
 		}
 
 		#region IMessagePartEncoder Members

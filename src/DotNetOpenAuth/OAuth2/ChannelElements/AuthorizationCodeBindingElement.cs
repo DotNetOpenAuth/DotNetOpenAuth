@@ -15,13 +15,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 	/// <summary>
 	/// A binding element for OAuth 2.0 authorization servers that create/verify
-	/// issued verification codes as part of obtaining access/refresh tokens.
+	/// issued authorization codes as part of obtaining access/refresh tokens.
 	/// </summary>
-	internal class WebServerVerificationCodeBindingElement : AuthServerBindingElementBase {
+	internal class AuthorizationCodeBindingElement : AuthServerBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebServerVerificationCodeBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizationCodeBindingElement"/> class.
 		/// </summary>
-		internal WebServerVerificationCodeBindingElement() {
+		internal AuthorizationCodeBindingElement() {
 		}
 
 		/// <summary>

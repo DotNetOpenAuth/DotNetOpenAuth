@@ -160,7 +160,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			if (authorizationServer != null) {
 				bindingElements.Add(new AuthServerAllFlowsBindingElement());
-				bindingElements.Add(new WebServerVerificationCodeBindingElement());
+				bindingElements.Add(new AuthorizationCodeBindingElement());
 				bindingElements.Add(new AccessRequestBindingElement());
 			}
 

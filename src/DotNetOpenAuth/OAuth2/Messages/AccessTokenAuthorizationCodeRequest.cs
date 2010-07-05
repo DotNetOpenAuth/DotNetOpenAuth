@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
-		/// in <see cref="WebServerSuccessResponse.VerificationCode"/>.
+		/// in <see cref="EndUserAuthorizationSuccessResponse.AuthorizationCode"/>.
 		/// </summary>
 		/// <value>The verification code received from the authorization server.</value>
 		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
@@ -73,22 +73,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </value>
 		[MessagePart(Protocol.redirect_uri, IsRequired = true, AllowEmpty = false)]
 		internal Uri Callback { get; set; }
-
-		/// <summary>
-		/// Gets or sets the identifier by which this client is known to the Authorization Server.
-		/// </summary>
-		/// <value>The client identifier.</value>
-		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
-		public string ClientIdentifier { get; set; }
-
-		/// <summary>
-		/// Gets or sets the client secret.
-		/// </summary>
-		/// <value>The client secret.</value>
-		/// <remarks>
-		/// REQUIRED if the client identifier has a matching secret. The client secret as described in Section 3.4  (Client Credentials). 
-		/// </remarks>
-		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
-		public string ClientSecret { get; set; }
 	}
 }

@@ -4,6 +4,7 @@
 	using System.Linq;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using System.Data.SqlClient;
 
 	/// <summary>
 	/// A database-persisted nonce store.
@@ -46,6 +47,8 @@
 				Global.DataContext.SubmitChanges();
 				return true;
 			} catch (System.Data.Linq.DuplicateKeyException) {
+				return false;
+			} catch (SqlException) {
 				return false;
 			}
 		}

@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.grant_type, IsRequired = true, AllowEmpty = false, Encoder = typeof(GrantTypeEncoder))]
 		internal abstract GrantType GrantType { get; }
 
-		[MessagePart(Protocol.scope, IsRequired = true, AllowEmpty = true)]
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
 		internal string Scope { get; set; }
 
 		/// <summary>

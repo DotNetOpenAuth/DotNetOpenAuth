@@ -31,7 +31,8 @@
 				}
 			}
 
-			if (Authorization != null) {
+			// Refresh the access token if it expires and if its lifetime is too short to be of use.
+			if (Authorization != null && Authorization.AccessTokenExpirationUtc.HasValue) {
 				client.RefreshToken(Authorization, TimeSpan.FromMinutes(1));
 			}
 		}

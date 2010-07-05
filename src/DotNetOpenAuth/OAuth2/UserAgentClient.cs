@@ -68,11 +68,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="actualRedirectUrl">The actual URL of the incoming HTTP request.</param>
 		/// <param name="authorization">The authorization.</param>
 		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
-		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorization = null) {
+		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorizationState = null) {
 			Contract.Requires<ArgumentNullException>(actualRedirectUrl != null, "actualRedirectUrl");
 
-			if (authorization == null) {
-				authorization = new AuthorizationState();
+			if (authorizationState == null) {
+				authorizationState = new AuthorizationState();
 			}
 
 			var carrier = new HttpRequestInfo("GET", actualRedirectUrl, actualRedirectUrl.PathAndQuery, new System.Net.WebHeaderCollection(), null);
@@ -84,15 +84,29 @@ namespace DotNetOpenAuth.OAuth2 {
 			EndUserAuthorizationSuccessResponse success;
 			EndUserAuthorizationFailedResponse failure;
 			if ((success = response as EndUserAuthorizationSuccessResponse) != null) {
-				this.UpdateAuthorizationWithResponse(authorization, success);
+				var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
+					ClientIdentifier = this.ClientIdentifier,
+					ClientSecret = this.ClientSecret,
+					Callback = authorizationState.Callback,
+					AuthorizationCode = success.AuthorizationCode,
+				};
+				IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
+				var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
+				var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
+				if (accessTokenSuccess != null) {
+					this.UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
+				} else if (failedAccessTokenResponse != null) {
+					authorizationState.Delete();
+					return null;
+				} else {
+					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
+				}
 			} else if ((failure = response as EndUserAuthorizationFailedResponse) != null) {
-				authorization.Delete();
+				authorizationState.Delete();
 				return null;
-			} else {
-				ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
 			}
 
-			return authorization;
+			return authorizationState;
 		}
 	}
 }

@@ -38,11 +38,6 @@
 						throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 					}
 
-					// This sample doesn't implement support for immediate mode.
-					if (!request.IsUserInteractionAllowed) {
-						Global.AuthorizationServer.RejectAuthorizationRequest(request);
-					}
-
 					// Redirect the user to a page that requires the user to be logged in.
 					Global.PendingOAuth2Authorization = request;
 					context.Response.Redirect("~/Members/Authorize2.aspx");
