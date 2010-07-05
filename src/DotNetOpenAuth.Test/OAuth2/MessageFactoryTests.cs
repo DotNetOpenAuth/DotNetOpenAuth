@@ -35,6 +35,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		[TestCase]
 		public void EndUserAuthorizationRequest() {
 			var fields = new Dictionary<string, string> {
+				{ Protocol.response_type, "code" },
 				{ Protocol.client_id, "abc" },
 				{ Protocol.redirect_uri, "abc" },
 			};
@@ -43,10 +44,18 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		}
 
 		[TestCase]
-		public void EndUserAuthorizationSuccessResponse() {
+		public void EndUserAuthorizationSuccessResponseWithCode() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.client_id, "abc" },
-				{ Protocol.redirect_uri, "abc" },
+				{ Protocol.code, "abc" },
+			};
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponse), request);
+		}
+
+		[TestCase, Ignore("Not yet supported")]
+		public void EndUserAuthorizationSuccessResponseWithAccessToken() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.access_token, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponse), request);
@@ -55,8 +64,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		[TestCase]
 		public void EndUserAuthorizationFailedResponse() {
 			var fields = new Dictionary<string, string> {
-				{ Protocol.client_id, "abc" },
-				{ Protocol.redirect_uri, "abc" },
+				{ Protocol.error, "access-denied" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationFailedResponse), request);
@@ -69,6 +77,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		[TestCase]
 		public void AccessTokenRefreshRequest() {
 			var fields = new Dictionary<string, string> {
+				{ Protocol.client_id, "abc" },
 				{ Protocol.refresh_token, "abc" },
 				{ Protocol.grant_type, "refresh-token" },
 			};
@@ -80,7 +89,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		public void AccessTokenAuthorizationCodeRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
+				{ Protocol.code, "code" },
 				{ Protocol.grant_type, "authorization-code" },
+				{ Protocol.redirect_uri, "http://someUri" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(AccessTokenAuthorizationCodeRequest), request);
@@ -113,6 +124,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		[TestCase]
 		public void AccessTokenAssertionRequest() {
 			var fields = new Dictionary<string, string> {
+				{ Protocol.client_id, "abc" },
 				{ Protocol.assertion_type, "abc" },
 				{ Protocol.assertion, "abc" },
 				{ Protocol.grant_type, "assertion" },
