@@ -38,6 +38,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
+		/// <param name="scope">The scope of authorized access requested.</param>
+		/// <returns>The authorization request as an HTTP response that causes a redirect.</returns>
+		public OutgoingWebResponse RequestUserAuthorization(string scope = null) {
+			var response = this.PrepareRequestUserAuthorization(scope);
+			return this.Channel.PrepareResponse(response);
+		}
+
+		/// <summary>
+		/// Prepares a request for user authorization from an authorization server.
+		/// </summary>
+		/// <param name="scope">The scope of authorized access requested.</param>
 		/// <returns>The authorization request.</returns>
 		public EndUserAuthorizationRequest PrepareRequestUserAuthorization(string scope = null) {
 			var authorizationState = new AuthorizationState { Scope = scope };
