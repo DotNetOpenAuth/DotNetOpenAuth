@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scope">The scope of authorized access requested.</param>
 		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
-		public Uri RequestUserAuthoroization(string scope = null) {
+		public Uri RequestUserAuthorization(string scope = null) {
 			var authorization = new AuthorizationState { Scope = scope };
 			return this.RequestUserAuthorization(authorization);
 		}
