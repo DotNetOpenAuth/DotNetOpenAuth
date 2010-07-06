@@ -22,8 +22,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
-		public UserAgentClient(AuthorizationServerDescription authorizationServer)
-			: base(authorizationServer) {
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="clientSecret">The client secret.</param>
+		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
+			: base(authorizationServer, clientIdentifier, clientSecret) {
 		}
 
 		/// <summary>
@@ -39,15 +41,22 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Generates a URL that the user's browser can be directed to in order to authorize
 		/// this client to access protected data at some resource server.
 		/// </summary>
-		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
-		/// <param name="immediate">If set to <c>true</c>, the authorization server will return immediately instead of interacting with the user.  Authorization will only be granted if the authorization server determines it is safe to do so without asking the user first.</param>
+		/// <param name="scope">The scope of authorized access requested.</param>
 		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
-		public Uri RequestUserAuthorization(IAuthorizationState authorization = null) {
-			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
+		public Uri RequestUserAuthoroization(string scope = null) {
+			var authorization = new AuthorizationState { Scope = scope };
+			return this.RequestUserAuthorization(authorization);
+		}
 
-			if (authorization == null) {
-				authorization = new AuthorizationState();
-			}
+		/// <summary>
+		/// Generates a URL that the user's browser can be directed to in order to authorize
+		/// this client to access protected data at some resource server.
+		/// </summary>
+		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
+		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
+		public Uri RequestUserAuthorization(IAuthorizationState authorization) {
+			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
+			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 
 			if (authorization.Callback == null) {
 				authorization.Callback = new Uri("http://localhost/");
@@ -66,7 +75,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Scans the incoming request for an authorization response message.
 		/// </summary>
 		/// <param name="actualRedirectUrl">The actual URL of the incoming HTTP request.</param>
-		/// <param name="authorization">The authorization.</param>
+		/// <param name="authorizationState">The authorization.</param>
 		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
 		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorizationState = null) {
 			Contract.Requires<ArgumentNullException>(actualRedirectUrl != null, "actualRedirectUrl");

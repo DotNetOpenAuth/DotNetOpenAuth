@@ -152,7 +152,7 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="1">Token Endpoint URL</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapTokenUrlBox" />
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapTokenUrlBox" Text="https://graph.facebook.com/oauth/access_token" />
                 <Label Grid.Row="1" Grid.Column="2">POST</Label>
                 <Label Grid.Row="2">User Authorization URL</Label>
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" Text="https://graph.facebook.com/oauth/authorize?display=popup" />
@@ -180,11 +180,11 @@
                 <Label Grid.Row="4">Client Identifier</Label>
                 <TextBox Grid.Row="4" Grid.Column="1" x:Name="wrapClientIdentifierBox" Grid.ColumnSpan="2" Text="367207604173" />
                 <Label Grid.Row="5">Client Secret</Label>
-                <TextBox Grid.Row="5" Grid.Column="1" x:Name="wrapClientSecretBox" Grid.ColumnSpan="2"/>
+                <TextBox Grid.Row="5" Grid.Column="1" x:Name="wrapClientSecretBox" Grid.ColumnSpan="2" Text="1df77e64055c4d7d3583cefdf2bc62d7"/>
                 <Label Grid.Row="6">OAuth 2.0 version</Label>
                 <ComboBox Grid.Row="6" Grid.Column="1" SelectedIndex="0" x:Name="wrapVersion">
                     <ComboBox.Items>
-                        <ComboBoxItem>2.0 DRAFT 5</ComboBoxItem>
+                        <ComboBoxItem>2.0 DRAFT 9</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Button Grid.Row="7" Grid.Column="1" x:Name="wrapBeginButton" Click="wrapBeginButton_Click">Begin</Button>

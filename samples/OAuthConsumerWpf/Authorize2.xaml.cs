@@ -14,6 +14,7 @@
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
 	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Interaction logic for Authorize2.xaml
@@ -38,10 +39,15 @@
 		}
 
 		private void locationChanged(Uri location) {
-			if (location == this.Authorization.Callback) {
-				this.client.ProcessUserAuthorization(location, this.Authorization);
-				this.DialogResult = !string.IsNullOrEmpty(this.Authorization.AccessToken);
-				this.Close();
+			if (SignificantlyEqual(location, this.Authorization.Callback, UriComponents.SchemeAndServer | UriComponents.Path)) {
+				try {
+					this.client.ProcessUserAuthorization(location, this.Authorization);
+				} catch (ProtocolException ex) {
+					MessageBox.Show(ex.ToStringDescriptive());
+				} finally {
+					this.DialogResult = !string.IsNullOrEmpty(this.Authorization.AccessToken);
+					this.Close();
+				}
 			}
 		}
 
@@ -51,6 +57,12 @@
 
 		private void webBrowser_LocationChanged(object sender, EventArgs e) {
 			this.locationChanged(webBrowser.Url);
+		}
+
+		private static bool SignificantlyEqual(Uri location1, Uri location2, UriComponents components) {
+			string value1 = location1.GetComponents(components, UriFormat.Unescaped);
+			string value2 = location2.GetComponents(components, UriFormat.Unescaped);
+			return string.Equals(value1, value2, StringComparison.Ordinal);
 		}
 	}
 }

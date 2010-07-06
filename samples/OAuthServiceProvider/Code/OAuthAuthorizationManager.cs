@@ -7,9 +7,13 @@
 	using System.ServiceModel;
 	using System.ServiceModel.Channels;
 	using System.ServiceModel.Security;
+
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth2;
+
+	using ProtocolException = System.ServiceModel.ProtocolException;
 
 	/// <summary>
 	/// A WCF extension to authenticate incoming messages using OAuth.
@@ -23,8 +27,8 @@
 				return false;
 			}
 
-			HttpRequestMessageProperty httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
-			Uri requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
+			var httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
+			var requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
 
 			try {
 				var principal = this.VerifyOAuth2(httpDetails, requestUri);
@@ -80,7 +84,7 @@
 					OAuth2AuthorizationServer.AsymmetricKey));
 
 			string username, scope;
-			var error = resourceServer.VerifyAccess(new DotNetOpenAuth.Messaging.HttpRequestInfo(httpDetails, requestUri), out username, out scope);
+			var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out username, out scope);
 			if (error == null) {
 				string[] scopes = scope.Split(new char[] { ' ' });
 				var principal = new OAuthPrincipal(username, scopes);

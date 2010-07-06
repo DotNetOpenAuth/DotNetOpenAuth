@@ -114,7 +114,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message to be serialized.</param>
 		/// <param name="writer">The writer to use for the serialized form.</param>
 		/// <remarks>
-		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter"/>
+		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter(System.IO.Stream)"/>
 		/// to create the <see cref="XmlDictionaryWriter"/> instance capable of emitting JSON.
 		/// </remarks>
 		[Pure]
@@ -186,7 +186,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="reader">The XML/JSON to read into the message.</param>
 		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
 		/// <remarks>
-		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader"/>
+		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader(System.IO.Stream, System.Xml.XmlDictionaryReaderQuotas)"/>
 		/// to create the <see cref="XmlDictionaryReader"/> instance capable of reading JSON.
 		/// </remarks>
 		internal void Deserialize(MessageDictionary messageDictionary, XmlDictionaryReader reader) {
