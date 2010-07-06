@@ -30,10 +30,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Gets or sets the token manager.
+		/// Gets or sets an optional component that gives you greater control to record and influence the authorization process.
 		/// </summary>
-		/// <value>The token manager.</value>
-		public IClientAuthorizationTracker TokenManager { get; set; }
+		/// <value>The authorization tracker.</value>
+		public IClientAuthorizationTracker AuthorizationTracker { get; set; }
 
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
@@ -101,8 +101,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {
 				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.UrlBeforeRewriting, this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState;
-				if (this.TokenManager != null) {
-					authorizationState = this.TokenManager.GetAuthorizationState(callback, response.ClientState);
+				if (this.AuthorizationTracker != null) {
+					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);
 					ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
 				} else {
 					authorizationState = new AuthorizationState { Callback = callback };

@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// Initializes a new instance of the <see cref="FacebookClient"/> class.
 		/// </summary>
 		public FacebookClient() : base(FacebookDescription) {
-			this.TokenManager = new TokenManager();
+			this.AuthorizationTracker = new TokenManager();
 		}
 	}
 }
