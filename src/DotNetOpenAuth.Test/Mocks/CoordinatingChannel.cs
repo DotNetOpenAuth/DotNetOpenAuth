@@ -200,13 +200,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
-			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
-			return accessor.ReadFromResponseCore(response);
+			return this.wrappedChannel.ReadFromResponseCoreTestHook(response);
 		}
 
 		protected override void ProcessIncomingMessage(IProtocolMessage message) {
-			Channel_Accessor accessor = Channel_Accessor.AttachShadow(this.wrappedChannel);
-			accessor.ProcessIncomingMessage(message);
+			this.wrappedChannel.ProcessIncomingMessageTestHook(message);
 		}
 
 		/// <summary>
@@ -254,8 +252,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private static IMessageFactory GetMessageFactory(Channel channel) {
 			Contract.Requires<ArgumentNullException>(channel != null);
 
-			Channel_Accessor accessor = Channel_Accessor.AttachShadow(channel);
-			return accessor.MessageFactory;
+			return channel.MessageFactoryTestHook;
 		}
 
 		private IDictionary<string, string> AwaitIncomingMessage(out MessageReceivingEndpoint recipient) {

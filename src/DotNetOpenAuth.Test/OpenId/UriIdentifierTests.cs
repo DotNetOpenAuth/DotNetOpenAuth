@@ -301,14 +301,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private static void TestAsFullAndPartialTrust(Action<bool> action) {
 			// Test a bunch of interesting URLs both with scheme substitution on and off.
-			Assert.IsTrue(UriIdentifier_Accessor.schemeSubstitution, "Expected scheme substitution to be working.");
+			Assert.IsTrue(UriIdentifier.SchemeSubstitutionTestHook, "Expected scheme substitution to be working.");
 			action(true);
 
-			UriIdentifier_Accessor.schemeSubstitution = false;
+			UriIdentifier.SchemeSubstitutionTestHook = false;
 			try {
 				action(false);
 			} finally {
-				UriIdentifier_Accessor.schemeSubstitution = true;
+				UriIdentifier.SchemeSubstitutionTestHook = true;
 			}
 		}
 	}

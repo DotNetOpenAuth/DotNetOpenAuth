@@ -63,25 +63,23 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		[TestCase]
 		public void ResponseNonceSetter() {
 			const string HybridValue = CreationDateString + "UNIQUE";
-			var responseAccessor = IndirectSignedResponse_Accessor.AttachShadow(this.response);
 			IReplayProtectedProtocolMessage responseReplay = this.response;
-			responseAccessor.ResponseNonce = HybridValue;
-			Assert.AreEqual(HybridValue, responseAccessor.ResponseNonce);
+			this.response.ResponseNonceTestHook = HybridValue;
+			Assert.AreEqual(HybridValue, this.response.ResponseNonceTestHook);
 			Assert.AreEqual(this.creationDate, responseReplay.UtcCreationDate);
 			Assert.AreEqual("UNIQUE", responseReplay.Nonce);
 
-			responseAccessor.ResponseNonce = null;
+			this.response.ResponseNonceTestHook = null;
 			Assert.IsNull(responseReplay.Nonce);
 		}
 
 		[TestCase]
 		public void ResponseNonceGetter() {
-			var responseAccessor = IndirectSignedResponse_Accessor.AttachShadow(this.response);
 			IReplayProtectedProtocolMessage responseReplay = this.response;
 			responseReplay.Nonce = "UnIqUe";
 			responseReplay.UtcCreationDate = this.creationDate;
 
-			Assert.AreEqual(CreationDateString + "UnIqUe", responseAccessor.ResponseNonce);
+			Assert.AreEqual(CreationDateString + "UnIqUe", this.response.ResponseNonceTestHook);
 			Assert.AreEqual("UnIqUe", responseReplay.Nonce);
 			Assert.AreEqual(this.creationDate, responseReplay.UtcCreationDate);
 		}

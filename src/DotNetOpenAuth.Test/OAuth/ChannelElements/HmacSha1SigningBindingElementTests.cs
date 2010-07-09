@@ -16,9 +16,9 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		public void SignatureTest() {
 			UnauthorizedTokenRequest message = SigningBindingElementBaseTests.CreateTestRequestTokenMessage(this.MessageDescriptions, null);
 
-			HmacSha1SigningBindingElement_Accessor hmac = new HmacSha1SigningBindingElement_Accessor();
+			var hmac = new HmacSha1SigningBindingElement();
 			hmac.Channel = new TestChannel(this.MessageDescriptions);
-			Assert.AreEqual("kR0LhH8UqylaLfR/esXVVlP4sQI=", hmac.GetSignature(message));
+			Assert.AreEqual("kR0LhH8UqylaLfR/esXVVlP4sQI=", hmac.GetSignatureTestHook(message));
 		}
 	}
 }

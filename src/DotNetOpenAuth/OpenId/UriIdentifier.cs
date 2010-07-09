@@ -156,6 +156,16 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether scheme substitution is being used to workaround
+		/// .NET path compression that invalidates some OpenIDs that have trailing periods
+		/// in one of their path segments.
+		/// </summary>
+		internal static bool SchemeSubstitutionTestHook {
+			get { return schemeSubstitution; }
+			set { schemeSubstitution = value; }
+		}
+
+		/// <summary>
 		/// Gets the URI this instance represents.
 		/// </summary>
 		internal Uri Uri { get; private set; }

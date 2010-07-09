@@ -272,6 +272,29 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </list>
 		/// </value>
 		/// <example>2005-05-15T17:11:51ZUNIQUE</example>
+		internal string ResponseNonceTestHook {
+			get { return this.ResponseNonce; }
+			set { this.ResponseNonce = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the nonce that will protect the message from replay attacks.
+		/// </summary>
+		/// <value>
+		/// <para>A string 255 characters or less in length, that MUST be unique to 
+		/// this particular successful authentication response. The nonce MUST start 
+		/// with the current time on the server, and MAY contain additional ASCII 
+		/// characters in the range 33-126 inclusive (printable non-whitespace characters), 
+		/// as necessary to make each response unique. The date and time MUST be 
+		/// formatted as specified in section 5.6 of [RFC3339] 
+		/// (Klyne, G. and C. Newman, “Date and Time on the Internet: Timestamps,” .), 
+		/// with the following restrictions:</para>
+		/// <list type="bullet">
+		///   <item>All times must be in the UTC timezone, indicated with a "Z".</item>
+		///   <item>No fractional seconds are allowed</item>
+		/// </list>
+		/// </value>
+		/// <example>2005-05-15T17:11:51ZUNIQUE</example>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by messaging framework via reflection.")]
 		[MessagePart("openid.response_nonce", IsRequired = true, AllowEmpty = false, RequiredProtection = ProtectionLevel.Sign, MinVersion = "2.0")]
 		[MessagePart("openid.response_nonce", IsRequired = false, AllowEmpty = false, RequiredProtection = ProtectionLevel.None, MaxVersion = "1.1")]
