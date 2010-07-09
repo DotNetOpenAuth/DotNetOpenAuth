@@ -39,7 +39,7 @@
 
 		protected void Page_Load(object sender, EventArgs e) {
 			if (this.TokenManager != null) {
-				this.MultiView1.SetActiveView(BeginAuthorizationView);
+				this.MultiView1.SetActiveView(this.BeginAuthorizationView);
 			}
 		}
 
@@ -54,7 +54,7 @@
 			this.RequestToken = requestToken;
 			string javascript = "window.open('" + popupWindowLocation.AbsoluteUri + "');";
 			this.Page.ClientScript.RegisterStartupScript(GetType(), "YammerPopup", javascript, true);
-			MultiView1.SetActiveView(CompleteAuthorizationView);
+			this.MultiView1.SetActiveView(this.CompleteAuthorizationView);
 		}
 
 		protected void finishAuthorizationButton_Click(object sender, EventArgs e) {
@@ -63,7 +63,7 @@
 			}
 
 			var yammer = YammerConsumer.CreateConsumer(this.TokenManager);
-			var authorizationResponse = YammerConsumer.CompleteAuthorization(yammer, this.RequestToken, yammerUserCode.Text);
+			var authorizationResponse = YammerConsumer.CompleteAuthorization(yammer, this.RequestToken, this.yammerUserCode.Text);
 			if (authorizationResponse != null) {
 				this.accessTokenLabel.Text = HttpUtility.HtmlEncode(authorizationResponse.AccessToken);
 				this.MultiView1.SetActiveView(this.AuthorizationCompleteView);
