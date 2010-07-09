@@ -30,6 +30,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Gets or sets the client secret shared with the Authorization Server.
+		/// </summary>
+		/// <value></value>
+		public new string ClientSecret {
+			get { return base.ClientSecret; }
+			set { base.ClientSecret = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets an optional component that gives you greater control to record and influence the authorization process.
 		/// </summary>
 		/// <value>The authorization tracker.</value>

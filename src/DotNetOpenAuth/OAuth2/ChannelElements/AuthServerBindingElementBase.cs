@@ -44,8 +44,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <remarks>
 		/// This property is set by the channel when it is first constructed.
 		/// </remarks>
-		protected OAuthWrapAuthorizationServerChannel OAuthChannel {
-			get { return (OAuthWrapAuthorizationServerChannel)this.Channel; }
+		protected OAuth2AuthorizationServerChannel OAuthChannel {
+			get { return (OAuth2AuthorizationServerChannel)this.Channel; }
 		}
 
 		/// <summary>

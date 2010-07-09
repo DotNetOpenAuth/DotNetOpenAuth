@@ -157,15 +157,12 @@
                 <Label Grid.Row="2">User Authorization URL</Label>
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" Text="https://graph.facebook.com/oauth/authorize?display=popup" />
                 <Label Grid.Row="2" Grid.Column="2">GET</Label>
-                <Label Grid.Row="0">Flow</Label>
-                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="1">
+                <Label Grid.Row="0">Grant Type</Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="0">
                     <ComboBox.Items>
-                        <ComboBoxItem>Web Server</ComboBoxItem>
-                        <ComboBoxItem>User Agent</ComboBoxItem>
-                        <ComboBoxItem>Device</ComboBoxItem>
-                        <ComboBoxItem>Username and Password</ComboBoxItem>
-                        <ComboBoxItem>Assertion</ComboBoxItem>
-                        <ComboBoxItem>Client Credentials</ComboBoxItem>
+                        <ComboBoxItem>Authorization Code</ComboBoxItem>
+                        <ComboBoxItem>Resource Owner Basic Credentials</ComboBoxItem>
+                        <ComboBoxItem>Access Code (direct)</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="3">Resource URL</Label>

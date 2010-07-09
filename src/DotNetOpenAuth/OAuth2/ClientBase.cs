@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			this.AuthorizationServer = authorizationServer;
-			this.Channel = new OAuthWrapAuthorizationServerChannel();
+			this.Channel = new OAuth2ClientChannel();
 			this.ClientIdentifier = clientIdentifier;
 			this.ClientSecret = clientSecret;
 		}
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets or sets the client secret shared with the Authorization Server.
 		/// </summary>
-		public string ClientSecret { get; set; }
+		protected internal string ClientSecret { get; set; }
 
 		/// <summary>
 		/// Adds the necessary HTTP Authorization header to an HTTP request for protected resources

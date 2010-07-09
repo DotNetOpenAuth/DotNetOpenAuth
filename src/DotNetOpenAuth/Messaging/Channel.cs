@@ -618,7 +618,7 @@ namespace DotNetOpenAuth.Messaging {
 			try {
 				recipient = request.GetRecipient();
 			} catch (ArgumentException ex) {
-				Logger.Messaging.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+				Logger.Messaging.WarnFormat("Unrecognized HTTP request: {0}", ex);
 				return null;
 			}
 

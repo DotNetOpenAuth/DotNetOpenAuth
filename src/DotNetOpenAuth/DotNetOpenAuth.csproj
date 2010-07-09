@@ -315,10 +315,12 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\ChannelElements\GrantTypeEncoder.cs" />
     <Compile Include="OAuth2\ChannelElements\EndUserAuthorizationResponseTypeEncoder.cs" />
     <Compile Include="OAuth2\ChannelElements\IDataBagFormatter.cs" />
+    <Compile Include="OAuth2\ChannelElements\OAuth2ChannelBase.cs" />
+    <Compile Include="OAuth2\ChannelElements\OAuth2ClientChannel.cs" />
     <Compile Include="OAuth2\ChannelElements\UriStyleMessageFormatter.cs" />
     <Compile Include="OAuth2\ChannelElements\IAuthorizationDescription.cs" />
     <Compile Include="OAuth2\ChannelElements\ITokenCarryingRequest.cs" />
-    <Compile Include="OAuth2\ChannelElements\OAuthWrapResourceServerChannel.cs" />
+    <Compile Include="OAuth2\ChannelElements\OAuth2ResourceServerChannel.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
     <Compile Include="OAuth2\ChannelElements\RefreshToken.cs" />
     <Compile Include="OAuth2\ChannelElements\DataBag.cs" />
@@ -637,7 +639,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\StandardWebRequestHandler.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="Reporting.cs" />
-    <Compile Include="OAuth2\ChannelElements\OAuthWrapAuthorizationServerChannel.cs" />
+    <Compile Include="OAuth2\ChannelElements\OAuth2AuthorizationServerChannel.cs" />
     <Compile Include="OAuth2\ClientBase.cs" />
     <Compile Include="OAuth2\Messages\MessageBase.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationRequest.cs" />

@@ -24,8 +24,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
-		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
-			: base(authorizationServer, clientIdentifier, clientSecret) {
+		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null)
+			: base(authorizationServer, clientIdentifier) {
 		}
 
 		/// <summary>
@@ -66,6 +66,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				ClientIdentifier = this.ClientIdentifier,
 				Scope = authorization.Scope,
 				Callback = authorization.Callback,
+				ResponseType = EndUserAuthorizationResponseType.AccessToken,
 			};
 
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);

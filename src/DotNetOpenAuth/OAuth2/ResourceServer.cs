@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(accessTokenAnalyzer != null, "accessTokenAnalyzer");
 
 			this.AccessTokenAnalyzer = accessTokenAnalyzer;
-			this.Channel = new OAuthWrapResourceServerChannel();
+			this.Channel = new OAuth2ResourceServerChannel();
 		}
 
 		/// <summary>
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the channel.
 		/// </summary>
 		/// <value>The channel.</value>
-		internal OAuthWrapResourceServerChannel Channel { get; private set; }
+		internal OAuth2ResourceServerChannel Channel { get; private set; }
 
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.

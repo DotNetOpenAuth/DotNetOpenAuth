@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationServer">The authorization server.</param>
 		protected AuthorizationServerBase(IAuthorizationServer authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
-			this.OAuthChannel = new OAuthWrapAuthorizationServerChannel(authorizationServer);
+			this.OAuthChannel = new OAuth2AuthorizationServerChannel(authorizationServer);
 		}
 
 		/// <summary>
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets the channel.
 		/// </summary>
-		internal OAuthWrapAuthorizationServerChannel OAuthChannel { get; private set; }
+		internal OAuth2AuthorizationServerChannel OAuthChannel { get; private set; }
 
 		/// <summary>
 		/// Prepares the response to an access token request.

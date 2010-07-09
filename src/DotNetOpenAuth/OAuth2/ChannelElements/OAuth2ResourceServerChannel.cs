@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthWrapResourceServerChannel.cs" company="Andrew Arnott">
+// <copyright file="OAuth2ResourceServerChannel.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// The channel for the OAuth protocol.
 	/// </summary>
-	internal class OAuthWrapResourceServerChannel : StandardMessageFactoryChannel {
+	internal class OAuth2ResourceServerChannel : StandardMessageFactoryChannel {
 		/// <summary>
 		/// The messages receivable by this channel.
 		/// </summary>
@@ -34,9 +34,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthWrapResourceServerChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuth2ResourceServerChannel"/> class.
 		/// </summary>
-		protected internal OAuthWrapResourceServerChannel()
+		protected internal OAuth2ResourceServerChannel()
 			: base(MessageTypes, Versions) {
 			// TODO: add signing (authenticated request) binding element.
 		}

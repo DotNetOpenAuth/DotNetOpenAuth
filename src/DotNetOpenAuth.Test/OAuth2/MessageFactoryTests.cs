@@ -20,13 +20,13 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	/// </summary>
 	public class MessageFactoryTests : OAuth2TestBase {
 		private readonly MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
-		private OAuthWrapAuthorizationServerChannel channel;
+		private OAuth2AuthorizationServerChannel channel;
 		private IMessageFactory messageFactory;
 
 		public override void SetUp() {
 			base.SetUp();
 
-			this.channel = new OAuthWrapAuthorizationServerChannel();
+			this.channel = new OAuth2AuthorizationServerChannel();
 			this.messageFactory = OAuthWrapAuthorizationServerChannel_Accessor.AttachShadow(this.channel).MessageFactory;
 		}
 
