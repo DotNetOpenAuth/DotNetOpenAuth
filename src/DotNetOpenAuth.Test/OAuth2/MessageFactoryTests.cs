@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Moq;
 	using NUnit.Framework;
 
 	/// <summary>
@@ -26,8 +27,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		public override void SetUp() {
 			base.SetUp();
 
-			this.channel = new OAuth2AuthorizationServerChannel();
-			this.messageFactory = OAuthWrapAuthorizationServerChannel_Accessor.AttachShadow(this.channel).MessageFactory;
+			this.channel = new OAuth2AuthorizationServerChannel(new Mock<IAuthorizationServer>().Object);
+			this.messageFactory = this.channel.MessageFactoryTestHook;
 		}
 
 		#region End user authorization messages
