@@ -37,7 +37,13 @@ namespace DotNetOpenAuth.OpenId {
 	/// Code contract for the <see cref="IIdentifierDiscoveryService"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IIdentifierDiscoveryService))]
-	internal class IIdentifierDiscoveryServiceContract : IIdentifierDiscoveryService {
+	internal abstract class IIdentifierDiscoveryServiceContract : IIdentifierDiscoveryService {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IIdentifierDiscoveryServiceContract"/> class from being created.
+		/// </summary>
+		private IIdentifierDiscoveryServiceContract() {
+		}
+
 		#region IDiscoveryService Members
 
 		/// <summary>

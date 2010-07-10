@@ -398,6 +398,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Creates the request message to send to the Provider,
+		/// based on the properties in this instance.
+		/// </summary>
+		/// <returns>The message to send to the Provider.</returns>
+		internal SignedResponseRequest CreateRequestMessageTestHook()
+		{
+			return this.CreateRequestMessage();
+		}
+
+		/// <summary>
 		/// Performs deferred request generation for the <see cref="Create"/> method.
 		/// </summary>
 		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>

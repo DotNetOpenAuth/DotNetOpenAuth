@@ -182,6 +182,14 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets a tool that can figure out what kind of message is being received
+		/// so it can be deserialized.
+		/// </summary>
+		internal IMessageFactory MessageFactoryTestHook {
+			get { return this.MessageFactory; }
+		}
+
+		/// <summary>
 		/// Gets the binding elements used by this channel, in no particular guaranteed order.
 		/// </summary>
 		protected internal ReadOnlyCollection<IChannelBindingElement> BindingElements {
@@ -468,6 +476,66 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Verifies the integrity and applicability of an incoming message.
+		/// </summary>
+		/// <param name="message">The message just received.</param>
+		/// <exception cref="ProtocolException">
+		/// Thrown when the message is somehow invalid.
+		/// This can be due to tampering, replay attack or expiration, among other things.
+		/// </exception>
+		internal void ProcessIncomingMessageTestHook(IProtocolMessage message) {
+			this.ProcessIncomingMessage(message);
+		}
+
+		/// <summary>
+		/// Prepares an HTTP request that carries a given message.
+		/// </summary>
+		/// <param name="request">The message to send.</param>
+		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
+		/// <remarks>
+		/// This method must be overridden by a derived class, unless the <see cref="RequestCore"/> method
+		/// is overridden and does not require this method.
+		/// </remarks>
+		internal HttpWebRequest CreateHttpRequestTestHook(IDirectedProtocolMessage request) {
+			return this.CreateHttpRequest(request);
+		}
+
+		/// <summary>
+		/// Queues a message for sending in the response stream where the fields
+		/// are sent in the response stream in querystring style.
+		/// </summary>
+		/// <param name="response">The message to send as a response.</param>
+		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		/// <remarks>
+		/// This method implements spec OAuth V1.0 section 5.3.
+		/// </remarks>
+		internal OutgoingWebResponse PrepareDirectResponseTestHook(IProtocolMessage response) {
+			return this.PrepareDirectResponse(response);
+		}
+
+		/// <summary>
+		/// Gets the protocol message that may be in the given HTTP response.
+		/// </summary>
+		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
+		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
+		internal IDictionary<string, string> ReadFromResponseCoreTestHook(IncomingWebResponse response) {
+			return this.ReadFromResponseCore(response);
+		}
+
+		/// <remarks>
+		/// 	This method should NOT be called by derived types
+		/// 	except when sending ONE WAY request messages.
+		/// </remarks>
+		/// <summary>
+		/// Prepares a message for transmit by applying signatures, nonces, etc.
+		/// </summary>
+		/// <param name="message">The message to prepare for sending.</param>
+		internal void ProcessOutgoingMessageTestHook(IProtocolMessage message) {
+			this.ProcessOutgoingMessage(message);
+		}
 
 		/// <summary>
 		/// Gets the current HTTP request being processed.

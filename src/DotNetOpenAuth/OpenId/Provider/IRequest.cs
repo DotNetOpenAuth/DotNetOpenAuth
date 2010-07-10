@@ -45,6 +45,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		void AddResponseExtension(IOpenIdMessageExtension extension);
 
 		/// <summary>
+		/// Removes any response extensions previously added using <see cref="IRequest.AddResponseExtension"/>.
+		/// </summary>
+		/// <remarks>
+		/// This should be called before sending a negative response back to the relying party
+		/// if extensions were already added, since negative responses cannot carry extensions.
+		/// </remarks>
+		void ClearResponseExtensions();
+
+		/// <summary>
 		/// Gets an extension sent from the relying party.
 		/// </summary>
 		/// <typeparam name="T">The type of the extension.</typeparam>
@@ -102,6 +111,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		void IRequest.AddResponseExtension(IOpenIdMessageExtension extension) {
 			Contract.Requires<ArgumentNullException>(extension != null);
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Removes any response extensions previously added using <see cref="IRequest.AddResponseExtension"/>.
+		/// </summary>
+		/// <remarks>
+		/// This should be called before sending a negative response back to the relying party
+		/// if extensions were already added, since negative responses cannot carry extensions.
+		/// </remarks>
+		void IRequest.ClearResponseExtensions() {
 		}
 
 		/// <summary>

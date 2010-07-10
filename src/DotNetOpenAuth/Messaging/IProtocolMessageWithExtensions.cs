@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// Code contract for the <see cref="IProtocolMessageWithExtensions"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IProtocolMessageWithExtensions))]
-	internal class IProtocolMessageWithExtensionsContract : IProtocolMessageWithExtensions {
+	internal abstract class IProtocolMessageWithExtensionsContract : IProtocolMessageWithExtensions {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="IProtocolMessageWithExtensionsContract"/> class from being created.
 		/// </summary>
@@ -79,7 +79,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		Version IMessage.Version {
 			get {
-				Contract.Ensures(Contract.Result<Version>() != null);
 				throw new NotImplementedException();
 			}
 		}
@@ -92,7 +91,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		IDictionary<string, string> IMessage.ExtraData {
 			get {
-				Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 				throw new NotImplementedException();
 			}
 		}

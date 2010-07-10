@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// Code contract class for the IOpenIdMessageExtension interface.
 	/// </summary>
 	[ContractClassFor(typeof(IOpenIdMessageExtension))]
-	internal class IOpenIdMessageExtensionContract : IOpenIdMessageExtension {
+	internal abstract class IOpenIdMessageExtensionContract : IOpenIdMessageExtension {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="IOpenIdMessageExtensionContract"/> class from being created.
 		/// </summary>
@@ -123,7 +123,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		Version IMessage.Version {
 			get {
-				Contract.Ensures(Contract.Result<Version>() != null);
 				throw new NotImplementedException();
 			}
 		}
@@ -136,7 +135,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		IDictionary<string, string> IMessage.ExtraData {
 			get {
-				Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 				throw new NotImplementedException();
 			}
 		}

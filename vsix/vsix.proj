@@ -109,7 +109,9 @@
 			<GeneratedVsix Include="$(ExtensionVsix)">
 				<IncludeInDrop>true</IncludeInDrop>
 			</GeneratedVsix>
-			<GeneratedVsix Include="%(VSGalleryVsixTargets.VSGalleryVsix)" />
+			<GeneratedVsix Include="%(VSGalleryVsixTargets.VSGalleryVsix)">
+				<VSGallery>true</VSGallery>
+			</GeneratedVsix>
 		</ItemGroup>
 
 		<Zip

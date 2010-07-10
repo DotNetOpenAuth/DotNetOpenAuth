@@ -44,6 +44,6 @@
 		<CheckAdminRights>
 			<Output TaskParameter="IsElevated" PropertyName="IsElevated" />
 		</CheckAdminRights>
-		<Message Importance="High" Text="IsElevated = $(IsElevated)" />
+		<Message Text="IsElevated = $(IsElevated)" />
 	</Target>
 </Project>

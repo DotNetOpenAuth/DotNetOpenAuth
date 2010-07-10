@@ -234,6 +234,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
+		/// Calculates a signature for a given message.
+		/// </summary>
+		/// <param name="message">The message to sign.</param>
+		/// <returns>The signature for the message.</returns>
+		/// <remarks>
+		/// This method signs the message per OAuth 1.0 section 9.2.
+		/// </remarks>
+		internal string GetSignatureTestHook(ITamperResistantOAuthMessage message) {
+			return this.GetSignature(message);
+		}
+
+		/// <summary>
 		/// Gets the "ConsumerSecret&amp;TokenSecret" string, allowing either property to be empty or null.
 		/// </summary>
 		/// <param name="message">The message to extract the secrets from.</param>
