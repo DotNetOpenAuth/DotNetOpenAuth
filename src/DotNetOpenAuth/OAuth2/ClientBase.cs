@@ -159,6 +159,32 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Updates the authorization state maintained by the client with the content of an outgoing response.
+		/// </summary>
+		/// <param name="authorizationState">The authorization state maintained by the client.</param>
+		/// <param name="accessTokenSuccess">The access token containing response message.</param>
+		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess) {
+			Contract.Requires<ArgumentNullException>(authorizationState != null, "authorizationState");
+			Contract.Requires<ArgumentNullException>(accessTokenSuccess != null, "accessTokenSuccess");
+
+			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
+			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
+			authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;
+			if (accessTokenSuccess.Scope != null && accessTokenSuccess.Scope != authorizationState.Scope) {
+				if (authorizationState.Scope != null) {
+					Logger.OAuth.InfoFormat(
+										   "Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",
+										   authorizationState.Scope,
+										   accessTokenSuccess.Scope);
+				}
+
+				authorizationState.Scope = accessTokenSuccess.Scope;
+			}
+
+			authorizationState.SaveChanges();
+		}
+
+		/// <summary>
 		/// Calculates the fraction of life remaining in an access token.
 		/// </summary>
 		/// <param name="authorization">The authorization to measure.</param>

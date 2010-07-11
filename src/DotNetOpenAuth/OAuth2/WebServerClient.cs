@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			if (authorization.Callback == null) {
 				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting
-					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(EndUserAuthorizationSuccessResponse), Protocol.Default.Version))
+					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(EndUserAuthorizationSuccessResponseBase), Protocol.Default.Version))
 					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(EndUserAuthorizationFailedResponse), Protocol.Default.Version));
 				authorization.SaveChanges();
 			}
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				} else {
 					authorizationState = new AuthorizationState { Callback = callback };
 				}
-				var success = response as EndUserAuthorizationSuccessResponse;
+				var success = response as EndUserAuthorizationSuccessAuthCodeResponse;
 				var failure = response as EndUserAuthorizationFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 				if (success != null) {

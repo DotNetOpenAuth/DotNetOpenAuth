@@ -26,7 +26,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			typeof(AccessTokenSuccessResponse),
 			typeof(AccessTokenFailedResponse),
 			typeof(EndUserAuthorizationRequest),
-			typeof(EndUserAuthorizationSuccessResponse),
+			typeof(EndUserAuthorizationSuccessAuthCodeResponse),
+			typeof(EndUserAuthorizationSuccessAccessTokenResponse),
 			typeof(EndUserAuthorizationFailedResponse),
 			typeof(UnauthorizedResponse),
 		};

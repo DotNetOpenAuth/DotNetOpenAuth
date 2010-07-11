@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 
 	internal class EndUserAuthorizationFailedResponse : MessageBase, IMessageWithClientState {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponse"/> class.
+		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponseBase"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The URL to redirect to so the client receives the message. This may not be built into the request message if the client pre-registered the URL with the authorization server.</param>
 		/// <param name="version">The protocol version.</param>

@@ -23,7 +23,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="clientSecret">The client secret.</param>
 		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null)
 			: base(authorizationServer, clientIdentifier) {
 		}
@@ -91,26 +90,10 @@ namespace DotNetOpenAuth.OAuth2 {
 				return null;
 			}
 
-			EndUserAuthorizationSuccessResponse success;
+			EndUserAuthorizationSuccessAccessTokenResponse success;
 			EndUserAuthorizationFailedResponse failure;
-			if ((success = response as EndUserAuthorizationSuccessResponse) != null) {
-				var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
-					ClientIdentifier = this.ClientIdentifier,
-					ClientSecret = this.ClientSecret,
-					Callback = authorizationState.Callback,
-					AuthorizationCode = success.AuthorizationCode,
-				};
-				IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
-				var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
-				var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
-				if (accessTokenSuccess != null) {
-					this.UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
-				} else if (failedAccessTokenResponse != null) {
-					authorizationState.Delete();
-					return null;
-				} else {
-					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
-				}
+			if ((success = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
+				this.UpdateAuthorizationWithResponse(authorizationState, success);
 			} else if ((failure = response as EndUserAuthorizationFailedResponse) != null) {
 				authorizationState.Delete();
 				return null;

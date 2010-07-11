@@ -377,7 +377,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\Messages\AccessTokenBasicCredentialsRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRequestBase.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenClientCredentialsRequest.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAccessTokenResponse.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationFailedResponse.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponse.cs" />
     <Compile Include="OAuth2\Messages\GrantType.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRefreshRequest.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationResponseType.cs" />
@@ -385,7 +387,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\Messages\UnauthorizedResponse.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenFailedResponse.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenSuccessResponse.cs" />
-    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessResponse.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessResponseBase.cs" />
     <Compile Include="OAuth2\ResourceServer.cs" />
     <Compile Include="OAuth2\StandardAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\UserAgentClient.cs" />

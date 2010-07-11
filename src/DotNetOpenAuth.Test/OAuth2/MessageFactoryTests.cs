@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.code, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponse), request);
+			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
 		}
 
 		[TestCase, Ignore("Not yet supported")]
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.access_token, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponse), request);
+			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
 		}
 
 		[TestCase]
