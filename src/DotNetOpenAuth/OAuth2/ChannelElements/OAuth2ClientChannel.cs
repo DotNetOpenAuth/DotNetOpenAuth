@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// but this request may have been fabricated by an installed desktop app, in which case
 			// the fragment is available.
 			string fragment = request.UrlBeforeRewriting.Fragment;
-			if (fragment != null) {
+			if (!string.IsNullOrEmpty(fragment)) {
 				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).ToDictionary()) {
 					fields.Add(pair.Key, pair.Value);
 				}
