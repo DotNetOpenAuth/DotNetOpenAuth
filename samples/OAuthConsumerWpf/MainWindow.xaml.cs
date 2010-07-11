@@ -212,7 +212,7 @@
 			try {
 				////var client = new DotNetOpenAuth.OAuth2.WebAppClient(authServer);
 				////client.PrepareRequestUserAuthorization();
-				var client = new OAuth2.UserAgentClient(authServer, wrapClientIdentifierBox.Text, wrapClientSecretBox.Text);
+				var client = new OAuth2.UserAgentClient(authServer, wrapClientIdentifierBox.Text);
 
 				var authorizePopup = new Authorize2(client);
 				authorizePopup.Owner = this;
