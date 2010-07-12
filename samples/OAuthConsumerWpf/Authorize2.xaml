@@ -5,7 +5,7 @@
         Title="Authorize" Height="500" Width="500">
 	<DockPanel LastChildFill="True">
 		<WindowsFormsHost Name="windowsFormsHost1">
-			<wf:WebBrowser x:Name="webBrowser" Dock="Fill" Navigating="webBrowser_Navigating" Navigated="webBrowser_Navigated" LocationChanged="webBrowser_LocationChanged" />
+			<wf:WebBrowser x:Name="webBrowser" Dock="Fill" Navigating="webBrowser_Navigating" Navigated="webBrowser_Navigated" LocationChanged="webBrowser_LocationChanged" IsWebBrowserContextMenuEnabled="False" />
 		</WindowsFormsHost>
 	</DockPanel>
 </Window>
