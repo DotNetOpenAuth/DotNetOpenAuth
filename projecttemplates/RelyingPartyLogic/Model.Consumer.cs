@@ -13,7 +13,7 @@ namespace RelyingPartyLogic {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
-	public partial class Consumer : IConsumerDescription {
+	public partial class Consumer : IConsumerDescription, DotNetOpenAuth.OAuth2.IConsumerDescription {
 		public VerificationCodeFormat VerificationCodeFormat {
 			get { return (VerificationCodeFormat)this.VerificationCodeFormatAsInt; }
 			set { this.VerificationCodeFormatAsInt = (int)value; }
@@ -36,5 +36,16 @@ namespace RelyingPartyLogic {
 		string IConsumerDescription.Key {
 			get { return this.ConsumerKey; }
 		}
+
+		#region IConsumerDescription Members
+
+		/// <summary>
+		/// Gets the consumer secret.
+		/// </summary>
+		string DotNetOpenAuth.OAuth2.IConsumerDescription.Secret {
+			get { return this.ConsumerSecret; }
+		}
+
+		#endregion
 	}
 }

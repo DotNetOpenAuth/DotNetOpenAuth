@@ -121,13 +121,11 @@
     <Compile Include="Model.OpenIdAssociation.cs" />
     <Compile Include="Model.User.cs" />
     <Compile Include="NonceDbStore.cs" />
+    <Compile Include="OAuthAuthorizationServer.cs" />
     <Compile Include="OAuthAuthenticationModule.cs" />
     <Compile Include="OAuthAuthorizationManager.cs" />
-    <Compile Include="OAuthConsumerTokenManager.cs" />
     <Compile Include="OAuthPrincipalAuthorizationPolicy.cs" />
     <Compile Include="OAuthServiceProvider.cs" />
-    <Compile Include="OAuthServiceProviderTokenManager.cs" />
-    <Compile Include="OAuthTokenManager.cs" />
     <Compile Include="Policies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelyingPartyApplicationDbStore.cs" />
@@ -144,12 +142,12 @@
       <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
       <Name>DotNetOpenAuth</Name>
     </ProjectReference>
-		<ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj">
-			<Name>RelyingPartyDatabase</Name>
-			<!-- Deploy the latest SQL script first, so that this project can embed the latest version. -->
-			<Targets>Build;Deploy</Targets>
-			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-		</ProjectReference>
+    <ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj">
+      <Name>RelyingPartyDatabase</Name>
+      <!-- Deploy the latest SQL script first, so that this project can embed the latest version. -->
+      <Targets>Build;Deploy</Targets>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CreateDatabase.sql" />

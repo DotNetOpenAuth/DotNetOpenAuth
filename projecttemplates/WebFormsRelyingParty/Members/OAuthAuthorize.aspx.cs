@@ -13,22 +13,23 @@ namespace WebFormsRelyingParty.Members {
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.OAuth2.Messages;
+
 	using RelyingPartyLogic;
 
 	public partial class OAuthAuthorize : System.Web.UI.Page {
+		private EndUserAuthorizationRequest pendingRequest;
+
 		protected void Page_Load(object sender, EventArgs e) {
+			this.pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+			if (this.pendingRequest == null) {
+				Response.Redirect("AccountInfo.aspx");
+			}
+
 			if (!IsPostBack) {
-				var pendingRequest = OAuthServiceProvider.PendingAuthorizationRequest;
-				if (pendingRequest == null) {
-					Response.Redirect("AccountInfo.aspx");
-				}
-
 				this.csrfCheck.Value = Code.SiteUtilities.SetCsrfCookie();
-				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
-				this.OAuth10ConsumerWarning.Visible = pendingRequest.IsUnsafeRequest;
-
-				this.serviceProviderDomainNameLabel.Text = HttpUtility.HtmlEncode(this.Request.Url.Host);
-				this.consumerDomainNameLabel3.Text = this.consumerDomainNameLabel2.Text = this.consumerDomainNameLabel1.Text = HttpUtility.HtmlEncode(OAuthServiceProvider.PendingAuthorizationConsumer.Name);
+				var requestingClient = Database.DataContext.Consumers.First(c => c.ConsumerKey == this.pendingRequest.ClientIdentifier);
+				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(requestingClient.Name);
 			} else {
 				Code.SiteUtilities.VerifyCsrfCookie(this.csrfCheck.Value);
 			}
@@ -36,31 +37,12 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void yesButton_Click(object sender, EventArgs e) {
 			this.outerMultiView.SetActiveView(this.authorizationGrantedView);
-
-			var consumer = OAuthServiceProvider.PendingAuthorizationConsumer;
-			var tokenManager = OAuthServiceProvider.ServiceProvider.TokenManager;
-			var pendingRequest = OAuthServiceProvider.PendingAuthorizationRequest;
-			ITokenContainingMessage requestTokenMessage = pendingRequest;
-			var requestToken = tokenManager.GetRequestToken(requestTokenMessage.Token);
-
-			OAuthServiceProvider.AuthorizePendingRequestToken();
-
-			// The rest of this method only executes if we couldn't automatically
-			// redirect to the consumer.
-			if (pendingRequest.IsUnsafeRequest) {
-				this.verifierMultiView.SetActiveView(this.noCallbackView);
-			} else {
-				this.verifierMultiView.SetActiveView(this.verificationCodeView);
-				string verifier = ServiceProvider.CreateVerificationCode(consumer.VerificationCodeFormat, consumer.VerificationCodeLength);
-				this.verificationCodeLabel.Text = HttpUtility.HtmlEncode(verifier);
-				requestToken.VerificationCode = verifier;
-				tokenManager.UpdateToken(requestToken);
-			}
+			OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
 		}
 
 		protected void noButton_Click(object sender, EventArgs e) {
 			this.outerMultiView.SetActiveView(this.authorizationDeniedView);
-			OAuthServiceProvider.PendingAuthorizationRequest = null;
+			OAuthServiceProvider.AuthorizationServer.RejectAuthorizationRequest(this.pendingRequest);
 		}
 	}
 }

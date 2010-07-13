@@ -15,6 +15,7 @@ namespace RelyingPartyLogic {
 	using System.ServiceModel.Security;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.OAuth;
+	using DotNetOpenAuth.OAuth2;
 
 	/// <summary>
 	/// A WCF extension to authenticate incoming messages using OAuth.
@@ -28,15 +29,16 @@ namespace RelyingPartyLogic {
 				return false;
 			}
 
-			HttpRequestMessageProperty httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
-			Uri requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
-			ServiceProvider sp = OAuthServiceProvider.ServiceProvider;
-			try {
-				var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
-				if (auth != null) {
-					var accessToken = Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>().First(token => token.Token == auth.AccessToken);
+			var httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
+			var requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
 
-					var principal = sp.CreatePrincipal(auth);
+			var tokenAnalyzer = new StandardAccessTokenAnalyzer(OAuthAuthorizationServer.AsymmetricKey, OAuthAuthorizationServer.AsymmetricKey);
+			var resourceServer = new ResourceServer(tokenAnalyzer);
+			
+			try {
+				IPrincipal principal;
+				var errorResponse = resourceServer.VerifyAccess(httpDetails, requestUri, out principal);
+				if (errorResponse == null) {
 					var policy = new OAuthPrincipalAuthorizationPolicy(principal);
 					var policies = new List<IAuthorizationPolicy> {
 						policy,
@@ -56,8 +58,7 @@ namespace RelyingPartyLogic {
 					};
 
 					// Only allow this method call if the access token scope permits it.
-					string[] scopes = accessToken.Scope.Split('|');
-					if (scopes.Contains(operationContext.IncomingMessageHeaders.Action)) {
+					if (principal.IsInRole(operationContext.IncomingMessageHeaders.Action)) {
 						return true;
 					}
 				}
