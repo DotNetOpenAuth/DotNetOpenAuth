@@ -19,6 +19,17 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnauthorizedResponse"/> class.
 		/// </summary>
+		/// <param name="exception">The exception.</param>
+		/// <param name="version">The protocol version.</param>
+		internal UnauthorizedResponse(ProtocolException exception, Version version = null)
+			: base(version ?? Protocol.Default.Version) {
+			Contract.Requires<ArgumentNullException>(exception != null, "exception");
+			this.ErrorMessage = exception.Message;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UnauthorizedResponse"/> class.
+		/// </summary>
 		/// <param name="request">The request.</param>
 		internal UnauthorizedResponse(IDirectedProtocolMessage request)
 			: base(request) {

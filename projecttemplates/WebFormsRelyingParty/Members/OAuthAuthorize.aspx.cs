@@ -8,9 +8,12 @@ namespace WebFormsRelyingParty.Members {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
+
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -21,7 +24,12 @@ namespace WebFormsRelyingParty.Members {
 		private EndUserAuthorizationRequest pendingRequest;
 
 		protected void Page_Load(object sender, EventArgs e) {
-			this.pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+			// We'll mask that on postback it's a POST when looking up the authorization details so that the GET-only
+			// message can be picked up.
+			var requestInfo = this.IsPostBack
+			                  	? new HttpRequestInfo("GET", this.Request.Url, this.Request.RawUrl, new WebHeaderCollection(), null)
+			                  	: null;
+			this.pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest(requestInfo);
 			if (this.pendingRequest == null) {
 				Response.Redirect("AccountInfo.aspx");
 			}
@@ -37,7 +45,10 @@ namespace WebFormsRelyingParty.Members {
 
 		protected void yesButton_Click(object sender, EventArgs e) {
 			this.outerMultiView.SetActiveView(this.authorizationGrantedView);
-			OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
+
+			// In this case the resource server and the auth server are the same, so just use the same key.
+			var resourceServerPublicKey = OAuthServiceProvider.AuthorizationServer.AuthorizationServer.AccessTokenSigningPrivateKey;
+			OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name, resourceServerPublicKey);
 		}
 
 		protected void noButton_Click(object sender, EventArgs e) {

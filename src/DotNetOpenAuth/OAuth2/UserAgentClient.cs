@@ -90,10 +90,13 @@ namespace DotNetOpenAuth.OAuth2 {
 				return null;
 			}
 
-			EndUserAuthorizationSuccessAccessTokenResponse success;
+			EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess;
+			EndUserAuthorizationSuccessAuthCodeResponse authCodeSuccess;
 			EndUserAuthorizationFailedResponse failure;
-			if ((success = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
-				this.UpdateAuthorizationWithResponse(authorizationState, success);
+			if ((accessTokenSuccess = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
+				this.UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
+			} else if ((authCodeSuccess = response as EndUserAuthorizationSuccessAuthCodeResponse) != null) {
+				this.UpdateAuthorizationWithResponse(authorizationState, authCodeSuccess);
 			} else if ((failure = response as EndUserAuthorizationFailedResponse) != null) {
 				authorizationState.Delete();
 				return null;

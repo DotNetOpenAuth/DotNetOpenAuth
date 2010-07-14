@@ -70,7 +70,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (request != null) {
 				// This convenience method only encrypts access tokens assuming that this auth server
 				// doubles as the resource server.
-				response = this.PrepareAccessTokenResponse(request, this.AuthorizationServer.AccessTokenSigningPrivateKey);
+				RSAParameters resourceServerPublicKey = this.AuthorizationServer.AccessTokenSigningPrivateKey;
+				response = this.PrepareAccessTokenResponse(request, resourceServerPublicKey);
 				return true;
 			}
 

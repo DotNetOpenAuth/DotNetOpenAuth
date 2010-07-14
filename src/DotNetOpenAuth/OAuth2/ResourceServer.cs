@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OAuth2 {
 					throw ErrorUtilities.ThrowProtocol("Missing access token.");
 				}
 			} catch (ProtocolException ex) {
-				var response = new UnauthorizedResponse(request, ex);
+				var response = request != null ? new UnauthorizedResponse(request, ex) : new UnauthorizedResponse(ex);
 
 				username = null;
 				scope = null;
