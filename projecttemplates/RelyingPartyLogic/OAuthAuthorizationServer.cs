@@ -82,7 +82,7 @@ namespace RelyingPartyLogic {
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
 		public IConsumerDescription GetClient(string clientIdentifier) {
-			return Database.DataContext.Consumers.First(c => c.ConsumerKey == clientIdentifier);
+			return Database.DataContext.Clients.First(c => c.ClientIdentifier == clientIdentifier);
 		}
 
 		/// <summary>

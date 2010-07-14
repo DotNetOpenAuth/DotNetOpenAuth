@@ -36,7 +36,7 @@ namespace WebFormsRelyingParty.Members {
 
 			if (!IsPostBack) {
 				this.csrfCheck.Value = Code.SiteUtilities.SetCsrfCookie();
-				var requestingClient = Database.DataContext.Consumers.First(c => c.ConsumerKey == this.pendingRequest.ClientIdentifier);
+				var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
 				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(requestingClient.Name);
 			} else {
 				Code.SiteUtilities.VerifyCsrfCookie(this.csrfCheck.Value);
@@ -46,9 +46,15 @@ namespace WebFormsRelyingParty.Members {
 		protected void yesButton_Click(object sender, EventArgs e) {
 			this.outerMultiView.SetActiveView(this.authorizationGrantedView);
 
-			// In this case the resource server and the auth server are the same, so just use the same key.
-			var resourceServerPublicKey = OAuthServiceProvider.AuthorizationServer.AuthorizationServer.AccessTokenSigningPrivateKey;
-			OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name, resourceServerPublicKey);
+			var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
+			Database.LoggedInUser.ClientAuthorizations.Add(
+				new ClientAuthorization
+					{
+						Client = requestingClient,
+						Scope = this.pendingRequest.Scope,
+						User = Database.LoggedInUser,
+					});
+			OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
 		}
 
 		protected void noButton_Click(object sender, EventArgs e) {

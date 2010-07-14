@@ -182,7 +182,7 @@ ALTER TABLE [dbo].[AuthenticationToken]
 
 
 GO
-PRINT N'Creating [dbo].[Consumer]...';
+PRINT N'Creating [dbo].[Client]...';
 
 
 GO
@@ -190,15 +190,12 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER ON;
 
 
 GO
-CREATE TABLE [dbo].[Consumer] (
-    [ConsumerId]             INT             IDENTITY (1, 1) NOT NULL,
-    [ConsumerKey]            NVARCHAR (255)  COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
-    [ConsumerSecret]         NVARCHAR (255)  COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
-    [X509Certificate]        IMAGE           NULL,
-    [Callback]               NVARCHAR (2048) NULL,
-    [VerificationCodeFormat] INT             NOT NULL,
-    [VerificationCodeLength] INT             NOT NULL,
-    [Name]                   NVARCHAR (50)   NULL
+CREATE TABLE [dbo].[Client] (
+    [ClientId]         INT            IDENTITY (1, 1) NOT NULL,
+    [ClientIdentifier] VARCHAR (255)  COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
+    [ClientSecret]     VARCHAR (255)  COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
+    [Callback]         VARCHAR (2048) NULL,
+    [Name]             NVARCHAR (50)  NULL
 );
 
 
@@ -211,21 +208,22 @@ PRINT N'Creating PK_Consumer...';
 
 
 GO
-ALTER TABLE [dbo].[Consumer]
-    ADD CONSTRAINT [PK_Consumer] PRIMARY KEY CLUSTERED ([ConsumerId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+ALTER TABLE [dbo].[Client]
+    ADD CONSTRAINT [PK_Consumer] PRIMARY KEY CLUSTERED ([ClientId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
 
 
 GO
-PRINT N'Creating [dbo].[Consumer].[IX_Consumer]...';
+PRINT N'Creating [dbo].[Client].[IX_Consumer]...';
 
 
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Consumer]
-    ON [dbo].[Consumer]([ConsumerKey] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
+    ON [dbo].[Client]([ClientIdentifier] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0)
+    ON [PRIMARY];
 
 
 GO
-PRINT N'Creating [dbo].[IssuedToken]...';
+PRINT N'Creating [dbo].[ClientAuthorization]...';
 
 
 GO
@@ -233,19 +231,13 @@ SET ANSI_NULLS, QUOTED_IDENTIFIER ON;
 
 
 GO
-CREATE TABLE [dbo].[IssuedToken] (
-    [IssuedTokenId]    INT             IDENTITY (1, 1) NOT NULL,
-    [ConsumerId]       INT             NOT NULL,
-    [UserId]           INT             NULL,
-    [Token]            NVARCHAR (255)  COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
-    [TokenSecret]      NVARCHAR (255)  COLLATE SQL_Latin1_General_CP1_CS_AS NOT NULL,
-    [CreatedOn]        DATETIME        NOT NULL,
-    [Callback]         NVARCHAR (2048) NULL,
-    [VerificationCode] NVARCHAR (255)  COLLATE SQL_Latin1_General_CP1_CS_AS NULL,
-    [ConsumerVersion]  VARCHAR (10)    NULL,
-    [ExpirationDate]   DATETIME        NULL,
-    [IsAccessToken]    BIT             NOT NULL,
-    [Scope]            NVARCHAR (255)  NULL
+CREATE TABLE [dbo].[ClientAuthorization] (
+    [AuthorizationId] INT            IDENTITY (1, 1) NOT NULL,
+    [ClientId]        INT            NOT NULL,
+    [UserId]          INT            NOT NULL,
+    [CreatedOn]       DATETIME       NOT NULL,
+    [ExpirationDate]  DATETIME       NULL,
+    [Scope]           VARCHAR (2048) NULL
 );
 
 
@@ -258,17 +250,8 @@ PRINT N'Creating PK_IssuedToken...';
 
 
 GO
-ALTER TABLE [dbo].[IssuedToken]
-    ADD CONSTRAINT [PK_IssuedToken] PRIMARY KEY CLUSTERED ([IssuedTokenId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
-
-
-GO
-PRINT N'Creating [dbo].[IssuedToken].[IX_IssuedToken]...';
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_IssuedToken]
-    ON [dbo].[IssuedToken]([Token] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF, ONLINE = OFF, MAXDOP = 0);
+ALTER TABLE [dbo].[ClientAuthorization]
+    ADD CONSTRAINT [PK_IssuedToken] PRIMARY KEY CLUSTERED ([AuthorizationId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
 
 
 GO
@@ -497,17 +480,8 @@ PRINT N'Creating DF_IssuedToken_CreatedOn...';
 
 
 GO
-ALTER TABLE [dbo].[IssuedToken]
+ALTER TABLE [dbo].[ClientAuthorization]
     ADD CONSTRAINT [DF_IssuedToken_CreatedOn] DEFAULT (getutcdate()) FOR [CreatedOn];
-
-
-GO
-PRINT N'Creating DF_IssuedToken_IsAccessToken...';
-
-
-GO
-ALTER TABLE [dbo].[IssuedToken]
-    ADD CONSTRAINT [DF_IssuedToken_IsAccessToken] DEFAULT ((0)) FOR [IsAccessToken];
 
 
 GO
@@ -551,8 +525,8 @@ PRINT N'Creating FK_IssuedToken_Consumer...';
 
 
 GO
-ALTER TABLE [dbo].[IssuedToken] WITH NOCHECK
-    ADD CONSTRAINT [FK_IssuedToken_Consumer] FOREIGN KEY ([ConsumerId]) REFERENCES [dbo].[Consumer] ([ConsumerId]) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE [dbo].[ClientAuthorization] WITH NOCHECK
+    ADD CONSTRAINT [FK_IssuedToken_Consumer] FOREIGN KEY ([ClientId]) REFERENCES [dbo].[Client] ([ClientId]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 GO
@@ -560,7 +534,7 @@ PRINT N'Creating FK_IssuedToken_User...';
 
 
 GO
-ALTER TABLE [dbo].[IssuedToken] WITH NOCHECK
+ALTER TABLE [dbo].[ClientAuthorization] WITH NOCHECK
     ADD CONSTRAINT [FK_IssuedToken_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User] ([UserId]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
@@ -699,9 +673,9 @@ USE [$(DatabaseName)];
 GO
 ALTER TABLE [dbo].[AuthenticationToken] WITH CHECK CHECK CONSTRAINT [FK_AuthenticationToken_User];
 
-ALTER TABLE [dbo].[IssuedToken] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_Consumer];
+ALTER TABLE [dbo].[ClientAuthorization] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_Consumer];
 
-ALTER TABLE [dbo].[IssuedToken] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_User];
+ALTER TABLE [dbo].[ClientAuthorization] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_User];
 
 ALTER TABLE [dbo].[UserRole] WITH CHECK CHECK CONSTRAINT [FK_UserRole_Role];
 

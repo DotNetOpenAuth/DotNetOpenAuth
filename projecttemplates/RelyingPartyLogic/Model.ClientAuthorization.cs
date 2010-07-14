@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Model.IssuedToken.cs" company="Andrew Arnott">
+// <copyright file="Model.ClientAuthorization.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,11 +11,11 @@ namespace RelyingPartyLogic {
 	using System.Web;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
-	public partial class IssuedToken {
+	public partial class ClientAuthorization {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IssuedToken"/> class.
 		/// </summary>
-		public IssuedToken() {
+		public ClientAuthorization() {
 			this.CreatedOnUtc = DateTime.UtcNow;
 		}
 

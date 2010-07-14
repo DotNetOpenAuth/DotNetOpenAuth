@@ -106,18 +106,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model.cs" />
-    <Compile Include="Model.IssuedToken.cs" />
+    <Compile Include="Model.ClientAuthorization.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DataRoleProvider.cs" />
     <Compile Include="Model.AuthenticationToken.cs" />
-    <Compile Include="Model.Consumer.cs" />
+    <Compile Include="Model.Client.cs" />
     <Compile Include="Model.Designer.cs">
       <DependentUpon>Model.edmx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Model.IssuedAccessToken.cs" />
-    <Compile Include="Model.IssuedRequestToken.cs" />
     <Compile Include="Model.OpenIdAssociation.cs" />
     <Compile Include="Model.User.cs" />
     <Compile Include="NonceDbStore.cs" />

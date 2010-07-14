@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[IssuedToken] (
+﻿/*CREATE TABLE [dbo].[IssuedToken] (
     [IssuedTokenId]    INT             IDENTITY (1, 1) NOT NULL,
     [ConsumerId]       INT             NOT NULL,
     [UserId]           INT             NULL,
@@ -11,5 +11,5 @@
     [ExpirationDate]   DATETIME        NULL,
     [IsAccessToken]    BIT             NOT NULL,
     [Scope]            NVARCHAR (255)  NULL
-);
+);*/
 
