@@ -29,7 +29,8 @@
 
 			this.client = client;
 			this.Authorization = new AuthorizationState();
-			this.webBrowser.Navigate(this.client.RequestUserAuthorization(this.Authorization));
+			Uri authorizationUrl = this.client.RequestUserAuthorization(this.Authorization);
+			this.webBrowser.Navigate(authorizationUrl.AbsoluteUri); // use AbsoluteUri to workaround bug in WebBrowser that calls Uri.ToString instead of Uri.AbsoluteUri leading to escaping errors.
 		}
 
 		public IAuthorizationState Authorization { get; set; }
