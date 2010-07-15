@@ -9,7 +9,7 @@
 <% } else { %>
 	<ul>
 	<% foreach (var app in Model.AuthorizedApps) { %>
-		<li><%= Html.Encode(app.AppName) %> - <%= Ajax.ActionLink("revoke", "RevokeToken", new { token = app.Token }, new AjaxOptions { HttpMethod = "DELETE", UpdateTargetId = "authorizedApps", OnFailure = "function(e) { alert('Revoking authorization for this application failed.'); }" }) %></li>
+		<li><%= Html.Encode(app.AppName) %> - <%= Html.Encode(app.Scope) %> - <%= Ajax.ActionLink("revoke", "RevokeAuthorization", new { authorizationId = app.AuthorizationId }, new AjaxOptions { HttpMethod = "DELETE", UpdateTargetId = "authorizedApps", OnFailure = "function(e) { alert('Revoking authorization for this application failed.'); }" })%></li>
 	<% } %>
 	</ul>
 <% } %>
