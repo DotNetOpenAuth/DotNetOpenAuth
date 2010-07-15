@@ -13,24 +13,6 @@ namespace WebFormsRelyingParty.Members {
     public partial class OAuthAuthorize {
         
         /// <summary>
-        /// outerMultiView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.MultiView outerMultiView;
-        
-        /// <summary>
-        /// getPermissionView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View getPermissionView;
-        
-        /// <summary>
         /// consumerNameLabel control.
         /// </summary>
         /// <remarks>
@@ -38,6 +20,15 @@ namespace WebFormsRelyingParty.Members {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label consumerNameLabel;
+        
+        /// <summary>
+        /// scopeLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label scopeLabel;
         
         /// <summary>
         /// yesButton control.
@@ -65,59 +56,5 @@ namespace WebFormsRelyingParty.Members {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField csrfCheck;
-        
-        /// <summary>
-        /// authorizationGrantedView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View authorizationGrantedView;
-        
-        /// <summary>
-        /// verifierMultiView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.MultiView verifierMultiView;
-        
-        /// <summary>
-        /// verificationCodeView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View verificationCodeView;
-        
-        /// <summary>
-        /// verificationCodeLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label verificationCodeLabel;
-        
-        /// <summary>
-        /// noCallbackView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View noCallbackView;
-        
-        /// <summary>
-        /// authorizationDeniedView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View authorizationDeniedView;
     }
 }

@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Diagnostics.Contracts;
+	using System.Security.Cryptography;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 

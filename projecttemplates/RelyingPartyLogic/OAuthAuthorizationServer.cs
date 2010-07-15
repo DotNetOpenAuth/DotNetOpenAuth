@@ -10,9 +10,12 @@ namespace RelyingPartyLogic {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Web;
 
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
 	/// Provides OAuth 2.0 authorization server information to DotNetOpenAuth.
@@ -82,7 +85,11 @@ namespace RelyingPartyLogic {
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
 		public IConsumerDescription GetClient(string clientIdentifier) {
-			return Database.DataContext.Clients.First(c => c.ClientIdentifier == clientIdentifier);
+			try {
+				return Database.DataContext.Clients.First(c => c.ClientIdentifier == clientIdentifier);
+			} catch (InvalidOperationException ex) {
+				throw new ArgumentOutOfRangeException("No client by that identifier.", ex);
+			}
 		}
 
 		/// <summary>
@@ -107,11 +114,63 @@ namespace RelyingPartyLogic {
 		/// security in the event the user was revoking access in order to sever authorization on a stolen
 		/// account or piece of hardware in which the tokens were stored. </para>
 		/// </remarks>
-		public bool IsAuthorizationValid(DotNetOpenAuth.OAuth2.ChannelElements.IAuthorizationDescription authorization) {
-			// We don't support revoking tokens yet.
-			return true;
+		public bool IsAuthorizationValid(IAuthorizationDescription authorization) {
+			return this.IsAuthorizationValid(authorization.Scope, authorization.ClientIdentifier, authorization.UtcIssued, authorization.User);
 		}
 
 		#endregion
+
+		public bool CanBeAutoApproved(EndUserAuthorizationRequest authorizationRequest) {
+			if (authorizationRequest == null) {
+				throw new ArgumentNullException("authorizationRequest");
+			}
+
+			// NEVER issue an auto-approval to a client that would end up getting an access token immediately
+			// (without a client secret), as that would allow ANY client to spoof an approved client's identity
+			// and obtain unauthorized access to user data.
+			if (authorizationRequest.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
+				// Never issue auto-approval if the client secret is blank, since that too makes it easy to spoof
+				// a client's identity and obtain unauthorized access.
+				var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == authorizationRequest.ClientIdentifier);
+				if (!string.IsNullOrEmpty(requestingClient.ClientSecret)) {
+					return this.IsAuthorizationValid(
+						authorizationRequest.Scope,
+						authorizationRequest.ClientIdentifier,
+						DateTime.UtcNow,
+						HttpContext.Current.User.Identity.Name);
+				}
+			}
+
+			// Default to not auto-approving.
+			return false;
+		}
+
+		private bool IsAuthorizationValid(string requestedScope, string clientIdentifier, DateTime issuedUtc, string username)
+		{
+			var stringCompare = StringComparer.Ordinal;
+			var requestedScopes = OAuthUtilities.BreakUpScopes(requestedScope, stringCompare);
+
+			var grantedScopeStrings = from auth in Database.DataContext.ClientAuthorizations
+									  where
+										auth.Client.ClientIdentifier == clientIdentifier &&
+										auth.CreatedOnUtc <= issuedUtc &&
+										auth.User.AuthenticationTokens.Any(token => token.ClaimedIdentifier == username)
+									  select auth.Scope;
+
+			if (!grantedScopeStrings.Any()) {
+				// No granted authorizations prior to the issuance of this token, so it must have been revoked.
+				// Even if later authorizations restore this client's ability to call in, we can't allow
+				// access tokens issued before the re-authorization because the revoked authorization should
+				// effectively and permanently revoke all access and refresh tokens.
+				return false;
+			}
+
+			var grantedScopes = new HashSet<string>(stringCompare);
+			foreach (string scope in grantedScopeStrings) {
+				grantedScopes.UnionWith(OAuthUtilities.BreakUpScopes(scope, stringCompare));
+			}
+
+			return requestedScopes.IsSubsetOf(grantedScopes);
+		}
 	}
 }

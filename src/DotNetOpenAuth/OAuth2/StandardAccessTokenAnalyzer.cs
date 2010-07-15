@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// This method also responsible to throw a <see cref="ProtocolException"/> or return
 		/// <c>false</c> when the access token is expired, invalid, or from an untrusted authorization server.
 		/// </remarks>
-		public bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out string scope) {
+		public virtual bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out string scope) {
 			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
 			var token = accessTokenFormatter.Deserialize(message, accessToken);
 			user = token.User;

@@ -55,7 +55,7 @@
           <Property Name="ClientIdentifier" Type="varchar" Nullable="false" MaxLength="255" />
           <Property Name="ClientSecret" Type="varchar" MaxLength="255" />
           <Property Name="Callback" Type="varchar" MaxLength="2048" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
         </EntityType>
         <EntityType Name="ClientAuthorization">
           <Key>
@@ -284,7 +284,7 @@
           <Property Type="String" Name="ClientIdentifier" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ClientSecret" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="CallbackAsString" MaxLength="2048" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Name" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Name" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="ClientAuthorizations" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="Client" ToRole="ClientAuthorization" />
         </EntityType>
         <EntityType Name="ClientAuthorization">

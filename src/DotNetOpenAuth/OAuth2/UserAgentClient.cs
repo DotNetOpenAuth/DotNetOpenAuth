@@ -36,6 +36,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null, "authorizationEndpoint");
 		}
 
+		// TODO: remove this.  user agent clients can't keep secrets.
+		public new string ClientSecret {
+			get { return base.ClientSecret; }
+			set { base.ClientSecret = value; }
+		}
+
 		/// <summary>
 		/// Generates a URL that the user's browser can be directed to in order to authorize
 		/// this client to access protected data at some resource server.
@@ -65,7 +71,8 @@ namespace DotNetOpenAuth.OAuth2 {
 				ClientIdentifier = this.ClientIdentifier,
 				Scope = authorization.Scope,
 				Callback = authorization.Callback,
-				ResponseType = EndUserAuthorizationResponseType.AccessToken,
+				// TODO: bring back ResponseType = AccessToken, since user agents can't keep secrets, thus can't process authorization codes.
+				//ResponseType = EndUserAuthorizationResponseType.AccessToken,
 			};
 
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);

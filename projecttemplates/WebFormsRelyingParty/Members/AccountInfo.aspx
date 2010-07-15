@@ -91,7 +91,9 @@
 					<li>
 						<asp:Label runat="server" Text='<%# HttpUtility.HtmlEncode(Eval("Client.Name").ToString()) %>' />
 						-
-						<asp:Label ID="Label1" runat="server" Text='<%# HttpUtility.HtmlEncode(Eval("CreatedOn").ToString()) %>' ForeColor="Gray" />
+						<asp:Label ID="Label2" runat="server" Text='<%# HttpUtility.HtmlEncode((string)Eval("Scope")) %>' ForeColor="Gray" />
+						-
+						<asp:Label ID="Label1" runat="server" Text='<%# HttpUtility.HtmlEncode(Eval("CreatedOnUtc").ToString()) %>' ForeColor="Gray" />
 						-
 						<asp:LinkButton ID="revokeLink" runat="server" Text="revoke" OnCommand="revokeToken_Command"
 							CommandName="revokeToken" CommandArgument='<%# Eval("AuthorizationId") %>' />

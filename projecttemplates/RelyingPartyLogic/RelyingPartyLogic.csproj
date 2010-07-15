@@ -127,6 +127,7 @@
     <Compile Include="Policies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelyingPartyApplicationDbStore.cs" />
+    <Compile Include="SpecialAccessTokenAnalyzer.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

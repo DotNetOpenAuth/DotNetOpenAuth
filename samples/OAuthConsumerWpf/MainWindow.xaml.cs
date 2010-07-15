@@ -29,7 +29,11 @@
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Samples.OAuthConsumerWpf.WcfSampleService;
+
+	using OAuth2;
+
 	using OAuth2 = DotNetOpenAuth.OAuth2;
+	using ProtocolVersion = DotNetOpenAuth.OAuth.ProtocolVersion;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -213,8 +217,10 @@
 				////var client = new DotNetOpenAuth.OAuth2.WebAppClient(authServer);
 				////client.PrepareRequestUserAuthorization();
 				var client = new OAuth2.UserAgentClient(authServer, wrapClientIdentifierBox.Text);
+				client.ClientSecret = wrapClientSecretBox.Text;
 
-				var authorizePopup = new Authorize2(client);
+				var authorization = new AuthorizationState { Scope = wrapScopeBox.Text };
+				var authorizePopup = new Authorize2(client, authorization);
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
@@ -236,6 +242,8 @@
 					return;
 				}
 			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
+				MessageBox.Show(this, ex.Message);
+			} catch (WebException ex) {
 				MessageBox.Show(this, ex.Message);
 			}
 		}

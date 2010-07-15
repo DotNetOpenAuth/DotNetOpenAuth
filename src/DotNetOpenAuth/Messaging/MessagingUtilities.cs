@@ -209,6 +209,15 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Cuts off precision beyond a second on a DateTime value.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <returns>A DateTime with a 0 millisecond component.</returns>
+		public static DateTime CutToSecond(this DateTime value) {
+			return value - TimeSpan.FromMilliseconds(value.Millisecond);
+		}
+
+		/// <summary>
 		/// Strips any and all URI query parameters that serve as parts of a message.
 		/// </summary>
 		/// <param name="uri">The URI that may contain query parameters to remove.</param>

@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(RelyingPartyLogic.User), "ClientAuthorization", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.ClientAuthorization))]
 
 // Original file name:
-// Generation date: 7/14/2010 7:00:56 AM
+// Generation date: 7/14/2010 9:35:17 PM
 namespace RelyingPartyLogic
 {
     
@@ -1190,12 +1190,14 @@ namespace RelyingPartyLogic
         /// </summary>
         /// <param name="clientId">Initial value of ClientId.</param>
         /// <param name="clientIdentifier">Initial value of ClientIdentifier.</param>
+        /// <param name="name">Initial value of Name.</param>
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public static Client CreateClient(int clientId, string clientIdentifier)
+        public static Client CreateClient(int clientId, string clientIdentifier, string name)
         {
             Client client = new Client();
             client.ClientId = clientId;
             client.ClientIdentifier = clientIdentifier;
+            client.Name = name;
             return client;
         }
         /// <summary>
@@ -1309,7 +1311,7 @@ namespace RelyingPartyLogic
         /// <summary>
         /// There are no comments for property Name in the schema.
         /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
         public string Name
@@ -1322,7 +1324,7 @@ namespace RelyingPartyLogic
             {
                 this.OnNameChanging(value);
                 this.ReportPropertyChanging("Name");
-                this._Name = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this._Name = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
                 this.ReportPropertyChanged("Name");
                 this.OnNameChanged();
             }

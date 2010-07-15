@@ -45,10 +45,16 @@ namespace DotNetOpenAuth.OAuth2 {
 			return message;
 		}
 
-		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, Uri callback = null) {
+		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, string scope = null, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
 			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, username, callback);
+
+			// Customize the approved scope if the authorization server has decided to do so.
+			if (scope != null) {
+				response.Scope = scope;
+			}
+
 			this.Channel.Send(response);
 		}
 

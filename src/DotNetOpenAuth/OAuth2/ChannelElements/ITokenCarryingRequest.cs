@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
+	using System.Security.Cryptography;
+
 	using Messaging;
 
 	/// <summary>
