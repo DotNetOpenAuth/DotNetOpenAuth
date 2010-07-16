@@ -153,10 +153,10 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="1" TabIndex="202">Token Endpoint URL</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapTokenUrlBox" Text="http://localhost:54189/OAuthTokenEndpoint.ashx" TabIndex="203" />
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapTokenUrlBox" Text="http://localhost:18916/OAuthTokenEndpoint.ashx" TabIndex="203" />
                 <Label Grid.Row="1" Grid.Column="2" TabIndex="204">POST</Label>
                 <Label Grid.Row="2" TabIndex="205">User Authorization URL</Label>
-                <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" Text="http://localhost:54189/Members/OAuthAuthorize.aspx" TabIndex="206" />
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" Text="http://localhost:18916/Account/Authorize" TabIndex="206" />
                 <Label Grid.Row="2" Grid.Column="2" TabIndex="207">GET</Label>
                 <Label Grid.Row="0" TabIndex="200">Grant Type</Label>
                 <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="0" TabIndex="201">
@@ -167,7 +167,7 @@
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="3" TabIndex="207">Resource URL</Label>
-                <TextBox Grid.Row="3" Grid.Column="1" x:Name="wrapResourceUrlBox" Text="http://localhost:54189/Members/" TabIndex="208" />
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="wrapResourceUrlBox" Text="http://localhost:18916/" TabIndex="208" />
                 <ComboBox Grid.Row="3" Grid.Column="2" x:Name="wrapResourceHttpMethodList" SelectedIndex="0" TabIndex="209">
                     <ComboBox.Items>
                         <ComboBoxItem>GET w/ header</ComboBoxItem>
