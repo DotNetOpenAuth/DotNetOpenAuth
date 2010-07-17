@@ -273,7 +273,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			Contract.Requires<ArgumentNullException>(message != null);
 
 			string signature = this.GetSignature(message);
-			return message.Signature == signature;
+			return MessagingUtilities.EqualsConstantTime(message.Signature, signature);
 		}
 
 		/// <summary>
