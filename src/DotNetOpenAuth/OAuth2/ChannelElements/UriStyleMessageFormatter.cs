@@ -232,7 +232,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				byte[] bytesToSign = this.GetBytesToSign(message);
 				return this.asymmetricSigning.VerifyData(bytesToSign, this.hasherForAsymmetricSigning, message.Signature);
 			} else {
-				return MessagingUtilities.AreEquivalent(message.Signature, this.CalculateSignature(message));
+				return MessagingUtilities.AreEquivalentConstantTime(message.Signature, this.CalculateSignature(message));
 			}
 		}
 

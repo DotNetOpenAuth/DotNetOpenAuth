@@ -840,6 +840,32 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Tests whether two arrays are equal in contents and ordering,
+		/// guaranteeing roughly equivalent execution time regardless of where a signature mismatch may exist.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in the arrays.</typeparam>
+		/// <param name="first">The first array in the comparison.  May not be null.</param>
+		/// <param name="second">The second array in the comparison. May not be null.</param>
+		/// <returns>True if the arrays equal; false otherwise.</returns>
+		/// <remarks>
+		/// Guaranteeing equal execution time is useful in mitigating against timing attacks on a signature
+		/// or other secret.
+		/// </remarks>
+		internal static bool AreEquivalentConstantTime(byte[] first, byte[] second) {
+			Contract.Requires<ArgumentNullException>(first != null);
+			Contract.Requires<ArgumentNullException>(second != null);
+			if (first.Length != second.Length) {
+				return false;
+			}
+
+			int result = 0;
+			for (int i = 0; i < first.Length; i++) {
+				result |= first[i] ^ second[i];
+			}
+			return result == 0;
+		}
+
+		/// <summary>
 		/// Tests two sequences for same contents and ordering.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the arrays.</typeparam>
