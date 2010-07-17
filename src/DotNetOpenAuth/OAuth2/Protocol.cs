@@ -24,14 +24,14 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	internal class Protocol {
 		/// <summary>
-		/// The HTTP authorization scheme "Token";
+		/// The HTTP authorization scheme "OAuth";
 		/// </summary>
-		internal const string HttpAuthorizationScheme = "Token";
+		internal const string HttpAuthorizationScheme = "OAuth";
 
 		/// <summary>
 		/// The format of the HTTP Authorization header value that authorizes OAuth 2.0 requests.
 		/// </summary>
-		internal const string HttpAuthorizationHeaderFormat = "Token token=\"{0}\"";
+		internal const string HttpAuthorizationHeaderFormat = "OAuth token=\"{0}\"";
 
 		/// <summary>
 		/// The "type" string.
