@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets or sets the client secret shared with the Authorization Server.
 		/// </summary>
-		protected internal string ClientSecret { get; set; }
+		public string ClientSecret { get; set; }
 
 		/// <summary>
 		/// Adds the necessary HTTP Authorization header to an HTTP request for protected resources

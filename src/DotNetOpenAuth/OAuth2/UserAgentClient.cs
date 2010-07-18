@@ -23,8 +23,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null)
-			: base(authorizationServer, clientIdentifier) {
+		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
+			: base(authorizationServer, clientIdentifier, clientSecret) {
 		}
 
 		/// <summary>
@@ -34,12 +34,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		public UserAgentClient(Uri authorizationEndpoint)
 			: base(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint }) {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null, "authorizationEndpoint");
-		}
-
-		// TODO: remove this.  user agent clients can't keep secrets.
-		public new string ClientSecret {
-			get { return base.ClientSecret; }
-			set { base.ClientSecret = value; }
 		}
 
 		/// <summary>
@@ -71,8 +65,6 @@ namespace DotNetOpenAuth.OAuth2 {
 				ClientIdentifier = this.ClientIdentifier,
 				Scope = authorization.Scope,
 				Callback = authorization.Callback,
-				// TODO: bring back ResponseType = AccessToken, since user agents can't keep secrets, thus can't process authorization codes.
-				//ResponseType = EndUserAuthorizationResponseType.AccessToken,
 			};
 
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);

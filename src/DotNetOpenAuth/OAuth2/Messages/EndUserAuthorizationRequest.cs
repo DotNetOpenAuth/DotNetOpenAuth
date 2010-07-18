@@ -27,7 +27,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
 			Contract.Requires<ArgumentNullException>(version != null);
 			this.HttpMethods = HttpDeliveryMethods.GetRequest;
-			this.ResponseType = EndUserAuthorizationResponseType.AuthorizationCode;
 		}
 
 		/// <summary>
@@ -42,10 +41,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the type of the authorization that the client expects of the authorization server.
+		/// Gets the type of the authorization that the client expects of the authorization server.
 		/// </summary>
+		/// <value>Always <see cref="EndUserAuthorizationResponseType.AuthorizationCode"/>.  Other response types are not supported.</value>
 		[MessagePart(Protocol.response_type, IsRequired = true, AllowEmpty = false, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
-		public EndUserAuthorizationResponseType ResponseType { get; set; }
+		public EndUserAuthorizationResponseType ResponseType
+		{
+			get { return EndUserAuthorizationResponseType.AuthorizationCode; }
+		}
 
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
