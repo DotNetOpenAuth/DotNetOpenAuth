@@ -203,23 +203,15 @@
 			}
 
 			try {
-				////var client = new DotNetOpenAuth.OAuth2.WebAppClient(authServer);
-				////client.PrepareRequestUserAuthorization();
-				var client = new OAuth2.UserAgentClient(authServer, oauth2ClientIdentifierBox.Text);
-				client.ClientSecret = oauth2ClientSecretBox.Text;
+				var client = new OAuth2.UserAgentClient(authServer, oauth2ClientIdentifierBox.Text, oauth2ClientSecretBox.Text);
 
 				var authorization = new AuthorizationState { Scope = oauth2ScopeBox.Text };
 				var authorizePopup = new Authorize2(client, authorization);
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
-					// One method of OAuth authorization is to tack the ?access_token= onto the query string.
-					var address = new Uri(oauth2ResourceUrlBox.Text);
-					address = new Uri(oauth2ResourceUrlBox.Text + (string.IsNullOrEmpty(address.Query) ? "?" : string.Empty) + "access_token=" + Uri.EscapeDataString(authorizePopup.Authorization.AccessToken));
-					var request = (HttpWebRequest)WebRequest.Create(address);
-
-					// This method tacks on the Authorization header
-					client.AuthorizeRequest(request, authorizePopup.Authorization);
+					var request = (HttpWebRequest)WebRequest.Create(oauth2ResourceUrlBox.Text);
+					client.AuthorizeRequest(request, authorization);
 
 					request.Method = oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
 					using (var resourceResponse = request.GetResponse()) {
@@ -230,7 +222,7 @@
 				} else {
 					return;
 				}
-			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
+			} catch (Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);
 			} catch (WebException ex) {
 				MessageBox.Show(this, ex.Message);
