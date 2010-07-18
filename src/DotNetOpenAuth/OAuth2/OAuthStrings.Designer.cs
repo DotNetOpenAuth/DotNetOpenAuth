@@ -22,14 +22,14 @@ namespace DotNetOpenAuth.OAuth2 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class OAuthWrapStrings {
+    internal class OAuthStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal OAuthWrapStrings() {
+        internal OAuthStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OAuth2 {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOpenAuth.OAuth2.OAuthWrapStrings", typeof(OAuthWrapStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetOpenAuth.OAuth2.OAuthStrings", typeof(OAuthStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace DotNetOpenAuth.OAuth2 {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The requested access scope (&quot;{0}&quot;) exceeds the grant scope (&quot;{1}&quot;)..
+        /// </summary>
+        internal static string AccessScopeExceedsGrantScope {
+            get {
+                return ResourceManager.GetString("AccessScopeExceedsGrantScope", resourceCulture);
             }
         }
         
@@ -102,6 +111,15 @@ namespace DotNetOpenAuth.OAuth2 {
         internal static string NoCallback {
             get {
                 return ResourceManager.GetString("NoCallback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh tokens should not be granted without the request including an access grant..
+        /// </summary>
+        internal static string NoGrantNoRefreshToken {
+            get {
+                return ResourceManager.GetString("NoGrantNoRefreshToken", resourceCulture);
             }
         }
     }

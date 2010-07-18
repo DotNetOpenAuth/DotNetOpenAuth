@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
-			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthWrapStrings.HttpsRequired);
+			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthStrings.HttpsRequired);
 		}
 
 		internal override GrantType GrantType {

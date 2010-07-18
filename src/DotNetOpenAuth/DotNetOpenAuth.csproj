@@ -374,9 +374,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\Messages\AccessProtectedResourceRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAssertionRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenBasicCredentialsRequest.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRequestBase.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenClientCredentialsRequest.cs" />
+    <Compile Include="OAuth2\Messages\AuthenticatedClientRequestBase.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAccessTokenResponse.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationFailedResponse.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponse.cs" />
@@ -668,10 +669,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\Messages\MessageBase.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationRequest.cs" />
     <Compile Include="OAuth2\Protocol.cs" />
-    <Compile Include="OAuth2\OAuthWrapStrings.Designer.cs">
+    <Compile Include="OAuth2\OAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>OAuthWrapStrings.resx</DependentUpon>
+      <DependentUpon>OAuthStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\AuthorizationServerDescription.cs" />
     <Compile Include="OAuth2\WebServerClient.cs" />
@@ -810,9 +811,9 @@ http://opensource.org/licenses/ms-pl.html
     <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js">
       <Copyright>$(StandardCopyright)</Copyright>
     </EmbeddedResource>
-    <EmbeddedResource Include="OAuth2\OAuthWrapStrings.resx">
+    <EmbeddedResource Include="OAuth2\OAuthStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>OAuthWrapStrings.Designer.cs</LastGenOutput>
+      <LastGenOutput>OAuthStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Strings.sr.resx" />
     <EmbeddedResource Include="Xrds\XrdsStrings.sr.resx" />

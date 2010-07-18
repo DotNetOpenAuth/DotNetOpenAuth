@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessScopeExceedsGrantScope" xml:space="preserve">
+    <value>The requested access scope ("{0}") exceeds the grant scope ("{1}").</value>
+  </data>
   <data name="CallbackMismatch" xml:space="preserve">
     <value>Client's pre-registered callback URL ({0}) does not match the one found in the authorization request ({1}).</value>
   </data>
@@ -131,5 +134,8 @@
   </data>
   <data name="NoCallback" xml:space="preserve">
     <value>No callback URI was available for this request.</value>
+  </data>
+  <data name="NoGrantNoRefreshToken" xml:space="preserve">
+    <value>Refresh tokens should not be granted without the request including an access grant.</value>
   </data>
 </root>

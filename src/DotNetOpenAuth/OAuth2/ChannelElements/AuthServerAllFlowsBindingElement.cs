@@ -71,8 +71,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var authorizationRequest = message as EndUserAuthorizationRequest;
 			if (authorizationRequest != null) {
 				var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
-				ErrorUtilities.VerifyProtocol(client.Callback == null || client.Callback == authorizationRequest.Callback, OAuthWrapStrings.CallbackMismatch, client.Callback, authorizationRequest.Callback);
-				ErrorUtilities.VerifyProtocol(client.Callback != null || authorizationRequest.Callback != null, OAuthWrapStrings.NoCallback);
+				ErrorUtilities.VerifyProtocol(client.Callback == null || client.Callback == authorizationRequest.Callback, OAuthStrings.CallbackMismatch, client.Callback, authorizationRequest.Callback);
+				ErrorUtilities.VerifyProtocol(client.Callback != null || authorizationRequest.Callback != null, OAuthStrings.NoCallback);
 
 				return MessageProtections.None;
 			}

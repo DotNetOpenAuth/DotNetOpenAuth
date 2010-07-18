@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The assertion format.</value>
 		[MessagePart(Protocol.assertion_type, IsRequired = true, AllowEmpty = false)]
-		internal string AssertionType { get; set; }
+		internal Uri AssertionType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the assertion.

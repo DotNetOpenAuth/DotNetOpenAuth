@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenBasicCredentialsRequest.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenResourceOwnerPasswordCredentialsRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,11 +12,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 
 	using DotNetOpenAuth.Messaging;
 
-	internal class AccessTokenBasicCredentialsRequest : AccessTokenRequestBase {
+	internal class AccessTokenResourceOwnerPasswordCredentialsRequest : AccessTokenRequestBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenBasicCredentialsRequest"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenResourceOwnerPasswordCredentialsRequest"/> class.
 		/// </summary>
-		internal AccessTokenBasicCredentialsRequest(Uri accessTokenEndpoint, Version version)
+		internal AccessTokenResourceOwnerPasswordCredentialsRequest(Uri accessTokenEndpoint, Version version)
 			: base(accessTokenEndpoint, version) {
 		}
 

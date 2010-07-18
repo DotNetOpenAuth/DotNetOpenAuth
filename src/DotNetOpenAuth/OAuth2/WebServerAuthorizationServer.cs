@@ -148,7 +148,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				return client.Callback;
 			}
 
-			throw ErrorUtilities.ThrowProtocol(OAuthWrapStrings.NoCallback);
+			throw ErrorUtilities.ThrowProtocol(OAuthStrings.NoCallback);
 		}
 	}
 }

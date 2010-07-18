@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client
-		/// in <see cref="EndUserAuthorizationSuccessResponseBase.AuthorizationCode"/>.
+		/// in <see cref="EndUserAuthorizationSuccessAuthCodeResponse.AuthorizationCode"/>.
 		/// </summary>
 		/// <value>The verification code received from the authorization server.</value>
 		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]

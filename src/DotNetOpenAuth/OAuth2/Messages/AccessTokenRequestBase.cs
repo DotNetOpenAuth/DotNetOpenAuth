@@ -13,34 +13,24 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
-	public abstract class AccessTokenRequestBase : MessageBase {
+	/// <summary>
+	/// A message sent from the client to the authorization server to exchange a previously obtained grant for an access token.
+	/// </summary>
+	public abstract class AccessTokenRequestBase : AuthenticatedClientRequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenRequestBase"/> class.
 		/// </summary>
 		/// <param name="tokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
 		protected AccessTokenRequestBase(Uri tokenEndpoint, Version version)
-			: base(version, MessageTransport.Direct, tokenEndpoint) {
+			: base(tokenEndpoint, version) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
 		/// <summary>
-		/// Gets or sets the client identifier previously obtained from the Authorization Server.
+		/// Gets the type of the grant.
 		/// </summary>
-		/// <value>The client identifier.</value>
-		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
-		public string ClientIdentifier { get; internal set; }
-
-		/// <summary>
-		/// Gets or sets the client secret.
-		/// </summary>
-		/// <value>The client secret.</value>
-		/// <remarks>
-		/// REQUIRED. The client secret as described in Section 3.1  (Client Credentials). OPTIONAL if no client secret was issued. 
-		/// </remarks>
-		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
-		public string ClientSecret { get; internal set; }
-
+		/// <value>The type of the grant.</value>
 		[MessagePart(Protocol.grant_type, IsRequired = true, AllowEmpty = false, Encoder = typeof(GrantTypeEncoder))]
 		internal abstract GrantType GrantType { get; }
 
@@ -63,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			base.EnsureValidMessage();
 			ErrorUtilities.VerifyProtocol(
 				DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
-				OAuthWrapStrings.HttpsRequired);
+				OAuthStrings.HttpsRequired);
 		}
 	}
 }

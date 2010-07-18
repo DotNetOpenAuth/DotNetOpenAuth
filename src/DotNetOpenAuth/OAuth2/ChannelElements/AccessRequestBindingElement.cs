@@ -69,6 +69,14 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return MessageProtections.None;
 			}
 
+			var accessTokenResponse = message as AccessTokenSuccessResponse;
+			if (accessTokenResponse != null)
+			{
+				var directResponseMessage = (IDirectResponseProtocolMessage)accessTokenResponse;
+				var accessTokenRequest = (AccessTokenRequestBase)directResponseMessage.OriginatingRequest;
+				ErrorUtilities.VerifyProtocol(accessTokenRequest.GrantType != GrantType.None || accessTokenResponse.RefreshToken == null, OAuthStrings.NoGrantNoRefreshToken);
+			}
+
 			return null;
 		}
 
@@ -119,6 +127,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					// Check that the client secret is correct.
 					var client = this.AuthorizationServer.GetClientOrThrow(accessRequest.ClientIdentifier);
 					ErrorUtilities.VerifyProtocol(string.Equals(client.Secret, accessRequest.ClientSecret, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
+
+					// Make sure the scope the client is requesting does not exceed the scope in the grant.
+					ErrorUtilities.VerifyProtocol(OAuthUtilities.IsScopeSubset(accessRequest.Scope, tokenRequest.AuthorizationDescription.Scope), OAuthStrings.AccessScopeExceedsGrantScope, accessRequest.Scope, tokenRequest.AuthorizationDescription.Scope);
 				}
 
 				// Make sure the authorization this token represents hasn't already been revoked.

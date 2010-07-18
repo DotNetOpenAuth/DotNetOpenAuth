@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		private static readonly Type[] MessageTypes = new Type[] {
 			typeof(AccessTokenRefreshRequest),
 			typeof(AccessTokenAuthorizationCodeRequest),
-			typeof(AccessTokenBasicCredentialsRequest),
+			typeof(AccessTokenResourceOwnerPasswordCredentialsRequest),
 			typeof(AccessTokenAssertionRequest),
 			typeof(AccessTokenClientCredentialsRequest),
 			typeof(AccessTokenSuccessResponse),
