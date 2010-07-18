@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal static void AuthorizeWithOAuthWrap(this HttpWebRequest request, string accessToken) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
-			Contract.Requires<ArgumentException>(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), "The access token contains characters that must not appear in the HTTP Authorization header.");
+			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), "The access token contains characters that must not appear in the HTTP Authorization header.");
 
 			request.Headers[HttpRequestHeader.Authorization] = string.Format(
 				CultureInfo.InvariantCulture,
