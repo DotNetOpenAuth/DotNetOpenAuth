@@ -120,22 +120,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				var failure = response as EndUserAuthorizationFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 				if (success != null) {
-					var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
-						ClientIdentifier = this.ClientIdentifier,
-						ClientSecret = this.ClientSecret,
-						Callback = authorizationState.Callback,
-						AuthorizationCode = success.AuthorizationCode,
-					};
-					IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
-					var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
-					var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
-					if (accessTokenSuccess != null) {
-						this.UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
-					} else {
-						authorizationState.Delete();
-						string error = failedAccessTokenResponse != null ? failedAccessTokenResponse.Error : "(unknown)";
-						ErrorUtilities.ThrowProtocol(OAuthWrapStrings.CannotObtainAccessTokenWithReason, error);
-					}
+					UpdateAuthorizationWithResponse(authorizationState, success);
 				} else { // failure
 					Logger.OAuth.Info("User refused to grant the requested authorization at the Authorization Server.");
 					authorizationState.Delete();

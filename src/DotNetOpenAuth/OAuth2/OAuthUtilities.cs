@@ -17,7 +17,63 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// Some common utility methods for OAuth 2.0.
 	/// </summary>
-	internal static class OAuthUtilities {
+	public static class OAuthUtilities {
+		/// <summary>
+		/// The delimiter between scope elements.
+		/// </summary>
+		private static char[] scopeDelimiter = new char[] { ' ' };
+
+		/// <summary>
+		/// The characters that may appear in an access token that is included in an HTTP Authorization header.
+		/// </summary>
+		/// <remarks>
+		/// This is defined in OAuth 2.0 DRAFT 10, section 5.1.1. (http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authz-header)
+		/// </remarks>
+		private static string accessTokenAuthorizationHeaderAllowedCharacters = MessagingUtilities.UppercaseLetters +
+		                                                                        MessagingUtilities.LowercaseLetters +
+		                                                                        MessagingUtilities.Digits +
+		                                                                        @"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
+
+		/// <summary>
+		/// Determines whether one given scope is a subset of another scope.
+		/// </summary>
+		/// <param name="requestedScope">The requested scope, which may be a subset of <paramref name="grantedScope"/>.</param>
+		/// <param name="grantedScope">The granted scope, the suspected superset.</param>
+		/// <returns>
+		/// 	<c>true</c> if all the elements that appear in <paramref name="requestedScope"/> also appear in <paramref name="grantedScope"/>;
+		/// <c>false</c> otherwise.
+		/// </returns>
+		public static bool IsScopeSubset(string requestedScope, string grantedScope) {
+			if (string.IsNullOrEmpty(requestedScope)) {
+				return true;
+			}
+
+			if (string.IsNullOrEmpty(grantedScope)) {
+				return false;
+			}
+
+			var requestedScopes = new HashSet<string>(requestedScope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries));
+			var grantedScopes = new HashSet<string>(grantedScope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries));
+			return requestedScopes.IsSubsetOf(grantedScopes);
+		}
+
+		/// <summary>
+		/// Identifies individual scope elements
+		/// </summary>
+		/// <param name="scope">The scope.</param>
+		/// <param name="scopeComparer">The scope comparer, allowing scopes to be case sensitive or insensitive.
+		/// Usually <see cref="StringComparer.Ordinal"/> or <see cref="StringComparer.OrdinalIgnoreCase"/>.</param>
+		/// <returns></returns>
+		public static HashSet<string> BreakUpScopes(string scope, StringComparer scopeComparer) {
+			Contract.Requires<ArgumentNullException>(scopeComparer != null, "scopeComparer");
+
+			if (string.IsNullOrEmpty(scope)) {
+				return new HashSet<string>();
+			}
+
+			return new HashSet<string>(scope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries), scopeComparer);
+		}
+
 		/// <summary>
 		/// Authorizes an HTTP request using an OAuth 2.0 access token in an HTTP Authorization header.
 		/// </summary>
@@ -26,10 +82,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal static void AuthorizeWithOAuthWrap(this HttpWebRequest request, string accessToken) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
+			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), "The access token contains characters that must not appear in the HTTP Authorization header.");
+
 			request.Headers[HttpRequestHeader.Authorization] = string.Format(
 				CultureInfo.InvariantCulture,
 				Protocol.HttpAuthorizationHeaderFormat,
-				Uri.EscapeDataString(accessToken));
+				accessToken);
 		}
 
 		/// <summary>

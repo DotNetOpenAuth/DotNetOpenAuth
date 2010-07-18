@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
-	internal class EndUserAuthorizationFailedResponse : MessageBase, IMessageWithClientState {
+	public class EndUserAuthorizationFailedResponse : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponseBase"/> class.
 		/// </summary>

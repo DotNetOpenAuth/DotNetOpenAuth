@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Security.Principal;
+	using System.ServiceModel.Channels;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
@@ -87,15 +89,55 @@ namespace DotNetOpenAuth.OAuth2 {
 
 					throw ErrorUtilities.ThrowProtocol("Bad access token");
 				} else {
-					throw ErrorUtilities.ThrowProtocol("Missing access token.");
+					var response = new UnauthorizedResponse(new ProtocolException("Missing access token"));
+
+					username = null;
+					scope = null;
+					return this.Channel.PrepareResponse(response);
 				}
 			} catch (ProtocolException ex) {
-				var response = new UnauthorizedResponse(request, ex);
+				var response = request != null ? new UnauthorizedResponse(request, ex) : new UnauthorizedResponse(ex);
 
 				username = null;
 				scope = null;
 				return this.Channel.PrepareResponse(response);
 			}
+		}
+
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="httpRequestInfo">The HTTP request info.</param>
+		/// <param name="principal">The principal that contains the user and roles that the access token is authorized for.</param>
+		/// <returns>
+		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// </returns>
+		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out IPrincipal principal) {
+			string username, scope;
+			var result = this.VerifyAccess(httpRequestInfo, out username, out scope);
+			if (result == null) {
+				principal = new OAuth.ChannelElements.OAuthPrincipal(username, scope != null ? scope.Split(' ') : new string[0]);
+			} else {
+				principal = null;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="request">HTTP details from an incoming WCF message.</param>
+		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
+		/// <param name="principal">The principal that contains the user and roles that the access token is authorized for.</param>
+		/// <returns>
+		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// </returns>
+		public virtual OutgoingWebResponse VerifyAccess(HttpRequestMessageProperty request, Uri requestUri, out IPrincipal principal) {
+			Contract.Requires<ArgumentNullException>(request != null, "request");
+			Contract.Requires<ArgumentNullException>(requestUri != null, "requestUri");
+
+			return this.VerifyAccess(new HttpRequestInfo(request, requestUri), out principal);
 		}
 	}
 }

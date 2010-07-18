@@ -5,10 +5,8 @@
 	using System.Web;
 
 	public class AccountAuthorizeModel {
-		public string ConsumerApp { get; set; }
+		public string ClientApp { get; set; }
 
-		public bool IsUnsafeRequest { get; set; }
-
-		public string VerificationCode { get; set; }
+		public string Scope { get; set; }
 	}
 }

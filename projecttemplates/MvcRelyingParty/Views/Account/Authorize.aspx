@@ -12,9 +12,13 @@
 	</div>
 	<p>
 		The
-		<%= Html.Encode(Model.ConsumerApp) %>
+		<%= Html.Encode(Model.ClientApp) %>
 		application is requesting to access the private data in your account here. Is that
 		alright with you?
+	</p>
+	<p>
+		<b>Requested access: </b>
+		<%= Html.Encode(Model.Scope) %>
 	</p>
 	<p>
 		If you grant access now, you can revoke it at any time by returning to
@@ -31,18 +35,6 @@
 			<b>Javascript appears to be disabled in your browser. </b>This page requires Javascript
 			to be enabled to better protect your security.
 		</div>
-		<% if (Model.IsUnsafeRequest) { %>
-		<div style="background-color: red; color: white; font-weight: bold">
-			This website is registered with
-			<asp:Label runat="server" ID="serviceProviderDomainNameLabel" />
-			to make authorization requests, but has not been configured to send requests securely.
-			If you grant access but you did not initiate this request at
-			<%= Html.Encode(Model.ConsumerApp) %>, it may be possible for other users of
-			<%= Html.Encode(Model.ConsumerApp) %>
-			to access your data. We recommend you deny access unless you are certain that you
-			initiated this request directly with
-			<%= Html.Encode(Model.ConsumerApp) %>.
-		<% } %>
 
 		<script language="javascript" type="text/javascript">
 			//<![CDATA[

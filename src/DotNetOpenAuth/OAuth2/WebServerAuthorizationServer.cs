@@ -45,11 +45,16 @@ namespace DotNetOpenAuth.OAuth2 {
 			return message;
 		}
 
-		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, Uri callback = null) {
+		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, string scope = null, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
-			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, callback);
-			response.AuthorizingUsername = username;
+			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, username, callback);
+
+			// Customize the approved scope if the authorization server has decided to do so.
+			if (scope != null) {
+				response.Scope = scope;
+			}
+
 			this.Channel.Send(response);
 		}
 
@@ -71,7 +76,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (request != null) {
 				// This convenience method only encrypts access tokens assuming that this auth server
 				// doubles as the resource server.
-				response = this.PrepareAccessTokenResponse(request, this.AuthorizationServer.AccessTokenSigningPrivateKey);
+				RSAParameters resourceServerPublicKey = this.AuthorizationServer.AccessTokenSigningPrivateKey;
+				response = this.PrepareAccessTokenResponse(request, resourceServerPublicKey);
 				return true;
 			}
 
@@ -89,7 +95,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			return request;
 		}
 
-		internal EndUserAuthorizationFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
+		public EndUserAuthorizationFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Ensures(Contract.Result<EndUserAuthorizationFailedResponse>() != null);
 
@@ -101,8 +107,9 @@ namespace DotNetOpenAuth.OAuth2 {
 			return response;
 		}
 
-		internal EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
+		public EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(username));
 			Contract.Ensures(Contract.Result<EndUserAuthorizationSuccessResponseBase>() != null);
 
 			if (callback == null) {
@@ -111,8 +118,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 			EndUserAuthorizationSuccessResponseBase response;
-			switch (authorizationRequest.ResponseType)
-			{
+			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
 					response = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
 					break;
@@ -123,7 +129,8 @@ namespace DotNetOpenAuth.OAuth2 {
 				default:
 					throw ErrorUtilities.ThrowInternal("Unexpected response type.");
 			}
-			
+
+			response.AuthorizingUsername = username;
 			return response;
 		}
 

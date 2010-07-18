@@ -184,6 +184,28 @@ namespace DotNetOpenAuth.OAuth2 {
 			authorizationState.SaveChanges();
 		}
 
+		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAuthCodeResponse authorizationSuccess) {
+			Contract.Requires<ArgumentNullException>(authorizationState != null, "authorizationState");
+			Contract.Requires<ArgumentNullException>(authorizationSuccess != null, "authorizationSuccess");
+
+			var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
+				ClientIdentifier = this.ClientIdentifier,
+				ClientSecret = this.ClientSecret,
+				Callback = authorizationState.Callback,
+				AuthorizationCode = authorizationSuccess.AuthorizationCode,
+			};
+			IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
+			var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
+			var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
+			if (accessTokenSuccess != null) {
+				this.UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
+			} else {
+				authorizationState.Delete();
+				string error = failedAccessTokenResponse != null ? failedAccessTokenResponse.Error : "(unknown)";
+				ErrorUtilities.ThrowProtocol(OAuthWrapStrings.CannotObtainAccessTokenWithReason, error);
+			}
+		}
+
 		/// <summary>
 		/// Calculates the fraction of life remaining in an access token.
 		/// </summary>

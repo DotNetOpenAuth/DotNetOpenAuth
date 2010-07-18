@@ -12,9 +12,7 @@ namespace RelyingPartyLogic {
 	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuth;
-	using DotNetOpenAuth.OAuth.ChannelElements;
-	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.OAuth2;
 
 	public class OAuthAuthenticationModule : IHttpModule {
 		private HttpApplication application;
@@ -51,10 +49,13 @@ namespace RelyingPartyLogic {
 				return;
 			}
 
-			IDirectedProtocolMessage incomingMessage = OAuthServiceProvider.ServiceProvider.ReadRequest(new HttpRequestInfo(this.application.Context.Request));
-			var authorization = incomingMessage as AccessProtectedResourceRequest;
-			if (authorization != null) {
-				this.application.Context.User = OAuthServiceProvider.ServiceProvider.CreatePrincipal(authorization);
+			var tokenAnalyzer = new SpecialAccessTokenAnalyzer(OAuthAuthorizationServer.AsymmetricKey, OAuthAuthorizationServer.AsymmetricKey);
+			var resourceServer = new ResourceServer(tokenAnalyzer);
+
+			IPrincipal principal;
+			var errorMessage = resourceServer.VerifyAccess(new HttpRequestInfo(this.application.Context.Request), out principal);
+			if (errorMessage == null) {
+				this.application.Context.User = principal;
 			}
 		}
 
@@ -70,7 +71,7 @@ namespace RelyingPartyLogic {
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Web.Security.RoleManagerEventArgs"/> instance containing the event data.</param>
 		private void roleManager_GetRoles(object sender, RoleManagerEventArgs e) {
-			if (this.application.User is OAuthPrincipal) {
+			if (this.application.User is DotNetOpenAuth.OAuth.ChannelElements.OAuthPrincipal) {
 				e.RolesPopulated = true;
 			}
 		}

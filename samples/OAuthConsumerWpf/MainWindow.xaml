@@ -144,6 +144,7 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -151,41 +152,43 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="1">Token Endpoint URL</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapTokenUrlBox" Text="https://graph.facebook.com/oauth/access_token" />
-                <Label Grid.Row="1" Grid.Column="2">POST</Label>
-                <Label Grid.Row="2">User Authorization URL</Label>
-                <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" Text="https://graph.facebook.com/oauth/authorize?display=popup" />
-                <Label Grid.Row="2" Grid.Column="2">GET</Label>
-                <Label Grid.Row="0">Grant Type</Label>
-                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="0">
+                <Label Grid.Row="1" TabIndex="202">Token Endpoint URL</Label>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="wrapTokenUrlBox" Text="http://localhost:18916/OAuthTokenEndpoint.ashx" TabIndex="203" />
+                <Label Grid.Row="1" Grid.Column="2" TabIndex="204">POST</Label>
+                <Label Grid.Row="2" TabIndex="205">User Authorization URL</Label>
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="wrapAuthorizationUrlBox" Text="http://localhost:18916/Account/Authorize" TabIndex="206" />
+                <Label Grid.Row="2" Grid.Column="2" TabIndex="207">GET</Label>
+                <Label Grid.Row="0" TabIndex="200">Grant Type</Label>
+                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="0" TabIndex="201">
                     <ComboBox.Items>
                         <ComboBoxItem>Authorization Code</ComboBoxItem>
                         <ComboBoxItem>Resource Owner Basic Credentials</ComboBoxItem>
                         <ComboBoxItem>Access Code (direct)</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
-                <Label Grid.Row="3">Resource URL</Label>
-                <TextBox Grid.Row="3" Grid.Column="1" x:Name="wrapResourceUrlBox" Text="https://graph.facebook.com/me" />
-                <ComboBox Grid.Row="3" Grid.Column="2" x:Name="wrapResourceHttpMethodList" SelectedIndex="0">
+                <Label Grid.Row="3" TabIndex="207">Resource URL</Label>
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="wrapResourceUrlBox" Text="http://localhost:18916/" TabIndex="208" />
+                <ComboBox Grid.Row="3" Grid.Column="2" x:Name="wrapResourceHttpMethodList" SelectedIndex="0" TabIndex="209">
                     <ComboBox.Items>
                         <ComboBoxItem>GET w/ header</ComboBoxItem>
                         <ComboBoxItem>GET w/ querystring</ComboBoxItem>
                         <ComboBoxItem>POST</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
-                <Label Grid.Row="4">Client Identifier</Label>
-                <TextBox Grid.Row="4" Grid.Column="1" x:Name="wrapClientIdentifierBox" Grid.ColumnSpan="2" Text="367207604173" />
-                <Label Grid.Row="5">Client Secret</Label>
-                <TextBox Grid.Row="5" Grid.Column="1" x:Name="wrapClientSecretBox" Grid.ColumnSpan="2" Text="1df77e64055c4d7d3583cefdf2bc62d7"/>
-                <Label Grid.Row="6">OAuth 2.0 version</Label>
-                <ComboBox Grid.Row="6" Grid.Column="1" SelectedIndex="0" x:Name="wrapVersion">
+                <Label Grid.Row="4" TabIndex="210">Client Identifier</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" x:Name="wrapClientIdentifierBox" Grid.ColumnSpan="2" Text="a" TabIndex="211" />
+                <Label Grid.Row="5" TabIndex="212">Client Secret</Label>
+                <TextBox Grid.Row="5" Grid.Column="1" x:Name="wrapClientSecretBox" Grid.ColumnSpan="2" Text="b" TabIndex="213" />
+                <Label Grid.Row="6" TabIndex="214">Scope</Label>
+                <TextBox Grid.Row="6" Grid.Column="1" x:Name="wrapScopeBox" TabIndex="215" Text="some scope" />
+                <Label Grid.Row="7" TabIndex="216">OAuth 2.0 version</Label>
+                <ComboBox Grid.Row="7" Grid.Column="1" SelectedIndex="0" x:Name="wrapVersion" TabIndex="217">
                     <ComboBox.Items>
                         <ComboBoxItem>2.0 DRAFT 9</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
-                <Button Grid.Row="7" Grid.Column="1" x:Name="wrapBeginButton" Click="wrapBeginButton_Click">Begin</Button>
-                <TextBox Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="3" Name="wrapResultsBox" IsReadOnly="True" />
+                <Button Grid.Row="8" Grid.Column="1" x:Name="wrapBeginButton" Click="wrapBeginButton_Click" TabIndex="218">Begin</Button>
+                <TextBox Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Name="wrapResultsBox" IsReadOnly="True" TabIndex="219"/>
             </Grid>
         </TabItem>
     </TabControl>

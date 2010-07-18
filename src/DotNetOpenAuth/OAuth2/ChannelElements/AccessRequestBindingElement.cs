@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -52,12 +53,18 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var tokenRequest = message as ITokenCarryingRequest;
-			if (tokenRequest != null) {
-				ErrorUtilities.VerifyInternal(tokenRequest.CodeOrTokenType == CodeOrTokenType.AuthorizationCode, "Only verification codes are expected here.");
-				var tokenBag = (AuthorizationCode)tokenRequest.AuthorizationDescription;
-				var formatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-				tokenRequest.CodeOrToken = formatter.Serialize(tokenBag);
+			var response = message as ITokenCarryingRequest;
+			if (response != null) {
+				switch (response.CodeOrTokenType)
+				{
+					case CodeOrTokenType.AuthorizationCode:
+						var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
+						var code = (AuthorizationCode)response.AuthorizationDescription;
+						response.CodeOrToken = codeFormatter.Serialize(code);
+						break;
+					default:
+						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));
+				}
 
 				return MessageProtections.None;
 			}

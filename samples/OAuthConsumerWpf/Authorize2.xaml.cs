@@ -22,14 +22,16 @@
 	public partial class Authorize2 : Window {
 		private UserAgentClient client;
 
-		internal Authorize2(UserAgentClient client) {
+		internal Authorize2(UserAgentClient client, IAuthorizationState authorizationState) {
 			Contract.Requires(client != null, "client");
+			Contract.Requires(authorizationState != null, "authorizationState");
 
 			InitializeComponent();
 
 			this.client = client;
-			this.Authorization = new AuthorizationState();
-			this.webBrowser.Navigate(this.client.RequestUserAuthorization(this.Authorization));
+			this.Authorization = authorizationState;
+			Uri authorizationUrl = this.client.RequestUserAuthorization(this.Authorization);
+			this.webBrowser.Navigate(authorizationUrl.AbsoluteUri); // use AbsoluteUri to workaround bug in WebBrowser that calls Uri.ToString instead of Uri.AbsoluteUri leading to escaping errors.
 		}
 
 		public IAuthorizationState Authorization { get; set; }

@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	[ContractClass(typeof(IAuthorizationServerContract))]
 	public interface IAuthorizationServer {
 		/// <summary>
-		/// Gets the secret used to symmetrically encrypt and sign verification codes and refresh tokens.
+		/// Gets the secret used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
 		/// <remarks>
 		/// This secret should be kept strictly confidential in the authorization server(s)
@@ -39,9 +39,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		RSAParameters AccessTokenSigningPrivateKey { get; }
 
 		/// <summary>
-		/// Gets the verification code nonce store to use to ensure that verification codes can only be used once.
+		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
-		/// <value>The verification code nonce store.</value>
+		/// <value>The authorization code nonce store.</value>
 		INonceStore VerificationCodeNonceStore { get; }
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Gets the secret used to symmetrically encrypt and sign verification codes and refresh tokens.
+		/// Gets the secret used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
 		/// <value></value>
 		/// <remarks>
@@ -117,9 +117,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Gets the verification code nonce store to use to ensure that verification codes can only be used once.
+		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
-		/// <value>The verification code nonce store.</value>
+		/// <value>The authorization code nonce store.</value>
 		INonceStore IAuthorizationServer.VerificationCodeNonceStore {
 			get {
 				Contract.Ensures(Contract.Result<INonceStore>() != null);

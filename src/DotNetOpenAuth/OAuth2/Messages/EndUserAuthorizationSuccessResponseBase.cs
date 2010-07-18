@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Diagnostics.Contracts;
+	using System.Security.Cryptography;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
@@ -15,7 +17,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, and to return the user
 	/// to the Client where they started their experience.
 	/// </summary>
-	internal abstract class EndUserAuthorizationSuccessResponseBase : MessageBase, IMessageWithClientState {
+	public abstract class EndUserAuthorizationSuccessResponseBase : MessageBase, IMessageWithClientState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponseBase"/> class.
 		/// </summary>
