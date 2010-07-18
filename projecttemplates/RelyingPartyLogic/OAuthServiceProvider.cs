@@ -25,7 +25,7 @@ namespace RelyingPartyLogic {
 		/// <summary>
 		/// The shared authorization server.
 		/// </summary>
-		private static WebServerAuthorizationServer authorizationServer;
+		private static AuthorizationServer authorizationServer;
 
 		/// <summary>
 		/// The lock to synchronize initialization of the <see cref="authorizationServer"/> field.
@@ -36,7 +36,7 @@ namespace RelyingPartyLogic {
 		/// Gets the service provider.
 		/// </summary>
 		/// <value>The service provider.</value>
-		public static WebServerAuthorizationServer AuthorizationServer {
+		public static AuthorizationServer AuthorizationServer {
 			get {
 				EnsureInitialized();
 				return authorizationServer;
@@ -68,7 +68,7 @@ namespace RelyingPartyLogic {
 					}
 
 					if (authorizationServer == null) {
-						authorizationServer = new WebServerAuthorizationServer(new OAuthAuthorizationServer());
+						authorizationServer = new AuthorizationServer(new OAuthAuthorizationServer());
 					}
 				}
 			}

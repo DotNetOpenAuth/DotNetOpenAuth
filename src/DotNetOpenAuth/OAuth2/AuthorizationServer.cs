@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WebServerAuthorizationServer.cs" company="Andrew Arnott">
+// <copyright file="AuthorizationServer.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -18,12 +18,12 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// Authorization Server supporting the web server flow.
 	/// </summary>
-	public class WebServerAuthorizationServer : AuthorizationServerBase {
+	public class AuthorizationServer : AuthorizationServerBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebServerAuthorizationServer"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizationServer"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		public WebServerAuthorizationServer(IAuthorizationServer authorizationServer)
+		public AuthorizationServer(IAuthorizationServer authorizationServer)
 			: base(authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
 		}

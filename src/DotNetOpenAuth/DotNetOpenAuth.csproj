@@ -392,7 +392,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\ResourceServer.cs" />
     <Compile Include="OAuth2\StandardAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\UserAgentClient.cs" />
-    <Compile Include="OAuth2\WebServerAuthorizationServer.cs" />
+    <Compile Include="OAuth2\AuthorizationServer.cs" />
     <Compile Include="OAuth2\OAuthUtilities.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />

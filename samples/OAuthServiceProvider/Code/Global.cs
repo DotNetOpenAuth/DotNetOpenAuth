@@ -22,7 +22,7 @@
 		/// </summary>
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthServiceProvider");
 
-		public static WebServerAuthorizationServer AuthorizationServer = new WebServerAuthorizationServer(new OAuth2AuthorizationServer());
+		public static AuthorizationServer AuthorizationServer = new AuthorizationServer(new OAuth2AuthorizationServer());
 
 		/// <summary>
 		/// Gets the transaction-protected database connection for the current request.
