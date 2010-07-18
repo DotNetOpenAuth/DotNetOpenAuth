@@ -9,21 +9,10 @@
 	using System.Security.Cryptography.X509Certificates;
 	using System.ServiceModel;
 	using System.ServiceModel.Channels;
-	using System.Text;
-	using System.Threading;
 	using System.Windows;
 	using System.Windows.Controls;
-	using System.Windows.Data;
-	using System.Windows.Documents;
-	using System.Windows.Input;
-	using System.Windows.Media;
-	using System.Windows.Media.Imaging;
-	using System.Windows.Navigation;
-	using System.Windows.Shapes;
-	using System.Xml;
 	using System.Xml.Linq;
-	using System.Xml.XPath;
-	using DotNetOpenAuth;
+
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
@@ -92,7 +81,7 @@
 				return;
 			}
 
-			Authorize auth = new Authorize(
+			var auth = new Authorize(
 				this.google,
 				(DesktopConsumer consumer, out string requestToken) =>
 				GoogleConsumer.RequestAuthorization(
@@ -205,37 +194,37 @@
 			}
 		}
 
-		private void wrapBeginButton_Click(object sender, RoutedEventArgs e) {
+		private void oauth2BeginButton_Click(object sender, RoutedEventArgs e) {
 			var authServer = new DotNetOpenAuth.OAuth2.AuthorizationServerDescription {
-				AuthorizationEndpoint = new Uri(wrapAuthorizationUrlBox.Text),
+				AuthorizationEndpoint = new Uri(oauth2AuthorizationUrlBox.Text),
 			};
-			if (wrapTokenUrlBox.Text.Length > 0) {
-				authServer.TokenEndpoint = new Uri(wrapTokenUrlBox.Text);
+			if (oauth2TokenEndpointBox.Text.Length > 0) {
+				authServer.TokenEndpoint = new Uri(oauth2TokenEndpointBox.Text);
 			}
 
 			try {
 				////var client = new DotNetOpenAuth.OAuth2.WebAppClient(authServer);
 				////client.PrepareRequestUserAuthorization();
-				var client = new OAuth2.UserAgentClient(authServer, wrapClientIdentifierBox.Text);
-				client.ClientSecret = wrapClientSecretBox.Text;
+				var client = new OAuth2.UserAgentClient(authServer, oauth2ClientIdentifierBox.Text);
+				client.ClientSecret = oauth2ClientSecretBox.Text;
 
-				var authorization = new AuthorizationState { Scope = wrapScopeBox.Text };
+				var authorization = new AuthorizationState { Scope = oauth2ScopeBox.Text };
 				var authorizePopup = new Authorize2(client, authorization);
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
 					// One method of OAuth authorization is to tack the ?access_token= onto the query string.
-					var address = new Uri(wrapResourceUrlBox.Text);
-					address = new Uri(wrapResourceUrlBox.Text + (string.IsNullOrEmpty(address.Query) ? "?" : string.Empty) + "access_token=" + Uri.EscapeDataString(authorizePopup.Authorization.AccessToken));
+					var address = new Uri(oauth2ResourceUrlBox.Text);
+					address = new Uri(oauth2ResourceUrlBox.Text + (string.IsNullOrEmpty(address.Query) ? "?" : string.Empty) + "access_token=" + Uri.EscapeDataString(authorizePopup.Authorization.AccessToken));
 					var request = (HttpWebRequest)WebRequest.Create(address);
 
 					// This method tacks on the Authorization header
 					client.AuthorizeRequest(request, authorizePopup.Authorization);
 
-					request.Method = wrapResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
+					request.Method = oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
 					using (var resourceResponse = request.GetResponse()) {
 						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
-							wrapResultsBox.Text = responseStream.ReadToEnd();
+							oauth2ResultsBox.Text = responseStream.ReadToEnd();
 						}
 					}
 				} else {
