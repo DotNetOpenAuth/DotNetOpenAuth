@@ -145,11 +145,8 @@ namespace RelyingPartyLogic {
 			return false;
 		}
 
-		private bool IsAuthorizationValid(string requestedScope, string clientIdentifier, DateTime issuedUtc, string username)
+		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username)
 		{
-			var stringCompare = StringComparer.Ordinal;
-			var requestedScopes = OAuthUtilities.BreakUpScopes(requestedScope, stringCompare);
-
 			var grantedScopeStrings = from auth in Database.DataContext.ClientAuthorizations
 									  where
 										auth.Client.ClientIdentifier == clientIdentifier &&
@@ -165,9 +162,9 @@ namespace RelyingPartyLogic {
 				return false;
 			}
 
-			var grantedScopes = new HashSet<string>(stringCompare);
+			var grantedScopes = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 			foreach (string scope in grantedScopeStrings) {
-				grantedScopes.UnionWith(OAuthUtilities.BreakUpScopes(scope, stringCompare));
+				grantedScopes.UnionWith(OAuthUtilities.SplitScopes(scope));
 			}
 
 			return requestedScopes.IsSubsetOf(grantedScopes);

@@ -6,6 +6,9 @@
 
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
+	using System.Collections.Generic;
+
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A simple memory-only copy of an authorization state.
@@ -15,7 +18,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationState"/> class.
 		/// </summary>
-		public AuthorizationState() {
+		public AuthorizationState(IEnumerable<string> scopes = null) {
+			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
+			if (scopes != null) {
+				this.Scope.AddRange(scopes);
+			}
 		}
 
 		/// <summary>
@@ -52,7 +59,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets or sets the scope the token is (to be) authorized for.
 		/// </summary>
 		/// <value>The scope.</value>
-		public string Scope { get; set; }
+		public HashSet<string> Scope { get; private set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is deleted.

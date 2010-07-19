@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -33,15 +34,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </summary>
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="callback">The callback the client used to obtain authorization.</param>
-		/// <param name="scope">The scope.</param>
+		/// <param name="scopes">The authorized scopes.</param>
 		/// <param name="username">The name on the account that authorized access.</param>
-		internal AuthorizationCode(string clientIdentifier, Uri callback, string scope, string username) {
+		internal AuthorizationCode(string clientIdentifier, Uri callback, IEnumerable<string> scopes, string username) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
 			Contract.Requires<ArgumentNullException>(callback != null, "callback");
 
 			this.ClientIdentifier = clientIdentifier;
 			this.CallbackHash = this.CalculateCallbackHash(callback);
-			this.Scope = scope;
+			this.Scope.ResetContents(scopes);
 			this.User = username;
 		}
 

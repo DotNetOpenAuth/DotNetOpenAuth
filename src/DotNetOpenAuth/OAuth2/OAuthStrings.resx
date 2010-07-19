@@ -138,4 +138,7 @@
   <data name="NoGrantNoRefreshToken" xml:space="preserve">
     <value>Refresh tokens should not be granted without the request including an access grant.</value>
   </data>
+  <data name="ScopesMayNotContainSpaces" xml:space="preserve">
+    <value>Individual scopes may not contain spaces.</value>
+  </data>
 </root>

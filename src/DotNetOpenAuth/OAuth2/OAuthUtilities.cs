@@ -34,6 +34,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		                                                                        MessagingUtilities.Digits +
 		                                                                        @"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
 
+		public static readonly StringComparer ScopeStringComparer = StringComparer.Ordinal;
+
 		/// <summary>
 		/// Determines whether one given scope is a subset of another scope.
 		/// </summary>
@@ -64,14 +66,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="scopeComparer">The scope comparer, allowing scopes to be case sensitive or insensitive.
 		/// Usually <see cref="StringComparer.Ordinal"/> or <see cref="StringComparer.OrdinalIgnoreCase"/>.</param>
 		/// <returns></returns>
-		public static HashSet<string> BreakUpScopes(string scope, StringComparer scopeComparer) {
-			Contract.Requires<ArgumentNullException>(scopeComparer != null, "scopeComparer");
-
+		public static HashSet<string> SplitScopes(string scope) {
 			if (string.IsNullOrEmpty(scope)) {
 				return new HashSet<string>();
 			}
 
-			return new HashSet<string>(scope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries), scopeComparer);
+			return new HashSet<string>(scope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries), ScopeStringComparer);
+		}
+
+		public static string JoinScopes(HashSet<string> scopes) {
+			Contract.Requires<ArgumentNullException>(scopes != null, "scopes");
+			return string.Join(" ", scopes.ToArray());
 		}
 
 		/// <summary>

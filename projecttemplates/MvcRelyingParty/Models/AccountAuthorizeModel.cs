@@ -7,6 +7,6 @@
 	public class AccountAuthorizeModel {
 		public string ClientApp { get; set; }
 
-		public string Scope { get; set; }
+		public HashSet<string> Scope { get; set; }
 	}
 }

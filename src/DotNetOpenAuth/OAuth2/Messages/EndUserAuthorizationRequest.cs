@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -27,6 +28,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
 			Contract.Requires<ArgumentNullException>(version != null);
 			this.HttpMethods = HttpDeliveryMethods.GetRequest;
+			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 
 		/// <summary>
@@ -85,7 +87,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the scope of access being requested.
 		/// </summary>
 		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>
-		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
-		public string Scope { get; set; }
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
+		public HashSet<string> Scope { get; private set; }
 	}
 }

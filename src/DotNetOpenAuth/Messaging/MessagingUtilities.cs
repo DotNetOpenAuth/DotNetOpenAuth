@@ -234,6 +234,36 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Adds a set of values to a collection.
+		/// </summary>
+		/// <typeparam name="T">The type of value kept in the collection.</typeparam>
+		/// <param name="collection">The collection to add to.</param>
+		/// <param name="values">The values to add to the collection.</param>
+		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> values) {
+			Contract.Requires<ArgumentNullException>(collection != null, "collection");
+			Contract.Requires<ArgumentNullException>(values != null, "values");
+
+			foreach (var value in values) {
+				collection.Add(value);
+			}
+		}
+
+		/// <summary>
+		/// Clears any existing elements in a collection and fills the collection with a given set of values.
+		/// </summary>
+		/// <typeparam name="T">The type of value kept in the collection.</typeparam>
+		/// <param name="collection">The collection to modify.</param>
+		/// <param name="values">The new values to fill the collection.</param>
+		internal static void ResetContents<T>(this ICollection<T> collection, IEnumerable<T> values) {
+			Contract.Requires<ArgumentNullException>(collection != null, "collection");
+
+			collection.Clear();
+			if (values != null) {
+				AddRange(collection, values);
+			}
+		}
+
+		/// <summary>
 		/// Strips any and all URI query parameters that serve as parts of a message.
 		/// </summary>
 		/// <param name="uri">The URI that may contain query parameters to remove.</param>

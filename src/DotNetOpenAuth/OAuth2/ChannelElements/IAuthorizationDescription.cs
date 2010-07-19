@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Gets the scope of operations the client is allowed to invoke.
 		/// </summary>
-		string Scope { get; }
+		HashSet<string> Scope { get; }
 	}
 
 	/// <summary>
@@ -80,8 +80,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Gets the scope of operations the client is allowed to invoke.
 		/// </summary>
-		string IAuthorizationDescription.Scope {
-			get { throw new NotImplementedException(); }
+		HashSet<string> IAuthorizationDescription.Scope {
+			get {
+				Contract.Ensures(Contract.Result<HashSet<string>>() != null);
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

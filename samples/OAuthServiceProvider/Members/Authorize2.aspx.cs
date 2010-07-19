@@ -8,6 +8,8 @@
 	using System.Web.UI.WebControls;
 	using Code;
 
+	using DotNetOpenAuth.OAuth2;
+
 	public partial class Authorize2 : System.Web.UI.Page {
 		private static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
@@ -22,7 +24,7 @@
 					Response.Redirect("~/Members/AuthorizedConsumers.aspx");
 				} else {
 					var pendingRequest = Global.PendingOAuth2Authorization;
-					this.desiredAccessLabel.Text = pendingRequest.Scope;
+					this.desiredAccessLabel.Text = OAuthUtilities.JoinScopes(pendingRequest.Scope);
 					this.consumerLabel.Text = pendingRequest.ClientIdentifier;
 
 					// Generate an unpredictable secret that goes to the user agent and must come back

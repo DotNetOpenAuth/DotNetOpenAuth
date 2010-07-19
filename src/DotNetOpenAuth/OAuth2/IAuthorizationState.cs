@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// Provides access to a persistent object that tracks the state of an authorization.
@@ -44,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets or sets the scope the token is (to be) authorized for.
 		/// </summary>
 		/// <value>The scope.</value>
-		string Scope { get; set; }
+		HashSet<string> Scope { get; }
 
 		/// <summary>
 		/// Deletes this authorization, including access token and refresh token where applicable.

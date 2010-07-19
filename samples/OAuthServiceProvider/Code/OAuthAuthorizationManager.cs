@@ -83,11 +83,11 @@
 					OAuth2AuthorizationServer.AsymmetricKey,
 					OAuth2AuthorizationServer.AsymmetricKey));
 
-			string username, scope;
+			string username;
+			HashSet<string> scope;
 			var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out username, out scope);
 			if (error == null) {
-				string[] scopes = scope.Split(new char[] { ' ' });
-				var principal = new OAuthPrincipal(username, scopes);
+				var principal = new OAuthPrincipal(username, scope.ToArray());
 				return principal;
 			} else {
 				return null;

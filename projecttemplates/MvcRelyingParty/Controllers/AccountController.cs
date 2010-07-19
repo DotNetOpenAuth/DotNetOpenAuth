@@ -79,9 +79,9 @@
 			IDirectedProtocolMessage response;
 			if (isApproved) {
 				Database.LoggedInUser.ClientAuthorizations.Add(
-					new ClientAuthorization {
+					new ClientAuthorization() {
 						Client = requestingClient,
-						Scope = pendingRequest.Scope,
+						Scope = string.Join(" ", pendingRequest.Scope.ToArray()),
 						User = Database.LoggedInUser,
 						CreatedOnUtc = DateTime.UtcNow.CutToSecond(),
 					});

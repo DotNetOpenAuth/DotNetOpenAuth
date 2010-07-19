@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="user">The user whose data is accessible with this access token.</param>
 		/// <param name="scope">The scope of access authorized by this access token.</param>
 		/// <returns>A value indicating whether this access token is valid.</returns>
-		bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out string scope);
+		bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope);
 	}
 
 	/// <summary>
@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// A value indicating whether this access token is valid.
 		/// </returns>
-		bool IAccessTokenAnalyzer.TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out string scope) {
+		bool IAccessTokenAnalyzer.TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope) {
 			Contract.Requires<ArgumentNullException>(message != null, "message");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
 			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<string>(out user) != null));

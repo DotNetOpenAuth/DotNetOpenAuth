@@ -16,6 +16,7 @@ namespace WebFormsRelyingParty.Members {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.Messages;
 	using RelyingPartyLogic;
 
@@ -37,7 +38,7 @@ namespace WebFormsRelyingParty.Members {
 				this.csrfCheck.Value = Code.SiteUtilities.SetCsrfCookie();
 				var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
 				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(requestingClient.Name);
-				this.scopeLabel.Text = HttpUtility.HtmlEncode(this.pendingRequest.Scope);
+				this.scopeLabel.Text = HttpUtility.HtmlEncode(OAuthUtilities.JoinScopes(this.pendingRequest.Scope));
 
 				// Consider auto-approving if safe to do so.
 				if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServer).CanBeAutoApproved(this.pendingRequest)) {
@@ -53,7 +54,7 @@ namespace WebFormsRelyingParty.Members {
 			Database.LoggedInUser.ClientAuthorizations.Add(
 				new ClientAuthorization {
 					Client = requestingClient,
-					Scope = this.pendingRequest.Scope,
+					Scope = OAuthUtilities.JoinScopes(this.pendingRequest.Scope),
 					User = Database.LoggedInUser,
 					CreatedOnUtc = DateTime.UtcNow.CutToSecond(),
 				});

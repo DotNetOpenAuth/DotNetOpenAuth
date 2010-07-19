@@ -42,8 +42,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scope">The scope of authorized access requested.</param>
 		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
-		public Uri RequestUserAuthorization(string scope = null) {
-			var authorization = new AuthorizationState { Scope = scope };
+		public Uri RequestUserAuthorization(IEnumerable<string> scope = null) {
+			var authorization = new AuthorizationState(scope);
 			return this.RequestUserAuthorization(authorization);
 		}
 
@@ -63,9 +63,9 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
-				Scope = authorization.Scope,
 				Callback = authorization.Callback,
 			};
+			request.Scope.ResetContents(authorization.Scope);
 
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);
 		}

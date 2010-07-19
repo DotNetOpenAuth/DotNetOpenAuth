@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			this.ClientIdentifier = authorization.ClientIdentifier;
 			this.UtcCreationDate = authorization.UtcIssued;
 			this.User = authorization.User;
-			this.Scope = authorization.Scope;
+			this.Scope.ResetContents(authorization.Scope);
 		}
 
 		internal static IDataBagFormatter<RefreshToken> CreateFormatter(byte[] symmetricSecret)

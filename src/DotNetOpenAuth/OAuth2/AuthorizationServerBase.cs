@@ -66,10 +66,10 @@ namespace DotNetOpenAuth.OAuth2 {
 			var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
 
 			var response = new AccessTokenSuccessResponse(request) {
-				Scope = tokenRequest.AuthorizationDescription.Scope,
 				AccessToken = accessTokenFormatter.Serialize(accessToken),
 				Lifetime = accessToken.Lifetime,
 			};
+			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 
 			if (includeRefreshToken) {
 				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.Secret);

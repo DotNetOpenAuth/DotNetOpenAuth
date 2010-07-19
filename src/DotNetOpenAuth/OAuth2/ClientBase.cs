@@ -120,7 +120,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			// Just in case the scope has changed...
 			if (response.Scope != null) {
-				authorization.Scope = response.Scope;
+				authorization.Scope.ResetContents(response.Scope);
 			}
 
 			// The authorization server MAY choose to renew the refresh token itself.
@@ -147,12 +147,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (accessTokenSuccess.Scope != null && accessTokenSuccess.Scope != authorizationState.Scope) {
 				if (authorizationState.Scope != null) {
 					Logger.OAuth.InfoFormat(
-					                       "Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",
-					                       authorizationState.Scope,
-					                       accessTokenSuccess.Scope);
+						"Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",
+						authorizationState.Scope,
+						accessTokenSuccess.Scope);
 				}
 
-				authorizationState.Scope = accessTokenSuccess.Scope;
+				authorizationState.Scope.ResetContents(accessTokenSuccess.Scope);
 			}
 
 			authorizationState.SaveChanges();
@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.OAuth2 {
 										   accessTokenSuccess.Scope);
 				}
 
-				authorizationState.Scope = accessTokenSuccess.Scope;
+				authorizationState.Scope.ResetContents(accessTokenSuccess.Scope);
 			}
 
 			authorizationState.SaveChanges();

@@ -63,9 +63,8 @@
 			string[] scopes = (from item in this.scopeList.Items.OfType<ListItem>()
 							   where item.Selected
 							   select item.Value).ToArray();
-			string scope = string.Join(" ", scopes);
 
-			Client.RequestUserAuthorization(scope).Send();
+			Client.RequestUserAuthorization(scopes).Send();
 		}
 
 		protected void getNameButton_Click(object sender, EventArgs e) {

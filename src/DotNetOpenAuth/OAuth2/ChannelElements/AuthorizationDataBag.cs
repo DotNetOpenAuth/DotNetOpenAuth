@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Initializes a new instance of the <see cref="AuthorizationDataBag"/> class.
 		/// </summary>
 		protected AuthorizationDataBag() {
+			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 
 		/// <summary>
@@ -48,7 +49,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Gets or sets the scope of operations the client is allowed to invoke.
 		/// </summary>
-		[MessagePart]
-		public string Scope { get; set; }
+		[MessagePart(Encoder = typeof(ScopeEncoder))]
+		public HashSet<string> Scope { get; private set; }
 	}
 }

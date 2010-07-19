@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scope">The scope of authorized access requested.</param>
 		/// <returns>The authorization request as an HTTP response that causes a redirect.</returns>
-		public OutgoingWebResponse RequestUserAuthorization(string scope = null) {
+		public OutgoingWebResponse RequestUserAuthorization(IEnumerable<string> scope = null) {
 			var response = this.PrepareRequestUserAuthorization(scope);
 			return this.Channel.PrepareResponse(response);
 		}
@@ -50,8 +50,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scope">The scope of authorized access requested.</param>
 		/// <returns>The authorization request.</returns>
-		public EndUserAuthorizationRequest PrepareRequestUserAuthorization(string scope = null) {
-			var authorizationState = new AuthorizationState { Scope = scope };
+		public EndUserAuthorizationRequest PrepareRequestUserAuthorization(IEnumerable<string> scopes = null) {
+			var authorizationState = new AuthorizationState(scopes);
 			return this.PrepareRequestUserAuthorization(authorizationState);
 		}
 
@@ -78,8 +78,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
-				Scope = authorization.Scope,
 			};
+			request.Scope.ResetContents(authorization.Scope);
 
 			return request;
 		}

@@ -18,7 +18,7 @@
 	</p>
 	<p>
 		<b>Requested access: </b>
-		<%= Html.Encode(Model.Scope) %>
+		<%= Html.Encode(String.Join(" ", Model.Scope.ToArray())) %>
 	</p>
 	<p>
 		If you grant access now, you can revoke it at any time by returning to

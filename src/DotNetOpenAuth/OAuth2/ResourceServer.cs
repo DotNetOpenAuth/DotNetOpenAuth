@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="username">The name on the account the client has access to.</param>
 		/// <param name="scope">The set of operations the client is authorized for.</param>
 		/// <returns>An error to return to the client if access is not authorized; <c>null</c> if access is granted.</returns>
-		public OutgoingWebResponse VerifyAccess(out string username, out string scope) {
+		public OutgoingWebResponse VerifyAccess(out string username, out HashSet<string> scope) {
 			return this.VerifyAccess(this.Channel.GetRequestFromContext(), out username, out scope);
 		}
 
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
 		/// </returns>
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string username, out string scope) {
+		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string username, out HashSet<string> scope) {
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
 
 			AccessProtectedResourceRequest request = null;
@@ -113,10 +113,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
 		/// </returns>
 		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out IPrincipal principal) {
-			string username, scope;
+			string username;
+			HashSet<string> scope;
 			var result = this.VerifyAccess(httpRequestInfo, out username, out scope);
 			if (result == null) {
-				principal = new OAuth.ChannelElements.OAuthPrincipal(username, scope != null ? scope.Split(' ') : new string[0]);
+				principal = new OAuth.ChannelElements.OAuthPrincipal(username, scope != null ? scope.ToArray() : new string[0]);
 			} else {
 				principal = null;
 			}

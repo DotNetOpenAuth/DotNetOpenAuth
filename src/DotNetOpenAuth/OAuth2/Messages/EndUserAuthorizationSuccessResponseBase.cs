@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 
@@ -27,6 +28,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: base(version, MessageTransport.Indirect, clientCallback) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
+			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 
 		/// <summary>
@@ -39,6 +41,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
 			Contract.Requires<ArgumentNullException>(request != null, "request");
 			((IMessageWithClientState)this).ClientState = request.ClientState;
+			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 
 		/// <summary>
@@ -59,11 +62,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		internal TimeSpan? Lifetime { get; set; }
 
 		/// <summary>
-		/// Gets or sets the scope of the <see cref="AccessToken"/> if one is given; otherwise the scope of the authorization code.
+		/// Gets the scope of the <see cref="AccessToken"/> if one is given; otherwise the scope of the authorization code.
 		/// </summary>
 		/// <value>The scope.</value>
-		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
-		public string Scope { get; set; }
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
+		public ICollection<string> Scope { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the authorizing user's account name.

@@ -205,7 +205,7 @@
 			try {
 				var client = new OAuth2.UserAgentClient(authServer, oauth2ClientIdentifierBox.Text, oauth2ClientSecretBox.Text);
 
-				var authorization = new AuthorizationState { Scope = oauth2ScopeBox.Text };
+				var authorization = new AuthorizationState(OAuthUtilities.SplitScopes(oauth2ScopeBox.Text));
 				var authorizePopup = new Authorize2(client, authorization);
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();

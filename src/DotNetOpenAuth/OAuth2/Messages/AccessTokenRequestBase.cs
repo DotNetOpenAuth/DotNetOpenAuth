@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		protected AccessTokenRequestBase(Uri tokenEndpoint, Version version)
 			: base(tokenEndpoint, version) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
+			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 
 		/// <summary>
@@ -34,8 +35,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.grant_type, IsRequired = true, AllowEmpty = false, Encoder = typeof(GrantTypeEncoder))]
 		internal abstract GrantType GrantType { get; }
 
-		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true)]
-		internal string Scope { get; set; }
+		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
+		internal HashSet<string> Scope { get; private set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

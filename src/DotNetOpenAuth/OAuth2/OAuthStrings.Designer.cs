@@ -122,5 +122,14 @@ namespace DotNetOpenAuth.OAuth2 {
                 return ResourceManager.GetString("NoGrantNoRefreshToken", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Individual scopes may not contain spaces..
+        /// </summary>
+        internal static string ScopesMayNotContainSpaces {
+            get {
+                return ResourceManager.GetString("ScopesMayNotContainSpaces", resourceCulture);
+            }
+        }
     }
 }

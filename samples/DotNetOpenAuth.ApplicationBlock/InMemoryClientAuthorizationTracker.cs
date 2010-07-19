@@ -41,12 +41,10 @@ namespace DotNetOpenAuth.ApplicationBlock {
 
 		#endregion
 
-		internal IAuthorizationState NewAuthorization(string scope, out string clientState) {
+		internal IAuthorizationState NewAuthorization(HashSet<string> scope, out string clientState) {
 			int counter = Interlocked.Increment(ref this.stateCounter);
 			clientState = counter.ToString(CultureInfo.InvariantCulture);
-			return this.savedStates[counter] = new AuthorizationState {
-				Scope = scope,
-			};
+			return this.savedStates[counter] = new AuthorizationState(scope);
 		}
 	}
 #endif
