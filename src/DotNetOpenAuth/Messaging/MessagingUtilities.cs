@@ -218,6 +218,22 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Adds a name-value pair to the end of a given URL
+		/// as part of the querystring piece.  Prefixes a ? or &amp; before
+		/// first element as necessary.
+		/// </summary>
+		/// <param name="builder">The UriBuilder to add arguments to.</param>
+		/// <param name="name">The name of the parameter to add.</param>
+		/// <param name="value">The value of the argument.</param>
+		/// <remarks>
+		/// If the parameters to add match names of parameters that already are defined
+		/// in the query string, the existing ones are <i>not</i> replaced.
+		/// </remarks>
+		public static void AppendQueryArgument(this UriBuilder builder, string name, string value) {
+			AppendQueryArgs(builder, new[] { new KeyValuePair<string, string>(name, value) });
+		}
+
+		/// <summary>
 		/// Strips any and all URI query parameters that serve as parts of a message.
 		/// </summary>
 		/// <param name="uri">The URI that may contain query parameters to remove.</param>

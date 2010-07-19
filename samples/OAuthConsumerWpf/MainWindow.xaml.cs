@@ -210,10 +210,17 @@
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
-					var request = (HttpWebRequest)WebRequest.Create(oauth2ResourceUrlBox.Text);
-					client.AuthorizeRequest(request, authorization);
+					var requestUri = new UriBuilder(oauth2ResourceUrlBox.Text);
+					if (oauth2ResourceHttpMethodList.SelectedIndex > 0) {
+						requestUri.AppendQueryArgument("access_token", authorization.AccessToken);
+					}
 
+					var request = (HttpWebRequest)WebRequest.Create(requestUri.Uri);
 					request.Method = oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
+					if (oauth2ResourceHttpMethodList.SelectedIndex == 0) {
+						client.AuthorizeRequest(request, authorization);
+					}
+
 					using (var resourceResponse = request.GetResponse()) {
 						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
 							oauth2ResultsBox.Text = responseStream.ReadToEnd();
@@ -225,7 +232,11 @@
 			} catch (Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);
 			} catch (WebException ex) {
-				MessageBox.Show(this, ex.Message);
+				string responseText = string.Empty;
+				using (var responseReader = new StreamReader(ex.Response.GetResponseStream())) {
+					responseText = responseReader.ReadToEnd();
+				}
+				MessageBox.Show(this, ex.Message + "  " + responseText);
 			}
 		}
 	}
