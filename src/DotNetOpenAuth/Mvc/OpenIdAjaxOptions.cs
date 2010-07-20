@@ -7,8 +7,10 @@
 namespace DotNetOpenAuth.Mvc {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A set of customizations available for the scripts sent to the browser in AJAX OpenID scenarios.
@@ -41,6 +43,14 @@ namespace DotNetOpenAuth.Mvc {
 		public int FormIndex { get; set; }
 
 		/// <summary>
+		/// Gets or sets the id of the form in the document.forms array on the browser that should
+		/// be submitted when the user is ready to send the positive assertion to the RP.  A value
+		/// in this property takes precedence over any value in the <see cref="FormIndex"/> property.
+		/// </summary>
+		/// <value>The form id.</value>
+		public string FormId { get; set; }
+
+		/// <summary>
 		/// Gets or sets the preloaded discovery results.
 		/// </summary>
 		public string PreloadedDiscoveryResults { get; set; }
@@ -55,5 +65,12 @@ namespace DotNetOpenAuth.Mvc {
 		/// asynchronous authentication of the user for diagnostic purposes.
 		/// </summary>
 		public bool ShowDiagnosticIFrame { get; set; }
+
+		/// <summary>
+		/// Gets the form key to use when accessing the relevant form.
+		/// </summary>
+		internal string FormKey {
+			get { return string.IsNullOrEmpty(this.FormId) ? this.FormIndex.ToString(CultureInfo.InvariantCulture) : MessagingUtilities.GetSafeJavascriptValue(this.FormId); }
+		}
 	}
 }

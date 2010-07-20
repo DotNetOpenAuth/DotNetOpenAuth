@@ -90,7 +90,7 @@
 
 		public string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers) {
 			return relyingParty.AsAjaxPreloadedDiscoveryResult(
-				identifiers.Select(id => this.CreateRequests(id, realm, returnTo, privacyPolicy)).Flatten());
+				identifiers.SelectMany(id => this.CreateRequests(id, realm, returnTo, privacyPolicy)));
 		}
 
 		public ActionResult ProcessAjaxOpenIdResponse() {

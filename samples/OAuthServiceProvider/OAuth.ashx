@@ -8,6 +8,7 @@ using DotNetOpenAuth.OAuth;
 using DotNetOpenAuth.OAuth.ChannelElements;
 using DotNetOpenAuth.OAuth.Messages;
 using DotNetOpenAuth.Messaging;
+using OAuthServiceProvider.Code;
 
 public class OAuth : IHttpHandler, IRequiresSessionState {
 	ServiceProvider sp;

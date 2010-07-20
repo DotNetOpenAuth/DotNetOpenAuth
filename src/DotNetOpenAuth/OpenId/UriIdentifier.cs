@@ -68,6 +68,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// since some identifiers (like some of the pseudonymous identifiers from Yahoo) include path segments
 		/// that end with periods, which the Uri class will typically trim off.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Some things just can't be done in a field initializer.")]
 		static UriIdentifier() {
 			// Our first attempt to handle trailing periods in path segments is to leverage
 			// full trust if it's available to rewrite the rules.
@@ -152,6 +153,16 @@ namespace DotNetOpenAuth.OpenId {
 			}
 			this.Uri = uri;
 			this.SchemeImplicitlyPrepended = false;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether scheme substitution is being used to workaround
+		/// .NET path compression that invalidates some OpenIDs that have trailing periods
+		/// in one of their path segments.
+		/// </summary>
+		internal static bool SchemeSubstitutionTestHook {
+			get { return schemeSubstitution; }
+			set { schemeSubstitution = value; }
 		}
 
 		/// <summary>
@@ -414,18 +425,9 @@ namespace DotNetOpenAuth.OpenId {
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(uri));
 
-			uri = uri.Trim();
 			canonicalUri = null;
-			schemePrepended = false;
 			try {
-				// Assume http:// scheme if an allowed scheme isn't given, and strip
-				// fragments off.  Consistent with spec section 7.2#3
-				if (!IsAllowedScheme(uri)) {
-					uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
-						Uri.SchemeDelimiter + uri;
-					schemePrepended = true;
-				}
-
+				uri = DoSimpleCanonicalize(uri, forceHttpsDefaultScheme, out schemePrepended);
 				if (schemeSubstitution) {
 					uri = NormalSchemeToSpecialRoundTrippingScheme(uri);
 				}
@@ -434,6 +436,7 @@ namespace DotNetOpenAuth.OpenId {
 				return TryCanonicalize(uri, out canonicalUri);
 			} catch (UriFormatException) {
 				// We try not to land here with checks in the try block, but just in case.
+				schemePrepended = false;
 				return false;
 			}
 		}
@@ -441,7 +444,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Fixes up the scheme if appropriate.
 		/// </summary>
-		/// <param name="uri">The URI to canonicalize.</param>
+		/// <param name="uri">The URI, already in legal form (with http(s):// prepended if necessary).</param>
 		/// <param name="canonicalUri">The resulting canonical URI.</param>
 		/// <returns><c>true</c> if the canonicalization was successful; <c>false</c> otherwise.</returns>
 		/// <remarks>
@@ -493,6 +496,30 @@ namespace DotNetOpenAuth.OpenId {
 			return delimiterIndex < 0 ? nonCompressingScheme : nonCompressingScheme + normal.Substring(delimiterIndex);
 		}
 
+		/// <summary>
+		/// Performs the minimal URL normalization to allow a string to be passed to the <see cref="Uri"/> constructor.
+		/// </summary>
+		/// <param name="uri">The user-supplied identifier URI to normalize.</param>
+		/// <param name="forceHttpsDefaultScheme">if set to <c>true</c>, a missing scheme should result in HTTPS being prepended instead of HTTP.</param>
+		/// <param name="schemePrepended">if set to <c>true</c>, the scheme was prepended during normalization.</param>
+		/// <returns>The somewhat normalized URL.</returns>
+		private static string DoSimpleCanonicalize(string uri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
+
+			schemePrepended = false;
+			uri = uri.Trim();
+
+			// Assume http:// scheme if an allowed scheme isn't given, and strip
+			// fragments off.  Consistent with spec section 7.2#3
+			if (!IsAllowedScheme(uri)) {
+				uri = (forceHttpsDefaultScheme ? Uri.UriSchemeHttps : Uri.UriSchemeHttp) +
+					Uri.SchemeDelimiter + uri;
+				schemePrepended = true;
+			}
+
+			return uri;
+		}
+
 #if CONTRACTS_FULL
 		/// <summary>
 		/// Verifies conditions that should be true for any valid state of this object.
@@ -522,6 +549,9 @@ namespace DotNetOpenAuth.OpenId {
 			public SimpleUri(string value) {
 				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
 
+				bool schemePrepended;
+				value = DoSimpleCanonicalize(value, false, out schemePrepended);
+
 				// Leverage the Uri class's parsing where we can.
 				Uri uri = new Uri(value);
 				this.Scheme = uri.Scheme;
@@ -531,12 +561,14 @@ namespace DotNetOpenAuth.OpenId {
 
 				// Get the Path out ourselves, since the default Uri parser compresses it too much for OpenID.
 				int schemeLength = value.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
+				Contract.Assume(schemeLength > 0);
 				int hostStart = schemeLength + Uri.SchemeDelimiter.Length;
 				int hostFinish = value.IndexOf('/', hostStart);
 				if (hostFinish < 0) {
 					this.Path = "/";
 				} else {
 					int pathFinish = value.IndexOfAny(PathEndingCharacters, hostFinish);
+					Contract.Assume(pathFinish >= hostFinish || pathFinish < 0);
 					if (pathFinish < 0) {
 						this.Path = value.Substring(hostFinish);
 					} else {
@@ -613,6 +645,21 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			/// <summary>
+			/// Returns a hash code for this instance.
+			/// </summary>
+			/// <returns>
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+			/// </returns>
+			public override int GetHashCode() {
+				int hashCode = 0;
+				hashCode += StringComparer.OrdinalIgnoreCase.GetHashCode(this.Scheme);
+				hashCode += StringComparer.OrdinalIgnoreCase.GetHashCode(this.Authority);
+				hashCode += StringComparer.Ordinal.GetHashCode(this.Path);
+				hashCode += StringComparer.Ordinal.GetHashCode(this.Query);
+				return hashCode;
+			}
+
+			/// <summary>
 			/// Normalizes the characters that are escaped in the given URI path.
 			/// </summary>
 			/// <param name="path">The path to normalize.</param>
@@ -663,6 +710,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// Initializes this parser with the actual scheme it should appear to be.
 			/// </summary>
 			/// <param name="hideNonStandardScheme">if set to <c>true</c> Uris using this scheme will look like they're using the original standard scheme.</param>
+			[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Schemes are traditionally displayed in lowercase.")]
 			internal void Initialize(bool hideNonStandardScheme) {
 				if (schemeField == null) {
 					schemeField = typeof(UriParser).GetField("m_Scheme", BindingFlags.NonPublic | BindingFlags.Instance);

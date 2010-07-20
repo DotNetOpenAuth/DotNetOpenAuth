@@ -128,24 +128,6 @@ ELSE
 
 
 GO
-IF IS_SRVROLEMEMBER(N'sysadmin') = 1
-    BEGIN
-        IF EXISTS (SELECT 1
-                   FROM   [master].[dbo].[sysdatabases]
-                   WHERE  [name] = N'$(DatabaseName)')
-            BEGIN
-                EXECUTE sp_executesql N'ALTER DATABASE [$(DatabaseName)]
-    SET HONOR_BROKER_PRIORITY OFF 
-    WITH ROLLBACK IMMEDIATE';
-            END
-    END
-ELSE
-    BEGIN
-        PRINT N'The database settings cannot be modified. You must be a SysAdmin to apply these settings.';
-    END
-
-
-GO
 USE [$(DatabaseName)]
 
 GO

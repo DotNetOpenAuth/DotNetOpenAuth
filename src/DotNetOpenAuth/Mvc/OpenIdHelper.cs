@@ -151,7 +151,7 @@ window.openid_trace = {1}; // causes lots of messages";
 				blockFormat,
 				additionalOptions.AssertionHiddenFieldId,
 				additionalOptions.ReturnUrlHiddenFieldId,
-				additionalOptions.FormIndex);
+				additionalOptions.FormKey);
 
 			blockFormat = @"	$(function () {{
 		var box = document.getElementsByName('openid_identifier')[0];

@@ -238,24 +238,28 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		public override int GetHashCode() {
 			HMACSHA1 hmac = new HMACSHA1(this.SecretKey);
-			CryptoStream cs = new CryptoStream(Stream.Null, hmac, CryptoStreamMode.Write);
+			try {
+				CryptoStream cs = new CryptoStream(Stream.Null, hmac, CryptoStreamMode.Write);
 
-			byte[] hbytes = ASCIIEncoding.ASCII.GetBytes(this.Handle);
+				byte[] hbytes = ASCIIEncoding.ASCII.GetBytes(this.Handle);
 
-			cs.Write(hbytes, 0, hbytes.Length);
-			cs.Close();
+				cs.Write(hbytes, 0, hbytes.Length);
+				cs.Close();
 
-			byte[] hash = hmac.Hash;
-			hmac.Clear();
+				byte[] hash = hmac.Hash;
+				hmac.Clear();
 
-			long val = 0;
-			for (int i = 0; i < hash.Length; i++) {
-				val = val ^ (long)hash[i];
+				long val = 0;
+				for (int i = 0; i < hash.Length; i++) {
+					val = val ^ (long)hash[i];
+				}
+
+				val = val ^ this.Expires.ToFileTimeUtc();
+
+				return (int)val;
+			} finally {
+				((IDisposable)hmac).Dispose();
 			}
-
-			val = val ^ this.Expires.ToFileTimeUtc();
-
-			return (int)val;
 		}
 
 		/// <summary>

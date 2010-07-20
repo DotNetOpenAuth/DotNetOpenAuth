@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 			// Copy all message parts from the id_res message into this one,
 			// except for the openid.mode parameter.
-			MessageDictionary checkPayload = channel.MessageDescriptions.GetAccessor(message);
+			MessageDictionary checkPayload = channel.MessageDescriptions.GetAccessor(message, true);
 			MessageDictionary thisPayload = channel.MessageDescriptions.GetAccessor(this);
 			foreach (var pair in checkPayload) {
 				if (!string.Equals(pair.Key, this.Protocol.openid.mode)) {

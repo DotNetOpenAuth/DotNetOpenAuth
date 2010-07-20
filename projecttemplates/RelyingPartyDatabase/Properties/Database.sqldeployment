@@ -3,7 +3,7 @@
   <Version>1.0</Version>
   <Properties>
     <AbortOnFirstError>False</AbortOnFirstError>
-    <AlwaysCreateNewDatabase>False</AlwaysCreateNewDatabase>
+    <AlwaysCreateNewDatabase>True</AlwaysCreateNewDatabase>
     <BlockIncrementalDeploymentIfDataLoss>True</BlockIncrementalDeploymentIfDataLoss>
     <CommentOutSetVarDeclarations>True</CommentOutSetVarDeclarations>
     <DeployDatabaseProperties>True</DeployDatabaseProperties>

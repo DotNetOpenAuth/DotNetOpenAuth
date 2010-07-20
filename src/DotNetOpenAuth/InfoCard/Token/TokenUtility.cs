@@ -226,7 +226,9 @@ namespace DotNetOpenAuth.InfoCard {
 			int charMapLength = charMap.Length;
 
 			byte[] raw = Convert.FromBase64String(ppid);
-			raw = SHA1.Create().ComputeHash(raw);
+			using (HashAlgorithm hasher = SHA1.Create()) {
+				raw = hasher.ComputeHash(raw);
+			}
 
 			StringBuilder callSign = new StringBuilder();
 

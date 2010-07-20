@@ -83,10 +83,18 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
 				// but just in case a given message failed to guarantee that, we do it here.
-				DateTime expirationDate = expiringMessage.UtcCreationDate.ToUniversalTimeSafe() + MaximumMessageAge;
+				DateTime creationDate = expiringMessage.UtcCreationDate.ToUniversalTimeSafe();
+				DateTime expirationDate = creationDate + MaximumMessageAge;
 				if (expirationDate < DateTime.UtcNow) {
 					throw new ExpiredMessageException(expirationDate, expiringMessage);
 				}
+
+				// Mitigate HMAC attacks (just guessing the signature until they get it) by 
+				// disallowing post-dated messages.
+				ErrorUtilities.VerifyProtocol(
+					creationDate <= DateTime.UtcNow + DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew,
+					MessagingStrings.MessageTimestampInFuture,
+					creationDate);
 
 				return MessageProtections.Expiration;
 			}

@@ -15,6 +15,7 @@
 		                 VersionFile="$(ProjectRoot)src\version.txt"
 		                 GitRepoRoot="$(ProjectRoot)">
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
+			<Output TaskParameter="SimpleVersion" PropertyName="BuildVersionSimple" />
 			<Output TaskParameter="GitCommitId" PropertyName="AssemblyInformationalVersion" />
 		</GetBuildVersion>
 		<PropertyGroup>

@@ -133,6 +133,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 				Assert.AreEqual("http://abc/", new UriIdentifier("HTTP://ABC").ToString());
 				Assert.AreEqual("http://abc/?q", new UriIdentifier("HTTP://ABC?q").ToString());
 				Assert.AreEqual("http://abc/#f", new UriIdentifier("HTTP://ABC#f").ToString());
+
+				Assert.AreEqual("http://blog.nerdbank.net/", new UriIdentifier("blog.nerdbank.net").ToString());
+				Assert.AreEqual("http://blog.nerdbank.net/a", new UriIdentifier("BLOG.nerdbank.net/a").ToString());
+				Assert.AreEqual("https://blog.nerdbank.net/", new UriIdentifier("blog.nerdbank.net", true).ToString());
 			});
 		}
 
@@ -297,14 +301,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		private static void TestAsFullAndPartialTrust(Action<bool> action) {
 			// Test a bunch of interesting URLs both with scheme substitution on and off.
-			Assert.IsTrue(UriIdentifier_Accessor.schemeSubstitution, "Expected scheme substitution to be working.");
+			Assert.IsTrue(UriIdentifier.SchemeSubstitutionTestHook, "Expected scheme substitution to be working.");
 			action(true);
 
-			UriIdentifier_Accessor.schemeSubstitution = false;
+			UriIdentifier.SchemeSubstitutionTestHook = false;
 			try {
 				action(false);
 			} finally {
-				UriIdentifier_Accessor.schemeSubstitution = true;
+				UriIdentifier.SchemeSubstitutionTestHook = true;
 			}
 		}
 	}

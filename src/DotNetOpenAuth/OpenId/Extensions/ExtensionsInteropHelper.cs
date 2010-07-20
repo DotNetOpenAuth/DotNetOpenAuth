@@ -130,7 +130,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 		/// <summary>
 		/// Looks for Simple Registration and Attribute Exchange (all known formats)
-		/// request extensions and returns them as a Simple Registration extension.
+		/// request extensions and returns them as a Simple Registration extension,
+		/// and adds the new extension to the original request message if it was absent.
 		/// </summary>
 		/// <param name="request">The authentication request.</param>
 		/// <returns>
@@ -140,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		internal static ClaimsRequest UnifyExtensionsAsSreg(this Provider.IHostProcessedRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
 
-			var req = (Provider.AuthenticationRequest)request;
+			var req = (Provider.HostProcessedRequest)request;
 			var sreg = req.GetExtension<ClaimsRequest>();
 			if (sreg != null) {
 				return sreg;
@@ -148,7 +149,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 			var ax = req.GetExtension<FetchRequest>();
 			if (ax != null) {
-				sreg = new ClaimsRequest();
+				sreg = new ClaimsRequest(SimpleRegistration.Constants.sreg_ns);
 				sreg.Synthesized = true;
 				((IProtocolMessageWithExtensions)req.RequestMessage).Extensions.Add(sreg);
 				sreg.BirthDate = GetDemandLevelFor(ax, WellKnownAttributes.BirthDate.WholeBirthDate);
@@ -230,6 +231,16 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </returns>
 		internal static string GetAttributeValue(this FetchResponse fetchResponse, string typeUri, AXAttributeFormats formats) {
 			return ForEachFormat(formats).Select(format => fetchResponse.GetAttributeValue(TransformAXFormat(typeUri, format))).FirstOrDefault(s => s != null);
+		}
+
+		/// <summary>
+		/// Transforms an AX attribute type URI from the axschema.org format into a given format.
+		/// </summary>
+		/// <param name="axSchemaOrgFormatTypeUri">The ax schema org format type URI.</param>
+		/// <param name="targetFormat">The target format.  Only one flag should be set.</param>
+		/// <returns>The AX attribute type URI in the target format.</returns>
+		internal static string TransformAXFormatTestHook(string axSchemaOrgFormatTypeUri, AXAttributeFormats targetFormat) {
+			return TransformAXFormat(axSchemaOrgFormatTypeUri, targetFormat);
 		}
 
 		/// <summary>

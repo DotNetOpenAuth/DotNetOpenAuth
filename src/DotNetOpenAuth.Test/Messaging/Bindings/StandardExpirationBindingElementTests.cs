@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Test.Messaging.Bindings {
 	using System;
+
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Test.Mocks;
@@ -30,10 +32,22 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
+		[TestCase]
+		public void VerifyFutureTimestampWithinClockSkewIsAccepted() {
+			this.Channel = CreateChannel(MessageProtections.Expiration);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew - TimeSpan.FromSeconds(1), false);
+		}
+
 		[TestCase, ExpectedException(typeof(ExpiredMessageException))]
-		public void VerifyBadTimestampIsRejected() {
+		public void VerifyOldTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - StandardExpirationBindingElement.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
+		}
+
+		[TestCase, ExpectedException(typeof(ProtocolException))]
+		public void VerifyFutureTimestampIsRejected() {
+			this.Channel = CreateChannel(MessageProtections.Expiration);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew + TimeSpan.FromSeconds(1), false);
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.hostedProvider.ProcessRequest = this.ProcessRequest;
 			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
 			if (boxLogger != null) {
-				boxLogger.Writer = new TextBoxTextWriter(logBox);
+				boxLogger.Writer = new TextBoxTextWriter(this.logBox);
 			}
 
 			this.startProvider();
@@ -115,15 +115,15 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				if (!request.IsResponseReady) {
 					var authRequest = request as IAuthenticationRequest;
 					if (authRequest != null) {
-						switch (checkidRequestList.SelectedIndex) {
+						switch (this.checkidRequestList.SelectedIndex) {
 							case 0:
 								if (authRequest.IsDirectedIdentity) {
 									string userIdentityPageBase = this.hostedProvider.UserIdentityPageBase.AbsoluteUri;
-									if (capitalizedHostName.IsChecked.Value) {
+									if (this.capitalizedHostName.IsChecked.Value) {
 										userIdentityPageBase = (this.hostedProvider.UserIdentityPageBase.Scheme + Uri.SchemeDelimiter + this.hostedProvider.UserIdentityPageBase.Authority).ToUpperInvariant() + this.hostedProvider.UserIdentityPageBase.PathAndQuery;
 									}
 									string leafPath = "directedidentity";
-									if (directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
+									if (this.directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
 										leafPath += ".";
 									}
 									authRequest.ClaimedIdentifier = Identifier.Parse(userIdentityPageBase + leafPath, true);
@@ -173,7 +173,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="e">The <see cref="System.Windows.Input.MouseButtonEventArgs"/> instance containing the event data.</param>
 		private void opIdentifierLabel_MouseDown(object sender, MouseButtonEventArgs e) {
 			try {
-				Clipboard.SetText(opIdentifierLabel.Content.ToString());
+				Clipboard.SetText(this.opIdentifierLabel.Content.ToString());
 			} catch (COMException ex) {
 				MessageBox.Show(this, ex.Message, "Error while copying OP Identifier to the clipboard", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
@@ -185,7 +185,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
 		private void ClearLogButton_Click(object sender, RoutedEventArgs e) {
-			logBox.Clear();
+			this.logBox.Clear();
 		}
 	}
 }

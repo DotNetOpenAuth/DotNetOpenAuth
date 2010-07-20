@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// to the end of the direct response, corrupting the data.  So we deviate
 		/// from the spec a bit here to improve the story for free Providers.
 		/// </remarks>
-		private const string KeyValueFormContentType = "application/x-openid-kvf";
+		internal const string KeyValueFormContentType = "application/x-openid-kvf";
 
 		/// <summary>
 		/// The encoder that understands how to read and write Key-Value Form.

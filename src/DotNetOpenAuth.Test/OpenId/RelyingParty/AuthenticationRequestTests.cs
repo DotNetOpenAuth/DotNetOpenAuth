@@ -86,8 +86,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 					authRequest.AddExtension(sregRequest);
 
 					// Construct the actual authentication request message.
-					var authRequestAccessor = AuthenticationRequest_Accessor.AttachShadow(authRequest);
-					var req = authRequestAccessor.CreateRequestMessage();
+					var authRequestAccessor = (AuthenticationRequest)authRequest;
+					var req = authRequestAccessor.CreateRequestMessageTestHook();
 					Assert.IsNotNull(req);
 
 					// Verify that callback arguments were included.

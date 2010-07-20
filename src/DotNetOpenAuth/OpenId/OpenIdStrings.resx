@@ -352,4 +352,7 @@ Discovered endpoint info:
   <data name="ClaimedIdentifierDefiesDotNetNormalization" xml:space="preserve">
     <value>This OpenID exploits features that this relying party cannot reliably verify.  Please try logging in with a human-readable OpenID or from a different OpenID Provider.</value>
   </data>
+  <data name="MissingElement" xml:space="preserve">
+    <value>Missing {0} element.</value>
+  </data>
 </root>

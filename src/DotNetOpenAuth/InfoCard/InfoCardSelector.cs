@@ -268,6 +268,7 @@ namespace DotNetOpenAuth.InfoCard {
 		[Category(InfoCardCategory), DefaultValue(PrivacyUrlDefault)]
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "We construct a Uri to validate the format of the string.")]
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "That overload is NOT the same.")]
+		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "This can take ~/ paths.")]
 		public string PrivacyUrl {
 			get {
 				return (string)this.ViewState[PrivacyUrlViewStateKey] ?? PrivacyUrlDefault;
@@ -570,24 +571,28 @@ namespace DotNetOpenAuth.InfoCard {
 
 			Panel supportedPanel = new Panel();
 
-			if (!this.DesignMode) {
-				// At the user agent, assume InfoCard is not supported until
-				// the JavaScript discovers otherwise and reveals this panel.
-				supportedPanel.Style[HtmlTextWriterStyle.Display] = "none";
+			try {
+				if (!this.DesignMode) {
+					// At the user agent, assume InfoCard is not supported until
+					// the JavaScript discovers otherwise and reveals this panel.
+					supportedPanel.Style[HtmlTextWriterStyle.Display] = "none";
+				}
+
+				supportedPanel.Controls.Add(this.CreateInfoCardImage());
+
+				// trigger the selector at page load?
+				if (this.AutoPopup && !this.Page.IsPostBack) {
+					this.Page.ClientScript.RegisterStartupScript(
+						typeof(InfoCardSelector),
+						"selector_load_trigger",
+						this.GetInfoCardSelectorActivationScript(true),
+						true);
+				}
+				return supportedPanel;
+			} catch {
+				supportedPanel.Dispose();
+				throw;
 			}
-
-			supportedPanel.Controls.Add(this.CreateInfoCardImage());
-
-			// trigger the selector at page load?
-			if (this.AutoPopup && !this.Page.IsPostBack) {
-				this.Page.ClientScript.RegisterStartupScript(
-					typeof(InfoCardSelector),
-					"selector_load_trigger",
-					this.GetInfoCardSelectorActivationScript(true),
-					true);
-			}
-
-			return supportedPanel;
 		}
 
 		/// <summary>
@@ -624,10 +629,15 @@ namespace DotNetOpenAuth.InfoCard {
 			Contract.Ensures(Contract.Result<Panel>() != null);
 
 			Panel unsupportedPanel = new Panel();
-			if (this.UnsupportedTemplate != null) {
-				this.UnsupportedTemplate.InstantiateIn(unsupportedPanel);
+			try {
+				if (this.UnsupportedTemplate != null) {
+					this.UnsupportedTemplate.InstantiateIn(unsupportedPanel);
+				}
+				return unsupportedPanel;
+			} catch {
+				unsupportedPanel.Dispose();
+				throw;
 			}
-			return unsupportedPanel;
 		}
 
 		/// <summary>
@@ -692,13 +702,18 @@ namespace DotNetOpenAuth.InfoCard {
 		private Image CreateInfoCardImage() {
 			// add clickable image
 			Image image = new Image();
-			image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
-			image.AlternateText = InfoCardStrings.SelectorClickPrompt;
-			image.ToolTip = this.ToolTip;
-			image.Style[HtmlTextWriterStyle.Cursor] = "hand";
+			try {
+				image.ImageUrl = this.Page.ClientScript.GetWebResourceUrl(typeof(InfoCardSelector), InfoCardImage.GetImageManifestResourceStreamName(this.ImageSize));
+				image.AlternateText = InfoCardStrings.SelectorClickPrompt;
+				image.ToolTip = this.ToolTip;
+				image.Style[HtmlTextWriterStyle.Cursor] = "hand";
 
-			image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
-			return image;
+				image.Attributes["onclick"] = this.GetInfoCardSelectorActivationScript(false);
+				return image;
+			} catch {
+				image.Dispose();
+				throw;
+			}
 		}
 
 		/// <summary>

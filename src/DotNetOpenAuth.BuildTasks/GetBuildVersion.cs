@@ -10,12 +10,23 @@ using Microsoft.Build.Utilities;
 
 namespace DotNetOpenAuth.BuildTasks {
 	public class GetBuildVersion : Task {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GetBuildVersion"/> class.
+		/// </summary>
+		public GetBuildVersion() {
+		}
 
 		/// <summary>
 		/// Gets the version string to use in the compiled assemblies.
 		/// </summary>
 		[Output]
 		public string Version { get; private set; }
+
+		/// <summary>
+		/// Gets the version string to use in the official release name (lacks revision number).
+		/// </summary>
+		[Output]
+		public string SimpleVersion { get; private set; }
 
 		/// <summary>
 		/// Gets the Git revision control commit id for HEAD (the current source code version).
@@ -37,9 +48,11 @@ namespace DotNetOpenAuth.BuildTasks {
 		public override bool Execute() {
 			try {
 				Version typedVersion = ReadVersionFromFile();
-				typedVersion = new Version(typedVersion.Major, typedVersion.Minor, typedVersion.Build, CalculateJDate(DateTime.Now));
-				Version = typedVersion.ToString();
+				SimpleVersion = typedVersion.ToString();
 
+				var fullVersion = new Version(typedVersion.Major, typedVersion.Minor, typedVersion.Build, CalculateJDate(DateTime.Now));
+				Version = fullVersion.ToString();
+	
 				this.GitCommitId = GetGitHeadCommitId();
 			} catch (ArgumentOutOfRangeException ex) {
 				Log.LogErrorFromException(ex);

@@ -14,10 +14,27 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 	public class UIRequestTests : OpenIdTestBase {
 		[TestCase]
 		public void Defaults() {
-			UIRequest request = new UIRequest();
+			var request = new UIRequest();
 			Assert.AreEqual("popup", request.Mode);
 			Assert.AreEqual(1, request.LanguagePreference.Length);
 			Assert.AreEqual(CultureInfo.CurrentUICulture, request.LanguagePreference[0]);
+			Assert.IsFalse(request.Icon.HasValue);
+		}
+
+		[TestCase]
+		public void IconEncodingDecoding()
+		{
+			var request = new UIRequest();
+			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(request);
+			Assert.IsFalse(dictionary.ContainsKey("icon"));
+
+			Assert.IsFalse(request.Icon.HasValue);
+			dictionary["icon"] = "true";
+			Assert.IsTrue(request.Icon.Value);
+
+			dictionary.ClearValues();
+			request.Icon = true;
+			Assert.AreEqual("true", dictionary["icon"]);
 		}
 
 		[TestCase]

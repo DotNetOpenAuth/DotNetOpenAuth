@@ -800,8 +800,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// so we have to actually put the test for it ABOVE the call to objSrc.{0} so that it already 
 			// whether to call window.self.close() after the call.
 			string htmlFormat = @"	if (inPopup) {{
-		objSrc.{0};
-		window.self.close();
+		try {{
+			objSrc.{0};
+		}} catch (ex) {{
+			alert(ex);
+		}} finally {{
+			window.self.close();
+		}}
 	}} else {{
 		objSrc.{0};
 	}}";

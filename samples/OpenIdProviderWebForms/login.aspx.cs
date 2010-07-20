@@ -13,7 +13,7 @@ namespace OpenIdProviderWebForms {
 	public partial class login : System.Web.UI.Page {
 		protected void Page_Load(object src, EventArgs e) {
 			if (!IsPostBack) {
-				yubicoPanel.Visible = !string.IsNullOrEmpty(ConfigurationManager.AppSettings["YubicoAPIKey"]);
+				this.yubicoPanel.Visible = !string.IsNullOrEmpty(ConfigurationManager.AppSettings["YubicoAPIKey"]);
 
 				if (ProviderEndpoint.PendingAuthenticationRequest != null &&
 					!ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity) {
@@ -27,7 +27,7 @@ namespace OpenIdProviderWebForms {
 
 		protected void yubicoButton_Click(object sender, EventArgs e) {
 			string username;
-			if (this.TryVerifyYubikeyAndGetUsername(yubicoBox.Text, out username)) {
+			if (this.TryVerifyYubikeyAndGetUsername(this.yubicoBox.Text, out username)) {
 				FormsAuthentication.RedirectFromLoginPage(username, false);
 			}
 		}
@@ -40,8 +40,8 @@ namespace OpenIdProviderWebForms {
 					username = YubikeyRelyingParty.ExtractUsername(token);
 					return true;
 				default:
-					yubikeyFailureLabel.Visible = true;
-					yubikeyFailureLabel.Text = result.ToString();
+					this.yubikeyFailureLabel.Visible = true;
+					this.yubikeyFailureLabel.Text = result.ToString();
 					username = null;
 					return false;
 			}

@@ -36,6 +36,12 @@ namespace DotNetOpenAuth.OpenId {
 	/// <see cref="System.Uri"/> for consumers (to distinguish associations across servers) or
 	/// <see cref="AssociationRelyingPartyType"/> for providers (to distinguish dumb and smart client associations).
 	/// </typeparam>
+	/// <remarks>
+	/// Expired associations should be periodically cleared out of an association store.
+	/// This should be done frequently enough to avoid a memory leak, but sparingly enough
+	/// to not be a performance drain.  Because this balance can vary by host, it is the
+	/// responsibility of the host to initiate this cleaning.
+	/// </remarks>
 	////[ContractClass(typeof(IAssociationStoreContract<>))]
 	public interface IAssociationStore<TKey> {
 		/// <summary>
@@ -84,17 +90,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// before this call.
 		/// </remarks>
 		bool RemoveAssociation(TKey distinguishingFactor, string handle);
-
-		/// <summary>
-		/// Clears all expired associations from the store.
-		/// </summary>
-		/// <remarks>
-		/// If another algorithm is in place to periodically clear out expired associations,
-		/// this method call may be ignored.
-		/// This should be done frequently enough to avoid a memory leak, but sparingly enough
-		/// to not be a performance drain.
-		/// </remarks>
-		void ClearExpiredAssociations();
 	}
 
 	// For some odd reason, having this next class causes our test project to fail to build with this error:

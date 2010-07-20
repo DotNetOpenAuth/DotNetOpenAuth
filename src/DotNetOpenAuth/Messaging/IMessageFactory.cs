@@ -46,7 +46,13 @@ namespace DotNetOpenAuth.Messaging {
 	/// Code contract for the <see cref="IMessageFactory"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IMessageFactory))]
-	internal class IMessageFactoryContract : IMessageFactory {
+	internal abstract class IMessageFactoryContract : IMessageFactory {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IMessageFactoryContract"/> class from being created.
+		/// </summary>
+		private IMessageFactoryContract() {
+		}
+
 		#region IMessageFactory Members
 
 		/// <summary>

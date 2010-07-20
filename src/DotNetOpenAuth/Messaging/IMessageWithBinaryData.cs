@@ -33,7 +33,13 @@ namespace DotNetOpenAuth.Messaging {
 	/// The contract class for the <see cref="IMessageWithBinaryData"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IMessageWithBinaryData))]
-	internal sealed class IMessageWithBinaryDataContract : IMessageWithBinaryData {
+	internal abstract class IMessageWithBinaryDataContract : IMessageWithBinaryData {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IMessageWithBinaryDataContract"/> class from being created.
+		/// </summary>
+		private IMessageWithBinaryDataContract() {
+		}
+
 		#region IMessageWithBinaryData Members
 
 		/// <summary>
@@ -67,7 +73,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		Version IMessage.Version {
 			get {
-				Contract.Ensures(Contract.Result<Version>() != null);
 				return default(Version); // dummy return
 			}
 		}
@@ -81,7 +86,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		IDictionary<string, string> IMessage.ExtraData {
 			get {
-				Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 				return default(IDictionary<string, string>);
 			}
 		}

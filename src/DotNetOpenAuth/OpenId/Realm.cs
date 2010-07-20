@@ -180,6 +180,14 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Gets the original string.
+		/// </summary>
+		/// <value>The original string.</value>
+		internal string OriginalString {
+			get { return this.uri.OriginalString; }
+		}
+
+		/// <summary>
 		/// Gets the realm URL.  If the realm includes a wildcard, it is not included here.
 		/// </summary>
 		public Uri NoWildcardUri {
