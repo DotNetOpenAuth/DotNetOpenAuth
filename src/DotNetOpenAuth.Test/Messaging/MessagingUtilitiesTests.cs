@@ -216,6 +216,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		public void GetHttpDeliveryMethodOutOfRangeTest() {
 			MessagingUtilities.GetHttpDeliveryMethod("UNRECOGNIZED");
 		}
+
 		/// <summary>
 		/// Verifies that the time-independent string equality check works accurately.
 		/// </summary>
@@ -242,29 +243,29 @@ namespace DotNetOpenAuth.Test.Messaging {
 			string totalmismatch = new string('B', 5000);
 			string almostmatch = new string('A', 4999) + 'B';
 
-			const int iterations = 4000;
+			const int Iterations = 4000;
 			var totalMismatchTimer = new Stopwatch();
 			totalMismatchTimer.Start();
-			for (int i = 0; i < iterations; i++) {
+			for (int i = 0; i < Iterations; i++) {
 				MessagingUtilities.EqualsConstantTime(expected, totalmismatch);
 			}
 			totalMismatchTimer.Stop();
 
 			var almostMatchTimer = new Stopwatch();
 			almostMatchTimer.Start();
-			for (int i = 0; i < iterations; i++) {
+			for (int i = 0; i < Iterations; i++) {
 				MessagingUtilities.EqualsConstantTime(expected, almostmatch);
 			}
 			almostMatchTimer.Stop();
 
-			const double toleranceFactor = 0.06;
+			const double ToleranceFactor = 0.06;
 			long averageTimeTicks = (totalMismatchTimer.ElapsedTicks + almostMatchTimer.ElapsedTicks) / 2;
-			var tolerableDifference = TimeSpan.FromTicks((long)(averageTimeTicks * toleranceFactor));
+			var tolerableDifference = TimeSpan.FromTicks((long)(averageTimeTicks * ToleranceFactor));
 			var absoluteDifference = TimeSpan.FromTicks(Math.Abs(totalMismatchTimer.ElapsedTicks - almostMatchTimer.ElapsedTicks));
 			double actualFactor = (double)absoluteDifference.Ticks / averageTimeTicks;
-			Assert.IsTrue(absoluteDifference <= tolerableDifference, "A total mismatch took {0} but a near match took {1}, which is too different to be indistinguishable.  The tolerable difference is {2} but the actual difference is {3}.  This represents a difference of {4}%, beyond the tolerated {5}%.", totalMismatchTimer.Elapsed, almostMatchTimer.Elapsed, tolerableDifference, absoluteDifference, Math.Round(actualFactor * 100), Math.Round(toleranceFactor * 100));
-			Console.WriteLine("A total mismatch took {0} and a near match took {1}.  The tolerable difference is {2}, and the actual difference is {3}.  This represents a difference of {4}%, within the tolerated {5}%.", totalMismatchTimer.Elapsed, almostMatchTimer.Elapsed, tolerableDifference, absoluteDifference, Math.Round(actualFactor * 100), Math.Round(toleranceFactor * 100));
-			Console.WriteLine("The equality test execution time difference was only {0}%, within the tolerable {1}%", Math.Round(100 * actualFactor), Math.Round(toleranceFactor * 100));
+			Assert.IsTrue(absoluteDifference <= tolerableDifference, "A total mismatch took {0} but a near match took {1}, which is too different to be indistinguishable.  The tolerable difference is {2} but the actual difference is {3}.  This represents a difference of {4}%, beyond the tolerated {5}%.", totalMismatchTimer.Elapsed, almostMatchTimer.Elapsed, tolerableDifference, absoluteDifference, Math.Round(actualFactor * 100), Math.Round(ToleranceFactor * 100));
+			Console.WriteLine("A total mismatch took {0} and a near match took {1}.  The tolerable difference is {2}, and the actual difference is {3}.  This represents a difference of {4}%, within the tolerated {5}%.", totalMismatchTimer.Elapsed, almostMatchTimer.Elapsed, tolerableDifference, absoluteDifference, Math.Round(actualFactor * 100), Math.Round(ToleranceFactor * 100));
+			Console.WriteLine("The equality test execution time difference was only {0}%, within the tolerable {1}%", Math.Round(100 * actualFactor), Math.Round(ToleranceFactor * 100));
 		}
 
 		/// <summary>
