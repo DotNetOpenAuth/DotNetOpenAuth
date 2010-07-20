@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test {
+namespace DotNetOpenAuth.Test.OAuth {
 	using DotNetOpenAuth.OAuth;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
