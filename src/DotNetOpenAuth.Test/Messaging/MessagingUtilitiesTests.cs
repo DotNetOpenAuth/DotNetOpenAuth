@@ -237,7 +237,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that EqualsConstantTime actually has the same execution time regardless of how well a value matches.
 		/// </summary>
-		[TestCase]
+		[TestCase, Category("Performance")]
 		public void EqualsConstantTimeIsActuallyConstantTime() {
 			string expected = new string('A', 5000);
 			string totalmismatch = new string('B', 5000);
