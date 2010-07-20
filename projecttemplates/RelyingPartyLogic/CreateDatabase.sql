@@ -10,8 +10,8 @@ GO
 /*
 :setvar Path1 "WEBROOT\App_Data\"
 :setvar DatabaseName "RelyingPartyDatabase"
-:setvar DefaultDataPath "c:\Program Files (x86)\Microsoft SQL Server\MSSQL.1\MSSQL\DATA\"
-:setvar DefaultLogPath "c:\Program Files (x86)\Microsoft SQL Server\MSSQL.1\MSSQL\DATA\"
+:setvar DefaultDataPath ""
+:setvar DefaultLogPath ""
 */
 
 GO
@@ -706,6 +706,12 @@ ALTER TABLE [dbo].[IssuedToken] WITH CHECK CHECK CONSTRAINT [FK_IssuedToken_User
 ALTER TABLE [dbo].[UserRole] WITH CHECK CHECK CONSTRAINT [FK_UserRole_Role];
 
 ALTER TABLE [dbo].[UserRole] WITH CHECK CHECK CONSTRAINT [FK_UserRole_User];
+
+
+GO
+ALTER DATABASE [$(DatabaseName)]
+    SET MULTI_USER 
+    WITH ROLLBACK IMMEDIATE;
 
 
 GO
