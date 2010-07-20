@@ -98,7 +98,7 @@
 				this.googleAccessToken = auth.AccessToken;
 				postButton.IsEnabled = true;
 
-				XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, this.googleAccessToken);
+				XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, this.googleAccessToken, 25, 1);
 				var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 							   select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
 				contactsGrid.Children.Clear();
