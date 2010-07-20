@@ -70,7 +70,6 @@
 															$(ProjectRoot)**\*.log*;
 															$(ProjectRoot)**\*~;
 															$(ProjectRoot)**\Debug\**;
-															$(ProjectRoot)**\Settings.StyleCop;
 															$(ProjectRoot)**\StyleCop.Cache;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
