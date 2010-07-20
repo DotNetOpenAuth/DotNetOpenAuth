@@ -177,7 +177,7 @@
 			public Stream GetRequestStream(HttpWebRequest request)
 			{
 				this.action(request);
-				return wrappedHandler.GetRequestStream(request);
+				return this.wrappedHandler.GetRequestStream(request);
 			}
 
 			/// <summary>
@@ -202,7 +202,7 @@
 			public Stream GetRequestStream(HttpWebRequest request, DirectWebRequestOptions options)
 			{
 				this.action(request);
-				return wrappedHandler.GetRequestStream(request, options);
+				return this.wrappedHandler.GetRequestStream(request, options);
 			}
 
 			/// <summary>
@@ -226,7 +226,7 @@
 					this.action(request);
 				}
 
-				return wrappedHandler.GetResponse(request);
+				return this.wrappedHandler.GetResponse(request);
 			}
 
 			/// <summary>
@@ -250,7 +250,7 @@
 					this.action(request);
 				}
 
-				return wrappedHandler.GetResponse(request, options);
+				return this.wrappedHandler.GetResponse(request, options);
 			}
 
 			#endregion
