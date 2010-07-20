@@ -1,4 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="EnlistmentInfo.props" />
 	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.automated.props"/>
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 
@@ -11,7 +12,7 @@
 										samples\samples.proj;
 										doc\doc.proj;
 										" />
-		
+
 		<ProjectsToClean Include="
 										 $(SolutionPath);
 										 projecttemplates\projecttemplates.proj;
@@ -68,4 +69,5 @@
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+	<Import Project="EnlistmentInfo.targets" />
 </Project>
