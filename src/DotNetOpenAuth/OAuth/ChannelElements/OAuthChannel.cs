@@ -139,6 +139,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 						}
 					}
 				}
+
+				fields.Remove("realm"); // ignore the realm parameter, since we don't use it, and it must be omitted from signature base string.
 			}
 
 			// Scrape the entity
