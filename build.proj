@@ -1,4 +1,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="EnlistmentInfo.props" />
 	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.automated.props"/>
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 
@@ -11,7 +12,7 @@
 										samples\samples.proj;
 										doc\doc.proj;
 										" />
-		
+
 		<ProjectsToClean Include="
 										 $(SolutionPath);
 										 projecttemplates\projecttemplates.proj;
@@ -47,7 +48,7 @@
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="BuildTests"
-	        Inputs="$(OutputPath)$(ProductName).Test.dll"
+	        Inputs="$(OutputPath)$(ProductName).dll;$(OutputPath)$(ProductName).Test.dll"
 	        Outputs='$(OutputPath)Test-result.xml'>
 		<PropertyGroup>
 			<!-- Performance tests are only expected to pass in optimized builds. -->
@@ -56,7 +57,7 @@
 		<NUnit Assemblies="$(OutputPath)$(ProductName).Test.dll"
 		       ToolPath="$(NUnitToolPath)"
 		       OutputXmlFile="$(OutputPath)Test-result.xml"
-		       ExcludeCategory="$(NUnitExcludeCategories)"/>
+		       ExcludeCategory="$(NUnitExcludeCategories)" />
 	</Target>
 
 	<Target Name="Nightly">
@@ -68,4 +69,5 @@
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+	<Import Project="EnlistmentInfo.targets" />
 </Project>

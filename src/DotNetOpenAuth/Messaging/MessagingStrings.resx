@@ -312,4 +312,7 @@
   <data name="EncoderInstantiationFailed" xml:space="preserve">
     <value>Unable to instantiate the message part encoder/decoder type {0}.</value>
   </data>
+  <data name="MessageTimestampInFuture" xml:space="preserve">
+    <value>This message has a timestamp of {0}, which is beyond the allowable clock skew for in the future.</value>
+  </data>
 </root>

@@ -91,28 +91,28 @@
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
 				this.googleAccessToken = auth.AccessToken;
-				postButton.IsEnabled = true;
+				this.postButton.IsEnabled = true;
 
-				XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, this.googleAccessToken);
+				XDocument contactsDocument = GoogleConsumer.GetContacts(this.google, this.googleAccessToken, 25, 1);
 				var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 							   select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
-				contactsGrid.Children.Clear();
+				this.contactsGrid.Children.Clear();
 				foreach (var contact in contacts) {
-					contactsGrid.RowDefinitions.Add(new RowDefinition());
+					this.contactsGrid.RowDefinitions.Add(new RowDefinition());
 					TextBlock name = new TextBlock { Text = contact.Name };
 					TextBlock email = new TextBlock { Text = contact.Email };
-					Grid.SetRow(name, contactsGrid.RowDefinitions.Count - 1);
-					Grid.SetRow(email, contactsGrid.RowDefinitions.Count - 1);
+					Grid.SetRow(name, this.contactsGrid.RowDefinitions.Count - 1);
+					Grid.SetRow(email, this.contactsGrid.RowDefinitions.Count - 1);
 					Grid.SetColumn(email, 1);
-					contactsGrid.Children.Add(name);
-					contactsGrid.Children.Add(email);
+					this.contactsGrid.Children.Add(name);
+					this.contactsGrid.Children.Add(email);
 				}
 			}
 		}
 
 		private void postButton_Click(object sender, RoutedEventArgs e) {
-			XElement postBodyXml = XElement.Parse(postBodyBox.Text);
-			GoogleConsumer.PostBlogEntry(this.google, this.googleAccessToken, blogUrlBox.Text, postTitleBox.Text, postBodyXml);
+			XElement postBodyXml = XElement.Parse(this.postBodyBox.Text);
+			GoogleConsumer.PostBlogEntry(this.google, this.googleAccessToken, this.blogUrlBox.Text, this.postTitleBox.Text, postBodyXml);
 		}
 
 		private void beginWcfAuthorizationButton_Click(object sender, RoutedEventArgs e) {
@@ -125,9 +125,9 @@
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
 				this.wcfAccessToken = auth.AccessToken;
-				wcfName.Content = CallService(client => client.GetName());
-				wcfAge.Content = CallService(client => client.GetAge());
-				wcfFavoriteSites.Content = CallService(client => string.Join(", ", client.GetFavoriteSites()));
+				this.wcfName.Content = CallService(client => client.GetName());
+				this.wcfAge.Content = CallService(client => client.GetAge());
+				this.wcfFavoriteSites.Content = CallService(client => string.Join(", ", client.GetFavoriteSites()));
 			}
 		}
 
@@ -150,15 +150,15 @@
 		private void beginButton_Click(object sender, RoutedEventArgs e) {
 			try {
 				var service = new ServiceProviderDescription {
-					RequestTokenEndpoint = new MessageReceivingEndpoint(requestTokenUrlBox.Text, requestTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
-					UserAuthorizationEndpoint = new MessageReceivingEndpoint(authorizeUrlBox.Text, HttpDeliveryMethods.GetRequest),
-					AccessTokenEndpoint = new MessageReceivingEndpoint(accessTokenUrlBox.Text, accessTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
+					RequestTokenEndpoint = new MessageReceivingEndpoint(this.requestTokenUrlBox.Text, this.requestTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
+					UserAuthorizationEndpoint = new MessageReceivingEndpoint(this.authorizeUrlBox.Text, HttpDeliveryMethods.GetRequest),
+					AccessTokenEndpoint = new MessageReceivingEndpoint(this.accessTokenUrlBox.Text, this.accessTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
 					TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-					ProtocolVersion = oauthVersion.SelectedIndex == 0 ? ProtocolVersion.V10 : ProtocolVersion.V10a,
+					ProtocolVersion = this.oauthVersion.SelectedIndex == 0 ? ProtocolVersion.V10 : ProtocolVersion.V10a,
 				};
 				var tokenManager = new InMemoryTokenManager();
-				tokenManager.ConsumerKey = consumerKeyBox.Text;
-				tokenManager.ConsumerSecret = consumerSecretBox.Text;
+				tokenManager.ConsumerKey = this.consumerKeyBox.Text;
+				tokenManager.ConsumerSecret = this.consumerSecretBox.Text;
 
 				var consumer = new DesktopConsumer(service, tokenManager);
 				string accessToken;
@@ -181,13 +181,13 @@
 						return;
 					}
 				}
-				HttpDeliveryMethods resourceHttpMethod = resourceHttpMethodList.SelectedIndex < 2 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest;
-				if (resourceHttpMethodList.SelectedIndex == 1) {
+				HttpDeliveryMethods resourceHttpMethod = this.resourceHttpMethodList.SelectedIndex < 2 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest;
+				if (this.resourceHttpMethodList.SelectedIndex == 1) {
 					resourceHttpMethod |= HttpDeliveryMethods.AuthorizationHeaderRequest;
 				}
-				var resourceEndpoint = new MessageReceivingEndpoint(resourceUrlBox.Text, resourceHttpMethod);
+				var resourceEndpoint = new MessageReceivingEndpoint(this.resourceUrlBox.Text, resourceHttpMethod);
 				using (IncomingWebResponse resourceResponse = consumer.PrepareAuthorizedRequestAndSend(resourceEndpoint, accessToken)) {
-					resultsBox.Text = resourceResponse.GetResponseReader().ReadToEnd();
+					this.resultsBox.Text = resourceResponse.GetResponseReader().ReadToEnd();
 				}
 			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);

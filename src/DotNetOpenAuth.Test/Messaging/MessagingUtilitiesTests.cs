@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
 	using System.Text.RegularExpressions;
@@ -226,6 +227,68 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 			string roundTripped = MessagingUtilities.Decrypt(cipher, key);
 			Assert.AreEqual(PlainText, roundTripped);
+		}
+
+		/// <summary>
+		/// Verifies that the time-independent string equality check works accurately.
+		/// </summary>
+		[TestCase]
+		public void EqualsConstantTime() {
+			this.EqualsConstantTimeHelper(null, null);
+			this.EqualsConstantTimeHelper(null, string.Empty);
+			this.EqualsConstantTimeHelper(string.Empty, string.Empty);
+			this.EqualsConstantTimeHelper(string.Empty, "a");
+			this.EqualsConstantTimeHelper(null, "a");
+			this.EqualsConstantTimeHelper("a", "a");
+			this.EqualsConstantTimeHelper("a", "A");
+			this.EqualsConstantTimeHelper("A", "A");
+			this.EqualsConstantTimeHelper("ab", "ab");
+			this.EqualsConstantTimeHelper("ab", "b");
+		}
+
+		/// <summary>
+		/// Verifies that EqualsConstantTime actually has the same execution time regardless of how well a value matches.
+		/// </summary>
+		[TestCase, Category("Performance")]
+		public void EqualsConstantTimeIsActuallyConstantTime() {
+			string expected = new string('A', 5000);
+			string totalmismatch = new string('B', 5000);
+			string almostmatch = new string('A', 4999) + 'B';
+
+			const int Iterations = 4000;
+			var totalMismatchTimer = new Stopwatch();
+			totalMismatchTimer.Start();
+			for (int i = 0; i < Iterations; i++) {
+				MessagingUtilities.EqualsConstantTime(expected, totalmismatch);
+			}
+			totalMismatchTimer.Stop();
+
+			var almostMatchTimer = new Stopwatch();
+			almostMatchTimer.Start();
+			for (int i = 0; i < Iterations; i++) {
+				MessagingUtilities.EqualsConstantTime(expected, almostmatch);
+			}
+			almostMatchTimer.Stop();
+
+			const double ToleranceFactor = 0.06;
+			long averageTimeTicks = (totalMismatchTimer.ElapsedTicks + almostMatchTimer.ElapsedTicks) / 2;
+			var tolerableDifference = TimeSpan.FromTicks((long)(averageTimeTicks * ToleranceFactor));
+			var absoluteDifference = TimeSpan.FromTicks(Math.Abs(totalMismatchTimer.ElapsedTicks - almostMatchTimer.ElapsedTicks));
+			double actualFactor = (double)absoluteDifference.Ticks / averageTimeTicks;
+			Assert.IsTrue(absoluteDifference <= tolerableDifference, "A total mismatch took {0} but a near match took {1}, which is too different to be indistinguishable.  The tolerable difference is {2} but the actual difference is {3}.  This represents a difference of {4}%, beyond the tolerated {5}%.", totalMismatchTimer.Elapsed, almostMatchTimer.Elapsed, tolerableDifference, absoluteDifference, Math.Round(actualFactor * 100), Math.Round(ToleranceFactor * 100));
+			Console.WriteLine("A total mismatch took {0} and a near match took {1}.  The tolerable difference is {2}, and the actual difference is {3}.  This represents a difference of {4}%, within the tolerated {5}%.", totalMismatchTimer.Elapsed, almostMatchTimer.Elapsed, tolerableDifference, absoluteDifference, Math.Round(actualFactor * 100), Math.Round(ToleranceFactor * 100));
+			Console.WriteLine("The equality test execution time difference was only {0}%, within the tolerable {1}%", Math.Round(100 * actualFactor), Math.Round(ToleranceFactor * 100));
+		}
+
+		/// <summary>
+		/// Verifies that the time-independent string equality check works for a given pair of strings.
+		/// </summary>
+		/// <param name="value1">The first value.</param>
+		/// <param name="value2">The second value.</param>
+		private void EqualsConstantTimeHelper(string value1, string value2) {
+			bool expected = string.Equals(value1, value2, StringComparison.Ordinal);
+			Assert.AreEqual(expected, MessagingUtilities.EqualsConstantTime(value1, value2));
+			Assert.AreEqual(expected, MessagingUtilities.EqualsConstantTime(value2, value1));
 		}
 	}
 }

@@ -359,7 +359,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				{ "Name", "Andrew" },
 				{ "Location", "http://hostb/pathB" },
 				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
-				{ "realm" , "someValue" },
+				{ "realm", "someValue" },
 			};
 			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(scheme, fields));
 			Assert.IsNotNull(requestMessage);

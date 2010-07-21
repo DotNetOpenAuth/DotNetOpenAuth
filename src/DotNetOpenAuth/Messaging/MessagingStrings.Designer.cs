@@ -322,6 +322,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This message has a timestamp of {0}, which is beyond the allowable clock skew for in the future..
+        /// </summary>
+        internal static string MessageTimestampInFuture {
+            get {
+                return ResourceManager.GetString("MessageTimestampInFuture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A non-empty string was expected..
         /// </summary>
         internal static string NonEmptyStringExpected {
