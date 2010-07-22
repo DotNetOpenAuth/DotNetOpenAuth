@@ -72,7 +72,7 @@
 															$(ProjectRoot)**\*~;
 															$(ProjectRoot)**\Debug\**;
 															$(ProjectRoot)**\StyleCop.Cache;
-															$(ProjectRoot)Samples\_ReSharper.Samples\**;
+															$(ProjectRoot)Samples\_ReSharper.*\**;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
 															$(ProjectRoot)Samples\**\log4net.???;
@@ -142,6 +142,10 @@
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
 			Condition=" '$(DowngradeVS2010ToVS2008)' != 'false' "
 			/>
+		<ItemGroup>
+			<!-- Go snag the newly created files so that .zip file will include them. -->
+			<AllDropTargets Include="$(DropSamplesDirectory)**\*-vs2008.*" />
+		</ItemGroup>
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
