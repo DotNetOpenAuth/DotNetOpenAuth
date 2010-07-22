@@ -49,7 +49,11 @@ namespace DotNetOpenAuth.BuildTasks {
 							}
 						}
 
-						// Web projects usually have an import that includes these substrings
+						// MSBuild v3.5 doesn't support the GetDirectoryNameOfFileAbove function
+						var enlistmentInfoImports = project.Imports.Cast<Import>().Where(i => i.ProjectPath.IndexOf("[MSBuild]::GetDirectoryNameOfFileAbove", StringComparison.OrdinalIgnoreCase) >= 0);
+						enlistmentInfoImports.ToList().ForEach(i => project.Imports.RemoveImport(i));
+
+						// Web projects usually have an import that includes these substrings));)
 						foreach (Import import in project.Imports) {
 							import.ProjectPath = import.ProjectPath
 								.Replace("$(MSBuildExtensionsPath32)", "$(MSBuildExtensionsPath)")
