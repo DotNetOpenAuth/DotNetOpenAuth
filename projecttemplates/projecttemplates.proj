@@ -211,6 +211,7 @@
 			Projects="@(ProjectTemplates2008Layout)"
 			Condition="'%(Extension)' == '.csproj'"
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
+			InPlaceDowngrade="true"
 			/>
 
 		<Purge Directories="$(ProjectTemplates2008LayoutPath)" 
