@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public string ClientState { get; set; }
 
 		/// <summary>
-		/// Gets or sets the scope of access being requested.
+		/// Gets the scope of access being requested.
 		/// </summary>
 		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]

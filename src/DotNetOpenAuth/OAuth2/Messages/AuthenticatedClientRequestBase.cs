@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public string ClientIdentifier { get; internal set; }
 
 		/// <summary>
-		/// Gets or sets the client secret.
+		/// Gets the client secret.
 		/// </summary>
 		/// <value>The client secret.</value>
 		/// <remarks>
