@@ -19,8 +19,8 @@
 		/// The details about the sample OAuth-enabled WCF service that this sample client calls into.
 		/// </summary>
 		private static AuthorizationServerDescription AuthServerDescription = new AuthorizationServerDescription {
-			TokenEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/token"),
-			AuthorizationEndpoint = new Uri("http://localhost:65169/OAuth2.ashx/auth"),
+			TokenEndpoint = new Uri("http://localhost:65169/OAuth.ashx"),
+			AuthorizationEndpoint = new Uri("http://localhost:65169/Members/Authorize.aspx"),
 		};
 
 		/// <summary>
@@ -55,6 +55,7 @@
 				if (authorization != null) {
 					// We are receiving an authorization response.  Store it and associate it with this user.
 					Authorization = authorization;
+					Response.Redirect(Request.Path); // get rid of the /?code= parameter
 				}
 			}
 		}

@@ -37,6 +37,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The password.</value>
 		[MessagePart(Protocol.password, IsRequired = true, AllowEmpty = true)]
 		internal string Password { get; set; }
-
 	}
 }

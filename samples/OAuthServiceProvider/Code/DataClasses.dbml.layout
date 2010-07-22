@@ -33,25 +33,25 @@
         <classShapeMoniker Id="8a79b099-7f87-4766-907a-db2c3e1b5716" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(2.5 : 4.29409912109375); (3.5 : 4.29409912109375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/DataClassesDataContext/Client/OAuthConsumer_OAuthToken" />
-      <nodes>
-        <classShapeMoniker Id="f909becb-85b1-4fe6-bb16-3feb3e4fe3ee" />
-        <classShapeMoniker Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(2.42590266277457 : 2.27089680989583); (2.42590266277457 : 3.25); (2.75 : 3.25); (2.75 : 3.67829756054687); (3.5 : 3.67829756054687)]" fixedFrom="Caller" fixedTo="Algorithm">
-      <AssociationMoniker Name="/DataClassesDataContext/User/User_OAuthToken" />
-      <nodes>
-        <classShapeMoniker Id="696d2c69-040e-411d-9257-bb664b743834" />
-        <classShapeMoniker Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" />
-      </nodes>
-    </associationConnector>
     <classShape Id="a63562a7-acf2-4ed9-9686-52a1ad85633e" absoluteBounds="1.375, 6.375, 2, 1.3862939453124996">
       <DataClassMoniker Name="/DataClassesDataContext/Nonce" />
       <nestedChildShapes>
         <elementListCompartment Id="9e4514ef-bc7b-4179-88e6-05363bf6ee5e" absoluteBounds="1.39, 6.835, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
+    <associationConnector edgePoints="[(2.5 : 4.29409912109375); (3.5 : 4.29409912109375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/DataClassesDataContext/Client/Client_ClientAuthorization" />
+      <nodes>
+        <classShapeMoniker Id="f909becb-85b1-4fe6-bb16-3feb3e4fe3ee" />
+        <classShapeMoniker Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(2.59375 : 2.27089680989583); (2.59375 : 3.28125); (3.5 : 3.28125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/DataClassesDataContext/User/User_ClientAuthorization" />
+      <nodes>
+        <classShapeMoniker Id="696d2c69-040e-411d-9257-bb664b743834" />
+        <classShapeMoniker Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" />
+      </nodes>
+    </associationConnector>
   </nestedChildShapes>
 </ordesignerObjectsDiagram>

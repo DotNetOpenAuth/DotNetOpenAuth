@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(RelyingPartyLogic.User), "ClientAuthorization", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.ClientAuthorization))]
 
 // Original file name:
-// Generation date: 7/14/2010 9:35:17 PM
+// Generation date: 7/22/2010 11:15:43 AM
 namespace RelyingPartyLogic
 {
     
@@ -1437,32 +1437,32 @@ namespace RelyingPartyLogic
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
         partial void OnCreatedOnUtcChanged();
         /// <summary>
-        /// There are no comments for property ExpirationDate in the schema.
+        /// There are no comments for property ExpirationDateUtc in the schema.
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public global::System.Nullable<global::System.DateTime> ExpirationDate
+        public global::System.Nullable<global::System.DateTime> ExpirationDateUtc
         {
             get
             {
-                return this._ExpirationDate;
+                return this._ExpirationDateUtc;
             }
             set
             {
-                this.OnExpirationDateChanging(value);
-                this.ReportPropertyChanging("ExpirationDate");
-                this._ExpirationDate = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
-                this.ReportPropertyChanged("ExpirationDate");
-                this.OnExpirationDateChanged();
+                this.OnExpirationDateUtcChanging(value);
+                this.ReportPropertyChanging("ExpirationDateUtc");
+                this._ExpirationDateUtc = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ExpirationDateUtc");
+                this.OnExpirationDateUtcChanged();
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private global::System.Nullable<global::System.DateTime> _ExpirationDate;
+        private global::System.Nullable<global::System.DateTime> _ExpirationDateUtc;
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnExpirationDateChanging(global::System.Nullable<global::System.DateTime> value);
+        partial void OnExpirationDateUtcChanging(global::System.Nullable<global::System.DateTime> value);
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnExpirationDateChanged();
+        partial void OnExpirationDateUtcChanged();
         /// <summary>
         /// There are no comments for property Scope in the schema.
         /// </summary>

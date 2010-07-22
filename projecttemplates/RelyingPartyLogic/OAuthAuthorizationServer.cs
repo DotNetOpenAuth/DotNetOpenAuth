@@ -151,6 +151,7 @@ namespace RelyingPartyLogic {
 									  where
 										auth.Client.ClientIdentifier == clientIdentifier &&
 										auth.CreatedOnUtc <= issuedUtc &&
+										(!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
 										auth.User.AuthenticationTokens.Any(token => token.ClaimedIdentifier == username)
 									  select auth.Scope;
 

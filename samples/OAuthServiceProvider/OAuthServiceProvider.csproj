@@ -59,7 +59,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
-    <Content Include="Members\Authorize2.aspx" />
+    <Content Include="Members\Authorize.aspx" />
     <Content Include="Members\AuthorizedConsumers.aspx" />
     <Content Include="Members\Logoff.aspx" />
     <Content Include="TracePage.aspx" />
@@ -71,15 +71,15 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Members\Authorize2.aspx.cs">
-      <DependentUpon>Authorize2.aspx</DependentUpon>
+    <Compile Include="Members\Authorize.aspx.cs">
+      <DependentUpon>Authorize.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Members\Authorize2.aspx.designer.cs">
-      <DependentUpon>Authorize2.aspx</DependentUpon>
+    <Compile Include="Members\Authorize.aspx.designer.cs">
+      <DependentUpon>Authorize.aspx</DependentUpon>
     </Compile>
-    <Compile Include="OAuth2.ashx.cs">
-      <DependentUpon>OAuth2.ashx</DependentUpon>
+    <Compile Include="OAuth.ashx.cs">
+      <DependentUpon>OAuth.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataApi.cs">
@@ -91,7 +91,7 @@
     <Compile Include="Code\Global.cs" />
     <Compile Include="Code\IDataApi.cs" />
     <Compile Include="Code\OAuthAuthorizationManager.cs" />
-    <Compile Include="Code\OAuthConsumer.cs" />
+    <Compile Include="Code\Client.cs" />
     <Compile Include="Code\OAuthPrincipalAuthorizationPolicy.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\Utilities.cs" />
@@ -129,7 +129,7 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Members\Web.config" />
-    <Content Include="OAuth2.ashx" />
+    <Content Include="OAuth.ashx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\DataClasses.dbml.layout">

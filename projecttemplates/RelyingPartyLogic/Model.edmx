@@ -293,7 +293,7 @@
           </Key>
           <Property Type="Int32" Name="AuthorizationId" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="DateTime" Name="CreatedOnUtc" Nullable="false" />
-          <Property Type="DateTime" Name="ExpirationDate" />
+          <Property Type="DateTime" Name="ExpirationDateUtc" Nullable="true" />
           <Property Type="String" Name="Scope" MaxLength="2048" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Client" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="ClientAuthorization" ToRole="Client" />
           <NavigationProperty Name="User" Relationship="DatabaseModel.FK_IssuedToken_User" FromRole="ClientAuthorization" ToRole="User" />
@@ -386,7 +386,7 @@
             <EntityTypeMapping TypeName="DatabaseModel.ClientAuthorization">
               <MappingFragment StoreEntitySet="ClientAuthorization">
                 <ScalarProperty Name="Scope" ColumnName="Scope" />
-                <ScalarProperty Name="ExpirationDate" ColumnName="ExpirationDate" />
+                <ScalarProperty Name="ExpirationDateUtc" ColumnName="ExpirationDate" />
                 <ScalarProperty Name="CreatedOnUtc" ColumnName="CreatedOn" />
                 <ScalarProperty Name="AuthorizationId" ColumnName="AuthorizationId" />
               </MappingFragment>

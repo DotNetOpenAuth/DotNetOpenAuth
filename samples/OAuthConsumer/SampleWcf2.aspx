@@ -7,7 +7,7 @@
 			<asp:ListItem Value="http://tempuri.org/IDataApi/GetAge">GetAge</asp:ListItem>
 			<asp:ListItem Value="http://tempuri.org/IDataApi/GetFavoriteSites">GetFavoriteSites</asp:ListItem>
 		</asp:CheckBoxList>
-		<asp:Button ID="getAuthorizationButton" runat="server" Text="Get Authorization" OnClick="getAuthorizationButton_Click" />
+		<asp:Button ID="getAuthorizationButton" runat="server" Text="Request Authorization" OnClick="getAuthorizationButton_Click" />
 		<asp:Label ID="authorizationLabel" runat="server" />
 	</fieldset>
 	<br />

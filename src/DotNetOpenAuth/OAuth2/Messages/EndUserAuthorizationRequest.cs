@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: base(version, MessageTransport.Indirect, authorizationEndpoint) {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
 			Contract.Requires<ArgumentNullException>(version != null);
-			this.HttpMethods = HttpDeliveryMethods.GetRequest;
+			this.HttpMethods = HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest;
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 

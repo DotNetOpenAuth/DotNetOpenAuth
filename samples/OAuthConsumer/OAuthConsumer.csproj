@@ -63,7 +63,6 @@
     <Content Include="Global.asax" />
     <Content Include="GoogleAddressBook.aspx" />
     <Content Include="images\Sign-in-with-Twitter-darker.png" />
-    <Content Include="SampleWcf.aspx" />
     <Content Include="Yammer.aspx" />
     <None Include="Service References\SampleServiceProvider\DataApi.disco" />
     <None Include="Service References\SampleServiceProvider\configuration91.svcinfo" />
@@ -100,13 +99,6 @@
     </Compile>
     <Compile Include="GoogleAddressBook.aspx.designer.cs">
       <DependentUpon>GoogleAddressBook.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="SampleWcf.aspx.cs">
-      <DependentUpon>SampleWcf.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="SampleWcf.aspx.designer.cs">
-      <DependentUpon>SampleWcf.aspx</DependentUpon>
     </Compile>
     <Compile Include="SampleWcf2.aspx.cs">
       <DependentUpon>SampleWcf2.aspx</DependentUpon>

@@ -46,12 +46,6 @@
 			get { return Global.DataContext.Users.SingleOrDefault(user => user.OpenIDClaimedIdentifier == HttpContext.Current.User.Identity.Name); }
 		}
 
-		public static EndUserAuthorizationRequest PendingOAuth2Authorization
-		{
-			get { return HttpContext.Current.Session["authrequest"] as EndUserAuthorizationRequest; }
-			set { HttpContext.Current.Session["authrequest"] = value; }
-		}
-
 		private static DataClassesDataContext dataContextSimple {
 			get {
 				if (HttpContext.Current != null) {
