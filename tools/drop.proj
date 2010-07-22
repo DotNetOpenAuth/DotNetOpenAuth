@@ -72,6 +72,7 @@
 															$(ProjectRoot)**\*~;
 															$(ProjectRoot)**\Debug\**;
 															$(ProjectRoot)**\StyleCop.Cache;
+															$(ProjectRoot)Samples\_ReSharper.Samples\**;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
 															$(ProjectRoot)Samples\**\log4net.???;
