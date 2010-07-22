@@ -25,6 +25,14 @@ namespace DotNetOpenAuth.BuildTasks {
 		[Required]
 		public ITaskItem[] Projects { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether project files are downgraded and re-saved to the same paths.
+		/// </summary>
+		public bool InPlaceDowngrade { get; set; }
+
+		/// <summary>
+		/// Gets or sets the set of newly created project files.  Empty if <see cref="InPlaceDowngrade"/> is <c>true</c>.
+		/// </summary>
 		[Output]
 		public ITaskItem[] DowngradedProjects { get; set; }
 
@@ -44,9 +52,12 @@ namespace DotNetOpenAuth.BuildTasks {
 				switch (GetClassification(taskItem)) {
 					case ProjectClassification.VS2010Project:
 					case ProjectClassification.VS2010Solution:
-						string projectNameForVS2008 = Path.Combine(
-							Path.GetDirectoryName(taskItem.ItemSpec),
-							Path.GetFileNameWithoutExtension(taskItem.ItemSpec) + "-vs2008" + Path.GetExtension(taskItem.ItemSpec));
+						string projectNameForVS2008 = InPlaceDowngrade
+														? taskItem.ItemSpec
+														: Path.Combine(
+															Path.GetDirectoryName(taskItem.ItemSpec),
+															Path.GetFileNameWithoutExtension(taskItem.ItemSpec) + "-vs2008" +
+															Path.GetExtension(taskItem.ItemSpec));
 						newProjectToOldProjectMapping[taskItem.ItemSpec] = projectNameForVS2008;
 						break;
 				}
@@ -131,7 +142,11 @@ namespace DotNetOpenAuth.BuildTasks {
 				}
 			}
 
-			this.DowngradedProjects = createdProjectFiles.ToArray();
+			if (InPlaceDowngrade) {
+				this.DowngradedProjects = new ITaskItem[0];
+			} else {
+				this.DowngradedProjects = createdProjectFiles.ToArray();
+			}
 
 			return !this.Log.HasLoggedErrors;
 		}
