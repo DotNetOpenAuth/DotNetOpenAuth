@@ -9,8 +9,6 @@
 	using System.ServiceModel.Security;
 
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuth;
-	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth2;
 
 	using ProtocolException = System.ServiceModel.ProtocolException;
@@ -31,7 +29,7 @@
 			var requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
 
 			try {
-				var principal = this.VerifyOAuth2(httpDetails, requestUri);
+				var principal = VerifyOAuth2(httpDetails, requestUri);
 				if (principal != null) {
 					var policy = new OAuthPrincipalAuthorizationPolicy(principal);
 					var policies = new List<IAuthorizationPolicy> {
@@ -63,19 +61,7 @@
 			return false;
 		}
 
-		private OAuthPrincipal VerifyOAuth1(HttpRequestMessageProperty httpDetails, Uri requestUri) {
-			ServiceProvider sp = Constants.CreateServiceProvider();
-			var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
-			if (auth != null) {
-				var accessToken = Global.DataContext.OAuthTokens.Single(token => token.Token == auth.AccessToken);
-				var principal = sp.CreatePrincipal(auth);
-				return principal;
-			}
-
-			return null;
-		}
-
-		private OAuthPrincipal VerifyOAuth2(HttpRequestMessageProperty httpDetails, Uri requestUri) {
+		private static IPrincipal VerifyOAuth2(HttpRequestMessageProperty httpDetails, Uri requestUri) {
 			// for this sample where the auth server and resource server are the same site,
 			// we use the same public/private key.
 			var resourceServer = new ResourceServer(
@@ -83,15 +69,11 @@
 					OAuth2AuthorizationServer.AsymmetricKey,
 					OAuth2AuthorizationServer.AsymmetricKey));
 
-			string username;
-			HashSet<string> scope;
-			var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out username, out scope);
-			if (error == null) {
-				var principal = new OAuthPrincipal(username, scope.ToArray());
-				return principal;
-			} else {
-				return null;
-			}
+			IPrincipal result;
+			var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out result);
+
+			// TODO: return the prepared error code.
+			return error != null ? null : result;
 		}
 	}
 }

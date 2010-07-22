@@ -36,12 +36,12 @@ namespace OAuthServiceProvider.Code
     partial void InsertFavoriteSite(FavoriteSite instance);
     partial void UpdateFavoriteSite(FavoriteSite instance);
     partial void DeleteFavoriteSite(FavoriteSite instance);
-    partial void InsertOAuthConsumer(OAuthConsumer instance);
-    partial void UpdateOAuthConsumer(OAuthConsumer instance);
-    partial void DeleteOAuthConsumer(OAuthConsumer instance);
-    partial void InsertOAuthToken(OAuthToken instance);
-    partial void UpdateOAuthToken(OAuthToken instance);
-    partial void DeleteOAuthToken(OAuthToken instance);
+    partial void InsertClient(Client instance);
+    partial void UpdateClient(Client instance);
+    partial void DeleteClient(Client instance);
+    partial void InsertClientAuthorization(ClientAuthorization instance);
+    partial void UpdateClientAuthorization(ClientAuthorization instance);
+    partial void DeleteClientAuthorization(ClientAuthorization instance);
     partial void InsertNonce(Nonce instance);
     partial void UpdateNonce(Nonce instance);
     partial void DeleteNonce(Nonce instance);
@@ -93,19 +93,19 @@ namespace OAuthServiceProvider.Code
 			}
 		}
 		
-		public System.Data.Linq.Table<OAuthConsumer> OAuthConsumers
+		public System.Data.Linq.Table<Client> Clients
 		{
 			get
 			{
-				return this.GetTable<OAuthConsumer>();
+				return this.GetTable<Client>();
 			}
 		}
 		
-		public System.Data.Linq.Table<OAuthToken> OAuthTokens
+		public System.Data.Linq.Table<ClientAuthorization> ClientAuthorizations
 		{
 			get
 			{
-				return this.GetTable<OAuthToken>();
+				return this.GetTable<ClientAuthorization>();
 			}
 		}
 		
@@ -136,7 +136,7 @@ namespace OAuthServiceProvider.Code
 		
 		private EntitySet<FavoriteSite> _FavoriteSites;
 		
-		private EntitySet<OAuthToken> _OAuthTokens;
+		private EntitySet<ClientAuthorization> _OAuthTokens;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -157,7 +157,7 @@ namespace OAuthServiceProvider.Code
 		public User()
 		{
 			this._FavoriteSites = new EntitySet<FavoriteSite>(new Action<FavoriteSite>(this.attach_FavoriteSites), new Action<FavoriteSite>(this.detach_FavoriteSites));
-			this._OAuthTokens = new EntitySet<OAuthToken>(new Action<OAuthToken>(this.attach_OAuthTokens), new Action<OAuthToken>(this.detach_OAuthTokens));
+			this._OAuthTokens = new EntitySet<ClientAuthorization>(new Action<ClientAuthorization>(this.attach_OAuthTokens), new Action<ClientAuthorization>(this.detach_OAuthTokens));
 			OnCreated();
 		}
 		
@@ -274,8 +274,8 @@ namespace OAuthServiceProvider.Code
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_OAuthToken", Storage="_OAuthTokens", ThisKey="UserId", OtherKey="UserId")]
-		public EntitySet<OAuthToken> OAuthTokens
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_ClientAuthorization", Storage="_OAuthTokens", ThisKey="UserId", OtherKey="UserId")]
+		public EntitySet<ClientAuthorization> ClientAuthorizations
 		{
 			get
 			{
@@ -319,13 +319,13 @@ namespace OAuthServiceProvider.Code
 			entity.User = null;
 		}
 		
-		private void attach_OAuthTokens(OAuthToken entity)
+		private void attach_OAuthTokens(ClientAuthorization entity)
 		{
 			this.SendPropertyChanging();
 			entity.User = this;
 		}
 		
-		private void detach_OAuthTokens(OAuthToken entity)
+		private void detach_OAuthTokens(ClientAuthorization entity)
 		{
 			this.SendPropertyChanging();
 			entity.User = null;
@@ -484,7 +484,7 @@ namespace OAuthServiceProvider.Code
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.OAuthConsumer")]
-	public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyChanged
+	public partial class Client : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
@@ -497,38 +497,34 @@ namespace OAuthServiceProvider.Code
 		
 		private string _Callback;
 		
-		private DotNetOpenAuth.OAuth.VerificationCodeFormat _VerificationCodeFormat;
+		private string _VerificationCodeLength;
 		
-		private int _VerificationCodeLength;
-		
-		private EntitySet<OAuthToken> _OAuthTokens;
+		private EntitySet<ClientAuthorization> _OAuthTokens;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void OnConsumerIdChanging(int value);
-    partial void OnConsumerIdChanged();
-    partial void OnConsumerKeyChanging(string value);
-    partial void OnConsumerKeyChanged();
-    partial void OnConsumerSecretChanging(string value);
-    partial void OnConsumerSecretChanged();
+    partial void OnClientIdChanging(int value);
+    partial void OnClientIdChanged();
+    partial void OnClientIdentifierChanging(string value);
+    partial void OnClientIdentifierChanged();
+    partial void OnClientSecretChanging(string value);
+    partial void OnClientSecretChanged();
     partial void OnCallbackChanging(string value);
     partial void OnCallbackChanged();
-    partial void OnVerificationCodeFormatChanging(DotNetOpenAuth.OAuth.VerificationCodeFormat value);
-    partial void OnVerificationCodeFormatChanged();
-    partial void OnVerificationCodeLengthChanging(int value);
-    partial void OnVerificationCodeLengthChanged();
+    partial void OnNameChanging(string value);
+    partial void OnNameChanged();
     #endregion
 		
-		public OAuthConsumer()
+		public Client()
 		{
-			this._OAuthTokens = new EntitySet<OAuthToken>(new Action<OAuthToken>(this.attach_OAuthTokens), new Action<OAuthToken>(this.detach_OAuthTokens));
+			this._OAuthTokens = new EntitySet<ClientAuthorization>(new Action<ClientAuthorization>(this.attach_OAuthTokens), new Action<ClientAuthorization>(this.detach_OAuthTokens));
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int ConsumerId
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="ConsumerId", Storage="_ConsumerId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ClientId
 		{
 			get
 			{
@@ -538,17 +534,17 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._ConsumerId != value))
 				{
-					this.OnConsumerIdChanging(value);
+					this.OnClientIdChanging(value);
 					this.SendPropertyChanging();
 					this._ConsumerId = value;
-					this.SendPropertyChanged("ConsumerId");
-					this.OnConsumerIdChanged();
+					this.SendPropertyChanged("ClientId");
+					this.OnClientIdChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerKey", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string ConsumerKey
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="ConsumerKey", Storage="_ConsumerKey", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string ClientIdentifier
 		{
 			get
 			{
@@ -558,17 +554,17 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._ConsumerKey != value))
 				{
-					this.OnConsumerKeyChanging(value);
+					this.OnClientIdentifierChanging(value);
 					this.SendPropertyChanging();
 					this._ConsumerKey = value;
-					this.SendPropertyChanged("ConsumerKey");
-					this.OnConsumerKeyChanged();
+					this.SendPropertyChanged("ClientIdentifier");
+					this.OnClientIdentifierChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerSecret", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string ConsumerSecret
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="ConsumerSecret", Storage="_ConsumerSecret", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string ClientSecret
 		{
 			get
 			{
@@ -578,11 +574,11 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._ConsumerSecret != value))
 				{
-					this.OnConsumerSecretChanging(value);
+					this.OnClientSecretChanging(value);
 					this.SendPropertyChanging();
 					this._ConsumerSecret = value;
-					this.SendPropertyChanged("ConsumerSecret");
-					this.OnConsumerSecretChanged();
+					this.SendPropertyChanged("ClientSecret");
+					this.OnClientSecretChanged();
 				}
 			}
 		}
@@ -607,28 +603,8 @@ namespace OAuthServiceProvider.Code
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_VerificationCodeFormat")]
-		public DotNetOpenAuth.OAuth.VerificationCodeFormat VerificationCodeFormat
-		{
-			get
-			{
-				return this._VerificationCodeFormat;
-			}
-			set
-			{
-				if ((this._VerificationCodeFormat != value))
-				{
-					this.OnVerificationCodeFormatChanging(value);
-					this.SendPropertyChanging();
-					this._VerificationCodeFormat = value;
-					this.SendPropertyChanged("VerificationCodeFormat");
-					this.OnVerificationCodeFormatChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_VerificationCodeLength")]
-		public int VerificationCodeLength
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="", Storage="_VerificationCodeLength", CanBeNull=false)]
+		public string Name
 		{
 			get
 			{
@@ -638,17 +614,17 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._VerificationCodeLength != value))
 				{
-					this.OnVerificationCodeLengthChanging(value);
+					this.OnNameChanging(value);
 					this.SendPropertyChanging();
 					this._VerificationCodeLength = value;
-					this.SendPropertyChanged("VerificationCodeLength");
-					this.OnVerificationCodeLengthChanged();
+					this.SendPropertyChanged("Name");
+					this.OnNameChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="OAuthConsumer_OAuthToken", Storage="_OAuthTokens", ThisKey="ConsumerId", OtherKey="ConsumerId")]
-		public EntitySet<OAuthToken> OAuthTokens
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Client_ClientAuthorization", Storage="_OAuthTokens", ThisKey="ClientId", OtherKey="ClientId")]
+		public EntitySet<ClientAuthorization> ClientAuthorizations
 		{
 			get
 			{
@@ -680,32 +656,26 @@ namespace OAuthServiceProvider.Code
 			}
 		}
 		
-		private void attach_OAuthTokens(OAuthToken entity)
+		private void attach_OAuthTokens(ClientAuthorization entity)
 		{
 			this.SendPropertyChanging();
-			entity.OAuthConsumer = this;
+			entity.Client = this;
 		}
 		
-		private void detach_OAuthTokens(OAuthToken entity)
+		private void detach_OAuthTokens(ClientAuthorization entity)
 		{
 			this.SendPropertyChanging();
-			entity.OAuthConsumer = null;
+			entity.Client = null;
 		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.OAuthToken")]
-	public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChanged
+	public partial class ClientAuthorization : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
 		private int _TokenId;
-		
-		private string _Token;
-		
-		private string _TokenSecret;
-		
-		private OAuthServiceProvider.Code.TokenAuthorizationState _State;
 		
 		private System.DateTime _IssueDate;
 		
@@ -715,13 +685,9 @@ namespace OAuthServiceProvider.Code
 		
 		private string _Scope;
 		
-		private string _RequestTokenVerifier;
+		private System.DateTime _RequestTokenVerifier;
 		
-		private string _RequestTokenCallback;
-		
-		private string _ConsumerVersion;
-		
-		private EntityRef<OAuthConsumer> _OAuthConsumer;
+		private EntityRef<Client> _OAuthConsumer;
 		
 		private EntityRef<User> _User;
 		
@@ -729,39 +695,29 @@ namespace OAuthServiceProvider.Code
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void OnTokenIdChanging(int value);
-    partial void OnTokenIdChanged();
-    partial void OnTokenChanging(string value);
-    partial void OnTokenChanged();
-    partial void OnTokenSecretChanging(string value);
-    partial void OnTokenSecretChanged();
-    partial void OnStateChanging(OAuthServiceProvider.Code.TokenAuthorizationState value);
-    partial void OnStateChanged();
-    partial void OnIssueDateChanging(System.DateTime value);
-    partial void OnIssueDateChanged();
-    partial void OnConsumerIdChanging(int value);
-    partial void OnConsumerIdChanged();
+    partial void OnAuthorizationIdChanging(int value);
+    partial void OnAuthorizationIdChanged();
+    partial void OnCreatedOnChanging(System.DateTime value);
+    partial void OnCreatedOnChanged();
+    partial void OnClientIdChanging(int value);
+    partial void OnClientIdChanged();
     partial void OnUserIdChanging(System.Nullable<int> value);
     partial void OnUserIdChanged();
     partial void OnScopeChanging(string value);
     partial void OnScopeChanged();
-    partial void OnRequestTokenVerifierChanging(string value);
-    partial void OnRequestTokenVerifierChanged();
-    partial void OnRequestTokenCallbackChanging(string value);
-    partial void OnRequestTokenCallbackChanged();
-    partial void OnConsumerVersionChanging(string value);
-    partial void OnConsumerVersionChanged();
+    partial void OnExpirationDateChanging(System.DateTime value);
+    partial void OnExpirationDateChanged();
     #endregion
 		
-		public OAuthToken()
+		public ClientAuthorization()
 		{
-			this._OAuthConsumer = default(EntityRef<OAuthConsumer>);
+			this._OAuthConsumer = default(EntityRef<Client>);
 			this._User = default(EntityRef<User>);
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TokenId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int TokenId
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="TokenId", Storage="_TokenId", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int AuthorizationId
 		{
 			get
 			{
@@ -771,77 +727,17 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._TokenId != value))
 				{
-					this.OnTokenIdChanging(value);
+					this.OnAuthorizationIdChanging(value);
 					this.SendPropertyChanging();
 					this._TokenId = value;
-					this.SendPropertyChanged("TokenId");
-					this.OnTokenIdChanged();
+					this.SendPropertyChanged("AuthorizationId");
+					this.OnAuthorizationIdChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Token", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string Token
-		{
-			get
-			{
-				return this._Token;
-			}
-			set
-			{
-				if ((this._Token != value))
-				{
-					this.OnTokenChanging(value);
-					this.SendPropertyChanging();
-					this._Token = value;
-					this.SendPropertyChanged("Token");
-					this.OnTokenChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TokenSecret", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string TokenSecret
-		{
-			get
-			{
-				return this._TokenSecret;
-			}
-			set
-			{
-				if ((this._TokenSecret != value))
-				{
-					this.OnTokenSecretChanging(value);
-					this.SendPropertyChanging();
-					this._TokenSecret = value;
-					this.SendPropertyChanged("TokenSecret");
-					this.OnTokenSecretChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_State", DbType="INT NOT NULL", CanBeNull=false)]
-		public OAuthServiceProvider.Code.TokenAuthorizationState State
-		{
-			get
-			{
-				return this._State;
-			}
-			set
-			{
-				if ((this._State != value))
-				{
-					this.OnStateChanging(value);
-					this.SendPropertyChanging();
-					this._State = value;
-					this.SendPropertyChanged("State");
-					this.OnStateChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IssueDate", DbType="DateTime NOT NULL")]
-		public System.DateTime IssueDate
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="IssueDate", Storage="_IssueDate", DbType="DateTime NOT NULL")]
+		public System.DateTime CreatedOn
 		{
 			get
 			{
@@ -851,17 +747,17 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._IssueDate != value))
 				{
-					this.OnIssueDateChanging(value);
+					this.OnCreatedOnChanging(value);
 					this.SendPropertyChanging();
 					this._IssueDate = value;
-					this.SendPropertyChanged("IssueDate");
-					this.OnIssueDateChanged();
+					this.SendPropertyChanged("CreatedOn");
+					this.OnCreatedOnChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerId", DbType="Int NOT NULL")]
-		public int ConsumerId
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="ConsumerId", Storage="_ConsumerId", DbType="Int NOT NULL")]
+		public int ClientId
 		{
 			get
 			{
@@ -871,15 +767,11 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._ConsumerId != value))
 				{
-					if (this._OAuthConsumer.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnConsumerIdChanging(value);
+					this.OnClientIdChanging(value);
 					this.SendPropertyChanging();
 					this._ConsumerId = value;
-					this.SendPropertyChanged("ConsumerId");
-					this.OnConsumerIdChanged();
+					this.SendPropertyChanged("ClientId");
+					this.OnClientIdChanged();
 				}
 			}
 		}
@@ -928,8 +820,8 @@ namespace OAuthServiceProvider.Code
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RequestTokenVerifier")]
-		public string RequestTokenVerifier
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Name="RequestTokenVerifier", Storage="_RequestTokenVerifier", DbType="DateTime NOT NULL")]
+		public System.DateTime ExpirationDate
 		{
 			get
 			{
@@ -939,57 +831,17 @@ namespace OAuthServiceProvider.Code
 			{
 				if ((this._RequestTokenVerifier != value))
 				{
-					this.OnRequestTokenVerifierChanging(value);
+					this.OnExpirationDateChanging(value);
 					this.SendPropertyChanging();
 					this._RequestTokenVerifier = value;
-					this.SendPropertyChanged("RequestTokenVerifier");
-					this.OnRequestTokenVerifierChanged();
+					this.SendPropertyChanged("ExpirationDate");
+					this.OnExpirationDateChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RequestTokenCallback")]
-		public string RequestTokenCallback
-		{
-			get
-			{
-				return this._RequestTokenCallback;
-			}
-			set
-			{
-				if ((this._RequestTokenCallback != value))
-				{
-					this.OnRequestTokenCallbackChanging(value);
-					this.SendPropertyChanging();
-					this._RequestTokenCallback = value;
-					this.SendPropertyChanged("RequestTokenCallback");
-					this.OnRequestTokenCallbackChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ConsumerVersion")]
-		public string ConsumerVersion
-		{
-			get
-			{
-				return this._ConsumerVersion;
-			}
-			set
-			{
-				if ((this._ConsumerVersion != value))
-				{
-					this.OnConsumerVersionChanging(value);
-					this.SendPropertyChanging();
-					this._ConsumerVersion = value;
-					this.SendPropertyChanged("ConsumerVersion");
-					this.OnConsumerVersionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="OAuthConsumer_OAuthToken", Storage="_OAuthConsumer", ThisKey="ConsumerId", OtherKey="ConsumerId", IsForeignKey=true, DeleteOnNull=true, DeleteRule="CASCADE")]
-		public OAuthConsumer OAuthConsumer
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Client_ClientAuthorization", Storage="_OAuthConsumer", ThisKey="ClientId", OtherKey="ClientId", IsForeignKey=true, DeleteOnNull=true, DeleteRule="CASCADE")]
+		public Client Client
 		{
 			get
 			{
@@ -997,7 +849,7 @@ namespace OAuthServiceProvider.Code
 			}
 			set
 			{
-				OAuthConsumer previousValue = this._OAuthConsumer.Entity;
+				Client previousValue = this._OAuthConsumer.Entity;
 				if (((previousValue != value) 
 							|| (this._OAuthConsumer.HasLoadedOrAssignedValue == false)))
 				{
@@ -1005,24 +857,24 @@ namespace OAuthServiceProvider.Code
 					if ((previousValue != null))
 					{
 						this._OAuthConsumer.Entity = null;
-						previousValue.OAuthTokens.Remove(this);
+						previousValue.ClientAuthorizations.Remove(this);
 					}
 					this._OAuthConsumer.Entity = value;
 					if ((value != null))
 					{
-						value.OAuthTokens.Add(this);
-						this._ConsumerId = value.ConsumerId;
+						value.ClientAuthorizations.Add(this);
+						this._ConsumerId = value.ClientId;
 					}
 					else
 					{
 						this._ConsumerId = default(int);
 					}
-					this.SendPropertyChanged("OAuthConsumer");
+					this.SendPropertyChanged("Client");
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_OAuthToken", Storage="_User", ThisKey="UserId", OtherKey="UserId", IsForeignKey=true, DeleteRule="CASCADE")]
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_ClientAuthorization", Storage="_User", ThisKey="UserId", OtherKey="UserId", IsForeignKey=true, DeleteRule="CASCADE")]
 		public User User
 		{
 			get
@@ -1039,12 +891,12 @@ namespace OAuthServiceProvider.Code
 					if ((previousValue != null))
 					{
 						this._User.Entity = null;
-						previousValue.OAuthTokens.Remove(this);
+						previousValue.ClientAuthorizations.Remove(this);
 					}
 					this._User.Entity = value;
 					if ((value != null))
 					{
-						value.OAuthTokens.Add(this);
+						value.ClientAuthorizations.Add(this);
 						this._UserId = value.UserId;
 					}
 					else

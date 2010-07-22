@@ -4,7 +4,6 @@
 	using System.ServiceModel;
 	using System.Text;
 	using System.Web;
-	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.Messages;
 
@@ -41,17 +40,10 @@
 			}
 		}
 
-		public static DatabaseTokenManager TokenManager { get; set; }
-
 		public static DatabaseNonceStore NonceStore { get; set; }
 
 		public static User LoggedInUser {
 			get { return Global.DataContext.Users.SingleOrDefault(user => user.OpenIDClaimedIdentifier == HttpContext.Current.User.Identity.Name); }
-		}
-
-		public static UserAuthorizationRequest PendingOAuthAuthorization {
-			get { return HttpContext.Current.Session["authrequest"] as UserAuthorizationRequest; }
-			set { HttpContext.Current.Session["authrequest"] = value; }
 		}
 
 		public static EndUserAuthorizationRequest PendingOAuth2Authorization
@@ -87,12 +79,6 @@
 			}
 		}
 
-		public static void AuthorizePendingRequestToken() {
-			ITokenContainingMessage tokenMessage = PendingOAuthAuthorization;
-			TokenManager.AuthorizeRequestToken(tokenMessage.Token, LoggedInUser);
-			PendingOAuthAuthorization = null;
-		}
-
 		private static void CommitAndCloseDatabaseIfNecessary() {
 			var dataContext = dataContextSimple;
 			if (dataContext != null) {
@@ -110,11 +96,6 @@
 				appPath += "/";
 			}
 
-			// This will break in IIS Integrated Pipeline mode, since applications
-			// start before the first incoming request context is available.
-			// TODO: fix this.
-			Constants.WebRootUrl = new Uri(HttpContext.Current.Request.Url, appPath);
-			Global.TokenManager = new DatabaseTokenManager();
 			Global.NonceStore = new DatabaseNonceStore();
 		}
 

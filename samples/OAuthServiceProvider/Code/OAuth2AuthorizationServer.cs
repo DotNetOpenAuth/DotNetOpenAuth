@@ -40,8 +40,8 @@
 		}
 
 		public IConsumerDescription GetClient(string clientIdentifier) {
-			var consumerRow = Global.DataContext.OAuthConsumers.SingleOrDefault(
-				consumerCandidate => consumerCandidate.ConsumerKey == clientIdentifier);
+			var consumerRow = Global.DataContext.Clients.SingleOrDefault(
+				consumerCandidate => consumerCandidate.ClientIdentifier == clientIdentifier);
 			if (consumerRow == null) {
 				throw new ArgumentOutOfRangeException("clientIdentifier");
 			}

@@ -1,10 +1,7 @@
 ﻿namespace OAuthServiceProvider.Code {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Web;
-	using DotNetOpenAuth.Messaging.Bindings;
 	using System.Data.SqlClient;
+	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// A database-persisted nonce store.

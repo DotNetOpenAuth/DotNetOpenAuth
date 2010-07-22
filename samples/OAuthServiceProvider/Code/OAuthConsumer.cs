@@ -9,44 +9,16 @@ namespace OAuthServiceProvider.Code {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web;
-	using DotNetOpenAuth.OAuth.ChannelElements;
+	using DotNetOpenAuth.OAuth2;
 
-	public partial class OAuthConsumer : IConsumerDescription, DotNetOpenAuth.OAuth2.IConsumerDescription {
+	public partial class Client : IConsumerDescription {
 		#region IConsumerDescription Members
 
-		string IConsumerDescription.Key {
-			get { return this.ConsumerKey; }
-		}
-
 		string IConsumerDescription.Secret {
-			get { return this.ConsumerSecret; }
-		}
-
-		System.Security.Cryptography.X509Certificates.X509Certificate2 IConsumerDescription.Certificate {
-			get { return null; }
+			get { return this.ClientSecret; }
 		}
 
 		Uri IConsumerDescription.Callback {
-			get { return string.IsNullOrEmpty(this.Callback) ? null : new Uri(this.Callback); }
-		}
-
-		DotNetOpenAuth.OAuth.VerificationCodeFormat IConsumerDescription.VerificationCodeFormat {
-			get { return this.VerificationCodeFormat; }
-		}
-
-		int IConsumerDescription.VerificationCodeLength {
-			get { return this.VerificationCodeLength; }
-		}
-
-		#endregion
-
-		#region IConsumerDescription Members
-
-		string DotNetOpenAuth.OAuth2.IConsumerDescription.Secret {
-			get { return this.ConsumerSecret; }
-		}
-
-		Uri DotNetOpenAuth.OAuth2.IConsumerDescription.Callback {
 			get { return string.IsNullOrEmpty(this.Callback) ? null : new Uri(this.Callback); }
 		}
 

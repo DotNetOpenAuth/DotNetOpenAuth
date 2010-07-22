@@ -22,9 +22,10 @@
 				dc.CreateDatabase();
 
 				// Fill with sample data.
-				dc.OAuthConsumers.InsertOnSubmit(new OAuthConsumer {
-					ConsumerKey = "sampleconsumer",
-					ConsumerSecret = "samplesecret",
+				dc.Clients.InsertOnSubmit(new Client {
+					ClientIdentifier = "sampleconsumer",
+					ClientSecret = "samplesecret",
+					Name = "Some sample client",
 				});
 				dc.Users.InsertOnSubmit(new User {
 					OpenIDFriendlyIdentifier = "=arnott",

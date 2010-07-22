@@ -59,7 +59,6 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
-    <Content Include="Members\Authorize.aspx" />
     <Content Include="Members\Authorize2.aspx" />
     <Content Include="Members\AuthorizedConsumers.aspx" />
     <Content Include="Members\Logoff.aspx" />
@@ -86,23 +85,14 @@
     <Compile Include="DataApi.cs">
       <DependentUpon>DataApi.svc</DependentUpon>
     </Compile>
-    <Compile Include="Members\Authorize.aspx.designer.cs">
-      <DependentUpon>Authorize.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Members\AuthorizedConsumers.aspx.designer.cs">
       <DependentUpon>AuthorizedConsumers.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Code\Constants.cs" />
-    <Compile Include="Code\CustomOAuthTypeProvider.cs" />
-    <Compile Include="Code\DatabaseTokenManager.cs" />
     <Compile Include="Code\Global.cs" />
     <Compile Include="Code\IDataApi.cs" />
     <Compile Include="Code\OAuthAuthorizationManager.cs" />
     <Compile Include="Code\OAuthConsumer.cs" />
     <Compile Include="Code\OAuthPrincipalAuthorizationPolicy.cs" />
-    <Compile Include="Code\OAuthToken.cs" />
-    <Compile Include="Code\RequestScopedTokenMessage.cs" />
-    <Compile Include="Code\TokenAuthorizationState.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\Utilities.cs" />
     <Compile Include="Code\DataClasses.designer.cs">
@@ -112,10 +102,6 @@
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Members\Authorize.aspx.cs">
-      <DependentUpon>Authorize.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Members\AuthorizedConsumers.aspx.cs">
@@ -132,9 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="OAuth.ashx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MasterPage.master" />
