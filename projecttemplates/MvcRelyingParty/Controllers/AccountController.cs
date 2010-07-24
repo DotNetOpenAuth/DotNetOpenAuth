@@ -48,32 +48,36 @@
 			return PartialView("EditFields", GetAccountInfoModel());
 		}
 
-		[Authorize]
+		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
 		public ActionResult Authorize() {
 			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
 			if (pendingRequest == null) {
-				return RedirectToAction("Edit");
+				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}
 
 			var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == pendingRequest.ClientIdentifier);
 
 			// Consider auto-approving if safe to do so.
 			if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServer).CanBeAutoApproved(pendingRequest)) {
-				OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(pendingRequest, HttpContext.User.Identity.Name);
+				var approval = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, HttpContext.User.Identity.Name);
+				return OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponse(approval).AsActionResult();
 			}
 
 			var model = new AccountAuthorizeModel {
 				ClientApp = requestingClient.Name,
 				Scope = pendingRequest.Scope,
+				AuthorizationRequest = pendingRequest,
 			};
 
 			return View(model);
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
-		public ActionResult Authorize(bool isApproved) {
-			var getRequest = new HttpRequestInfo("GET", this.Request.Url, this.Request.RawUrl, new WebHeaderCollection(), null);
-			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest(getRequest);
+		public ActionResult AuthorizeResponse(bool isApproved) {
+			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+			if (pendingRequest == null) {
+				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
+			}
 			var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == pendingRequest.ClientIdentifier);
 
 			IDirectedProtocolMessage response;

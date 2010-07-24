@@ -1,4 +1,5 @@
 <%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage<MvcRelyingParty.Models.AccountAuthorizeModel>" %>
+<%@ Import Namespace="DotNetOpenAuth.OAuth2" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
 	Authorize
@@ -24,9 +25,14 @@
 		If you grant access now, you can revoke it at any time by returning to
 		<%= Html.ActionLink("your account page", "Edit") %>.
 	</p>
-	<% using (Html.BeginForm()) { %>
+	<% using (Html.BeginForm("AuthorizeResponse", "Account")) { %>
 		<%= Html.AntiForgeryToken() %>
 		<%= Html.Hidden("IsApproved") %>
+		<%= Html.Hidden("client_id", Model.AuthorizationRequest.ClientIdentifier) %>
+		<%= Html.Hidden("redirect_uri", Model.AuthorizationRequest.Callback) %>
+		<%= Html.Hidden("state", Model.AuthorizationRequest.ClientState) %>
+		<%= Html.Hidden("scope", OAuthUtilities.JoinScopes(Model.AuthorizationRequest.Scope)) %>
+		<%= Html.Hidden("response_type", "code") %>
 		<div style="display: none" id="responseButtonsDiv">
 			<input type="submit" value="Yes" onclick="document.getElementsByName('IsApproved')[0].value = true; return true;" />
 			<input type="submit" value="No" onclick="document.getElementsByName('IsApproved')[0].value = false; return true;" />

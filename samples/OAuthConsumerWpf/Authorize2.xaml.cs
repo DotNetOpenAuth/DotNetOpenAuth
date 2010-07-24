@@ -41,11 +41,11 @@
 		}
 
 		private void locationChanged(Uri location) {
-			if (location.Scheme == "res") {
-				this.DialogResult = false;
-				this.Close();
-				MessageBox.Show("An error occurred during authorization.");
-			}
+			//if (location.Scheme == "res") {
+			//    this.DialogResult = false;
+			//    this.Close();
+			//    MessageBox.Show("An error occurred during authorization.");
+			//}
 
 			if (SignificantlyEqual(location, this.Authorization.Callback, UriComponents.SchemeAndServer | UriComponents.Path)) {
 				try {

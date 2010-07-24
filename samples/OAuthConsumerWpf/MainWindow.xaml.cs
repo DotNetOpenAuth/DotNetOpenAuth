@@ -233,8 +233,10 @@
 				MessageBox.Show(this, ex.Message);
 			} catch (WebException ex) {
 				string responseText = string.Empty;
-				using (var responseReader = new StreamReader(ex.Response.GetResponseStream())) {
-					responseText = responseReader.ReadToEnd();
+				if (ex.Response != null) {
+					using (var responseReader = new StreamReader(ex.Response.GetResponseStream())) {
+						responseText = responseReader.ReadToEnd();
+					}
 				}
 				MessageBox.Show(this, ex.Message + "  " + responseText);
 			}

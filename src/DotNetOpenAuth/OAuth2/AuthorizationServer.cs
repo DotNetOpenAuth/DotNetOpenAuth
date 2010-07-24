@@ -48,12 +48,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, IEnumerable<string> scopes = null, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
-			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, username, callback);
-
-			// Customize the approved scope if the authorization server has decided to do so.
-			if (scopes != null) {
-				response.Scope.ResetContents(scopes);
-			}
+			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, username, scopes, callback);
 
 			this.Channel.Send(response);
 		}
@@ -107,7 +102,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			return response;
 		}
 
-		public EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, Uri callback = null) {
+		public EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, IEnumerable<string> scopes = null, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(username));
 			Contract.Ensures(Contract.Result<EndUserAuthorizationSuccessResponseBase>() != null);
@@ -131,6 +126,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			response.AuthorizingUsername = username;
+
+			// Customize the approved scope if the authorization server has decided to do so.
+			if (scopes != null) {
+				response.Scope.ResetContents(scopes);
+			}
+
 			return response;
 		}
 

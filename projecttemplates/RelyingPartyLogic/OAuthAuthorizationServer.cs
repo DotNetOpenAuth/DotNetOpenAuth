@@ -34,7 +34,13 @@ namespace RelyingPartyLogic {
 			secret = new byte[16];
 			crypto.GetBytes(secret);
 
-			AsymmetricKey = new RSACryptoServiceProvider().ExportParameters(true);
+			// As we generate a new random key, we need to set the UseMachineKeyStore flag so that this doesn't
+			// crash on IIS. For more information: 
+			// http://social.msdn.microsoft.com/Forums/en-US/clr/thread/7ea48fd0-8d6b-43ed-b272-1a0249ae490f?prof=required
+			var cspParameters  = new CspParameters();
+			cspParameters.Flags = CspProviderFlags.UseArchivableKey | CspProviderFlags.UseMachineKeyStore;
+			var cryptoProvider = new RSACryptoServiceProvider(cspParameters);
+			AsymmetricKey = cryptoProvider.ExportParameters(true);
 		}
 
 		/// <summary>

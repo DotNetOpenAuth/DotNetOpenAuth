@@ -24,17 +24,12 @@ namespace WebFormsRelyingParty.Members {
 		private EndUserAuthorizationRequest pendingRequest;
 
 		protected void Page_Load(object sender, EventArgs e) {
-			// We'll mask that on postback it's a POST when looking up the authorization details so that the GET-only
-			// message can be picked up.
-			var requestInfo = this.IsPostBack
-								? new HttpRequestInfo("GET", this.Request.Url, this.Request.RawUrl, new WebHeaderCollection(), null)
-								: null;
-			this.pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest(requestInfo);
-			if (this.pendingRequest == null) {
-				Response.Redirect("AccountInfo.aspx");
-			}
-
 			if (!IsPostBack) {
+				this.pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+				if (this.pendingRequest == null) {
+					throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
+				}
+
 				this.csrfCheck.Value = Code.SiteUtilities.SetCsrfCookie();
 				var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
 				this.consumerNameLabel.Text = HttpUtility.HtmlEncode(requestingClient.Name);
@@ -44,8 +39,10 @@ namespace WebFormsRelyingParty.Members {
 				if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServer).CanBeAutoApproved(this.pendingRequest)) {
 					OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
 				}
+				this.ViewState["AuthRequest"] = this.pendingRequest;
 			} else {
 				Code.SiteUtilities.VerifyCsrfCookie(this.csrfCheck.Value);
+				this.pendingRequest = (EndUserAuthorizationRequest)this.ViewState["AuthRequest"];
 			}
 		}
 
