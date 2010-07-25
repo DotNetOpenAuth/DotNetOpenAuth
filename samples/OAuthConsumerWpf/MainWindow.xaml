@@ -188,7 +188,7 @@
                     </ComboBox.Items>
                 </ComboBox>
                 <Button Grid.Row="8" Grid.Column="1" x:Name="oauth2BeginButton" Click="oauth2BeginButton_Click" TabIndex="218">Begin</Button>
-                <TextBox Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Name="oauth2ResultsBox" IsReadOnly="True" TabIndex="219"/>
+                <TextBox Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Name="oauth2ResultsBox" IsReadOnly="True" TabIndex="219" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
             </Grid>
         </TabItem>
     </TabControl>
