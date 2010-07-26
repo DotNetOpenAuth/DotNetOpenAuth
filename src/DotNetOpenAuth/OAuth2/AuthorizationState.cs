@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public DateTime? AccessTokenIssueDateUtc { get; set; }
 
 		/// <summary>
-		/// Gets or sets the scope the token is (to be) authorized for.
+		/// Gets the scope the token is (to be) authorized for.
 		/// </summary>
 		/// <value>The scope.</value>
 		public HashSet<string> Scope { get; private set; }

@@ -27,20 +27,20 @@
 
 		protected void Page_Load(object sender, EventArgs e) {
 			var getRequest = new HttpRequestInfo("GET", this.Request.Url, this.Request.RawUrl, new WebHeaderCollection(), null);
-			pendingRequest = Global.AuthorizationServer.ReadAuthorizationRequest(getRequest);
-			if (pendingRequest == null) {
+			this.pendingRequest = Global.AuthorizationServer.ReadAuthorizationRequest(getRequest);
+			if (this.pendingRequest == null) {
 				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}
 
-			client = Global.DataContext.Clients.First(c => c.ClientIdentifier == pendingRequest.ClientIdentifier);
+			client = Global.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
 
 			var authServer = new OAuth2AuthorizationServer();
-			if (authServer.CanBeAutoApproved(pendingRequest)) {
-				Global.AuthorizationServer.ApproveAuthorizationRequest(pendingRequest, User.Identity.Name);
+			if (authServer.CanBeAutoApproved(this.pendingRequest)) {
+				Global.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, User.Identity.Name);
 			}
 
 			if (!IsPostBack) {
-				this.desiredAccessLabel.Text = OAuthUtilities.JoinScopes(pendingRequest.Scope);
+				this.desiredAccessLabel.Text = OAuthUtilities.JoinScopes(this.pendingRequest.Scope);
 				this.consumerLabel.Text = client.Name;
 
 				// Generate an unpredictable secret that goes to the user agent and must come back
@@ -62,15 +62,15 @@
 
 			client.ClientAuthorizations.Add(
 				new ClientAuthorization {
-					Scope = OAuthUtilities.JoinScopes(pendingRequest.Scope),
+					Scope = OAuthUtilities.JoinScopes(this.pendingRequest.Scope),
 					User = Global.LoggedInUser,
 					CreatedOnUtc = DateTime.UtcNow,
 				});
-			Global.AuthorizationServer.ApproveAuthorizationRequest(pendingRequest, User.Identity.Name);
+			Global.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, User.Identity.Name);
 		}
 
 		protected void denyAccessButton_Click(object sender, EventArgs e) {
-			Global.AuthorizationServer.RejectAuthorizationRequest(pendingRequest);
+			Global.AuthorizationServer.RejectAuthorizationRequest(this.pendingRequest);
 		}
 	}
 }

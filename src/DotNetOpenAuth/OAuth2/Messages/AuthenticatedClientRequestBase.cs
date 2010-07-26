@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the client identifier previously obtained from the Authorization Server.
+		/// Gets the client identifier previously obtained from the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
 		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]

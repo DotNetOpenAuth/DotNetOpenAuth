@@ -16,12 +16,9 @@
 
 	public partial class SampleWcf2 : System.Web.UI.Page {
 		/// <summary>
-		/// The details about the sample OAuth-enabled WCF service that this sample client calls into.
+		/// The OAuth 2.0 client object to use to obtain authorization and authorize outgoing HTTP requests.
 		/// </summary>
-		private static AuthorizationServerDescription AuthServerDescription = new AuthorizationServerDescription {
-			TokenEndpoint = new Uri("http://localhost:65169/OAuth.ashx"),
-			AuthorizationEndpoint = new Uri("http://localhost:65169/Members/Authorize.aspx"),
-		};
+		private static readonly WebServerClient Client;
 
 		/// <summary>
 		/// Gets or sets the authorization details for the logged in user.
@@ -37,16 +34,19 @@
 		}
 
 		/// <summary>
-		/// The OAuth 2.0 client object to use to obtain authorization and authorize outgoing HTTP requests.
-		/// </summary>
-		private static readonly WebServerClient Client;
-
-		/// <summary>
-		/// Initializes the <see cref="SampleWcf2"/> class.
+		/// Initializes static members of the <see cref="SampleWcf2"/> class.
 		/// </summary>
 		static SampleWcf2() {
 			Client = new WebServerClient(AuthServerDescription, "sampleconsumer", "samplesecret");
 		}
+
+		/// <summary>
+		/// The details about the sample OAuth-enabled WCF service that this sample client calls into.
+		/// </summary>
+		private static AuthorizationServerDescription AuthServerDescription = new AuthorizationServerDescription {
+		                                                                                                         	TokenEndpoint = new Uri("http://localhost:65169/OAuth.ashx"),
+		                                                                                                         	AuthorizationEndpoint = new Uri("http://localhost:65169/Members/Authorize.aspx"),
+		                                                                                                         };
 
 		protected void Page_Load(object sender, EventArgs e) {
 			if (!IsPostBack) {

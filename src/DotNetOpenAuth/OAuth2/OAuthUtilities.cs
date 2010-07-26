@@ -18,6 +18,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// Some common utility methods for OAuth 2.0.
 	/// </summary>
 	public static class OAuthUtilities {
+		public static readonly StringComparer ScopeStringComparer = StringComparer.Ordinal;
+
 		/// <summary>
 		/// The delimiter between scope elements.
 		/// </summary>
@@ -33,8 +35,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		                                                                        MessagingUtilities.LowercaseLetters +
 		                                                                        MessagingUtilities.Digits +
 		                                                                        @"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
-
-		public static readonly StringComparer ScopeStringComparer = StringComparer.Ordinal;
 
 		/// <summary>
 		/// Determines whether one given scope is a subset of another scope.

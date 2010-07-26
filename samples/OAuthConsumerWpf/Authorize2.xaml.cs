@@ -13,8 +13,8 @@
 	using System.Windows.Media.Imaging;
 	using System.Windows.Navigation;
 	using System.Windows.Shapes;
-	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2;
 
 	/// <summary>
 	/// Interaction logic for Authorize2.xaml
@@ -35,6 +35,12 @@
 		}
 
 		public IAuthorizationState Authorization { get; set; }
+
+		private static bool SignificantlyEqual(Uri location1, Uri location2, UriComponents components) {
+			string value1 = location1.GetComponents(components, UriFormat.Unescaped);
+			string value2 = location2.GetComponents(components, UriFormat.Unescaped);
+			return string.Equals(value1, value2, StringComparison.Ordinal);
+		}
 
 		private void webBrowser_Navigating(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) {
 			this.locationChanged(e.Url);
@@ -65,12 +71,6 @@
 
 		private void webBrowser_LocationChanged(object sender, EventArgs e) {
 			this.locationChanged(webBrowser.Url);
-		}
-
-		private static bool SignificantlyEqual(Uri location1, Uri location2, UriComponents components) {
-			string value1 = location1.GetComponents(components, UriFormat.Unescaped);
-			string value2 = location2.GetComponents(components, UriFormat.Unescaped);
-			return string.Equals(value1, value2, StringComparison.Ordinal);
 		}
 	}
 }

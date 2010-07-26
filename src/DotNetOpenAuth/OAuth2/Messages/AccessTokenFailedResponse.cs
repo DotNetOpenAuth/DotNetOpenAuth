@@ -43,6 +43,25 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			this.invalidClientCredentialsInAuthorizationHeader = invalidClientCredentialsInAuthorizationHeader;
 		}
 
+		#region IHttpDirectResponse Members
+
+		/// <summary>
+		/// Gets the HTTP status code that the direct response should be sent with.
+		/// </summary>
+		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
+			get { return this.invalidClientCredentialsInAuthorizationHeader ? HttpStatusCode.Unauthorized : HttpStatusCode.BadRequest; }
+		}
+
+		/// <summary>
+		/// Gets the HTTP headers to add to the response.
+		/// </summary>
+		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
+		WebHeaderCollection IHttpDirectResponse.Headers {
+			get { return new WebHeaderCollection(); }
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Gets or sets the error.
 		/// </summary>
@@ -63,24 +82,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>A URI identifying a human-readable web page with information about the error, used to provide the end-user with additional information about the error.</value>
 		[MessagePart(Protocol.error_uri, AllowEmpty = false, IsRequired = false)]
 		internal Uri ErrorUri { get; set; }
-
-		#region IHttpDirectResponse Members
-
-		/// <summary>
-		/// Gets the HTTP status code that the direct response should be sent with.
-		/// </summary>
-		HttpStatusCode IHttpDirectResponse.HttpStatusCode {
-			get { return this.invalidClientCredentialsInAuthorizationHeader ? HttpStatusCode.Unauthorized : HttpStatusCode.BadRequest; }
-		}
-
-		/// <summary>
-		/// Gets the HTTP headers to add to the response.
-		/// </summary>
-		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
-		WebHeaderCollection IHttpDirectResponse.Headers {
-			get { return new WebHeaderCollection(); }
-		}
-
-		#endregion
 	}
 }

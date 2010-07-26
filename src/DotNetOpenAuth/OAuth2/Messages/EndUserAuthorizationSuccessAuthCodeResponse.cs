@@ -43,12 +43,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
 
-		[MessagePart(Protocol.code, AllowEmpty = false, IsRequired = true)]
-		internal string AuthorizationCode { get; set; }
-
-		[MessagePart(Protocol.access_token, AllowEmpty = false, IsRequired = false)]
-		internal string AccessToken { get; set; }
-
 		#region ITokenCarryingRequest Members
 
 		string ITokenCarryingRequest.CodeOrToken {
@@ -63,5 +57,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		#endregion
+
+		[MessagePart(Protocol.code, AllowEmpty = false, IsRequired = true)]
+		internal string AuthorizationCode { get; set; }
+
+		[MessagePart(Protocol.access_token, AllowEmpty = false, IsRequired = false)]
+		internal string AccessToken { get; set; }
 	}
 }

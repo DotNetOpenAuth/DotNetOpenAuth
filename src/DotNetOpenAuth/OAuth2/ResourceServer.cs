@@ -41,17 +41,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		public IAccessTokenAnalyzer AccessTokenAnalyzer { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the endpoint information for an authorization server that may be used
-		/// to obtain an access token for this resource.
-		/// </summary>
-		/// <value>The authorization server description.</value>
-		/// <remarks>
-		/// This value is optional.  If set, this information will be used to generate
-		/// more useful HTTP 401 Unauthorized responses for requests that lack an OAuth access token.
-		/// </remarks>
-		public AuthorizationServerDescription AuthorizationServerDescription { get; set; }
-
-		/// <summary>
 		/// Gets the channel.
 		/// </summary>
 		/// <value>The channel.</value>

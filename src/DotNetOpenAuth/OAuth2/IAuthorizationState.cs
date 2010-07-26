@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		DateTime? AccessTokenExpirationUtc { get; set; }
 
 		/// <summary>
-		/// Gets or sets the scope the token is (to be) authorized for.
+		/// Gets the scope the token is (to be) authorized for.
 		/// </summary>
 		/// <value>The scope.</value>
 		HashSet<string> Scope { get; }

@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Text;
 
 	/// <summary>
-	/// A description of an OAuth Authorization Server.
+	/// A description of an OAuth Authorization Server as seen by an OAuth Client.
 	/// </summary>
 	public class AuthorizationServerDescription {
 		/// <summary>

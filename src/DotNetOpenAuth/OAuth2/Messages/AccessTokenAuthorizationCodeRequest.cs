@@ -31,10 +31,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
 		}
 
-		internal override GrantType GrantType {
-			get { return Messages.GrantType.AuthorizationCode; }
-		}
-
 		/// <summary>
 		/// Gets the type of the code or token.
 		/// </summary>
@@ -56,6 +52,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+
+		internal override GrantType GrantType {
+			get { return Messages.GrantType.AuthorizationCode; }
+		}
 
 		/// <summary>
 		/// Gets or sets the verification code previously communicated to the Client

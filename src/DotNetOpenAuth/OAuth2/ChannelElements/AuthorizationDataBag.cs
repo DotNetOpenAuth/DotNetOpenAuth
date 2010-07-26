@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public string User { get; set; }
 
 		/// <summary>
-		/// Gets or sets the scope of operations the client is allowed to invoke.
+		/// Gets the scope of operations the client is allowed to invoke.
 		/// </summary>
 		[MessagePart(Encoder = typeof(ScopeEncoder))]
 		public HashSet<string> Scope { get; private set; }

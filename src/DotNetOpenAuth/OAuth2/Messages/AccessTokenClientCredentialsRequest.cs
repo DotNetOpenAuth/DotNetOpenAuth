@@ -30,6 +30,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
+		internal override GrantType GrantType {
+			get { return Messages.GrantType.None; }
+		}
+
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
 		/// and throws an exception if the message is invalid.
@@ -45,10 +49,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
 			ErrorUtilities.VerifyProtocol(this.Recipient.IsTransportSecure(), OAuthStrings.HttpsRequired);
-		}
-
-		internal override GrantType GrantType {
-			get { return Messages.GrantType.None; }
 		}
 	}
 }
