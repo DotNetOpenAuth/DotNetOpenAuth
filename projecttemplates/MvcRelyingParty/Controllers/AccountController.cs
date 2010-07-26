@@ -58,7 +58,7 @@
 			var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == pendingRequest.ClientIdentifier);
 
 			// Consider auto-approving if safe to do so.
-			if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServer).CanBeAutoApproved(pendingRequest)) {
+			if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServerServices).CanBeAutoApproved(pendingRequest)) {
 				var approval = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, HttpContext.User.Identity.Name);
 				return OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponse(approval).AsActionResult();
 			}

@@ -344,7 +344,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
-    <Compile Include="OAuth2\AuthorizationServerBase.cs" />
     <Compile Include="OAuth2\AuthorizationState.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessRequestBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessToken.cs" />

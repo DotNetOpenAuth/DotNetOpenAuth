@@ -36,7 +36,7 @@ namespace WebFormsRelyingParty.Members {
 				this.scopeLabel.Text = HttpUtility.HtmlEncode(OAuthUtilities.JoinScopes(this.pendingRequest.Scope));
 
 				// Consider auto-approving if safe to do so.
-				if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServer).CanBeAutoApproved(this.pendingRequest)) {
+				if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServerServices).CanBeAutoApproved(this.pendingRequest)) {
 					OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
 				}
 				this.ViewState["AuthRequest"] = this.pendingRequest;
