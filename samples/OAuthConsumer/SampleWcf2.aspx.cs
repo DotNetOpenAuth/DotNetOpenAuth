@@ -21,6 +21,21 @@
 		private static readonly WebServerClient Client;
 
 		/// <summary>
+		/// The details about the sample OAuth-enabled WCF service that this sample client calls into.
+		/// </summary>
+		private static AuthorizationServerDescription authServerDescription = new AuthorizationServerDescription {
+		                                                                                                         	TokenEndpoint = new Uri("http://localhost:65169/OAuth.ashx"),
+		                                                                                                         	AuthorizationEndpoint = new Uri("http://localhost:65169/Members/Authorize.aspx"),
+		                                                                                                         };
+
+		/// <summary>
+		/// Initializes static members of the <see cref="SampleWcf2"/> class.
+		/// </summary>
+		static SampleWcf2() {
+			Client = new WebServerClient(authServerDescription, "sampleconsumer", "samplesecret");
+		}
+
+		/// <summary>
 		/// Gets or sets the authorization details for the logged in user.
 		/// </summary>
 		/// <value>The authorization details.</value>
@@ -32,21 +47,6 @@
 			get { return (AuthorizationState)HttpContext.Current.Session["Authorization"]; }
 			set { HttpContext.Current.Session["Authorization"] = value; }
 		}
-
-		/// <summary>
-		/// Initializes static members of the <see cref="SampleWcf2"/> class.
-		/// </summary>
-		static SampleWcf2() {
-			Client = new WebServerClient(AuthServerDescription, "sampleconsumer", "samplesecret");
-		}
-
-		/// <summary>
-		/// The details about the sample OAuth-enabled WCF service that this sample client calls into.
-		/// </summary>
-		private static AuthorizationServerDescription AuthServerDescription = new AuthorizationServerDescription {
-		                                                                                                         	TokenEndpoint = new Uri("http://localhost:65169/OAuth.ashx"),
-		                                                                                                         	AuthorizationEndpoint = new Uri("http://localhost:65169/Members/Authorize.aspx"),
-		                                                                                                         };
 
 		protected void Page_Load(object sender, EventArgs e) {
 			if (!IsPostBack) {

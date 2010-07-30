@@ -39,7 +39,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			get { return CodeOrTokenType.RefreshToken; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>

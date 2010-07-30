@@ -18,6 +18,9 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// Some common utility methods for OAuth 2.0.
 	/// </summary>
 	public static class OAuthUtilities {
+		/// <summary>
+		/// The <see cref="StringComparer"/> instance to use when comparing scope equivalence.
+		/// </summary>
 		public static readonly StringComparer ScopeStringComparer = StringComparer.Ordinal;
 
 		/// <summary>
@@ -62,10 +65,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Identifies individual scope elements
 		/// </summary>
-		/// <param name="scope">The scope.</param>
-		/// <param name="scopeComparer">The scope comparer, allowing scopes to be case sensitive or insensitive.
-		/// Usually <see cref="StringComparer.Ordinal"/> or <see cref="StringComparer.OrdinalIgnoreCase"/>.</param>
-		/// <returns></returns>
+		/// <param name="scope">The space-delimited list of scopes.</param>
+		/// <returns>A set of individual scopes, with any duplicates removed.</returns>
 		public static HashSet<string> SplitScopes(string scope) {
 			if (string.IsNullOrEmpty(scope)) {
 				return new HashSet<string>();
@@ -74,6 +75,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			return new HashSet<string>(scope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries), ScopeStringComparer);
 		}
 
+		/// <summary>
+		/// Serializes a set of scopes as a space-delimited list.
+		/// </summary>
+		/// <param name="scopes">The scopes to serialize.</param>
+		/// <returns>A space-delimited list.</returns>
 		public static string JoinScopes(HashSet<string> scopes) {
 			Contract.Requires<ArgumentNullException>(scopes != null, "scopes");
 			return string.Join(" ", scopes.ToArray());

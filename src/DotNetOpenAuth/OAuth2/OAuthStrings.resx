@@ -121,7 +121,7 @@
     <value>The requested access scope ("{0}") exceeds the grant scope ("{1}").</value>
   </data>
   <data name="CallbackMismatch" xml:space="preserve">
-    <value>Client's pre-registered callback URL ({0}) does not match the one found in the authorization request ({1}).</value>
+    <value>None of the client's pre-registered callback URLs ({0}) match the one found in the authorization request ({1}).</value>
   </data>
   <data name="CannotObtainAccessTokenWithReason" xml:space="preserve">
     <value>Failed to obtain access token.  Authorization Server reports reason: {0}</value>

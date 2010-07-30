@@ -26,7 +26,7 @@
 			Contract.Requires(client != null, "client");
 			Contract.Requires(authorizationState != null, "authorizationState");
 
-			InitializeComponent();
+			this.InitializeComponent();
 
 			this.client = client;
 			this.Authorization = authorizationState;
@@ -47,11 +47,11 @@
 		}
 
 		private void locationChanged(Uri location) {
-			//if (location.Scheme == "res") {
-			//    this.DialogResult = false;
-			//    this.Close();
-			//    MessageBox.Show("An error occurred during authorization.");
-			//}
+			////if (location.Scheme == "res") {
+			////    this.DialogResult = false;
+			////    this.Close();
+			////    MessageBox.Show("An error occurred during authorization.");
+			////}
 
 			if (SignificantlyEqual(location, this.Authorization.Callback, UriComponents.SchemeAndServer | UriComponents.Path)) {
 				try {
@@ -70,7 +70,7 @@
 		}
 
 		private void webBrowser_LocationChanged(object sender, EventArgs e) {
-			this.locationChanged(webBrowser.Url);
+			this.locationChanged(this.webBrowser.Url);
 		}
 	}
 }

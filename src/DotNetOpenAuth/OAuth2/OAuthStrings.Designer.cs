@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OAuth2 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Client&apos;s pre-registered callback URL ({0}) does not match the one found in the authorization request ({1})..
+        ///   Looks up a localized string similar to None of the client&apos;s pre-registered callback URLs ({0}) match the one found in the authorization request ({1})..
         /// </summary>
         internal static string CallbackMismatch {
             get {

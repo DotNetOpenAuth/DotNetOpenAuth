@@ -13,9 +13,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// The message that an Authorization Server responds to a Client with when the user denies a user authorization request.
+	/// </summary>
 	public class EndUserAuthorizationFailedResponse : MessageBase, IMessageWithClientState {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessResponseBase"/> class.
+		/// Initializes a new instance of the <see cref="EndUserAuthorizationFailedResponse"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The URL to redirect to so the client receives the message. This may not be built into the request message if the client pre-registered the URL with the authorization server.</param>
 		/// <param name="version">The protocol version.</param>

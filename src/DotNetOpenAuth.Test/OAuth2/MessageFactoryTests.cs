@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.client_secret, "abc" },
 				{ Protocol.grant_type, "basic-credentials" },
 				{ Protocol.username, "abc" },
-				{ Protocol.password , "abc" },
+				{ Protocol.password, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(AccessTokenResourceOwnerPasswordCredentialsRequest), request);

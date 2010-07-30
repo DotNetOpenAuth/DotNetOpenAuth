@@ -16,14 +16,14 @@
 	public partial class Authorize2 : System.Web.UI.Page {
 		private static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
+		private EndUserAuthorizationRequest pendingRequest;
+
+		private Client client;
+
 		private string AuthorizationSecret {
 			get { return Session["OAuthAuthorizationSecret"] as string; }
 			set { Session["OAuthAuthorizationSecret"] = value; }
 		}
-
-		private EndUserAuthorizationRequest pendingRequest;
-
-		private Client client;
 
 		protected void Page_Load(object sender, EventArgs e) {
 			var getRequest = new HttpRequestInfo("GET", this.Request.Url, this.Request.RawUrl, new WebHeaderCollection(), null);

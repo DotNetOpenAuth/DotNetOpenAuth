@@ -196,34 +196,34 @@
 
 		private void oauth2BeginButton_Click(object sender, RoutedEventArgs e) {
 			var authServer = new DotNetOpenAuth.OAuth2.AuthorizationServerDescription {
-				AuthorizationEndpoint = new Uri(oauth2AuthorizationUrlBox.Text),
+				AuthorizationEndpoint = new Uri(this.oauth2AuthorizationUrlBox.Text),
 			};
-			if (oauth2TokenEndpointBox.Text.Length > 0) {
-				authServer.TokenEndpoint = new Uri(oauth2TokenEndpointBox.Text);
+			if (this.oauth2TokenEndpointBox.Text.Length > 0) {
+				authServer.TokenEndpoint = new Uri(this.oauth2TokenEndpointBox.Text);
 			}
 
 			try {
-				var client = new OAuth2.UserAgentClient(authServer, oauth2ClientIdentifierBox.Text, oauth2ClientSecretBox.Text);
+				var client = new OAuth2.UserAgentClient(authServer, this.oauth2ClientIdentifierBox.Text, this.oauth2ClientSecretBox.Text);
 
-				var authorization = new AuthorizationState(OAuthUtilities.SplitScopes(oauth2ScopeBox.Text));
+				var authorization = new AuthorizationState(OAuthUtilities.SplitScopes(this.oauth2ScopeBox.Text));
 				var authorizePopup = new Authorize2(client, authorization);
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
-					var requestUri = new UriBuilder(oauth2ResourceUrlBox.Text);
-					if (oauth2ResourceHttpMethodList.SelectedIndex > 0) {
+					var requestUri = new UriBuilder(this.oauth2ResourceUrlBox.Text);
+					if (this.oauth2ResourceHttpMethodList.SelectedIndex > 0) {
 						requestUri.AppendQueryArgument("access_token", authorization.AccessToken);
 					}
 
 					var request = (HttpWebRequest)WebRequest.Create(requestUri.Uri);
-					request.Method = oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
-					if (oauth2ResourceHttpMethodList.SelectedIndex == 0) {
+					request.Method = this.oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
+					if (this.oauth2ResourceHttpMethodList.SelectedIndex == 0) {
 						client.AuthorizeRequest(request, authorization);
 					}
 
 					using (var resourceResponse = request.GetResponse()) {
 						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
-							oauth2ResultsBox.Text = responseStream.ReadToEnd();
+							this.oauth2ResultsBox.Text = responseStream.ReadToEnd();
 						}
 					}
 				} else {

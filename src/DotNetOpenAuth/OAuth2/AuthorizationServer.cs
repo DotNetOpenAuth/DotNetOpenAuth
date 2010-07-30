@@ -66,6 +66,13 @@ namespace DotNetOpenAuth.OAuth2 {
 			return message;
 		}
 
+		/// <summary>
+		/// Approves an authorization request and sends an HTTP response to the user agent to redirect the user back to the Client.
+		/// </summary>
+		/// <param name="authorizationRequest">The authorization request to approve.</param>
+		/// <param name="username">The username of the account that approved the request (or whose data will be accessed by the client).</param>
+		/// <param name="scopes">The scope of access the client should be granted.  If <c>null</c>, all scopes in the original request will be granted.</param>
+		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
 		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, IEnumerable<string> scopes = null, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
@@ -74,6 +81,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			this.Channel.Send(response);
 		}
 
+		/// <summary>
+		/// Rejects an authorization request and sends an HTTP response to the user agent to redirect the user back to the Client.
+		/// </summary>
+		/// <param name="authorizationRequest">The authorization request to disapprove.</param>
+		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
 		public void RejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 
@@ -123,6 +135,14 @@ namespace DotNetOpenAuth.OAuth2 {
 			return response;
 		}
 
+		/// <summary>
+		/// Approves an authorization request.
+		/// </summary>
+		/// <param name="authorizationRequest">The authorization request to approve.</param>
+		/// <param name="username">The username of the account that approved the request (or whose data will be accessed by the client).</param>
+		/// <param name="scopes">The scope of access the client should be granted.  If <c>null</c>, all scopes in the original request will be granted.</param>
+		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
+		/// <returns>The authorization response message to send to the Client.</returns>
 		public EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string username, IEnumerable<string> scopes = null, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(username));
@@ -196,8 +216,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			var client = this.AuthorizationServerServices.GetClient(authorizationRequest.ClientIdentifier);
-			if (client.Callback != null) {
-				return client.Callback;
+			if (client.AllowedCallbacks.Any()) {
+				return client.AllowedCallbacks.First();
 			}
 
 			throw ErrorUtilities.ThrowProtocol(OAuthStrings.NoCallback);
