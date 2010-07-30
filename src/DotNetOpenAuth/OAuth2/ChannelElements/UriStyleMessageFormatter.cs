@@ -171,8 +171,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		}
 
 		public T Deserialize(IProtocolMessage containingMessage, string value) {
-			var message = new T();
-			message.ContainingMessage = containingMessage;
+			var message = new T { ContainingMessage = containingMessage };
 			byte[] data = Convert.FromBase64String(value);
 
 			if (this.encrypted) {

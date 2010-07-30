@@ -39,34 +39,34 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <param name="scope">The scope of authorized access requested.</param>
+		/// <param name="state">The state of the client that should be sent back with the authorization response.</param>
 		/// <returns>The authorization request as an HTTP response that causes a redirect.</returns>
-		public OutgoingWebResponse RequestUserAuthorization(IEnumerable<string> scope = null) {
-			var response = this.PrepareRequestUserAuthorization(scope);
-			return this.Channel.PrepareResponse(response);
+		public void RequestUserAuthorization(IEnumerable<string> scope = null, string state = null) {
+			this.PrepareRequestUserAuthorization(scope, state).Send();
 		}
 
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
-		/// <param name="scope">The scope of authorized access requested.</param>
+		/// <param name="scopes">The scope of authorized access requested.</param>
+		/// <param name="state">The state of the client that should be sent back with the authorization response.</param>
 		/// <returns>The authorization request.</returns>
-		public EndUserAuthorizationRequest PrepareRequestUserAuthorization(IEnumerable<string> scopes = null) {
+		public OutgoingWebResponse PrepareRequestUserAuthorization(IEnumerable<string> scopes = null, string state = null) {
 			var authorizationState = new AuthorizationState(scopes);
-			return this.PrepareRequestUserAuthorization(authorizationState);
+			return this.PrepareRequestUserAuthorization(authorizationState, state);
 		}
 
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <param name="authorization">The authorization state to associate with this particular request.</param>
+		/// <param name="state">The state of the client that should be sent back with the authorization response.</param>
 		/// <returns>The authorization request.</returns>
-		public EndUserAuthorizationRequest PrepareRequestUserAuthorization(IAuthorizationState authorization) {
+		public OutgoingWebResponse PrepareRequestUserAuthorization(IAuthorizationState authorization, string state = null) {
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<InvalidOperationException>(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
-			Contract.Ensures(Contract.Result<EndUserAuthorizationRequest>() != null);
-			Contract.Ensures(Contract.Result<EndUserAuthorizationRequest>().ClientIdentifier == this.ClientIdentifier);
-			Contract.Ensures(Contract.Result<EndUserAuthorizationRequest>().Callback == authorization.Callback);
+			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			if (authorization.Callback == null) {
 				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting
@@ -78,10 +78,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
+				ClientState = state,
 			};
 			request.Scope.ResetContents(authorization.Scope);
 
-			return request;
+			return this.Channel.PrepareResponse(request);
 		}
 
 		/// <summary>

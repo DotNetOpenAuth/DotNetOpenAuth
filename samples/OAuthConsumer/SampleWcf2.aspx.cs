@@ -65,7 +65,7 @@
 							   where item.Selected
 							   select item.Value).ToArray();
 
-			Client.RequestUserAuthorization(scopes).Send();
+			Client.RequestUserAuthorization(scopes);
 		}
 
 		protected void getNameButton_Click(object sender, EventArgs e) {

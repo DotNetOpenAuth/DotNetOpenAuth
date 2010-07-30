@@ -32,7 +32,7 @@
 				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}
 
-			client = Global.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
+			this.client = Global.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
 
 			var authServer = new OAuth2AuthorizationServer();
 			if (authServer.CanBeAutoApproved(this.pendingRequest)) {
@@ -41,7 +41,7 @@
 
 			if (!IsPostBack) {
 				this.desiredAccessLabel.Text = OAuthUtilities.JoinScopes(this.pendingRequest.Scope);
-				this.consumerLabel.Text = client.Name;
+				this.consumerLabel.Text = this.client.Name;
 
 				// Generate an unpredictable secret that goes to the user agent and must come back
 				// with authorization to guarantee the user interacted with this page rather than
@@ -60,7 +60,7 @@
 			this.AuthorizationSecret = null; // clear one time use secret
 			this.multiView.SetActiveView(this.AuthGranted);
 
-			client.ClientAuthorizations.Add(
+			this.client.ClientAuthorizations.Add(
 				new ClientAuthorization {
 					Scope = OAuthUtilities.JoinScopes(this.pendingRequest.Scope),
 					User = Global.LoggedInUser,

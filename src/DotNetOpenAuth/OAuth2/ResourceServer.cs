@@ -105,12 +105,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			string username;
 			HashSet<string> scope;
 			var result = this.VerifyAccess(httpRequestInfo, out username, out scope);
-			if (result == null) {
-				principal = new OAuth.ChannelElements.OAuthPrincipal(username, scope != null ? scope.ToArray() : new string[0]);
-			} else {
-				principal = null;
-			}
-
+			principal = result == null ? new OAuth.ChannelElements.OAuthPrincipal(username, scope != null ? scope.ToArray() : new string[0]) : null;
 			return result;
 		}
 

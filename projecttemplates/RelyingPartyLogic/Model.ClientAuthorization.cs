@@ -13,7 +13,7 @@ namespace RelyingPartyLogic {
 
 	public partial class ClientAuthorization {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="IssuedToken"/> class.
+		/// Initializes a new instance of the <see cref="ClientAuthorization"/> class.
 		/// </summary>
 		public ClientAuthorization() {
 			this.CreatedOnUtc = DateTime.UtcNow;

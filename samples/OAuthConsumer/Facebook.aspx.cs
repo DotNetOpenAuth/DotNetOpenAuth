@@ -17,7 +17,7 @@
 			IAuthorizationState authorization = client.ProcessUserAuthorization();
 			if (authorization == null) {
 				// Kick off authorization request
-				client.Channel.Send(client.PrepareRequestUserAuthorization());
+				client.RequestUserAuthorization();
 			} else {
 				var request = WebRequest.Create("https://graph.facebook.com/me?access_token=" + Uri.EscapeDataString(authorization.AccessToken));
 				using (var response = request.GetResponse()) {
