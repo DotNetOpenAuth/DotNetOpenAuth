@@ -5,14 +5,14 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 	<h2>
-		<%: ViewData["Message"] %></h2>
+		DotNetOpenAuth presents the OAuth 2.0 Authorization Server!
+	</h2>
 	<p>
-		To learn more about ASP.NET MVC visit <a href="http://asp.net/mvc" title="ASP.NET MVC Website">
-			http://asp.net/mvc</a>.
+		To learn more about DotNetOpenAuth visit <a href="http://www.DotNetOpenAuth.net/"
+			title="DotNetOpenAuth web site">http://www.DotNetOpenAuth.net/</a>.
 	</p>
-	<% using (Html.BeginForm("CreateDatabase", "Home"))
-    {%>
-		<input type="submit" value="(Re)Create Database" />
+	<% using (Html.BeginForm("CreateDatabase", "Home")) {%>
+	<input type="submit" value="(Re)Create Database" />
 	<%
-    }%>
+		}%>
 </asp:Content>

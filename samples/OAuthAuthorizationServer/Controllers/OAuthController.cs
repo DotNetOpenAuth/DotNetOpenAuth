@@ -73,8 +73,7 @@
 
 		[Authorize, HttpPost, ValidateAntiForgeryToken]
 		public ActionResult AuthorizeResponse(bool isApproved) {
-			var getRequest = new HttpRequestInfo("GET", this.Request.Url, this.Request.RawUrl, new WebHeaderCollection(), null);
-			var pendingRequest = authorizationServer.ReadAuthorizationRequest(getRequest);
+			var pendingRequest = authorizationServer.ReadAuthorizationRequest();
 			if (pendingRequest == null) {
 				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}

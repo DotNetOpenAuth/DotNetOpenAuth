@@ -12,7 +12,7 @@
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.OAuth2;
 
-	using SampleServiceProvider;
+	using SampleResourceServer;
 
 	public partial class SampleWcf2 : System.Web.UI.Page {
 		/// <summary>
@@ -24,9 +24,9 @@
 		/// The details about the sample OAuth-enabled WCF service that this sample client calls into.
 		/// </summary>
 		private static AuthorizationServerDescription authServerDescription = new AuthorizationServerDescription {
-		                                                                                                         	TokenEndpoint = new Uri("http://localhost:65169/OAuth.ashx"),
-		                                                                                                         	AuthorizationEndpoint = new Uri("http://localhost:65169/Members/Authorize.aspx"),
-		                                                                                                         };
+			TokenEndpoint = new Uri("http://localhost:50172/OAuth/Token"),
+			AuthorizationEndpoint = new Uri("http://localhost:50172/OAuth/Authorize"),
+		};
 
 		/// <summary>
 		/// Initializes static members of the <see cref="SampleWcf2"/> class.
@@ -56,6 +56,14 @@
 					// We are receiving an authorization response.  Store it and associate it with this user.
 					Authorization = authorization;
 					Response.Redirect(Request.Path); // get rid of the /?code= parameter
+				} else {
+					if (Authorization != null) {
+						// Indicate to the user that we have already obtained authorization on some of these.
+						foreach (var li in this.scopeList.Items.OfType<ListItem>().Where(li => Authorization.Scope.Contains(li.Value))) {
+							li.Selected = true;
+						}
+						authorizationLabel.Text = "Authorization received!";
+					}
 				}
 			}
 		}

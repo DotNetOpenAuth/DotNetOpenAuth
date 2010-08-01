@@ -12,7 +12,7 @@
 
         <div id="header">
             <div id="title">
-                <h1>My MVC Application</h1>
+                <h1>DotNetOpenAuth OAuth 2.0 Authorization Server</h1>
             </div>
               
             <div id="logindisplay">

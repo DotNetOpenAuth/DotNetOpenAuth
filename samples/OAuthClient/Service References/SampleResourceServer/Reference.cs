@@ -8,11 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OAuthClient.SampleServiceProvider {
+namespace OAuthClient.SampleResourceServer {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="SampleServiceProvider.IDataApi")]
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="SampleResourceServer.IDataApi")]
     public interface IDataApi {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDataApi/GetAge", ReplyAction="http://tempuri.org/IDataApi/GetAgeResponse")]
@@ -26,12 +26,12 @@ namespace OAuthClient.SampleServiceProvider {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IDataApiChannel : IDataApi, System.ServiceModel.IClientChannel {
+    public interface IDataApiChannel : OAuthClient.SampleResourceServer.IDataApi, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-	public partial class DataApiClient : System.ServiceModel.ClientBase<IDataApi>, IDataApi {
+    public partial class DataApiClient : System.ServiceModel.ClientBase<OAuthClient.SampleResourceServer.IDataApi>, OAuthClient.SampleResourceServer.IDataApi {
         
         public DataApiClient() {
         }

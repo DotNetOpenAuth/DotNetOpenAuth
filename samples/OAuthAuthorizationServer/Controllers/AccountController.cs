@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Security.Principal;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using System.Web.Security;
-using OAuthAuthorizationServer.Models;
+﻿namespace OAuthAuthorizationServer.Controllers {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
+	using System.Security.Principal;
+	using System.Web;
+	using System.Web.Mvc;
+	using System.Web.Routing;
+	using System.Web.Security;
 
-namespace OAuthAuthorizationServer.Controllers {
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+
+	using OAuthAuthorizationServer.Models;
+
+	using DotNetOpenAuth.Messaging;
 
 	[HandleError]
 	public class AccountController : Controller {
-
-		public IFormsAuthenticationService FormsService { get; set; }
-		public IMembershipService MembershipService { get; set; }
-
-		protected override void Initialize(RequestContext requestContext) {
-			if (FormsService == null) { FormsService = new FormsAuthenticationService(); }
-			if (MembershipService == null) { MembershipService = new AccountMembershipService(); }
-
-			base.Initialize(requestContext);
-		}
 
 		// **************************************
 		// URL: /Account/LogOn
@@ -35,20 +30,35 @@ namespace OAuthAuthorizationServer.Controllers {
 		[HttpPost]
 		public ActionResult LogOn(LogOnModel model, string returnUrl) {
 			if (ModelState.IsValid) {
-				if (MembershipService.ValidateUser(model.UserName, model.Password)) {
-					FormsService.SignIn(model.UserName, model.RememberMe);
-					if (!String.IsNullOrEmpty(returnUrl)) {
-						return Redirect(returnUrl);
-					} else {
-						return RedirectToAction("Index", "Home");
-					}
+				var rp = new OpenIdRelyingParty();
+				var request = rp.CreateRequest(model.UserSuppliedIdentifier, Realm.AutoDetect, new Uri(Request.Url, Url.Action("Authenticate")));
+				if (request != null) {
+					request.AddCallbackArguments("returnUrl", returnUrl);
+					return request.RedirectingResponse.AsActionResult();
 				} else {
-					ModelState.AddModelError("", "The user name or password provided is incorrect.");
+					ModelState.AddModelError("", "The identifier you supplied is not recognized as a valid OpenID Identifier.");
 				}
 			}
 
 			// If we got this far, something failed, redisplay form
 			return View(model);
+		}
+
+		public ActionResult Authenticate(string returnUrl) {
+			var rp = new OpenIdRelyingParty();
+			var response = rp.GetResponse();
+			if (response != null) {
+				switch (response.Status) {
+					case AuthenticationStatus.Authenticated:
+						FormsAuthentication.SetAuthCookie(response.ClaimedIdentifier, false);
+						return this.Redirect(returnUrl);
+					default:
+						ModelState.AddModelError("", "An error occurred during login.");
+						break;
+				}
+			}
+
+			return this.View("LogOn");
 		}
 
 		// **************************************
@@ -56,72 +66,9 @@ namespace OAuthAuthorizationServer.Controllers {
 		// **************************************
 
 		public ActionResult LogOff() {
-			FormsService.SignOut();
+			FormsAuthentication.SignOut();
 
 			return RedirectToAction("Index", "Home");
 		}
-
-		// **************************************
-		// URL: /Account/Register
-		// **************************************
-
-		public ActionResult Register() {
-			ViewData["PasswordLength"] = MembershipService.MinPasswordLength;
-			return View();
-		}
-
-		[HttpPost]
-		public ActionResult Register(RegisterModel model) {
-			if (ModelState.IsValid) {
-				// Attempt to register the user
-				MembershipCreateStatus createStatus = MembershipService.CreateUser(model.UserName, model.Password, model.Email);
-
-				if (createStatus == MembershipCreateStatus.Success) {
-					FormsService.SignIn(model.UserName, false /* createPersistentCookie */);
-					return RedirectToAction("Index", "Home");
-				} else {
-					ModelState.AddModelError("", AccountValidation.ErrorCodeToString(createStatus));
-				}
-			}
-
-			// If we got this far, something failed, redisplay form
-			ViewData["PasswordLength"] = MembershipService.MinPasswordLength;
-			return View(model);
-		}
-
-		// **************************************
-		// URL: /Account/ChangePassword
-		// **************************************
-
-		[Authorize]
-		public ActionResult ChangePassword() {
-			ViewData["PasswordLength"] = MembershipService.MinPasswordLength;
-			return View();
-		}
-
-		[Authorize]
-		[HttpPost]
-		public ActionResult ChangePassword(ChangePasswordModel model) {
-			if (ModelState.IsValid) {
-				if (MembershipService.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword)) {
-					return RedirectToAction("ChangePasswordSuccess");
-				} else {
-					ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
-				}
-			}
-
-			// If we got this far, something failed, redisplay form
-			ViewData["PasswordLength"] = MembershipService.MinPasswordLength;
-			return View(model);
-		}
-
-		// **************************************
-		// URL: /Account/ChangePasswordSuccess
-		// **************************************
-
-		public ActionResult ChangePasswordSuccess() {
-			return View();
-		}
-
 	}
 }
