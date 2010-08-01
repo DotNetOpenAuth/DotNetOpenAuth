@@ -68,7 +68,7 @@ namespace DotNetOpenId.Provider {
 
 			string expected_sig = Convert.ToBase64String(assoc.Sign(signed_pairs, signedKeyOrder));
 
-			if (signature != expected_sig) {
+			if (!Util.EqualsConstantTime(signature, expected_sig)) {
 				Logger.ErrorFormat("Expected signature is '{0}'. Actual signature is '{1}' ", expected_sig, signature);
 			}
 

@@ -484,7 +484,7 @@ namespace DotNetOpenId.RelyingParty {
 
 			string v_sig = Convert.ToBase64String(assoc.Sign(query, signedFields, protocol.openid.Prefix));
 
-			if (v_sig != sig)
+			if (!Util.EqualsConstantTime(v_sig, sig))
 				throw new OpenIdException(Strings.InvalidSignature);
 		}
 
