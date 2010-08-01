@@ -56,16 +56,22 @@
 					// We are receiving an authorization response.  Store it and associate it with this user.
 					Authorization = authorization;
 					Response.Redirect(Request.Path); // get rid of the /?code= parameter
-				} else {
-					if (Authorization != null) {
-						// Indicate to the user that we have already obtained authorization on some of these.
-						foreach (var li in this.scopeList.Items.OfType<ListItem>().Where(li => Authorization.Scope.Contains(li.Value))) {
-							li.Selected = true;
-						}
-						authorizationLabel.Text = "Authorization received!";
-					}
 				}
 			}
+
+			if (Authorization != null) {
+				// Indicate to the user that we have already obtained authorization on some of these.
+				foreach (var li in this.scopeList.Items.OfType<ListItem>().Where(li => Authorization.Scope.Contains(li.Value))) {
+					li.Selected = true;
+				}
+				authorizationLabel.Text = "Authorization received!";
+				if (Authorization.AccessTokenExpirationUtc.HasValue) {
+					TimeSpan timeLeft = Authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
+					authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, "  (access token expires in {0} minutes)", Math.Round(timeLeft.TotalMinutes, 1));
+				}
+			}
+
+			this.getNameButton.Enabled = this.getAgeButton.Enabled = this.getFavoriteSites.Enabled = Authorization != null;
 		}
 
 		protected void getAuthorizationButton_Click(object sender, EventArgs e) {
@@ -111,7 +117,10 @@
 
 			// Refresh the access token if it expires and if its lifetime is too short to be of use.
 			if (Authorization.AccessTokenExpirationUtc.HasValue) {
-				Client.RefreshToken(Authorization, TimeSpan.FromMinutes(1));
+				if (Client.RefreshToken(Authorization, TimeSpan.FromSeconds(30))) {
+					TimeSpan timeLeft = Authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
+					authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, " - just renewed for {0} more minutes)", Math.Round(timeLeft.TotalMinutes, 1));
+				}
 			}
 
 			var httpRequest = (HttpWebRequest)WebRequest.Create(wcfClient.Endpoint.Address.Uri);

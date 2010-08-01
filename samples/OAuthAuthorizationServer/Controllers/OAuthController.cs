@@ -40,7 +40,18 @@
 		public ActionResult Token() {
 			var request = this.authorizationServer.ReadAccessTokenRequest();
 			if (request != null) {
-				var response = this.authorizationServer.PrepareAccessTokenResponse(request, ResourceServerEncryptionPublicKey);
+				// Just for the sake of the sample, we use a short-lived token.  This can be useful to mitigate the security risks
+				// of access tokens that are used over standard HTTP.
+				// But this is just the lifetime of the access token.  The client can still renew it using their refresh token until
+				// the authorization itself expires.
+				TimeSpan accessTokenLifetime = TimeSpan.FromMinutes(2);
+
+				// Also take into account the remaining life of the authorization and artificially shorten the access token's lifetime
+				// to account for that if necessary.
+				// TODO: code here
+
+				// Prepare the refresh and access tokens.
+				var response = this.authorizationServer.PrepareAccessTokenResponse(request, ResourceServerEncryptionPublicKey, accessTokenLifetime);
 				return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
 			}
 
@@ -80,6 +91,9 @@
 
 			IDirectedProtocolMessage response;
 			if (isApproved) {
+				// The authorization we file in our database lasts until the user explicitly revokes it.
+				// You can cause the authorization to expire by setting the ExpirationDateUTC
+				// property in the below created ClientAuthorization.
 				var client = MvcApplication.DataContext.Clients.First(c => c.ClientIdentifier == pendingRequest.ClientIdentifier);
 				client.ClientAuthorizations.Add(
 					new ClientAuthorization {

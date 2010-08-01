@@ -94,7 +94,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorization">The authorization to update.</param>
 		/// <param name="skipIfUsefulLifeExceeds">If given, the access token will <em>not</em> be refreshed if its remaining lifetime exceeds this value.</param>
-		public void RefreshToken(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null) {
+		/// <returns>A value indicating whether the access token was actually renewed; <c>true</c> if it was renewed, or <c>false</c> if it still had useful life remaining.</returns>
+		public bool RefreshToken(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null) {
 			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(authorization.RefreshToken));
 
@@ -103,7 +104,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (usefulLifeRemaining > skipIfUsefulLifeExceeds.Value) {
 					// There is useful life remaining in the access token.  Don't refresh.
 					Logger.OAuth.DebugFormat("Skipping token refresh step because access token's remaining life is {0}, which exceeds {1}.", usefulLifeRemaining, skipIfUsefulLifeExceeds.Value);
-					return;
+					return false;
 				}
 			}
 
@@ -129,6 +130,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			authorization.SaveChanges();
+			return true;
 		}
 
 		/// <summary>
