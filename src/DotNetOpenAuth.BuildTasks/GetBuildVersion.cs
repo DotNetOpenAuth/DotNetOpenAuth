@@ -72,12 +72,13 @@ namespace DotNetOpenAuth.BuildTasks {
 			// First try asking Git for the HEAD commit id
 			try {
 				string cmdPath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe");
-				ProcessStartInfo psi = new ProcessStartInfo(cmdPath, "/c git rev-parse HEAD");
-				psi.WindowStyle = ProcessWindowStyle.Hidden;
-				psi.CreateNoWindow = true;
-				psi.RedirectStandardOutput = true;
-				psi.UseShellExecute = false;
-				Process git = Process.Start(psi);
+				var psi = new ProcessStartInfo(cmdPath, "/c git rev-parse HEAD") {
+					WindowStyle = ProcessWindowStyle.Hidden,
+					CreateNoWindow = true,
+					RedirectStandardOutput = true,
+					UseShellExecute = false
+				};
+				var git = Process.Start(psi);
 				commitId = git.StandardOutput.ReadLine();
 				git.WaitForExit();
 				if (git.ExitCode != 0) {
@@ -115,6 +116,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			} catch (DirectoryNotFoundException) {
 			}
 
+			commitId = commitId ?? String.Empty; // doubly-be sure it's not null, since in some error cases it can be.
 			return commitId.Trim();
 		}
 
