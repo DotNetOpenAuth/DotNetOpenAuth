@@ -11,13 +11,14 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// A simple memory-only copy of an authorization state.
+	/// A simple in-memory copy of an authorization state.
 	/// </summary>
 	[Serializable]
 	public class AuthorizationState : IAuthorizationState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationState"/> class.
 		/// </summary>
+		/// <param name="scopes">The scopes of access being requested or that was obtained.</param>
 		public AuthorizationState(IEnumerable<string> scopes = null) {
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 			if (scopes != null) {

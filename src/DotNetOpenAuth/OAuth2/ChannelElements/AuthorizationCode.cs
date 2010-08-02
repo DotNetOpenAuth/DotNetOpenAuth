@@ -52,6 +52,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[MessagePart("cb")]
 		private byte[] CallbackHash { get; set; }
 
+		/// <summary>
+		/// Creates a serializer/deserializer for this type.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server that will be serializing/deserializing this authorization code.  Must not be null.</param>
+		/// <returns>A DataBag formatter.</returns>
 		internal static IDataBagFormatter<AuthorizationCode> CreateFormatter(IAuthorizationServer authorizationServer) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);

@@ -10,6 +10,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth2.Messages;
 
+	/// <summary>
+	/// Encodes/decodes the OAuth 2.0 grant_type argument.
+	/// </summary>
 	internal class GrantTypeEncoder : IMessagePartEncoder {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GrantTypeEncoder"/> class.

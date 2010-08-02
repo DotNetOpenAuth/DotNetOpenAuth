@@ -35,6 +35,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.grant_type, IsRequired = true, AllowEmpty = false, Encoder = typeof(GrantTypeEncoder))]
 		internal abstract GrantType GrantType { get; }
 
+		/// <summary>
+		/// Gets the set of scopes the Client would like the access token to provide access to.
+		/// </summary>
+		/// <value>A set of scopes.  Never null.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
 		internal HashSet<string> Scope { get; private set; }
 

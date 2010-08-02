@@ -93,12 +93,32 @@ namespace DotNetOpenAuth.OAuth2 {
 			this.Channel.Send(response);
 		}
 
+		/// <summary>
+		/// Checks the incoming HTTP request for an access token request and prepares a response if the request message was found.
+		/// </summary>
+		/// <param name="response">The formulated response, or <c>null</c> if the request was not found..</param>
+		/// <returns>A value indicating whether any access token request was found in the HTTP request.</returns>
+		/// <remarks>
+		/// This method assumes that the authorization server and the resource server are the same and that they share a single
+		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
+		/// </remarks>
 		public bool TryPrepareAccessTokenResponse(out IDirectResponseProtocolMessage response) {
 			return this.TryPrepareAccessTokenResponse(this.Channel.GetRequestFromContext(), out response);
 		}
 
+		/// <summary>
+		/// Checks the incoming HTTP request for an access token request and prepares a response if the request message was found.
+		/// </summary>
+		/// <param name="httpRequestInfo">The HTTP request info.</param>
+		/// <param name="response">The formulated response, or <c>null</c> if the request was not found..</param>
+		/// <returns>A value indicating whether any access token request was found in the HTTP request.</returns>
+		/// <remarks>
+		/// This method assumes that the authorization server and the resource server are the same and that they share a single
+		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
+		/// </remarks>
 		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response) {
 			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
+			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<IDirectResponseProtocolMessage>(out response) != null));
 
 			var request = this.ReadAccessTokenRequest(httpRequestInfo);
 			if (request != null) {
@@ -113,6 +133,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			return false;
 		}
 
+		/// <summary>
+		/// Reads the access token request.
+		/// </summary>
+		/// <param name="requestInfo">The request info.</param>
+		/// <returns>The Client's request for an access token; or <c>null</c> if no such message was found in the request.</returns>
 		public AccessTokenRequestBase ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
 			if (requestInfo == null) {
 				requestInfo = this.Channel.GetRequestFromContext();
@@ -123,6 +148,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			return request;
 		}
 
+		/// <summary>
+		/// Prepares a response to inform the Client that the user has rejected the Client's authorization request.
+		/// </summary>
+		/// <param name="authorizationRequest">The authorization request.</param>
+		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
+		/// <returns>The authorization response message to send to the Client.</returns>
 		public EndUserAuthorizationFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Ensures(Contract.Result<EndUserAuthorizationFailedResponse>() != null);
@@ -206,6 +237,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			return response;
 		}
 
+		/// <summary>
+		/// Gets the redirect URL to use for a particular authorization request.
+		/// </summary>
+		/// <param name="authorizationRequest">The authorization request.</param>
+		/// <returns>The URL to redirect to.  Never <c>null</c>.</returns>
+		/// <exception cref="ProtocolException">Thrown if no callback URL could be determined.</exception>
 		protected Uri GetCallback(EndUserAuthorizationRequest authorizationRequest) {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Ensures(Contract.Result<Uri>() != null);

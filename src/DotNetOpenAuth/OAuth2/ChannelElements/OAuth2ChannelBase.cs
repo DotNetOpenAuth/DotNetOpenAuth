@@ -13,6 +13,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
+	/// <summary>
+	/// The base messaging channel used by OAuth 2.0 parties.
+	/// </summary>
 	internal abstract class OAuth2ChannelBase : StandardMessageFactoryChannel {
 		/// <summary>
 		/// The messages receivable by this channel.

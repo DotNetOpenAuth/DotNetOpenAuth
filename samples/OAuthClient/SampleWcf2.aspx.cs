@@ -64,10 +64,10 @@
 				foreach (var li in this.scopeList.Items.OfType<ListItem>().Where(li => Authorization.Scope.Contains(li.Value))) {
 					li.Selected = true;
 				}
-				authorizationLabel.Text = "Authorization received!";
+				this.authorizationLabel.Text = "Authorization received!";
 				if (Authorization.AccessTokenExpirationUtc.HasValue) {
 					TimeSpan timeLeft = Authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
-					authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, "  (access token expires in {0} minutes)", Math.Round(timeLeft.TotalMinutes, 1));
+					this.authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, "  (access token expires in {0} minutes)", Math.Round(timeLeft.TotalMinutes, 1));
 				}
 			}
 
@@ -119,7 +119,7 @@
 			if (Authorization.AccessTokenExpirationUtc.HasValue) {
 				if (Client.RefreshToken(Authorization, TimeSpan.FromSeconds(30))) {
 					TimeSpan timeLeft = Authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
-					authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, " - just renewed for {0} more minutes)", Math.Round(timeLeft.TotalMinutes, 1));
+					this.authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, " - just renewed for {0} more minutes)", Math.Round(timeLeft.TotalMinutes, 1));
 				}
 			}
 

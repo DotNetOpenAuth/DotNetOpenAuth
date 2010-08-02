@@ -18,6 +18,11 @@ namespace RelyingPartyLogic {
 		private const string PendingAuthorizationRequestSessionKey = "PendingAuthorizationRequest";
 
 		/// <summary>
+		/// The lock to synchronize initialization of the <see cref="authorizationServer"/> field.
+		/// </summary>
+		private static readonly object InitializerLock = new object();
+
+		/// <summary>
 		/// The shared service description for this web site.
 		/// </summary>
 		private static AuthorizationServerDescription authorizationServerDescription;
@@ -26,11 +31,6 @@ namespace RelyingPartyLogic {
 		/// The shared authorization server.
 		/// </summary>
 		private static AuthorizationServer authorizationServer;
-
-		/// <summary>
-		/// The lock to synchronize initialization of the <see cref="authorizationServer"/> field.
-		/// </summary>
-		private static readonly object InitializerLock = new object();
 
 		/// <summary>
 		/// Gets the service provider.

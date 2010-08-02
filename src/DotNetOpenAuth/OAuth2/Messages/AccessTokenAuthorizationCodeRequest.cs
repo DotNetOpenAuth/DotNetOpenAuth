@@ -14,6 +14,9 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
+	/// <summary>
+	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token.
+	/// </summary>
 	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, ITokenCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
@@ -24,7 +27,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: base(tokenEndpoint, version) {
 		}
 
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
 		internal AccessTokenAuthorizationCodeRequest(AuthorizationServerDescription authorizationServer)
 			: this(authorizationServer.TokenEndpoint, authorizationServer.Version)
 		{
@@ -53,6 +59,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
+		/// <summary>
+		/// Gets the type of the grant.
+		/// </summary>
+		/// <value>The type of the grant.</value>
 		internal override GrantType GrantType {
 			get { return Messages.GrantType.AuthorizationCode; }
 		}

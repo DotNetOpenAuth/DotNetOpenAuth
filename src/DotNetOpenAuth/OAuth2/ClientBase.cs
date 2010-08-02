@@ -186,6 +186,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			authorizationState.SaveChanges();
 		}
 
+		/// <summary>
+		/// Updates authorization state with a success response from the Authorization Server.
+		/// </summary>
+		/// <param name="authorizationState">The authorization state to update.</param>
+		/// <param name="authorizationSuccess">The authorization success message obtained from the authorization server.</param>
 		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAuthCodeResponse authorizationSuccess) {
 			Contract.Requires<ArgumentNullException>(authorizationState != null, "authorizationState");
 			Contract.Requires<ArgumentNullException>(authorizationSuccess != null, "authorizationSuccess");

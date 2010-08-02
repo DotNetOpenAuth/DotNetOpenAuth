@@ -11,7 +11,15 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// A request from a Client to an Authorization Server to exchange some assertion for an access token.
+	/// </summary>
 	internal class AccessTokenAssertionRequest : AccessTokenRequestBase {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AccessTokenAssertionRequest"/> class.
+		/// </summary>
+		/// <param name="tokenEndpoint">The Authorization Server's access token endpoint URL.</param>
+		/// <param name="version">The version.</param>
 		internal AccessTokenAssertionRequest(Uri tokenEndpoint, Version version)
 			: base(tokenEndpoint, version) {
 		}
@@ -30,6 +38,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.assertion, IsRequired = true, AllowEmpty = false)]
 		internal string Assertion { get; set; }
 
+		/// <summary>
+		/// Gets the type of the grant.
+		/// </summary>
+		/// <value>The type of the grant.</value>
 		internal override GrantType GrantType {
 			get { return GrantType.Assertion; }
 		}

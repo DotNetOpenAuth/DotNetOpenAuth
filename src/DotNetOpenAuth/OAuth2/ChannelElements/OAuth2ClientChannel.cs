@@ -14,6 +14,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// The messaging channel used by OAuth 2.0 Clients.
+	/// </summary>
 	internal class OAuth2ClientChannel : OAuth2ChannelBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2ClientChannel"/> class.
@@ -45,6 +48,14 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			return httpRequest;
 		}
 
+		/// <summary>
+		/// Gets the protocol message that may be in the given HTTP response.
+		/// </summary>
+		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <returns>
+		/// The deserialized message parts, if found.  Null otherwise.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
 			string body = response.GetResponseReader().ReadToEnd();
@@ -57,6 +68,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			}
 		}
 
+		/// <summary>
+		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// </summary>
+		/// <param name="request">The request to search for an embedded message.</param>
+		/// <returns>
+		/// The deserialized message, if one is found.  Null otherwise.
+		/// </returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
 			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.UrlBeforeRewriting.AbsoluteUri);
 
@@ -84,7 +102,19 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 		}
 
+		/// <summary>
+		/// Queues a message for sending in the response stream where the fields
+		/// are sent in the response stream in querystring style.
+		/// </summary>
+		/// <param name="response">The message to send as a response.</param>
+		/// <returns>
+		/// The pending user agent redirect based message to be sent as an HttpResponse.
+		/// </returns>
+		/// <remarks>
+		/// This method implements spec OAuth V1.0 section 5.3.
+		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+			// Clients don't ever send direct responses.
 			throw new NotImplementedException();
 		}
 	}

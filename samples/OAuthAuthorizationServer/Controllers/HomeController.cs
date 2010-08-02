@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-
-namespace OAuthAuthorizationServer.Controllers {
+﻿namespace OAuthAuthorizationServer.Controllers {
 	using System.Configuration;
 	using System.Data.SqlClient;
 	using System.IO;
+	using System.Linq;
+	using System.Web.Mvc;
 
 	using OAuthAuthorizationServer.Code;
 

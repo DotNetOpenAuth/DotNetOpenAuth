@@ -30,6 +30,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
 		}
 
+		/// <summary>
+		/// Gets the type of the grant.
+		/// </summary>
+		/// <value>The type of the grant.</value>
 		internal override GrantType GrantType {
 			get { return Messages.GrantType.None; }
 		}

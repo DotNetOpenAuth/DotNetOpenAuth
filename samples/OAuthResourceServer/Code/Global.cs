@@ -12,16 +12,6 @@
 	/// The web application global events and properties.
 	/// </summary>
 	public class Global : HttpApplication {
-		/// <summary>
-		/// An application memory cache of recent log messages.
-		/// </summary>
-		public static StringBuilder LogMessages = new StringBuilder();
-
-		/// <summary>
-		/// The logger for this sample to use.
-		/// </summary>
-		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthResourceServer");
-
 #if SAMPLESONLY
 		/// <summary>
 		/// The FOR SAMPLE ONLY hard-coded public key of the authorization server that is used to verify the signature on access tokens.
@@ -36,7 +26,22 @@
 			Exponent = new byte[] { 1, 0, 1 },
 			Modulus = new byte[] { 210, 95, 53, 12, 203, 114, 150, 23, 23, 88, 4, 200, 47, 219, 73, 54, 146, 253, 126, 121, 105, 91, 118, 217, 182, 167, 140, 6, 67, 112, 97, 183, 66, 112, 245, 103, 136, 222, 205, 28, 196, 45, 6, 223, 192, 76, 56, 180, 90, 120, 144, 19, 31, 193, 37, 129, 186, 214, 36, 53, 204, 53, 108, 133, 112, 17, 133, 244, 3, 12, 230, 29, 243, 51, 79, 253, 10, 111, 185, 23, 74, 230, 99, 94, 78, 49, 209, 39, 95, 213, 248, 212, 22, 4, 222, 145, 77, 190, 136, 230, 134, 70, 228, 241, 194, 216, 163, 234, 52, 1, 64, 181, 139, 128, 90, 255, 214, 60, 168, 233, 254, 110, 31, 102, 58, 67, 201, 33 },
 		};
+#else
+		[Obsolete("You must use a real key for a real app.", true)]
+		public static readonly RSAParameters AuthorizationServerSigningPublicKey = new RSAParameters();
+#endif
 
+		/// <summary>
+		/// An application memory cache of recent log messages.
+		/// </summary>
+		public static StringBuilder LogMessages = new StringBuilder();
+
+		/// <summary>
+		/// The logger for this sample to use.
+		/// </summary>
+		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthResourceServer");
+
+#if SAMPLESONLY
 		/// <summary>
 		/// The FOR SAMPLE ONLY hard-coded private key used to decrypt access tokens intended for this resource server.
 		/// </summary>
@@ -55,9 +60,6 @@
 			D = new byte[] { 94, 20, 94, 119, 18, 92, 141, 13, 17, 238, 92, 80, 22, 96, 232, 82, 128, 164, 115, 195, 191, 119, 142, 202, 135, 210, 103, 8, 10, 11, 51, 60, 208, 207, 168, 179, 253, 164, 250, 80, 245, 42, 201, 128, 97, 123, 108, 161, 69, 63, 47, 49, 24, 150, 165, 139, 105, 214, 154, 104, 172, 159, 86, 208, 64, 134, 158, 156, 234, 125, 140, 210, 3, 32, 60, 28, 62, 154, 198, 21, 132, 191, 236, 10, 158, 12, 247, 159, 177, 77, 178, 53, 238, 95, 165, 9, 200, 28, 148, 242, 35, 70, 189, 121, 169, 248, 97, 91, 111, 45, 103, 1, 167, 220, 67, 250, 175, 89, 122, 238, 192, 144, 142, 248, 198, 101, 96, 129 },
 		};
 #else
-		[Obsolete("You must use a real key for a real app.", true)]
-		public static readonly RSAParameters AuthorizationServerSigningPublicKey = new RSAParameters();
-
 		[Obsolete("You must use a real key for a real app.", true)]
 		internal static readonly RSAParameters ResourceServerEncryptionPrivateKey= new RSAParameters();
 #endif

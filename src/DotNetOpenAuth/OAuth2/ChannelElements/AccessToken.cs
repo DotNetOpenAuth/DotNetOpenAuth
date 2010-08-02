@@ -46,6 +46,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[MessagePart]
 		internal TimeSpan? Lifetime { get; set; }
 
+		/// <summary>
+		/// Creates a formatter capable of serializing/deserializing an access token.
+		/// </summary>
+		/// <param name="signingKey">The authorization server's private key used to asymmetrically sign the access token.</param>
+		/// <param name="encryptingKey">The resource server's public key used to encrypt the access token.</param>
+		/// <returns>An access token serializer.</returns>
 		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSAParameters signingKey, RSAParameters encryptingKey)
 		{
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AccessToken>>() != null);

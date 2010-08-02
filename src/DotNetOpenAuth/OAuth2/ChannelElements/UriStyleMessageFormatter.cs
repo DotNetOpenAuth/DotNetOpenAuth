@@ -143,6 +143,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			this.symmetricSecret = symmetricSecret;
 		}
 
+		/// <summary>
+		/// Serializes the specified message.
+		/// </summary>
+		/// <param name="message">The message to serialize.  Must not be null.</param>
+		/// <returns>A non-null, non-empty value.</returns>
 		public string Serialize(T message) {
 			message.UtcCreationDate = DateTime.UtcNow;
 
@@ -170,6 +175,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			return Convert.ToBase64String(encoded);
 		}
 
+		/// <summary>
+		/// Deserializes a <see cref="DataBag"/>.
+		/// </summary>
+		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
+		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
+		/// <returns>The deserialized value.  Never null.</returns>
 		public T Deserialize(IProtocolMessage containingMessage, string value) {
 			var message = new T { ContainingMessage = containingMessage };
 			byte[] data = Convert.FromBase64String(value);

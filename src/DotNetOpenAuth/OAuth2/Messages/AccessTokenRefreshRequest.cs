@@ -63,6 +63,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
 		internal string RefreshToken { get; set; }
 
+		/// <summary>
+		/// Gets the type of the grant.
+		/// </summary>
+		/// <value>The type of the grant.</value>
 		internal override GrantType GrantType {
 			get { return Messages.GrantType.RefreshToken; }
 		}

@@ -55,18 +55,18 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		string IMessageWithClientState.ClientState { get; set; }
 
 		/// <summary>
-		/// Gets or sets the lifetime of the authorization.
-		/// </summary>
-		/// <value>The lifetime.</value>
-		[MessagePart(Protocol.expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
-		internal TimeSpan? Lifetime { get; set; }
-
-		/// <summary>
 		/// Gets the scope of the <see cref="AccessToken"/> if one is given; otherwise the scope of the authorization code.
 		/// </summary>
 		/// <value>The scope.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
 		public ICollection<string> Scope { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the lifetime of the authorization.
+		/// </summary>
+		/// <value>The lifetime.</value>
+		[MessagePart(Protocol.expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
+		internal TimeSpan? Lifetime { get; set; }
 
 		/// <summary>
 		/// Gets or sets the authorizing user's account name.

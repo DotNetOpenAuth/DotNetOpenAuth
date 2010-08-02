@@ -37,6 +37,7 @@
 		/// <summary>
 		/// The OAuth 2.0 token endpoint.
 		/// </summary>
+		/// <returns>The response to the Client.</returns>
 		public ActionResult Token() {
 			var request = this.authorizationServer.ReadAccessTokenRequest();
 			if (request != null) {
@@ -58,6 +59,10 @@
 			throw new HttpException((int)HttpStatusCode.BadRequest, "Missing OAuth 2.0 request message.");
 		}
 
+		/// <summary>
+		/// Prompts the user to authorize a client to access the user's private data.
+		/// </summary>
+		/// <returns>The browser HTML response that prompts the user to authorize the client.</returns>
 		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
 		public ActionResult Authorize() {
 			var pendingRequest = this.authorizationServer.ReadAuthorizationRequest();
@@ -82,9 +87,14 @@
 			return View(model);
 		}
 
+		/// <summary>
+		/// Processes the user's response as to whether to authorize a Client to access his/her private data.
+		/// </summary>
+		/// <param name="isApproved">if set to <c>true</c>, the user has authorized the Client; <c>false</c> otherwise.</param>
+		/// <returns>HTML response that redirects the browser to the Client.</returns>
 		[Authorize, HttpPost, ValidateAntiForgeryToken]
 		public ActionResult AuthorizeResponse(bool isApproved) {
-			var pendingRequest = authorizationServer.ReadAuthorizationRequest();
+			var pendingRequest = this.authorizationServer.ReadAuthorizationRequest();
 			if (pendingRequest == null) {
 				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}
@@ -104,12 +114,12 @@
 
 				// In this simple sample, the user either agrees to the entire scope requested by the client or none of it.  
 				// But in a real app, you could grant a reduced scope of access to the client by passing a scope parameter to this method.
-				response = authorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, User.Identity.Name);
+				response = this.authorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, User.Identity.Name);
 			} else {
-				response = authorizationServer.PrepareRejectAuthorizationRequest(pendingRequest);
+				response = this.authorizationServer.PrepareRejectAuthorizationRequest(pendingRequest);
 			}
 
-			return authorizationServer.Channel.PrepareResponse(response).AsActionResult();
+			return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
 		}
 	}
 }

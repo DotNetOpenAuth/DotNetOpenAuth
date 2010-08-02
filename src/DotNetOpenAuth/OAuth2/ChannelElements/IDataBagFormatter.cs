@@ -15,8 +15,19 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <typeparam name="T">The DataBag-derived type that is to be serialized/deserialized.</typeparam>
 	[ContractClass(typeof(IDataBagFormatterContract<>))]
 	internal interface IDataBagFormatter<T> where T : DataBag, new() {
+		/// <summary>
+		/// Serializes the specified message.
+		/// </summary>
+		/// <param name="message">The message to serialize.  Must not be null.</param>
+		/// <returns>A non-null, non-empty value.</returns>
 		string Serialize(T message);
 
+		/// <summary>
+		/// Deserializes a <see cref="DataBag"/>.
+		/// </summary>
+		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
+		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
+		/// <returns>The deserialized value.  Never null.</returns>
 		T Deserialize(IProtocolMessage containingMessage, string data);
 	}
 
@@ -34,6 +45,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 		#region IDataBagFormatter<T> Members
 
+		/// <summary>
+		/// Serializes the specified message.
+		/// </summary>
+		/// <param name="message">The message to serialize.  Must not be null.</param>
+		/// <returns>A non-null, non-empty value.</returns>
 		string IDataBagFormatter<T>.Serialize(T message) {
 			Contract.Requires<ArgumentNullException>(message != null, "message");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -41,6 +57,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			throw new System.NotImplementedException();
 		}
 
+		/// <summary>
+		/// Deserializes a <see cref="DataBag"/>.
+		/// </summary>
+		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
+		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
+		/// <returns>The deserialized value.  Never null.</returns>
 		T IDataBagFormatter<T>.Deserialize(IProtocolMessage containingMessage, string data) {
 			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(data));

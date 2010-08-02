@@ -43,22 +43,38 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
 
-		[MessagePart(Protocol.access_token, AllowEmpty = false, IsRequired = true)]
-		internal string AccessToken { get; set; }
-
 		#region ITokenCarryingRequest Members
 
+		/// <summary>
+		/// Gets or sets the verification code or refresh/access token.
+		/// </summary>
+		/// <value>The code or token.</value>
 		string ITokenCarryingRequest.CodeOrToken {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
 		}
 
+		/// <summary>
+		/// Gets the type of the code or token.
+		/// </summary>
+		/// <value>The type of the code or token.</value>
 		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.AccessToken; }
 		}
 
+		/// <summary>
+		/// Gets or sets the authorization that the token describes.
+		/// </summary>
+		/// <value></value>
 		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
 
 		#endregion
+
+		/// <summary>
+		/// Gets or sets the access token.
+		/// </summary>
+		/// <value>The access token.</value>
+		[MessagePart(Protocol.access_token, AllowEmpty = false, IsRequired = true)]
+		internal string AccessToken { get; set; }
 	}
 }

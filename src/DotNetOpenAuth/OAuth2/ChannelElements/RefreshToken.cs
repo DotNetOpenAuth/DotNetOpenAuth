@@ -36,6 +36,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			this.Scope.ResetContents(authorization.Scope);
 		}
 
+		/// <summary>
+		/// Creates a formatter capable of serializing/deserializing a refresh token.
+		/// </summary>
+		/// <param name="symmetricSecret">The symmetric secret used by the authorization server to sign/encrypt refresh tokens.  Must not be null.</param>
+		/// <returns>A DataBag formatter.  Never null.</returns>
 		internal static IDataBagFormatter<RefreshToken> CreateFormatter(byte[] symmetricSecret)
 		{
 			Contract.Requires<ArgumentNullException>(symmetricSecret != null, "symmetricSecret");
