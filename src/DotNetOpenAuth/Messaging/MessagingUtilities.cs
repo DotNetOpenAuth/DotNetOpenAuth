@@ -659,7 +659,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The compressed data.</returns>
 		internal static byte[] Compress(byte[] buffer) {
 			var ms = new MemoryStream();
-			using (var compressingStream = new GZipStream(ms, CompressionMode.Compress, true)) {
+			using (var compressingStream = new DeflateStream(ms, CompressionMode.Compress, true)) {
 				compressingStream.Write(buffer, 0, buffer.Length);
 			}
 
@@ -674,7 +674,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static byte[] Decompress(byte[] buffer) {
 			var compressedDataStream = new MemoryStream(buffer);
 			var decompressedDataStream = new MemoryStream();
-			using (var decompressingStream = new GZipStream(compressedDataStream, CompressionMode.Decompress, true)) {
+			using (var decompressingStream = new DeflateStream(compressedDataStream, CompressionMode.Decompress, true)) {
 				decompressingStream.CopyTo(decompressedDataStream);
 			}
 
