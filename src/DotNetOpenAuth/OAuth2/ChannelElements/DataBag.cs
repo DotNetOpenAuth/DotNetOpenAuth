@@ -6,16 +6,8 @@
 
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
-	using System.Linq;
-	using System.Security.Cryptography;
-	using System.Security.Cryptography.X509Certificates;
-	using System.Text;
-	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.Messaging.Bindings;
-	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
