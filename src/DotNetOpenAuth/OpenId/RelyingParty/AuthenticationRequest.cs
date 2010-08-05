@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Text;
 	using System.Threading;
 	using System.Web;
+
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -558,7 +560,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			request.AssociationHandle = association != null ? association.Handle : null;
 			request.SignReturnTo = this.returnToArgsMustBeSigned;
 			request.AddReturnToArguments(this.returnToArgs);
-			if (this.DiscoveryResult.UserSuppliedIdentifier != null) {
+			if (this.DiscoveryResult.UserSuppliedIdentifier != null && DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.PreserveUserSuppliedIdentifier) {
 				request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.DiscoveryResult.UserSuppliedIdentifier.OriginalString);
 			}
 			foreach (IOpenIdMessageExtension extension in this.extensions) {

@@ -438,6 +438,13 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:choice>
+									<xs:attribute name="preserveUserSuppliedIdentifier" type="xs:boolean" default="true">
+										<xs:annotation>
+											<xs:documentation>
+												Whether "dnoa.userSuppliedIdentifier" is tacked onto the openid.return_to URL in order to preserve what the user typed into the OpenID box.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="provider">
