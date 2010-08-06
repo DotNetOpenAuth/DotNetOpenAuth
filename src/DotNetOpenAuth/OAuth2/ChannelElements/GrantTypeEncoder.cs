@@ -39,8 +39,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					return Protocol.GrantTypes.AuthorizationCode;
 					case GrantType.RefreshToken:
 					return Protocol.GrantTypes.RefreshToken;
-				case GrantType.BasicCredentials:
-					return Protocol.GrantTypes.BasicCredentials;
+				case GrantType.Password:
+					return Protocol.GrantTypes.Password;
 				case GrantType.Assertion:
 					return Protocol.GrantTypes.Assertion;
 				default:
@@ -62,8 +62,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					return GrantType.None;
 				case Protocol.GrantTypes.Assertion:
 					return GrantType.Assertion;
-				case Protocol.GrantTypes.BasicCredentials:
-					return GrantType.BasicCredentials;
+				case Protocol.GrantTypes.Password:
+					return GrantType.Password;
 				case Protocol.GrantTypes.RefreshToken:
 					return GrantType.RefreshToken;
 				case Protocol.GrantTypes.AuthorizationCode:

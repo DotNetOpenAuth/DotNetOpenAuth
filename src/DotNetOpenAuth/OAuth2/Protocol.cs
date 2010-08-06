@@ -234,18 +234,18 @@ namespace DotNetOpenAuth.OAuth2 {
 		{
 			internal const string Code = "code";
 			internal const string Token = "token";
-			internal const string CodeAndToken = "code-and-token";
+			internal const string CodeAndToken = "code_and_token";
 		}
 
 		internal static class GrantTypes
 		{
-			internal const string AuthorizationCode = "authorization-code";
+			internal const string AuthorizationCode = "authorization_code";
 
-			internal const string BasicCredentials = "basic-credentials";
+			internal const string Password = "password";
 
 			internal const string Assertion = "assertion";
 
-			internal const string RefreshToken = "refresh-token";
+			internal const string RefreshToken = "refresh_token";
 
 			internal const string None = "none";
 		}

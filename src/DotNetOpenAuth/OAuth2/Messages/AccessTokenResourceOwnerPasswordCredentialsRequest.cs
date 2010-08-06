@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The type of the grant.</value>
 		internal override GrantType GrantType {
-			get { return Messages.GrantType.BasicCredentials; }
+			get { return Messages.GrantType.Password; }
 		}
 
 		/// <summary>

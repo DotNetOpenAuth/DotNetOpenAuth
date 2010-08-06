@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// The client is providing the end user's username and password to the authorization server.
 		/// </summary>
-		BasicCredentials,
+		Password,
 
 		/// <summary>
 		/// The client is providing an assertion it obtained from another source.
