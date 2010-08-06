@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockXrdsResponse(ServiceEndpoint endpoint) {
-			Contract.Requires<ArgumentNullException>(endpoint != null);
+			ErrorUtilities.VerifyArgumentNotNull(endpoint != null, "endpoint"); // CCBUG: Contract.Requires<ArgumentNullException>(endpoints != null);
 
 			string identityUri;
 			if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
