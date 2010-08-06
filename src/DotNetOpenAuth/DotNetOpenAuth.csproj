@@ -17,6 +17,7 @@ Copyright (c) 2009, Andrew Arnott. All rights reserved.
 Code licensed under the Ms-PL License:
 http://opensource.org/licenses/ms-pl.html
 </StandardCopyright>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +59,9 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
+    <CodeContractsExtraRewriteOptions>
+    </CodeContractsExtraRewriteOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -688,7 +692,6 @@ http://opensource.org/licenses/ms-pl.html
     <CompileDependsOn>$(CompileDependsOn);CheckForCodeContracts</CompileDependsOn>
   </PropertyGroup>
   <Target Name="CheckForCodeContracts">
-      <Error Condition=" '$(CodeContractsImported)' != 'true' "
-             Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx"/>
+    <Error Condition=" '$(CodeContractsImported)' != 'true' " Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx" />
   </Target>
 </Project>
