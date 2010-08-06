@@ -285,7 +285,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public void SendResponse(IRequest request) {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentException>(((Request)request).IsResponseReady);
+			Contract.Requires<ArgumentException>(request.IsResponseReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -301,7 +301,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public OutgoingWebResponse PrepareResponse(IRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentException>(((Request)request).IsResponseReady);
+			Contract.Requires<ArgumentException>(request.IsResponseReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
