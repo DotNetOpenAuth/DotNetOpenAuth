@@ -118,11 +118,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		/// <param name="typeUri">The type URI.</param>
 		private void InjectAdvertisedTypeUri(string typeUri) {
-			var serviceEndpoint = ServiceEndpoint_Accessor.AttachShadow(((ServiceEndpoint)this.authReq.Provider));
-			serviceEndpoint.ProviderDescription = ProviderEndpointDescription_Accessor.AttachShadow(
-				new ProviderEndpointDescription(
-					serviceEndpoint.ProviderDescription.Endpoint,
-					serviceEndpoint.ProviderDescription.Capabilities.Concat(new[] { typeUri })));
+			var serviceEndpoint = (ServiceEndpoint)this.authReq.Provider;
+			serviceEndpoint.SetCapabilitiesForTestHook(serviceEndpoint.ProviderDescription.Capabilities.Concat(new[] { typeUri }));
 		}
 	}
 }

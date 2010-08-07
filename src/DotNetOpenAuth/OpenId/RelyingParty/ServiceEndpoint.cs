@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
@@ -487,6 +488,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			writer.WriteLine(this.Protocol.Version);
 
 			// No reason to serialize priority. We only needed priority to decide whether to use this endpoint.
+		}
+
+		/// <summary>
+		/// Sets a specific set of type URIs on the discovered endpoint for testing purposes.
+		/// </summary>
+		/// <param name="capabilities">The set of capabilities to set on the endpoint.</param>
+		internal void SetCapabilitiesForTestHook(IEnumerable<string> capabilities) {
+			this.ProviderDescription = new ProviderEndpointDescription(this.ProviderDescription.Endpoint, capabilities);
 		}
 
 		/// <summary>

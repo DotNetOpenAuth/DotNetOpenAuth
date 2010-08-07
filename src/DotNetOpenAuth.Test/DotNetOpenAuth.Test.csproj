@@ -312,9 +312,6 @@
     <EmbeddedResource Include="Logging.config" />
   </ItemGroup>
   <ItemGroup>
-    <Shadow Include="Test References\DotNetOpenAuth.accessor" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html1020.html" />
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html10both.html" />
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html10del.html" />
