@@ -229,7 +229,7 @@
 		</ItemGroup>
 		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" />
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
-		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
+		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
 	</Target>
 
 	<Target Name="Drop" DependsOnTargets="DropLayout">
