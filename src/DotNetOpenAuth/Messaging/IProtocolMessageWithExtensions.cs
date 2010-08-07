@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// Code contract for the <see cref="IProtocolMessageWithExtensions"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IProtocolMessageWithExtensions))]
-	internal class IProtocolMessageWithExtensionsContract : IProtocolMessageWithExtensions {
+	internal abstract class IProtocolMessageWithExtensionsContract : IProtocolMessageWithExtensions {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="IProtocolMessageWithExtensionsContract"/> class from being created.
 		/// </summary>

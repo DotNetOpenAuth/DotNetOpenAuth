@@ -51,7 +51,13 @@ namespace DotNetOpenAuth.Messaging {
 	/// Code contract for the <see cref="IMessage"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IMessage))]
-	internal sealed class IMessageContract : IMessage {
+	internal abstract class IMessageContract : IMessage {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IMessageContract"/> class from being created.
+		/// </summary>
+		private IMessageContract() {
+		}
+
 		/// <summary>
 		/// Gets the version of the protocol or extension this message is prepared to implement.
 		/// </summary>

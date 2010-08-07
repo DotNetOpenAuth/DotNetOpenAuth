@@ -68,7 +68,13 @@ namespace DotNetOpenAuth.Messaging {
 	/// Code Contract for the <see cref="IChannelBindingElement"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IChannelBindingElement))]
-	internal class IChannelBindingElementContract : IChannelBindingElement {
+	internal abstract class IChannelBindingElementContract : IChannelBindingElement {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IChannelBindingElementContract"/> class from being created.
+		/// </summary>
+		private IChannelBindingElementContract() {
+		}
+
 		#region IChannelBindingElement Members
 
 		/// <summary>

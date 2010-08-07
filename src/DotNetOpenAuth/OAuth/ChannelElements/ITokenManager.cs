@@ -79,11 +79,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// The code contract class for the <see cref="ITokenManager"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(ITokenManager))]
-	internal class ITokenManagerContract : ITokenManager {
+	internal abstract class ITokenManagerContract : ITokenManager {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ITokenManagerContract"/> class.
+		/// Prevents a default instance of the <see cref="ITokenManagerContract"/> class from being created.
 		/// </summary>
-		internal ITokenManagerContract() {
+		private ITokenManagerContract() {
 		}
 
 		#region ITokenManager Members
