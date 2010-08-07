@@ -226,7 +226,8 @@
 		<ItemGroup>
 			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
 		</ItemGroup>
-		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)" />
+		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)"
+		                          RemoveImportsStartingWith="..\"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
 	</Target>
