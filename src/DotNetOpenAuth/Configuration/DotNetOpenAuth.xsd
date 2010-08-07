@@ -206,6 +206,18 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="strict" type="xs:boolean" default="true">
+							<xs:annotation>
+								<xs:documentation>
+									Whether remote parties will be held strictly to the protocol specifications.
+									Strict will require that remote parties adhere strictly to the specifications,
+									even when a loose interpretation would not compromise security.
+									true is a good default because it shakes out interoperability bugs in remote services
+									so they can be identified and corrected.  But some web sites want things to Just Work
+									more than they want to file bugs against others, so false is the setting for them.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="openid">
@@ -319,7 +331,32 @@
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>
-												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean" />
+												<xs:attribute name="allowDualPurposeIdentifiers" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether identifiers that are both OP Identifiers and Claimed Identifiers
+															should ever be recognized as claimed identifiers.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="allowApproximateIdentifierDiscovery" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether certain Claimed Identifiers that exploit
+															features that .NET does not have the ability to send exact HTTP requests for will
+															still be allowed by using an approximate HTTP request.
+															Only impacts hosts running under partial trust.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="protectDownlevelReplayAttacks" type="xs:boolean">
+													<xs:annotation>
+														<xs:documentation>
+															Controls whether the relying party should take special care
+															to protect users against replay attacks when interoperating with OpenID 1.1 Providers.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="behaviors">
@@ -401,6 +438,13 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:choice>
+									<xs:attribute name="preserveUserSuppliedIdentifier" type="xs:boolean" default="true">
+										<xs:annotation>
+											<xs:documentation>
+												Whether "dnoa.userSuppliedIdentifier" is tacked onto the openid.return_to URL in order to preserve what the user typed into the OpenID box.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="provider">

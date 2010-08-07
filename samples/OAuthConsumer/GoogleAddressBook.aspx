@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Gmail address book demo" Language="C#" MasterPageFile="~/MasterPage.master"
-	AutoEventWireup="true" CodeFile="GoogleAddressBook.aspx.cs" Inherits="GoogleAddressBook" %>
+	AutoEventWireup="true" Inherits="OAuthConsumer.GoogleAddressBook" Codebehind="GoogleAddressBook.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
@@ -16,7 +16,7 @@
 		<asp:View runat="server">
 			<h2>Updates</h2>
 			<p>Ok, Google has authorized us to download your contacts. Click &#39;Get address book&#39;
-				to download the first 25 contacts to this sample. Notice how we never asked you
+				to download the first 5 contacts to this sample. Notice how we never asked you
 				for your Google username or password. </p>
 			<asp:Button ID="getAddressBookButton" runat="server" OnClick="getAddressBookButton_Click"
 				Text="Get address book" />

@@ -19,3 +19,4 @@ PrecompiledWeb
 .dotest
 *.Publish.xml
 *.dbproj.schemaview
+_ReSharper*

@@ -300,4 +300,10 @@
   <data name="BinaryDataRequiresMultipart" xml:space="preserve">
     <value>Unable to send all message data because some of it requires multi-part POST, but IMessageWithBinaryData.SendAsMultipart was false.</value>
   </data>
+  <data name="SessionRequired" xml:space="preserve">
+    <value>An HttpContext.Current.Session object is required.</value>
+  </data>
+  <data name="MessageTimestampInFuture" xml:space="preserve">
+    <value>This message has a timestamp of {0}, which is beyond the allowable clock skew for in the future.</value>
+  </data>
 </root>

@@ -681,10 +681,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void OnPreRender(EventArgs e) {
 			base.OnPreRender(e);
 
-			EnsureChildControls();
-			EnsureID();
-			this.requiredValidator.ControlToValidate = this.ID;
-			this.identifierFormatValidator.ControlToValidate = this.ID;
+			this.EnsureChildControls();
 		}
 
 		/// <summary>
@@ -702,79 +699,104 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// top row, left cell
 			cell = new TableCell();
-			this.label = new HtmlGenericControl("label");
-			this.label.InnerText = LabelTextDefault;
-			cell.Controls.Add(this.label);
-			row1.Cells.Add(cell);
+			try {
+				this.label = new HtmlGenericControl("label");
+				this.label.InnerText = LabelTextDefault;
+				cell.Controls.Add(this.label);
+				row1.Cells.Add(cell);
+			} catch {
+				cell.Dispose();
+				throw;
+			}
 
 			// top row, middle cell
 			cell = new TableCell();
-			cell.Controls.Add(new InPlaceControl(this));
-			row1.Cells.Add(cell);
+			try {
+				cell.Controls.Add(new InPlaceControl(this));
+				row1.Cells.Add(cell);
+			} catch {
+				cell.Dispose();
+				throw;
+			}
 
 			// top row, right cell
 			cell = new TableCell();
-			this.loginButton = new Button();
-			this.loginButton.ID = "loginButton";
-			this.loginButton.Text = ButtonTextDefault;
-			this.loginButton.ToolTip = ButtonToolTipDefault;
-			this.loginButton.Click += this.LoginButton_Click;
-			this.loginButton.ValidationGroup = ValidationGroupDefault;
+			try {
+				this.loginButton = new Button();
+				this.loginButton.ID = this.ID + "_loginButton";
+				this.loginButton.Text = ButtonTextDefault;
+				this.loginButton.ToolTip = ButtonToolTipDefault;
+				this.loginButton.Click += this.LoginButton_Click;
+				this.loginButton.ValidationGroup = ValidationGroupDefault;
 #if !Mono
-			this.panel.DefaultButton = this.loginButton.ID;
+				this.panel.DefaultButton = this.loginButton.ID;
 #endif
-			cell.Controls.Add(this.loginButton);
-			row1.Cells.Add(cell);
+				cell.Controls.Add(this.loginButton);
+				row1.Cells.Add(cell);
+			} catch {
+				cell.Dispose();
+				throw;
+			}
 
 			// middle row, left cell
 			row2.Cells.Add(new TableCell());
 
 			// middle row, middle cell
 			cell = new TableCell();
-			cell.Style[HtmlTextWriterStyle.Color] = "gray";
-			cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
-			this.requiredValidator = new RequiredFieldValidator();
-			this.requiredValidator.ErrorMessage = RequiredTextDefault + RequiredTextSuffix;
-			this.requiredValidator.Text = RequiredTextDefault + RequiredTextSuffix;
-			this.requiredValidator.Display = ValidatorDisplay.Dynamic;
-			this.requiredValidator.ValidationGroup = ValidationGroupDefault;
-			cell.Controls.Add(this.requiredValidator);
-			this.identifierFormatValidator = new CustomValidator();
-			this.identifierFormatValidator.ErrorMessage = UriFormatTextDefault + RequiredTextSuffix;
-			this.identifierFormatValidator.Text = UriFormatTextDefault + RequiredTextSuffix;
-			this.identifierFormatValidator.ServerValidate += this.IdentifierFormatValidator_ServerValidate;
-			this.identifierFormatValidator.Enabled = UriValidatorEnabledDefault;
-			this.identifierFormatValidator.Display = ValidatorDisplay.Dynamic;
-			this.identifierFormatValidator.ValidationGroup = ValidationGroupDefault;
-			cell.Controls.Add(this.identifierFormatValidator);
-			this.errorLabel = new Label();
-			this.errorLabel.EnableViewState = false;
-			this.errorLabel.ForeColor = System.Drawing.Color.Red;
-			this.errorLabel.Style[HtmlTextWriterStyle.Display] = "block"; // puts it on its own line
-			this.errorLabel.Visible = false;
-			cell.Controls.Add(this.errorLabel);
-			this.examplePrefixLabel = new Label();
-			this.examplePrefixLabel.Text = ExamplePrefixDefault;
-			cell.Controls.Add(this.examplePrefixLabel);
-			cell.Controls.Add(new LiteralControl(" "));
-			this.exampleUrlLabel = new Label();
-			this.exampleUrlLabel.Font.Bold = true;
-			this.exampleUrlLabel.Text = ExampleUrlDefault;
-			cell.Controls.Add(this.exampleUrlLabel);
-			row2.Cells.Add(cell);
+			try {
+				cell.Style[HtmlTextWriterStyle.Color] = "gray";
+				cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
+				this.requiredValidator = new RequiredFieldValidator();
+				this.requiredValidator.ErrorMessage = RequiredTextDefault + RequiredTextSuffix;
+				this.requiredValidator.Text = RequiredTextDefault + RequiredTextSuffix;
+				this.requiredValidator.Display = ValidatorDisplay.Dynamic;
+				this.requiredValidator.ValidationGroup = ValidationGroupDefault;
+				cell.Controls.Add(this.requiredValidator);
+				this.identifierFormatValidator = new CustomValidator();
+				this.identifierFormatValidator.ErrorMessage = UriFormatTextDefault + RequiredTextSuffix;
+				this.identifierFormatValidator.Text = UriFormatTextDefault + RequiredTextSuffix;
+				this.identifierFormatValidator.ServerValidate += this.IdentifierFormatValidator_ServerValidate;
+				this.identifierFormatValidator.Enabled = UriValidatorEnabledDefault;
+				this.identifierFormatValidator.Display = ValidatorDisplay.Dynamic;
+				this.identifierFormatValidator.ValidationGroup = ValidationGroupDefault;
+				cell.Controls.Add(this.identifierFormatValidator);
+				this.errorLabel = new Label();
+				this.errorLabel.EnableViewState = false;
+				this.errorLabel.ForeColor = System.Drawing.Color.Red;
+				this.errorLabel.Style[HtmlTextWriterStyle.Display] = "block"; // puts it on its own line
+				this.errorLabel.Visible = false;
+				cell.Controls.Add(this.errorLabel);
+				this.examplePrefixLabel = new Label();
+				this.examplePrefixLabel.Text = ExamplePrefixDefault;
+				cell.Controls.Add(this.examplePrefixLabel);
+				cell.Controls.Add(new LiteralControl(" "));
+				this.exampleUrlLabel = new Label();
+				this.exampleUrlLabel.Font.Bold = true;
+				this.exampleUrlLabel.Text = ExampleUrlDefault;
+				cell.Controls.Add(this.exampleUrlLabel);
+				row2.Cells.Add(cell);
+			} catch {
+				cell.Dispose();
+				throw;
+			}
 
 			// middle row, right cell
 			cell = new TableCell();
-			cell.Style[HtmlTextWriterStyle.Color] = "gray";
-			cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
-			cell.Style[HtmlTextWriterStyle.TextAlign] = "center";
-			this.registerLink = new HyperLink();
-			this.registerLink.Text = RegisterTextDefault;
-			this.registerLink.ToolTip = RegisterToolTipDefault;
-			this.registerLink.NavigateUrl = RegisterUrlDefault;
-			this.registerLink.Visible = RegisterVisibleDefault;
-			cell.Controls.Add(this.registerLink);
-			row2.Cells.Add(cell);
+			try {
+				cell.Style[HtmlTextWriterStyle.Color] = "gray";
+				cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
+				cell.Style[HtmlTextWriterStyle.TextAlign] = "center";
+				this.registerLink = new HyperLink();
+				this.registerLink.Text = RegisterTextDefault;
+				this.registerLink.ToolTip = RegisterToolTipDefault;
+				this.registerLink.NavigateUrl = RegisterUrlDefault;
+				this.registerLink.Visible = RegisterVisibleDefault;
+				cell.Controls.Add(this.registerLink);
+				row2.Cells.Add(cell);
+			} catch {
+				cell.Dispose();
+				throw;
+			}
 
 			// bottom row, left cell
 			cell = new TableCell();
@@ -782,17 +804,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// bottom row, middle cell
 			cell = new TableCell();
-			this.rememberMeCheckBox = new CheckBox();
-			this.rememberMeCheckBox.Text = RememberMeTextDefault;
-			this.rememberMeCheckBox.Checked = this.UsePersistentCookie != LogOnPersistence.Session;
-			this.rememberMeCheckBox.Visible = RememberMeVisibleDefault;
-			this.rememberMeCheckBox.CheckedChanged += this.RememberMeCheckBox_CheckedChanged;
-			cell.Controls.Add(this.rememberMeCheckBox);
-			row3.Cells.Add(cell);
+			try {
+				this.rememberMeCheckBox = new CheckBox();
+				this.rememberMeCheckBox.Text = RememberMeTextDefault;
+				this.rememberMeCheckBox.Checked = this.UsePersistentCookie != LogOnPersistence.Session;
+				this.rememberMeCheckBox.Visible = RememberMeVisibleDefault;
+				this.rememberMeCheckBox.CheckedChanged += this.RememberMeCheckBox_CheckedChanged;
+				cell.Controls.Add(this.rememberMeCheckBox);
+				row3.Cells.Add(cell);
+			} catch {
+				cell.Dispose();
+				throw;
+			}
 
 			// bottom row, right cell
 			cell = new TableCell();
-			row3.Cells.Add(cell);
+			try {
+				row3.Cells.Add(cell);
+			} catch {
+				cell.Dispose();
+				throw;
+			}
 
 			// this sets all the controls' tab indexes
 			this.TabIndex = TabIndexDefault;
@@ -801,6 +833,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.idselectorJavascript = new Literal();
 			this.panel.Controls.Add(this.idselectorJavascript);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Web.UI.Control.Init"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> object that contains the event data.</param>
+		protected override void OnInit(EventArgs e) {
+			this.SetChildControlReferenceIds();
+
+			base.OnInit(e);
 		}
 
 		/// <summary>
@@ -907,6 +949,19 @@ idselector_input_id = '" + this.ClientID + @"';
 		/// <param name="writer">The writer.</param>
 		private void RenderControlInner(HtmlTextWriter writer) {
 			base.RenderControl(writer);
+		}
+
+		/// <summary>
+		/// Sets child control properties that depend on this control's ID.
+		/// </summary>
+		private void SetChildControlReferenceIds() {
+			this.EnsureChildControls();
+			this.EnsureID();
+			ErrorUtilities.VerifyInternal(!string.IsNullOrEmpty(this.ID), "No control ID available yet!");
+			this.requiredValidator.ControlToValidate = this.ID;
+			this.requiredValidator.ID = this.ID + "_requiredValidator";
+			this.identifierFormatValidator.ControlToValidate = this.ID;
+			this.identifierFormatValidator.ID = this.ID + "_identifierFormatValidator";
 		}
 
 		/// <summary>

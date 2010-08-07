@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Security;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
@@ -90,6 +91,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the storage to use for saving and retrieving associations.  May be null.
+		/// </summary>
+		internal IAssociationStore<Uri> AssociationStoreTestHook {
+			get { return this.associationStore; }
+		}
+
+		/// <summary>
 		/// Gets an association between this Relying Party and a given Provider
 		/// if it already exists in the association store.
 		/// </summary>
@@ -148,10 +156,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return null;
 			}
 
-			var associateRequest = AssociateRequest.Create(this.securitySettings, provider);
+			try {
+				var associateRequest = AssociateRequest.Create(this.securitySettings, provider);
 
-			const int RenegotiateRetries = 1;
-			return this.CreateNewAssociation(provider, associateRequest, RenegotiateRetries);
+				const int RenegotiateRetries = 1;
+				return this.CreateNewAssociation(provider, associateRequest, RenegotiateRetries);
+			} catch (VerificationException ex) {
+				// See Trac ticket #163.  In partial trust host environments, the
+				// Diffie-Hellman implementation we're using for HTTP OP endpoints
+				// sometimes causes the CLR to throw:
+				// "VerificationException: Operation could destabilize the runtime."
+				// Just give up and use dumb mode in this case.
+				Logger.OpenId.ErrorFormat("VerificationException occurred while trying to create an association with {0}.  {1}", provider.Uri, ex);
+				return null;
+			}
 		}
 
 		/// <summary>

@@ -358,6 +358,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
+				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
+
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Realm object based on it.
 					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, this.RelyingParty.Channel.GetRequestFromContext())); // throws an exception on failure.
@@ -912,16 +914,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Approximate the returnTo (either based on the customize property or the page URL)
 			// so we can use it to help with Realm resolution.
-			Uri returnToApproximation = this.ReturnToUrl != null ? new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.ReturnToUrl) : this.Page.Request.Url;
+			Uri returnToApproximation;
+			if (this.ReturnToUrl != null) {
+				string returnToResolvedPath = this.ResolveUrl(this.ReturnToUrl);
+				returnToApproximation = new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, returnToResolvedPath);
+			} else {
+				returnToApproximation = this.Page.Request.Url;
+			}
 
 			// Resolve the trust root, and swap out the scheme and port if necessary to match the
-			// return_to URL, since this match is required by OpenId, and the consumer app
+			// return_to URL, since this match is required by OpenID, and the consumer app
 			// may be using HTTP at some times and HTTPS at others.
 			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
 			realm.Scheme = returnToApproximation.Scheme;
 			realm.Port = returnToApproximation.Port;
 
-			// Initiate openid request
+			// Initiate OpenID request
 			// We use TryParse here to avoid throwing an exception which 
 			// might slip through our validator control if it is disabled.
 			Realm typedRealm = new Realm(realm);

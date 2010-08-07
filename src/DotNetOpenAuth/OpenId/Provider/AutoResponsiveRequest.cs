@@ -64,6 +64,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
 		/// </summary>
+		internal IProtocolMessage ResponseMessageTestHook {
+			get { return this.ResponseMessage; }
+		}
+
+		/// <summary>
+		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// </summary>
 		protected override IProtocolMessage ResponseMessage {
 			get { return this.response; }
 		}

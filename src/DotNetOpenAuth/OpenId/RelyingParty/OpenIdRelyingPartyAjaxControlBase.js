@@ -701,7 +701,7 @@ window.dnoa_internal.PositiveAssertion = function(uri) {
 };
 
 window.dnoa_internal.clone = function(obj) {
-	if (obj === null || typeof (obj) != 'object') {
+	if (obj === null || typeof (obj) != 'object' || !isNaN(obj)) { // !isNaN catches Date objects
 		return obj;
 	}
 
@@ -709,6 +709,10 @@ window.dnoa_internal.clone = function(obj) {
 	for (var key in obj) {
 		temp[key] = window.dnoa_internal.clone(obj[key]);
 	}
+
+	// Copy over some built-in methods that were not included in the above loop,
+	// but nevertheless may have been overridden.
+	temp.toString = window.dnoa_internal.clone(obj.toString);
 
 	return temp;
 };
@@ -732,7 +736,7 @@ window.dnoa_internal.clearExpiredPositiveAssertions = function() {
 		var discoveryResult = window.dnoa_internal.discoveryResults[identifier];
 		if (typeof (discoveryResult) != 'object') { continue; } // skip functions
 		for (var i = 0; i < discoveryResult.length; i++) {
-			if (discoveryResult[i].result === window.dnoa_internal.authSuccess) {
+			if (discoveryResult[i] && discoveryResult[i].result === window.dnoa_internal.authSuccess) {
 				if (new Date() - discoveryResult[i].successReceived > window.dnoa_internal.maxPositiveAssertionLifetime) {
 					// This positive assertion is too old, and may eventually be rejected by DNOA during verification.
 					// Let's clear out the positive assertion so it can be renewed.

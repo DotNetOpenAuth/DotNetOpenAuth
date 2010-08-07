@@ -24,7 +24,7 @@
 		private string requestToken;
 
 		internal Authorize(DesktopConsumer consumer, FetchUri fetchUriCallback) {
-			InitializeComponent();
+			this.InitializeComponent();
 
 			this.consumer = consumer;
 			Cursor original = this.Cursor;
@@ -44,7 +44,7 @@
 		internal string AccessToken { get; set; }
 
 		private void finishButton_Click(object sender, RoutedEventArgs e) {
-			var grantedAccess = this.consumer.ProcessUserAuthorization(this.requestToken, verifierBox.Text);
+			var grantedAccess = this.consumer.ProcessUserAuthorization(this.requestToken, this.verifierBox.Text);
 			this.AccessToken = grantedAccess.AccessToken;
 			DialogResult = true;
 			Close();

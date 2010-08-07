@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.ComponentModel {
 				return null;
 			}
 
-			MemberInfo identifierParse = typeof(Identifier).GetMethod("Parse", BindingFlags.Static | BindingFlags.Public);
+			MemberInfo identifierParse = typeof(Identifier).GetMethod("Parse", BindingFlags.Static | BindingFlags.Public, null, new Type[] { typeof(string) }, null);
 			return CreateInstanceDescriptor(identifierParse, new object[] { value.ToString() });
 		}
 

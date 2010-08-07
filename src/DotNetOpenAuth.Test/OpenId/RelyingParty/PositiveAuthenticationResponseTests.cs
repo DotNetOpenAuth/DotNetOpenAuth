@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -34,7 +35,6 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			assertion.Extensions.Add(extension);
 			var rp = CreateRelyingParty();
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
-			var authResponseAccessor = PositiveAuthenticationResponse_Accessor.AttachShadow(authResponse);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.IsNull(authResponse.Exception);
 			Assert.AreEqual((string)assertion.ClaimedIdentifier, (string)authResponse.ClaimedIdentifier);
@@ -118,6 +118,26 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(0, authResponse.GetCallbackArguments().Count);
 			Assert.IsFalse(authResponse.GetCallbackArguments().ContainsKey("a"));
 			Assert.IsNull(authResponse.GetCallbackArgument("a"));
+		}
+
+		/// <summary>
+		/// Verifies that certain problematic claimed identifiers pass through to the RP response correctly.
+		/// </summary>
+		[TestCase]
+		public void ProblematicClaimedId() {
+			var providerEndpoint = new ProviderEndpointDescription(OpenIdTestBase.OPUri, Protocol.Default.Version);
+			string claimed_id = BaseMockUri + "a./b.";
+			var se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimed_id, claimed_id, providerEndpoint, null, null);
+			UriIdentifier identityUri = (UriIdentifier)se.ClaimedIdentifier;
+			var mockId = new MockIdentifier(identityUri, this.MockResponder, new IdentifierDiscoveryResult[] { se });
+
+			var positiveAssertion = this.GetPositiveAssertion();
+			positiveAssertion.ClaimedIdentifier = mockId;
+			positiveAssertion.LocalIdentifier = mockId;
+			var rp = CreateRelyingParty();
+			var authResponse = new PositiveAuthenticationResponse(positiveAssertion, rp);
+			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
+			Assert.AreEqual(claimed_id, authResponse.ClaimedIdentifier.ToString());
 		}
 
 		private PositiveAssertionResponse GetPositiveAssertion() {

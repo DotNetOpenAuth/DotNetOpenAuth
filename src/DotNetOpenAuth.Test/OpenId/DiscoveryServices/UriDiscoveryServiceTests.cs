@@ -179,6 +179,23 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		}
 
 		/// <summary>
+		/// Verifies HTML discovery proceeds if an XRDS document is referenced that doesn't contain OpenID endpoints.
+		/// </summary>
+		[TestCase]
+		public void HtmlDiscoveryProceedsIfXrdsIsEmpty() {
+			this.MockResponder.RegisterMockResponse(new Uri("http://localhost/xrds-irrelevant.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds-irrelevant.xml"));
+			this.DiscoverHtml("html20provWithEmptyXrds", ProtocolVersion.V20, null, "http://a/b");
+		}
+
+		/// <summary>
+		/// Verifies HTML discovery proceeds if the XRDS that is referenced cannot be found.
+		/// </summary>
+		[TestCase]
+		public void HtmlDiscoveryProceedsIfXrdsIsBadOrMissing() {
+			this.DiscoverHtml("html20provWithBadXrds", ProtocolVersion.V20, null, "http://a/b");
+		}
+
+		/// <summary>
 		/// Verifies that a dual identifier yields only one service endpoint by default.
 		/// </summary>
 		[TestCase]

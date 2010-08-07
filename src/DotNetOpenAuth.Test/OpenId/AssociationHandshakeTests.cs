@@ -80,24 +80,22 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SecuritySettings.MaximumHashBitLength = 160; // Force OP to reject HMAC-SHA256
 
 					// Receive initial request for an HMAC-SHA256 association.
-					AutoResponsiveRequest req = (AutoResponsiveRequest) op.GetRequest();
-					AutoResponsiveRequest_Accessor reqAccessor = AutoResponsiveRequest_Accessor.AttachShadow(req);
-					AssociateRequest associateRequest = (AssociateRequest)reqAccessor.RequestMessage;
+					AutoResponsiveRequest req = (AutoResponsiveRequest)op.GetRequest();
+					AssociateRequest associateRequest = (AssociateRequest)req.RequestMessage;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA256, associateRequest.AssociationType);
 
 					// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1
-					AssociateUnsuccessfulResponse renegotiateResponse = (AssociateUnsuccessfulResponse)reqAccessor.ResponseMessage;
+					AssociateUnsuccessfulResponse renegotiateResponse = (AssociateUnsuccessfulResponse)req.ResponseMessageTestHook;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, renegotiateResponse.AssociationType);
 					op.SendResponse(req);
 
 					// Receive second attempt request for an HMAC-SHA1 association.
 					req = (AutoResponsiveRequest)op.GetRequest();
-					reqAccessor = AutoResponsiveRequest_Accessor.AttachShadow(req);
-					associateRequest = (AssociateRequest)reqAccessor.RequestMessage;
+					associateRequest = (AssociateRequest)req.RequestMessage;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, associateRequest.AssociationType);
 
 					// Ensure that the response is a success response.
-					AssociateSuccessfulResponse successResponse = (AssociateSuccessfulResponse)reqAccessor.ResponseMessage;
+					AssociateSuccessfulResponse successResponse = (AssociateSuccessfulResponse)req.ResponseMessageTestHook;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, successResponse.AssociationType);
 					op.SendResponse(req);
 				});
@@ -352,11 +350,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 			};
 			coordinator.Run();
 
-			var associationManagerAccessor = AssociationManager_Accessor.AttachShadow(coordinator.RelyingParty.AssociationManager);
-
 			if (expectSuccess) {
 				Assert.IsNotNull(rpAssociation);
-				Assert.AreSame(rpAssociation, associationManagerAccessor.associationStore.GetAssociation(opDescription.Uri, rpAssociation.Handle));
+				Assert.AreSame(rpAssociation, coordinator.RelyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, rpAssociation.Handle));
 				opAssociation = coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, rpAssociation.Handle);
 				Assert.IsNotNull(opAssociation, "The Provider should have stored the association.");
 
@@ -375,7 +371,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var unencryptedResponse = (AssociateUnencryptedResponse)associateSuccessfulResponse;
 				}
 			} else {
-				Assert.IsNull(associationManagerAccessor.associationStore.GetAssociation(opDescription.Uri, new RelyingPartySecuritySettings()));
+				Assert.IsNull(coordinator.RelyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, new RelyingPartySecuritySettings()));
 				Assert.IsNull(coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, new ProviderSecuritySettings()));
 			}
 		}
