@@ -12,6 +12,7 @@
     <AssemblyName>DotNetOpenAuth.BuildTasks</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,6 +49,9 @@
     </CodeContractsBaseLineFile>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
+    <CodeContractsExtraRewriteOptions>
+    </CodeContractsExtraRewriteOptions>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -56,6 +60,34 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsExtraRewriteOptions>
+    </CodeContractsExtraRewriteOptions>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Engine" />

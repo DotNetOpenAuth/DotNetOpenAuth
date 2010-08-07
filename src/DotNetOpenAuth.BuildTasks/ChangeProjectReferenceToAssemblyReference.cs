@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.BuildTasks {
 				Log.LogMessage(MessageImportance.Normal, "Changing P2P references to assembly references in \"{0}\".", project.ItemSpec);
 
 				Project doc = new Project();
-				doc.Load(project.ItemSpec);
+				doc.Load(project.ItemSpec, ProjectLoadSettings.IgnoreMissingImports);
 				
 				var projectReference = doc.EvaluatedItems.OfType<BuildItem>().Where(
 					item => item.Name == "ProjectReference" && item.Include == ProjectReference).Single();
