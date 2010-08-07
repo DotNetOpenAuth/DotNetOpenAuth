@@ -185,7 +185,7 @@
 			<SampleProjectTargets Include="$(DropSamplesDirectory)\**\*.csproj" />
 		</ItemGroup>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
-		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
+		  ProjectReference="..\..\src\$(ProductName)\$(ProductName).csproj" Reference="..\..\Bin\$(ProductName).dll" />
 	</Target>
 
 	<Target Name="Drop" DependsOnTargets="DropLayout">
