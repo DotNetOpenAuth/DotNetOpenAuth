@@ -1,4 +1,5 @@
 PrecompiledWeb
+_ReSharper.*
 *.suo
 *.cache
 *.user
