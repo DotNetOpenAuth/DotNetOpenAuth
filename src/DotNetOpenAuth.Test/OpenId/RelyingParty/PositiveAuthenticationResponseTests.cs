@@ -34,7 +34,6 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			assertion.Extensions.Add(extension);
 			var rp = CreateRelyingParty();
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
-			var authResponseAccessor = PositiveAuthenticationResponse_Accessor.AttachShadow(authResponse);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.IsNull(authResponse.Exception);
 			Assert.AreEqual<string>(assertion.ClaimedIdentifier, authResponse.ClaimedIdentifier);

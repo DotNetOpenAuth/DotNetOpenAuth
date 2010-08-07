@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[TestMethod]
 		public void UnifyExtensionsasSregFromSchemaOpenIdNet() {
 			var axInjected = new FetchResponse();
-			axInjected.Attributes.Add(ExtensionsInteropHelper_Accessor.TransformAXFormat(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet), "nate");
+			axInjected.Attributes.Add(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet), "nate");
 			this.extensions.Add(axInjected);
 			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.AreEqual("nate", sreg.Nickname);

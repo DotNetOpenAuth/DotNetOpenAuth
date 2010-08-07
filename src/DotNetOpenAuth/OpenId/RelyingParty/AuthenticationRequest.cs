@@ -383,6 +383,28 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Creates an instance of <see cref="AuthenticationRequest"/> FOR TESTING PURPOSES ONLY.
+		/// </summary>
+		/// <param name="endpoint">The discovery result.</param>
+		/// <param name="realm">The realm.</param>
+		/// <param name="returnTo">The return to.</param>
+		/// <param name="rp">The relying party.</param>
+		/// <returns>The instantiated <see cref="AuthenticationRequest"/>.</returns>
+		internal static AuthenticationRequest CreateForTest(ServiceEndpoint endpoint, Realm realm, Uri returnTo, OpenIdRelyingParty rp) {
+			return new AuthenticationRequest(endpoint, realm, returnTo, rp);
+		}
+
+		/// <summary>
+		/// Creates the request message to send to the Provider,
+		/// based on the properties in this instance.
+		/// </summary>
+		/// <returns>The message to send to the Provider.</returns>
+		internal SignedResponseRequest CreateRequestMessageTestHook()
+		{
+			return this.CreateRequestMessage();
+		}
+
+		/// <summary>
 		/// Performs deferred request generation for the <see cref="Create"/> method.
 		/// </summary>
 		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>

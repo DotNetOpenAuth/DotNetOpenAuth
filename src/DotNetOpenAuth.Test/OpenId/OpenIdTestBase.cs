@@ -88,11 +88,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <param name="providerEndpoint">The provider endpoint.</param>
 		/// <param name="association">The association.</param>
 		internal static void StoreAssociation(OpenIdRelyingParty relyingParty, Uri providerEndpoint, Association association) {
-			var associationManagerAccessor = AssociationManager_Accessor.AttachShadow(relyingParty.AssociationManager);
-
 			// Only store the association if the RP is not in stateless mode.
-			if (associationManagerAccessor.associationStore != null) {
-				associationManagerAccessor.associationStore.StoreAssociation(providerEndpoint, association);
+			if (relyingParty.AssociationManager.AssociationStoreTestHook != null) {
+				relyingParty.AssociationManager.AssociationStoreTestHook.StoreAssociation(providerEndpoint, association);
 			}
 		}
 

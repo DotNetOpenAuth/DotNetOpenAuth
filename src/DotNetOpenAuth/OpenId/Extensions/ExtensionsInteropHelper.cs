@@ -234,6 +234,16 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		}
 
 		/// <summary>
+		/// Transforms an AX attribute type URI from the axschema.org format into a given format.
+		/// </summary>
+		/// <param name="axSchemaOrgFormatTypeUri">The ax schema org format type URI.</param>
+		/// <param name="targetFormat">The target format.  Only one flag should be set.</param>
+		/// <returns>The AX attribute type URI in the target format.</returns>
+		internal static string TransformAXFormatTestHook(string axSchemaOrgFormatTypeUri, AXAttributeFormats targetFormat) {
+			return TransformAXFormat(axSchemaOrgFormatTypeUri, targetFormat);
+		}
+
+		/// <summary>
 		/// Adds the AX attribute value to the response if it is non-empty.
 		/// </summary>
 		/// <param name="ax">The AX Fetch response to add the attribute value to.</param>

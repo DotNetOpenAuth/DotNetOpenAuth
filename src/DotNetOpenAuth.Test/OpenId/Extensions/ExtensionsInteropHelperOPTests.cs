@@ -132,8 +132,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 		private void ParameterizedAXTest(AXAttributeFormats format) {
 			var axInjected = new FetchRequest();
-			axInjected.Attributes.AddOptional(ExtensionsInteropHelper_Accessor.TransformAXFormat(WellKnownAttributes.Name.Alias, format));
-			axInjected.Attributes.AddRequired(ExtensionsInteropHelper_Accessor.TransformAXFormat(WellKnownAttributes.Name.FullName, format));
+			axInjected.Attributes.AddOptional(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, format));
+			axInjected.Attributes.AddRequired(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.FullName, format));
 			this.extensions.Add(axInjected);
 			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.request);
 			Assert.AreSame(sreg, this.request.GetExtension<ClaimsRequest>());
@@ -147,7 +147,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
 			var extensions = this.GetResponseExtensions();
 			var axResponse = extensions.OfType<FetchResponse>().Single();
-			Assert.AreEqual("andy", axResponse.GetAttributeValue(ExtensionsInteropHelper_Accessor.TransformAXFormat(WellKnownAttributes.Name.Alias, format)));
+			Assert.AreEqual("andy", axResponse.GetAttributeValue(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, format)));
 		}
 	}
 }

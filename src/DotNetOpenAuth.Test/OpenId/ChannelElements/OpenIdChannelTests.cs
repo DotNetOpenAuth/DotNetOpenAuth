@@ -24,14 +24,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	public class OpenIdChannelTests : TestBase {
 		private static readonly TimeSpan maximumMessageAge = TimeSpan.FromHours(3); // good for tests, too long for production
 		private OpenIdChannel channel;
-		private OpenIdChannel_Accessor accessor;
 		private Mocks.TestWebRequestHandler webHandler;
 
 		[TestInitialize]
 		public void Setup() {
 			this.webHandler = new Mocks.TestWebRequestHandler();
 			this.channel = new OpenIdChannel(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(maximumMessageAge), new RelyingPartySecuritySettings());
-			this.accessor = OpenIdChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webHandler;
 		}
 
@@ -59,7 +57,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				Recipient = new Uri("http://host"),
 				Name = "Andrew",
 			};
-			HttpWebRequest httpRequest = this.accessor.CreateHttpRequest(requestMessage);
+			HttpWebRequest httpRequest = this.channel.CreateHttpRequestTestHook(requestMessage);
 			Assert.AreEqual("POST", httpRequest.Method);
 			StringAssert.Contains(this.webHandler.RequestEntityAsString, "Name=Andrew");
 		}
@@ -78,9 +76,9 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			MessageDictionary messageFields = this.MessageDescriptions.GetAccessor(message);
 			byte[] expectedBytes = KeyValueFormEncoding.GetBytes(messageFields);
-			string expectedContentType = OpenIdChannel_Accessor.KeyValueFormContentType;
+			string expectedContentType = OpenIdChannel.KeyValueFormContentType;
 
-			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);
+			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);
 			Assert.AreEqual(expectedContentType, directResponse.Headers[HttpResponseHeader.ContentType]);
 			byte[] actualBytes = new byte[directResponse.ResponseStream.Length];
 			directResponse.ResponseStream.Read(actualBytes, 0, actualBytes.Length);
@@ -99,7 +97,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			var response = new CachedDirectWebResponse {
 				CachedResponseStream = new MemoryStream(KeyValueFormEncoding.GetBytes(fields)),
 			};
-			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.accessor.ReadFromResponseCore(response)));
+			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.channel.ReadFromResponseCoreTestHook(response)));
 		}
 
 		/// <summary>
@@ -108,13 +106,13 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestMethod]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
-			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);
+			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);
 			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
 
 			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
 			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
 			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
-			directResponse = this.accessor.PrepareDirectResponse(httpMessage);
+			directResponse = this.channel.PrepareDirectResponseTestHook(httpMessage);
 			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
 		}
 	}

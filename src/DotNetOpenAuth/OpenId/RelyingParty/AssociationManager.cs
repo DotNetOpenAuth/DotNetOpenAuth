@@ -91,6 +91,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the storage to use for saving and retrieving associations.  May be null.
+		/// </summary>
+		internal IAssociationStore<Uri> AssociationStoreTestHook {
+			get { return this.associationStore; }
+		}
+
+		/// <summary>
 		/// Gets an association between this Relying Party and a given Provider
 		/// if it already exists in the association store.
 		/// </summary>
