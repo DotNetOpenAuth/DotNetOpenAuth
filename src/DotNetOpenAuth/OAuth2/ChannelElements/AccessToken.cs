@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets or sets the lifetime of the access token.
 		/// </summary>
 		/// <value>The lifetime.</value>
-		[MessagePart]
+		[MessagePart(Encoder = typeof(TimespanSecondsEncoder))]
 		internal TimeSpan? Lifetime { get; set; }
 
 		/// <summary>
