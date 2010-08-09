@@ -107,6 +107,11 @@ namespace DotNetOpenAuth {
 		private static DateTime lastPublished = DateTime.Now;
 
 		/// <summary>
+		/// A UTF8 encoder that doesn't emit the preamble.  Used for mid-stream writers.
+		/// </summary>
+		private static readonly Encoding Utf8NoPreamble = new UTF8Encoding(false);
+
+		/// <summary>
 		/// Initializes static members of the <see cref="Reporting"/> class.
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "We do more than field initialization here.")]
@@ -665,7 +670,7 @@ namespace DotNetOpenAuth {
 					this.memorySet.Add(this.reader.ReadLine());
 				}
 
-				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
+				this.writer = new StreamWriter(this.fileStream, Utf8NoPreamble);
 				this.lastFlushed = DateTime.Now;
 			}
 
@@ -818,7 +823,7 @@ namespace DotNetOpenAuth {
 					}
 				}
 
-				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
+				this.writer = new StreamWriter(this.fileStream, Utf8NoPreamble);
 				this.lastFlushed = DateTime.Now;
 			}
 
