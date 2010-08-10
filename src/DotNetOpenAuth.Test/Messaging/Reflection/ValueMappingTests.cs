@@ -13,12 +13,12 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 	public class ValueMappingTests {
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullToString() {
-			new ValueMapping(null, str => new object());
+			new ValueMapping(null, null, str => new object());
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullToObject() {
-			new ValueMapping(obj => obj.ToString(), null);
+			new ValueMapping(obj => obj.ToString(), null, null);
 		}
 	}
 }

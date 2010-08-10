@@ -134,7 +134,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				Association association = this.GetSpecificAssociation(signedMessage);
 				if (association != null) {
 					string signature = this.GetSignature(signedMessage, association);
-					if (!string.Equals(signedMessage.Signature, signature, StringComparison.Ordinal)) {
+					if (!MessagingUtilities.EqualsConstantTime(signedMessage.Signature, signature)) {
 						Logger.Bindings.Error("Signature verification failed.");
 						throw new InvalidSignatureException(message);
 					}

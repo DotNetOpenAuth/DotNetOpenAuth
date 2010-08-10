@@ -16,6 +16,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Text;
 	using System.Web;
 	using System.Web.Script.Serialization;
+
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
@@ -90,8 +92,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				req.SetUntrustedCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
-				if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
-					req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
+				if (DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.PreserveUserSuppliedIdentifier) {
+					if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
+						req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
+					}
 				}
 
 				// Our javascript needs to let the user know which endpoint responded.  So we force it here.
@@ -177,7 +181,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			if (requests.Any()) {
 				return new {
-					claimedIdentifier = requests.First().ClaimedIdentifier,
+					claimedIdentifier = (string)requests.First().ClaimedIdentifier,
 					requests = requests.Select(req => new {
 						endpoint = req.Provider.Uri.AbsoluteUri,
 						immediate = this.GetRedirectUrl(req, true),
@@ -213,7 +217,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			var json = (from request in requests
 						group request by request.DiscoveryResult.UserSuppliedIdentifier into requestsByIdentifier
 						select new {
-							userSuppliedIdentifier = requestsByIdentifier.Key.ToString(),
+							userSuppliedIdentifier = (string)requestsByIdentifier.Key,
 							discoveryResult = this.AsJsonDiscoveryResult(requestsByIdentifier),
 						}).ToArray();
 

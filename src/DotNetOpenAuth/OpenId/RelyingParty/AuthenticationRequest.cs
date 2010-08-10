@@ -11,7 +11,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Web;
+
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -297,6 +300,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
+		/// <exception cref="ThreadAbortException">Typically thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
 		public void RedirectToProvider() {
 			this.RedirectingResponse.Send();
 		}
@@ -393,6 +397,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The instantiated <see cref="AuthenticationRequest"/>.</returns>
 		internal static AuthenticationRequest CreateForTest(IdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnTo, OpenIdRelyingParty rp) {
 			return new AuthenticationRequest(discoveryResult, realm, returnTo, rp);
+		}
+
+		/// <summary>
+		/// Creates the request message to send to the Provider,
+		/// based on the properties in this instance.
+		/// </summary>
+		/// <returns>The message to send to the Provider.</returns>
+		internal SignedResponseRequest CreateRequestMessageTestHook()
+		{
+			return this.CreateRequestMessage();
 		}
 
 		/// <summary>
@@ -546,7 +560,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			request.AssociationHandle = association != null ? association.Handle : null;
 			request.SignReturnTo = this.returnToArgsMustBeSigned;
 			request.AddReturnToArguments(this.returnToArgs);
-			if (this.DiscoveryResult.UserSuppliedIdentifier != null) {
+			if (this.DiscoveryResult.UserSuppliedIdentifier != null && DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.PreserveUserSuppliedIdentifier) {
 				request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.DiscoveryResult.UserSuppliedIdentifier.OriginalString);
 			}
 			foreach (IOpenIdMessageExtension extension in this.extensions) {

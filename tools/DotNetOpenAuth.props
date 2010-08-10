@@ -4,7 +4,6 @@
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</ProjectRoot>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
@@ -25,6 +24,11 @@
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
+
+		<!-- Always use our own toolset's copy of Code Contracts for reliably reproducible builds. 
+		     Suppress the installed code contracts from importing itself. -->
+		<DontImportCodeContracts>true</DontImportCodeContracts>
+		<ImportCodeContractsFromToolset>true</ImportCodeContractsFromToolset>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -39,6 +43,6 @@
 		<CheckAdminRights>
 			<Output TaskParameter="IsElevated" PropertyName="IsElevated" />
 		</CheckAdminRights>
-		<Message Importance="High" Text="IsElevated = $(IsElevated)" />
+		<Message Text="IsElevated = $(IsElevated)" />
 	</Target>
 </Project>

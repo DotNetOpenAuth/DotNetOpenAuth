@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test {
+namespace DotNetOpenAuth.Test.OAuth {
 	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;

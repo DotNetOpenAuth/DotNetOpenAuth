@@ -30,7 +30,16 @@ namespace DotNetOpenAuth.Test.Hosting {
 					}
 				}
 			} catch (FileNotFoundException ex) {
-				Assert.Inconclusive("Unable to execute hosted ASP.NET tests because {0} could not be found.  {1}", ex.FileName, ex.FusionLog);
+				Assert.Inconclusive(
+					"Unable to execute hosted ASP.NET tests because {0} could not be found.  {1}", ex.FileName, ex.FusionLog);
+			} catch (WebException ex) {
+				if (ex.Response != null) {
+					using (var responseStream = new StreamReader(ex.Response.GetResponseStream())) {
+						Console.WriteLine(responseStream.ReadToEnd());
+					}
+				}
+
+				throw;
 			}
 		}
 	}

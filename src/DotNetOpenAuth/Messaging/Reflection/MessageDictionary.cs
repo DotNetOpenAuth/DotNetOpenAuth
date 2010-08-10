@@ -30,17 +30,24 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		private readonly MessageDescription description;
 
 		/// <summary>
+		/// Whether original string values should be retrieved instead of normalized ones.
+		/// </summary>
+		private readonly bool getOriginalValues;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageDictionary"/> class.
 		/// </summary>
 		/// <param name="message">The message instance whose values will be manipulated by this dictionary.</param>
 		/// <param name="description">The message description.</param>
+		/// <param name="getOriginalValues">A value indicating whether this message dictionary will retrieve original values instead of normalized ones.</param>
 		[Pure]
-		internal MessageDictionary(IMessage message, MessageDescription description) {
+		internal MessageDictionary(IMessage message, MessageDescription description, bool getOriginalValues) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentNullException>(description != null);
 
 			this.message = message;
 			this.description = description;
+			this.getOriginalValues = getOriginalValues;
 		}
 
 		/// <summary>
@@ -103,7 +110,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				List<string> keys = new List<string>(this.description.Mapping.Count);
 				foreach (var pair in this.description.Mapping) {
 					// Don't include keys with null values, but default values for structs is ok
-					if (pair.Value.GetValue(this.message) != null) {
+					if (pair.Value.GetValue(this.message, this.getOriginalValues) != null) {
 						keys.Add(pair.Key);
 					}
 				}
@@ -126,8 +133,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			get {
 				List<string> values = new List<string>(this.message.ExtraData.Count + this.description.Mapping.Count);
 				foreach (MessagePart part in this.description.Mapping.Values) {
-					if (part.GetValue(this.message) != null) {
-						values.Add(part.GetValue(this.message));
+					if (part.GetValue(this.message, this.getOriginalValues) != null) {
+						values.Add(part.GetValue(this.message, this.getOriginalValues));
 					}
 				}
 
@@ -167,7 +174,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				MessagePart part;
 				if (this.description.Mapping.TryGetValue(key, out part)) {
 					// Never throw KeyNotFoundException for declared properties.
-					return part.GetValue(this.message);
+					return part.GetValue(this.message, this.getOriginalValues);
 				} else {
 					return this.message.ExtraData[key];
 				}
@@ -223,7 +230,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>True if the parameter by the given name has a set value.  False otherwise.</returns>
 		public bool ContainsKey(string key) {
 			return this.message.ExtraData.ContainsKey(key) ||
-				(this.description.Mapping.ContainsKey(key) && this.description.Mapping[key].GetValue(this.message) != null);
+				(this.description.Mapping.ContainsKey(key) && this.description.Mapping[key].GetValue(this.message, this.getOriginalValues) != null);
 		}
 
 		/// <summary>
@@ -237,7 +244,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			} else {
 				MessagePart part;
 				if (this.description.Mapping.TryGetValue(key, out part)) {
-					if (part.GetValue(this.message) != null) {
+					if (part.GetValue(this.message, this.getOriginalValues) != null) {
 						part.SetValue(this.message, null);
 						return true;
 					}
@@ -255,7 +262,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		public bool TryGetValue(string key, out string value) {
 			MessagePart part;
 			if (this.description.Mapping.TryGetValue(key, out part)) {
-				value = part.GetValue(this.message);
+				value = part.GetValue(this.message, this.getOriginalValues);
 				return value != null;
 			}
 			return this.message.ExtraData.TryGetValue(key, out value);
@@ -306,7 +313,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		public bool Contains(KeyValuePair<string, string> item) {
 			MessagePart part;
 			if (this.description.Mapping.TryGetValue(item.Key, out part)) {
-				return string.Equals(part.GetValue(this.message), item.Value, StringComparison.Ordinal);
+				return string.Equals(part.GetValue(this.message, this.getOriginalValues), item.Value, StringComparison.Ordinal);
 			} else {
 				return this.message.ExtraData.Contains(item);
 			}

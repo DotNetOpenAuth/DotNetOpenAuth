@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Net.Security;
 	using System.Reflection;
 	using System.Xml;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.OpenId;
 
 	/// <summary>
@@ -73,10 +74,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return bool.Parse(str);
 			};
-			Func<string, Identifier> safeIdentfier = str => {
+			Func<string, Identifier> safeIdentifier = str => {
 				Contract.Assume(str != null);
 				ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
-				return Identifier.Parse(str);
+				return Identifier.Parse(str, true);
 			};
 			Func<byte[], string> safeFromByteArray = bytes => {
 				Contract.Assume(bytes != null);
@@ -90,14 +91,14 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return new Realm(str);
 			};
-			Map<Uri>(uri => uri.AbsoluteUri, safeUri);
-			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
-			Map<byte[]>(safeFromByteArray, safeToByteArray);
-			Map<Realm>(realm => realm.ToString(), safeRealm);
-			Map<Identifier>(id => id.ToString(), safeIdentfier);
-			Map<bool>(value => value.ToString().ToLowerInvariant(), safeBool);
-			Map<CultureInfo>(c => c.Name, str => new CultureInfo(str));
-			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
+			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
+			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), null, str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
+			Map<byte[]>(safeFromByteArray, null, safeToByteArray);
+			Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
+			Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
+			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
+			Map<CultureInfo>(c => c.Name, null, str => new CultureInfo(str));
+			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), null, str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
 		}
 
 		/// <summary>
@@ -129,9 +130,28 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Contract.Assume(this.memberDeclaredType != null); // CC missing PropertyInfo.PropertyType ensures result != null
 			if (attribute.Encoder == null) {
 				if (!converters.TryGetValue(this.memberDeclaredType, out this.converter)) {
-					this.converter = new ValueMapping(
-						obj => obj != null ? obj.ToString() : null,
-						str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
+					if (this.memberDeclaredType.IsGenericType &&
+						this.memberDeclaredType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+						// It's a nullable type.  Try again to look up an appropriate converter for the underlying type.
+						Type underlyingType = Nullable.GetUnderlyingType(this.memberDeclaredType);
+						ValueMapping underlyingMapping;
+						if (converters.TryGetValue(underlyingType, out underlyingMapping)) {
+							this.converter = new ValueMapping(
+								underlyingMapping.ValueToString,
+								null,
+								str => str != null ? underlyingMapping.StringToValue(str) : null);
+						} else {
+							this.converter = new ValueMapping(
+								obj => obj != null ? obj.ToString() : null,
+								null,
+								str => str != null ? Convert.ChangeType(str, underlyingType, CultureInfo.InvariantCulture) : null);
+						}
+					} else {
+						this.converter = new ValueMapping(
+							obj => obj != null ? obj.ToString() : null,
+							null,
+							str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
+					}
 				}
 			} else {
 				this.converter = new ValueMapping(GetEncoder(attribute.Encoder));
@@ -189,7 +209,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			try {
 				if (this.IsConstantValue) {
 					string constantValue = this.GetValue(message);
-					if (!string.Equals(constantValue, value)) {
+					var caseSensitivity = DotNetOpenAuthSection.Configuration.Messaging.Strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+					if (!string.Equals(constantValue, value, caseSensitivity)) {
 						throw new ArgumentException(string.Format(
 							CultureInfo.CurrentCulture,
 							MessagingStrings.UnexpectedMessagePartValueForConstant,
@@ -211,7 +232,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
-		/// Gets the value of a member of a given message.
+		/// Gets the normalized form of a value of a member of a given message.
 		/// Used in serialization.
 		/// </summary>
 		/// <param name="message">The message instance to read the value from.</param>
@@ -219,7 +240,23 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal string GetValue(IMessage message) {
 			try {
 				object value = this.GetValueAsObject(message);
-				return this.ToString(value);
+				return this.ToString(value, false);
+			} catch (FormatException ex) {
+				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartWriteFailure, message.GetType(), this.Name);
+			}
+		}
+
+		/// <summary>
+		/// Gets the value of a member of a given message.
+		/// Used in serialization.
+		/// </summary>
+		/// <param name="message">The message instance to read the value from.</param>
+		/// <param name="originalValue">A value indicating whether the original value should be retrieved (as opposed to a normalized form of it).</param>
+		/// <returns>The string representation of the member's value.</returns>
+		internal string GetValue(IMessage message, bool originalValue) {
+			try {
+				object value = this.GetValueAsObject(message);
+				return this.ToString(value, originalValue);
 			} catch (FormatException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartWriteFailure, message.GetType(), this.Name);
 			}
@@ -252,15 +289,24 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
-		/// Adds a pair of type conversion functions to the static converstion map.
+		/// Adds a pair of type conversion functions to the static conversion map.
 		/// </summary>
 		/// <typeparam name="T">The custom type to convert to and from strings.</typeparam>
 		/// <param name="toString">The function to convert the custom type to a string.</param>
+		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
-		private static void Map<T>(Func<T, string> toString, Func<string, T> toValue) {
+		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
+			Contract.Requires<ArgumentNullException>(toString != null, "toString");
+			Contract.Requires<ArgumentNullException>(toValue != null, "toValue");
+
+			if (toOriginalString == null) {
+				toOriginalString = toString;
+			}
+
 			Func<object, string> safeToString = obj => obj != null ? toString((T)obj) : null;
+			Func<object, string> safeToOriginalString = obj => obj != null ? toOriginalString((T)obj) : null;
 			Func<string, object> safeToT = str => str != null ? toValue(str) : default(T);
-			converters.Add(typeof(T), new ValueMapping(safeToString, safeToT));
+			converters.Add(typeof(T), new ValueMapping(safeToString, safeToOriginalString, safeToT));
 		}
 
 		/// <summary>
@@ -312,11 +358,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Converts the member's value to its string representation.
 		/// </summary>
 		/// <param name="value">The value of the member.</param>
+		/// <param name="originalString">A value indicating whether a string matching the originally decoded string should be returned (as opposed to a normalized string).</param>
 		/// <returns>
 		/// The string representation of the member's value.
 		/// </returns>
-		private string ToString(object value) {
-			return this.converter.ValueToString(value);
+		private string ToString(object value, bool originalString) {
+			return originalString ? this.converter.ValueToOriginalString(value) : this.converter.ValueToString(value);
 		}
 
 		/// <summary>

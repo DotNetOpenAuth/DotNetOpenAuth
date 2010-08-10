@@ -22,6 +22,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string StoreConfigName = "store";
 
 		/// <summary>
+		/// The name of the attribute that specifies whether dnoa.userSuppliedIdentifier is tacked onto the openid.return_to URL.
+		/// </summary>
+		private const string PreserveUserSuppliedIdentifierConfigName = "preserveUserSuppliedIdentifier";
+
+		/// <summary>
 		/// Gets the name of the security sub-element.
 		/// </summary>
 		private const string SecuritySettingsConfigName = "security";
@@ -45,6 +50,18 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartyElement() {
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether "dnoa.userSuppliedIdentifier" is tacked onto the openid.return_to URL in order to preserve what the user typed into the OpenID box.
+		/// </summary>
+		/// <value>
+		/// 	The default value is <c>true</c>.
+		/// </value>
+		[ConfigurationProperty(PreserveUserSuppliedIdentifierConfigName, DefaultValue = true)]
+		public bool PreserveUserSuppliedIdentifier {
+			get { return (bool)this[PreserveUserSuppliedIdentifierConfigName]; }
+			set { this[PreserveUserSuppliedIdentifierConfigName] = value; }
 		}
 
 		/// <summary>

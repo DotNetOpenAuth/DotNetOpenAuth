@@ -100,19 +100,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			return this.associationStore.RemoveAssociation(distinguishingFactor, handle);
 		}
 
-		/// <summary>
-		/// Clears all expired associations from the store.
-		/// </summary>
-		/// <remarks>
-		/// If another algorithm is in place to periodically clear out expired associations,
-		/// this method call may be ignored.
-		/// This should be done frequently enough to avoid a memory leak, but sparingly enough
-		/// to not be a performance drain.
-		/// </remarks>
-		public void ClearExpiredAssociations() {
-			this.associationStore.ClearExpiredAssociations();
-		}
-
 		#endregion
 
 		#region INonceStore Members

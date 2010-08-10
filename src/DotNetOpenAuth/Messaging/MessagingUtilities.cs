@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
 		/// </summary>
-		/// <param name="response">The response to send to the uesr agent.</param>
+		/// <param name="response">The response to send to the user agent.</param>
 		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
 		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
 			Contract.Requires<ArgumentNullException>(response != null);
@@ -181,7 +181,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <typeparam name="T">The type of element contained in the sequence.</typeparam>
 		/// <param name="sequence">The sequence of sequences to flatten.</param>
 		/// <returns>A sequence of the contained items.</returns>
+		[Obsolete("Use Enumerable.SelectMany instead.")]
 		public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> sequence) {
+			ErrorUtilities.VerifyArgumentNotNull(sequence, "sequence");
+
 			foreach (IEnumerable<T> subsequence in sequence) {
 				foreach (T item in subsequence) {
 					yield return item;
@@ -292,6 +295,43 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return new string(randomString);
+		}
+
+		/// <summary>
+		/// Compares to string values for ordinal equality in such a way that its execution time does not depend on how much of the value matches.
+		/// </summary>
+		/// <param name="value1">The first value.</param>
+		/// <param name="value2">The second value.</param>
+		/// <returns>A value indicating whether the two strings share ordinal equality.</returns>
+		/// <remarks>
+		/// In signature equality checks, a difference in execution time based on how many initial characters match MAY
+		/// be used as an attack to figure out the expected signature.  It is therefore important to make a signature
+		/// equality check's execution time independent of how many characters match the expected value.
+		/// See http://codahale.com/a-lesson-in-timing-attacks/ for more information.
+		/// </remarks>
+		internal static bool EqualsConstantTime(string value1, string value2) {
+			// If exactly one value is null, they don't match.
+			if (value1 == null ^ value2 == null) {
+				return false;
+			}
+
+			// If both values are null (since if one is at this point then they both are), it's a match.
+			if (value1 == null) {
+				return true;
+			}
+
+			if (value1.Length != value2.Length) {
+				return false;
+			}
+
+			// This looks like a pretty crazy way to compare values, but it provides a constant time equality check,
+			// and is more resistant to compiler optimizations than simply setting a boolean flag and returning the boolean after the loop.
+			int result = 0;
+			for (int i = 0; i < value1.Length; i++) {
+				result |= value1[i] ^ value2[i];
+			}
+
+			return result == 0;
 		}
 
 		/// <summary>
@@ -777,7 +817,10 @@ namespace DotNetOpenAuth.Messaging {
 					if (throwOnNullKey) {
 						throw new ArgumentException(MessagingStrings.UnexpectedNullKey);
 					} else {
-						Logger.OpenId.WarnFormat("Null key with value {0} encountered while translating NameValueCollection to Dictionary.", nvc[key]);
+						// Only emit a warning if there was a non-empty value.
+						if (!string.IsNullOrEmpty(nvc[key])) {
+							Logger.OpenId.WarnFormat("Null key with value {0} encountered while translating NameValueCollection to Dictionary.", nvc[key]);
+						}
 					}
 				} else {
 					dictionary.Add(key, nvc[key]);
@@ -869,7 +912,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// by using appropriate character escaping.
 		/// </summary>
 		/// <param name="value">The untrusted string value to be escaped to protected against XSS attacks.  May be null.</param>
-		/// <returns>The escaped string.</returns>
+		/// <returns>The escaped string, surrounded by single-quotes.</returns>
 		internal static string GetSafeJavascriptValue(string value) {
 			if (value == null) {
 				return "null";

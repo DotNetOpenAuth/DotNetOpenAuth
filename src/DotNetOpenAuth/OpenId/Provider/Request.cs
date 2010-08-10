@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.SecuritySettings = securitySettings;
 		}
 
-		#region IRequest Members
+		#region IRequest Properties
 
 		/// <summary>
 		/// Gets a value indicating whether the response is ready to be sent to the user agent.
@@ -162,6 +162,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// we just add the extensions to a collection here and add them 
 			// to the response on the way out.
 			this.responseExtensions.Add(extension);
+		}
+
+		/// <summary>
+		/// Removes any response extensions previously added using <see cref="AddResponseExtension"/>.
+		/// </summary>
+		/// <remarks>
+		/// This should be called before sending a negative response back to the relying party
+		/// if extensions were already added, since negative responses cannot carry extensions.
+		/// </remarks>
+		public void ClearResponseExtensions() {
+			this.responseExtensions.Clear();
 		}
 
 		/// <summary>

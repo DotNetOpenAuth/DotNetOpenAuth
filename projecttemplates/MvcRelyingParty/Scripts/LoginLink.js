@@ -1,7 +1,7 @@
 ﻿$(function() {
 	var loginContent = '/Auth/LogOnPopup';
 	var popupWindowName = 'openidlogin';
-	var popupWidth = 355;
+	var popupWidth = 365;
 	var popupHeight = 205; // use 205 for 1 row of OP buttons, or 273 for 2 rows
 	var iframe;
 

@@ -112,22 +112,55 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Identifier noFragment = UriIdentifier.Parse("http://a/b");
 			Identifier fragment = UriIdentifier.Parse("http://a/b#c");
 			Assert.AreSame(noFragment, noFragment.TrimFragment());
-			Assert.AreEqual(noFragment, fragment.TrimFragment());
+			Assert.AreEqual(noFragment.ToString(), fragment.TrimFragment().ToString());
+
+			// Try the problematic ones
+			TestAsFullAndPartialTrust(fullTrust => {
+				Identifier noFrag = UriIdentifier.Parse("http://a/b./c");
+				Identifier frag = UriIdentifier.Parse("http://a/b./c#d");
+				Assert.AreSame(noFrag, noFrag.TrimFragment());
+				Assert.AreEqual(noFrag.ToString(), frag.TrimFragment().ToString());
+			});
 		}
 
 		[TestCase]
 		public void ToStringTest() {
 			Assert.AreEqual(this.goodUri, new UriIdentifier(this.goodUri).ToString());
+			TestAsFullAndPartialTrust(fullTrust => {
+				Assert.AreEqual("http://abc/D./e.?Qq#Ff", new UriIdentifier("HTTP://ABC/D./e.?Qq#Ff").ToString());
+				Assert.AreEqual("http://abc/D./e.?Qq", new UriIdentifier("HTTP://ABC/D./e.?Qq").ToString());
+				Assert.AreEqual("http://abc/D./e.#Ff", new UriIdentifier("HTTP://ABC/D./e.#Ff").ToString());
+				Assert.AreEqual("http://abc/", new UriIdentifier("HTTP://ABC").ToString());
+				Assert.AreEqual("http://abc/?q", new UriIdentifier("HTTP://ABC?q").ToString());
+				Assert.AreEqual("http://abc/#f", new UriIdentifier("HTTP://ABC#f").ToString());
+
+				Assert.AreEqual("http://blog.nerdbank.net/", new UriIdentifier("blog.nerdbank.net").ToString());
+				Assert.AreEqual("http://blog.nerdbank.net/a", new UriIdentifier("BLOG.nerdbank.net/a").ToString());
+				Assert.AreEqual("https://blog.nerdbank.net/", new UriIdentifier("blog.nerdbank.net", true).ToString());
+			});
 		}
 
 		[TestCase]
 		public void EqualsTest() {
-			Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri));
-			// This next test is an interesting side-effect of passing off to Uri.Equals.  But it's probably ok.
-			Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "#frag"));
-			Assert.AreNotEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "a"));
-			Assert.AreNotEqual(null, new UriIdentifier(this.goodUri));
-			Assert.IsTrue(new UriIdentifier(this.goodUri).Equals(this.goodUri));
+			TestAsFullAndPartialTrust(fulltrust => {
+				Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri));
+				// This next test is an interesting side-effect of passing off to Uri.Equals.  But it's probably ok.
+				Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "#frag"));
+				Assert.AreEqual(new UriIdentifier("http://a/b./c."), new UriIdentifier("http://a/b./c.#frag"));
+				Assert.AreNotEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri + "a"));
+				Assert.AreNotEqual(null, new UriIdentifier(this.goodUri));
+				Assert.IsTrue(new UriIdentifier(this.goodUri).Equals(this.goodUri));
+
+				Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", true));
+				Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", true), Identifier.Parse("http://www.foo.com/abc", false));
+				Assert.AreEqual(Identifier.Parse("HTTP://WWW.FOO.COM/abc", false), Identifier.Parse("http://www.foo.com/abc", false));
+				Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", true));
+				Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", true), Identifier.Parse("http://www.foo.com/ABC", false));
+				Assert.AreNotEqual(Identifier.Parse("http://www.foo.com/abc", false), Identifier.Parse("http://www.foo.com/ABC", false));
+
+				Assert.AreNotEqual(Identifier.Parse("http://a/b./c."), Identifier.Parse("http://a/b/c."));
+				Assert.AreEqual(Identifier.Parse("http://a/b./c."), Identifier.Parse("http://a/b./c."));
+			});
 		}
 
 		[TestCase]
@@ -148,6 +181,51 @@ namespace DotNetOpenAuth.Test.OpenId {
 			// make sure https is preserved, along with port 80, which is NON-default for https
 			id = "https://HOST:80/PaTH?KeY=VaLUE#fRag";
 			Assert.AreEqual("https://host:80/PaTH?KeY=VaLUE#fRag", id.ToString());
+		}
+
+		/// <summary>
+		/// Verifies that URIs that contain base64 encoded path segments (such as Yahoo) are properly preserved.
+		/// </summary>
+		/// <remarks>
+		/// Yahoo includes a base64 encoded part as their last path segment,
+		/// which may end with a period.  The default .NET Uri parser trims off
+		/// trailing periods, which breaks OpenID unless special precautions are taken.
+		/// </remarks>
+		[TestCase]
+		public void TrailingPeriodsNotTrimmed() {
+			TestAsFullAndPartialTrust(fullTrust => {
+				string claimedIdentifier = "https://me.yahoo.com/a/AsDf.#asdf";
+				Identifier id = claimedIdentifier;
+				Assert.AreEqual(claimedIdentifier, id.OriginalString);
+				Assert.AreEqual(claimedIdentifier, id.ToString());
+
+				UriIdentifier idUri = new UriIdentifier(claimedIdentifier);
+				Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
+				Assert.AreEqual(claimedIdentifier, idUri.ToString());
+				if (fullTrust) {
+					Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
+				}
+				Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
+				Assert.AreEqual(id.ToString(), new UriIdentifier((Uri)idUri).ToString(), "Round tripping UriIdentifier->Uri->UriIdentifier failed.");
+
+				idUri = new UriIdentifier(new Uri(claimedIdentifier));
+				Assert.AreEqual(claimedIdentifier, idUri.OriginalString);
+				Assert.AreEqual(claimedIdentifier, idUri.ToString());
+				if (fullTrust) {
+					Assert.AreEqual(claimedIdentifier, idUri.Uri.AbsoluteUri);
+				}
+				Assert.AreEqual(Uri.UriSchemeHttps, idUri.Uri.Scheme); // in case custom scheme tricks are played, this must still match
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().ToString());
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.", idUri.TrimFragment().OriginalString);
+				Assert.AreEqual(id.ToString(), new UriIdentifier((Uri)idUri).ToString(), "Round tripping UriIdentifier->Uri->UriIdentifier failed.");
+
+				claimedIdentifier = "https://me.yahoo.com:443/a/AsDf.#asdf";
+				id = claimedIdentifier;
+				Assert.AreEqual(claimedIdentifier, id.OriginalString);
+				Assert.AreEqual("https://me.yahoo.com/a/AsDf.#asdf", id.ToString());
+			});
 		}
 
 		[TestCase]
@@ -192,6 +270,46 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
 			Assert.AreEqual(0, Discover(secureId).Count());
+		}
+
+		/// <summary>
+		/// Verifies that unicode hostnames are handled.
+		/// </summary>
+		[TestCase]
+		public void UnicodeHostSupport() {
+			var id = new UriIdentifier("http://server崎/村");
+			Assert.AreEqual("server崎", id.Uri.Host);
+		}
+
+		/// <summary>
+		/// Verifies SimpleUri behavior
+		/// </summary>
+		[TestCase]
+		public void SimpleUri() {
+			Assert.AreEqual("http://abc/D./e.?Qq#Ff", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq#Ff").ToString());
+			Assert.AreEqual("http://abc/D./e.?Qq", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq").ToString());
+			Assert.AreEqual("http://abc/D./e.#Ff", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.#Ff").ToString());
+			Assert.AreEqual("http://abc/", new UriIdentifier.SimpleUri("HTTP://ABC/").ToString());
+			Assert.AreEqual("http://abc/", new UriIdentifier.SimpleUri("HTTP://ABC").ToString());
+			Assert.AreEqual("http://abc/?q", new UriIdentifier.SimpleUri("HTTP://ABC?q").ToString());
+			Assert.AreEqual("http://abc/#f", new UriIdentifier.SimpleUri("HTTP://ABC#f").ToString());
+
+			Assert.AreEqual("http://abc/a//b", new UriIdentifier.SimpleUri("http://abc/a//b").ToString());
+			Assert.AreEqual("http://abc/a%2Fb/c", new UriIdentifier.SimpleUri("http://abc/a%2fb/c").ToString());
+			Assert.AreEqual("http://abc/A/c", new UriIdentifier.SimpleUri("http://abc/%41/c").ToString());
+		}
+
+		private static void TestAsFullAndPartialTrust(Action<bool> action) {
+			// Test a bunch of interesting URLs both with scheme substitution on and off.
+			Assert.IsTrue(UriIdentifier.SchemeSubstitutionTestHook, "Expected scheme substitution to be working.");
+			action(true);
+
+			UriIdentifier.SchemeSubstitutionTestHook = false;
+			try {
+				action(false);
+			} finally {
+				UriIdentifier.SchemeSubstitutionTestHook = true;
+			}
 		}
 	}
 }

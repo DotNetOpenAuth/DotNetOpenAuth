@@ -207,7 +207,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets or sets the association handle that the Provider wants the Relying Party to not use any more.
 		/// </summary>
 		/// <value>If the Relying Party sent an invalid association handle with the request, it SHOULD be included here.</value>
-		[MessagePart("openid.invalidate_handle", IsRequired = false, AllowEmpty = false)]
+		/// <remarks>
+		/// For OpenID 1.1, we allow this to be present but empty to put up with poor implementations such as Blogger.
+		/// </remarks>
+		[MessagePart("openid.invalidate_handle", IsRequired = false, AllowEmpty = true, MaxVersion = "1.1")]
+		[MessagePart("openid.invalidate_handle", IsRequired = false, AllowEmpty = false, MinVersion = "2.0")]
 		string ITamperResistantOpenIdMessage.InvalidateHandle { get; set; }
 
 		/// <summary>
@@ -248,6 +252,29 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		internal IEnumerable<IOpenIdMessageExtension> UnsignedExtensions {
 			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => !ext.IsSignedByRemoteParty); }
+		}
+
+		/// <summary>
+		/// Gets or sets the nonce that will protect the message from replay attacks.
+		/// </summary>
+		/// <value>
+		/// <para>A string 255 characters or less in length, that MUST be unique to 
+		/// this particular successful authentication response. The nonce MUST start 
+		/// with the current time on the server, and MAY contain additional ASCII 
+		/// characters in the range 33-126 inclusive (printable non-whitespace characters), 
+		/// as necessary to make each response unique. The date and time MUST be 
+		/// formatted as specified in section 5.6 of [RFC3339] 
+		/// (Klyne, G. and C. Newman, “Date and Time on the Internet: Timestamps,” .), 
+		/// with the following restrictions:</para>
+		/// <list type="bullet">
+		///   <item>All times must be in the UTC timezone, indicated with a "Z".</item>
+		///   <item>No fractional seconds are allowed</item>
+		/// </list>
+		/// </value>
+		/// <example>2005-05-15T17:11:51ZUNIQUE</example>
+		internal string ResponseNonceTestHook {
+			get { return this.ResponseNonce; }
+			set { this.ResponseNonce = value; }
 		}
 
 		/// <summary>

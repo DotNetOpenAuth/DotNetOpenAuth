@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 	<Import Project="$(MSBuildProjectDirectory)\DotNetOpenAuth.automated.props"/>
 
 	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
@@ -22,6 +23,9 @@
 			<DropSpecsDirectory>$(DropDirectory)Specs\</DropSpecsDirectory>
 		</PropertyGroup>
 		<ItemGroup>
+			<RedistributableFiles Include="@(DropLayoutDependencies)">
+				<Package>DotNetOpenAuth project templates</Package>
+			</RedistributableFiles>
 			<ExtensionVsix Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsix\vsix.proj' " />
 			<ProjectTemplatesVsi Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsi\vsi.proj' " />
 			<DropDirectories Include="
@@ -41,9 +45,10 @@
 																"
 											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
 			<DropBinSourceFiles Include="
-																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).???;
+																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).dll;
+																$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb;
 																$(OutputPath)$(ProductName).xml;
-																$(OutputPath)$(SignedSubPath)$(ProductName).Contracts.???;
+																$(OutputPath)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
 													" />
@@ -66,8 +71,8 @@
 															$(ProjectRoot)**\*.log*;
 															$(ProjectRoot)**\*~;
 															$(ProjectRoot)**\Debug\**;
-															$(ProjectRoot)**\Settings.StyleCop;
 															$(ProjectRoot)**\StyleCop.Cache;
+															$(ProjectRoot)Samples\_ReSharper.*\**;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
 															$(ProjectRoot)Samples\**\log4net.???;
@@ -132,15 +137,29 @@
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
-		<DowngradeProjects Projects="@(SampleProjectTargets);@(SampleSolutionTargets)" DowngradeMvc2ToMvc1="true" />
+		<DowngradeProjects
+			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
+			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
+			Condition=" '$(DowngradeVS2010ToVS2008)' != 'false' "
+			/>
+		<ItemGroup>
+			<!-- Go snag the newly created files so that .zip file will include them. -->
+			<AllDropTargets Include="$(DropSamplesDirectory)**\*-vs2008.*" />
+		</ItemGroup>
 	</Target>
 
-	<Target Name="Build" DependsOnTargets="Layout">
+	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
 		<PropertyGroup>
 			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
 		</PropertyGroup>
+		<ItemGroup>
+			<RedistributableFiles Include="$(DropZip)">
+				<Package>DotNetOpenAuth</Package>
+			</RedistributableFiles>
+		</ItemGroup>
 		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" ZipLevel="$(ZipLevel)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
 </Project>

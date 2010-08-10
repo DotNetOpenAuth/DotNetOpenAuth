@@ -10,12 +10,23 @@ using Microsoft.Build.Utilities;
 
 namespace DotNetOpenAuth.BuildTasks {
 	public class GetBuildVersion : Task {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GetBuildVersion"/> class.
+		/// </summary>
+		public GetBuildVersion() {
+		}
 
 		/// <summary>
 		/// Gets the version string to use in the compiled assemblies.
 		/// </summary>
 		[Output]
 		public string Version { get; private set; }
+
+		/// <summary>
+		/// Gets the version string to use in the official release name (lacks revision number).
+		/// </summary>
+		[Output]
+		public string SimpleVersion { get; private set; }
 
 		/// <summary>
 		/// Gets the Git revision control commit id for HEAD (the current source code version).
@@ -37,9 +48,11 @@ namespace DotNetOpenAuth.BuildTasks {
 		public override bool Execute() {
 			try {
 				Version typedVersion = ReadVersionFromFile();
-				typedVersion = new Version(typedVersion.Major, typedVersion.Minor, typedVersion.Build, CalculateJDate(DateTime.Now));
-				Version = typedVersion.ToString();
+				SimpleVersion = typedVersion.ToString();
 
+				var fullVersion = new Version(typedVersion.Major, typedVersion.Minor, typedVersion.Build, CalculateJDate(DateTime.Now));
+				Version = fullVersion.ToString();
+	
 				this.GitCommitId = GetGitHeadCommitId();
 			} catch (ArgumentOutOfRangeException ex) {
 				Log.LogErrorFromException(ex);
@@ -59,12 +72,13 @@ namespace DotNetOpenAuth.BuildTasks {
 			// First try asking Git for the HEAD commit id
 			try {
 				string cmdPath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe");
-				ProcessStartInfo psi = new ProcessStartInfo(cmdPath, "/c git rev-parse HEAD");
-				psi.WindowStyle = ProcessWindowStyle.Hidden;
-				psi.CreateNoWindow = true;
-				psi.RedirectStandardOutput = true;
-				psi.UseShellExecute = false;
-				Process git = Process.Start(psi);
+				var psi = new ProcessStartInfo(cmdPath, "/c git rev-parse HEAD") {
+					WindowStyle = ProcessWindowStyle.Hidden,
+					CreateNoWindow = true,
+					RedirectStandardOutput = true,
+					UseShellExecute = false
+				};
+				var git = Process.Start(psi);
 				commitId = git.StandardOutput.ReadLine();
 				git.WaitForExit();
 				if (git.ExitCode != 0) {
@@ -102,6 +116,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			} catch (DirectoryNotFoundException) {
 			}
 
+			commitId = commitId ?? String.Empty; // doubly-be sure it's not null, since in some error cases it can be.
 			return commitId.Trim();
 		}
 

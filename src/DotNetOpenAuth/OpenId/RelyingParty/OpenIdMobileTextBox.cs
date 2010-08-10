@@ -762,13 +762,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			IRelyingPartyApplicationStore store = this.Stateless ? null :
 				(this.CustomApplicationStore ?? DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore));
 			var rp = new OpenIdRelyingParty(store);
-
-			// Only set RequireSsl to true, as we don't want to override 
-			// a .config setting of true with false.
-			if (this.RequireSsl) {
-				rp.SecuritySettings.RequireSsl = true;
+			try {
+				// Only set RequireSsl to true, as we don't want to override 
+				// a .config setting of true with false.
+				if (this.RequireSsl) {
+					rp.SecuritySettings.RequireSsl = true;
+				}
+				return rp;
+			} catch {
+				rp.Dispose();
+				throw;
 			}
-			return rp;
 		}
 	}
 }

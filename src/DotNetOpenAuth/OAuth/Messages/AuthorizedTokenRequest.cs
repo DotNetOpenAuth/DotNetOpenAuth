@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		public string VerificationCode { get; set; }
 
 		/// <summary>
-		/// Gets or sets the unauthorized Request Token used to obtain authorization.
+		/// Gets or sets the authorized Request Token used to obtain authorization.
 		/// </summary>
 		[MessagePart("oauth_token", IsRequired = true)]
 		internal string RequestToken { get; set; }

@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private CheckIdWindow(HostedProvider provider, IAuthenticationRequest request) {
 			Contract.Requires(request != null);
 
-			InitializeComponent();
+			this.InitializeComponent();
 
 			// Initialize the window with appropriate values.
 			this.realmLabel.Content = request.Realm;

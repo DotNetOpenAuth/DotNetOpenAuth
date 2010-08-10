@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.ChannelElements {
+namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
@@ -24,7 +24,6 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 	[TestFixture]
 	public class OAuthChannelTests : TestBase {
 		private OAuthChannel channel;
-		private OAuthChannel_Accessor accessor;
 		private TestWebRequestHandler webRequestHandler;
 		private SigningBindingElementBase signingElement;
 		private INonceStore nonceStore;
@@ -37,7 +36,6 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
 			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
-			this.accessor = OAuthChannel_Accessor.AttachShadow(this.channel);
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
@@ -149,8 +147,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			writer.Write(MessagingUtilities.CreateQueryString(fields));
 			writer.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
-			Channel_Accessor channelAccessor = Channel_Accessor.AttachShadow(this.channel);
-			IDictionary<string, string> deserializedFields = channelAccessor.ReadFromResponseCore(new CachedDirectWebResponse { CachedResponseStream = ms });
+			IDictionary<string, string> deserializedFields = this.channel.ReadFromResponseCoreTestHook(new CachedDirectWebResponse { CachedResponseStream = ms });
 			Assert.AreEqual(fields.Count, deserializedFields.Count);
 			foreach (string key in fields.Keys) {
 				Assert.AreEqual(fields[key], deserializedFields[key]);
@@ -238,13 +235,13 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 		[TestCase]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
-			OutgoingWebResponse directResponse = this.accessor.PrepareDirectResponse(message);
+			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);
 			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
 
 			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
 			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
 			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
-			directResponse = this.accessor.PrepareDirectResponse(httpMessage);
+			directResponse = this.channel.PrepareDirectResponseTestHook(httpMessage);
 			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
 		}
 
@@ -362,6 +359,7 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 				{ "Name", "Andrew" },
 				{ "Location", "http://hostb/pathB" },
 				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
+				{ "realm", "someValue" },
 			};
 			IProtocolMessage requestMessage = this.channel.ReadFromRequest(CreateHttpRequestInfo(scheme, fields));
 			Assert.IsNotNull(requestMessage);
@@ -370,6 +368,12 @@ namespace DotNetOpenAuth.Test.ChannelElements {
 			Assert.AreEqual(15, testMessage.Age);
 			Assert.AreEqual("Andrew", testMessage.Name);
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
+			if (scheme == HttpDeliveryMethods.AuthorizationHeaderRequest) {
+				// The realm value should be ignored in the authorization header
+				Assert.IsFalse(((IMessage)testMessage).ExtraData.ContainsKey("realm"));
+			} else {
+				Assert.AreEqual("someValue", ((IMessage)testMessage).ExtraData["realm"]);
+			}
 		}
 	}
 }

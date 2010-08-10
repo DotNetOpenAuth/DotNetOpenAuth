@@ -1,5 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true"
-	CodeFile="Authorize.aspx.cs" Inherits="Authorize" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" Inherits="OAuthServiceProvider.Authorize" Codebehind="Authorize.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
 	<asp:MultiView runat="server" ActiveViewIndex="0" ID="multiView">

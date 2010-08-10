@@ -331,6 +331,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Removes any response extensions previously added using <see cref="IRequest.AddResponseExtension"/>.
+		/// </summary>
+		/// <remarks>
+		/// This should be called before sending a negative response back to the relying party
+		/// if extensions were already added, since negative responses cannot carry extensions.
+		/// </remarks>
+		void IRequest.ClearResponseExtensions() {
+		}
+
+		/// <summary>
 		/// Gets an extension sent from the relying party.
 		/// </summary>
 		/// <typeparam name="T">The type of the extension.</typeparam>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
 	<Identifier Id="DotNetOpenAuth.MvcRelyingParty.15E8EC96-BDC3-47E2-8BB1-0483E9D16705">
-		<Name>ASP.NET MVC OpenID web site (C#)</Name>
+		<Name>ASP.NET MVC 2 OpenID web site (C#)</Name>
 		<Author>DotNetOpenAuth</Author>
 		<Version>$version$</Version>
 		<Description>Resources for developing applications that use OpenID, OAuth, and InfoCard.</Description>
@@ -13,9 +13,9 @@
 		<InstalledByMsi>false</InstalledByMsi>
 		<SupportedProducts>
 			<VisualStudio Version="10.0">
-				<Edition>VSTS</Edition>
-				<Edition>VSTD</Edition>
 				<Edition>Pro</Edition>
+				<Edition>Premium</Edition>
+				<Edition>Ultimate</Edition>
 			</VisualStudio>
 		</SupportedProducts>
 		<SupportedFrameworkRuntimeEdition MinVersion="3.5" MaxVersion="3.5" />

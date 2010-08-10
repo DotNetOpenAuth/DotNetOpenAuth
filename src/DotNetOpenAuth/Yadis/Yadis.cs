@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// The maximum number of bytes to read from an HTTP response
 		/// in searching for a link to a YADIS document.
 		/// </summary>
-		private const int MaximumResultToScan = 1024 * 1024;
+		internal const int MaximumResultToScan = 1024 * 1024;
 
 		/// <summary>
 		/// Performs YADIS discovery on some identifier.
@@ -96,7 +96,6 @@ namespace DotNetOpenAuth.Yadis {
 						response2 = Request(requestHandler, url, requireSsl, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
 						if (response2.Status != HttpStatusCode.OK) {
 							Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.Status, response2.Status, uri);
-							return null;
 						}
 					} else {
 						Logger.Yadis.WarnFormat("XRDS document at insecure location '{0}'.  Aborting YADIS discovery.", url);
