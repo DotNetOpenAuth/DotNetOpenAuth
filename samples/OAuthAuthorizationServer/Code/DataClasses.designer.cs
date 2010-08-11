@@ -443,7 +443,7 @@ namespace OAuthAuthorizationServer.Code
 		
 		private int _ClientId;
 		
-		private System.Nullable<int> _UserId;
+		private int _UserId;
 		
 		private string _Scope;
 		
@@ -463,7 +463,7 @@ namespace OAuthAuthorizationServer.Code
     partial void OnCreatedOnUtcChanged();
     partial void OnClientIdChanging(int value);
     partial void OnClientIdChanged();
-    partial void OnUserIdChanging(System.Nullable<int> value);
+    partial void OnUserIdChanging(int value);
     partial void OnUserIdChanged();
     partial void OnScopeChanging(string value);
     partial void OnScopeChanged();
@@ -543,7 +543,7 @@ namespace OAuthAuthorizationServer.Code
 		}
 		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="Int")]
-		public System.Nullable<int> UserId
+		public int UserId
 		{
 			get
 			{
@@ -667,7 +667,7 @@ namespace OAuthAuthorizationServer.Code
 					}
 					else
 					{
-						this._UserId = default(Nullable<int>);
+						this._UserId = default(int);
 					}
 					this.SendPropertyChanged("User");
 				}
