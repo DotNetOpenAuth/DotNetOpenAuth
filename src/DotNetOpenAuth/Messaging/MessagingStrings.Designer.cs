@@ -619,6 +619,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This blob is not a recognized encryption format..
+        /// </summary>
+        internal static string UnsupportedEncryptionAlgorithm {
+            get {
+                return ResourceManager.GetString("UnsupportedEncryptionAlgorithm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The HTTP verb &apos;{0}&apos; is unrecognized and unsupported..
         /// </summary>
         internal static string UnsupportedHttpVerb {

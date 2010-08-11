@@ -315,4 +315,7 @@
   <data name="MessageTimestampInFuture" xml:space="preserve">
     <value>This message has a timestamp of {0}, which is beyond the allowable clock skew for in the future.</value>
   </data>
+  <data name="UnsupportedEncryptionAlgorithm" xml:space="preserve">
+    <value>This blob is not a recognized encryption format.</value>
+  </data>
 </root>

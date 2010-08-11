@@ -513,7 +513,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			var ms = new MemoryStream();
 			var binaryWriter = new BinaryWriter(ms);
-			binaryWriter.Write(crypto.IV.Length);
+			binaryWriter.Write((byte)1); // version of encryption algorithm
 			binaryWriter.Write(crypto.IV);
 			binaryWriter.Flush();
 
@@ -535,8 +535,9 @@ namespace DotNetOpenAuth.Messaging {
 
 			var ms = new MemoryStream(buffer);
 			var binaryReader = new BinaryReader(ms);
-			int ivLength = binaryReader.ReadInt32();
-			crypto.IV = binaryReader.ReadBytes(ivLength);
+			int algorithmVersion = binaryReader.ReadByte();
+			ErrorUtilities.VerifyProtocol(algorithmVersion == 1, MessagingStrings.UnsupportedEncryptionAlgorithm);
+			crypto.IV = binaryReader.ReadBytes(crypto.IV.Length);
 
 			// Allocate space for the decrypted buffer.  We don't know how long it will be yet,
 			// but it will never be larger than the encrypted buffer.
