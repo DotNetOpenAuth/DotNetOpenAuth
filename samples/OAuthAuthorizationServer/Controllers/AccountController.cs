@@ -24,7 +24,10 @@
 				var rp = new OpenIdRelyingParty();
 				var request = rp.CreateRequest(model.UserSuppliedIdentifier, Realm.AutoDetect, new Uri(Request.Url, Url.Action("Authenticate")));
 				if (request != null) {
-					request.AddCallbackArguments("returnUrl", returnUrl);
+					if (returnUrl != null) {
+						request.AddCallbackArguments("returnUrl", returnUrl);
+					}
+
 					return request.RedirectingResponse.AsActionResult();
 				} else {
 					ModelState.AddModelError(string.Empty, "The identifier you supplied is not recognized as a valid OpenID Identifier.");
@@ -42,7 +45,7 @@
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
 						FormsAuthentication.SetAuthCookie(response.ClaimedIdentifier, false);
-						return this.Redirect(returnUrl);
+						return this.Redirect(returnUrl ?? Url.Action("Index", "Home"));
 					default:
 						ModelState.AddModelError(string.Empty, "An error occurred during login.");
 						break;
