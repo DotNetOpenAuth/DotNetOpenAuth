@@ -44,7 +44,7 @@
 
 				dc.SubmitChanges();
 				ViewData["Success"] = true;
-			} catch (System.Data.SqlClient.SqlException ex) {
+			} catch (SqlException ex) {
 				ViewData["Error"] = string.Join("<br>", ex.Errors.OfType<SqlError>().Select(er => er.Message).ToArray());
 			}
 
