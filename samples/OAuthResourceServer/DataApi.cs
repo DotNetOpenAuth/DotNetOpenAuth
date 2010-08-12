@@ -1,5 +1,6 @@
 ﻿namespace OAuthResourceServer {
 	using System.Linq;
+	using System.Security.Principal;
 	using System.ServiceModel;
 
 	using Code;
@@ -16,20 +17,26 @@
 	/// to gain access to the service.
 	/// </remarks>
 	public class DataApi : IDataApi {
-		private User User {
-			get { return OperationContext.Current.ServiceSecurityContext.PrimaryIdentity.GetUser(); }
+		private IIdentity User {
+			get { return OperationContext.Current.ServiceSecurityContext.PrimaryIdentity; }
 		}
 
 		public int? GetAge() {
-			return User.Age;
+			// We'll just make up an age personalized to the user by counting the length of the username.
+			return this.User.Name.Length;
 		}
 
 		public string GetName() {
-			return User.FullName;
+			return this.User.Name;
 		}
 
 		public string[] GetFavoriteSites() {
-			return User.FavoriteSites.Select(site => site.SiteUrl).ToArray();
+			// Just return a hard-coded list, to avoid having to have a database in a sample.
+			return new string[] {
+				"http://www.dotnetopenauth.net/",
+				"http://www.oauth.net/",
+				"http://www.openid.net/",
+			};
 		}
 	}
 }

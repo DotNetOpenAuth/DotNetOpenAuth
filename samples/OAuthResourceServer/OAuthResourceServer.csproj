@@ -76,12 +76,6 @@
     <Compile Include="Code\OAuthAuthorizationManager.cs" />
     <Compile Include="Code\OAuthPrincipalAuthorizationPolicy.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
-    <Compile Include="Code\Utilities.cs" />
-    <Compile Include="Code\DataClasses.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataClasses.dbml</DependentUpon>
-    </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -101,17 +95,7 @@
     <Content Include="MasterPage.master" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Code\DataClasses.dbml">
-      <Generator>MSLinqToSQLGenerator</Generator>
-      <LastGenOutput>DataClasses.designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Members\Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Code\DataClasses.dbml.layout">
-      <DependentUpon>DataClasses.dbml</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />

@@ -31,15 +31,11 @@
 			try {
 				dc.CreateDatabase();
 
-				// Fill with sample data.
+				// Add the necessary row for the sample client.
 				dc.Clients.InsertOnSubmit(new Client {
 					ClientIdentifier = "sampleconsumer",
 					ClientSecret = "samplesecret",
 					Name = "Some sample client",
-				});
-				dc.Users.InsertOnSubmit(new User {
-					OpenIDFriendlyIdentifier = "=arnott",
-					OpenIDClaimedIdentifier = "=!9B72.7DD1.50A9.5CCD",
 				});
 
 				dc.SubmitChanges();

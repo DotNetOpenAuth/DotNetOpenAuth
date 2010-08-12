@@ -64,63 +64,6 @@
 		internal static readonly RSAParameters ResourceServerEncryptionPrivateKey= new RSAParameters();
 #endif
 
-		/// <summary>
-		/// Gets the transaction-protected database connection for the current request.
-		/// </summary>
-		public static DataClassesDataContext DataContext {
-			get {
-				DataClassesDataContext dataContext = dataContextSimple;
-				if (dataContext == null) {
-					dataContext = new DataClassesDataContext();
-					dataContext.Connection.Open();
-					dataContext.Transaction = dataContext.Connection.BeginTransaction();
-					dataContextSimple = dataContext;
-				}
-
-				return dataContext;
-			}
-		}
-
-		public static User LoggedInUser {
-			get { return Global.DataContext.Users.SingleOrDefault(user => user.OpenIDClaimedIdentifier == HttpContext.Current.User.Identity.Name); }
-		}
-
-		private static DataClassesDataContext dataContextSimple {
-			get {
-				if (HttpContext.Current != null) {
-					return HttpContext.Current.Items["DataContext"] as DataClassesDataContext;
-				} else if (OperationContext.Current != null) {
-					object data;
-					if (OperationContext.Current.IncomingMessageProperties.TryGetValue("DataContext", out data)) {
-						return data as DataClassesDataContext;
-					} else {
-						return null;
-					}
-				} else {
-					throw new InvalidOperationException();
-				}
-			}
-
-			set {
-				if (HttpContext.Current != null) {
-					HttpContext.Current.Items["DataContext"] = value;
-				} else if (OperationContext.Current != null) {
-					OperationContext.Current.IncomingMessageProperties["DataContext"] = value;
-				} else {
-					throw new InvalidOperationException();
-				}
-			}
-		}
-
-		private static void CommitAndCloseDatabaseIfNecessary() {
-			var dataContext = dataContextSimple;
-			if (dataContext != null) {
-				dataContext.SubmitChanges();
-				dataContext.Transaction.Commit();
-				dataContext.Connection.Close();
-			}
-		}
-
 		private void Application_Start(object sender, EventArgs e) {
 			log4net.Config.XmlConfigurator.Configure();
 			Logger.Info("Sample starting...");
@@ -138,7 +81,6 @@
 		}
 
 		private void Application_EndRequest(object sender, EventArgs e) {
-			CommitAndCloseDatabaseIfNecessary();
 		}
 	}
 }

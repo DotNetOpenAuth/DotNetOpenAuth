@@ -1,5 +1,6 @@
 ﻿namespace OAuthAuthorizationServer.Controllers {
 	using System;
+	using System.Linq;
 	using System.Web.Mvc;
 	using System.Web.Security;
 
@@ -7,6 +8,7 @@
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
+	using OAuthAuthorizationServer.Code;
 	using OAuthAuthorizationServer.Models;
 
 	[HandleError]
@@ -44,6 +46,15 @@
 			if (response != null) {
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
+						// Make sure we have a user account for this guy.
+						string identifier = response.ClaimedIdentifier; // convert to string so LinqToSQL expression parsing works.
+						if (MvcApplication.DataContext.Users.FirstOrDefault(u => u.OpenIDClaimedIdentifier == identifier) == null) {
+							MvcApplication.DataContext.Users.InsertOnSubmit(new User {
+								OpenIDFriendlyIdentifier = response.FriendlyIdentifierForDisplay,
+								OpenIDClaimedIdentifier = response.ClaimedIdentifier,
+							});
+						}
+
 						FormsAuthentication.SetAuthCookie(response.ClaimedIdentifier, false);
 						return this.Redirect(returnUrl ?? Url.Action("Index", "Home"));
 					default:
