@@ -32,6 +32,11 @@ namespace DotNetOpenAuth {
 	/// </summary>
 	public static class Reporting {
 		/// <summary>
+		/// A UTF8 encoder that doesn't emit the preamble.  Used for mid-stream writers.
+		/// </summary>
+		private static readonly Encoding Utf8NoPreamble = new UTF8Encoding(false);
+
+		/// <summary>
 		/// A value indicating whether reporting is desirable or not.  Must be logical-AND'd with !<see cref="broken"/>.
 		/// </summary>
 		private static bool enabled;
@@ -105,11 +110,6 @@ namespace DotNetOpenAuth {
 		/// The time that we last published reports.
 		/// </summary>
 		private static DateTime lastPublished = DateTime.Now;
-
-		/// <summary>
-		/// A UTF8 encoder that doesn't emit the preamble.  Used for mid-stream writers.
-		/// </summary>
-		private static readonly Encoding Utf8NoPreamble = new UTF8Encoding(false);
 
 		/// <summary>
 		/// Initializes static members of the <see cref="Reporting"/> class.
