@@ -506,7 +506,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Encrypts a byte buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer to encrypt.</param>
-		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, and 256.</param>
+		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, or 256 bytes in length.</param>
 		/// <returns>The encrypted buffer</returns>
 		internal static byte[] Encrypt(byte[] buffer, byte[] key) {
 			SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key);

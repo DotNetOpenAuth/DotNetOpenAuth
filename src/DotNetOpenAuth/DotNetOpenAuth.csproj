@@ -740,6 +740,7 @@ http://opensource.org/licenses/ms-pl.html
     <EmbeddedResource Include="Messaging\MessagingStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="OAuth\OAuthStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
