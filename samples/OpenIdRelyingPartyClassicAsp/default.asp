@@ -25,10 +25,14 @@
 			assembly is found.</li>
 		<li>Register DotNetOpenAuth as a COM server:<br />
 			<span class="command">%windir%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe 
-			/tlb DotNetOpenAuth.dll</span></li>
+			/tlb DotNetOpenAuth.dll</span><br />
+			Note that you may need to copy System.Web.Mvc.dll into the same directory as dotnetopenauth.dll
+			if it is not already in your GAC.</li>
 		<li>Install DotNetOpenAuth into the GAC.&nbsp; The gacutil.exe tool may be in an SDK
 			directory, which will be in your path if you opened a Visual Studio Command Prompt.<br />
-			<span class="command">gacutil.exe /i DotNetOpenAuth.dll</span></li>
+			<span class="command">gacutil.exe /i DotNetOpenAuth.dll</span><br />
+			Be sure to use a gacutil.exe that comes from a .NET 2.0-3.5 directory (not .NET 1.x).
+			</li>
 	</ol>
 	<p>Another thing to be aware of is that with classic ASP there is no Web.config 
 		file in which to customize DotNetOpenAuth behavior.&nbsp; And the COM interfaces 
