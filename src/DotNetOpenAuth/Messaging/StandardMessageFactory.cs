@@ -181,8 +181,8 @@ namespace DotNetOpenAuth.Messaging {
 			               let ctors = this.FindMatchingResponseConstructors(message, request.GetType())
 			               where ctors.Any()
 			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType()),
-			               	this.CountInCommon(message.Mapping.Keys, fields.Keys) descending,
-			               	message.Mapping.Count descending
+			                 this.CountInCommon(message.Mapping.Keys, fields.Keys) descending,
+			                 message.Mapping.Count descending
 			               select message).CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
 			if (match != null) {
