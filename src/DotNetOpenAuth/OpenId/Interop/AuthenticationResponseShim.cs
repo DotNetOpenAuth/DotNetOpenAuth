@@ -92,6 +92,13 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		}
 
 		/// <summary>
+		/// Gets the provider endpoint that sent the assertion.
+		/// </summary>
+		public string ProviderEndpoint {
+			get { return this.response.Provider != null ? this.response.Provider.Uri.AbsoluteUri : null;  }
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the authentication attempt succeeded.
 		/// </summary>
 		public bool Successful {
