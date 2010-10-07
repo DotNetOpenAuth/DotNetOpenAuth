@@ -50,6 +50,7 @@ namespace OpenIdProviderMvc.Controllers {
 		/// <summary>
 		/// Displays a confirmation page.
 		/// </summary>
+		/// <returns>The response for the user agent.</returns>
 		[Authorize]
 		public ActionResult AskUser() {
 			if (ProviderEndpoint.PendingRequest == null) {
