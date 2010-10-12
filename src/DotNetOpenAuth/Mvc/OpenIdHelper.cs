@@ -30,16 +30,14 @@ namespace DotNetOpenAuth.Mvc {
 		/// Emits a series of stylesheet import tags to support the AJAX OpenID Selector.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <returns>HTML that should be sent directly to the browser.</returns>
-		public static string OpenIdSelectorStyles(this HtmlHelper html, Page page) {
+		public static string OpenIdSelectorStyles(this HtmlHelper html) {
 			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			StringWriter result = new StringWriter();
-			result.WriteStylesheetLink(page, OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName);
-			result.WriteStylesheetLink(page, OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedStylesheetResourceName);
+			result.WriteStylesheetLink(OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName);
+			result.WriteStylesheetLink(OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedStylesheetResourceName);
 			return result.ToString();
 		}
 
@@ -47,25 +45,22 @@ namespace DotNetOpenAuth.Mvc {
 		/// Emits a series of script import tags and some inline script to support the AJAX OpenID Selector.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <returns>HTML that should be sent directly to the browser.</returns>
-		public static string OpenIdSelectorScripts(this HtmlHelper html, Page page) {
-			return OpenIdSelectorScripts(html, page, null, null);
+		public static string OpenIdSelectorScripts(this HtmlHelper html) {
+			return OpenIdSelectorScripts(html, null, null);
 		}
 
 		/// <summary>
 		/// Emits a series of script import tags and some inline script to support the AJAX OpenID Selector.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="selectorOptions">An optional instance of an <see cref="OpenIdSelector"/> control, whose properties have been customized to express how this MVC control should be rendered.</param>
 		/// <param name="additionalOptions">An optional set of additional script customizations.</param>
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		public static string OpenIdSelectorScripts(this HtmlHelper html, Page page, OpenIdSelector selectorOptions, OpenIdAjaxOptions additionalOptions) {
+		public static string OpenIdSelectorScripts(this HtmlHelper html, OpenIdSelector selectorOptions, OpenIdAjaxOptions additionalOptions) {
 			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (selectorOptions == null) {
@@ -92,7 +87,7 @@ window.openid_trace = {1}; // causes lots of messages";
 					OpenIdRelyingPartyAjaxControlBase.EmbeddedAjaxJavascriptResource,
 					OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName,
 				};
-			result.WriteScriptTags(page, scriptResources);
+			result.WriteScriptTags(scriptResources);
 
 			if (selectorOptions.DownloadYahooUILibrary) {
 				result.WriteScriptTags(new[] { "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js" });
@@ -163,10 +158,10 @@ window.openid_trace = {1}; // causes lots of messages";
 	}});";
 			blockBuilder.WriteLine(
 				blockFormat,
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdTextBox.EmbeddedLogoResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdTextBox.EmbeddedLogoResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)),
 				selectorOptions.Throttle,
 				selectorOptions.Timeout.TotalMilliseconds,
 				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnText),
@@ -183,7 +178,7 @@ window.openid_trace = {1}; // causes lots of messages";
 				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticationFailedToolTip));
 
 			result.WriteScriptBlock(blockBuilder.ToString());
-			result.WriteScriptTags(page, OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName);
+			result.WriteScriptTags(OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName);
 
 			Reporting.RecordFeatureUse("MVC " + typeof(OpenIdSelector).Name);
 			return result.ToString();
@@ -193,20 +188,18 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// Emits the HTML to render an OpenID Provider button as a part of the overall OpenID Selector UI.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="providerIdentifier">The OP Identifier.</param>
 		/// <param name="imageUrl">The URL of the image to display on the button.</param>
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		public static string OpenIdSelectorOPButton(this HtmlHelper html, Page page, Identifier providerIdentifier, string imageUrl) {
+		public static string OpenIdSelectorOPButton(this HtmlHelper html, Identifier providerIdentifier, string imageUrl) {
 			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentNullException>(providerIdentifier != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			return OpenIdSelectorButton(html, page, providerIdentifier, "OPButton", imageUrl);
+			return OpenIdSelectorButton(html, providerIdentifier, "OPButton", imageUrl);
 		}
 
 		/// <summary>
@@ -214,32 +207,28 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// allowing the user to enter their own OpenID.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="imageUrl">The URL of the image to display on the button.</param>
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		public static string OpenIdSelectorOpenIdButton(this HtmlHelper html, Page page, string imageUrl) {
+		public static string OpenIdSelectorOpenIdButton(this HtmlHelper html, string imageUrl) {
 			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			return OpenIdSelectorButton(html, page, "OpenIDButton", "OpenIDButton", imageUrl);
+			return OpenIdSelectorButton(html, "OpenIDButton", "OpenIDButton", imageUrl);
 		}
 
 		/// <summary>
 		/// Emits the HTML to render the entire OpenID Selector UI.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="buttons">The buttons to include on the selector.</param>
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		public static string OpenIdSelector(this HtmlHelper html, Page page, params SelectorButton[] buttons) {
+		public static string OpenIdSelector(this HtmlHelper html, params SelectorButton[] buttons) {
 			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentNullException>(buttons != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
@@ -252,13 +241,13 @@ window.openid_trace = {1}; // causes lots of messages";
 			foreach (SelectorButton button in buttons) {
 				var op = button as SelectorProviderButton;
 				if (op != null) {
-					h.Write(OpenIdSelectorOPButton(html, page, op.OPIdentifier, op.Image));
+					h.Write(OpenIdSelectorOPButton(html, op.OPIdentifier, op.Image));
 					continue;
 				}
 
 				var openid = button as SelectorOpenIdButton;
 				if (openid != null) {
-					h.Write(OpenIdSelectorOpenIdButton(html, page, openid.Image));
+					h.Write(OpenIdSelectorOpenIdButton(html, openid.Image));
 					continue;
 				}
 
@@ -294,16 +283,14 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// Emits the HTML to render a button as a part of the overall OpenID Selector UI.
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="id">The value to assign to the HTML id attribute.</param>
 		/// <param name="cssClass">The value to assign to the HTML class attribute.</param>
 		/// <param name="imageUrl">The URL of the image to draw on the button.</param>
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		private static string OpenIdSelectorButton(this HtmlHelper html, Page page, string id, string cssClass, string imageUrl) {
+		private static string OpenIdSelectorButton(this HtmlHelper html, string id, string cssClass, string imageUrl) {
 			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentNullException>(id != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
 			Contract.Ensures(Contract.Result<string>() != null);
@@ -327,7 +314,7 @@ window.openid_trace = {1}; // causes lots of messages";
 			h.RenderBeginTag(HtmlTextWriterTag.Img);
 			h.RenderEndTag();
 
-			h.AddAttribute(HtmlTextWriterAttribute.Src, page.ClientScript.GetWebResourceUrl(typeof(OpenIdSelector), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
+			h.AddAttribute(HtmlTextWriterAttribute.Src, Util.GetWebResourceUrl(typeof(OpenIdSelector), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
 			h.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
 			h.AddAttribute(HtmlTextWriterAttribute.Title, "Authenticated as {0}");
 			h.RenderBeginTag(HtmlTextWriterTag.Img);
@@ -351,7 +338,7 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// </summary>
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="scriptUrls">The locations of the scripts to import.</param>
-		private static void WriteScriptTags(this TextWriter writer, IEnumerable<string> scriptUrls) {
+		private static void WriteScriptTagsUrls(this TextWriter writer, IEnumerable<string> scriptUrls) {
 			Contract.Requires<ArgumentNullException>(writer != null);
 			Contract.Requires<ArgumentNullException>(scriptUrls != null);
 
@@ -364,28 +351,24 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// Writes out script tags that import a script from resources embedded in this assembly.
 		/// </summary>
 		/// <param name="writer">The writer to emit the tags to.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="resourceName">Name of the resource.</param>
-		private static void WriteScriptTags(this TextWriter writer, Page page, string resourceName) {
+		private static void WriteScriptTags(this TextWriter writer, string resourceName) {
 			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(resourceName));
 
-			WriteScriptTags(writer, page, new[] { resourceName });
+			WriteScriptTags(writer, new[] { resourceName });
 		}
 
 		/// <summary>
 		/// Writes out script tags that import scripts from resources embedded in this assembly.
 		/// </summary>
 		/// <param name="writer">The writer to emit the tags to.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="resourceNames">The resource names.</param>
-		private static void WriteScriptTags(this TextWriter writer, Page page, IEnumerable<string> resourceNames) {
+		private static void WriteScriptTags(this TextWriter writer, IEnumerable<string> resourceNames) {
 			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentNullException>(resourceNames != null);
 
-			writer.WriteScriptTags(resourceNames.Select(r => page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), r)));
+			writer.WriteScriptTagsUrls(resourceNames.Select(r => Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), r)));
 		}
 
 		/// <summary>
@@ -407,14 +390,12 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// Writes a given CSS link.
 		/// </summary>
 		/// <param name="writer">The writer to emit the tags to.</param>
-		/// <param name="page">The page being rendered.</param>
 		/// <param name="resourceName">Name of the resource containing the CSS content.</param>
-		private static void WriteStylesheetLink(this TextWriter writer, Page page, string resourceName) {
+		private static void WriteStylesheetLink(this TextWriter writer, string resourceName) {
 			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(page != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(resourceName));
 
-			WriteStylesheetLink(writer, page.ClientScript.GetWebResourceUrl(typeof(OpenIdRelyingPartyAjaxControlBase), resourceName));
+			WriteStylesheetLinkUrl(writer, Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyAjaxControlBase), resourceName));
 		}
 
 		/// <summary>
@@ -422,7 +403,7 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// </summary>
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="stylesheet">The stylesheet to link in.</param>
-		private static void WriteStylesheetLink(this TextWriter writer, string stylesheet) {
+		private static void WriteStylesheetLinkUrl(this TextWriter writer, string stylesheet) {
 			Contract.Requires<ArgumentNullException>(writer != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(stylesheet));
 

@@ -126,4 +126,7 @@
   <data name="ConfigurationXamlReferenceRequiresHttpContext" xml:space="preserve">
     <value>The configuration XAML reference to {0} requires a current HttpContext to resolve.</value>
   </data>
+  <data name="EmbeddedResourceUrlProviderRequired" xml:space="preserve">
+    <value>The current IHttpHandler is not one of types: {0}.  An embedded resource URL provider must be set in your .config file.</value>
+  </data>
 </root>

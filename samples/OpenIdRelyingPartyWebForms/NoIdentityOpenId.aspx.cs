@@ -19,6 +19,7 @@
 							// This is the "success" status we get when no authentication was requested.
 							var sreg = response.GetExtension<ClaimsResponse>();
 							if (sreg != null) {
+								this.emailLabel.Text = sreg.Email;
 								this.timeZoneLabel.Text = sreg.TimeZone;
 								this.postalCodeLabel.Text = sreg.PostalCode;
 								this.countryLabel.Text = sreg.Country;
@@ -55,6 +56,7 @@
 					// This is where you would add any OpenID extensions you wanted
 					// to include in the request.
 					request.AddExtension(new ClaimsRequest {
+						Email = DemandLevel.Request,
 						Country = DemandLevel.Request,
 						Gender = DemandLevel.Require,
 						PostalCode = DemandLevel.Require,

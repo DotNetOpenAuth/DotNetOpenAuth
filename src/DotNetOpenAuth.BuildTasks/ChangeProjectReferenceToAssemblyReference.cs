@@ -38,7 +38,7 @@
 
 			foreach (var project in Projects) {
 				Project doc = new Project();
-				doc.Load(project.ItemSpec);
+				doc.Load(project.ItemSpec, ProjectLoadSettings.IgnoreMissingImports);
 
 				var projectReferences = doc.EvaluatedItems.OfType<BuildItem>().Where(item => item.Name == "ProjectReference");
 				var matchingReferences = from reference in projectReferences
