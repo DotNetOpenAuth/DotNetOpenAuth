@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
+#if !SILVERLIGHT
 using System.Web.UI;
 
 [assembly: TagPrefix("DotNetOpenAuth", "dnoa")]
@@ -23,6 +24,7 @@ using System.Web.UI;
 [assembly: TagPrefix("DotNetOpenAuth.OpenId", "openid")]
 [assembly: TagPrefix("DotNetOpenAuth.OpenId.Provider", "op")]
 [assembly: TagPrefix("DotNetOpenAuth.OpenId.RelyingParty", "rp")]
+#endif
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
