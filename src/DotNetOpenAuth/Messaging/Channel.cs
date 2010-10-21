@@ -55,6 +55,14 @@ namespace DotNetOpenAuth.Messaging {
 		private const int IndirectMessageGetToPostThreshold = 2 * 1024; // 2KB, recommended by OpenID group
 
 		/// <summary>
+		/// The HTML that should be returned to the user agent as part of a 301 Redirect.
+		/// </summary>
+		/// <value>A string that should be used as the first argument to String.Format, where the {0} should be replaced with the URL to redirect to.</value>
+		private const string RedirectResponseBodyFormat = @"<html><head><title>Object moved</title></head><body>
+<h2>Object moved to <a href=""{0}"">here</a>.</h2>
+</body></html>";
+
+		/// <summary>
 		/// A list of binding elements in the order they must be applied to outgoing messages.
 		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -260,10 +268,12 @@ namespace DotNetOpenAuth.Messaging {
 			this.ProcessOutgoingMessage(message);
 			Logger.Channel.DebugFormat("Sending message: {0}", message.GetType().Name);
 
+			OutgoingWebResponse result;
 			switch (message.Transport) {
 				case MessageTransport.Direct:
 					// This is a response to a direct message.
-					return this.PrepareDirectResponse(message);
+					result = this.PrepareDirectResponse(message);
+					break;
 				case MessageTransport.Indirect:
 					var directedMessage = message as IDirectedProtocolMessage;
 					ErrorUtilities.VerifyArgumentNamed(
@@ -741,15 +751,18 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(fields != null);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
+			// As part of this redirect, we include an HTML body in order to get passed some proxy filters
+			// such as WebSense.
 			WebHeaderCollection headers = new WebHeaderCollection();
 			UriBuilder builder = new UriBuilder(message.Recipient);
 			MessagingUtilities.AppendQueryArgs(builder, fields);
 			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
+			headers.Add(HttpResponseHeader.ContentType, "text/html; charset=utf-8");
 			Logger.Http.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
 			OutgoingWebResponse response = new OutgoingWebResponse {
 				Status = HttpStatusCode.Redirect,
 				Headers = headers,
-				Body = null,
+				Body = string.Format(CultureInfo.InvariantCulture, RedirectResponseBodyFormat, builder.Uri.AbsoluteUri),
 				OriginalMessage = message
 			};
 
