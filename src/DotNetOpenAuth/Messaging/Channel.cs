@@ -275,7 +275,8 @@ namespace DotNetOpenAuth.Messaging {
 						directedMessage.Recipient != null,
 						"message",
 						MessagingStrings.DirectedMessageMissingRecipient);
-					return this.PrepareIndirectResponse(directedMessage);
+					result = this.PrepareIndirectResponse(directedMessage);
+					break;
 				default:
 					throw ErrorUtilities.ThrowArgumentNamed(
 						"message",
@@ -283,6 +284,13 @@ namespace DotNetOpenAuth.Messaging {
 						"Transport",
 						message.Transport);
 			}
+
+			// Apply caching policy to any response.  We want to disable all caching because in auth* protocols,
+			// caching can be utilized in identity spoofing attacks.
+			result.Headers[HttpResponseHeader.CacheControl] = "no-cache, no-store, max-age=0, must-revalidate";
+			result.Headers[HttpResponseHeader.Pragma] = "no-cache";
+
+			return result;
 		}
 
 		/// <summary>
