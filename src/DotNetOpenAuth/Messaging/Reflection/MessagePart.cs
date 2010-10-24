@@ -114,9 +114,25 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 
 			if (attribute.Encoder == null) {
 				if (!converters.TryGetValue(this.memberDeclaredType, out this.converter)) {
-					this.converter = new ValueMapping(
-						obj => obj != null ? obj.ToString() : null,
-						str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
+					if (this.memberDeclaredType.IsGenericType &&
+						this.memberDeclaredType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+						// It's a nullable type.  Try again to look up an appropriate converter for the underlying type.
+						Type underlyingType = Nullable.GetUnderlyingType(this.memberDeclaredType);
+						ValueMapping underlyingMapping;
+						if (converters.TryGetValue(underlyingType, out underlyingMapping)) {
+							this.converter = new ValueMapping(
+								underlyingMapping.ValueToString,
+								str => str != null ? underlyingMapping.StringToValue(str) : null);
+						} else {
+							this.converter = new ValueMapping(
+								obj => obj != null ? obj.ToString() : null,
+								str => str != null ? Convert.ChangeType(str, underlyingType, CultureInfo.InvariantCulture) : null);
+						}
+					} else {
+						this.converter = new ValueMapping(
+							obj => obj != null ? obj.ToString() : null,
+							str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
+					}
 				}
 			} else {
 				this.converter = new ValueMapping(GetEncoder(attribute.Encoder));
@@ -239,7 +255,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
-		/// Adds a pair of type conversion functions to the static converstion map.
+		/// Adds a pair of type conversion functions to the static conversion map.
 		/// </summary>
 		/// <typeparam name="T">The custom type to convert to and from strings.</typeparam>
 		/// <param name="toString">The function to convert the custom type to a string.</param>

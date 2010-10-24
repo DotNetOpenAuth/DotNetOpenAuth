@@ -31,6 +31,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// <see cref="IProviderEndpoint.IsExtensionSupported"/> method on the <see cref="DotNetOpenAuth.OpenId.RelyingParty.IAuthenticationRequest.Provider"/>
 	/// object.</para>
 	/// </remarks>
+	[Serializable]
 	public sealed class UIRequest : IOpenIdMessageExtension, IMessageWithEvents {
 		/// <summary>
 		/// The factory method that may be used in deserialization of this message.
@@ -71,6 +72,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// <remarks>
 		/// The user's preferred languages as a [BCP 47] language priority list, represented as a comma-separated list of BCP 47 basic language ranges in descending priority order. For instance, the value "fr-CA,fr-FR,en-CA" represents the preference for French spoken in Canada, French spoken in France, followed by English spoken in Canada.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "By design.")]
 		[MessagePart("lang", AllowEmpty = false)]
 		public CultureInfo[] LanguagePreference { get; set; }
 

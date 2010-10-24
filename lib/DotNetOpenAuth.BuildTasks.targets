@@ -1,19 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
-	<PropertyGroup>
-		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..</ProjectRoot>
-	</PropertyGroup>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<ItemGroup>
+		<VsTemplateParameterReplaceExtensions Include=".cs;.csproj;.sql;.config;.Master;.aspx;.ascx;.vb;.asax;.ashx" />
+		<VsTemplateProjectItemTypes Include="Compile;EmbeddedResource;EntityDeploy;Content;None" />
+	</ItemGroup>
 
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="GetBuildVersion" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="ChangeProjectReferenceToAssemblyReference" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="CompareFiles" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="ReSignDelaySignedAssemblies" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="SignatureVerification" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="CheckAdminRights" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="CreateWebApplication" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="DeleteWebApplication" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="Trim" />
-	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="FilterItems" />
-
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="GetBuildVersion" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="ChangeProjectReferenceToAssemblyReference" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="CompareFiles" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="ReSignDelaySignedAssemblies" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="SignatureVerification" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="CheckAdminRights" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="CreateWebApplication" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="DeleteWebApplication" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="Trim" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="FilterItems" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="JsPack" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="CopyWithTokenSubstitution" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="MergeProjectWithVSTemplate" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="DiscoverProjectTemplates" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="FixupReferenceHintPaths" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="AddProjectItems" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="Purge" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="FixupShippingToolSamples" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="Publicize" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="DowngradeProjects" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="HardLinkCopy" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="PrepareOhlohRelease" />
 </Project>

@@ -42,6 +42,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsNull(sreg);
 
 			// Make sure we're still able to send an sreg response.
+			// (not really a valid scenario, since OPs don't have public access
+			// to directly create a response without a request.
 			var sregResponse = new ClaimsResponse();
 			this.request.AddResponseExtension(sregResponse);
 			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
@@ -49,12 +51,18 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreSame(sregResponse, extensions.Single());
 		}
 
+		[TestMethod]
+		public void NegativeResponse() {
+			this.request.IsAuthenticated = false;
+			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
+		}
+
 		/// <summary>
 		/// Verifies sreg coming in is seen as sreg.
 		/// </summary>
 		[TestMethod]
 		public void UnifyExtensionsAsSregWithSreg() {
-			var sregInjected = new ClaimsRequest {
+			var sregInjected = new ClaimsRequest(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns) {
 				Nickname = DemandLevel.Request,
 			};
 			this.extensions.Add(sregInjected);
@@ -63,7 +71,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(DemandLevel.Request, sreg.Nickname);
 			Assert.AreEqual(DemandLevel.NoRequest, sreg.FullName);
 
-			var sregResponse = new ClaimsResponse();
+			var sregResponse = sreg.CreateResponse();
 			this.request.AddResponseExtension(sregResponse);
 			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
 			var extensions = this.GetResponseExtensions();
@@ -91,7 +99,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		[TestMethod]
 		public void UnifyExtensionsAsSregWithBothSregAndAX() {
-			var sregInjected = new ClaimsRequest {
+			var sregInjected = new ClaimsRequest(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns) {
 				Nickname = DemandLevel.Request,
 			};
 			this.extensions.Add(sregInjected);
@@ -103,9 +111,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(DemandLevel.Request, sreg.Nickname);
 			Assert.AreEqual(DemandLevel.NoRequest, sreg.Email);
 
-			var sregResponseInjected = new ClaimsResponse {
-				Nickname = "andy",
-			};
+			var sregResponseInjected = sreg.CreateResponse();
+			sregResponseInjected.Nickname = "andy";
 			this.request.AddResponseExtension(sregResponseInjected);
 			var axResponseInjected = new FetchResponse();
 			axResponseInjected.Attributes.Add(WellKnownAttributes.Contact.Email, "a@b.com");
@@ -134,9 +141,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(DemandLevel.Require, sreg.FullName);
 			Assert.AreEqual(DemandLevel.NoRequest, sreg.Language);
 
-			var sregResponse = new ClaimsResponse {
-				Nickname = "andy",
-			};
+			var sregResponse = sreg.CreateResponse();
+			sregResponse.Nickname = "andy";
 			this.request.AddResponseExtension(sregResponse);
 			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
 			var extensions = this.GetResponseExtensions();

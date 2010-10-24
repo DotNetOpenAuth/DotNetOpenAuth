@@ -120,7 +120,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Automatically sends the appropriate response to the user agent
 		/// and ends execution on the current page or handler.
 		/// </summary>
-		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		/// <exception cref="ThreadAbortException">Typically thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
 		/// <remarks>
 		/// Requires a current HttpContext.
 		/// </remarks>
@@ -137,7 +137,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="context">The context of the HTTP request whose response should be set.
 		/// Typically this is <see cref="HttpContext.Current"/>.</param>
-		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		/// <exception cref="ThreadAbortException">Typically thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
 		public virtual void Send(HttpContext context) {
 			Contract.Requires(context != null);
 			ErrorUtilities.VerifyArgumentNotNull(context, "context");

@@ -294,6 +294,59 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="serverVariables">The server variables to consider part of the request.</param>
+		/// <returns>
+		/// The URI that the outside world used to create this request.
+		/// </returns>
+		/// <remarks>
+		/// Although the <paramref name="serverVariables"/> value can be obtained from
+		/// <see cref="HttpRequest.ServerVariables"/>, it's useful to be able to pass them
+		/// in so we can simulate injected values from our unit tests since the actual property
+		/// is a read-only kind of <see cref="NameValueCollection"/>.
+		/// </remarks>
+		internal static Uri GetPublicFacingUrl(HttpRequest request, NameValueCollection serverVariables) {
+			Contract.Requires(request != null);
+			Contract.Requires(serverVariables != null);
+			ErrorUtilities.VerifyArgumentNotNull(request, "request");
+			ErrorUtilities.VerifyArgumentNotNull(serverVariables, "serverVariables");
+
+			// Due to URL rewriting, cloud computing (i.e. Azure)
+			// and web farms, etc., we have to be VERY careful about what
+			// we consider the incoming URL.  We want to see the URL as it would
+			// appear on the public-facing side of the hosting web site.
+			// HttpRequest.Url gives us the internal URL in a cloud environment,
+			// So we use a variable that (at least from what I can tell) gives us
+			// the public URL:
+#if !Mono // In ASP.NET MVC, Mono adds UrlRouting.axd to the URL here, which breaks OpenID return_to verification.
+			if (serverVariables["HTTP_HOST"] != null) {
+				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
+				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ?? request.Url.Scheme;
+				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + serverVariables["HTTP_HOST"]);
+				UriBuilder publicRequestUri = new UriBuilder(request.Url);
+				publicRequestUri.Scheme = scheme;
+				publicRequestUri.Host = hostAndPort.Host;
+				publicRequestUri.Port = hostAndPort.Port;
+				return publicRequestUri.Uri;
+			} else {
+#endif
+				// Failover to the method that works for non-web farm enviroments.
+				// We use Request.Url for the full path to the server, and modify it
+				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
+				// and the original path in case URL rewriting is going on.  We don't want to be
+				// fooled by URL rewriting because we're comparing the actual URL with what's in
+				// the return_to parameter in some cases.
+				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
+				// session, but not the URL rewriting problem.
+				return new Uri(request.Url, request.RawUrl);
+#if !Mono
+			}
+#endif
+		}
+
+		/// <summary>
 		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
 		/// </summary>
 		/// <returns>A set of name=value pairs.</returns>
@@ -317,38 +370,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires(request != null);
 			ErrorUtilities.VerifyArgumentNotNull(request, "request");
 
-			// Due to URL rewriting, cloud computing (i.e. Azure)
-			// and web farms, etc., we have to be VERY careful about what
-			// we consider the incoming URL.  We want to see the URL as it would
-			// appear on the public-facing side of the hosting web site.
-			// HttpRequest.Url gives us the internal URL in a cloud environment,
-			// So we use a variable that (at least from what I can tell) gives us
-			// the public URL:
-#if !Mono // In ASP.NET MVC, Mono adds UrlRouting.axd to the URL here, which breaks OpenID return_to verification.
-			if (request.ServerVariables["HTTP_HOST"] != null) {
-				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
-				UriBuilder publicRequestUri = new UriBuilder(request.Url);
-				Uri hostAndPort = new Uri(request.Url.Scheme + Uri.SchemeDelimiter + request.ServerVariables["HTTP_HOST"]);
-				publicRequestUri.Host = hostAndPort.Host;
-				publicRequestUri.Port = hostAndPort.Port;
-				if (request.ServerVariables["HTTP_X_FORWARDED_PROTO"] != null) {
-					publicRequestUri.Scheme = request.ServerVariables["HTTP_X_FORWARDED_PROTO"];
-				}
-				return publicRequestUri.Uri;
-			} else {
-#endif
-				// Failover to the method that works for non-web farm enviroments.
-				// We use Request.Url for the full path to the server, and modify it
-				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
-				// and the original path in case URL rewriting is going on.  We don't want to be
-				// fooled by URL rewriting because we're comparing the actual URL with what's in
-				// the return_to parameter in some cases.
-				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
-				// session, but not the URL rewriting problem.
-				return new Uri(request.Url, request.RawUrl);
-#if !Mono
-			}
-#endif
+			return GetPublicFacingUrl(request, request.ServerVariables);
 		}
 
 		/// <summary>

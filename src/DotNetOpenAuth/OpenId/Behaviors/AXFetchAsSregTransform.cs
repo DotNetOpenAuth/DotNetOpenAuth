@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// to the originally requested extension and format.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
-	public class AXFetchAsSregTransform : IRelyingPartyBehavior, IProviderBehavior {
+	public sealed class AXFetchAsSregTransform : IRelyingPartyBehavior, IProviderBehavior {
 		/// <summary>
 		/// Initializes static members of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>
@@ -65,7 +65,10 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// without malfunctioning.
 		/// </remarks>
 		void IRelyingPartyBehavior.OnOutgoingAuthenticationRequest(RelyingParty.IAuthenticationRequest request) {
-			request.SpreadSregToAX(AXFormats);
+			// Don't create AX extensions for OpenID 1.x messages, since AX requires OpenID 2.0.
+			if (request.Provider.Version.Major >= 2) {
+				request.SpreadSregToAX(AXFormats);
+			}
 		}
 
 		/// <summary>
@@ -112,12 +115,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
 			var extensionRequest = request as Provider.HostProcessedRequest;
 			if (extensionRequest != null) {
-				if (extensionRequest.GetExtension<ClaimsRequest>() == null) {
-					ClaimsRequest sreg = extensionRequest.UnifyExtensionsAsSreg();
-					if (sreg != null) {
-						((IProtocolMessageWithExtensions)extensionRequest.RequestMessage).Extensions.Add(sreg);
-					}
-				}
+				extensionRequest.UnifyExtensionsAsSreg();
 			}
 
 			return false;

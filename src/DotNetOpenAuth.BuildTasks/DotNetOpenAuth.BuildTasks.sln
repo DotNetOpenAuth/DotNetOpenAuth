@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.BuildTasks", "DotNetOpenAuth.BuildTasks.csproj", "{AC231A51-EF60-437C-A33F-AF8ADEB8EB74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ABBE14A3-0404-4123-9093-E598C3DD3E9B}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\build.proj = ..\..\build.proj
+		..\..\lib\DotNetOpenAuth.BuildTasks.targets = ..\..\lib\DotNetOpenAuth.BuildTasks.targets
+		..\..\tools\DotNetOpenAuth.Common.Settings.targets = ..\..\tools\DotNetOpenAuth.Common.Settings.targets
+		..\..\tools\DotNetOpenAuth.Versioning.targets = ..\..\tools\DotNetOpenAuth.Versioning.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC231A51-EF60-437C-A33F-AF8ADEB8EB74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC231A51-EF60-437C-A33F-AF8ADEB8EB74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC231A51-EF60-437C-A33F-AF8ADEB8EB74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC231A51-EF60-437C-A33F-AF8ADEB8EB74}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

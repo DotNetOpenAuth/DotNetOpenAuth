@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -15,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// a fetch request, or by a relying party as part of a store request.
 	/// </summary>
 	[Serializable]
+	[DebuggerDisplay("{TypeUri}")]
 	public class AttributeValues {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AttributeValues"/> class.

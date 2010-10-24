@@ -220,7 +220,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
 		[ContractInvariantMethod]
-		protected void ObjectInvariant() {
+		private void ObjectInvariant() {
 			Contract.Invariant(this.Hasher != null);
 			Contract.Invariant(this.Encoder != null);
 			Contract.Invariant(this.BaseIdentifier != null);

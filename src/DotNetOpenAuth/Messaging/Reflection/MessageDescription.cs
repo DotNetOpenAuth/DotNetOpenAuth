@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="keys">The names of all parameters included in a message.</param>
 		/// <exception cref="ProtocolException">Thrown when required parts of a message are not in <paramref name="keys"/></exception>
 		private void EnsureRequiredMessagePartsArePresent(IEnumerable<string> keys) {
-			var missingKeys = (from part in Mapping.Values
+			var missingKeys = (from part in this.Mapping.Values
 							   where part.IsRequired && !keys.Contains(part.Name)
 							   select part.Name).ToArray();
 			if (missingKeys.Length > 0) {
@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="partValues">A dictionary of key/value pairs that make up the serialized message.</param>
 		private void EnsureRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues) {
 			string value;
-			var emptyValuedKeys = (from part in Mapping.Values
+			var emptyValuedKeys = (from part in this.Mapping.Values
 								   where !part.AllowEmpty && partValues.TryGetValue(part.Name, out value) && value != null && value.Length == 0
 								   select part.Name).ToArray();
 			if (emptyValuedKeys.Length > 0) {

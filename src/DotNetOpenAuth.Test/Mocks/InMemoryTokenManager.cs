@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.Test.OAuth;
 
 	internal class InMemoryTokenManager : IConsumerTokenManager, IServiceProviderTokenManager {
 		private KeyedCollectionDelegate<string, ConsumerInfo> consumers = new KeyedCollectionDelegate<string, ConsumerInfo>(c => c.Key);

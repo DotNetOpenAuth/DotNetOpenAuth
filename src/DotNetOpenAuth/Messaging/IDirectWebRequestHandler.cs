@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
 		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
-		/// value, if set, shoud be Closed before throwing.</para>
+		/// value, if set, should be Closed before throwing.</para>
 		/// </remarks>
 		IncomingWebResponse GetResponse(HttpWebRequest request);
 
@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<para>Implementations should catch <see cref="WebException"/> and wrap it in a
 		/// <see cref="ProtocolException"/> to abstract away the transport and provide
 		/// a single exception type for hosts to catch.  The <see cref="WebException.Response"/>
-		/// value, if set, shoud be Closed before throwing.</para>
+		/// value, if set, should be Closed before throwing.</para>
 		/// </remarks>
 		IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options);
 	}
