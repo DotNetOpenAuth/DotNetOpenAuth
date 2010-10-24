@@ -15,7 +15,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	/// so the Service Provider can ask the user to authorize the Consumer's access to some
 	/// protected resource(s).
 	/// </summary>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	public class UserAuthorizationRequest : MessageBase, ITokenContainingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAuthorizationRequest"/> class.

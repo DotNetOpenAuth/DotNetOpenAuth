@@ -11,10 +11,12 @@ namespace DotNetOpenAuth {
 	using System.Net;
 	using System.Reflection;
 	using System.Text;
+#if !SILVERLIGHT
 	using System.Web;
 	using System.Web.UI;
 
 	using DotNetOpenAuth.Configuration;
+#endif
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -27,10 +29,12 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		internal const string DefaultNamespace = "DotNetOpenAuth";
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// The web.config file-specified provider of web resource URLs.
 		/// </summary>
 		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = DotNetOpenAuthSection.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false);
+#endif
 
 		/// <summary>
 		/// Gets a human-readable description of the library name and version, including
@@ -162,6 +166,7 @@ namespace DotNetOpenAuth {
 				});
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets the web resource URL from a Page or <see cref="IEmbeddedResourceRetrieval"/> object.
 		/// </summary>
@@ -187,6 +192,7 @@ namespace DotNetOpenAuth {
 						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Manages an individual deferred ToString call.

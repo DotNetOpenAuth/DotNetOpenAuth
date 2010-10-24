@@ -30,6 +30,7 @@ namespace DotNetOpenAuth.OAuth {
 			: base(serviceDescription, tokenManager) {
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Begins an OAuth authorization request.
 		/// </summary>
@@ -43,6 +44,7 @@ namespace DotNetOpenAuth.OAuth {
 			OutgoingWebResponse response = this.Channel.PrepareResponse(message);
 			return response.GetDirectUriRequest(this.Channel);
 		}
+#endif
 
 		/// <summary>
 		/// Exchanges a given request token for access token.

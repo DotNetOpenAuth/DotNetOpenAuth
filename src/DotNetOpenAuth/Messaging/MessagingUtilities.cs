@@ -14,12 +14,16 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+#if !SILVERLIGHT
 	using System.Net.Mime;
+#endif
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
+#if !SILVERLIGHT
 	using System.Web;
 	using System.Web.Mvc;
+#endif
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -63,6 +67,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		private static readonly string[] UriRfc3986CharsToEscape = new[] { "!", "*", "'", "(", ")" };
 
+#if SILVERLIGHT
+		/// <summary>
+		/// Characters used for hex escaping.
+		/// </summary>
+		private static char[] HexUpperChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+#endif
+
 		/// <summary>
 		/// A set of escaping mappings that help secure a string from javscript execution.
 		/// </summary>
@@ -86,6 +97,7 @@ namespace DotNetOpenAuth.Messaging {
 			{ "=", @"\x3d" },
 		};
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
 		/// </summary>
@@ -133,6 +145,7 @@ namespace DotNetOpenAuth.Messaging {
 				return uri;
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Sends a multipart HTTP POST request (useful for posting files).
@@ -203,16 +216,22 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(requestHandler != null);
 			Contract.Requires<ArgumentNullException>(parts != null);
 
+#if !SILVERLIGHT
 			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
+#endif
 			parts = parts.CacheGeneratedResults();
 			string boundary = Guid.NewGuid().ToString();
 			string initialPartLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "--{0}\r\n", boundary);
 			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
 			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
+#if !SILVERLIGHT
 			var contentType = new ContentType("multipart/form-data") {
 				Boundary = boundary,
 				CharSet = Channel.PostEntityEncoding.WebName,
 			};
+#else
+			var contentType = "multipart/form-data; boundary=" + boundary + "; charset=" + Channel.PostEntityEncoding.WebName;
+#endif
 
 			request.Method = "POST";
 			request.ContentType = contentType.ToString();
@@ -334,6 +353,7 @@ namespace DotNetOpenAuth.Messaging {
 			return result == 0;
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
 		/// taking care to set some headers to the appropriate properties of
@@ -383,6 +403,7 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 		}
+#endif
 
 #if !CLR4
 		/// <summary>
@@ -481,47 +502,57 @@ namespace DotNetOpenAuth.Messaging {
 					case "Connection": break; // Keep-Alive controls this
 					case "Content-Length": newRequest.ContentLength = request.ContentLength; break;
 					case "Content-Type": newRequest.ContentType = request.ContentType; break;
-					case "Expect": newRequest.Expect = request.Expect; break;
 					case "Host": break; // implicitly copied as part of the RequestUri
+					case "Proxy-Connection": break; // no property equivalent?
+					case "User-Agent": newRequest.UserAgent = request.UserAgent; break;
+#if !SILVERLIGHT
+					case "Expect": newRequest.Expect = request.Expect; break;
 					case "If-Modified-Since": newRequest.IfModifiedSince = request.IfModifiedSince; break;
 					case "Keep-Alive": newRequest.KeepAlive = request.KeepAlive; break;
-					case "Proxy-Connection": break; // no property equivalent?
 					case "Referer": newRequest.Referer = request.Referer; break;
 					case "Transfer-Encoding": newRequest.TransferEncoding = request.TransferEncoding; break;
-					case "User-Agent": newRequest.UserAgent = request.UserAgent; break;
+#endif
 					default: newRequest.Headers[headerName] = request.Headers[headerName]; break;
 				}
 			}
 
 			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
 			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
+#if !SILVERLIGHT
 			newRequest.AuthenticationLevel = request.AuthenticationLevel;
 			newRequest.AutomaticDecompression = request.AutomaticDecompression;
 			newRequest.CachePolicy = request.CachePolicy;
 			newRequest.ClientCertificates = request.ClientCertificates;
 			newRequest.ConnectionGroupName = request.ConnectionGroupName;
 			newRequest.ContinueDelegate = request.ContinueDelegate;
+#endif
 			newRequest.CookieContainer = request.CookieContainer;
 			newRequest.Credentials = request.Credentials;
+#if !SILVERLIGHT
 			newRequest.ImpersonationLevel = request.ImpersonationLevel;
 			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
 			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
 			newRequest.MediaType = request.MediaType;
+#endif
 			newRequest.Method = request.Method;
+#if !SILVERLIGHT
 			newRequest.Pipelined = request.Pipelined;
 			newRequest.PreAuthenticate = request.PreAuthenticate;
 			newRequest.ProtocolVersion = request.ProtocolVersion;
 			newRequest.ReadWriteTimeout = request.ReadWriteTimeout;
 			newRequest.SendChunked = request.SendChunked;
 			newRequest.Timeout = request.Timeout;
+#endif
 			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
 
+#if !SILVERLIGHT
 			try {
 				newRequest.Proxy = request.Proxy;
 				newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
 			} catch (SecurityException) {
 				Logger.Messaging.Warn("Unable to clone some HttpWebRequest properties due to partial trust.");
 			}
+#endif
 
 			return newRequest;
 		}
@@ -687,6 +718,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Adds parameters to a query string, replacing parameters that
 		/// match ones that already exist in the query string.
@@ -718,6 +750,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
 			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, GetHttpDeliveryMethod(request.HttpMethod));
 		}
+#endif
 
 		/// <summary>
 		/// Gets the <see cref="HttpDeliveryMethods"/> enum value for a given HTTP verb.
@@ -779,6 +812,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
 		/// </summary>
@@ -829,6 +863,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return dictionary;
 		}
+#endif
 
 		/// <summary>
 		/// Sorts the elements of a sequence in ascending order by using a specified comparer.
@@ -924,7 +959,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (var pair in javascriptStaticStringEscaping) {
 				builder.Replace(pair.Key, pair.Value);
 			}
-			builder.Insert(0, '\'');
+			builder.Insert(0, "\'");
 			builder.Append('\'');
 			return builder.ToString();
 		}
@@ -951,12 +986,57 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Upgrade the escaping to RFC 3986, if necessary.
 			for (int i = 0; i < UriRfc3986CharsToEscape.Length; i++) {
+#if !SILVERLIGHT
 				escaped.Replace(UriRfc3986CharsToEscape[i], Uri.HexEscape(UriRfc3986CharsToEscape[i][0]));
+#else
+				escaped.Replace(UriRfc3986CharsToEscape[i], HexEscape(UriRfc3986CharsToEscape[i][0]));
+#endif
 			}
 
 			// Return the fully-RFC3986-escaped string.
 			return escaped.ToString();
 		}
+
+#if SILVERLIGHT
+		/// <summary>
+		/// Parses a query string, similar to <see cref="HttpUtility.ParseQueryString"/>, which is missing from Silverlight.
+		/// </summary>
+		/// <param name="value">The query string to parse.</param>
+		/// <returns>A dictionary of the unescaped elements from the query string.</returns>
+		internal static IDictionary<string, string> ParseQueryString(string value) {
+			ErrorUtilities.VerifyArgumentNotNull(value, "value");
+			var result = new Dictionary<string, string>();
+			var pairs = from pair in value.TrimStart('?').Split('&')
+						let halves = pair.Split('=')
+						where halves.Length == 2
+						let k = Uri.UnescapeDataString(halves[0])
+						let v = Uri.UnescapeDataString(halves[1])
+						select new KeyValuePair<string, string>(k, v);
+			foreach (var pair in pairs) {
+				string existingValue;
+				if (result.TryGetValue(pair.Key, out existingValue)) {
+					result[pair.Key] = existingValue + "," + pair.Value;
+				} else {
+					result.Add(pair.Key, pair.Value);
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Equivalent to <see cref="Uri.HexEscape"/>, which isn't available on Silverlight.
+		/// </summary>
+		/// <param name="ch">The character to escape.</param>
+		/// <returns>A 3-character string, beginning with "%".</returns>
+		private static string HexEscape(char ch) {
+			if (ch > '\x00ff') {
+				throw new ArgumentOutOfRangeException("ch");
+			}
+
+			return "%" + HexUpperChars[(ch & 240) >> 4] + HexUpperChars[ch & '\x000f'];
+		}
+#endif
 
 		/// <summary>
 		/// Ensures that UTC times are converted to local times.  Unspecified kinds are unchanged.

@@ -6,7 +6,9 @@
 
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
+#if !SILVERLIGHT
 	using DotNetOpenAuth.Configuration;
+#endif
 
 	/// <summary>
 	/// A message expiration enforcing binding element that supports messages
@@ -42,7 +44,13 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// being discarded as too old.
 		/// </summary>
 		protected internal static TimeSpan MaximumMessageAge {
-			get { return Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime; }
+			get {
+#if !SILVERLIGHT
+				return Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
+#else
+				return TimeSpan.FromMinutes(13);
+#endif
+			}
 		}
 
 		#region IChannelBindingElement Methods
@@ -91,8 +99,13 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 
 				// Mitigate HMAC attacks (just guessing the signature until they get it) by 
 				// disallowing post-dated messages.
+#if !SILVERLIGHT
+				TimeSpan maxClockSkew = DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew;
+#else
+				TimeSpan maxClockSkew = TimeSpan.FromMinutes(5);
+#endif
 				ErrorUtilities.VerifyProtocol(
-					creationDate <= DateTime.UtcNow + DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew,
+					creationDate <= DateTime.UtcNow + maxClockSkew,
 					MessagingStrings.MessageTimestampInFuture,
 					creationDate);
 

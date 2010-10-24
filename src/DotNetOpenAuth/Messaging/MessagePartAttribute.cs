@@ -7,7 +7,9 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+#if !SILVERLIGHT
 	using System.Net.Security;
+#endif
 	using System.Reflection;
 
 	/// <summary>

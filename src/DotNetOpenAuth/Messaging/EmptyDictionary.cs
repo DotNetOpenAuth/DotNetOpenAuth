@@ -15,7 +15,9 @@ namespace DotNetOpenAuth.Messaging {
 	/// </summary>
 	/// <typeparam name="TKey">The type of the key.</typeparam>
 	/// <typeparam name="TValue">The type of the value.</typeparam>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class EmptyDictionary<TKey, TValue> : IDictionary<TKey, TValue> {
 		/// <summary>
 		/// The singleton instance of the empty dictionary.

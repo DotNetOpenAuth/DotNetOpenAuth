@@ -13,7 +13,9 @@ namespace DotNetOpenAuth.Messaging {
 	/// An immutable description of a URL that receives messages.
 	/// </summary>
 	[DebuggerDisplay("{AllowedMethods} {Location}")]
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	public class MessageReceivingEndpoint {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageReceivingEndpoint"/> class.

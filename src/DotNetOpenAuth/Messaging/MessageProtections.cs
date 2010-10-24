@@ -43,4 +43,26 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		All = TamperProtection | Expiration | ReplayProtection,
 	}
+
+#if SILVERLIGHT
+	/// <summary>
+	/// Indicates the security services requested for an authenticated stream.
+	/// </summary>
+	public enum ProtectionLevel {
+		/// <summary>
+		/// No protection required.
+		/// </summary>
+		None,
+
+		/// <summary>
+		/// Message (part) should be signed.
+		/// </summary>
+		Sign,
+
+		/// <summary>
+		/// Message (part) should be encrypted and signed.
+		/// </summary>
+		EncryptAndSign,
+	}
+#endif
 }

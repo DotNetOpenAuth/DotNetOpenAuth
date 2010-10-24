@@ -9,7 +9,9 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+#if !SILVERLIGHT
 	using System.Web;
+#endif
 
 	/// <summary>
 	/// A collection of error checking and reporting methods.
@@ -150,6 +152,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Checks a condition and throws an <see cref="InfoCard.InformationCardException"/> 
 		/// if it evaluates to false.
@@ -169,6 +172,7 @@ namespace DotNetOpenAuth.Messaging {
 				throw new InfoCard.InformationCardException(errorMessage);
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Throws a <see cref="HostErrorException"/> if some <paramref name="condition"/> evaluates to false.
@@ -371,6 +375,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Verifies that <see cref="HttpContext.Current"/> != <c>null</c>.
 		/// </summary>
@@ -381,5 +386,6 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(HttpContext.Current.Request != null);
 			ErrorUtilities.VerifyOperation(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 		}
+#endif
 	}
 }

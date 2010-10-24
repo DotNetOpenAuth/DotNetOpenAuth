@@ -8,12 +8,16 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+#if !SILVERLIGHT
 	using System.Web;
+#endif
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+#if !SILVERLIGHT
 	using DotNetOpenAuth.OpenId.Extensions.OAuth;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+#endif
 
 	/// <summary>
 	/// A website or application that uses OAuth to access the Service Provider on behalf of the User.
@@ -32,6 +36,7 @@ namespace DotNetOpenAuth.OAuth {
 			: base(serviceDescription, tokenManager) {
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Begins an OAuth authorization request and redirects the user to the Service Provider
 		/// to provide that authorization.  Upon successful authorization, the user is redirected
@@ -45,6 +50,7 @@ namespace DotNetOpenAuth.OAuth {
 			Uri callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting.StripQueryArgumentsWithPrefix(Protocol.ParameterPrefix);
 			return this.PrepareRequestUserAuthorization(callback, null, null);
 		}
+#endif
 
 		/// <summary>
 		/// Prepares an OAuth message that begins an authorization request that will 
@@ -62,6 +68,7 @@ namespace DotNetOpenAuth.OAuth {
 			return this.PrepareRequestUserAuthorization(callback, requestParameters, redirectParameters, out token);
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
 		/// </summary>
@@ -151,5 +158,6 @@ namespace DotNetOpenAuth.OAuth {
 				return null;
 			}
 		}
+#endif
 	}
 }

@@ -15,11 +15,15 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+#if !SILVERLIGHT
 	using System.Net.Cache;
 	using System.Net.Mime;
+#endif
 	using System.Text;
 	using System.Threading;
+#if !SILVERLIGHT
 	using System.Web;
+#endif
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -44,7 +48,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// URL-encoded series of key=value pairs.
 		/// This includes the <see cref="PostEntityEncoding"/> character encoding.
 		/// </summary>
+#if !SILVERLIGHT
 		protected internal static readonly ContentType HttpFormUrlEncodedContentType = new ContentType(HttpFormUrlEncoded) { CharSet = PostEntityEncoding.WebName };
+#else
+		protected internal static readonly string HttpFormUrlEncodedContentType = HttpFormUrlEncoded + "; charset=" + PostEntityEncoding.WebName;
+#endif
 
 		/// <summary>
 		/// The maximum allowable size for a 301 Redirect response before we send
@@ -114,10 +122,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		private IMessageFactory messageTypeProvider;
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Backing store for the <see cref="CachePolicy"/> property.
 		/// </summary>
 		private RequestCachePolicy cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+#endif
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
@@ -224,6 +234,7 @@ namespace DotNetOpenAuth.Messaging {
 			get { return this.messageTypeProvider; }
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets or sets the cache policy to use for direct message requests.
 		/// </summary>
@@ -411,6 +422,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return requestMessage;
 		}
+#endif
 
 		/// <summary>
 		/// Sends a direct message to a remote party and waits for the response.
@@ -494,6 +506,7 @@ namespace DotNetOpenAuth.Messaging {
 			return this.CreateHttpRequest(request);
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
@@ -506,6 +519,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal OutgoingWebResponse PrepareDirectResponseTestHook(IProtocolMessage response) {
 			return this.PrepareDirectResponse(response);
 		}
+#endif
 
 		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
@@ -529,6 +543,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.ProcessOutgoingMessage(message);
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets the current HTTP request being processed.
 		/// </summary>
@@ -549,6 +564,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Assume(HttpContext.Current.Request.RawUrl != null);
 			return new HttpRequestInfo(HttpContext.Current.Request);
 		}
+#endif
 
 		/// <summary>
 		/// Checks whether a given HTTP method is expected to include an entity body in its request.
@@ -657,6 +673,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual void OnReceivingDirectResponse(IncomingWebResponse response, IDirectResponseProtocolMessage message) {
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
@@ -684,6 +701,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 		}
+#endif
 
 		/// <summary>
 		/// Deserializes a dictionary of values into a message.
@@ -712,6 +730,7 @@ namespace DotNetOpenAuth.Messaging {
 			return message;
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Queues an indirect message for transmittal via the user agent.
 		/// </summary>
@@ -807,6 +826,7 @@ namespace DotNetOpenAuth.Messaging {
 				return response;
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
@@ -832,6 +852,7 @@ namespace DotNetOpenAuth.Messaging {
 			throw new NotImplementedException();
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
@@ -842,6 +863,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
 		protected abstract OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response);
+#endif
 
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
@@ -960,7 +982,9 @@ namespace DotNetOpenAuth.Messaging {
 			var fields = messageAccessor.Serialize();
 
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+#if !SILVERLIGHT
 			httpRequest.CachePolicy = this.CachePolicy;
+#endif
 			httpRequest.Method = "POST";
 
 			var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
@@ -1171,7 +1195,8 @@ namespace DotNetOpenAuth.Messaging {
 				elements.Where(element => element.Protection != MessageProtections.None));
 
 			bool wasLastProtectionPresent = true;
-			foreach (MessageProtections protectionKind in Enum.GetValues(typeof(MessageProtections))) {
+			var protections = new MessageProtections[] { MessageProtections.TamperProtection, MessageProtections.Expiration, MessageProtections.ReplayProtection };
+			foreach (MessageProtections protectionKind in protections) {
 				if (protectionKind == MessageProtections.None) {
 					continue;
 				}

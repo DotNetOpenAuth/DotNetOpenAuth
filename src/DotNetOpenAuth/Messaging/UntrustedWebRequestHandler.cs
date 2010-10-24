@@ -13,9 +13,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+#if !SILVERLIGHT
 	using System.Net.Cache;
+#endif
 	using System.Text.RegularExpressions;
+#if !SILVERLIGHT
 	using DotNetOpenAuth.Configuration;
+#endif
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -170,12 +174,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public ICollection<Regex> BlacklistHostsRegex { get { return this.blacklistHostsRegex; } }
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets the configuration for this class that is specified in the host's .config file.
 		/// </summary>
 		private static UntrustedWebRequestElement Configuration {
 			get { return DotNetOpenAuthSection.Configuration.Messaging.UntrustedWebRequest; }
 		}
+#endif
 
 		#region IDirectWebRequestHandler Members
 
@@ -255,7 +261,7 @@ namespace DotNetOpenAuth.Messaging {
 					// We have no copy of the post entity stream to repeat on our manually
 					// cloned HttpWebRequest, so we have to bail.
 					ErrorUtilities.VerifyProtocol(request.Method != "POST", MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
-					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
+					Uri redirectUri = new Uri(response.FinalUri, response.Headers["Location"]); // HttpResponseHeader.Location isn't available in Silverlight
 					request = request.Clone(redirectUri);
 				} else {
 					if (response.FinalUri != request.RequestUri) {
@@ -460,9 +466,11 @@ namespace DotNetOpenAuth.Messaging {
 			// Be careful to not try to change the HTTP headers that have already gone out.
 			if (preparingPost || request.Method == "GET") {
 				// Set/override a few properties of the request to apply our policies for untrusted requests.
+#if !SILVERLIGHT
 				request.ReadWriteTimeout = (int)this.ReadWriteTimeout.TotalMilliseconds;
 				request.Timeout = (int)this.Timeout.TotalMilliseconds;
 				request.KeepAlive = false;
+#endif
 			}
 
 			// If SSL is required throughout, we cannot allow auto redirects because

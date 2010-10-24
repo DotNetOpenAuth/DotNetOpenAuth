@@ -16,7 +16,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// Represents an OAuth consumer that is impersonating a known user on the system.
 	/// </summary>
 	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "Not cocreatable.")]
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	[ComVisible(true)]
 	public class OAuthIdentity : IIdentity {
 		/// <summary>

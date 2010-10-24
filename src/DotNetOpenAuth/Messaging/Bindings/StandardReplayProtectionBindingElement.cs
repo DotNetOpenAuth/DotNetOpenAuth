@@ -31,19 +31,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardReplayProtectionBindingElement"/> class.
 		/// </summary>
-		/// <param name="nonceStore">The store where nonces will be persisted and checked.</param>
-		internal StandardReplayProtectionBindingElement(INonceStore nonceStore)
-			: this(nonceStore, false) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardReplayProtectionBindingElement"/> class.
-		/// </summary>
-		/// <param name="nonceStore">The store where nonces will be persisted and checked.</param>
+		/// <param name="nonceStore">The store where nonces will be persisted and checked.  Not required when only outgoing messages contain nonces.</param>
 		/// <param name="allowEmptyNonces">A value indicating whether zero-length nonces will be allowed.</param>
-		internal StandardReplayProtectionBindingElement(INonceStore nonceStore, bool allowEmptyNonces) {
-			Contract.Requires<ArgumentNullException>(nonceStore != null);
-
+		internal StandardReplayProtectionBindingElement(INonceStore nonceStore = null, bool allowEmptyNonces = false) {
 			this.nonceStore = nonceStore;
 			this.AllowZeroLengthNonce = allowEmptyNonces;
 		}
@@ -123,6 +113,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
 			if (nonceMessage != null && nonceMessage.Nonce != null) {
 				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce, MessagingStrings.InvalidNonceReceived);
+				ErrorUtilities.VerifyInternal(this.nonceStore != null, "Nonce store not set.");
 
 				if (!this.nonceStore.StoreNonce(nonceMessage.NonceContext, nonceMessage.Nonce, nonceMessage.UtcCreationDate)) {
 					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", nonceMessage.Nonce, nonceMessage.UtcCreationDate);

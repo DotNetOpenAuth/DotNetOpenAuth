@@ -142,7 +142,11 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			Encoding encoding = Encoding.UTF8;
+#if !SILVERLIGHT
 			this.Headers[HttpResponseHeader.ContentEncoding] = encoding.HeaderName;
+#else
+			this.Headers["Content-Encoding"] = "UTF-8"; // encoding.HeaderName; // Silverlight lacks HttpResponseHeader.ContentEncoding
+#endif
 			this.responseStream = new MemoryStream();
 			StreamWriter writer = new StreamWriter(this.ResponseStream, encoding);
 			writer.Write(body);

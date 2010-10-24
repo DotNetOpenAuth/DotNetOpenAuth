@@ -11,7 +11,9 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+#if !SILVERLIGHT
 	using System.Net.Mime;
+#endif
 	using System.Text;
 
 	/// <summary>
@@ -43,6 +45,7 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.RequestUri = requestUri;
+#if !SILVERLIGHT
 			if (!string.IsNullOrEmpty(response.ContentType)) {
 				try {
 					this.ContentType = new ContentType(response.ContentType);
@@ -50,7 +53,12 @@ namespace DotNetOpenAuth.Messaging {
 					Logger.Messaging.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", response.ResponseUri.AbsoluteUri, response.ContentType);
 				}
 			}
+#else
+			this.ContentType = response.ContentType;
+#endif
+#if !SILVERLIGHT
 			this.ContentEncoding = string.IsNullOrEmpty(response.ContentEncoding) ? DefaultContentEncoding : response.ContentEncoding;
+#endif
 			this.FinalUri = response.ResponseUri;
 			this.Status = response.StatusCode;
 			this.Headers = response.Headers;
@@ -70,6 +78,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.RequestUri = requestUri;
 			this.Status = statusCode;
+#if !SILVERLIGHT
 			if (!string.IsNullOrEmpty(contentType)) {
 				try {
 					this.ContentType = new ContentType(contentType);
@@ -77,7 +86,12 @@ namespace DotNetOpenAuth.Messaging {
 					Logger.Messaging.ErrorFormat("HTTP response to {0} included an invalid Content-Type header value: {1}", responseUri.AbsoluteUri, contentType);
 				}
 			}
+#else
+			this.ContentType = contentType;
+#endif
+#if !SILVERLIGHT
 			this.ContentEncoding = string.IsNullOrEmpty(contentEncoding) ? DefaultContentEncoding : contentEncoding;
+#endif
 			this.Headers = headers;
 			this.FinalUri = responseUri;
 		}
@@ -85,12 +99,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the type of the content.
 		/// </summary>
+#if !SILVERLIGHT
 		public ContentType ContentType { get; private set; }
+#else
+		public string ContentType { get; private set; }
+#endif
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Gets the content encoding.
 		/// </summary>
 		public string ContentEncoding { get; private set; }
+#endif
 
 		/// <summary>
 		/// Gets the URI of the initial request.
@@ -138,7 +158,9 @@ namespace DotNetOpenAuth.Messaging {
 			sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "ResponseUri = {0}", this.FinalUri));
 			sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "StatusCode = {0}", this.Status));
 			sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "ContentType = {0}", this.ContentType));
+#if !SILVERLIGHT
 			sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "ContentEncoding = {0}", this.ContentEncoding));
+#endif
 			sb.AppendLine("Headers:");
 			foreach (string header in this.Headers) {
 				sb.AppendLine(string.Format(CultureInfo.CurrentCulture, "\t{0}: {1}", header, this.Headers[header]));

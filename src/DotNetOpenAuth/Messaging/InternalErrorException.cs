@@ -17,7 +17,9 @@ namespace DotNetOpenAuth.Messaging {
 	/// really an unexpected, potentially unrecoverable exception.
 	/// </remarks>
 	[SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic", Justification = "We want this to be internal so clients cannot catch it.")]
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class InternalErrorException : Exception {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InternalErrorException"/> class.
@@ -37,6 +39,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="inner">The inner exception.</param>
 		public InternalErrorException(string message, Exception inner) : base(message, inner) { }
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InternalErrorException"/> class.
 		/// </summary>
@@ -52,5 +55,6 @@ namespace DotNetOpenAuth.Messaging {
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
 			: base(info, context) { }
+#endif
 	}
 }

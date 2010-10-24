@@ -12,11 +12,15 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
+#if !SILVERLIGHT
 	using System.Net.Security;
+#endif
 	using System.Reflection;
 	using System.Xml;
+#if !SILVERLIGHT
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.OpenId;
+#endif
 
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
@@ -74,11 +78,13 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return bool.Parse(str);
 			};
+#if !SILVERLIGHT
 			Func<string, Identifier> safeIdentifier = str => {
 				Contract.Assume(str != null);
 				ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
 				return Identifier.Parse(str, true);
 			};
+#endif
 			Func<byte[], string> safeFromByteArray = bytes => {
 				Contract.Assume(bytes != null);
 				return Convert.ToBase64String(bytes);
@@ -87,15 +93,19 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return Convert.FromBase64String(str);
 			};
+#if !SILVERLIGHT
 			Func<string, Realm> safeRealm = str => {
 				Contract.Assume(str != null);
 				return new Realm(str);
 			};
+#endif
 			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), null, str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<byte[]>(safeFromByteArray, null, safeToByteArray);
+#if !SILVERLIGHT
 			Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
 			Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
+#endif
 			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
 			Map<CultureInfo>(c => c.Name, null, str => new CultureInfo(str));
 			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), null, str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
@@ -209,8 +219,12 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			try {
 				if (this.IsConstantValue) {
 					string constantValue = this.GetValue(message);
-					var caseSensitivity = DotNetOpenAuthSection.Configuration.Messaging.Strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-					if (!string.Equals(constantValue, value, caseSensitivity)) {
+#if !SILVERLIGHT
+					bool strict = DotNetOpenAuthSection.Configuration.Messaging.Strict;
+#else
+					bool strict = true;
+#endif
+					if (!string.Equals(constantValue, value, strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) {
 						throw new ArgumentException(string.Format(
 							CultureInfo.CurrentCulture,
 							MessagingStrings.UnexpectedMessagePartValueForConstant,

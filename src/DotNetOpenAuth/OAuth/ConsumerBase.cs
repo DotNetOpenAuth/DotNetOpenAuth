@@ -11,7 +11,9 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+#if !SILVERLIGHT
 	using DotNetOpenAuth.Configuration;
+#endif
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -31,12 +33,15 @@ namespace DotNetOpenAuth.OAuth {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
 
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
-			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager);
+			this.OAuthChannel = new OAuthChannel(signingElement, null, tokenManager);
 			this.ServiceProvider = serviceDescription;
-			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
 
+#if !SILVERLIGHT
+			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
 			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, null);
+#else
+			this.SecuritySettings = new ConsumerSecuritySettings();
+#endif
 		}
 
 		/// <summary>

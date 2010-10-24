@@ -12,7 +12,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+#if !SILVERLIGHT
 	using System.Web;
+#endif
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -186,8 +188,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			// In an outgoing message, the POST entity can only contain parameters if they were
 			// in the message dictionary, so no need to pull out any parameters from there.
 			if (message.Recipient.Query != null) {
+#if !SILVERLIGHT
 				NameValueCollection nvc = HttpUtility.ParseQueryString(message.Recipient.Query);
 				foreach (string key in nvc) {
+#else
+				IDictionary<string, string> nvc = MessagingUtilities.ParseQueryString(message.Recipient.Query);
+				foreach (string key in nvc.Keys) {
+#endif
 					string escapedKey = MessagingUtilities.EscapeUriDataStringRfc3986(key);
 					string escapedValue = MessagingUtilities.EscapeUriDataStringRfc3986(nvc[key]);
 					string existingValue;

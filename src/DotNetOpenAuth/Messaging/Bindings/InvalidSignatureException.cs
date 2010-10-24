@@ -10,7 +10,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// <summary>
 	/// An exception thrown when a signed message does not pass signature validation.
 	/// </summary>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class InvalidSignatureException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InvalidSignatureException"/> class.
@@ -19,6 +21,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		public InvalidSignatureException(IProtocolMessage faultedMessage)
 			: base(MessagingStrings.SignatureInvalid, faultedMessage) { }
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InvalidSignatureException"/> class.
 		/// </summary>
@@ -30,5 +33,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
 			: base(info, context) { }
+#endif
 	}
 }

@@ -13,9 +13,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+#if !SILVERLIGHT
 	using System.Net.Mime;
+#endif
 	using System.Text;
+#if !SILVERLIGHT
 	using System.Web;
+#endif
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -39,6 +43,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			new OAuthConsumerMessageFactory()) {
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
@@ -52,6 +57,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			tokenManager,
 			new OAuthServiceProviderMessageFactory(tokenManager)) {
 		}
+#endif
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
@@ -109,6 +115,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			return this.CreateHttpRequest(request);
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Searches an incoming HTTP request for data that could be used to assemble
 		/// a protocol request message.
@@ -186,6 +193,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			return message;
 		}
+#endif
 
 		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
@@ -196,7 +204,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			string body = response.GetResponseReader().ReadToEnd();
+#if !SILVERLIGHT
 			return HttpUtility.ParseQueryString(body).ToDictionary();
+#else
+			return MessagingUtilities.ParseQueryString(body);
+#endif
 		}
 
 		/// <summary>
@@ -230,6 +242,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			return httpRequest;
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
@@ -258,6 +271,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			return encodedResponse;
 		}
+#endif
 
 		/// <summary>
 		/// Initializes the binding elements for the OAuth channel.
@@ -274,10 +288,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				new StandardReplayProtectionBindingElement(store),
 			};
 
+#if !SILVERLIGHT
 			var spTokenManager = tokenManager as IServiceProviderTokenManager;
 			if (spTokenManager != null) {
 				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager));
 			}
+#endif
 
 			return bindingElements.ToArray();
 		}
@@ -359,7 +375,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 			authorization.Length--; // remove trailing comma
 
-			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
+			httpRequest.Headers[HttpRequestHeader.Authorization] = authorization.ToString();
 
 			if (hasEntity) {
 				// WARNING: We only set up the request stream for the caller if there is
@@ -416,7 +432,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				ErrorUtilities.VerifyInternal(consumerKey == consumerTokenManager.ConsumerKey, "The token manager consumer key and the consumer key set earlier do not match!");
 				return consumerTokenManager.ConsumerSecret;
 			} else {
+#if !SILVERLIGHT
 				return ((IServiceProviderTokenManager)this.TokenManager).GetConsumer(consumerKey).Secret;
+#else
+				throw new NotSupportedException();
+#endif
 			}
 		}
 	}

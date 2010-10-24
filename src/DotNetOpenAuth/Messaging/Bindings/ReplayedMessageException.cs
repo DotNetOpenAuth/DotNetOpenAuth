@@ -11,7 +11,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// An exception thrown when a message is received for the second time, signalling a possible
 	/// replay attack.
 	/// </summary>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	internal class ReplayedMessageException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReplayedMessageException"/> class.
@@ -19,6 +21,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="faultedMessage">The replayed message.</param>
 		public ReplayedMessageException(IProtocolMessage faultedMessage) : base(MessagingStrings.ReplayAttackDetected, faultedMessage) { }
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReplayedMessageException"/> class.
 		/// </summary>
@@ -30,5 +33,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
 			: base(info, context) { }
-	}
+#endif
+		}
 }

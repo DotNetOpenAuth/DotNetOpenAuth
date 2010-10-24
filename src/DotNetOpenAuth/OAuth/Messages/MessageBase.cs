@@ -17,7 +17,9 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	/// <summary>
 	/// A base class for all OAuth messages.
 	/// </summary>
+#if !SILVERLIGHT
 	[Serializable]
+#endif
 	public abstract class MessageBase : IDirectedProtocolMessage, IDirectResponseProtocolMessage {
 		/// <summary>
 		/// A store for extra name/value data pairs that are attached to this message.

@@ -11,9 +11,12 @@ namespace DotNetOpenAuth {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
+#if !SILVERLIGHT
 	using System.Web;
 	using System.Web.UI;
+#endif
 	using DotNetOpenAuth.Messaging;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// Utility methods for working with URIs.
@@ -35,7 +38,11 @@ namespace DotNetOpenAuth {
 				return false;
 			}
 
+#if !SILVERLIGHT
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
+#else
+			IDictionary<string, string> nvc = MessagingUtilities.ParseQueryString(uri.Query);
+#endif
 			Contract.Assume(nvc != null); // BCL
 			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
 		}
@@ -81,6 +88,7 @@ namespace DotNetOpenAuth {
 			}
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Validates that a URL will be resolvable at runtime.
 		/// </summary>
@@ -113,5 +121,6 @@ namespace DotNetOpenAuth {
 				}
 			}
 		}
+#endif
 	}
 }
