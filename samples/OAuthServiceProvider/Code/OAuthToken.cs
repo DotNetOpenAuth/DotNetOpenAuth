@@ -62,5 +62,34 @@ namespace OAuthServiceProvider.Code {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Called by LinqToSql when the <see cref="IssueDate"/> property is about to change.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		partial void OnIssueDateChanging(DateTime value) {
+			if (value.Kind == DateTimeKind.Unspecified) {
+				throw new ArgumentException("The DateTime.Kind cannot be Unspecified to ensure accurate timestamp checks.");
+			}
+		}
+
+		/// <summary>
+		/// Called by LinqToSql when <see cref="IssueDate"/> has changed.
+		/// </summary>
+		partial void OnIssueDateChanged() {
+			if (this.IssueDate.Kind == DateTimeKind.Local) {
+				this._IssueDate = this.IssueDate.ToUniversalTime();
+			}
+		}
+
+		/// <summary>
+		/// Called by LinqToSql when a token instance is deserialized.
+		/// </summary>
+		partial void OnLoaded() {
+			if (this.IssueDate.Kind == DateTimeKind.Unspecified) {
+				// this detail gets lost in db storage, but must be reaffirmed so that expiratoin checks succeed.
+				this._IssueDate = DateTime.SpecifyKind(this.IssueDate, DateTimeKind.Utc);
+			}
+		}
 	}
 }
