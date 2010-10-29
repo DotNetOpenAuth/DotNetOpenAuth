@@ -42,7 +42,11 @@ namespace OAuthServiceProvider.Code {
 		}
 
 		public void UpdateToken(IServiceProviderRequestToken token) {
-			// Nothing to do here, since we're using Linq To SQL.
+			// Nothing to do here, since we're using Linq To SQL, and
+			// We call LinqToSql's SubmitChanges method via our Global.Application_EndRequest method.
+			// This is a good pattern because we only save changes if the request didn't end up somehow failing.
+			// But if you DO want to save changes at this point, you could do it like so:
+			////Global.DataContext.SubmitChanges();
 		}
 
 		#endregion
