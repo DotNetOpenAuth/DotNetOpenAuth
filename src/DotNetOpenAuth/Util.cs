@@ -28,6 +28,11 @@ namespace DotNetOpenAuth {
 		internal const string DefaultNamespace = "DotNetOpenAuth";
 
 		/// <summary>
+		/// Caches the getwebresourceurl reflected method
+		/// </summary>
+		private static readonly Func<Type, string, bool, string> GetWebResourceUrlInternal = FindWebResourceUrlMethod();
+
+		/// <summary>
 		/// The web.config file-specified provider of web resource URLs.
 		/// </summary>
 		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = DotNetOpenAuthSection.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false);
@@ -180,12 +185,19 @@ namespace DotNetOpenAuth {
 			} else if ((retrieval = HttpContext.Current.CurrentHandler as IEmbeddedResourceRetrieval) != null) {
 				return retrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName).AbsoluteUri;
 			} else {
-				throw new InvalidOperationException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						Strings.EmbeddedResourceUrlProviderRequired,
-						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
+				return GetWebResourceUrlInternal(someTypeInResourceAssembly, manifestResourceName, false);
 			}
+		}
+
+		/// <summary>
+		/// Gets the Microsoft GetWebResourceUrl internal method
+		/// </summary>
+		/// <returns>A delegate to the reflected method</returns>
+		private static Func<Type, string, bool, string> FindWebResourceUrlMethod()
+		{
+			var method = typeof(System.Web.Handlers.AssemblyResourceLoader).GetMethod("GetWebResourceUrl", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(string), typeof(bool) }, null);
+
+			return (Func<Type, string, bool, string>)Delegate.CreateDelegate(typeof(Func<Type, string, bool, string>), method, true);
 		}
 
 		/// <summary>
