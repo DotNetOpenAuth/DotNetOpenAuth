@@ -125,8 +125,9 @@ $(function() {
 		});
 	});
 
-	$('ul.OpenIdProviders li').click(function() {
-		var lastFocus = $('.focused')[0];
+	$('ul.OpenIdProviders li').click(function(event) {
+	    event.preventDefault();
+        var lastFocus = $('.focused')[0];
 		if (lastFocus != $(this)[0]) {
 			$('ul.OpenIdProviders li').removeClass('focused');
 			$(this).addClass('focused');
@@ -166,6 +167,8 @@ $(function() {
 			// gray overlaying div captured the click event.
 			$('img', this)[0].click();
 		}
+
+        return false;
 	});
 	if (ajaxbox) {
 		$('#OpenIDButton').click(function() {

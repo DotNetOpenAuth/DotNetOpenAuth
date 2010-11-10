@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>mykeyfile.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -637,32 +643,33 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Yadis\Yadis.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(NoUIControls)' != 'true' ">
-    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs"/>
-    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs"/>
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs"/>
-    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs"/>
-    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs"/>
-    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs"/>
-    <Compile Include="XrdsPublisher.cs"/>
-    <Compile Include="InfoCard\ReceivingTokenEventArgs.cs"/>
-    <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs"/>
-    <Compile Include="InfoCard\InfoCardSelector.cs"/>
-    <Compile Include="InfoCard\ReceivedTokenEventArgs.cs"/>
-    <Compile Include="Mvc\OpenIdHelper.cs"/>
-    <Compile Include="OpenId\RelyingParty\SelectorButton.cs"/>
-    <Compile Include="OpenId\Provider\IdentityEndpoint.cs"/>
-    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs"/>
-    <Compile Include="OpenId\RelyingParty\SelectorInfoCardButton.cs"/>
-    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' "/>
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs"/>
-    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs"/>
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs"/>
-    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs"/>
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs"/>
+    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
+    <Compile Include="XrdsPublisher.cs" />
+    <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
+    <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
+    <Compile Include="InfoCard\InfoCardSelector.cs" />
+    <Compile Include="InfoCard\ReceivedTokenEventArgs.cs" />
+    <Compile Include="Mvc\OpenIdHelper.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
+    <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
+    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorInfoCardButton.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' " />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Configuration\DotNetOpenAuth.xsd" />
     <None Include="Migrated rules for DotNetOpenAuth.ruleset" />
+    <None Include="mykeyfile.pfx" />
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />

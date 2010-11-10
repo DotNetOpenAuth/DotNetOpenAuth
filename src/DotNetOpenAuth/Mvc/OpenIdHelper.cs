@@ -304,7 +304,7 @@ window.openid_trace = {1}; // causes lots of messages";
 			}
 			h.RenderBeginTag(HtmlTextWriterTag.Li);
 
-			h.AddAttribute(HtmlTextWriterAttribute.Href, "#");
+			h.AddAttribute(HtmlTextWriterAttribute.Href, new UrlHelper(html.ViewContext.RequestContext).Action("openid", new { openid_identifier = id}));
 			h.RenderBeginTag(HtmlTextWriterTag.A);
 
 			h.RenderBeginTag(HtmlTextWriterTag.Div);
