@@ -90,7 +90,7 @@ window.openid_trace = {1}; // causes lots of messages";
 			result.WriteScriptTags(scriptResources);
 
 			if (selectorOptions.DownloadYahooUILibrary) {
-				result.WriteScriptTags(new[] { "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js" });
+				result.WriteScriptTagsUrls(new[] { "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js" });
 			}
 
 			var blockBuilder = new StringWriter();
