@@ -126,8 +126,8 @@ $(function() {
 	});
 
 	$('ul.OpenIdProviders li').click(function(event) {
-	    event.preventDefault();
-        var lastFocus = $('.focused')[0];
+		event.preventDefault();
+		var lastFocus = $('.focused')[0];
 		if (lastFocus != $(this)[0]) {
 			$('ul.OpenIdProviders li').removeClass('focused');
 			$(this).addClass('focused');
@@ -168,7 +168,7 @@ $(function() {
 			$('img', this)[0].click();
 		}
 
-        return false;
+		return false;
 	});
 	if (ajaxbox) {
 		$('#OpenIDButton').click(function() {
@@ -183,7 +183,7 @@ $(function() {
 		});
 
 		$(ajaxbox.form).keydown(function(e) {
-			if (e.keyCode == $.ui.keyCode.ENTER) {
+			if (e.keyCode == 13/*$.ui.keyCode.ENTER*/) {
 				// we do NOT want to submit the form on ENTER.
 				e.preventDefault();
 			}
@@ -192,7 +192,7 @@ $(function() {
 
 	// Make popup window close on escape (the dialog style is already taken care of)
 	$(document).keydown(function(e) {
-		if (e.keyCode == $.ui.keyCode.ESCAPE) {
+		if (e.keyCode == 27/*$.ui.keyCode.ESCAPE*/) {
 			window.close();
 		}
 	});
