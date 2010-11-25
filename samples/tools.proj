@@ -15,13 +15,19 @@
 			</ToolProjects>
 		</ItemGroup>
 
-		<MSBuild Projects="@(ToolProjects)" Targets="%(ToolProjects.Targets)" BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="OfflineProvider"/>
+		<MSBuild Projects="@(ToolProjects)" Targets="%(ToolProjects.Targets);BuiltProjectOutputGroupDependencies" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="ToolProjectsOutputs"/>
 		</MSBuild>
 
 		<ItemGroup>
-			<!-- Remove the un-unified assembly. -->
-			<OfflineProvider Remove="$(OutputPath)$(SignedSubPath)$(ProductName).dll" />
+			<!-- Exclude the un-unified assemblies. -->
+			<OfflineProvider Include="@(ToolProjectsOutputs)" 
+											 Condition=" '%(ToolProjectsOutputs.CopyLocal)' != 'false' "
+											 Exclude="
+											 $(OutputPath)$(SignedSubPath)$(ProductName).dll;
+											 $(ProjectRoot)lib\Microsoft.Contracts.dll;
+											 " />
+			
 			<!-- add the PDBs -->
 			<OfflineProvider Include="@(OfflineProvider->'%(SymbolPath)')" />
 			<OfflineProviderTargets Include="
