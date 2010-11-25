@@ -24,6 +24,7 @@
 			<OfflineProvider Include="@(ToolProjectsOutputs)" 
 											 Condition=" '%(ToolProjectsOutputs.CopyLocal)' != 'false' "
 											 Exclude="
+											 $(OutputPath)$(ProductName).dll;
 											 $(OutputPath)$(SignedSubPath)$(ProductName).dll;
 											 $(ProjectRoot)lib\Microsoft.Contracts.dll;
 											 " />
