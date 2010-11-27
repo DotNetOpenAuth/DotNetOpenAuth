@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 	using System.Xml.Serialization;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using NUnit.Framework;
 
@@ -128,6 +129,17 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		public void InvalidRawBirthdate() {
 			var response = new ClaimsResponse();
 			response.BirthDateRaw = "2008";
+		}
+
+		[TestCase]
+		public void ResponseAlternateTypeUriTests() {
+			var request = new ClaimsRequest(Constants.sreg_ns10);
+			request.Email = DemandLevel.Require;
+
+			var response = new ClaimsResponse(Constants.sreg_ns10);
+			response.Email = "a@b.com";
+
+			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		private ClaimsResponse GetFilledData() {
