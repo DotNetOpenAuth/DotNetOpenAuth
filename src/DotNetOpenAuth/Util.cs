@@ -3,6 +3,8 @@
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+using System.Security;
+
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
@@ -26,11 +28,6 @@ namespace DotNetOpenAuth {
 		/// The base namespace for this library from which all other namespaces derive.
 		/// </summary>
 		internal const string DefaultNamespace = "DotNetOpenAuth";
-
-		/// <summary>
-		/// Caches the getwebresourceurl reflected method
-		/// </summary>
-		private static readonly Func<Type, string, bool, string> GetWebResourceUrlInternal = FindWebResourceUrlMethod();
 
 		/// <summary>
 		/// The web.config file-specified provider of web resource URLs.
@@ -186,6 +183,33 @@ namespace DotNetOpenAuth {
 				return retrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName).AbsoluteUri;
 			} else {
 				return GetWebResourceUrlInternal(someTypeInResourceAssembly, manifestResourceName, false);
+			}
+		}
+
+		/// <summary>
+		/// Caches the getwebresourceurl reflected method
+		/// </summary>
+		private static Func<Type, string, bool, string> getWebResourceUrlInternal;
+		public static Func<Type, string, bool, string> GetWebResourceUrlInternal
+		{
+			get
+			{
+				if (getWebResourceUrlInternal == null)
+				{
+					try
+					{
+						getWebResourceUrlInternal = FindWebResourceUrlMethod();
+					}
+					catch (SecurityException e)
+					{
+						throw new InvalidOperationException(
+											string.Format(
+												CultureInfo.CurrentCulture,
+												Strings.EmbeddedResourceUrlProviderRequired,
+												string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
+					}
+				}
+				return getWebResourceUrlInternal;
 			}
 		}
 
