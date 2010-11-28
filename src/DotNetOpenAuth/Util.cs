@@ -190,18 +190,12 @@ namespace DotNetOpenAuth {
 		/// Caches the getwebresourceurl reflected method
 		/// </summary>
 		private static Func<Type, string, bool, string> getWebResourceUrlInternal;
-		public static Func<Type, string, bool, string> GetWebResourceUrlInternal
-		{
-			get
-			{
-				if (getWebResourceUrlInternal == null)
-				{
-					try
-					{
+		public static Func<Type, string, bool, string> GetWebResourceUrlInternal {
+			get {
+				if (getWebResourceUrlInternal == null) {
+					try {
 						getWebResourceUrlInternal = FindWebResourceUrlMethod();
-					}
-					catch (SecurityException e)
-					{
+					} catch (SecurityException e) {
 						throw new InvalidOperationException(
 											string.Format(
 												CultureInfo.CurrentCulture,
@@ -217,8 +211,7 @@ namespace DotNetOpenAuth {
 		/// Gets the Microsoft GetWebResourceUrl internal method
 		/// </summary>
 		/// <returns>A delegate to the reflected method</returns>
-		private static Func<Type, string, bool, string> FindWebResourceUrlMethod()
-		{
+		private static Func<Type, string, bool, string> FindWebResourceUrlMethod() {
 			var method = typeof(System.Web.Handlers.AssemblyResourceLoader).GetMethod("GetWebResourceUrl", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(string), typeof(bool) }, null);
 
 			return (Func<Type, string, bool, string>)Delegate.CreateDelegate(typeof(Func<Type, string, bool, string>), method, true);
