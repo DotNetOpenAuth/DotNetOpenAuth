@@ -3,8 +3,6 @@
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-using System.Security;
-
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
@@ -182,39 +180,12 @@ namespace DotNetOpenAuth {
 			} else if ((retrieval = HttpContext.Current.CurrentHandler as IEmbeddedResourceRetrieval) != null) {
 				return retrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName).AbsoluteUri;
 			} else {
-				return GetWebResourceUrlInternal(someTypeInResourceAssembly, manifestResourceName, false);
+				throw new InvalidOperationException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.EmbeddedResourceUrlProviderRequired,
+						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
 			}
-		}
-
-		/// <summary>
-		/// Caches the getwebresourceurl reflected method
-		/// </summary>
-		private static Func<Type, string, bool, string> getWebResourceUrlInternal;
-		public static Func<Type, string, bool, string> GetWebResourceUrlInternal {
-			get {
-				if (getWebResourceUrlInternal == null) {
-					try {
-						getWebResourceUrlInternal = FindWebResourceUrlMethod();
-					} catch (SecurityException e) {
-						throw new InvalidOperationException(
-											string.Format(
-												CultureInfo.CurrentCulture,
-												Strings.EmbeddedResourceUrlProviderRequired,
-												string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
-					}
-				}
-				return getWebResourceUrlInternal;
-			}
-		}
-
-		/// <summary>
-		/// Gets the Microsoft GetWebResourceUrl internal method
-		/// </summary>
-		/// <returns>A delegate to the reflected method</returns>
-		private static Func<Type, string, bool, string> FindWebResourceUrlMethod() {
-			var method = typeof(System.Web.Handlers.AssemblyResourceLoader).GetMethod("GetWebResourceUrl", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(string), typeof(bool) }, null);
-
-			return (Func<Type, string, bool, string>)Delegate.CreateDelegate(typeof(Func<Type, string, bool, string>), method, true);
 		}
 
 		/// <summary>
