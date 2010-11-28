@@ -5,7 +5,8 @@
 //-----------------------------------------------------------------------
 using System.Security;
 
-namespace DotNetOpenAuth {
+namespace DotNetOpenAuth
+{
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
@@ -23,7 +24,8 @@ namespace DotNetOpenAuth {
 	/// A grab-bag utility class.
 	/// </summary>
 	[ContractVerification(true)]
-	internal static class Util {
+	internal static class Util
+	{
 		/// <summary>
 		/// The base namespace for this library from which all other namespaces derive.
 		/// </summary>
@@ -38,8 +40,10 @@ namespace DotNetOpenAuth {
 		/// Gets a human-readable description of the library name and version, including
 		/// whether the build is an official or private one.
 		/// </summary>
-		public static string LibraryVersion {
-			get {
+		public static string LibraryVersion
+		{
+			get
+			{
 				string assemblyFullName = Assembly.GetExecutingAssembly().FullName;
 				bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
 
@@ -55,14 +59,17 @@ namespace DotNetOpenAuth {
 		/// <param name="first">The first object.</param>
 		/// <param name="second">The second object.</param>
 		/// <returns><c>true</c> if the two objects are equal; <c>false</c> otherwise.</returns>
-		internal static bool EqualsNullSafe<T>(this T first, T second) where T : class {
+		internal static bool EqualsNullSafe<T>(this T first, T second) where T : class
+		{
 			// If one is null and the other is not...
-			if (object.ReferenceEquals(first, null) ^ object.ReferenceEquals(second, null)) {
+			if (object.ReferenceEquals(first, null) ^ object.ReferenceEquals(second, null))
+			{
 				return false;
 			}
 
 			// If both are null... (we only check one because we already know both are either null or non-null)
-			if (object.ReferenceEquals(first, null)) {
+			if (object.ReferenceEquals(first, null))
+			{
 				return true;
 			}
 
@@ -82,15 +89,18 @@ namespace DotNetOpenAuth {
 		/// <see cref="Object.ToString"/> method is actually called, which makes it great
 		/// for logging complex objects without being in a conditional block.
 		/// </remarks>
-		internal static object ToStringDeferred<K, V>(this IEnumerable<KeyValuePair<K, V>> pairs) {
+		internal static object ToStringDeferred<K, V>(this IEnumerable<KeyValuePair<K, V>> pairs)
+		{
 			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(
 				pairs,
-				p => {
+				p =>
+				{
 					////Contract.Requires(pairs != null); // CC: anonymous method can't handle it
 					ErrorUtilities.VerifyArgumentNotNull(pairs, "pairs");
 					var dictionary = pairs as IDictionary<K, V>;
 					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
-					foreach (var pair in pairs) {
+					foreach (var pair in pairs)
+					{
 						sb.AppendFormat("\t{0}: {1}{2}", pair.Key, pair.Value, Environment.NewLine);
 					}
 					return sb.ToString();
@@ -104,7 +114,8 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type of elements contained in the list.</typeparam>
 		/// <param name="list">The list of elements.</param>
 		/// <returns>An object whose ToString method will perform the actual work of generating the string.</returns>
-		internal static object ToStringDeferred<T>(this IEnumerable<T> list) {
+		internal static object ToStringDeferred<T>(this IEnumerable<T> list)
+		{
 			return ToStringDeferred<T>(list, false);
 		}
 
@@ -116,19 +127,23 @@ namespace DotNetOpenAuth {
 		/// <param name="multiLineElements">if set to <c>true</c>, special formatting will be applied to the output to make it clear where one element ends and the next begins.</param>
 		/// <returns>An object whose ToString method will perform the actual work of generating the string.</returns>
 		[ContractVerification(false)]
-		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements) {
+		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements)
+		{
 			return new DelayedToString<IEnumerable<T>>(
 				list,
-				l => {
+				l =>
+				{
 					// Code contracts not allowed in generator methods.
 					ErrorUtilities.VerifyArgumentNotNull(l, "l");
 
 					string newLine = Environment.NewLine;
 					////Contract.Assume(newLine != null && newLine.Length > 0);
 					StringBuilder sb = new StringBuilder();
-					if (multiLineElements) {
+					if (multiLineElements)
+					{
 						sb.AppendLine("[{");
-						foreach (T obj in l) {
+						foreach (T obj in l)
+						{
 							// Prepare the string repersentation of the object
 							string objString = obj != null ? obj.ToString() : "<NULL>";
 
@@ -137,25 +152,33 @@ namespace DotNetOpenAuth {
 							sb.Append("\t");
 							sb.Append(objString);
 
-							if (!objString.EndsWith(Environment.NewLine, StringComparison.Ordinal)) {
+							if (!objString.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+							{
 								sb.AppendLine();
 							}
 							sb.AppendLine("}, {");
 						}
-						if (sb.Length > 2 + Environment.NewLine.Length) { // if anything was in the enumeration
+						if (sb.Length > 2 + Environment.NewLine.Length)
+						{ // if anything was in the enumeration
 							sb.Length -= 2 + Environment.NewLine.Length; // trim off the last ", {\r\n"
-						} else {
+						}
+						else
+						{
 							sb.Length -= 1 + Environment.NewLine.Length; // trim off the opening {
 						}
 						sb.Append("]");
 						return sb.ToString();
-					} else {
+					}
+					else
+					{
 						sb.Append("{");
-						foreach (T obj in l) {
+						foreach (T obj in l)
+						{
 							sb.Append(obj != null ? obj.ToString() : "<NULL>");
 							sb.AppendLine(",");
 						}
-						if (sb.Length > 1) {
+						if (sb.Length > 1)
+						{
 							sb.Length -= 1;
 						}
 						sb.Append("}");
@@ -170,18 +193,26 @@ namespace DotNetOpenAuth {
 		/// <param name="someTypeInResourceAssembly">Some type in resource assembly.</param>
 		/// <param name="manifestResourceName">Name of the manifest resource.</param>
 		/// <returns>An absolute URL</returns>
-		internal static string GetWebResourceUrl(Type someTypeInResourceAssembly, string manifestResourceName) {
+		internal static string GetWebResourceUrl(Type someTypeInResourceAssembly, string manifestResourceName)
+		{
 			Page page;
 			IEmbeddedResourceRetrieval retrieval;
 
-			if (embeddedResourceRetrieval != null) {
+			if (embeddedResourceRetrieval != null)
+			{
 				Uri url = embeddedResourceRetrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName);
 				return url != null ? url.AbsoluteUri : null;
-			} else if ((page = HttpContext.Current.CurrentHandler as Page) != null) {
+			}
+			else if ((page = HttpContext.Current.CurrentHandler as Page) != null)
+			{
 				return page.ClientScript.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName);
-			} else if ((retrieval = HttpContext.Current.CurrentHandler as IEmbeddedResourceRetrieval) != null) {
+			}
+			else if ((retrieval = HttpContext.Current.CurrentHandler as IEmbeddedResourceRetrieval) != null)
+			{
 				return retrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName).AbsoluteUri;
-			} else {
+			}
+			else
+			{
 				return GetWebResourceUrlInternal(someTypeInResourceAssembly, manifestResourceName, false);
 			}
 		}
@@ -221,7 +252,8 @@ namespace DotNetOpenAuth {
 		/// Manages an individual deferred ToString call.
 		/// </summary>
 		/// <typeparam name="T">The type of object to be serialized as a string.</typeparam>
-		private class DelayedToString<T> {
+		private class DelayedToString<T>
+		{
 			/// <summary>
 			/// The object that will be serialized if called upon.
 			/// </summary>
@@ -237,7 +269,8 @@ namespace DotNetOpenAuth {
 			/// </summary>
 			/// <param name="obj">The object that may be serialized to string form.</param>
 			/// <param name="toString">The method that will serialize the object if called upon.</param>
-			public DelayedToString(T obj, Func<T, string> toString) {
+			public DelayedToString(T obj, Func<T, string> toString)
+			{
 				Contract.Requires<ArgumentNullException>(toString != null);
 
 				this.obj = obj;
@@ -250,7 +283,8 @@ namespace DotNetOpenAuth {
 			/// <returns>
 			/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 			/// </returns>
-			public override string ToString() {
+			public override string ToString()
+			{
 				return this.toString(this.obj) ?? string.Empty;
 			}
 		}
