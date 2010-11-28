@@ -3,6 +3,8 @@
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
+using System.Security;
+
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
@@ -180,11 +182,37 @@ namespace DotNetOpenAuth {
 			} else if ((retrieval = HttpContext.Current.CurrentHandler as IEmbeddedResourceRetrieval) != null) {
 				return retrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName).AbsoluteUri;
 			} else {
-				throw new InvalidOperationException(
-					string.Format(
-						CultureInfo.CurrentCulture,
-						Strings.EmbeddedResourceUrlProviderRequired,
-						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
+				return GetWebResourceUrlInternal(someTypeInResourceAssembly, manifestResourceName, false);
+			}
+		}
+
+		/// <summary>
+		/// Caches the getwebresourceurl reflected method
+		/// </summary>
+		private static Func<Type, string, bool, string> getWebResourceUrlInternal;
+		public static Func<Type, string, bool, string> GetWebResourceUrlInternal
+		{
+			get
+			{
+				if (getWebResourceUrlInternal == null)
+				{
+					try
+					{
+						//cache this reflection
+						var method = typeof(System.Web.Handlers.AssemblyResourceLoader).GetMethod("GetWebResourceUrl", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(string), typeof(bool) }, null);
+						getWebResourceUrlInternal = (Func<Type, string, bool, string>)Delegate.CreateDelegate(typeof(Func<Type, string, bool, string>), method, true);
+					}
+					catch (SecurityException e)
+					{
+						//if reflection is not supported, throw an exception
+						throw new InvalidOperationException(
+											string.Format(
+												CultureInfo.CurrentCulture,
+												Strings.EmbeddedResourceUrlProviderRequired,
+												string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })), e);
+					}
+				}
+				return getWebResourceUrlInternal;
 			}
 		}
 
