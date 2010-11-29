@@ -3,8 +3,6 @@
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-using System.Security;
-
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
@@ -12,10 +10,11 @@ namespace DotNetOpenAuth {
 	using System.Globalization;
 	using System.Net;
 	using System.Reflection;
+	using System.Security;
 	using System.Text;
+	using System.Threading;
 	using System.Web;
 	using System.Web.UI;
-
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 
@@ -35,6 +34,16 @@ namespace DotNetOpenAuth {
 		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = DotNetOpenAuthSection.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false);
 
 		/// <summary>
+		/// A value indicating whether obtaining the web resource internal method was already attempted.
+		/// </summary>
+		private static bool webResourceUrlGetAttempted;
+
+		/// <summary>
+		/// A cached value for the web resource URL internal method within the .NET Framework.
+		/// </summary>
+		private static Func<Type, string, bool, string> getWebResourceUrlInternal;
+
+		/// <summary>
 		/// Gets a human-readable description of the library name and version, including
 		/// whether the build is an official or private one.
 		/// </summary>
@@ -45,6 +54,30 @@ namespace DotNetOpenAuth {
 
 				// We use InvariantCulture since this is used for logging.
 				return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
+			}
+		}
+
+		/// <summary>
+		/// Gets the GetWebResourceUrl method from inside the .NET Framework if possible; otherwise returns <c>null</c>.
+		/// </summary>
+		private static Func<Type, string, bool, string> GetWebResourceUrlInternal {
+			get {
+				Thread.MemoryBarrier();
+				if (getWebResourceUrlInternal == null && !webResourceUrlGetAttempted) {
+					try {
+						// Cache this reflection
+						var method = typeof(System.Web.Handlers.AssemblyResourceLoader).GetMethod("GetWebResourceUrl", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(string), typeof(bool) }, null);
+						getWebResourceUrlInternal = (Func<Type, string, bool, string>)Delegate.CreateDelegate(typeof(Func<Type, string, bool, string>), method, true);
+					} catch (SecurityException) {
+						// Just quietly give up and return null.
+						Logger.Library.Warn("Unable to obtain the internal AssemblyResourceLoader.GetWebResourceUrl method because of insufficient code access security permissions.");
+					}
+
+					webResourceUrlGetAttempted = true;
+					Thread.MemoryBarrier();
+				}
+
+				return getWebResourceUrlInternal;
 			}
 		}
 
@@ -181,38 +214,14 @@ namespace DotNetOpenAuth {
 				return page.ClientScript.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName);
 			} else if ((retrieval = HttpContext.Current.CurrentHandler as IEmbeddedResourceRetrieval) != null) {
 				return retrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName).AbsoluteUri;
-			} else {
+			} else if (GetWebResourceUrlInternal != null) {
 				return GetWebResourceUrlInternal(someTypeInResourceAssembly, manifestResourceName, false);
-			}
-		}
-
-		/// <summary>
-		/// Caches the getwebresourceurl reflected method
-		/// </summary>
-		private static Func<Type, string, bool, string> getWebResourceUrlInternal;
-		public static Func<Type, string, bool, string> GetWebResourceUrlInternal
-		{
-			get
-			{
-				if (getWebResourceUrlInternal == null)
-				{
-					try
-					{
-						//cache this reflection
-						var method = typeof(System.Web.Handlers.AssemblyResourceLoader).GetMethod("GetWebResourceUrl", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(string), typeof(bool) }, null);
-						getWebResourceUrlInternal = (Func<Type, string, bool, string>)Delegate.CreateDelegate(typeof(Func<Type, string, bool, string>), method, true);
-					}
-					catch (SecurityException e)
-					{
-						//if reflection is not supported, throw an exception
-						throw new InvalidOperationException(
-											string.Format(
-												CultureInfo.CurrentCulture,
-												Strings.EmbeddedResourceUrlProviderRequired,
-												string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })), e);
-					}
-				}
-				return getWebResourceUrlInternal;
+			} else {
+				throw new InvalidOperationException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.EmbeddedResourceUrlProviderRequired,
+						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
 			}
 		}
 
