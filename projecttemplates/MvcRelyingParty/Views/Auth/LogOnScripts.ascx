@@ -8,4 +8,4 @@
 		PreloadedDiscoveryResults = (string)this.ViewData["PreloadedDiscoveryResults"],
 	};
 %>
-<%= Html.OpenIdSelectorScripts(this.Page, null, options)%>
+<%= Html.OpenIdSelectorScripts(null, options)%>

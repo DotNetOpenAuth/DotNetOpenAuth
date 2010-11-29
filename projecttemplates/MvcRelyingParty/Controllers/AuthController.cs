@@ -76,6 +76,30 @@ namespace MvcRelyingParty.Controllers {
 		}
 
 		/// <summary>
+		/// Stage 2: user submitting an Identifier.
+		/// This is the fallback method for the non-ajax way and will
+		/// only be used by the very few.
+		/// The action will redirect the user to the provider.
+		/// </summary>
+		/// <param name="openid_identifier">The openid provider that the user has chosen</param>
+		/// <returns>A redirect action to the provider's url</returns>
+		public virtual ActionResult OpenId(string openid_identifier) {
+			Identifier id;
+			if (Identifier.TryParse(openid_identifier, out id)) {
+				try {
+					var req = this.RelyingParty.CreateRequest(openid_identifier, Realm.AutoDetect, Request.Url, new Uri(Request.Url, Url.Action("PrivacyStatement")));
+					return req.RedirectingResponse.AsActionResult();
+				} catch (ProtocolException ex) {
+					ModelState.AddModelError("OpenID", ex);
+					return this.LogOn();
+				}
+			} else {
+				ModelState.AddModelError("OpenID", "Invalid identifier");
+				return this.LogOn();
+			}
+		}
+
+		/// <summary>
 		/// Prepares a web page to help the user supply his login information.
 		/// </summary>
 		/// <returns>The action result.</returns>
