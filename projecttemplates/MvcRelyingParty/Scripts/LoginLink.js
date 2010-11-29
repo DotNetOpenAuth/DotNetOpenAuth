@@ -1,4 +1,4 @@
-﻿$(function() {
+﻿$(function () {
 	var loginContent = '/Auth/LogOnPopup';
 	var popupWindowName = 'openidlogin';
 	var popupWidth = 365;
@@ -20,7 +20,7 @@
 		window.document.body.appendChild(div);
 	}
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$("#loginDialog").dialog({
 			bgiframe: true,
 			modal: true,
@@ -32,14 +32,14 @@
 			buttons: {},
 			closeOnEscape: true,
 			autoOpen: false,
-			close: function(event, ui) {
+			close: function (event, ui) {
 				// Clear the URL so Chrome/Firefox don't refresh the iframe when it's hidden.
 				iframe.src = "about:blank";
 			},
-			open: function(event, ui) {
+			open: function (event, ui) {
 				iframe.src = loginContent;
 			},
-			focus: function(event, ui) {
+			focus: function (event, ui) {
 				//				var box = $('#openid_identifier')[0];
 				//				if (box.style.display != 'none') {
 				//					box.focus();
@@ -47,10 +47,11 @@
 			}
 		});
 
-		$('.loginPopupLink').click(function() {
+		$('.loginPopupLink').click(function () {
 			$("#loginDialog").dialog('open');
+			return false;
 		});
-		$('.loginWindowLink').click(function() {
+		$('.loginWindowLink').click(function () {
 			if (window.showModalDialog) {
 				window.showModalDialog(loginContent, popupWindowName, 'status:0;resizable:1;scroll:1;center:1;dialogHeight:' + popupHeight + 'px;dialogWidth:' + popupWidth + 'px');
 			} else {

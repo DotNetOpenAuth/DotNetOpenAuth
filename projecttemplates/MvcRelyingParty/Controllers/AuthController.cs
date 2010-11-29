@@ -84,19 +84,30 @@ namespace MvcRelyingParty.Controllers {
 		/// <param name="openid_identifier">The openid provider that the user has chosen</param>
 		/// <returns>A redirect action to the provider's url</returns>
 		public virtual ActionResult OpenId(string openid_identifier) {
-			Identifier id;
-			if (Identifier.TryParse(openid_identifier, out id)) {
-				try {
-					var req = this.RelyingParty.CreateRequest(openid_identifier, Realm.AutoDetect, Request.Url, new Uri(Request.Url, Url.Action("PrivacyStatement")));
-					return req.RedirectingResponse.AsActionResult();
-				} catch (ProtocolException ex) {
-					ModelState.AddModelError("OpenID", ex);
-					return this.LogOn();
+			var response = this.RelyingParty.GetResponse();
+			if (response == null) {
+				// Stage 2: user submitting Identifier
+				Identifier id;
+				if (Identifier.TryParse(openid_identifier, out id)) {
+					try {
+						IAuthenticationRequest req = this.RelyingParty.CreateRequest(openid_identifier, Realm.AutoDetect, Request.Url, this.PrivacyPolicyUrl);
+
+						return req.RedirectingResponse.AsActionResult();
+					} catch (ProtocolException ex) {
+						ModelState.AddModelError("OpenID", ex);
+						return View("Logon");
+					}
+				} else {
+					ModelState.AddModelError("OpenID", "Invalid identifier");
+					return View("Logon");
 				}
-			} else {
-				ModelState.AddModelError("OpenID", "Invalid identifier");
-				return this.LogOn();
 			}
+
+			return this.ProcessResponse(response) ??
+				//// If we're to this point, login didn't complete successfully.
+				// Show the LogOn view again to show the user any errors and
+				// give another chance to complete login.
+				View("LogOn");
 		}
 
 		/// <summary>
@@ -153,34 +164,15 @@ namespace MvcRelyingParty.Controllers {
 
 				// Always say it's a GET since the payload is all in the URL, even the large ones.
 				HttpRequestInfo clientResponseInfo = new HttpRequestInfo("GET", auth, auth.PathAndQuery, headers, null);
-				response = this.RelyingParty.GetResponse(clientResponseInfo);
+				response = this.RelyingParty.GetAjaxResponse(clientResponseInfo);
 			} else {
-				response = this.RelyingParty.GetResponse();
+				response = this.RelyingParty.GetAjaxResponse();
 			}
-			if (response != null) {
-				switch (response.Status) {
-					case AuthenticationStatus.Authenticated:
-						var token = RelyingPartyLogic.User.ProcessUserLogin(response);
-						this.FormsAuth.SignIn(token.ClaimedIdentifier, false);
-						string returnUrl = Request.Form["returnUrl"];
-						if (!String.IsNullOrEmpty(returnUrl)) {
-							return Redirect(returnUrl);
-						} else {
-							return RedirectToAction("Index", "Home");
-						}
-					case AuthenticationStatus.Canceled:
-						ModelState.AddModelError("OpenID", "It looks like you canceled login at your OpenID Provider.");
-						break;
-					case AuthenticationStatus.Failed:
-						ModelState.AddModelError("OpenID", response.Exception.Message);
-						break;
-				}
-			}
-
-			// If we're to this point, login didn't complete successfully.
-			// Show the LogOn view again to show the user any errors and
-			// give another chance to complete login.
-			return View("LogOn");
+			return this.ProcessResponse(response) ??
+				//// If we're to this point, login didn't complete successfully.
+				// Show the LogOn view again to show the user any errors and
+				// give another chance to complete login.
+				View("LogOn");
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken, ValidateInput(false)]
@@ -195,9 +187,9 @@ namespace MvcRelyingParty.Controllers {
 
 				// Always say it's a GET since the payload is all in the URL, even the large ones.
 				HttpRequestInfo clientResponseInfo = new HttpRequestInfo("GET", auth, auth.PathAndQuery, headers, null);
-				response = this.RelyingParty.GetResponse(clientResponseInfo);
+				response = this.RelyingParty.GetAjaxResponse(clientResponseInfo);
 			} else {
-				response = this.RelyingParty.GetResponse();
+				response = this.RelyingParty.GetAjaxResponse();
 			}
 			if (response != null) {
 				switch (response.Status) {
@@ -244,6 +236,29 @@ namespace MvcRelyingParty.Controllers {
 				this.PrivacyPolicyUrl,
 				"https://me.yahoo.com/",
 				"https://www.google.com/accounts/o8/id");
+		}
+
+		private ActionResult ProcessResponse(IAuthenticationResponse response) {
+			if (response != null) {
+				switch (response.Status) {
+					case AuthenticationStatus.Authenticated:
+						var token = RelyingPartyLogic.User.ProcessUserLogin(response);
+						this.FormsAuth.SignIn(token.ClaimedIdentifier, false);
+						string returnUrl = Request["returnUrl"];
+						if (!String.IsNullOrEmpty(returnUrl)) {
+							return Redirect(returnUrl);
+						} else {
+							return RedirectToAction("Index", "Home");
+						}
+					case AuthenticationStatus.Canceled:
+						ModelState.AddModelError("OpenID", "It looks like you canceled login at your OpenID Provider.");
+						break;
+					case AuthenticationStatus.Failed:
+						ModelState.AddModelError("OpenID", response.Exception.Message);
+						break;
+				}
+			}
+			return null;
 		}
 	}
 }

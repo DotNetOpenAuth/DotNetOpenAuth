@@ -22,7 +22,7 @@ Welcome <b>
 	} else {
 %>
 [
-<a href="#" class="loginPopupLink">Login / Register</a>
+<%= Html.ActionLink("Login / Register", "Logon", "Auth", new { returnUrl = Request.Url.PathAndQuery }, new { @class="loginPopupLink" }) %>
 ]
 <%
 	}

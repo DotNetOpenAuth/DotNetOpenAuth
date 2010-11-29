@@ -14,17 +14,17 @@
 
 		IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy);
 
-		IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy);
-
 		ActionResult AjaxDiscovery(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy);
 
 		string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers);
 
 		ActionResult ProcessAjaxOpenIdResponse();
 
-		IAuthenticationResponse GetResponse();
+		IAuthenticationResponse GetAjaxResponse();
 
-		IAuthenticationResponse GetResponse(HttpRequestInfo request);
+		IAuthenticationResponse GetAjaxResponse(HttpRequestInfo request);
+
+		IAuthenticationResponse GetResponse();
 	}
 
 	/// <summary>
@@ -38,7 +38,17 @@
 		/// This is static because it is thread-safe and is more expensive
 		/// to create than we want to run through for every single page request.
 		/// </remarks>
-		private static OpenIdAjaxRelyingParty relyingParty = new OpenIdAjaxRelyingParty();
+		private static OpenIdAjaxRelyingParty ajaxRelyingParty = new OpenIdAjaxRelyingParty();
+
+		/// <summary>
+		/// The OpenID relying party to use for logging users in.
+		/// This version is used for the non-ajax requests
+		/// </summary>
+		/// <remarks>
+		/// This is static because it is thread-safe and is more expensive
+		/// to create than we want to run through for every single page request.
+		/// </remarks>
+		private static OpenIdRelyingParty relyingParty = new OpenIdRelyingParty();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyService"/> class.
@@ -49,14 +59,42 @@
 		#region IOpenIdRelyingParty Members
 
 		public Channel Channel {
-			get { return relyingParty.Channel; }
+			get { return ajaxRelyingParty.Channel; }
 		}
 
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
-			return this.CreateRequests(userSuppliedIdentifier, realm, returnTo, privacyPolicy).First();
+			return this.CreateRequests(relyingParty, userSuppliedIdentifier, realm, returnTo, privacyPolicy).First();
 		}
 
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
+		public ActionResult AjaxDiscovery(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
+			return ajaxRelyingParty.AsAjaxDiscoveryResult(
+				this.CreateRequests(ajaxRelyingParty, userSuppliedIdentifier, realm, returnTo, privacyPolicy)).AsActionResult();
+		}
+
+		public string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers) {
+			return ajaxRelyingParty.AsAjaxPreloadedDiscoveryResult(
+				identifiers.SelectMany(id => this.CreateRequests(ajaxRelyingParty, id, realm, returnTo, privacyPolicy)));
+		}
+
+		public ActionResult ProcessAjaxOpenIdResponse() {
+			return ajaxRelyingParty.ProcessResponseFromPopup().AsActionResult();
+		}
+
+		public IAuthenticationResponse GetResponse() {
+			return relyingParty.GetResponse();
+		}
+
+		public IAuthenticationResponse GetAjaxResponse() {
+			return ajaxRelyingParty.GetResponse();
+		}
+
+		public IAuthenticationResponse GetAjaxResponse(HttpRequestInfo request) {
+			return ajaxRelyingParty.GetResponse(request);
+		}
+
+		#endregion
+
+		private IEnumerable<IAuthenticationRequest> CreateRequests(OpenIdRelyingParty relyingParty, Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
 			if (userSuppliedIdentifier == null) {
 				throw new ArgumentNullException("userSuppliedIdentifier");
 			}
@@ -82,29 +120,5 @@
 				yield return request;
 			}
 		}
-
-		public ActionResult AjaxDiscovery(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
-			return relyingParty.AsAjaxDiscoveryResult(
-				this.CreateRequests(userSuppliedIdentifier, realm, returnTo, privacyPolicy)).AsActionResult();
-		}
-
-		public string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers) {
-			return relyingParty.AsAjaxPreloadedDiscoveryResult(
-				identifiers.SelectMany(id => this.CreateRequests(id, realm, returnTo, privacyPolicy)));
-		}
-
-		public ActionResult ProcessAjaxOpenIdResponse() {
-			return relyingParty.ProcessResponseFromPopup().AsActionResult();
-		}
-
-		public IAuthenticationResponse GetResponse() {
-			return relyingParty.GetResponse();
-		}
-
-		public IAuthenticationResponse GetResponse(HttpRequestInfo request) {
-			return relyingParty.GetResponse(request);
-		}
-
-		#endregion
-	}
+}
 }
