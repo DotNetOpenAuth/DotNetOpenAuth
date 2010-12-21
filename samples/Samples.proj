@@ -20,11 +20,20 @@
 		<ProjectsToClean Include="$(SolutionPath)">
 			<Targets>@(SampleSites->'%(Identity):Clean')</Targets>
 		</ProjectsToClean>
+
+		<_SampleWebConfigs Include="$(ProjectRoot)samples\*\web.config" />
+		<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
 	</ItemGroup>
 
 	<Target Name="Build" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="@(SampleProjects)" BuildInParallel="$(BuildInParallel)" />
-		<MSBuild Projects="$(SolutionPath)" Targets="@(SampleSites)" BuildInParallel="$(BuildInParallel)" />
+		<ItemGroup>
+			<SampleProjectsToBuild Include="@(SampleProjects)" />
+			<SampleProjectsToBuild Include="$(SolutionPath)">
+				<Targets>%(SampleSites.Identity)</Targets>
+			</SampleProjectsToBuild>
+		</ItemGroup>
+
+		<MSBuild Projects="@(SampleProjectsToBuild)" Targets="%(SampleProjectsToBuild.Targets)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Target Name="Prepare">
@@ -33,10 +42,6 @@
 		<PropertyGroup>
 			<PublishSamplesWebSiteVirtualPath>/$(BranchName)</PublishSamplesWebSiteVirtualPath>
 		</PropertyGroup>
-		<ItemGroup>
-			<_SampleWebConfigs Include="$(ProjectRoot)samples\*\web.config" />
-			<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
-		</ItemGroup>
 
 		<!-- Trim the trailing slash on the web sample paths so we can just get the leaf directory name. -->
 		<Trim
@@ -51,12 +56,13 @@
 		</ItemGroup>
 	</Target>
 
-	<Target Name="PrepareForPublish" DependsOnTargets="Prepare;Build">
+	<Target Name="PrepareForPublish" DependsOnTargets="Build">
+		<PropertyGroup>
+			<SamplesZip>$(DropDirectoryNoSlash)-samples.zip</SamplesZip>
+		</PropertyGroup>
+
 		<ItemGroup>
 			<SampleSources Include="$(ProjectRoot)samples\**\*" />
-			<SampleSources>
-				<PublishedLocation>$(SampleWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)</PublishedLocation>
-			</SampleSources>
 		</ItemGroup>
 
 		<FilterItems
@@ -64,26 +70,17 @@
 			StartsWithAny="@(PublishableWebSamples)">
 			<Output TaskParameter="FilteredItems" ItemName="PublishableWebSampleSources" />
 		</FilterItems>
+	</Target>
 
-		<ItemGroup>
-			<PublishableWebSampleTargets Include="@(PublishableWebSampleSources->'%(PublishedLocation)')" />
-		</ItemGroup>
+	<Target Name="Zip"
+					DependsOnTargets="PrepareForPublish"
+					Inputs="@(PublishableWebSampleSources)"
+					Outputs="$(SamplesZip)">
+		<Zip Files="@(PublishableWebSampleSources)" ZipFileName="$(SamplesZip)" WorkingDirectory="$(ProjectRoot)samples\" ZipLevel="$(ZipLevel)" />
 	</Target>
 
 	<Target Name="Publish"
-					DependsOnTargets="PrepareForPublish"
-					Inputs="@(PublishableWebSampleSources)"
-					Outputs="@(PublishableWebSampleTargets)"
-					Condition=" '$(SampleWebRoot)' != '' ">
-		<RemoveDir Directories="$(SampleWebRoot)\$(BranchName)" />
-		<MakeDir Directories="$(SampleWebRoot)\$(BranchName)" />
-		<Copy SourceFiles="@(PublishableWebSampleSources)" DestinationFiles="@(PublishableWebSampleTargets)" SkipUnchangedFiles="true" />
-	</Target>
-
-	<Target Name="Unpublish"
-					DependsOnTargets="DeleteSitesOnIis"
-					Condition=" '$(SampleWebRoot)' != '' ">
-	</Target>
+					DependsOnTargets="Zip" />
 
 	<Target Name="CreateSitesOnIis" DependsOnTargets="Prepare">
 		<Error Text="The PublishSamplesWebSiteName property must be set." Condition=" '$(PublishSamplesWebSiteName)' == '' "/>

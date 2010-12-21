@@ -4,14 +4,16 @@
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 
 	<ItemGroup>
-		<ProjectsInDrop Include="
+		<NightlyProjects Include="
 										samples\tools.proj;
 										tools\drop.proj;
 										" />
-		<ProjectsToPublish Include="
+		<NightlyProjects Include="
 										samples\samples.proj;
 										doc\doc.proj;
-										" />
+										">
+			<Targets>Zip</Targets>
+		</NightlyProjects>
 
 		<ProjectsToClean Include="
 										 $(SolutionPath);
@@ -61,11 +63,11 @@
 	</Target>
 
 	<Target Name="Nightly">
-		<MSBuild Projects="@(ProjectsInDrop)" Targets="%(ProjectsInDrop.Targets)" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="@(NightlyProjects)" Targets="%(NightlyProjects.Targets)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Target Name="Publish">
-		<MSBuild Projects="@(ProjectsToPublish)" Targets="Publish" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="@(ProjectsToPublish)" Targets="%(ProjectsToPublish.Targets)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
