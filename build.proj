@@ -12,7 +12,7 @@
 										samples\samples.proj;
 										doc\doc.proj;
 										">
-			<Targets>Zip</Targets>
+			<Targets>DeployableArchive</Targets>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="

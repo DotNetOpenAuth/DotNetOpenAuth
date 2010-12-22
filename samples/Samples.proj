@@ -58,7 +58,7 @@
 
 	<Target Name="PrepareForPublish" DependsOnTargets="Build">
 		<PropertyGroup>
-			<SamplesZip>$(DropDirectoryNoSlash)-samples.zip</SamplesZip>
+			<SamplesZip>$(DropDirectoryNoSlash)-samples.7z</SamplesZip>
 		</PropertyGroup>
 
 		<ItemGroup>
@@ -72,15 +72,20 @@
 		</FilterItems>
 	</Target>
 
-	<Target Name="Zip"
+	<Target Name="DeployableArchive"
 					DependsOnTargets="PrepareForPublish"
 					Inputs="@(PublishableWebSampleSources)"
 					Outputs="$(SamplesZip)">
-		<Zip Files="@(PublishableWebSampleSources)" ZipFileName="$(SamplesZip)" WorkingDirectory="$(ProjectRoot)samples\" ZipLevel="$(ZipLevel)" />
+		<Delete Files="$(SamplesZip)" />
+		<AddFilesTo7Zip
+			Files="@(PublishableWebSampleSources)"
+			ZipFileName="$(SamplesZip)"
+			WorkingDirectory="$(ProjectRoot)samples\"
+			ToolPath="$(Zip7ToolPath)" />
 	</Target>
 
 	<Target Name="Publish"
-					DependsOnTargets="Zip" />
+					DependsOnTargets="DeployableArchive" />
 
 	<Target Name="CreateSitesOnIis" DependsOnTargets="Prepare">
 		<Error Text="The PublishSamplesWebSiteName property must be set." Condition=" '$(PublishSamplesWebSiteName)' == '' "/>

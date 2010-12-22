@@ -28,4 +28,5 @@
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="DowngradeProjects" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="HardLinkCopy" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="PrepareOhlohRelease" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="AddFilesTo7Zip" />
 </Project>

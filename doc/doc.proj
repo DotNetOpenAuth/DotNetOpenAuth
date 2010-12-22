@@ -24,7 +24,7 @@
 	
 	<Target Name="PrepareForPublish" DependsOnTargets="BuildProduct;Html">
 		<PropertyGroup>
-			<DocZip>$(DropDirectoryNoSlash)-htmldoc.zip</DocZip>
+			<DocZip>$(DropDirectoryNoSlash)-htmldoc.7z</DocZip>
 		</PropertyGroup>
 
 		<ItemGroup>
@@ -32,15 +32,20 @@
 		</ItemGroup>
 	</Target>
 
-	<Target Name="Zip"
+	<Target Name="DeployableArchive"
 					DependsOnTargets="PrepareForPublish"
 					Inputs="@(DocSources)"
 					Outputs="$(DocZip)">
-		<Zip Files="@(DocSources)" ZipFileName="$(DocZip)" WorkingDirectory="$(ProjectRoot)doc\api\" ZipLevel="$(ZipLevel)" />
+		<Delete Files="$(DocZip)" />
+		<AddFilesTo7Zip
+			Files="@(DocSources)"
+			ZipFileName="$(DocZip)"
+			WorkingDirectory="$(ProjectRoot)doc\api\"
+			ToolPath="$(Zip7ToolPath)" />
 	</Target>
 
 	<Target Name="Publish"
-					DependsOnTargets="Zip" />
+					DependsOnTargets="DeployableArchive" />
 
 	<Target Name="CreateSiteOnIis" DependsOnTargets="Prepare">
 		<Error Text="The PublishDocsWebSiteName property must be set." Condition=" '$(PublishDocsWebSiteName)' == '' "/>
