@@ -270,7 +270,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			}
 			almostMatchTimer.Stop();
 
-			const double ToleranceFactor = 0.06;
+			const double ToleranceFactor = 0.12;
 			long averageTimeTicks = (totalMismatchTimer.ElapsedTicks + almostMatchTimer.ElapsedTicks) / 2;
 			var tolerableDifference = TimeSpan.FromTicks((long)(averageTimeTicks * ToleranceFactor));
 			var absoluteDifference = TimeSpan.FromTicks(Math.Abs(totalMismatchTimer.ElapsedTicks - almostMatchTimer.ElapsedTicks));

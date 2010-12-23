@@ -318,4 +318,7 @@
   <data name="UnsupportedEncryptionAlgorithm" xml:space="preserve">
     <value>This blob is not a recognized encryption format.</value>
   </data>
+  <data name="ExtraParameterAddFailure" xml:space="preserve">
+    <value>Failed to add extra parameter '{0}' with value '{1}'.</value>
+  </data>
 </root>

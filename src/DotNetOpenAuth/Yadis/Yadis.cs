@@ -151,7 +151,24 @@ namespace DotNetOpenAuth.Yadis {
 				options |= DirectWebRequestOptions.RequireSsl;
 			}
 
-			return requestHandler.GetResponse(request, options);
+			try {
+				return requestHandler.GetResponse(request, options);
+			} catch (ProtocolException ex) {
+				var webException = ex.InnerException as WebException;
+				if (webException != null) {
+					var response = webException.Response as HttpWebResponse;
+					if (response != null && response.IsFromCache) {
+						// We don't want to report error responses from the cache, since the server may have fixed
+						// whatever was causing the problem.  So try again with cache disabled.
+						Logger.Messaging.Error("An HTTP error response was obtained from the cache.  Retrying with cache disabled.", ex);
+						var nonCachingRequest = request.Clone();
+						nonCachingRequest.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.Reload);
+						return requestHandler.GetResponse(nonCachingRequest, options);
+					}
+				}
+
+				throw;
+			}
 		}
 
 		/// <summary>

@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			OutgoingWebResponse response = this.channel.PrepareResponse(message);
 			Assert.AreSame(message, response.OriginalMessage);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status);
-			Assert.AreEqual(0, response.Headers.Count);
+			Assert.AreEqual(2, response.Headers.Count);
 
 			NameValueCollection body = HttpUtility.ParseQueryString(response.Body);
 			Assert.AreEqual("15", body["age"]);

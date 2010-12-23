@@ -11,6 +11,10 @@ namespace DotNetOpenAuth {
 	using System.Net;
 	using System.Reflection;
 	using System.Text;
+	using System.Web;
+	using System.Web.UI;
+
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -22,6 +26,11 @@ namespace DotNetOpenAuth {
 		/// The base namespace for this library from which all other namespaces derive.
 		/// </summary>
 		internal const string DefaultNamespace = "DotNetOpenAuth";
+
+		/// <summary>
+		/// The web.config file-specified provider of web resource URLs.
+		/// </summary>
+		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = DotNetOpenAuthSection.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false);
 
 		/// <summary>
 		/// Gets a human-readable description of the library name and version, including
@@ -151,6 +160,32 @@ namespace DotNetOpenAuth {
 						return sb.ToString();
 					}
 				});
+		}
+
+		/// <summary>
+		/// Gets the web resource URL from a Page or <see cref="IEmbeddedResourceRetrieval"/> object.
+		/// </summary>
+		/// <param name="someTypeInResourceAssembly">Some type in resource assembly.</param>
+		/// <param name="manifestResourceName">Name of the manifest resource.</param>
+		/// <returns>An absolute URL</returns>
+		internal static string GetWebResourceUrl(Type someTypeInResourceAssembly, string manifestResourceName) {
+			Page page;
+			IEmbeddedResourceRetrieval retrieval;
+
+			if (embeddedResourceRetrieval != null) {
+				Uri url = embeddedResourceRetrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName);
+				return url != null ? url.AbsoluteUri : null;
+			} else if ((page = HttpContext.Current.CurrentHandler as Page) != null) {
+				return page.ClientScript.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName);
+			} else if ((retrieval = HttpContext.Current.CurrentHandler as IEmbeddedResourceRetrieval) != null) {
+				return retrieval.GetWebResourceUrl(someTypeInResourceAssembly, manifestResourceName).AbsoluteUri;
+			} else {
+				throw new InvalidOperationException(
+					string.Format(
+						CultureInfo.CurrentCulture,
+						Strings.EmbeddedResourceUrlProviderRequired,
+						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
+			}
 		}
 
 		/// <summary>

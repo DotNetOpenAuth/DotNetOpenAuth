@@ -28,8 +28,7 @@
 					// redirects and user prompts can appear and eventually some page can decide
 					// to respond to the OpenID authentication request either affirmatively or
 					// negatively.
-					ProviderEndpoint.PendingAnonymousRequest = request as IAnonymousRequest;
-					ProviderEndpoint.PendingAuthenticationRequest = request as IAuthenticationRequest;
+					ProviderEndpoint.PendingRequest = request as IHostProcessedRequest;
 
 					// We delegate that approval process to our utility method that we share
 					// with our other Provider sample page server.aspx.

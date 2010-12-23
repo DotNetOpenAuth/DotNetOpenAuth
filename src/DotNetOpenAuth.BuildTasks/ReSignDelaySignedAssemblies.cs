@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			////if (this.Assemblies.Length != 1) {
 			////    throw new NotSupportedException("Exactly 1 assembly for signing is supported.");
 			////}
-			CommandLineBuilder args = new CommandLineBuilder();
+			var args = new CommandLineBuilder();
 			args.AppendSwitch("-q");
 
 			if (this.KeyFile != null) {

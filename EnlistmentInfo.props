@@ -5,6 +5,6 @@
 		<StyleCopTreatErrorsAsWarnings Condition=" '$(StyleCopTreatErrorsAsWarnings)' == '' and '$(Configuration)' == 'Release' ">false</StyleCopTreatErrorsAsWarnings>
 		<StyleCopTreatErrorsAsWarnings Condition=" '$(StyleCopTreatErrorsAsWarnings)' == '' ">true</StyleCopTreatErrorsAsWarnings>
 
-		<ProjectRoot>$(MSBuildThisFileDirectory)\</ProjectRoot>
+		<ProjectRoot>$(MSBuildThisFileDirectory)</ProjectRoot>
 	</PropertyGroup>
 </Project>
