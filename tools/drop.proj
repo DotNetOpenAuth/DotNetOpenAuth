@@ -150,14 +150,19 @@
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
 		<PropertyGroup>
-			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
+			<DropZip>$(DropDirectoryNoSlash).7z</DropZip>
 		</PropertyGroup>
 		<ItemGroup>
 			<RedistributableFiles Include="$(DropZip)">
 				<Package>DotNetOpenAuth</Package>
 			</RedistributableFiles>
 		</ItemGroup>
-		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" ZipLevel="$(ZipLevel)" />
+		<Delete Files="$(DropZip)" />
+		<AddFilesTo7Zip
+			Files="@(AllDropTargets)"
+			ZipFileName="$(DropZip)"
+			WorkingDirectory="$(DropsRoot)"
+			ToolPath="$(Zip7ToolPath)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
