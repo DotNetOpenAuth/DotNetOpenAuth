@@ -47,7 +47,7 @@
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
 		<PropertyGroup>
-			<ToolsZip>$(ToolsDirectoryNoSlash).7z</ToolsZip>
+			<ToolsZip>$(ToolsDirectoryNoSlash)$(ZipFormat)</ToolsZip>
 		</PropertyGroup>
 		<ItemGroup>
 			<RedistributableFiles Include="$(ToolsZip)">

@@ -150,7 +150,7 @@
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
 		<PropertyGroup>
-			<DropZip>$(DropDirectoryNoSlash).7z</DropZip>
+			<DropZip>$(DropDirectoryNoSlash)$(ZipFormat)</DropZip>
 		</PropertyGroup>
 		<ItemGroup>
 			<RedistributableFiles Include="$(DropZip)">

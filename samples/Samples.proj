@@ -58,7 +58,7 @@
 
 	<Target Name="PrepareForPublish" DependsOnTargets="Build">
 		<PropertyGroup>
-			<SamplesZip>$(DropDirectoryNoSlash)-samples.7z</SamplesZip>
+			<SamplesZip>$(DropDirectoryNoSlash)-samples$(ZipFormat)</SamplesZip>
 		</PropertyGroup>
 
 		<ItemGroup>

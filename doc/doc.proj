@@ -24,7 +24,7 @@
 	
 	<Target Name="PrepareForPublish" DependsOnTargets="BuildProduct;Html">
 		<PropertyGroup>
-			<DocZip>$(DropDirectoryNoSlash)-htmldoc.7z</DocZip>
+			<DocZip>$(DropDirectoryNoSlash)-htmldoc$(ZipFormat)</DocZip>
 		</PropertyGroup>
 
 		<ItemGroup>
