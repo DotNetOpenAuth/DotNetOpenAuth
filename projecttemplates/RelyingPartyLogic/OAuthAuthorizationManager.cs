@@ -34,7 +34,7 @@ namespace RelyingPartyLogic {
 
 			var tokenAnalyzer = new SpecialAccessTokenAnalyzer(OAuthAuthorizationServer.AsymmetricKey, OAuthAuthorizationServer.AsymmetricKey);
 			var resourceServer = new ResourceServer(tokenAnalyzer);
-			
+
 			try {
 				IPrincipal principal;
 				var errorResponse = resourceServer.VerifyAccess(httpDetails, requestUri, out principal);

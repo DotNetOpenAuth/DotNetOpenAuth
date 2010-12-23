@@ -159,7 +159,7 @@ namespace RelyingPartyLogic {
 										auth.CreatedOnUtc <= issuedUtc &&
 										(!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
 										auth.User.AuthenticationTokens.Any(token => token.ClaimedIdentifier == username)
-									  select auth.Scope;
+										select auth.Scope;
 
 			if (!grantedScopeStrings.Any()) {
 				// No granted authorizations prior to the issuance of this token, so it must have been revoked.
