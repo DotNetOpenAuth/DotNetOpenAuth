@@ -11,6 +11,9 @@
 		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
 		<ZipLevel>6</ZipLevel>
+		<Zip7ToolPath>$(ToolsDir)7-Zip.x86\</Zip7ToolPath>
+		<NuGetToolPath>$(ToolsDir)NuGet\</NuGetToolPath>
+		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
 

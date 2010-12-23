@@ -13,17 +13,19 @@
 	<h2>Login Page</h2>
 	<%
 	dim realm, thisPageUrl, requestUrl, dnoi, authentication
-	realm = "http://" + Request.ServerVariables("HTTP_HOST") + "/classicaspdnoi/"
-	thisPageUrl = "http://" + Request.ServerVariables("HTTP_HOST") + Request.ServerVariables("URL")
-	requestUrl = "http://" + Request.ServerVariables("HTTP_HOST") + Request.ServerVariables("HTTP_URL")
+	realm = "http://" + Request.ServerVariables("HTTP_HOST") + "/classicaspdnoi/" ' change this to be the home page of your web site, without the filename.
+	requestUrl = "http://" + Request.ServerVariables("HTTP_HOST") + Request.ServerVariables("HTTP_URL") ' this is the full URL of the current incoming request.
 	Set dnoi = server.CreateObject("DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty")
 	On Error Resume Next
+	' Since this page both starts the OpenID authentication flow and receives the response, we don't
+	' yet know whether this particular request is already in the response phase.  Check that now.
 	Set authentication = dnoi.ProcessAuthentication(requestUrl, Request.Form)
 	If Err.number <> 0 Then
+		' Oops, report something that went wrong.
 		Response.Write "<p>" + Server.HTMLEncode(Err.Description) + "</p>"
 	End If
 	On Error Goto 0
-	if Not authentication Is Nothing then
+	if Not authentication Is Nothing then ' if this WAS an OpenID response coming in...
 		If authentication.Successful Then
 			Session("ClaimedIdentifier") = authentication.ClaimedIdentifier
 			If Not authentication.ClaimsResponse Is Nothing Then
@@ -35,9 +37,10 @@
 		else
 			Response.Write "Authentication failed: " + authentication.ExceptionMessage
 		end if
-	elseif Request.Form("openid_identifier") <> "" then
+	elseif Request.Form("openid_identifier") <> "" then ' if the user is only now starting the authentication flow...
 		dim redirectUrl
 		On Error Resume Next
+		thisPageUrl = "http://" + Request.ServerVariables("HTTP_HOST") + Request.ServerVariables("URL") ' this is the URL that will receive the response from the OpenID Provider.
 		' redirectUrl = dnoi.CreateRequest(Request.Form("openid_identifier"), realm, thisPageUrl)
 		redirectUrl = dnoi.CreateRequestWithSimpleRegistration(Request.Form("openid_identifier"), realm, thisPageUrl, "nickname,email", "fullname")
 		If Err.number <> 0 Then

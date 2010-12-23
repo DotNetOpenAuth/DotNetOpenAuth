@@ -92,6 +92,7 @@
     <Content Include="Views\Account\ChangePassword.aspx" />
     <Content Include="Views\Account\ChangePasswordSuccess.aspx" />
     <Content Include="Views\Account\Register.aspx" />
+    <Content Include="Views\OpenId\AskUser.aspx" />
     <Content Include="Views\Shared\Xrds.aspx" />
     <Content Include="Views\OpenId\Provider.aspx" />
     <Content Include="Views\User\Identity.aspx" />

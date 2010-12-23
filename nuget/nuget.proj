@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
+
+	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
+		<PropertyGroup>
+			<NuGetLayoutPath>$(DropsRoot)NuGet\$(BuildVersion)\</NuGetLayoutPath>
+		</PropertyGroup>
+
+		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.csproj" Targets="DocumentationProjectOutputGroup" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="NuGetSource"/>
+		</MSBuild>
+
+		<!-- IMPORTANT: These must appear as separate ItemGroups or else batching screws it up. -->
+		<ItemGroup>
+			<NuGetSource Include="%(ResignedAssembliesOutputs.Identity)" Condition=" '%(FileName)%(Extension)' == 'DotNetOpenAuth.dll' "/>
+			<NuGetSource>
+				<TargetPath>$(NuGetLayoutPath)lib\%(FileName)%(Extension)</TargetPath>
+			</NuGetSource>
+		</ItemGroup>
+		<ItemGroup>
+			<NuGetContentSource Include="$(ProjectRoot)NuGet\content\**"/>
+		</ItemGroup>
+		<ItemGroup>
+			<NuGetSource Include="@(NuGetContentSource)">
+				<TargetPath>$(NuGetLayoutPath)content\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
+			</NuGetSource>
+			
+			<NuSpecSource Include="DotNetOpenAuth.nuspec">
+				<LayoutPath>$(NuGetLayoutPath)</LayoutPath>
+				<BeforeTokens>$version$</BeforeTokens>
+				<AfterTokens>$(BuildVersion)</AfterTokens>
+			</NuSpecSource>
+
+			<NuSpecTarget Include="@(NuSpecSource->'$(NuGetLayoutPath)%(FileName)%(Extension)')" />
+		</ItemGroup>
+		<ItemGroup>
+			<NuGetContentsTarget Include="%(NuGetSource.TargetPath)" />
+		</ItemGroup>
+
+		<CopyWithTokenSubstitution
+			SourceFiles="@(NuSpecSource)"
+			DestinationFiles="@(NuSpecTarget)"
+			/>
+
+		<Copy
+			SourceFiles="@(NuGetSource)"
+			DestinationFiles="@(NuGetContentsTarget)"
+			SkipUnchangedFiles="true" />
+
+		<Purge Directories="$(NuGetLayoutPath)" IntendedFiles="@(NuGetContentsTarget);@(NuSpecTarget)" />
+	</Target>
+	
+	<Target Name="Build" DependsOnTargets="Layout">
+		<NuGetPack
+			NuSpec="%(NuSpecTarget.Identity)"
+			BaseDirectory="%(NuSpecTarget.LayoutPath)"
+			OutputPackageDirectory="$(DropsRoot)"
+			ToolPath="$(NuGetToolPath)" />
+	</Target>
+
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
+	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

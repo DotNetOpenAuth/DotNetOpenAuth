@@ -187,6 +187,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to add extra parameter &apos;{0}&apos; with value &apos;{1}&apos;..
+        /// </summary>
+        internal static string ExtraParameterAddFailure {
+            get {
+                return ResourceManager.GetString("ExtraParameterAddFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to At least one of GET or POST flags must be present..
         /// </summary>
         internal static string GetOrPostFlagsRequired {

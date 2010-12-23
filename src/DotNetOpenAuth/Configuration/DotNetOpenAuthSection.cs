@@ -40,6 +40,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string ReportingElementName = "reporting";
 
 		/// <summary>
+		/// The name of the &lt;webResourceUrlProvider&gt; sub-element.
+		/// </summary>
+		private const string WebResourceUrlProviderName = "webResourceUrlProvider";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
@@ -115,6 +120,15 @@ namespace DotNetOpenAuth.Configuration {
 			set {
 				this[ReportingElementName] = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the type to use for obtaining URLs that fetch embedded resource streams.
+		/// </summary>
+		[ConfigurationProperty(WebResourceUrlProviderName)]
+		internal TypeConfigurationElement<IEmbeddedResourceRetrieval> EmbeddedResourceRetrievalProvider {
+			get { return (TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ?? new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
+			set { this[WebResourceUrlProviderName] = value; }
 		}
 	}
 }

@@ -774,7 +774,11 @@ namespace DotNetOpenAuth.Messaging {
 
 			if (extraParameters != null) {
 				foreach (var pair in extraParameters) {
-					messageDictionary.Add(pair);
+					try {
+						messageDictionary.Add(pair);
+					} catch (ArgumentException ex) {
+						throw ErrorUtilities.Wrap(ex, MessagingStrings.ExtraParameterAddFailure, pair.Key, pair.Value);
+					}
 				}
 			}
 		}

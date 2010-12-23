@@ -32,6 +32,11 @@ namespace DotNetOpenAuth {
 	/// </summary>
 	public static class Reporting {
 		/// <summary>
+		/// A UTF8 encoder that doesn't emit the preamble.  Used for mid-stream writers.
+		/// </summary>
+		private static readonly Encoding Utf8NoPreamble = new UTF8Encoding(false);
+
+		/// <summary>
 		/// A value indicating whether reporting is desirable or not.  Must be logical-AND'd with !<see cref="broken"/>.
 		/// </summary>
 		private static bool enabled;
@@ -665,7 +670,7 @@ namespace DotNetOpenAuth {
 					this.memorySet.Add(this.reader.ReadLine());
 				}
 
-				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
+				this.writer = new StreamWriter(this.fileStream, Utf8NoPreamble);
 				this.lastFlushed = DateTime.Now;
 			}
 
@@ -818,7 +823,7 @@ namespace DotNetOpenAuth {
 					}
 				}
 
-				this.writer = new StreamWriter(this.fileStream, Encoding.UTF8);
+				this.writer = new StreamWriter(this.fileStream, Utf8NoPreamble);
 				this.lastFlushed = DateTime.Now;
 			}
 
