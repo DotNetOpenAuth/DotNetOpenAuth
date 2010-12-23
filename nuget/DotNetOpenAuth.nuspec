@@ -12,9 +12,5 @@
 		<summary>OpenID, OAuth, &amp; InfoCard library for web sites/services and apps.</summary>
 		<description>A C# library that adds OpenID 2.0 Provider and Relying Party, OAuth Consumer and Service Provider, and InfoCard Selector support to your web site both programmatically and through convenient drop-in ASP.NET controls.</description>
 		<language>en-US</language>
-		<dependencies>
-			<!-- optional -->
-			<!--<dependency id="log4net" version="1.2.10" />-->
-		</dependencies>
 	</metadata>
 </package>
