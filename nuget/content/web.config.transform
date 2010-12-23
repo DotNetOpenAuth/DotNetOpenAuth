@@ -22,6 +22,20 @@
 		</settings>
 	</system.net>
 
+	<runtime>
+		<!-- This prevents the Windows Event Log from frequently logging that HMAC1 is being used (when the other party needs it). -->
+		<legacyHMACWarning enabled="0" />
+
+		<!-- When targeting ASP.NET MVC 2, this assemblyBinding makes MVC 1 references relink
+		     to MVC 2 so libraries such as DotNetOpenAuth that compile against MVC 1 will work with it. -->
+		<assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+			<dependentAssembly>
+				<assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" />
+			</dependentAssembly>
+		</assemblyBinding>
+	</runtime>
+
 	<dotNetOpenAuth>
 		<!-- This is an optional configuration section where aspects of dotnetopenauth can be customized. -->
 		<!-- For a complete set of configuration options see http://www.dotnetopenauth.net/developers/code-snippets/configuration-options/ -->
