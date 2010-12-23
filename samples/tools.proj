@@ -47,7 +47,7 @@
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
 		<PropertyGroup>
-			<ToolsZip>$(ToolsDirectoryNoSlash).zip</ToolsZip>
+			<ToolsZip>$(ToolsDirectoryNoSlash)$(ZipFormat)</ToolsZip>
 		</PropertyGroup>
 		<ItemGroup>
 			<RedistributableFiles Include="$(ToolsZip)">
@@ -56,10 +56,12 @@
 			</RedistributableFiles>
 		</ItemGroup>
 
-		<Zip ZipFileName="$(ToolsZip)"
-				 Files="@(AllToolTargets)"
-				 WorkingDirectory="$(ToolsDirectory)"
-				 ZipLevel="$(ZipLevel)" />
+		<Delete Files="$(ToolsZip)" />
+		<AddFilesTo7Zip
+			ZipFileName="$(ToolsZip)"
+			Files="@(AllToolTargets)"
+			WorkingDirectory="$(ToolsDirectory)"
+			ToolPath="$(Zip7ToolPath)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>

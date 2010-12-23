@@ -12,16 +12,16 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Moq;
+	using NUnit.Framework;
 
-	[TestClass]
+	[TestFixture]
 	public class PositiveAuthenticationResponseSnapshotTests : OpenIdTestBase {
 		/// <summary>
 		/// Verifies that the PositiveAuthenticationResponseSnapshot is serializable,
 		/// as required by the <see cref="OpenIdRelyingPartyAjaxControlBase"/> class.
 		/// </summary>
-		[TestMethod]
+		[Test]
 		public void Serializable() {
 			var response = new Mock<IAuthenticationResponse>(MockBehavior.Strict);
 			response.Setup(o => o.ClaimedIdentifier).Returns(VanityUri);
