@@ -7,6 +7,7 @@
 		<NightlyProjects Include="
 										samples\tools.proj;
 										tools\drop.proj;
+										nuget\nuget.proj;
 										" />
 		<NightlyProjects Include="
 										samples\samples.proj;

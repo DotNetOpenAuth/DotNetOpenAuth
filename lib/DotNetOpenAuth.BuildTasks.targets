@@ -29,4 +29,5 @@
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="HardLinkCopy" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="PrepareOhlohRelease" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="AddFilesTo7Zip" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="NuGetPack" />
 </Project>

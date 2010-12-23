@@ -118,6 +118,7 @@
     <Compile Include="CheckAdminRights.cs" />
     <Compile Include="JsPack.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="NuGetPack.cs" />
     <Compile Include="ParseMaster.cs" />
     <Compile Include="PathSegment.cs" />
     <Compile Include="PrepareOhlohRelease.cs" />
