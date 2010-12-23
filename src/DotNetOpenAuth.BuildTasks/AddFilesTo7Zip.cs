@@ -13,6 +13,13 @@ namespace DotNetOpenAuth.BuildTasks {
 	using Microsoft.Build.Framework;
 
 	public class AddFilesTo7Zip : ToolTask {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AddFilesTo7Zip"/> class.
+		/// </summary>
+		public AddFilesTo7Zip() {
+			this.YieldDuringToolExecution = true;
+		}
+
 		[Required]
 		public ITaskItem ZipFileName { get; set; }
 
@@ -34,7 +41,6 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// <summary>
 		/// Generates the full path to tool.
 		/// </summary>
-		/// <returns></returns>
 		protected override string GenerateFullPathToTool() {
 			return this.ToolPath;
 		}
@@ -71,8 +77,7 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// <summary>
 		/// Generates the response file commands.
 		/// </summary>
-		protected override string GenerateResponseFileCommands()
-		{
+		protected override string GenerateResponseFileCommands() {
 			var args = new CommandLineBuilder();
 			args.AppendFileNamesIfNotNull(this.Files.Select(GetWorkingDirectoryRelativePath).ToArray(), Environment.NewLine);
 			return args.ToString();
@@ -89,8 +94,7 @@ namespace DotNetOpenAuth.BuildTasks {
 			}
 		}
 
-		private string GetWorkingDirectoryRelativePath(ITaskItem taskItem)
-		{
+		private string GetWorkingDirectoryRelativePath(ITaskItem taskItem) {
 			if (taskItem.ItemSpec.StartsWith(this.WorkingDirectory, StringComparison.OrdinalIgnoreCase)) {
 				return taskItem.ItemSpec.Substring(this.WorkingDirectory.Length);
 			} else {
