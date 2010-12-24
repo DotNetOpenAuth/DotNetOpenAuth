@@ -46,19 +46,18 @@
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
-		<PropertyGroup>
-			<ToolsZip>$(ToolsDirectoryNoSlash)$(ZipFormat)</ToolsZip>
-		</PropertyGroup>
 		<ItemGroup>
-			<RedistributableFiles Include="$(ToolsZip)">
+			<ToolsZip Include="$(ToolsDirectoryNoSlash).zip" />
+			<ToolsZip Include="$(ToolsDirectoryNoSlash).7z" />
+			<RedistributableFiles Include="@(ToolsZip)">
 				<Package>DotNetOpenAuth-Tools</Package>
 				<Platform>.NET $(TargetFrameworkVersion)</Platform>
 			</RedistributableFiles>
 		</ItemGroup>
 
-		<Delete Files="$(ToolsZip)" />
+		<Delete Files="@(ToolsZip)" />
 		<AddFilesTo7Zip
-			ZipFileName="$(ToolsZip)"
+			ZipFileName="%(ToolsZip.Identity)"
 			Files="@(AllToolTargets)"
 			WorkingDirectory="$(ToolsDirectory)"
 			ToolPath="$(Zip7ToolPath)" />
