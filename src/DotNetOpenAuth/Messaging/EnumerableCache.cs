@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.Messaging {
 			private object generatorLock = new object();
 
 			/// <summary>
-			/// Initializes a new instance of the EnumerableCache class.
+			/// Initializes a new instance of the EnumerableCacheExtensions.EnumerableCache class.
 			/// </summary>
 			/// <param name="generator">The generator.</param>
 			internal EnumerableCache(IEnumerable<T> generator) {
@@ -137,7 +137,7 @@ namespace DotNetOpenAuth.Messaging {
 				private int cachePosition = -1;
 
 				/// <summary>
-				/// Initializes a new instance of the <see cref="EnumeratorCache"/> class.
+				/// Initializes a new instance of the EnumerableCacheExtensions.EnumerableCache.EnumeratorCache class.
 				/// </summary>
 				/// <param name="parent">The parent cached enumerable whose GetEnumerator method is calling this constructor.</param>
 				internal EnumeratorCache(EnumerableCache<T> parent) {

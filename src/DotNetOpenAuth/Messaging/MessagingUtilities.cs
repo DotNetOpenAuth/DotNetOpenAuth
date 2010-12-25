@@ -1462,7 +1462,7 @@ namespace DotNetOpenAuth.Messaging {
 			private Comparison<T> comparison;
 
 			/// <summary>
-			/// Initializes a new instance of the ComparisonHelper class.
+			/// Initializes a new instance of the MessagingUtilities.ComparisonHelper class.
 			/// </summary>
 			/// <param name="comparison">The comparison method to use.</param>
 			internal ComparisonHelper(Comparison<T> comparison) {

@@ -543,7 +543,7 @@ namespace DotNetOpenAuth.OpenId {
 			private static readonly char[] PathEndingCharacters = new char[] { '?', '#' };
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="SimpleUri"/> class.
+			/// Initializes a new instance of the <see cref="UriIdentifier.SimpleUri"/> class.
 			/// </summary>
 			/// <param name="value">The value.</param>
 			internal SimpleUri(string value) {
@@ -691,7 +691,7 @@ namespace DotNetOpenAuth.OpenId {
 			private string standardScheme;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="NonPathCompressingUriParser"/> class.
+			/// Initializes a new instance of the <see cref="UriIdentifier.NonPathCompressingUriParser"/> class.
 			/// </summary>
 			/// <param name="standardScheme">The standard scheme that this parser will be subverting.</param>
 			public NonPathCompressingUriParser(string standardScheme)

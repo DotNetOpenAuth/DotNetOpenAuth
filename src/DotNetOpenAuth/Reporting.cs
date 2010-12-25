@@ -652,7 +652,7 @@ namespace DotNetOpenAuth {
 			private bool dirty;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="PersistentHashSet"/> class.
+			/// Initializes a new instance of the <see cref="Reporting.PersistentHashSet"/> class.
 			/// </summary>
 			/// <param name="storage">The storage location.</param>
 			/// <param name="fileName">Name of the file.</param>
@@ -798,7 +798,7 @@ namespace DotNetOpenAuth {
 			private bool dirty;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="PersistentCounter"/> class.
+			/// Initializes a new instance of the <see cref="Reporting.PersistentCounter"/> class.
 			/// </summary>
 			/// <param name="storage">The storage location.</param>
 			/// <param name="fileName">Name of the file.</param>

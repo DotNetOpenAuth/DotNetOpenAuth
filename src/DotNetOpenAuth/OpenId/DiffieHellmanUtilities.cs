@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		private class DHSha {
 			/// <summary>
-			/// Initializes a new instance of the <see cref="DHSha"/> class.
+			/// Initializes a new instance of the <see cref="DiffieHellmanUtilities.DHSha"/> class.
 			/// </summary>
 			/// <param name="algorithm">The hashing algorithm used in this particular Diffie-Hellman session type.</param>
 			/// <param name="getName">A function that will return the value of the openid.session_type parameter for a given version of OpenID.</param>

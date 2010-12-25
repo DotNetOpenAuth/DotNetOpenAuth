@@ -204,7 +204,7 @@ namespace DotNetOpenAuth {
 			private readonly Func<T, string> toString;
 
 			/// <summary>
-			/// Initializes a new instance of the DelayedToString class.
+			/// Initializes a new instance of the Util.DelayedToString class.
 			/// </summary>
 			/// <param name="obj">The object that may be serialized to string form.</param>
 			/// <param name="toString">The method that will serialize the object if called upon.</param>

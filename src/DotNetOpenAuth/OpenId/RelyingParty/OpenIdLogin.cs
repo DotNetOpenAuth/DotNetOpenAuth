@@ -975,7 +975,7 @@ idselector_input_id = '" + this.ClientID + @"';
 			private OpenIdLogin renderControl;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="InPlaceControl"/> class.
+			/// Initializes a new instance of the <see cref="OpenIdLogin.InPlaceControl"/> class.
 			/// </summary>
 			/// <param name="renderControl">The render control.</param>
 			internal InPlaceControl(OpenIdLogin renderControl) {
