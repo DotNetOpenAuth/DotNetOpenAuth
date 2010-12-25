@@ -26,7 +26,7 @@
 			}
 
 			var httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
-			var requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
+			var requestUri = operationContext.RequestContext.RequestMessage.Properties.Via;
 
 			try {
 				var principal = VerifyOAuth2(httpDetails, requestUri);
