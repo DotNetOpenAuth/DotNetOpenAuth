@@ -50,14 +50,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets a human readable description of the error.
 		/// </summary>
 		/// <value>Human-readable text providing additional information, used to assist in the understanding and resolution of the error that occurred.</value>
-		[MessagePart(Protocol.error_description, AllowEmpty = true, IsRequired = false)]
+		[MessagePart(Protocol.error_description, IsRequired = false, AllowEmpty = true)]
 		public string ErrorDescription { get; set; }
 
 		/// <summary>
 		/// Gets or sets the location of the web page that describes the error and possible resolution.
 		/// </summary>
 		/// <value>A URI identifying a human-readable web page with information about the error, used to provide the end-user with additional information about the error.</value>
-		[MessagePart(Protocol.error_uri, AllowEmpty = false, IsRequired = false)]
+		[MessagePart(Protocol.error_uri, IsRequired = false, AllowEmpty = false)]
 		public Uri ErrorUri { get; set; }
 
 		/// <summary>
