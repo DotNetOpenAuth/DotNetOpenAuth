@@ -149,18 +149,17 @@
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
-		<PropertyGroup>
-			<DropZip>$(DropDirectoryNoSlash)$(ZipFormat)</DropZip>
-		</PropertyGroup>
 		<ItemGroup>
-			<RedistributableFiles Include="$(DropZip)">
+			<DropZip Include="$(DropDirectoryNoSlash).7z" />
+			<DropZip Include="$(DropDirectoryNoSlash).zip" />
+			<RedistributableFiles Include="@(DropZip)">
 				<Package>DotNetOpenAuth</Package>
 			</RedistributableFiles>
 		</ItemGroup>
-		<Delete Files="$(DropZip)" />
+		<Delete Files="@(DropZip)" />
 		<AddFilesTo7Zip
 			Files="@(AllDropTargets)"
-			ZipFileName="$(DropZip)"
+			ZipFileName="%(DropZip.Identity)"
 			WorkingDirectory="$(DropsRoot)"
 			ToolPath="$(Zip7ToolPath)" />
 	</Target>
