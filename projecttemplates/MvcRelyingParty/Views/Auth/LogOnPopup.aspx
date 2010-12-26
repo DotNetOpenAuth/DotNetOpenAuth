@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>Login</title>
-	<%= Html.OpenIdSelectorStyles(this.Page) %>
+	<%= Html.OpenIdSelectorStyles() %>
 	<link rel="stylesheet" type="text/css" href='<%= Url.Content("~/Content/loginpopup.css") %>' />
 </head>
 <body>
