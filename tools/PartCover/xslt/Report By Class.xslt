@@ -16,7 +16,7 @@
 				<td colspan="2">Coverage by class</td>
 			</tr>
 
-			<xsl:for-each select="/PartCoverReport[@version='4.0']/Type">
+			<xsl:for-each select="/PartCoverReport/Type">
 				<tr>
 
 					<xsl:element name="td">
@@ -24,8 +24,8 @@
 						<xsl:value-of select="@name"/>
 					</xsl:element>
 
-					<xsl:variable name="codeSize" select="sum(./Method/pt/@len)+sum(./Method[count(pt)=0]/@bodysize)"/>
-					<xsl:variable name="coveredCodeSize" select="sum(./Method/pt[@visit>0]/@len)"/>
+					<xsl:variable name="codeSize" select="sum(./Method/pt/@len)+0"/>
+					<xsl:variable name="coveredCodeSize" select="sum(./Method/pt[@visit>0]/@len)+0"/>
 
 					<xsl:element name="td">
 						<xsl:if test="$codeSize=0">
@@ -36,7 +36,7 @@
 						</xsl:if>
 
 						<xsl:if test="$codeSize &gt; 0">
-							<xsl:variable name="coverage" select="round(100 * $coveredCodeSize div $codeSize)"/>
+							<xsl:variable name="coverage" select="ceiling(100 * $coveredCodeSize div $codeSize)"/>
 
 							<xsl:if test="$coverage &gt;=  0 and $coverage &lt; 20">
 								<xsl:attribute name="style">
@@ -70,7 +70,5 @@
 				</tr>
 			</xsl:for-each>
 		</table>
-
 	</xsl:template>
-
 </xsl:stylesheet>
