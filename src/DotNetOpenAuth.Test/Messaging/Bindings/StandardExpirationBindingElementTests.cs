@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		[TestCase, ExpectedException(typeof(ProtocolException))]
 		public void VerifyFutureTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew + TimeSpan.FromSeconds(1), false);
+			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew + TimeSpan.FromSeconds(2), false);
 		}
 	}
 }
