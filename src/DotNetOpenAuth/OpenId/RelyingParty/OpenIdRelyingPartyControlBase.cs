@@ -76,6 +76,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
 	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
+	[ParseChildren(true), PersistChildren(false)]
 	public abstract class OpenIdRelyingPartyControlBase : Control, IPostBackEventHandler, IDisposable {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
