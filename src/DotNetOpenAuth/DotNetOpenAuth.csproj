@@ -283,6 +283,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
     <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
+    <Compile Include="Configuration\HostMetaDiscoveryElement.cs" />
     <Compile Include="Configuration\MessagingElement.cs" />
     <Compile Include="Configuration\OAuthConsumerElement.cs" />
     <Compile Include="Configuration\OAuthConsumerSecuritySettingsElement.cs" />
