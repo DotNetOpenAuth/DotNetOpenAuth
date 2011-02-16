@@ -36,8 +36,9 @@
 
 	<ItemGroup>
 		<SignDependsOn Include="Build" />
-		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll;
-		                                 $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
+		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll" />
+		<ILMergeInputAssemblies Condition=" '$(ClrVersion)' == '2' "
+		                        Include="$(ProjectRoot)lib\Microsoft.Contracts.dll" />
 	</ItemGroup>
 
 	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />
