@@ -99,9 +99,9 @@ namespace DotNetOpenAuth.OAuth {
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			this.ServiceDescription = serviceDescription;
-			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, messageTypeProvider);
-			this.TokenGenerator = new StandardTokenGenerator();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, this.SecuritySettings, messageTypeProvider);
+			this.TokenGenerator = new StandardTokenGenerator();
 
 			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, nonceStore);
 		}
