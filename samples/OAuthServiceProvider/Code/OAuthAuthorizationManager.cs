@@ -23,7 +23,7 @@
 			}
 
 			HttpRequestMessageProperty httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
-			Uri requestUri = operationContext.RequestContext.RequestMessage.Properties["OriginalHttpRequestUri"] as Uri;
+			Uri requestUri = operationContext.RequestContext.RequestMessage.Properties.Via;
 			ServiceProvider sp = Constants.CreateServiceProvider();
 			try {
 				var auth = sp.ReadProtectedResourceAuthorization(httpDetails, requestUri);
