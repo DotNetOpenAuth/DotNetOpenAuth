@@ -26,10 +26,19 @@
 					request.Mode = AuthenticationRequestMode.Immediate;
 					request.RedirectToProvider();
 				} else {
-					// Now see if the UIRequest was mirrored back to us.
-					var ext = response.GetUntrustedExtension<UIRequest>();
-					this.YouAreLoggedInLabel.Visible = ext != null && ext.Mode == UIModeDetectSession;
-					this.YouAreNotLoggedInLabel.Visible = !this.YouAreLoggedInLabel.Visible;
+					if (response.Status == AuthenticationStatus.Authenticated) {
+						this.YouTrustUsLabel.Visible = true;
+					} else if (response.Status == AuthenticationStatus.SetupRequired) {
+						// Google refused to authenticate the user without user interaction.
+						// This is either because Google doesn't know who the user is yet,
+						// or because the user hasn't indicated to Google to trust this site.
+						// Google uniquely offers the RP a tip as to which of the above situations is true.
+						// Figure out which it is.  In a real app, you might use this value to promote a 
+						// Google login button on your site if you detect that a Google session exists.
+						var ext = response.GetUntrustedExtension<UIRequest>();
+						this.YouAreLoggedInLabel.Visible = ext != null && ext.Mode == UIModeDetectSession;
+						this.YouAreNotLoggedInLabel.Visible = !this.YouAreLoggedInLabel.Visible;
+					}
 				}
 			}
 		}
