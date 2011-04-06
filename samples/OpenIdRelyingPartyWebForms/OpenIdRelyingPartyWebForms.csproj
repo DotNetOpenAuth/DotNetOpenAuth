@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
+    <Content Include="DetectGoogleSession.aspx" />
     <Content Include="Global.asax" />
     <Content Include="images\openid_login.png" />
     <Content Include="login.aspx" />
@@ -110,6 +111,13 @@
     </Compile>
     <Compile Include="Code\State.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
+    <Compile Include="DetectGoogleSession.aspx.cs">
+      <DependentUpon>DetectGoogleSession.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DetectGoogleSession.aspx.designer.cs">
+      <DependentUpon>DetectGoogleSession.aspx</DependentUpon>
+    </Compile>
     <Compile Include="loginGoogleApps.aspx.cs">
       <DependentUpon>loginGoogleApps.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
