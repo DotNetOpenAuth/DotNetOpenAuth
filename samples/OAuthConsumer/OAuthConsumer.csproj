@@ -61,6 +61,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="GoogleAddressBook.aspx" />
+    <Content Include="GoogleApps2Legged.aspx" />
     <Content Include="images\Sign-in-with-Twitter-darker.png" />
     <Content Include="SampleWcf.aspx" />
     <Content Include="Yammer.aspx" />
@@ -91,6 +92,13 @@
     </Compile>
     <Compile Include="GoogleAddressBook.aspx.designer.cs">
       <DependentUpon>GoogleAddressBook.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleApps2Legged.aspx.cs">
+      <DependentUpon>GoogleApps2Legged.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GoogleApps2Legged.aspx.designer.cs">
+      <DependentUpon>GoogleApps2Legged.aspx</DependentUpon>
     </Compile>
     <Compile Include="SampleWcf.aspx.cs">
       <DependentUpon>SampleWcf.aspx</DependentUpon>
