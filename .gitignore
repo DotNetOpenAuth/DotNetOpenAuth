@@ -21,3 +21,4 @@ PrecompiledWeb
 *.Publish.xml
 *.dbproj.schemaview
 _ReSharper*
+*.vs10x
