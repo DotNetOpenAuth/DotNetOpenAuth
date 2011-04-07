@@ -87,7 +87,7 @@
     <Compile Include="CustomExtensions\Acme.cs" />
     <Compile Include="CustomExtensions\AcmeRequest.cs" />
     <Compile Include="CustomExtensions\AcmeResponse.cs" />
-    <Compile Include="CustomExtensions\UIRequestWithHasSession.cs" />
+    <Compile Include="CustomExtensions\UIRequestAtRelyingPartyFactory.cs" />
     <Compile Include="GoogleConsumer.cs" />
     <Compile Include="InMemoryTokenManager.cs">
       <SubType>Code</SubType>

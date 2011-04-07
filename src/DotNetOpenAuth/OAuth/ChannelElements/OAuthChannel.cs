@@ -292,8 +292,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			};
 
 			var spTokenManager = tokenManager as IServiceProviderTokenManager;
-			if (spTokenManager != null) {
-				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager, (ServiceProviderSecuritySettings)securitySettings));
+			var serviceProviderSecuritySettings = securitySettings as ServiceProviderSecuritySettings;
+			if (spTokenManager != null && serviceProviderSecuritySettings != null) {
+				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager, serviceProviderSecuritySettings));
 			}
 
 			return bindingElements.ToArray();

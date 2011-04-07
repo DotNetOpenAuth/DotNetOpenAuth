@@ -28,6 +28,14 @@ namespace DotNetOpenAuth.ApplicationBlock.CustomExtensions {
 		/// Allows UIRequest extensions to be received by the relying party.  Useful when Google mirrors back the request
 		/// to indicate that a user is logged in.
 		/// </summary>
+		/// <param name="typeUri">The type URI of the extension.</param>
+		/// <param name="data">The parameters associated specifically with this extension.</param>
+		/// <param name="baseMessage">The OpenID message carrying this extension.</param>
+		/// <param name="isProviderRole">A value indicating whether this extension is being received at the OpenID Provider.</param>
+		/// <returns>
+		/// An instance of <see cref="IOpenIdMessageExtension"/> if the factory recognizes
+		/// the extension described in the input parameters; <c>null</c> otherwise.
+		/// </returns>
 		public DotNetOpenAuth.OpenId.Messages.IOpenIdMessageExtension Create(string typeUri, IDictionary<string, string> data, IProtocolMessageWithExtensions baseMessage, bool isProviderRole) {
 			if (typeUri == UITypeUri && !isProviderRole) {
 				return new UIRequest();
