@@ -47,11 +47,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Creates a formatter capable of serializing/deserializing an access token.
 		/// </summary>
-		/// <param name="signingKey">The authorization server's private key used to asymmetrically sign the access token.</param>
-		/// <param name="encryptingKey">The resource server's public key used to encrypt the access token.</param>
+		/// <param name="signingKey">The crypto service provider with the authorization server's private key used to asymmetrically sign the access token.</param>
+		/// <param name="encryptingKey">The crypto service provider with the resource server's public key used to encrypt the access token.</param>
 		/// <returns>An access token serializer.</returns>
-		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSAParameters signingKey, RSAParameters encryptingKey)
-		{
+		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSACryptoServiceProvider signingKey, RSACryptoServiceProvider encryptingKey) {
+			Contract.Requires(signingKey != null || !signingKey.PublicOnly);
+			Contract.Requires(encryptingKey != null);
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AccessToken>>() != null);
 
 			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);

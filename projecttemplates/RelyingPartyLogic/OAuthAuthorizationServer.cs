@@ -21,7 +21,7 @@ namespace RelyingPartyLogic {
 	/// Provides OAuth 2.0 authorization server information to DotNetOpenAuth.
 	/// </summary>
 	public class OAuthAuthorizationServer : IAuthorizationServer {
-		internal static readonly RSAParameters AsymmetricKey;
+		internal static readonly RSACryptoServiceProvider AsymmetricKey;
 
 		private static readonly byte[] secret;
 
@@ -37,10 +37,9 @@ namespace RelyingPartyLogic {
 			// As we generate a new random key, we need to set the UseMachineKeyStore flag so that this doesn't
 			// crash on IIS. For more information: 
 			// http://social.msdn.microsoft.com/Forums/en-US/clr/thread/7ea48fd0-8d6b-43ed-b272-1a0249ae490f?prof=required
-			var cspParameters  = new CspParameters();
+			var cspParameters = new CspParameters();
 			cspParameters.Flags = CspProviderFlags.UseArchivableKey | CspProviderFlags.UseMachineKeyStore;
-			var cryptoProvider = new RSACryptoServiceProvider(cspParameters);
-			AsymmetricKey = cryptoProvider.ExportParameters(true);
+			AsymmetricKey = new RSACryptoServiceProvider(cspParameters);
 		}
 
 		/// <summary>
@@ -72,7 +71,7 @@ namespace RelyingPartyLogic {
 		/// The public key in the private/public key pair will be used by the resource
 		/// servers to validate that the access token is minted by a trusted authorization server.
 		/// </remarks>
-		public RSAParameters AccessTokenSigningPrivateKey {
+		public RSACryptoServiceProvider AccessTokenSigningPrivateKey {
 			get { return AsymmetricKey; }
 		}
 
@@ -151,8 +150,7 @@ namespace RelyingPartyLogic {
 			return false;
 		}
 
-		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username)
-		{
+		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username) {
 			var grantedScopeStrings = from auth in Database.DataContext.ClientAuthorizations
 									  where
 										auth.Client.ClientIdentifier == clientIdentifier &&

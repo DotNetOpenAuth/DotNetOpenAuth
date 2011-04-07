@@ -19,7 +19,7 @@ namespace RelyingPartyLogic {
 		/// </summary>
 		/// <param name="authorizationServerPublicSigningKey">The authorization server public signing key.</param>
 		/// <param name="resourceServerPrivateEncryptionKey">The resource server private encryption key.</param>
-		internal SpecialAccessTokenAnalyzer(RSAParameters authorizationServerPublicSigningKey, RSAParameters resourceServerPrivateEncryptionKey)
+		internal SpecialAccessTokenAnalyzer(RSACryptoServiceProvider authorizationServerPublicSigningKey, RSACryptoServiceProvider resourceServerPrivateEncryptionKey)
 			: base(authorizationServerPublicSigningKey, resourceServerPrivateEncryptionKey) {
 		}
 

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -18,9 +19,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardAccessTokenAnalyzer"/> class.
 		/// </summary>
-		/// <param name="authorizationServerPublicSigningKey">The authorization server public signing key.</param>
-		/// <param name="resourceServerPrivateEncryptionKey">The resource server private encryption key.</param>
-		public StandardAccessTokenAnalyzer(RSAParameters authorizationServerPublicSigningKey, RSAParameters resourceServerPrivateEncryptionKey) {
+		/// <param name="authorizationServerPublicSigningKey">The crypto service provider with the authorization server public signing key.</param>
+		/// <param name="resourceServerPrivateEncryptionKey">The crypto service provider with the resource server private encryption key.</param>
+		public StandardAccessTokenAnalyzer(RSACryptoServiceProvider authorizationServerPublicSigningKey, RSACryptoServiceProvider resourceServerPrivateEncryptionKey) {
+			Contract.Requires<ArgumentNullException>(authorizationServerPublicSigningKey != null, "authorizationServerPublicSigningKey");
+			Contract.Requires<ArgumentNullException>(resourceServerPrivateEncryptionKey != null, "resourceServerPrivateEncryptionKey");
+			Contract.Requires<ArgumentException>(!resourceServerPrivateEncryptionKey.PublicOnly);
 			this.AuthorizationServerPublicSigningKey = authorizationServerPublicSigningKey;
 			this.ResourceServerPrivateEncryptionKey = resourceServerPrivateEncryptionKey;
 		}
@@ -29,13 +33,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the authorization server public signing key.
 		/// </summary>
 		/// <value>The authorization server public signing key.</value>
-		public RSAParameters AuthorizationServerPublicSigningKey { get; private set; }
+		public RSACryptoServiceProvider AuthorizationServerPublicSigningKey { get; private set; }
 
 		/// <summary>
 		/// Gets the resource server private encryption key.
 		/// </summary>
 		/// <value>The resource server private encryption key.</value>
-		public RSAParameters ResourceServerPrivateEncryptionKey { get; private set; }
+		public RSACryptoServiceProvider ResourceServerPrivateEncryptionKey { get; private set; }
 
 		/// <summary>
 		/// Reads an access token to find out what data it authorizes access to.

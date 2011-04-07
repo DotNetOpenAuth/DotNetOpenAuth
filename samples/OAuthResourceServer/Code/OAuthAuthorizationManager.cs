@@ -66,8 +66,8 @@
 			// we use the same public/private key.
 			var resourceServer = new ResourceServer(
 				new StandardAccessTokenAnalyzer(
-					Global.AuthorizationServerSigningPublicKey,
-					Global.ResourceServerEncryptionPrivateKey));
+					Global.AuthorizationServerSigningServiceProvider,
+					Global.ResourceServerEncryptionServiceProvider));
 
 			IPrincipal result;
 			var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out result);

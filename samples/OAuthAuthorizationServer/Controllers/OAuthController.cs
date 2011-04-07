@@ -35,6 +35,19 @@
 #endif
 
 		/// <summary>
+		/// The resource server's encryption service provider with private key.
+		/// </summary>
+		private static readonly RSACryptoServiceProvider ResourceServerEncryptionServiceProvider;
+
+		/// <summary>
+		/// Initializes the <see cref="OAuthController"/> class.
+		/// </summary>
+		static OAuthController() {
+			ResourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
+			ResourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
+		}
+
+		/// <summary>
 		/// The OAuth 2.0 token endpoint.
 		/// </summary>
 		/// <returns>The response to the Client.</returns>
@@ -52,7 +65,7 @@
 				// TODO: code here
 
 				// Prepare the refresh and access tokens.
-				var response = this.authorizationServer.PrepareAccessTokenResponse(request, ResourceServerEncryptionPublicKey, accessTokenLifetime);
+				var response = this.authorizationServer.PrepareAccessTokenResponse(request, ResourceServerEncryptionServiceProvider, accessTokenLifetime);
 				return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
 			}
 

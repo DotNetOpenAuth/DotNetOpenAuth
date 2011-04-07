@@ -32,6 +32,11 @@
 #endif
 
 		/// <summary>
+		/// The authorization server crypto service provider that contains a public key.
+		/// </summary>
+		public static readonly RSACryptoServiceProvider AuthorizationServerSigningServiceProvider;
+
+		/// <summary>
 		/// An application memory cache of recent log messages.
 		/// </summary>
 		public static StringBuilder LogMessages = new StringBuilder();
@@ -63,6 +68,22 @@
 		[Obsolete("You must use a real key for a real app.", true)]
 		internal static readonly RSAParameters ResourceServerEncryptionPrivateKey= new RSAParameters();
 #endif
+
+		/// <summary>
+		/// The crypto service provider for this resource server that contains the private key used to decrypt an access token.
+		/// </summary>
+		internal static readonly RSACryptoServiceProvider ResourceServerEncryptionServiceProvider;
+
+		/// <summary>
+		/// Initializes the <see cref="Global"/> class.
+		/// </summary>
+		static Global() {
+			AuthorizationServerSigningServiceProvider = new RSACryptoServiceProvider();
+			AuthorizationServerSigningServiceProvider.ImportParameters(AuthorizationServerSigningPublicKey);
+
+			ResourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
+			ResourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPrivateKey);
+		}
 
 		private void Application_Start(object sender, EventArgs e) {
 			log4net.Config.XmlConfigurator.Configure();

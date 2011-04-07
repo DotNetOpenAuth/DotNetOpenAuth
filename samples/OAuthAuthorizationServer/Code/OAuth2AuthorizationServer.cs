@@ -13,6 +13,8 @@
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
 		internal static readonly RSAParameters AsymmetricTokenSigningPrivateKey;
 
+		internal static readonly RSACryptoServiceProvider AsymmetricTokenSigningServiceProvider;
+
 		private static readonly byte[] secret;
 
 		private readonly INonceStore nonceStore = new DatabaseNonceStore();
@@ -48,6 +50,9 @@
 			// Ultimately the private key information must be what is returned bout the AccessTokenSigningPrivateKey property.
 			AsymmetricTokenSigningPrivateKey = privateKey;
 #endif
+
+			AsymmetricTokenSigningServiceProvider = new RSACryptoServiceProvider();
+			AsymmetricTokenSigningServiceProvider.ImportParameters(AsymmetricTokenSigningPrivateKey);
 		}
 
 		#region Implementation of IAuthorizationServer
@@ -60,8 +65,8 @@
 			get { return this.nonceStore; }
 		}
 
-		public RSAParameters AccessTokenSigningPrivateKey {
-			get { return AsymmetricTokenSigningPrivateKey; }
+		public RSACryptoServiceProvider AccessTokenSigningPrivateKey {
+			get { return AsymmetricTokenSigningServiceProvider; }
 		}
 
 		public IConsumerDescription GetClient(string clientIdentifier) {

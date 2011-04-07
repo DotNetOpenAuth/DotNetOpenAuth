@@ -103,23 +103,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="signingKey">The asymmetric private key to use for signing the token.</param>
-		/// <param name="encryptingKey">The asymmetric public key to use for encrypting the token.</param>
+		/// <param name="signingKey">The crypto service provider with the asymmetric key to use for signing or verifying the token.</param>
+		/// <param name="encryptingKey">The crypto service provider with the asymmetric key to use for encrypting or decrypting the token.</param>
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
-		internal UriStyleMessageFormatter(RSAParameters? signingKey = null, RSAParameters? encryptingKey = null, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
-			: this(signingKey.HasValue, encryptingKey.HasValue, compressed, maximumAge, decodeOnceOnly) {
-			if (signingKey.HasValue) {
-				this.asymmetricSigning = new RSACryptoServiceProvider();
-				this.asymmetricSigning.ImportParameters(signingKey.Value);
-			}
-
-			if (encryptingKey.HasValue) {
-				this.asymmetricEncrypting = new RSACryptoServiceProvider();
-				this.asymmetricEncrypting.ImportParameters(encryptingKey.Value);
-			}
-
+		internal UriStyleMessageFormatter(RSACryptoServiceProvider signingKey = null, RSACryptoServiceProvider encryptingKey = null, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: this(signingKey != null, encryptingKey != null, compressed, maximumAge, decodeOnceOnly) {
+			this.asymmetricSigning = signingKey;
+			this.asymmetricEncrypting = encryptingKey;
 			this.hasherForAsymmetricSigning = new SHA1CryptoServiceProvider();
 		}
 
