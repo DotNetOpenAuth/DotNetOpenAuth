@@ -91,6 +91,7 @@
     <Compile Include="CustomExtensions\AcmeResponse.cs" />
     <Compile Include="Facebook\FacebookClient.cs" />
     <Compile Include="Facebook\FacebookGraph.cs" />
+    <Compile Include="CustomExtensions\UIRequestAtRelyingPartyFactory.cs" />
     <Compile Include="GoogleConsumer.cs" />
     <Compile Include="InMemoryClientAuthorizationTracker.cs" />
     <Compile Include="InMemoryTokenManager.cs">

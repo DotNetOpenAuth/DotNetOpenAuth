@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -279,7 +280,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public T GetUntrustedExtension<T>() where T : IOpenIdMessageExtension {
-			return default(T);
+			return this.response.Extensions.OfType<T>().FirstOrDefault();
 		}
 
 		/// <summary>
@@ -303,7 +304,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		public IOpenIdMessageExtension GetUntrustedExtension(Type extensionType) {
-			return null;
+			return this.response.Extensions.OfType<IOpenIdMessageExtension>().Where(ext => extensionType.IsInstanceOfType(ext)).FirstOrDefault();
 		}
 
 		#endregion

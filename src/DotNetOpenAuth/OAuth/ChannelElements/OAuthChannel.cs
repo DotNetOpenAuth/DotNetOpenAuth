@@ -31,12 +31,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager)
+		/// <param name="securitySettings">The security settings.</param>
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings)
 			: this(
 			signingBindingElement,
 			store,
 			tokenManager,
+			securitySettings,
 			new OAuthConsumerMessageFactory()) {
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
+			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
+			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 		}
 
 		/// <summary>
@@ -45,12 +51,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager)
+		/// <param name="securitySettings">The security settings.</param>
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings)
 			: this(
 			signingBindingElement,
 			store,
 			tokenManager,
+			securitySettings,
 			new OAuthServiceProviderMessageFactory(tokenManager)) {
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
+			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
+			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 		}
 
 		/// <summary>
@@ -59,14 +71,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The ITokenManager instance to use.</param>
-		/// <param name="messageTypeProvider">
-		/// An injected message type provider instance.
+		/// <param name="securitySettings">The security settings.</param>
+		/// <param name="messageTypeProvider">An injected message type provider instance.
 		/// Except for mock testing, this should always be one of
-		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.
-		/// </param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageFactory messageTypeProvider)
-			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager)) {
+		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.</param>
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider)
+			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
 			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
 			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 
@@ -243,8 +255,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The signing binding element.</param>
 		/// <param name="store">The nonce store.</param>
 		/// <param name="tokenManager">The token manager.</param>
-		/// <returns>An array of binding elements used to initialize the channel.</returns>
-		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager) {
+		/// <param name="securitySettings">The security settings.</param>
+		/// <returns>
+		/// An array of binding elements used to initialize the channel.
+		/// </returns>
+		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
+			Contract.Requires(securitySettings != null);
+
 			var bindingElements = new List<IChannelBindingElement> {
 				new OAuthHttpMethodBindingElement(),
 				signingBindingElement,
@@ -253,8 +270,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			};
 
 			var spTokenManager = tokenManager as IServiceProviderTokenManager;
-			if (spTokenManager != null) {
-				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager));
+			var serviceProviderSecuritySettings = securitySettings as ServiceProviderSecuritySettings;
+			if (spTokenManager != null && serviceProviderSecuritySettings != null) {
+				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager, serviceProviderSecuritySettings));
 			}
 
 			return bindingElements.ToArray();

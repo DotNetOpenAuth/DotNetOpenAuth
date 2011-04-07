@@ -157,6 +157,26 @@ Assert.That( array2x2, Is.Not.EqualTo( array4 ) );
 Assert.That( array2x2, Is.EqualTo( array4 ).AsCollection );
 </pre></div>
 
+<h4>Comparing Dictionaries</h4>
+
+<p>Dictionaries implement <b>ICollection</b>, and NUnit has treated
+them as collections since version 2.4. However, this did not
+give useful results, since the dictionary entries had to be
+in the same order for the comparison to succeed and the 
+underlying implementation had to be the same.
+
+<p>Beginning with NUnit 2.5.6, NUnit has specific code for
+comparing dictionaries. Two dictionaries are considered equal if
+
+<ol>
+<li>The list of keys is the same - without regard to ordering.
+<li>The values associated with each key are equal.
+</ol>
+
+<p>You can use this capability to compare any two objects implementing
+<b>IDictionary</b>. Generic and non-generic dictionaries (Hashtables) 
+may be successfully compared.
+
 <h4>User-Specified Comparers</h4>
 
 <p>If the default NUnit or .NET behavior for testing equality doesn't
@@ -196,9 +216,9 @@ Assert.That( myObj1, Is.EqualTo( myObj2 ).Using( myComparer ) );
 	addition, the maximum line length may be modified for all tests by setting
 	the value of <b>TextMessageWriter.MaximumLineLength</b> in the appropriate
 	level of setup.
-<li><p>When used with arrays or collections, EqualConstraint operates
-    recursively. Any modifiers are saved and used as they apply to 
-	individual items in the collection.
+<li><p>When used with arrays, collections or dictionaries, EqualConstraint 
+    operates recursively. Any modifiers are saved and used as they apply to 
+	individual items.
 <li><p>A user-specified comparer will not be called by <b>EqualConstraint</b>
     if either or both arguments are null. If both are null, the Constraint
 	succeeds. If only one is null, it fails.
@@ -212,7 +232,7 @@ For a <b>DirectoryInfo</b>, the first-level directory contents are compared.
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -231,6 +251,7 @@ For a <b>DirectoryInfo</b>, the first-level directory contents are compared.
 <li><a href="compoundConstraints.html">Compound&nbsp;Constraints</a></li>
 <li><a href="delayedConstraint.html">Delayed&nbsp;Constraint</a></li>
 <li><a href="listMapper.html">List&nbsp;Mapper</a></li>
+<li><a href="reusableConstraint.html">Reusable&nbsp;Constraint</a></li>
 </ul>
 <li><a href="attributes.html">Attributes</a></li>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
@@ -246,7 +267,7 @@ For a <b>DirectoryInfo</b>, the first-level directory contents are compared.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 
