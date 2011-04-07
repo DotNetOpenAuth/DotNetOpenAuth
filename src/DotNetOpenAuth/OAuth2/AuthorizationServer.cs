@@ -124,8 +124,10 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (request != null) {
 				// This convenience method only encrypts access tokens assuming that this auth server
 				// doubles as the resource server.
-				var resourceServerPublicKey = this.AuthorizationServerServices.AccessTokenSigningPrivateKey;
-				response = this.PrepareAccessTokenResponse(request, resourceServerPublicKey);
+				using (var resourceServerPublicKey = this.AuthorizationServerServices.CreateAccessTokenSigningCryptoServiceProvider()) {
+					response = this.PrepareAccessTokenResponse(request, resourceServerPublicKey);
+				}
+
 				return true;
 			}
 
@@ -220,22 +222,24 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(accessTokenEncryptingPublicKey != null, "accessTokenEncryptingPublicKey");
 
 			var tokenRequest = (ITokenCarryingRequest)request;
-			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerServices.AccessTokenSigningPrivateKey, accessTokenEncryptingPublicKey);
-			var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
+			using (var crypto = this.AuthorizationServerServices.CreateAccessTokenSigningCryptoServiceProvider()) {
+				var accessTokenFormatter = AccessToken.CreateFormatter(crypto, accessTokenEncryptingPublicKey);
+				var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
 
-			var response = new AccessTokenSuccessResponse(request) {
-				AccessToken = accessTokenFormatter.Serialize(accessToken),
-				Lifetime = accessToken.Lifetime,
-			};
-			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
+				var response = new AccessTokenSuccessResponse(request) {
+					AccessToken = accessTokenFormatter.Serialize(accessToken),
+					Lifetime = accessToken.Lifetime,
+				};
+				response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 
-			if (includeRefreshToken) {
-				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.Secret);
-				var refreshToken = new RefreshToken(tokenRequest.AuthorizationDescription);
-				response.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
+				if (includeRefreshToken) {
+					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.Secret);
+					var refreshToken = new RefreshToken(tokenRequest.AuthorizationDescription);
+					response.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
+				}
+
+				return response;
 			}
-
-			return response;
 		}
 
 		/// <summary>

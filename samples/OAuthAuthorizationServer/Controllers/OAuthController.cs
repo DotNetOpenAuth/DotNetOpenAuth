@@ -31,23 +31,14 @@
 		};
 #else
 		[Obsolete("You must use a real key for a real app.", true)]
-		private static readonly RSAParameters ResourceServerEncryptionPublicKey = new RSAParameters();
+		private static readonly RSAParameters ResourceServerEncryptionPublicKey;
 #endif
-
-		/// <summary>
-		/// The resource server's encryption service provider with private key.
-		/// </summary>
-		/// <remarks>
-		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
-		/// </remarks>
-		[ThreadStatic]
-		private static RSACryptoServiceProvider ResourceServerEncryptionServiceProvider = CreateResourceServerEncryptionServiceProvider();
 
 		/// <summary>
 		/// Creates the resource server's encryption service provider with private key.
 		/// </summary>
 		/// <returns>An RSA crypto service provider.</returns>
-		private static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
+		internal static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
 			var resourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
 			resourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
 			return resourceServerEncryptionServiceProvider;
@@ -71,8 +62,10 @@
 				// TODO: code here
 
 				// Prepare the refresh and access tokens.
-				var response = this.authorizationServer.PrepareAccessTokenResponse(request, ResourceServerEncryptionServiceProvider, accessTokenLifetime);
-				return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
+				using (var crypto = CreateResourceServerEncryptionServiceProvider()) {
+					var response = this.authorizationServer.PrepareAccessTokenResponse(request, crypto, accessTokenLifetime);
+					return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
+				}
 			}
 
 			throw new HttpException((int)HttpStatusCode.BadRequest, "Missing OAuth 2.0 request message.");

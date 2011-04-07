@@ -49,13 +49,15 @@ namespace RelyingPartyLogic {
 				return;
 			}
 
-			var tokenAnalyzer = new SpecialAccessTokenAnalyzer(OAuthAuthorizationServer.AsymmetricKeyServiceProvider, OAuthAuthorizationServer.AsymmetricKeyServiceProvider);
-			var resourceServer = new ResourceServer(tokenAnalyzer);
+			using (var crypto = OAuthAuthorizationServer.CreateAsymmetricKeyServiceProvider()) {
+				var tokenAnalyzer = new SpecialAccessTokenAnalyzer(crypto, crypto);
+				var resourceServer = new ResourceServer(tokenAnalyzer);
 
-			IPrincipal principal;
-			var errorMessage = resourceServer.VerifyAccess(new HttpRequestInfo(this.application.Context.Request), out principal);
-			if (errorMessage == null) {
-				this.application.Context.User = principal;
+				IPrincipal principal;
+				var errorMessage = resourceServer.VerifyAccess(new HttpRequestInfo(this.application.Context.Request), out principal);
+				if (errorMessage == null) {
+					this.application.Context.User = principal;
+				}
 			}
 		}
 

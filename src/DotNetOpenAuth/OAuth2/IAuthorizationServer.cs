@@ -30,14 +30,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		byte[] Secret { get; }
 
 		/// <summary>
-		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// Creates a new instance of the crypto service provider with the asymmetric private key to use for signing access tokens.
 		/// </summary>
 		/// <value>Must not be null, and must contain the private key.</value>
 		/// <remarks>
 		/// The public key in the private/public key pair will be used by the resource
 		/// servers to validate that the access token is minted by a trusted authorization server.
+		/// The caller is responsible to dispose of the returned instance.
 		/// </remarks>
-		RSACryptoServiceProvider AccessTokenSigningPrivateKey { get; }
+		RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider();
 
 		/// <summary>
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
@@ -108,17 +109,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
 		/// </summary>
-		/// <value></value>
 		/// <remarks>
 		/// The public key in the private/public key pair will be used by the resource
 		/// servers to validate that the access token is minted by a trusted authorization server.
 		/// </remarks>
-		RSACryptoServiceProvider IAuthorizationServer.AccessTokenSigningPrivateKey {
-			get {
-				Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
-				Contract.Ensures(!Contract.Result<RSACryptoServiceProvider>().PublicOnly);
-				throw new NotImplementedException();
-			}
+		RSACryptoServiceProvider IAuthorizationServer.CreateAccessTokenSigningCryptoServiceProvider() {
+			Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
+			Contract.Ensures(!Contract.Result<RSACryptoServiceProvider>().PublicOnly);
+			throw new NotImplementedException();
 		}
 
 		/// <summary>

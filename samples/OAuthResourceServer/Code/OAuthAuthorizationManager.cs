@@ -64,16 +64,17 @@
 		private static IPrincipal VerifyOAuth2(HttpRequestMessageProperty httpDetails, Uri requestUri) {
 			// for this sample where the auth server and resource server are the same site,
 			// we use the same public/private key.
-			var resourceServer = new ResourceServer(
-				new StandardAccessTokenAnalyzer(
-					Global.AuthorizationServerSigningServiceProvider,
-					Global.ResourceServerEncryptionServiceProvider));
+			using (var signing = Global.CreateAuthorizationServerSigningServiceProvider()) {
+				using (var encrypting = Global.CreateResourceServerEncryptionServiceProvider()) {
+					var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(signing, encrypting));
 
-			IPrincipal result;
-			var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out result);
+					IPrincipal result;
+					var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out result);
 
-			// TODO: return the prepared error code.
-			return error != null ? null : result;
+					// TODO: return the prepared error code.
+					return error != null ? null : result;
+				}
+			}
 		}
 	}
 }
