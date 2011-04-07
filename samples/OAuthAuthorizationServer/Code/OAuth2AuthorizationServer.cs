@@ -11,9 +11,10 @@
 	using DotNetOpenAuth.OAuth2.Messages;
 
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
-		internal static readonly RSAParameters AsymmetricTokenSigningPrivateKey;
+		private static readonly RSAParameters AsymmetricTokenSigningPrivateKey;
 
-		internal static readonly RSACryptoServiceProvider AsymmetricTokenSigningServiceProvider;
+		[ThreadStatic]
+		internal static readonly RSACryptoServiceProvider AsymmetricTokenSigningServiceProvider = CreateAsymmetricTokenSigningServiceProvider();
 
 		private static readonly byte[] secret;
 
@@ -47,12 +48,23 @@
 			var privateKey = keyPair.ExportParameters(true);
 			var publicKey = keyPair.ExportParameters(false);
 
-			// Ultimately the private key information must be what is returned bout the AccessTokenSigningPrivateKey property.
+			// Ultimately the private key information must be what is returned through the AccessTokenSigningPrivateKey property.
 			AsymmetricTokenSigningPrivateKey = privateKey;
 #endif
+		}
 
-			AsymmetricTokenSigningServiceProvider = new RSACryptoServiceProvider();
-			AsymmetricTokenSigningServiceProvider.ImportParameters(AsymmetricTokenSigningPrivateKey);
+		/// <summary>
+		/// Creates the asymmetric token signing service provider.
+		/// </summary>
+		/// <returns>An RSA crypto service provider.</returns>
+		/// <remarks>
+		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
+		/// In this sample we just create one for each incoming request.  Be sure to call Dispose on them to release native handles.
+		/// </remarks>
+		private static RSACryptoServiceProvider CreateAsymmetricTokenSigningServiceProvider() {
+			var asymmetricTokenSigningServiceProvider = new RSACryptoServiceProvider();
+			asymmetricTokenSigningServiceProvider.ImportParameters(AsymmetricTokenSigningPrivateKey);
+			return asymmetricTokenSigningServiceProvider;
 		}
 
 		#region Implementation of IAuthorizationServer

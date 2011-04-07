@@ -34,7 +34,11 @@
 		/// <summary>
 		/// The authorization server crypto service provider that contains a public key.
 		/// </summary>
-		public static readonly RSACryptoServiceProvider AuthorizationServerSigningServiceProvider;
+		/// <remarks>
+		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
+		/// </remarks>
+		[ThreadStatic]
+		public static readonly RSACryptoServiceProvider AuthorizationServerSigningServiceProvider = CreateAuthorizationServerSigningServiceProvider();
 
 		/// <summary>
 		/// An application memory cache of recent log messages.
@@ -66,23 +70,36 @@
 		};
 #else
 		[Obsolete("You must use a real key for a real app.", true)]
-		internal static readonly RSAParameters ResourceServerEncryptionPrivateKey= new RSAParameters();
+		internal static readonly RSAParameters ResourceServerEncryptionPrivateKey = new RSAParameters();
 #endif
 
 		/// <summary>
 		/// The crypto service provider for this resource server that contains the private key used to decrypt an access token.
 		/// </summary>
-		internal static readonly RSACryptoServiceProvider ResourceServerEncryptionServiceProvider;
+		/// <remarks>
+		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
+		/// </remarks>
+		[ThreadStatic]
+		internal static readonly RSACryptoServiceProvider ResourceServerEncryptionServiceProvider = CreateResourceServerEncryptionServiceProvider();
 
 		/// <summary>
-		/// Initializes the <see cref="Global"/> class.
+		/// Creates the crypto service provider for this resource server that contains the private key used to decrypt an access token.
 		/// </summary>
-		static Global() {
-			AuthorizationServerSigningServiceProvider = new RSACryptoServiceProvider();
-			AuthorizationServerSigningServiceProvider.ImportParameters(AuthorizationServerSigningPublicKey);
+		/// <returns>An RSA crypto service provider.</returns>
+		private static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
+			var resourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
+			resourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPrivateKey);
+			return resourceServerEncryptionServiceProvider;
+		}
 
-			ResourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
-			ResourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPrivateKey);
+		/// <summary>
+		/// Creates the crypto service provider for the authorization server that contains the public key used to verify an access token signature.
+		/// </summary>
+		/// <returns>An RSA crypto service provider.</returns>
+		private static RSACryptoServiceProvider CreateAuthorizationServerSigningServiceProvider() {
+			var authorizationServerSigningServiceProvider = new RSACryptoServiceProvider();
+			authorizationServerSigningServiceProvider.ImportParameters(AuthorizationServerSigningPublicKey);
+			return authorizationServerSigningServiceProvider;
 		}
 
 		private void Application_Start(object sender, EventArgs e) {

@@ -37,14 +37,20 @@
 		/// <summary>
 		/// The resource server's encryption service provider with private key.
 		/// </summary>
-		private static readonly RSACryptoServiceProvider ResourceServerEncryptionServiceProvider;
+		/// <remarks>
+		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
+		/// </remarks>
+		[ThreadStatic]
+		private static RSACryptoServiceProvider ResourceServerEncryptionServiceProvider = CreateResourceServerEncryptionServiceProvider();
 
 		/// <summary>
-		/// Initializes the <see cref="OAuthController"/> class.
+		/// Creates the resource server's encryption service provider with private key.
 		/// </summary>
-		static OAuthController() {
-			ResourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
-			ResourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
+		/// <returns>An RSA crypto service provider.</returns>
+		private static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
+			var resourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
+			resourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
+			return resourceServerEncryptionServiceProvider;
 		}
 
 		/// <summary>

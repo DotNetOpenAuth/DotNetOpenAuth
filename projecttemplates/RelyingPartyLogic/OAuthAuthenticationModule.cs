@@ -49,7 +49,7 @@ namespace RelyingPartyLogic {
 				return;
 			}
 
-			var tokenAnalyzer = new SpecialAccessTokenAnalyzer(OAuthAuthorizationServer.AsymmetricKey, OAuthAuthorizationServer.AsymmetricKey);
+			var tokenAnalyzer = new SpecialAccessTokenAnalyzer(OAuthAuthorizationServer.AsymmetricKeyServiceProvider, OAuthAuthorizationServer.AsymmetricKeyServiceProvider);
 			var resourceServer = new ResourceServer(tokenAnalyzer);
 
 			IPrincipal principal;

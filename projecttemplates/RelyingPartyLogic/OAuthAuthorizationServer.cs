@@ -21,7 +21,10 @@ namespace RelyingPartyLogic {
 	/// Provides OAuth 2.0 authorization server information to DotNetOpenAuth.
 	/// </summary>
 	public class OAuthAuthorizationServer : IAuthorizationServer {
-		internal static readonly RSACryptoServiceProvider AsymmetricKey;
+		private static readonly RSAParameters AsymmetricKey;
+
+		[ThreadStatic]
+		internal static readonly RSACryptoServiceProvider AsymmetricKeyServiceProvider = CreateAsymmetricKeyServiceProvider();
 
 		private static readonly byte[] secret;
 
@@ -39,7 +42,22 @@ namespace RelyingPartyLogic {
 			// http://social.msdn.microsoft.com/Forums/en-US/clr/thread/7ea48fd0-8d6b-43ed-b272-1a0249ae490f?prof=required
 			var cspParameters = new CspParameters();
 			cspParameters.Flags = CspProviderFlags.UseArchivableKey | CspProviderFlags.UseMachineKeyStore;
-			AsymmetricKey = new RSACryptoServiceProvider(cspParameters);
+			var asymmetricKey = new RSACryptoServiceProvider(cspParameters);
+			AsymmetricKey = asymmetricKey.ExportParameters(true);
+		}
+
+		/// <summary>
+		/// Creates the asymmetric crypto service provider.
+		/// </summary>
+		/// <returns>An RSA crypto service provider.</returns>
+		/// <remarks>
+		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
+		/// In this sample we just create one for each incoming request.  Be sure to call Dispose on them to release native handles.
+		/// </remarks>
+		private static RSACryptoServiceProvider CreateAsymmetricKeyServiceProvider() {
+			var serviceProvider = new RSACryptoServiceProvider();
+			serviceProvider.ImportParameters(AsymmetricKey);
+			return serviceProvider;
 		}
 
 		/// <summary>
@@ -72,7 +90,7 @@ namespace RelyingPartyLogic {
 		/// servers to validate that the access token is minted by a trusted authorization server.
 		/// </remarks>
 		public RSACryptoServiceProvider AccessTokenSigningPrivateKey {
-			get { return AsymmetricKey; }
+			get { return AsymmetricKeyServiceProvider; }
 		}
 
 		/// <summary>
