@@ -9,6 +9,7 @@
 	using System.Configuration;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.Messaging;
 
 	public partial class GoogleApps2Legged : System.Web.UI.Page {
 		private InMemoryTokenManager TokenManager {
@@ -30,7 +31,9 @@
 		protected void Page_Load(object sender, EventArgs e) {
 			var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
 			string accessToken = google.RequestNewClientAccount();
-			string tokenSecret = google.TokenManager.GetTokenSecret(accessToken);
+			////string tokenSecret = google.TokenManager.GetTokenSecret(accessToken);
+			MessageReceivingEndpoint ep = null; // set up your authorized call here.
+			google.PrepareAuthorizedRequestAndSend(ep, accessToken);
 		}
 	}
 }
