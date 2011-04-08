@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AbsoluteUriRequired" xml:space="preserve">
+    <value>The value for message part "{0}" must be an absolute URI.</value>
+  </data>
   <data name="AccessScopeExceedsGrantScope" xml:space="preserve">
     <value>The requested access scope ("{0}") exceeds the grant scope ("{1}").</value>
   </data>
