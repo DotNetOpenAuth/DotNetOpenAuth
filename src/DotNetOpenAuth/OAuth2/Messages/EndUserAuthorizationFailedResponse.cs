@@ -43,21 +43,21 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the error.
 		/// </summary>
 		/// <value>One of the values given in <see cref="Protocol.EndUserAuthorizationRequestErrorCodes"/>.</value>
-		[MessagePart(Protocol.error, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.error, IsRequired = true)]
 		public string Error { get; set; }
 
 		/// <summary>
 		/// Gets or sets a human readable description of the error.
 		/// </summary>
 		/// <value>Human-readable text providing additional information, used to assist in the understanding and resolution of the error that occurred.</value>
-		[MessagePart(Protocol.error_description, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.error_description, IsRequired = false)]
 		public string ErrorDescription { get; set; }
 
 		/// <summary>
 		/// Gets or sets the location of the web page that describes the error and possible resolution.
 		/// </summary>
 		/// <value>A URI identifying a human-readable web page with information about the error, used to provide the end-user with additional information about the error.</value>
-		[MessagePart(Protocol.error_uri, IsRequired = false, AllowEmpty = false)]
+		[MessagePart(Protocol.error_uri, IsRequired = false)]
 		public Uri ErrorUri { get; set; }
 
 		/// <summary>
@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// REQUIRED if the Client sent the value in the <see cref="EndUserAuthorizationRequest"/>.
 		/// </remarks>
-		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.state, IsRequired = false)]
 		string IMessageWithClientState.ClientState { get; set; }
 	}
 }

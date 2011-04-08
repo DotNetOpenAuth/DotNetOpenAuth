@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// REQUIRED. The refresh token associated with the access token to be refreshed. 
 		/// </remarks>
-		[MessagePart(Protocol.refresh_token, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.refresh_token, IsRequired = true)]
 		internal string RefreshToken { get; set; }
 
 		/// <summary>

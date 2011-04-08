@@ -51,14 +51,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// REQUIRED if the Client sent the value in the <see cref="EndUserAuthorizationRequest"/>.
 		/// </remarks>
-		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.state, IsRequired = false)]
 		string IMessageWithClientState.ClientState { get; set; }
 
 		/// <summary>
 		/// Gets the scope of the <see cref="AccessToken"/> if one is given; otherwise the scope of the authorization code.
 		/// </summary>
 		/// <value>The scope.</value>
-		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
+		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
 		public ICollection<string> Scope { get; private set; }
 
 		/// <summary>

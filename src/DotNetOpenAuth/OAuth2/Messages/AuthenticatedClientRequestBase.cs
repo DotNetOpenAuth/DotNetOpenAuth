@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the client identifier previously obtained from the Authorization Server.
 		/// </summary>
 		/// <value>The client identifier.</value>
-		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.client_id, IsRequired = true)]
 		public string ClientIdentifier { get; internal set; }
 
 		/// <summary>
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// REQUIRED. The client secret as described in Section 2.1  (Client Credentials). OPTIONAL if no client secret was issued. 
 		/// </remarks>
-		[MessagePart(Protocol.client_secret, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.client_secret, IsRequired = false)]
 		public string ClientSecret { get; internal set; }
 	}
 }

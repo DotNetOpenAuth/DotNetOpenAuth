@@ -28,14 +28,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the format of the assertion as defined by the Authorization Server.
 		/// </summary>
 		/// <value>The assertion format.</value>
-		[MessagePart(Protocol.assertion_type, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.assertion_type, IsRequired = true)]
 		internal Uri AssertionType { get; set; }
 
 		/// <summary>
 		/// Gets or sets the assertion.
 		/// </summary>
 		/// <value>The assertion.</value>
-		[MessagePart(Protocol.assertion, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.assertion, IsRequired = true)]
 		internal string Assertion { get; set; }
 
 		/// <summary>

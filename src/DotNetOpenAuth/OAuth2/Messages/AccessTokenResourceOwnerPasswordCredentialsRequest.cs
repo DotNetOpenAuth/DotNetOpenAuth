@@ -37,14 +37,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the user's account username.
 		/// </summary>
 		/// <value>The username on the user's account.</value>
-		[MessagePart(Protocol.username, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.username, IsRequired = true)]
 		internal string UserName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the user's password.
 		/// </summary>
 		/// <value>The password.</value>
-		[MessagePart(Protocol.password, IsRequired = true, AllowEmpty = true)]
+		[MessagePart(Protocol.password, IsRequired = true)]
 		internal string Password { get; set; }
 	}
 }

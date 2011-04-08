@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>
-		[MessagePart("token", IsRequired = true, AllowEmpty = false)]
+		[MessagePart("token", IsRequired = true)]
 		internal string AccessToken { get; set; }
 
 		/// <summary>

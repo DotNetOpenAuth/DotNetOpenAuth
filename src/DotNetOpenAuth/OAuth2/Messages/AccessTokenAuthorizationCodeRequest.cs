@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// in <see cref="EndUserAuthorizationSuccessAuthCodeResponse.AuthorizationCode"/>.
 		/// </summary>
 		/// <value>The verification code received from the authorization server.</value>
-		[MessagePart(Protocol.code, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.code, IsRequired = true)]
 		internal string AuthorizationCode { get; set; }
 
 		/// <summary>
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>
 		/// The Callback URL used to obtain the Verification Code.
 		/// </value>
-		[MessagePart(Protocol.redirect_uri, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.redirect_uri, IsRequired = true)]
 		internal Uri Callback { get; set; }
 	}
 }

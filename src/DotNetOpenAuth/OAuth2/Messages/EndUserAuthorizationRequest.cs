@@ -43,10 +43,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		/// <summary>
-		/// Gets the type of the authorization that the client expects of the authorization server.
+		/// Gets the grant type that the client expects of the authorization server.
 		/// </summary>
 		/// <value>Always <see cref="EndUserAuthorizationResponseType.AuthorizationCode"/>.  Other response types are not supported.</value>
-		[MessagePart(Protocol.response_type, IsRequired = true, AllowEmpty = false, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
+		[MessagePart(Protocol.response_type, IsRequired = true, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
 		public EndUserAuthorizationResponseType ResponseType
 		{
 			get { return EndUserAuthorizationResponseType.AuthorizationCode; }
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
-		[MessagePart(Protocol.client_id, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.client_id, IsRequired = true)]
 		public string ClientIdentifier { get; set; }
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// REQUIRED unless a redirection URI has been established between the client and authorization server via other means. An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed. The authorization server MAY require the client to pre-register their redirection URI. The redirection URI MUST NOT include a query component as defined by [RFC3986]  (Berners-Lee, T., Fielding, R., and L. Masinter, “Uniform Resource Identifier (URI): Generic Syntax,” January 2005.) section 3 if the state parameter is present. 
 		/// </remarks>
-		[MessagePart(Protocol.redirect_uri, IsRequired = false, AllowEmpty = false)]
+		[MessagePart(Protocol.redirect_uri, IsRequired = false)]
 		public Uri Callback { get; set; }
 
 		/// <summary>
@@ -80,14 +80,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// REQUIRED. The client identifier as described in Section 3.4  (Client Credentials). 
 		/// </remarks>
-		[MessagePart(Protocol.state, IsRequired = false, AllowEmpty = true)]
+		[MessagePart(Protocol.state, IsRequired = false)]
 		public string ClientState { get; set; }
 
 		/// <summary>
 		/// Gets the scope of access being requested.
 		/// </summary>
 		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>
-		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
+		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
 		public HashSet<string> Scope { get; private set; }
 	}
 }

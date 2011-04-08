@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>
-		[MessagePart(Protocol.access_token, IsRequired = true, AllowEmpty = false)]
+		[MessagePart(Protocol.access_token, IsRequired = true)]
 		public string AccessToken { get; internal set; }
 
 		/// <summary>
@@ -70,14 +70,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// OPTIONAL. The refresh token used to obtain new access tokens using the same end-user access grant as described in Section 6  (Refreshing an Access Token). 
 		/// </remarks>
-		[MessagePart(Protocol.refresh_token, IsRequired = false, AllowEmpty = false)]
+		[MessagePart(Protocol.refresh_token, IsRequired = false)]
 		public string RefreshToken { get; internal set; }
 
 		/// <summary>
 		/// Gets the scope of access being requested.
 		/// </summary>
 		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>
-		[MessagePart(Protocol.scope, IsRequired = false, AllowEmpty = true, Encoder = typeof(ScopeEncoder))]
+		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
 		public HashSet<string> Scope { get; private set; }
 	}
 }

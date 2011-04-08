@@ -70,14 +70,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the authorization code.
 		/// </summary>
 		/// <value>The authorization code.</value>
-		[MessagePart(Protocol.code, AllowEmpty = false, IsRequired = true)]
+		[MessagePart(Protocol.code, IsRequired = true)]
 		internal string AuthorizationCode { get; set; }
 
 		/// <summary>
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>
-		[MessagePart(Protocol.access_token, AllowEmpty = false, IsRequired = false)]
+		[MessagePart(Protocol.access_token, IsRequired = false)]
 		internal string AccessToken { get; set; }
 	}
 }
