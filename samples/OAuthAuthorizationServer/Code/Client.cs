@@ -18,17 +18,26 @@
 		}
 
 		/// <summary>
-		/// Gets the allowed callback URIs that this client has pre-registered with the service provider, if any.
+		/// Gets the callback to use when an individual authorization request
+		/// does not include an explicit callback URI.
 		/// </summary>
 		/// <value>
-		/// The URIs that user authorization responses may be directed to; must not be <c>null</c>, but may be empty.
+		/// An absolute URL; or <c>null</c> if none is registered.
 		/// </value>
-		/// <remarks>
-		/// The first element in this list (if any) will be used as the default client redirect URL if the client sends an authorization request without a redirect URL.
-		/// If the list is empty, any callback is allowed for this client.
-		/// </remarks>
-		List<Uri> IConsumerDescription.AllowedCallbacks {
-			get { return string.IsNullOrEmpty(this.Callback) ? new List<Uri>() : new List<Uri>(new Uri[] { new Uri(this.Callback) }); }
+		Uri IConsumerDescription.DefaultCallback {
+			get { return string.IsNullOrEmpty(this.Callback) ? null : new Uri(this.Callback); }
+		}
+
+		/// <summary>
+		/// Determines whether a callback URI included in a client's authorization request
+		/// is among those allowed callbacks for the registered client.
+		/// </summary>
+		/// <param name="callback">The absolute URI the client has requested the authorization result be received at.</param>
+		/// <returns>
+		///   <c>true</c> if the callback URL is allowable for this client; otherwise, <c>false</c>.
+		/// </returns>
+		bool IConsumerDescription.IsCallbackAllowed(Uri callback) {
+			return string.IsNullOrEmpty(this.Callback) || callback == new Uri(this.Callback);
 		}
 
 		#endregion

@@ -11,27 +11,6 @@ namespace RelyingPartyLogic {
 	using DotNetOpenAuth.OAuth2;
 
 	public partial class Client : IConsumerDescription {
-		/// <summary>
-		/// Gets the allowed callback URIs that this client has pre-registered with the service provider, if any.
-		/// </summary>
-		/// <value>
-		/// The URIs that user authorization responses may be directed to; must not be <c>null</c>, but may be empty.
-		/// </value>
-		/// <remarks>
-		/// The first element in this list (if any) will be used as the default client redirect URL if the client sends an authorization request without a redirect URL.
-		/// If the list is empty, any callback is allowed for this client.
-		/// </remarks>
-		public List<Uri> AllowedCallbacks {
-			get {
-				var result = new List<Uri>();
-				if (this.CallbackAsString != null) {
-					result.Add(new Uri(this.CallbackAsString));
-				}
-
-				return result;
-			}
-		}
-
 		#region IConsumerDescription Members
 
 		/// <summary>
@@ -39,6 +18,29 @@ namespace RelyingPartyLogic {
 		/// </summary>
 		string IConsumerDescription.Secret {
 			get { return this.ClientSecret; }
+		}
+
+		/// <summary>
+		/// Gets the callback to use when an individual authorization request
+		/// does not include an explicit callback URI.
+		/// </summary>
+		/// <value>
+		/// An absolute URL; or <c>null</c> if none is registered.
+		/// </value>
+		Uri IConsumerDescription.DefaultCallback {
+			get { return string.IsNullOrEmpty(this.CallbackAsString) ? null : new Uri(this.CallbackAsString); }
+		}
+
+		/// <summary>
+		/// Determines whether a callback URI included in a client's authorization request
+		/// is among those allowed callbacks for the registered client.
+		/// </summary>
+		/// <param name="callback">The absolute URI the client has requested the authorization result be received at.</param>
+		/// <returns>
+		///   <c>true</c> if the callback URL is allowable for this client; otherwise, <c>false</c>.
+		/// </returns>
+		bool IConsumerDescription.IsCallbackAllowed(Uri callback) {
+			return string.IsNullOrEmpty(this.CallbackAsString) || callback == new Uri(this.CallbackAsString);
 		}
 
 		#endregion

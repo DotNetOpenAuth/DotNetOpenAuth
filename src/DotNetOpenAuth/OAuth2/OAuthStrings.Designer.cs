@@ -79,20 +79,20 @@ namespace DotNetOpenAuth.OAuth2 {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to None of the client&apos;s pre-registered callback URLs ({0}) match the one found in the authorization request ({1})..
-        /// </summary>
-        internal static string CallbackMismatch {
-            get {
-                return ResourceManager.GetString("CallbackMismatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to obtain access token.  Authorization Server reports reason: {0}.
         /// </summary>
         internal static string CannotObtainAccessTokenWithReason {
             get {
                 return ResourceManager.GetString("CannotObtainAccessTokenWithReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The callback URL ({0}) is not allowed for this client..
+        /// </summary>
+        internal static string ClientCallbackDisallowed {
+            get {
+                return ResourceManager.GetString("ClientCallbackDisallowed", resourceCulture);
             }
         }
         

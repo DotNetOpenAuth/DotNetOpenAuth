@@ -123,11 +123,11 @@
   <data name="AccessScopeExceedsGrantScope" xml:space="preserve">
     <value>The requested access scope ("{0}") exceeds the grant scope ("{1}").</value>
   </data>
-  <data name="CallbackMismatch" xml:space="preserve">
-    <value>None of the client's pre-registered callback URLs ({0}) match the one found in the authorization request ({1}).</value>
-  </data>
   <data name="CannotObtainAccessTokenWithReason" xml:space="preserve">
     <value>Failed to obtain access token.  Authorization Server reports reason: {0}</value>
+  </data>
+  <data name="ClientCallbackDisallowed" xml:space="preserve">
+    <value>The callback URL ({0}) is not allowed for this client.</value>
   </data>
   <data name="HttpsRequired" xml:space="preserve">
     <value>This message can only be sent over HTTPS.</value>

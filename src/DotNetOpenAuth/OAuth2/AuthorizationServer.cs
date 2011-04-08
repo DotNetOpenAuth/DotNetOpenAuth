@@ -252,17 +252,20 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null, "authorizationRequest");
 			Contract.Ensures(Contract.Result<Uri>() != null);
 
+			var client = this.AuthorizationServerServices.GetClientOrThrow(authorizationRequest.ClientIdentifier);
+
 			// Prefer a request-specific callback to the pre-registered one (if any).
 			if (authorizationRequest.Callback != null) {
+				// The OAuth channel has already validated the callback parameter against
+				// the authorization server's whitelist for this client.
 				return authorizationRequest.Callback;
 			}
 
-			var client = this.AuthorizationServerServices.GetClient(authorizationRequest.ClientIdentifier);
-			if (client.AllowedCallbacks.Any()) {
-				return client.AllowedCallbacks.First();
-			}
-
-			throw ErrorUtilities.ThrowProtocol(OAuthStrings.NoCallback);
+			// Since the request didn't include a callback URL, look up the callback from
+			// the client's preregistration with this authorization server.
+			Uri defaultCallback = client.DefaultCallback;
+			ErrorUtilities.VerifyProtocol(defaultCallback != null, OAuthStrings.NoCallback);
+			return defaultCallback;
 		}
 	}
 }

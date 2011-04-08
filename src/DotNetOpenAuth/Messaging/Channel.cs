@@ -778,8 +778,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			// If GET didn't work out, for whatever reason...
-			if (response == null || tooLargeForGet)
-			{
+			if (response == null || tooLargeForGet) {
 				response = this.CreateFormPostResponse(message, fields);
 			}
 
