@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets or sets the Authorization Server URL where the Client (re)directs the User
 		/// to make an authorization request.
 		/// </summary>
-		/// <value>An HTTP or HTTPS URL.</value>
+		/// <value>An HTTPS URL.</value>
 		/// <remarks>
 		/// <para>Clients direct the resource owner to the authorization endpoint to approve their access request. Before granting access, the resource owner first authenticates with the authorization server. The way in which the authorization server authenticates the end-user (e.g. username and password login, OpenID, session cookies) and in which the authorization server obtains the end-user's authorization, including whether it uses a secure channel such as TLS/SSL, is beyond the scope of this specification. However, the authorization server MUST first verify the identity of the end-user.</para>
 		/// <para>The URI of the authorization endpoint can be found in the service documentation, or can be obtained by the client by making an unauthorized protected resource request (from the WWW-Authenticate response header auth-uri (The 'authorization-uri' Attribute) attribute).</para>

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
@@ -98,6 +99,9 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
 
+			ErrorUtilities.VerifyProtocol(
+				DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
+				OAuthStrings.HttpsRequired);
 			ErrorUtilities.VerifyProtocol(this.Callback == null || this.Callback.IsAbsoluteUri, this, OAuthStrings.AbsoluteUriRequired, Protocol.redirect_uri);
 		}
 	}
