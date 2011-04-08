@@ -720,6 +720,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
 			Contract.Requires<ArgumentNullException>(fields != null);
 
+			this.FilterReceivedFields(fields);
 			IProtocolMessage message = this.MessageFactory.GetNewRequestMessage(recipient, fields);
 
 			// If there was no data, or we couldn't recognize it as a message, abort.
@@ -1213,6 +1214,14 @@ namespace DotNetOpenAuth.Messaging {
 			// message deserializer did for us.  It would be too late to do it here since
 			// they might look initialized by the time we have an IProtocolMessage instance.
 			message.EnsureValidMessage();
+		}
+
+		/// <summary>
+		/// Allows preprocessing and validation of message data before an appropriate message type is
+		/// selected or deserialized.
+		/// </summary>
+		/// <param name="fields">The received message data.</param>
+		protected virtual void FilterReceivedFields(IDictionary<string, string> fields) {
 		}
 
 		/// <summary>
