@@ -258,32 +258,27 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// <summary>
 			/// The request is missing a required parameter, includes an unknown parameter or parameter value, repeats a parameter, includes multiple credentials, utilizes more than one mechanism for authenticating the client, or is otherwise malformed.
 			/// </summary>
-			internal const string InvalidRequest = "invalid-request";
-
-			/// <summary>
-			/// The client identifier provided is invalid, the client failed to authenticate, or the client provided multiple client credentials.
-			/// </summary>
-			internal const string InvalidClientCredentials = "invalid-client-credentials";
+			internal const string InvalidRequest = "invalid_request";
 
 			/// <summary>
 			/// The client is not authorized to use the access grant type provided.
 			/// </summary>
-			internal const string UnauthorizedClient = "unauthorized-client";
+			internal const string UnauthorizedClient = "unauthorized_client";
 
 			/// <summary>
-			/// The provided access grant is invalid, expired, or revoked (e.g. invalid assertion, expired authorization token, bad end-user basic credentials, or mismatching authorization code and redirection URI).
+			/// The resource owner or authorization server denied the request.
 			/// </summary>
-			internal const string InvalidGrant = "invalid-grant";
+			internal const string AccessDenied = "access_denied";
 
 			/// <summary>
-			/// The access grant included - its type or another attribute - is not supported by the authorization server.
+			/// The authorization server does not support obtaining an access token using this method.
 			/// </summary>
-			internal const string UnsupportedGrantType = "unsupported-grant-type";
+			internal const string UnsupportedGrantType = "unsupported_response_type";
 
 			/// <summary>
 			/// The requested scope is invalid, unknown, malformed, or exceeds the previously granted scope.
 			/// </summary>
-			internal const string InvalidScope = "invalid-scope";
+			internal const string InvalidScope = "invalid_scope";
 		}
 
 		/// <summary>
@@ -294,32 +289,22 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// <summary>
 			/// The request is missing a required parameter, includes an unknown parameter or parameter value, or is otherwise malformed.
 			/// </summary>
-			internal const string InvalidRequest = "invalid-request";
-
-			/// <summary>
-			/// The client identifier provided is invalid.
-			/// </summary>
-			internal const string InvalidClientId = "invalid-client-id";
+			internal const string InvalidRequest = "invalid_request";
 
 			/// <summary>
 			/// The client is not authorized to use the requested response type.
 			/// </summary>
-			internal const string UnauthorizedClient = "unauthorized-client";
-
-			/// <summary>
-			/// The redirection URI provided does not match a pre-registered value.
-			/// </summary>
-			internal const string RedirectUriMismatch = "redirect-uri-mismatch";
+			internal const string UnauthorizedClient = "unauthorized_client";
 
 			/// <summary>
 			/// The end-user or authorization server denied the request.
 			/// </summary>
-			internal const string AccessDenied = "access-denied";
+			internal const string AccessDenied = "access_denied";
 
 			/// <summary>
 			/// The requested response type is not supported by the authorization server.
 			/// </summary>
-			internal const string UnsupportedResponseType = "unsupported-response-type";
+			internal const string UnsupportedResponseType = "unsupported_response_type";
 
 			/// <summary>
 			/// The requested scope is invalid, unknown, or malformed.
