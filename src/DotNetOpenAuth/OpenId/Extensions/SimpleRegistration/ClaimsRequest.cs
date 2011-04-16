@@ -32,14 +32,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		};
 
 		/// <summary>
-		/// Additional type URIs that this extension is sometimes known by remote parties.
-		/// </summary>
-		private static readonly string[] additionalTypeUris = new string[] {
-			Constants.sreg_ns10,
-			Constants.sreg_ns11other,
-		};
-
-		/// <summary>
 		/// The type URI that this particular (deserialized) extension was read in using,
 		/// allowing a response to alter be crafted using the same type URI.
 		/// </summary>
@@ -49,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// Initializes a new instance of the <see cref="ClaimsRequest"/> class.
 		/// </summary>
 		public ClaimsRequest()
-			: base(new Version(1, 0), Constants.sreg_ns, additionalTypeUris) {
+			: base(new Version(1, 0), Constants.sreg_ns, Constants.AdditionalTypeUris) {
 		}
 
 		/// <summary>

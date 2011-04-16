@@ -72,6 +72,7 @@
 															$(ProjectRoot)**\*~;
 															$(ProjectRoot)**\Debug\**;
 															$(ProjectRoot)**\StyleCop.Cache;
+															$(ProjectRoot)Samples\_ReSharper.*\**;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
 															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
 															$(ProjectRoot)Samples\**\log4net.???;
@@ -141,18 +142,26 @@
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
 			Condition=" '$(DowngradeVS2010ToVS2008)' != 'false' "
 			/>
+		<ItemGroup>
+			<!-- Go snag the newly created files so that .zip file will include them. -->
+			<AllDropTargets Include="$(DropSamplesDirectory)**\*-vs2008.*" />
+		</ItemGroup>
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
-		<PropertyGroup>
-			<DropZip>$(DropDirectoryNoSlash).zip</DropZip>
-		</PropertyGroup>
 		<ItemGroup>
-			<RedistributableFiles Include="$(DropZip)">
+			<DropZip Include="$(DropDirectoryNoSlash).7z" />
+			<DropZip Include="$(DropDirectoryNoSlash).zip" />
+			<RedistributableFiles Include="@(DropZip)">
 				<Package>DotNetOpenAuth</Package>
 			</RedistributableFiles>
 		</ItemGroup>
-		<Zip Files="@(AllDropTargets)" ZipFileName="$(DropZip)" WorkingDirectory="$(DropsRoot)" ZipLevel="$(ZipLevel)" />
+		<Delete Files="@(DropZip)" />
+		<AddFilesTo7Zip
+			Files="@(AllDropTargets)"
+			ZipFileName="%(DropZip.Identity)"
+			WorkingDirectory="$(DropsRoot)"
+			ToolPath="$(Zip7ToolPath)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>

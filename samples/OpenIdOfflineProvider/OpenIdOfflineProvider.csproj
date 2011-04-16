@@ -210,6 +210,21 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <ILMergeProjectOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(TargetName)$(TargetExt)</ILMergeProjectOutputAssembly>
+    <!-- Don't sign the non-unified version of the assembly. -->
+    <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
+  </PropertyGroup>
+  <ItemGroup>
+    <SignDependsOn Include="BuildUnified" />
+    <DelaySignedAssemblies Include="$(ILMergeProjectOutputAssembly)" />
+    <ILMergeProjectInputAssemblies Include="$(TargetPath);
+                                            $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
+  </ItemGroup>
+  <Target Name="BuildUnified" DependsOnTargets="Build" Inputs="@(ILMergeProjectInputAssemblies)" Outputs="$(ILMergeProjectOutputAssembly)">
+    <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
+    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeProjectInputAssemblies)" OutputFile="$(ILMergeProjectOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" />
+  </Target>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
 </Project>

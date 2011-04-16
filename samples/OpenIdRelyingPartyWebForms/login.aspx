@@ -2,6 +2,7 @@
 	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
 
 <%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>
+<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration" TagPrefix="sreg" %>
 <asp:Content runat="server" ContentPlaceHolderID="Main">
 	<h2>Login Page </h2>
 	<rp:OpenIdLogin ID="OpenIdLogin1" runat="server" CssClass="openid_login" RequestCountry="Request"
@@ -24,6 +25,10 @@
 	<p><a href="loginGoogleApps.aspx">Log in using Google Apps for Domains</a>. </p>
 	<p>
 		<rp:OpenIdButton runat="server" ImageUrl="~/images/yahoo.png" Text="Login with Yahoo!" ID="yahooLoginButton"
-			Identifier="https://me.yahoo.com/" OnLoggingIn="OpenIdLogin1_LoggingIn" OnLoggedIn="OpenIdLogin1_LoggedIn" />
+			Identifier="https://me.yahoo.com/" OnLoggingIn="OpenIdLogin1_LoggingIn" OnLoggedIn="OpenIdLogin1_LoggedIn">
+			<Extensions>
+				<sreg:ClaimsRequest Email="Require" />
+			</Extensions>
+		</rp:OpenIdButton>
 	</p>
 </asp:Content>

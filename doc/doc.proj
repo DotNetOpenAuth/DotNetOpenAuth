@@ -22,26 +22,30 @@
 		</PropertyGroup>
 	</Target>
 	
-	<Target Name="PrepareForPublish" DependsOnTargets="Prepare;BuildProduct;Html">
+	<Target Name="PrepareForPublish" DependsOnTargets="BuildProduct;Html">
+		<PropertyGroup>
+			<DocZip>$(DropDirectoryNoSlash)-htmldoc$(ZipFormat)</DocZip>
+		</PropertyGroup>
+
 		<ItemGroup>
 			<DocSources Include="$(ProjectRoot)doc\api\**\*" />
-			<DocTargets Include="@(DocSources->'$(DocWebRoot)\$(BranchName)\%(RecursiveDir)%(Filename)%(Extension)')" />
 		</ItemGroup>
 	</Target>
 
-	<Target Name="Publish"
+	<Target Name="DeployableArchive"
 					DependsOnTargets="PrepareForPublish"
 					Inputs="@(DocSources)"
-					Outputs="@(DocTargets)">
-		<RemoveDir Directories="$(DocWebRoot)\$(BranchName)" />
-		<MakeDir Directories="$(DocWebRoot)\$(BranchName)" />
-		<Copy SourceFiles="@(DocSources)" DestinationFiles="@(DocTargets)" SkipUnchangedFiles="true" />
+					Outputs="$(DocZip)">
+		<Delete Files="$(DocZip)" />
+		<AddFilesTo7Zip
+			Files="@(DocSources)"
+			ZipFileName="$(DocZip)"
+			WorkingDirectory="$(ProjectRoot)doc\api\"
+			ToolPath="$(Zip7ToolPath)" />
 	</Target>
 
-	<Target Name="Unpublish"
-					DependsOnTargets="DeleteSiteOnIis"
-					Condition=" '$(DocWebRoot)' != '' ">
-	</Target>
+	<Target Name="Publish"
+					DependsOnTargets="DeployableArchive" />
 
 	<Target Name="CreateSiteOnIis" DependsOnTargets="Prepare">
 		<Error Text="The PublishDocsWebSiteName property must be set." Condition=" '$(PublishDocsWebSiteName)' == '' "/>

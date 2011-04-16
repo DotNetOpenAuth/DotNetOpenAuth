@@ -438,6 +438,13 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:choice>
+									<xs:attribute name="preserveUserSuppliedIdentifier" type="xs:boolean" default="true">
+										<xs:annotation>
+											<xs:documentation>
+												Whether "dnoa.userSuppliedIdentifier" is tacked onto the openid.return_to URL in order to preserve what the user typed into the OpenID box.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="provider">
@@ -869,6 +876,25 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="webResourceUrlProvider">
+					<xs:annotation>
+						<xs:documentation>
+							The type that implements the DotNetOpenAuth.IEmbeddedResourceRetrieval interface
+							to instantiate for obtaining URLs that fetch embedded resource streams.
+							Primarily useful when the System.Web.UI.Page class is not used in the ASP.NET pipeline.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="type" type="xs:string" use="optional">
+							<xs:annotation>
+								<xs:documentation>
+									The fully-qualified name of the type that implements the IEmbeddedResourceRetrieval interface.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="xaml" type="xs:string" use="optional" />
 					</xs:complexType>
 				</xs:element>
 			</xs:choice>

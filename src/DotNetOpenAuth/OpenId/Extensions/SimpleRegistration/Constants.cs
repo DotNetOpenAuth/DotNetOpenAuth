@@ -34,5 +34,13 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 			internal const string Male = "M";
 			internal const string Female = "F";
 		}
+
+		/// <summary>
+		/// Additional type URIs that this extension is sometimes known by remote parties.
+		/// </summary>
+		internal static readonly string[] AdditionalTypeUris = new string[] {
+			Constants.sreg_ns10,
+			Constants.sreg_ns11other,
+		};
 	}
 }

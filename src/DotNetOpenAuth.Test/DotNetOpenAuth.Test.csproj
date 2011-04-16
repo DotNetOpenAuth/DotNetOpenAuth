@@ -153,7 +153,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
     <Reference Include="Moq" />
     <Reference Include="NUnit.Framework" />
     <Reference Include="System" />

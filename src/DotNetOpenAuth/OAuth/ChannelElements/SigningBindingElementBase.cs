@@ -175,6 +175,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				partsToInclude = messageDictionary;
 			}
 
+			// If this message was deserialized, include only those explicitly included message parts (excludes defaulted values)
+			// in the signature.
+			var originalPayloadMessage = (IMessageOriginalPayload)message;
+			if (originalPayloadMessage.OriginalPayload != null) {
+				partsToInclude = partsToInclude.Where(pair => originalPayloadMessage.OriginalPayload.ContainsKey(pair.Key));
+			}
+
 			foreach (var pair in OAuthChannel.GetUriEscapedParameters(partsToInclude)) {
 				encodedDictionary[pair.Key] = pair.Value;
 			}

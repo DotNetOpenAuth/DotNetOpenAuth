@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.BuildTasks {
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using System.Text.RegularExpressions;
 	using Microsoft.Build.BuildEngine;
 	using Microsoft.Build.Framework;
 	using Microsoft.Build.Utilities;
@@ -25,6 +26,17 @@ namespace DotNetOpenAuth.BuildTasks {
 		public ITaskItem[] Projects { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether project files are downgraded and re-saved to the same paths.
+		/// </summary>
+		public bool InPlaceDowngrade { get; set; }
+
+		/// <summary>
+		/// Gets or sets the set of newly created project files.  Empty if <see cref="InPlaceDowngrade"/> is <c>true</c>.
+		/// </summary>
+		[Output]
+		public ITaskItem[] DowngradedProjects { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether ASP.NET MVC 2 projects are downgraded to MVC 1.0.
 		/// </summary>
 		public bool DowngradeMvc2ToMvc1 { get; set; }
@@ -33,11 +45,29 @@ namespace DotNetOpenAuth.BuildTasks {
 		/// Executes this instance.
 		/// </summary>
 		public override bool Execute() {
+			var newProjectToOldProjectMapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			var createdProjectFiles = new List<TaskItem>();
+
+			foreach (ITaskItem taskItem in this.Projects) {
+				switch (GetClassification(taskItem)) {
+					case ProjectClassification.VS2010Project:
+					case ProjectClassification.VS2010Solution:
+						string projectNameForVS2008 = InPlaceDowngrade
+														? taskItem.ItemSpec
+														: Path.Combine(
+															Path.GetDirectoryName(taskItem.ItemSpec),
+															Path.GetFileNameWithoutExtension(taskItem.ItemSpec) + "-vs2008" +
+															Path.GetExtension(taskItem.ItemSpec));
+						newProjectToOldProjectMapping[taskItem.ItemSpec] = projectNameForVS2008;
+						break;
+				}
+			}
+
 			foreach (ITaskItem taskItem in this.Projects) {
 				switch (GetClassification(taskItem)) {
 					case ProjectClassification.VS2010Project:
 						this.Log.LogMessage(MessageImportance.Low, "Downgrading project \"{0}\".", taskItem.ItemSpec);
-						Project project = new Project();
+						var project = new Project();
 						project.Load(taskItem.ItemSpec);
 						project.DefaultToolsVersion = "3.5";
 
@@ -49,7 +79,11 @@ namespace DotNetOpenAuth.BuildTasks {
 							}
 						}
 
-						// Web projects usually have an import that includes these substrings
+						// MSBuild v3.5 doesn't support the GetDirectoryNameOfFileAbove function
+						var enlistmentInfoImports = project.Imports.Cast<Import>().Where(i => i.ProjectPath.IndexOf("[MSBuild]::GetDirectoryNameOfFileAbove", StringComparison.OrdinalIgnoreCase) >= 0);
+						enlistmentInfoImports.ToList().ForEach(i => project.Imports.RemoveImport(i));
+
+						// Web projects usually have an import that includes these substrings));)
 						foreach (Import import in project.Imports) {
 							import.ProjectPath = import.ProjectPath
 								.Replace("$(MSBuildExtensionsPath32)", "$(MSBuildExtensionsPath)")
@@ -62,7 +96,18 @@ namespace DotNetOpenAuth.BuildTasks {
 							project.AddNewItem("Reference", "System.Core");
 						}
 
-						project.Save(taskItem.ItemSpec);
+						// Rewrite ProjectReferences to other renamed projects.
+						BuildItemGroup projectReferences = project.GetEvaluatedItemsByName("ProjectReference");
+						foreach (var mapping in newProjectToOldProjectMapping) {
+							string oldName = Path.GetFileName(mapping.Key);
+							string newName = Path.GetFileName(mapping.Value);
+							foreach (BuildItem projectReference in projectReferences) {
+								projectReference.Include = Regex.Replace(projectReference.Include, oldName, newName, RegexOptions.IgnoreCase);
+							}
+						}
+
+						project.Save(newProjectToOldProjectMapping[taskItem.ItemSpec]);
+						createdProjectFiles.Add(new TaskItem(taskItem) { ItemSpec = newProjectToOldProjectMapping[taskItem.ItemSpec] });
 						break;
 					case ProjectClassification.VS2010Solution:
 						this.Log.LogMessage(MessageImportance.Low, "Downgrading solution \"{0}\".", taskItem.ItemSpec);
@@ -80,12 +125,27 @@ namespace DotNetOpenAuth.BuildTasks {
 							contents[i] = contents[i].Replace("TargetFrameworkMoniker = \".NETFramework,Version%3Dv", "TargetFramework = \"");
 						}
 
-						File.WriteAllLines(taskItem.ItemSpec, contents);
+						foreach (var mapping in newProjectToOldProjectMapping) {
+							string oldName = Path.GetFileName(mapping.Key);
+							string newName = Path.GetFileName(mapping.Value);
+							for (int i = 0; i < contents.Length; i++) {
+								contents[i] = Regex.Replace(contents[i], oldName, newName, RegexOptions.IgnoreCase);
+							}
+						}
+
+						File.WriteAllLines(newProjectToOldProjectMapping[taskItem.ItemSpec], contents);
+						createdProjectFiles.Add(new TaskItem(taskItem) { ItemSpec = newProjectToOldProjectMapping[taskItem.ItemSpec] });
 						break;
 					default:
 						this.Log.LogWarning("Unrecognized project type for \"{0}\".", taskItem.ItemSpec);
 						break;
 				}
+			}
+
+			if (InPlaceDowngrade) {
+				this.DowngradedProjects = new ITaskItem[0];
+			} else {
+				this.DowngradedProjects = createdProjectFiles.ToArray();
 			}
 
 			return !this.Log.HasLoggedErrors;

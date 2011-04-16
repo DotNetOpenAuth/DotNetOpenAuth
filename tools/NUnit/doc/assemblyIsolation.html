@@ -41,7 +41,9 @@
 <p>If greater separation is desired, test assemblies may be loaded into
    a separate <b>Process</b> or into multiple processes. This is done
    automatically by NUnit in the case where the tests are to be run under
-   a different runtime from the one that NUnit is currently using.
+   a different runtime from the one that NUnit is currently using. Tests
+   running in a separate process are executed under the control of the
+   <a href="nunit-agent.html">nunit-agent</a> program.
    
 <h3>Controlling Isolation</h3>
 
@@ -66,12 +68,13 @@
 
 <p>Isolation settings may be specified for an individual NUnit project using the
    <a href="projectEditor.html">Project Editor</a>.
+
 </div>
 
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -82,6 +85,7 @@
 <li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
 <li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
 <li><a href="pnunit.html">PNUnit&nbsp;Runner</a></li>
+<li><a href="nunit-agent.html">NUnit&nbsp;Agent</a></li>
 <li><a href="runtimeSelection.html">Runtime&nbsp;Selection</a></li>
 <li id="current"><a href="assemblyIsolation.html">Assembly&nbsp;Isolation</a></li>
 <li><a href="configFiles.html">Configuration&nbsp;Files</a></li>
@@ -100,7 +104,7 @@
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

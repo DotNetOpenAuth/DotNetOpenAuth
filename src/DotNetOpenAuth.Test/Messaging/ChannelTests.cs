@@ -77,6 +77,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 			OutgoingWebResponse response = this.Channel.PrepareResponse(message);
 			Assert.AreEqual(HttpStatusCode.Redirect, response.Status);
+			Assert.AreEqual("text/html; charset=utf-8", response.Headers[HttpResponseHeader.ContentType]);
+			Assert.IsTrue(response.Body != null && response.Body.Length > 0); // a non-empty body helps get passed filters like WebSense
 			StringAssert.StartsWith("http://provider/path", response.Headers[HttpResponseHeader.Location]);
 			foreach (var pair in expected) {
 				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);

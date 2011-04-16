@@ -49,7 +49,7 @@ namespace OpenIdProviderWebForms.Code {
 		}
 
 		public void UpdateToken(IServiceProviderRequestToken token) {
-			// Nothing to do here, since there's not database in this sample.
+			// Nothing to do here, since there's no database in this sample.
 		}
 
 		#endregion

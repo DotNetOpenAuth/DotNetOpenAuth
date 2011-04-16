@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth.Messages {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -128,6 +129,15 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </summary>
 		[MessagePart("oauth_nonce", IsRequired = true)]
 		string IReplayProtectedProtocolMessage.Nonce { get; set; }
+
+		#endregion
+
+		#region IMessageOriginalPayload Members
+
+		/// <summary>
+		/// Gets or sets the original message parts, before any normalization or default values were assigned.
+		/// </summary>
+		IDictionary<string, string> IMessageOriginalPayload.OriginalPayload { get; set; }
 
 		#endregion
 

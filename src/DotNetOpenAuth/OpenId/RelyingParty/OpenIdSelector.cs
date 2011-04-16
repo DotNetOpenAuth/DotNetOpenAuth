@@ -29,7 +29,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An ASP.NET control that provides a user-friendly way of logging into a web site using OpenID.
 	/// </summary>
 	[ToolboxData("<{0}:OpenIdSelector runat=\"server\"></{0}:OpenIdSelector>")]
-	[ParseChildren(true), PersistChildren(false)]
 	public class OpenIdSelector : OpenIdRelyingPartyAjaxControlBase {
 		/// <summary>
 		/// The name of the manifest stream containing the OpenIdButtonPanel.js file.
