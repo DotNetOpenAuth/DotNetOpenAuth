@@ -796,6 +796,7 @@ http://opensource.org/licenses/ms-pl.html
              OutputFile="$(ILMergeOutputAssembly)"
              KeyFile="$(PublicKeyFile)"
              DelaySign="true"
+             ToolPath="$(ProjectRoot)tools\ILMerge"
              TargetPlatformVersion="$(ClrVersion).0"
              TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
   </Target>
