@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth;
@@ -72,6 +73,25 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				SigningBindingElementBase.ConstructSignatureBaseString(message, this.MessageDescriptions.GetAccessor(message)));
 		}
 
+		[TestCase]
+		public void BaseSignatureStringResourceRequests() {
+			var message = this.CreateResourceRequest(new MessageReceivingEndpoint("http://tom.test.wishpot.com/restapi/List/Search?List.LastName=ciccotosto", HttpDeliveryMethods.GetRequest));
+			message.ConsumerKey = "public";
+			message.AccessToken = "tokenpublic";
+
+			var signedMessage = (ITamperResistantOAuthMessage)message;
+			signedMessage.HttpMethod = "GET";
+			signedMessage.SignatureMethod = "HMAC-SHA1";
+
+			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(message);
+			dictionary["oauth_timestamp"] = "1302716502";
+			dictionary["oauth_nonce"] = "2U5YsZvL";
+
+			Assert.AreEqual(
+				"GET&http%3A%2F%2Ftom.test.wishpot.com%2Frestapi%2FList%2FSearch&List.LastName%3Dciccotosto%26oauth_consumer_key%3Dpublic%26oauth_nonce%3D2U5YsZvL%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1302716502%26oauth_token%3Dtokenpublic%26oauth_version%3D1.0",
+				SigningBindingElementBase.ConstructSignatureBaseString(message, this.MessageDescriptions.GetAccessor(message)));
+		}
+
 		internal static UnauthorizedTokenRequest CreateTestRequestTokenMessageNoOAuthVersion(MessageDescriptionCollection messageDescriptions, MessageReceivingEndpoint endpoint) {
 			endpoint = endpoint ?? new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest);
 			var parts = new Dictionary<string, string>();
@@ -101,6 +121,12 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			dictionary["oauth_timestamp"] = "1222665749";
 			dictionary["oauth_nonce"] = "fe4045a3f0efdd1e019fa8f8ae3f5c38";
 			dictionary["scope"] = "http://www.google.com/m8/feeds/";
+			return message;
+		}
+
+		internal AccessProtectedResourceRequest CreateResourceRequest(MessageReceivingEndpoint endpoint) {
+			Contract.Requires(endpoint != null);
+			var message = new AccessProtectedResourceRequest(endpoint, Protocol.V10.Version);
 			return message;
 		}
 	}
