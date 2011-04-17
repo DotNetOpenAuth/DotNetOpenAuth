@@ -129,7 +129,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// This property is internal because Providers should never turn it off, but it is
 		/// needed for testing the RP's rejection of unsigned extensions.
 		/// </remarks>
-		internal bool SignOutgoingExtensions { get; set; }
+		public bool SignOutgoingExtensions { get; set; }
 
 		/// <summary>
 		/// Creates a deep clone of this instance.

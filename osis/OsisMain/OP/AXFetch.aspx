@@ -19,7 +19,8 @@
 		</asp:View>
 		<asp:View ID="View2" runat="server">
 			<asp:Label ID="unsignedAXLabel" runat="server" Font-Bold="true" ForeColor="Red" Visible="false"
-				Text="Warning: Provider failed to sign the AX extension." /> AX fetch response:
+				Text="Warning: Provider failed to sign the AX extension." />
+			<p>AX fetch response: </p>
 			<asp:Table runat="server" ID="FetchResponseTable">
 				<asp:TableRow>
 					<asp:TableCell>Description</asp:TableCell>
