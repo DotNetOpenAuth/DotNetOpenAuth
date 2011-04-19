@@ -295,6 +295,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\ReportingElement.cs" />
+    <Compile Include="Configuration\TrustedProviderConfigurationCollection.cs" />
+    <Compile Include="Configuration\TrustedProviderEndpointConfigurationElement.cs" />
     <Compile Include="Configuration\TypeConfigurationCollection.cs" />
     <Compile Include="Configuration\TypeConfigurationElement.cs" />
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
