@@ -542,15 +542,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				NegativeAssertionResponse negativeAssertion;
 				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
-					if (this.EndpointFilter != null) {
-						// We need to make sure that this assertion is coming from an endpoint
-						// that the host deems acceptable.
-						var providerEndpoint = new SimpleXrdsProviderEndpoint(positiveAssertion);
-						ErrorUtilities.VerifyProtocol(
-							this.EndpointFilter(providerEndpoint),
-							OpenIdStrings.PositiveAssertionFromNonWhitelistedProvider,
-							providerEndpoint.Uri);
-					}
+					// We need to make sure that this assertion is coming from an endpoint
+					// that the host deems acceptable.
+					var providerEndpoint = new SimpleXrdsProviderEndpoint(positiveAssertion);
+					ErrorUtilities.VerifyProtocol(
+						this.FilterEndpoint(providerEndpoint),
+						OpenIdStrings.PositiveAssertionFromNonQualifiedProvider,
+						providerEndpoint.Uri);
 
 					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
 					foreach (var behavior in this.Behaviors) {
@@ -758,6 +756,38 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			return results;
+		}
+
+		/// <summary>
+		/// Checks whether a given OP Endpoint is permitted by the host relying party.
+		/// </summary>
+		/// <param name="endpoint">The OP endpoint.</param>
+		/// <returns><c>true</c> if the OP Endpoint is allowed; <c>false</c> otherwise.</returns>
+		protected internal bool FilterEndpoint(IProviderEndpoint endpoint) {
+			if (this.SecuritySettings.RejectAssertionsFromUntrustedProviders) {
+				if (!this.SecuritySettings.TrustedProviderEndpoints.ContainsKey(endpoint.Uri)) {
+					Logger.OpenId.InfoFormat("Filtering out OP endpoint {0} because it is not on the exclusive trusted provider whitelist.", endpoint.Uri.AbsoluteUri);
+					return false;
+				}
+			}
+
+			if (endpoint.Version < Protocol.Lookup(this.SecuritySettings.MinimumRequiredOpenIdVersion).Version) {
+				Logger.OpenId.InfoFormat(
+					"Filtering out OP endpoint {0} because it implements OpenID {1} but this relying party requires OpenID {2} or later.",
+					endpoint.Uri.AbsoluteUri,
+					endpoint.Version,
+					Protocol.Lookup(this.SecuritySettings.MinimumRequiredOpenIdVersion).Version);
+				return false;
+			}
+
+			if (this.EndpointFilter != null) {
+				if (!this.EndpointFilter(endpoint)) {
+					Logger.OpenId.InfoFormat("Filtering out OP endpoint {0} because the host rejected it.", endpoint.Uri.AbsoluteUri);
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		/// <summary>
