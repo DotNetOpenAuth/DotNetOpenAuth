@@ -273,8 +273,7 @@ namespace DotNetOpenAuth.Configuration {
 
 			settings.RejectAssertionsFromUntrustedProviders = this.TrustedProviders.RejectAssertionsFromUntrustedProviders;
 			foreach (TrustedProviderEndpointConfigurationElement opEndpoint in this.TrustedProviders) {
-				var endpointSetting = new RelyingPartySecuritySettings.TrustedProviderEndpointSettings(opEndpoint.AllowSubPath, opEndpoint.AllowAdditionalQueryParameters);
-				settings.TrustedProviderEndpoints.Add(opEndpoint.ProviderEndpoint, endpointSetting);
+				settings.TrustedProviderEndpoints.Add(opEndpoint.ProviderEndpoint);
 			}
 
 			return settings;

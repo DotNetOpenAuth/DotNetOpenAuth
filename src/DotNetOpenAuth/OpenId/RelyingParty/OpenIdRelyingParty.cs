@@ -765,7 +765,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns><c>true</c> if the OP Endpoint is allowed; <c>false</c> otherwise.</returns>
 		protected internal bool FilterEndpoint(IProviderEndpoint endpoint) {
 			if (this.SecuritySettings.RejectAssertionsFromUntrustedProviders) {
-				if (!this.SecuritySettings.TrustedProviderEndpoints.ContainsKey(endpoint.Uri)) {
+				if (!this.SecuritySettings.TrustedProviderEndpoints.Contains(endpoint.Uri)) {
 					Logger.OpenId.InfoFormat("Filtering out OP endpoint {0} because it is not on the exclusive trusted provider whitelist.", endpoint.Uri.AbsoluteUri);
 					return false;
 				}

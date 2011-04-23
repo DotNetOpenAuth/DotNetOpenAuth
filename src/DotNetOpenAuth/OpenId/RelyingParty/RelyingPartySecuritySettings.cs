@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
 			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
 			this.AllowApproximateIdentifierDiscovery = true;
-			this.TrustedProviderEndpoints = new Dictionary<Uri, TrustedProviderEndpointSettings>();
+			this.TrustedProviderEndpoints = new HashSet<Uri>();
 		}
 
 		/// <summary>
@@ -146,9 +146,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public bool AllowApproximateIdentifierDiscovery { get; set; }
 
 		/// <summary>
-		/// Gets the set of trusted OpenID Provider Endpoint URIs and settings that describe them.
+		/// Gets the set of trusted OpenID Provider Endpoint URIs.
 		/// </summary>
-		public IDictionary<Uri, TrustedProviderEndpointSettings> TrustedProviderEndpoints { get; private set; }
+		public HashSet<Uri> TrustedProviderEndpoints { get; private set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether any login attempt coming from an OpenID Provider Endpoint that is not on this
@@ -182,31 +182,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			return endpoints
 				.Where(se => !this.RejectDelegatingIdentifiers || se.ClaimedIdentifier == se.ProviderLocalIdentifier)
 				.Where(se => !this.RequireDirectedIdentity || se.ClaimedIdentifier == se.Protocol.ClaimedIdentifierForOPIdentifier);
-		}
-
-		/// <summary>
-		/// A trusted OpenID Provider endpoint and flags regarding how it is trusted.
-		/// </summary>
-		public class TrustedProviderEndpointSettings {
-			/// <summary>
-			/// Initializes a new instance of the <see cref="TrustedProviderEndpointSettings"/> class.
-			/// </summary>
-			/// <param name="allowSubPath">A value indicating whether the OP Endpoint given here is a base path, and sub-paths concatenated to it are equally trusted.</param>
-			/// <param name="allowAdditionalQueryParameters">A value indicating whether the OP Endpoint given here is equally trusted if query string parameters are added to it.</param>
-			public TrustedProviderEndpointSettings(bool allowSubPath = false, bool allowAdditionalQueryParameters = false) {
-				this.AllowSubPath = allowSubPath;
-				this.AllowAdditionalQueryParameters = allowAdditionalQueryParameters;
-			}
-
-			/// <summary>
-			/// Gets or sets a value indicating whether the OP Endpoint given here is a base path, and sub-paths concatenated to it are equally trusted.
-			/// </summary>
-			public bool AllowSubPath { get; set; }
-
-			/// <summary>
-			/// Gets or sets a value indicating whether the OP Endpoint given here is equally trusted if query string parameters are added to it.
-			/// </summary>
-			public bool AllowAdditionalQueryParameters { get; set; }
 		}
 	}
 }

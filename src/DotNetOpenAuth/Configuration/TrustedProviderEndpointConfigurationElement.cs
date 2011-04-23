@@ -18,16 +18,6 @@ namespace DotNetOpenAuth.Configuration {
 		private const string ProviderEndpointConfigName = "endpoint";
 
 		/// <summary>
-		/// The name of the attribute that stores the <see cref="AllowSubPath"/> value.
-		/// </summary>
-		private const string AllowSubPathConfigName = "allowSubPath";
-
-		/// <summary>
-		/// The name of the attribute that stores the <see cref="AllowAdditionalQueryParameters"/> value.
-		/// </summary>
-		private const string AllowAdditionalQueryParametersConfigName = "allowAdditionalQueryParameters";
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="TrustedProviderEndpointConfigurationElement"/> class.
 		/// </summary>
 		public TrustedProviderEndpointConfigurationElement() {
@@ -40,24 +30,6 @@ namespace DotNetOpenAuth.Configuration {
 		public Uri ProviderEndpoint {
 			get { return (Uri)this[ProviderEndpointConfigName]; }
 			set { this[ProviderEndpointConfigName] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the OP Endpoint given here is a base path, and sub-paths concatenated to it are equally trusted.
-		/// </summary>
-		[ConfigurationProperty(AllowSubPathConfigName, DefaultValue = false)]
-		public bool AllowSubPath {
-			get { return (bool)this[AllowSubPathConfigName]; }
-			set { this[AllowSubPathConfigName] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the OP Endpoint given here is equally trusted if query string parameters are added to it.
-		/// </summary>
-		[ConfigurationProperty(AllowAdditionalQueryParametersConfigName, DefaultValue = false)]
-		public bool AllowAdditionalQueryParameters {
-			get { return (bool)this[AllowAdditionalQueryParametersConfigName]; }
-			set { this[AllowAdditionalQueryParametersConfigName] = value; }
 		}
 	}
 }

@@ -256,20 +256,6 @@
 																				</xs:documentation>
 																			</xs:annotation>
 																		</xs:attribute>
-																		<xs:attribute name="allowSubPath" type="xs:boolean" default="false">
-																			<xs:annotation>
-																				<xs:documentation>
-																					A value indicating whether the OP Endpoint given here is a base path, and sub-paths concatenated to it are equally trusted.
-																				</xs:documentation>
-																			</xs:annotation>
-																		</xs:attribute>
-																		<xs:attribute name="allowAdditionalQueryParameters" type="xs:boolean" default="false">
-																			<xs:annotation>
-																				<xs:documentation>
-																					A value indicating whether the OP Endpoint given here is equally trusted if query string parameters are added to it.
-																				</xs:documentation>
-																			</xs:annotation>
-																		</xs:attribute>
 																	</xs:complexType>
 																</xs:element>
 																<xs:element name="remove">
