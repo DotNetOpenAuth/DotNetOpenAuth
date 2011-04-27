@@ -28,6 +28,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TrustedProviderConfigurationCollection"/> class.
 		/// </summary>
+		/// <param name="elements">The elements to initialize the collection with.</param>
 		internal TrustedProviderConfigurationCollection(IEnumerable<TrustedProviderEndpointConfigurationElement> elements) {
 			Contract.Requires<ArgumentNullException>(elements != null);
 

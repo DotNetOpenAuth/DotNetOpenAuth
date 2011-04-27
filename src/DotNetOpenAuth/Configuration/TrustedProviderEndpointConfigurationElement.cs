@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="TrustedProviderEndpoint.cs" company="Andrew Arnott">
+// <copyright file="TrustedProviderEndpointConfigurationElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
