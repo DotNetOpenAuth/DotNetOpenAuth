@@ -546,7 +546,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Enables a server control to perform final clean up before it is released from memory.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Unavoidable because base class does not expose a protected virtual Dispose(bool) method."), SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
 		public sealed override void Dispose() {
 			this.Dispose(true);
 			base.Dispose();
@@ -809,6 +809,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Configures the relying party.
 		/// </summary>
 		/// <param name="relyingParty">The relying party.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "relyingParty", Justification = "This makes it possible for overrides to see the value before it is set on a field.")]
 		protected virtual void ConfigureRelyingParty(OpenIdRelyingParty relyingParty) {
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
 

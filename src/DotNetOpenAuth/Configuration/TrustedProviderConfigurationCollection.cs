@@ -29,6 +29,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="TrustedProviderConfigurationCollection"/> class.
 		/// </summary>
 		/// <param name="elements">The elements to initialize the collection with.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Seems unavoidable")]
 		internal TrustedProviderConfigurationCollection(IEnumerable<TrustedProviderEndpointConfigurationElement> elements) {
 			Contract.Requires<ArgumentNullException>(elements != null);
 

@@ -480,7 +480,7 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Requires<InternalErrorException>(schemeSubstitution);
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
-			int delimiterIndex = normal.IndexOf(Uri.SchemeDelimiter);
+			int delimiterIndex = normal.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
 			string normalScheme = delimiterIndex < 0 ? normal : normal.Substring(0, delimiterIndex);
 			string nonCompressingScheme;
 			if (string.Equals(normalScheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) ||

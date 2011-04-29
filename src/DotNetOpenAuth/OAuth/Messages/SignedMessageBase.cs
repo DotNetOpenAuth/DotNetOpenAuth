@@ -137,7 +137,16 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets or sets the original message parts, before any normalization or default values were assigned.
 		/// </summary>
-		IDictionary<string, string> IMessageOriginalPayload.OriginalPayload { get; set; }
+		IDictionary<string, string> IMessageOriginalPayload.OriginalPayload {
+			get { return this.OriginalPayload; }
+			set { this.OriginalPayload = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the original message parts, before any normalization or default values were assigned.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "By design")]
+		protected IDictionary<string, string> OriginalPayload { get; set; }
 
 		#endregion
 

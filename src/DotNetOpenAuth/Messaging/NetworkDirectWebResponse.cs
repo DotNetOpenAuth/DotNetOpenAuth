@@ -109,6 +109,8 @@ namespace DotNetOpenAuth.Messaging {
 					this.httpWebResponse = null;
 				}
 			}
+
+			base.Dispose(disposing);
 		}
 	}
 }

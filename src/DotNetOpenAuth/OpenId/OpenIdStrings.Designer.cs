@@ -250,6 +250,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The associate request instance must be a Diffie-Hellman instance..
+        /// </summary>
+        internal static string DiffieHellmanAssociationRequired {
+            get {
+                return ResourceManager.GetString("DiffieHellmanAssociationRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}.
         /// </summary>
         internal static string DiffieHellmanRequiredPropertiesNotSet {
@@ -349,6 +358,15 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid XmlDSig signature on XRDS document..
+        /// </summary>
+        internal static string InvalidDSig {
+            get {
+                return ResourceManager.GetString("InvalidDSig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot decode Key-Value Form because a line was found without a &apos;{0}&apos; character.  (line {1}: &apos;{2}&apos;).
         /// </summary>
         internal static string InvalidKeyValueFormCharacterMissing {
@@ -421,6 +439,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string MaximumAuthenticationTimeExpired {
             get {
                 return ResourceManager.GetString("MaximumAuthenticationTimeExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X.509 signing certificate issued to {0}, but a certificate for {1} was expected..
+        /// </summary>
+        internal static string MisdirectedSigningCertificate {
+            get {
+                return ResourceManager.GetString("MisdirectedSigningCertificate", resourceCulture);
             }
         }
         
@@ -520,6 +547,15 @@ namespace DotNetOpenAuth.OpenId {
         internal static string OperationOnlyValidForSetupRequiredState {
             get {
                 return ResourceManager.GetString("OperationOnlyValidForSetupRequiredState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OpenID popup window or iframe did not recognize an OpenID response in the request..
+        /// </summary>
+        internal static string PopupRedirectMissingResponse {
+            get {
+                return ResourceManager.GetString("PopupRedirectMissingResponse", resourceCulture);
             }
         }
         
@@ -722,11 +758,29 @@ namespace DotNetOpenAuth.OpenId {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unrecognized or missing canonicalization method..
+        /// </summary>
+        internal static string UnsupportedCanonicalizationMethod {
+            get {
+                return ResourceManager.GetString("UnsupportedCanonicalizationMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This feature is unavailable due to an unrecognized channel configuration..
         /// </summary>
         internal static string UnsupportedChannelConfiguration {
             get {
                 return ResourceManager.GetString("UnsupportedChannelConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unrecognized or missing signature method..
+        /// </summary>
+        internal static string UnsupportedSignatureMethod {
+            get {
+                return ResourceManager.GetString("UnsupportedSignatureMethod", resourceCulture);
             }
         }
         

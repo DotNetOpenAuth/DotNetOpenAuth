@@ -143,6 +143,7 @@ using System.Reflection;
 		/// <exception cref="T:System.NotSupportedException">
 		/// The conversion cannot be performed.
 		/// </exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
 			Contract.Assume(destinationType != null, "Missing contract.");
 			if (destinationType.IsInstanceOfType(value)) {

@@ -208,7 +208,7 @@ namespace DotNetOpenAuth {
 		/// Renders the HTTP Header and/or HTML HEAD tags.
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		protected override void Render(HtmlTextWriter writer) {
 			Contract.Assume(writer != null, "Missing contract.");
 			if (this.Enabled && this.Visible && !string.IsNullOrEmpty(this.XrdsUrl)) {

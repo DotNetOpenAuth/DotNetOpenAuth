@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// The attribute discovered on <paramref name="member"/> that describes the
 		/// serialization requirements of the message part.
 		/// </param>
-		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts requires it.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Unavoidable"), SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts requires it.")]
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {
 			Contract.Requires<ArgumentNullException>(member != null);
 			Contract.Requires<ArgumentException>(member is FieldInfo || member is PropertyInfo);
@@ -295,6 +295,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toString">The function to convert the custom type to a string.</param>
 		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
 		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
 			Contract.Requires<ArgumentNullException>(toString != null, "toString");
 			Contract.Requires<ArgumentNullException>(toValue != null, "toValue");

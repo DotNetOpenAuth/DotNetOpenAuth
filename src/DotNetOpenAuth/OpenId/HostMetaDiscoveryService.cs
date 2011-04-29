@@ -212,6 +212,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="response">The response.</param>
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document has an invalid or a missing signature.</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "XmlDSig", Justification = "xml")]
 		private static void ValidateXmlDSig(XrdsDocument document, UriIdentifier identifier, IncomingWebResponse response, string signingHost) {
 			Contract.Requires<ArgumentNullException>(document != null);
 			Contract.Requires<ArgumentNullException>(identifier != null);
@@ -223,10 +224,10 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyProtocol(signedInfoNode != null, OpenIdStrings.MissingElement, "SignedInfo");
 			ErrorUtilities.VerifyProtocol(
 				signedInfoNode.SelectSingleNode("ds:CanonicalizationMethod[@Algorithm='http://docs.oasis-open.org/xri/xrd/2009/01#canonicalize-raw-octets']", document.XmlNamespaceResolver) != null,
-				"Unrecognized or missing canonicalization method.");
+				OpenIdStrings.UnsupportedCanonicalizationMethod);
 			ErrorUtilities.VerifyProtocol(
 				signedInfoNode.SelectSingleNode("ds:SignatureMethod[@Algorithm='http://www.w3.org/2000/09/xmldsig#rsa-sha1']", document.XmlNamespaceResolver) != null,
-				"Unrecognized or missing signature method.");
+				OpenIdStrings.UnsupportedSignatureMethod);
 			var certNodes = signatureNode.Select("ds:KeyInfo/ds:X509Data/ds:X509Certificate", document.XmlNamespaceResolver);
 			ErrorUtilities.VerifyProtocol(certNodes.Count > 0, OpenIdStrings.MissingElement, "X509Certificate");
 			var certs = certNodes.Cast<XPathNavigator>().Select(n => new X509Certificate2(Convert.FromBase64String(n.Value.Trim()))).ToList();
@@ -249,7 +250,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			// Verify that the certificate is issued to the host on whom we are performing discovery.
 			string hostName = certs[0].GetNameInfo(X509NameType.DnsName, false);
-			ErrorUtilities.VerifyProtocol(string.Equals(hostName, signingHost, StringComparison.OrdinalIgnoreCase), "X.509 signing certificate issued to {0}, but a certificate for {1} was expected.", hostName, signingHost);
+			ErrorUtilities.VerifyProtocol(string.Equals(hostName, signingHost, StringComparison.OrdinalIgnoreCase), OpenIdStrings.MisdirectedSigningCertificate, hostName, signingHost);
 
 			// Verify the signature itself
 			byte[] signature = Convert.FromBase64String(response.Headers["Signature"]);
@@ -257,7 +258,7 @@ namespace DotNetOpenAuth.OpenId {
 			byte[] data = new byte[response.ResponseStream.Length];
 			response.ResponseStream.Seek(0, SeekOrigin.Begin);
 			response.ResponseStream.Read(data, 0, data.Length);
-			ErrorUtilities.VerifyProtocol(provider.VerifyData(data, "SHA1", signature), "Invalid XmlDSig signature on XRDS document.");
+			ErrorUtilities.VerifyProtocol(provider.VerifyData(data, "SHA1", signature), OpenIdStrings.InvalidDSig);
 		}
 
 		/// <summary>
@@ -271,7 +272,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// an alternative plan.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if the certificate chain is invalid or unverifiable.</exception>
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.ThrowProtocol(System.String,System.Object[])", Justification = "The localized portion is a string resource already."), SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
 		private static void VerifyCertChain(List<X509Certificate2> certs) {
 			var chain = new X509Chain();
 			foreach (var cert in certs) {

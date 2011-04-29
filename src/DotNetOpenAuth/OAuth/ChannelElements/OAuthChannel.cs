@@ -32,6 +32,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings)
 			: this(
 			signingBindingElement,
@@ -52,6 +53,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings)
 			: this(
 			signingBindingElement,
@@ -75,6 +77,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="messageTypeProvider">An injected message type provider instance.
 		/// Except for mock testing, this should always be one of
 		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider)
 			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);

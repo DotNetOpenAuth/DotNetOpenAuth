@@ -316,7 +316,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets or sets the text to display if the user attempts to login 
 		/// without providing an Identifier.
 		/// </summary>
-		[Bindable(true)]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "br", Justification = "HTML"), Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(RequiredTextDefault)]
 		[Localizable(true)]
@@ -336,7 +336,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets or sets the text to display if the user provides an invalid form for an Identifier.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Property grid only supports primitive types.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "br", Justification = "HTML"), SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "Property grid only supports primitive types.")]
 		[Bindable(true)]
 		[Category("Appearance")]
 		[DefaultValue(UriFormatTextDefault)]
@@ -687,149 +687,155 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes the child controls.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.WebControls.WebControl.set_ToolTip(System.String)", Justification = "By design"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.WebControls.Label.set_Text(System.String)", Justification = "By design"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.WebControls.HyperLink.set_Text(System.String)", Justification = "By design"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.WebControls.CheckBox.set_Text(System.String)", Justification = "By design"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.WebControls.Button.set_Text(System.String)", Justification = "By design"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.WebControls.BaseValidator.set_ErrorMessage(System.String)", Justification = "By design"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "br", Justification = "HTML"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "It is correct"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "MyOpenID", Justification = "Correct spelling"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "myopenid", Justification = "URL")]
 		protected void InitializeControls() {
 			this.panel = new Panel();
 
 			Table table = new Table();
-			TableRow row1, row2, row3;
-			TableCell cell;
-			table.Rows.Add(row1 = new TableRow());
-			table.Rows.Add(row2 = new TableRow());
-			table.Rows.Add(row3 = new TableRow());
-
-			// top row, left cell
-			cell = new TableCell();
 			try {
-				this.label = new HtmlGenericControl("label");
-				this.label.InnerText = LabelTextDefault;
-				cell.Controls.Add(this.label);
-				row1.Cells.Add(cell);
-			} catch {
-				cell.Dispose();
-				throw;
-			}
+				TableRow row1, row2, row3;
+				TableCell cell;
+				table.Rows.Add(row1 = new TableRow());
+				table.Rows.Add(row2 = new TableRow());
+				table.Rows.Add(row3 = new TableRow());
 
-			// top row, middle cell
-			cell = new TableCell();
-			try {
-				cell.Controls.Add(new InPlaceControl(this));
-				row1.Cells.Add(cell);
-			} catch {
-				cell.Dispose();
-				throw;
-			}
+				// top row, left cell
+				cell = new TableCell();
+				try {
+					this.label = new HtmlGenericControl("label");
+					this.label.InnerText = LabelTextDefault;
+					cell.Controls.Add(this.label);
+					row1.Cells.Add(cell);
+				} catch {
+					cell.Dispose();
+					throw;
+				}
 
-			// top row, right cell
-			cell = new TableCell();
-			try {
-				this.loginButton = new Button();
-				this.loginButton.ID = this.ID + "_loginButton";
-				this.loginButton.Text = ButtonTextDefault;
-				this.loginButton.ToolTip = ButtonToolTipDefault;
-				this.loginButton.Click += this.LoginButton_Click;
-				this.loginButton.ValidationGroup = ValidationGroupDefault;
+				// top row, middle cell
+				cell = new TableCell();
+				try {
+					cell.Controls.Add(new InPlaceControl(this));
+					row1.Cells.Add(cell);
+				} catch {
+					cell.Dispose();
+					throw;
+				}
+
+				// top row, right cell
+				cell = new TableCell();
+				try {
+					this.loginButton = new Button();
+					this.loginButton.ID = this.ID + "_loginButton";
+					this.loginButton.Text = ButtonTextDefault;
+					this.loginButton.ToolTip = ButtonToolTipDefault;
+					this.loginButton.Click += this.LoginButton_Click;
+					this.loginButton.ValidationGroup = ValidationGroupDefault;
 #if !Mono
-				this.panel.DefaultButton = this.loginButton.ID;
+					this.panel.DefaultButton = this.loginButton.ID;
 #endif
-				cell.Controls.Add(this.loginButton);
-				row1.Cells.Add(cell);
-			} catch {
-				cell.Dispose();
-				throw;
-			}
+					cell.Controls.Add(this.loginButton);
+					row1.Cells.Add(cell);
+				} catch {
+					cell.Dispose();
+					throw;
+				}
 
-			// middle row, left cell
-			row2.Cells.Add(new TableCell());
+				// middle row, left cell
+				row2.Cells.Add(new TableCell());
 
-			// middle row, middle cell
-			cell = new TableCell();
-			try {
-				cell.Style[HtmlTextWriterStyle.Color] = "gray";
-				cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
-				this.requiredValidator = new RequiredFieldValidator();
-				this.requiredValidator.ErrorMessage = RequiredTextDefault + RequiredTextSuffix;
-				this.requiredValidator.Text = RequiredTextDefault + RequiredTextSuffix;
-				this.requiredValidator.Display = ValidatorDisplay.Dynamic;
-				this.requiredValidator.ValidationGroup = ValidationGroupDefault;
-				cell.Controls.Add(this.requiredValidator);
-				this.identifierFormatValidator = new CustomValidator();
-				this.identifierFormatValidator.ErrorMessage = UriFormatTextDefault + RequiredTextSuffix;
-				this.identifierFormatValidator.Text = UriFormatTextDefault + RequiredTextSuffix;
-				this.identifierFormatValidator.ServerValidate += this.IdentifierFormatValidator_ServerValidate;
-				this.identifierFormatValidator.Enabled = UriValidatorEnabledDefault;
-				this.identifierFormatValidator.Display = ValidatorDisplay.Dynamic;
-				this.identifierFormatValidator.ValidationGroup = ValidationGroupDefault;
-				cell.Controls.Add(this.identifierFormatValidator);
-				this.errorLabel = new Label();
-				this.errorLabel.EnableViewState = false;
-				this.errorLabel.ForeColor = System.Drawing.Color.Red;
-				this.errorLabel.Style[HtmlTextWriterStyle.Display] = "block"; // puts it on its own line
-				this.errorLabel.Visible = false;
-				cell.Controls.Add(this.errorLabel);
-				this.examplePrefixLabel = new Label();
-				this.examplePrefixLabel.Text = ExamplePrefixDefault;
-				cell.Controls.Add(this.examplePrefixLabel);
-				cell.Controls.Add(new LiteralControl(" "));
-				this.exampleUrlLabel = new Label();
-				this.exampleUrlLabel.Font.Bold = true;
-				this.exampleUrlLabel.Text = ExampleUrlDefault;
-				cell.Controls.Add(this.exampleUrlLabel);
-				row2.Cells.Add(cell);
-			} catch {
-				cell.Dispose();
-				throw;
-			}
+				// middle row, middle cell
+				cell = new TableCell();
+				try {
+					cell.Style[HtmlTextWriterStyle.Color] = "gray";
+					cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
+					this.requiredValidator = new RequiredFieldValidator();
+					this.requiredValidator.ErrorMessage = RequiredTextDefault + RequiredTextSuffix;
+					this.requiredValidator.Text = RequiredTextDefault + RequiredTextSuffix;
+					this.requiredValidator.Display = ValidatorDisplay.Dynamic;
+					this.requiredValidator.ValidationGroup = ValidationGroupDefault;
+					cell.Controls.Add(this.requiredValidator);
+					this.identifierFormatValidator = new CustomValidator();
+					this.identifierFormatValidator.ErrorMessage = UriFormatTextDefault + RequiredTextSuffix;
+					this.identifierFormatValidator.Text = UriFormatTextDefault + RequiredTextSuffix;
+					this.identifierFormatValidator.ServerValidate += this.IdentifierFormatValidator_ServerValidate;
+					this.identifierFormatValidator.Enabled = UriValidatorEnabledDefault;
+					this.identifierFormatValidator.Display = ValidatorDisplay.Dynamic;
+					this.identifierFormatValidator.ValidationGroup = ValidationGroupDefault;
+					cell.Controls.Add(this.identifierFormatValidator);
+					this.errorLabel = new Label();
+					this.errorLabel.EnableViewState = false;
+					this.errorLabel.ForeColor = System.Drawing.Color.Red;
+					this.errorLabel.Style[HtmlTextWriterStyle.Display] = "block"; // puts it on its own line
+					this.errorLabel.Visible = false;
+					cell.Controls.Add(this.errorLabel);
+					this.examplePrefixLabel = new Label();
+					this.examplePrefixLabel.Text = ExamplePrefixDefault;
+					cell.Controls.Add(this.examplePrefixLabel);
+					cell.Controls.Add(new LiteralControl(" "));
+					this.exampleUrlLabel = new Label();
+					this.exampleUrlLabel.Font.Bold = true;
+					this.exampleUrlLabel.Text = ExampleUrlDefault;
+					cell.Controls.Add(this.exampleUrlLabel);
+					row2.Cells.Add(cell);
+				} catch {
+					cell.Dispose();
+					throw;
+				}
 
-			// middle row, right cell
-			cell = new TableCell();
-			try {
-				cell.Style[HtmlTextWriterStyle.Color] = "gray";
-				cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
-				cell.Style[HtmlTextWriterStyle.TextAlign] = "center";
-				this.registerLink = new HyperLink();
-				this.registerLink.Text = RegisterTextDefault;
-				this.registerLink.ToolTip = RegisterToolTipDefault;
-				this.registerLink.NavigateUrl = RegisterUrlDefault;
-				this.registerLink.Visible = RegisterVisibleDefault;
-				cell.Controls.Add(this.registerLink);
-				row2.Cells.Add(cell);
-			} catch {
-				cell.Dispose();
-				throw;
-			}
+				// middle row, right cell
+				cell = new TableCell();
+				try {
+					cell.Style[HtmlTextWriterStyle.Color] = "gray";
+					cell.Style[HtmlTextWriterStyle.FontSize] = "smaller";
+					cell.Style[HtmlTextWriterStyle.TextAlign] = "center";
+					this.registerLink = new HyperLink();
+					this.registerLink.Text = RegisterTextDefault;
+					this.registerLink.ToolTip = RegisterToolTipDefault;
+					this.registerLink.NavigateUrl = RegisterUrlDefault;
+					this.registerLink.Visible = RegisterVisibleDefault;
+					cell.Controls.Add(this.registerLink);
+					row2.Cells.Add(cell);
+				} catch {
+					cell.Dispose();
+					throw;
+				}
 
-			// bottom row, left cell
-			cell = new TableCell();
-			row3.Cells.Add(cell);
-
-			// bottom row, middle cell
-			cell = new TableCell();
-			try {
-				this.rememberMeCheckBox = new CheckBox();
-				this.rememberMeCheckBox.Text = RememberMeTextDefault;
-				this.rememberMeCheckBox.Checked = this.UsePersistentCookie != LogOnPersistence.Session;
-				this.rememberMeCheckBox.Visible = RememberMeVisibleDefault;
-				this.rememberMeCheckBox.CheckedChanged += this.RememberMeCheckBox_CheckedChanged;
-				cell.Controls.Add(this.rememberMeCheckBox);
+				// bottom row, left cell
+				cell = new TableCell();
 				row3.Cells.Add(cell);
+
+				// bottom row, middle cell
+				cell = new TableCell();
+				try {
+					this.rememberMeCheckBox = new CheckBox();
+					this.rememberMeCheckBox.Text = RememberMeTextDefault;
+					this.rememberMeCheckBox.Checked = this.UsePersistentCookie != LogOnPersistence.Session;
+					this.rememberMeCheckBox.Visible = RememberMeVisibleDefault;
+					this.rememberMeCheckBox.CheckedChanged += this.RememberMeCheckBox_CheckedChanged;
+					cell.Controls.Add(this.rememberMeCheckBox);
+					row3.Cells.Add(cell);
+				} catch {
+					cell.Dispose();
+					throw;
+				}
+
+				// bottom row, right cell
+				cell = new TableCell();
+				try {
+					row3.Cells.Add(cell);
+				} catch {
+					cell.Dispose();
+					throw;
+				}
+
+				// this sets all the controls' tab indexes
+				this.TabIndex = TabIndexDefault;
+
+				this.panel.Controls.Add(table);
 			} catch {
-				cell.Dispose();
+				table.Dispose();
 				throw;
 			}
-
-			// bottom row, right cell
-			cell = new TableCell();
-			try {
-				row3.Cells.Add(cell);
-			} catch {
-				cell.Dispose();
-				throw;
-			}
-
-			// this sets all the controls' tab indexes
-			this.TabIndex = TabIndexDefault;
-
-			this.panel.Controls.Add(table);
 
 			this.idselectorJavascript = new Literal();
 			this.panel.Controls.Add(this.idselectorJavascript);
@@ -849,6 +855,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Renders the child controls.
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the rendered content.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.WebControls.Literal.set_Text(System.String)", Justification = "By design"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "idselector", Justification = "HTML"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "charset", Justification = "html"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "src", Justification = "html"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "openidselector", Justification = "html"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "idselectorinputid", Justification = "html")]
 		protected override void RenderChildren(HtmlTextWriter writer) {
 			if (!this.DesignMode) {
 				this.label.Attributes["for"] = this.ClientID;

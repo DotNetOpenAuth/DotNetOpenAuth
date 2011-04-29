@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Text;
 
@@ -19,6 +20,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the original message parts, before any normalization or default values were assigned.
 		/// </summary>
+		[SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "By design")]
 		IDictionary<string, string> OriginalPayload { get; set; }
 	}
 
