@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 
 	/// <summary>
@@ -29,7 +30,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="TrustedProviderConfigurationCollection"/> class.
 		/// </summary>
 		/// <param name="elements">The elements to initialize the collection with.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Seems unavoidable")]
+		[SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Seems unavoidable")]
 		internal TrustedProviderConfigurationCollection(IEnumerable<TrustedProviderEndpointConfigurationElement> elements) {
 			Contract.Requires<ArgumentNullException>(elements != null);
 

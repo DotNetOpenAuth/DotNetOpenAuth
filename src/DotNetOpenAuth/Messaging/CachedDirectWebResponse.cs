@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
@@ -156,7 +157,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response whose stream is to be cloned.</param>
 		/// <param name="maximumBytesToRead">The maximum bytes to cache.</param>
 		/// <returns>The seekable Stream instance that contains a copy of what was returned in the HTTP response.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		private static MemoryStream CacheNetworkStreamAndClose(HttpWebResponse response, int maximumBytesToRead) {
 			Contract.Requires<ArgumentNullException>(response != null);
 			Contract.Ensures(Contract.Result<MemoryStream>() != null);

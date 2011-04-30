@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// If ordering of the key=value pairs is important, a deterministic enumerator must
 		/// be used.
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		public static byte[] GetBytes(IEnumerable<KeyValuePair<string, string>> keysAndValues) {
 			Contract.Requires<ArgumentNullException>(keysAndValues != null);
 

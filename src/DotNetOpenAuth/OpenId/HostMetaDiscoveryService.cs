@@ -212,7 +212,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="response">The response.</param>
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document has an invalid or a missing signature.</exception>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "XmlDSig", Justification = "xml")]
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "XmlDSig", Justification = "xml")]
 		private static void ValidateXmlDSig(XrdsDocument document, UriIdentifier identifier, IncomingWebResponse response, string signingHost) {
 			Contract.Requires<ArgumentNullException>(document != null);
 			Contract.Requires<ArgumentNullException>(identifier != null);
@@ -272,7 +272,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// an alternative plan.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if the certificate chain is invalid or unverifiable.</exception>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.ThrowProtocol(System.String,System.Object[])", Justification = "The localized portion is a string resource already."), SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.ThrowProtocol(System.String,System.Object[])", Justification = "The localized portion is a string resource already."), SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
 		private static void VerifyCertChain(List<X509Certificate2> certs) {
 			var chain = new X509Chain();
 			foreach (var cert in certs) {

@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Mvc {
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		public static string OpenIdSelectorScripts(this HtmlHelper html, OpenIdSelector selectorOptions, OpenIdAjaxOptions additionalOptions) {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Ensures(Contract.Result<string>() != null);
@@ -240,7 +240,7 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		public static string OpenIdSelector(this HtmlHelper html, params SelectorButton[] buttons) {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Requires<ArgumentNullException>(buttons != null);
@@ -305,7 +305,7 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		private static string OpenIdSelectorButton(this HtmlHelper html, string id, string cssClass, string imageUrl) {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Requires<ArgumentNullException>(id != null);

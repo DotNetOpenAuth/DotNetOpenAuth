@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Sends server control content to a provided <see cref="T:System.Web.UI.HtmlTextWriter"/> object, which writes the content to be rendered on the client.
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.HtmlTextWriter.WriteEncodedText(System.String)", Justification = "Not localizable")]
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Web.UI.HtmlTextWriter.WriteEncodedText(System.String)", Justification = "Not localizable")]
 		protected override void Render(HtmlTextWriter writer) {
 			if (string.IsNullOrEmpty(this.Identifier)) {
 				writer.WriteEncodedText(string.Format(CultureInfo.CurrentCulture, "[{0}]", OpenIdStrings.NoIdentifierSet));

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -50,7 +51,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="supportedServiceTypeUris">The supported service type URIs.</param>
 		/// <returns>The best OpenID protocol version to use when communicating with this Provider.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "Spelling correct")]
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "Spelling correct")]
 		private static Protocol GetProtocolFromServices(string[] supportedServiceTypeUris) {
 			Protocol protocol = Protocol.FindBestVersion(p => p.RPReturnToTypeURI, supportedServiceTypeUris);
 			if (protocol == null) {

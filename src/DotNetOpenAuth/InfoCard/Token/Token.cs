@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="audience">The audience.  May be <c>null</c> to avoid audience checking.</param>
 		/// <param name="decryptor">The decryptor to use to decrypt the token, if necessary..</param>
 		/// <exception cref="InformationCardException">Thrown for any problem decoding or decrypting the token.</exception>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type."), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type."), SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			Contract.Requires<ArgumentException>(decryptor != null || !IsEncrypted(tokenXml));
@@ -199,7 +199,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>
 		/// 	<c>true</c> if the specified token XML is encrypted; otherwise, <c>false</c>.
 		/// </returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive"), Pure]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive"), Pure]
 		internal static bool IsEncrypted(string tokenXml) {
 			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
