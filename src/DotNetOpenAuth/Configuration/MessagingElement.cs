@@ -37,6 +37,20 @@ namespace DotNetOpenAuth.Configuration {
 		private const string StrictConfigName = "strict";
 
 		/// <summary>
+		/// The default value for the <see cref="MaximumIndirectMessageUrlLength"/> property.
+		/// </summary>
+		/// <value>
+		/// 2KB, recommended by OpenID group
+		/// </value>
+		private const int DefaultMaximumIndirectMessageUrlLength = 2 * 1024;
+
+		/// <summary>
+		/// The name of the attribute that controls the maximum length of a URL before it is converted
+		/// to a POST payload.
+		/// </summary>
+		private const string MaximumIndirectMessageUrlLengthConfigName = "maximumIndirectMessageUrlLength";
+
+		/// <summary>
 		/// Gets the actual maximum message lifetime that a program should allow.
 		/// </summary>
 		/// <value>The sum of the <see cref="MaximumMessageLifetime"/> and 
@@ -113,6 +127,20 @@ namespace DotNetOpenAuth.Configuration {
 		internal UntrustedWebRequestElement UntrustedWebRequest {
 			get { return (UntrustedWebRequestElement)this[UntrustedWebRequestElementName] ?? new UntrustedWebRequestElement(); }
 			set { this[UntrustedWebRequestElementName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum allowable size for a 301 Redirect response before we send
+		/// a 200 OK response with a scripted form POST with the parameters instead
+		/// in order to ensure successfully sending a large payload to another server
+		/// that might have a maximum allowable size restriction on its GET request.
+		/// </summary>
+		/// <value>The default value is 2048.</value>
+		[ConfigurationProperty(MaximumIndirectMessageUrlLengthConfigName, DefaultValue = DefaultMaximumIndirectMessageUrlLength)]
+		[IntegerValidator(MinValue = 500, MaxValue = 4096)]
+		internal int MaximumIndirectMessageUrlLength {
+			get { return (int)this[MaximumIndirectMessageUrlLengthConfigName]; }
+			set { this[MaximumIndirectMessageUrlLengthConfigName] = value; }
 		}
 	}
 }

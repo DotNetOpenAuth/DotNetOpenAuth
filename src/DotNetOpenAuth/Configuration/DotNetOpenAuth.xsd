@@ -218,6 +218,16 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="maximumIndirectMessageUrlLength" type="xs:int" default="2048">
+							<xs:annotation>
+								<xs:documentation>
+									The maximum allowable size for a 301 Redirect response before we send
+									a 200 OK response with a scripted form POST with the parameters instead
+									in order to ensure successfully sending a large payload to another server
+									that might have a maximum allowable size restriction on its GET request.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="openid">
