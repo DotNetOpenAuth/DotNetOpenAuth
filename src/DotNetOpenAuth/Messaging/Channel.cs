@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable.")]
 	[ContractVerification(true)]
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
