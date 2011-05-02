@@ -215,11 +215,19 @@
     <!-- Don't sign the non-unified version of the assembly. -->
     <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
   </PropertyGroup>
+  <!-- These items should never be visible.  In the project source tree, they're invisible because of an ItemDefinitionGroup
+       in DotNetOpenAuth.props.  But in the shipping samples that file is not included, so we must still set Visible=false explicitly.. -->
   <ItemGroup>
-    <SignDependsOn Include="BuildUnified" />
-    <DelaySignedAssemblies Include="$(ILMergeProjectOutputAssembly)" />
+    <SignDependsOn Include="BuildUnified">
+      <Visible>false</Visible>
+    </SignDependsOn>
+    <DelaySignedAssemblies Include="$(ILMergeProjectOutputAssembly)">
+      <Visible>false</Visible>
+    </DelaySignedAssemblies>
     <ILMergeProjectInputAssemblies Include="$(TargetPath);
-                                            $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
+                                            $(ProjectRoot)lib\Microsoft.Contracts.dll; ">
+      <Visible>false</Visible>
+    </ILMergeProjectInputAssemblies>
   </ItemGroup>
   <Target Name="BuildUnified" DependsOnTargets="Build" Inputs="@(ILMergeProjectInputAssemblies)" Outputs="$(ILMergeProjectOutputAssembly)">
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
