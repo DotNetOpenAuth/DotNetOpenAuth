@@ -1,19 +1,19 @@
-﻿namespace DotNetOpenAuth.Test.Performance {
+﻿//-----------------------------------------------------------------------
+// <copyright file="PerformanceTestUtilities.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.Performance {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using log4net;
-	using NUnit.Framework;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.RelyingParty;
-	using System.Threading;
 	using System.Diagnostics;
+	using System.Reflection;
+	using System.Threading;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+	using NUnit.Framework;
 
 	internal static class PerformanceTestUtilities {
 		internal static Stats Baseline;
-
-		private static readonly StatsCollection data = new StatsCollection();
 
 		static PerformanceTestUtilities() {
 			Baseline = CollectBaseline();
@@ -22,8 +22,13 @@
 				Baseline.Median * 1000);
 		}
 
+		internal static bool IsOptimized(Assembly assembly) {
+			DebuggableAttribute debugAttribute = (DebuggableAttribute)System.Attribute.GetCustomAttribute(assembly, typeof(System.Diagnostics.DebuggableAttribute));
+			return debugAttribute == null || !debugAttribute.IsJITOptimizerDisabled;
+		}
+
 		internal static Stats Measure(Action action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
-			if (!StatsLogger.IsOptimized(typeof(OpenIdRelyingParty).Assembly)) {
+			if (!IsOptimized(typeof(OpenIdRelyingParty).Assembly)) {
 				Assert.Inconclusive("Unoptimized code.");
 			}
 
@@ -67,11 +72,11 @@
 					for (hits = 0; hits < hitsRequired; hits++) {
 						float currentCpuUtilization = pc.NextValue();
 						if (currentCpuUtilization > maximumCpuUtilization) {
-							//Console.WriteLine("Miss: CPU at {0}% utilization", currentCpuUtilization);
+							////Console.WriteLine("Miss: CPU at {0}% utilization", currentCpuUtilization);
 							break;
 						}
 
-						//Console.WriteLine("Hit: CPU at {0}% utilization", currentCpuUtilization);
+						////Console.WriteLine("Hit: CPU at {0}% utilization", currentCpuUtilization);
 						Thread.Sleep(samplingInterval);
 					}
 
@@ -88,18 +93,21 @@
 
 		private static Stats CollectBaseline() {
 			using (new HighPerformance()) {
-				return new MultiSampleCodeTimer(10, 1000).Measure("MethodCalls: EmptyStaticFunction()", 10, delegate {
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-					Class.EmptyStaticFunction();
-				});
+				return new MultiSampleCodeTimer(10, 1000).Measure(
+					"MethodCalls: EmptyStaticFunction()",
+					10,
+					delegate {
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+						Class.EmptyStaticFunction();
+					});
 			}
 		}
 
@@ -107,57 +115,6 @@
 			[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
 			public static void EmptyStaticFunction() {
 			}
-		}
-	}
-
-	/// <summary>
-	/// Suppresses logging and forces the CPU into a high performance mode.
-	/// </summary>
-	internal class HighPerformance : IDisposable {
-		private readonly log4net.Core.Level originalLoggerThreshold;
-		private readonly PowerManagment.PowerSetting powerSetting;
-		private readonly ProcessPriorityClass originalProcessPriority;
-
-#pragma warning disable 0618
-		/// <summary>
-		/// Initializes a new instance of the <see cref="HighPerformance"/> class.
-		/// </summary>
-		internal HighPerformance() {
-			if (!PerformanceTestUtilities.CoolOff()) {
-				Assert.Inconclusive("Timed out waiting for a quiet CPU in which to perform perf tests.");
-			}
-
-			this.originalLoggerThreshold = LogManager.GetLoggerRepository().Threshold;
-			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["OFF"];
-			this.powerSetting = new PowerManagment.PowerSetting(PowerManagment.PowerProfiles.HighPerformance);
-			this.originalProcessPriority = Process.GetCurrentProcess().PriorityClass;
-			Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
-			Thread.CurrentThread.Priority = ThreadPriority.Highest;
-			HighCpu();
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose() {
-			Thread.CurrentThread.Priority = ThreadPriority.Normal;
-			Process.GetCurrentProcess().PriorityClass = this.originalProcessPriority;
-			this.powerSetting.Dispose(); // restores original power setting.
-			LogManager.GetLoggerRepository().Threshold = this.originalLoggerThreshold;
-		}
-#pragma warning restore 0618
-
-		/// <summary>
-		/// Runs the CPU in a tight loop to get it out of any low power state.
-		/// </summary>
-		private static void HighCpu() {
-			int dummy;
-			new MultiSampleCodeTimer(10, 1000).Measure("Loop 1K times", 1, delegate {
-				int k = 0;
-				while (k < 1000)
-					k++;        // still in danger of being optimized.  
-				dummy = k;      // avoid optimization.  
-			});
 		}
 	}
 }

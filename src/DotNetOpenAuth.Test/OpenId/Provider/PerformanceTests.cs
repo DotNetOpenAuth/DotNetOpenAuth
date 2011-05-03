@@ -18,8 +18,8 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
-	using NUnit.Framework;
 	using DotNetOpenAuth.Test.Performance;
+	using NUnit.Framework;
 
 	[TestFixture, Category("Performance")]
 	public class PerformanceTests : OpenIdTestBase {
