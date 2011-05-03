@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		[TestCase]
 		public void AssociateDH() {
 			var associateRequest = this.CreateAssociateRequest(OPUri);
-			PerformanceTestUtilities.Measure(
+			MeasurePerformance(
 				() => {
 					IRequest request = this.provider.GetRequest(associateRequest);
 					var response = this.provider.PrepareResponse(request);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		[TestCase]
 		public void AssociateClearText() {
 			var associateRequest = this.CreateAssociateRequest(OPUriSsl); // SSL will cause a plaintext association
-			PerformanceTestUtilities.Measure(
+			MeasurePerformance(
 				() => {
 					IRequest request = this.provider.GetRequest(associateRequest);
 					var response = this.provider.PrepareResponse(request);
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				this.provider.SecuritySettings);
 			this.provider.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, assoc);
 			var checkidRequest = this.CreateCheckIdRequest(true);
-			var stats = PerformanceTestUtilities.Measure(
+			MeasurePerformance(
 				() => {
 					var request = (IAuthenticationRequest)this.provider.GetRequest(checkidRequest);
 					request.IsAuthenticated = true;

@@ -11,6 +11,8 @@ namespace DotNetOpenAuth.Test {
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Performance;
 	using log4net;
 	using NUnit.Framework;
 
@@ -63,6 +65,34 @@ namespace DotNetOpenAuth.Test {
 		[TearDown]
 		public virtual void Cleanup() {
 			log4net.LogManager.Shutdown();
+		}
+
+		internal static Stats MeasurePerformance(Action action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
+			if (!PerformanceTestUtilities.IsOptimized(typeof(OpenIdRelyingParty).Assembly)) {
+				Assert.Inconclusive("Unoptimized code.");
+			}
+
+			var timer = new MultiSampleCodeTimer(samples, iterations);
+			Stats stats;
+			using (new HighPerformance()) {
+				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, action);
+			}
+
+			stats.AdjustForScale(PerformanceTestUtilities.Baseline.Median);
+
+			TestUtilities.TestLogger.InfoFormat(
+				"Performance counters: median {0}, mean {1}, min {2}, max {3}, stddev {4} ({5}%).",
+				stats.Median,
+				stats.Mean,
+				stats.Minimum,
+				stats.Maximum,
+				stats.StandardDeviation,
+				stats.StandardDeviation / stats.Median * 100);
+
+			Assert.IsTrue(stats.Mean < maximumAllowedUnitTime, "The mean time of {0} exceeded the maximum allowable of {1}.", stats.Mean, maximumAllowedUnitTime);
+			TestUtilities.TestLogger.InfoFormat("Within {0}% of the maximum allowed time of {1}.", Math.Round((maximumAllowedUnitTime - stats.Mean) / maximumAllowedUnitTime * 100, 1), maximumAllowedUnitTime);
+
+			return stats;
 		}
 
 		/// <summary>

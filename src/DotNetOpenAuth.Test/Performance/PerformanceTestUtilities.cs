@@ -13,44 +13,16 @@ namespace DotNetOpenAuth.Test.Performance {
 	using NUnit.Framework;
 
 	internal static class PerformanceTestUtilities {
-		private static Stats baseline;
+		internal static Stats Baseline;
 
 		static PerformanceTestUtilities() {
-			baseline = CollectBaseline();
+			Baseline = CollectBaseline();
 			TestUtilities.TestLogger.InfoFormat(
 				"Scaled where EmptyStaticFunction = 1.0 ({0:f1} nsec = 1.0 units)",
-				baseline.Median * 1000);
+				Baseline.Median * 1000);
 		}
 
-		internal static Stats Measure(Action action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
-			if (!IsOptimized(typeof(OpenIdRelyingParty).Assembly)) {
-				Assert.Inconclusive("Unoptimized code.");
-			}
-
-			var timer = new MultiSampleCodeTimer(samples, iterations);
-			Stats stats;
-			using (new HighPerformance()) {
-				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, action);
-			}
-
-			stats.AdjustForScale(PerformanceTestUtilities.baseline.Median);
-
-			TestUtilities.TestLogger.InfoFormat(
-				"Performance counters: median {0}, mean {1}, min {2}, max {3}, stddev {4} ({5}%).",
-				stats.Median,
-				stats.Mean,
-				stats.Minimum,
-				stats.Maximum,
-				stats.StandardDeviation,
-				stats.StandardDeviation / stats.Median * 100);
-
-			Assert.IsTrue(stats.Mean < maximumAllowedUnitTime, "The mean time of {0} exceeded the maximum allowable of {1}.", stats.Mean, maximumAllowedUnitTime);
-			TestUtilities.TestLogger.InfoFormat("Within {0}% of the maximum allowed time of {1}.", Math.Round((maximumAllowedUnitTime - stats.Mean) / maximumAllowedUnitTime * 100, 1), maximumAllowedUnitTime);
-
-			return stats;
-		}
-
-		private static bool IsOptimized(Assembly assembly) {
+		internal static bool IsOptimized(Assembly assembly) {
 			DebuggableAttribute debugAttribute = (DebuggableAttribute)System.Attribute.GetCustomAttribute(assembly, typeof(System.Diagnostics.DebuggableAttribute));
 			return debugAttribute == null || !debugAttribute.IsJITOptimizerDisabled;
 		}
