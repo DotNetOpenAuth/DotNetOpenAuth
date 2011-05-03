@@ -13,18 +13,13 @@ namespace DotNetOpenAuth.Test.Performance {
 	using NUnit.Framework;
 
 	internal static class PerformanceTestUtilities {
-		internal static Stats Baseline;
+		private static Stats baseline;
 
 		static PerformanceTestUtilities() {
-			Baseline = CollectBaseline();
+			baseline = CollectBaseline();
 			TestUtilities.TestLogger.InfoFormat(
 				"Scaled where EmptyStaticFunction = 1.0 ({0:f1} nsec = 1.0 units)",
-				Baseline.Median * 1000);
-		}
-
-		internal static bool IsOptimized(Assembly assembly) {
-			DebuggableAttribute debugAttribute = (DebuggableAttribute)System.Attribute.GetCustomAttribute(assembly, typeof(System.Diagnostics.DebuggableAttribute));
-			return debugAttribute == null || !debugAttribute.IsJITOptimizerDisabled;
+				baseline.Median * 1000);
 		}
 
 		internal static Stats Measure(Action action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
@@ -38,7 +33,7 @@ namespace DotNetOpenAuth.Test.Performance {
 				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, action);
 			}
 
-			stats.AdjustForScale(PerformanceTestUtilities.Baseline.Median);
+			stats.AdjustForScale(PerformanceTestUtilities.baseline.Median);
 
 			TestUtilities.TestLogger.InfoFormat(
 				"Performance counters: median {0}, mean {1}, min {2}, max {3}, stddev {4} ({5}%).",
@@ -55,40 +50,9 @@ namespace DotNetOpenAuth.Test.Performance {
 			return stats;
 		}
 
-		internal static bool CoolOff() {
-			using (var pc = new System.Diagnostics.PerformanceCounter()) {
-				pc.CategoryName = "Processor";
-				pc.CounterName = "% Processor Time";
-				pc.InstanceName = "_Total";
-
-				TimeSpan samplingInterval = TimeSpan.FromMilliseconds(1000);
-				TimeSpan minimumQuietTime = TimeSpan.FromSeconds(2);
-				TimeSpan maximumTimeBeforeBail = TimeSpan.FromSeconds(30);
-				float maximumCpuUtilization = 10;
-				DateTime startTryingStamp = DateTime.Now;
-				int hitsRequired = (int)(minimumQuietTime.TotalMilliseconds / samplingInterval.TotalMilliseconds);
-				while (DateTime.Now - startTryingStamp < maximumTimeBeforeBail) {
-					int hits;
-					for (hits = 0; hits < hitsRequired; hits++) {
-						float currentCpuUtilization = pc.NextValue();
-						if (currentCpuUtilization > maximumCpuUtilization) {
-							////Console.WriteLine("Miss: CPU at {0}% utilization", currentCpuUtilization);
-							break;
-						}
-
-						////Console.WriteLine("Hit: CPU at {0}% utilization", currentCpuUtilization);
-						Thread.Sleep(samplingInterval);
-					}
-
-					if (hits == hitsRequired) {
-						return true;
-					}
-
-					Thread.Sleep(samplingInterval);
-				}
-
-				return false;
-			}
+		private static bool IsOptimized(Assembly assembly) {
+			DebuggableAttribute debugAttribute = (DebuggableAttribute)System.Attribute.GetCustomAttribute(assembly, typeof(System.Diagnostics.DebuggableAttribute));
+			return debugAttribute == null || !debugAttribute.IsJITOptimizerDisabled;
 		}
 
 		private static Stats CollectBaseline() {

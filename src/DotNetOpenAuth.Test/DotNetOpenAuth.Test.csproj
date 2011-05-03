@@ -307,7 +307,6 @@
     <Compile Include="Performance\CodeTimers.cs" />
     <Compile Include="Performance\HighPerformance.cs" />
     <Compile Include="Performance\PerformanceTestUtilities.cs" />
-    <Compile Include="Performance\PowerManagement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="OAuth\AppendixScenarios.cs" />
