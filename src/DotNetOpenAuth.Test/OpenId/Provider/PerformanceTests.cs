@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 					var response = this.provider.PrepareResponse(request);
 					Assert.IsInstanceOf<AssociateSuccessfulResponse>(response.OriginalMessage);
 				},
-				maximumAllowedUnitTime: 2.8e6f,
+				maximumAllowedUnitTime: 3.5e6f,
 				iterations: 1);
 		}
 
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 					var response = this.provider.PrepareResponse(request);
 					Assert.IsInstanceOf<AssociateSuccessfulResponse>(response.OriginalMessage);
 				},
-				maximumAllowedUnitTime: 1.2e4f,
+				maximumAllowedUnitTime: 1.5e4f,
 				iterations: 1000);
 		}
 
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 					var response = this.provider.PrepareResponse(request);
 					Assert.IsInstanceOf<PositiveAssertionResponse>(response.OriginalMessage);
 				},
-				maximumAllowedUnitTime: 5.5e4f);
+				maximumAllowedUnitTime: 6.8e4f);
 		}
 
 		private HttpRequestInfo CreateAssociateRequest(Uri opEndpoint) {
