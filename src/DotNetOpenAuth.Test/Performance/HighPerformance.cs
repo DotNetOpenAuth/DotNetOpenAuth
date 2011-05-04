@@ -26,9 +26,9 @@ namespace DotNetOpenAuth.Test.Performance {
 		/// Initializes a new instance of the <see cref="HighPerformance"/> class.
 		/// </summary>
 		internal HighPerformance() {
-			if (!WaitForQuietCpu()) {
-				Assert.Inconclusive("Timed out waiting for a quiet CPU in which to perform perf tests.");
-			}
+			////if (!WaitForQuietCpu()) {
+			////    Assert.Inconclusive("Timed out waiting for a quiet CPU in which to perform perf tests.");
+			////}
 
 			this.originalLoggerThreshold = LogManager.GetLoggerRepository().Threshold;
 			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["OFF"];
