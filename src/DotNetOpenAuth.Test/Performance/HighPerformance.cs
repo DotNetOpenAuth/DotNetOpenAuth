@@ -127,7 +127,8 @@ namespace DotNetOpenAuth.Test.Performance {
 					Guid newPolicy = value;
 					int result = PowerSetActiveScheme(IntPtr.Zero, ref newPolicy);
 					if (result != 0) {
-						throw new Win32Exception(result);
+						TestUtilities.TestLogger.ErrorFormat("Unable to set power management policy.  Error code: {0}", result);
+						////throw new Win32Exception(result);
 					}
 				}
 			}
