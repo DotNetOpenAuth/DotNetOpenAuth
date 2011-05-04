@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.Performance {
 				});
 		}
 
-		private static bool WaitForQuietCpu(float maxCpuSpike = 10, int minSecondsOfQuiet = 2, int maxSecondsBeforeGiveUp = 30) {
+		private static bool WaitForQuietCpu(float maxCpuSpike = 25, int minSecondsOfQuiet = 2, int maxSecondsBeforeGiveUp = 30) {
 			using (var pc = new System.Diagnostics.PerformanceCounter()) {
 				pc.CategoryName = "Processor";
 				pc.CounterName = "% Processor Time";
