@@ -30,8 +30,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		byte[] Secret { get; }
 
 		/// <summary>
+		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
+		/// </summary>
+		/// <value>The authorization code nonce store.</value>
+		INonceStore VerificationCodeNonceStore { get; }
+
+		/// <summary>
 		/// Creates a new instance of the crypto service provider with the asymmetric private key to use for signing access tokens.
 		/// </summary>
+		/// <returns>A crypto service provider instance that contains the private key.</returns>
 		/// <value>Must not be null, and must contain the private key.</value>
 		/// <remarks>
 		/// The public key in the private/public key pair will be used by the resource
@@ -39,12 +46,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The caller is responsible to dispose of the returned instance.
 		/// </remarks>
 		RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider();
-
-		/// <summary>
-		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
-		/// </summary>
-		/// <value>The authorization code nonce store.</value>
-		INonceStore VerificationCodeNonceStore { get; }
 
 		/// <summary>
 		/// Gets the client with a given identifier.
@@ -107,19 +108,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
-		/// </summary>
-		/// <remarks>
-		/// The public key in the private/public key pair will be used by the resource
-		/// servers to validate that the access token is minted by a trusted authorization server.
-		/// </remarks>
-		RSACryptoServiceProvider IAuthorizationServer.CreateAccessTokenSigningCryptoServiceProvider() {
-			Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
-			Contract.Ensures(!Contract.Result<RSACryptoServiceProvider>().PublicOnly);
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
 		/// <value>The authorization code nonce store.</value>
@@ -128,6 +116,23 @@ namespace DotNetOpenAuth.OAuth2 {
 				Contract.Ensures(Contract.Result<INonceStore>() != null);
 				throw new NotImplementedException();
 			}
+		}
+
+		/// <summary>
+		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// </summary>
+		/// <returns>
+		/// A crypto service provider instance that contains the private key.
+		/// </returns>
+		/// <value>Must not be null, and must contain the private key.</value>
+		/// <remarks>
+		/// The public key in the private/public key pair will be used by the resource
+		/// servers to validate that the access token is minted by a trusted authorization server.
+		/// </remarks>
+		RSACryptoServiceProvider IAuthorizationServer.CreateAccessTokenSigningCryptoServiceProvider() {
+			Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
+			Contract.Ensures(!Contract.Result<RSACryptoServiceProvider>().PublicOnly);
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
