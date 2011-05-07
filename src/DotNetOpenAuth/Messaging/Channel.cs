@@ -27,6 +27,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable.")]
 	[ContractVerification(true)]
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
@@ -57,14 +58,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// This includes the <see cref="PostEntityEncoding"/> character encoding.
 		/// </summary>
 		protected internal static readonly ContentType HttpFormUrlEncodedContentType = new ContentType(HttpFormUrlEncoded) { CharSet = PostEntityEncoding.WebName };
-
-		/// <summary>
-		/// The maximum allowable size for a 301 Redirect response before we send
-		/// a 200 OK response with a scripted form POST with the parameters instead
-		/// in order to ensure successfully sending a large payload to another server
-		/// that might have a maximum allowable size restriction on its GET request.
-		/// </summary>
-		private const int IndirectMessageGetToPostThreshold = 2 * 1024; // 2KB, recommended by OpenID group
 
 		/// <summary>
 		/// The HTML that should be returned to the user agent as part of a 301 Redirect.
@@ -132,6 +125,11 @@ namespace DotNetOpenAuth.Messaging {
 		private RequestCachePolicy cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
 
 		/// <summary>
+		/// Backing field for the <see cref="MaximumIndirectMessageUrlLength"/> property.
+		/// </summary>
+		private int maximumIndirectMessageUrlLength = Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumIndirectMessageUrlLength;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
 		/// </summary>
 		/// <param name="messageTypeProvider">
@@ -174,6 +172,24 @@ namespace DotNetOpenAuth.Messaging {
 		/// to a mock object for testing purposes.
 		/// </remarks>
 		public IDirectWebRequestHandler WebRequestHandler { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum allowable size for a 301 Redirect response before we send
+		/// a 200 OK response with a scripted form POST with the parameters instead
+		/// in order to ensure successfully sending a large payload to another server
+		/// that might have a maximum allowable size restriction on its GET request.
+		/// </summary>
+		/// <value>The default value is 2048.</value>
+		public int MaximumIndirectMessageUrlLength {
+			get {
+				return this.maximumIndirectMessageUrlLength;
+			}
+
+			set {
+				Contract.Requires<ArgumentOutOfRangeException>(value >= 500 && value <= 4096);
+				this.maximumIndirectMessageUrlLength = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the message descriptions.
@@ -767,7 +783,7 @@ namespace DotNetOpenAuth.Messaging {
 				// First try creating a 301 redirect, and fallback to a form POST
 				// if the message is too big.
 				response = this.Create301RedirectResponse(message, fields, payloadInFragment);
-				tooLargeForGet = response.Headers[HttpResponseHeader.Location].Length > IndirectMessageGetToPostThreshold;
+				tooLargeForGet = response.Headers[HttpResponseHeader.Location].Length > this.MaximumIndirectMessageUrlLength;
 			}
 
 			// Make sure that if the message is too large for GET that POST is allowed.

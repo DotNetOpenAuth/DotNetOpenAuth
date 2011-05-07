@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
@@ -148,6 +149,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <remarks>
 		/// This method implements OAuth 1.0 section 9.1.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
 		internal static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, MessageDictionary messageDictionary) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(message.HttpMethod));
@@ -173,6 +175,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				partsToInclude = messageDictionary.Where(pair => declaredKeys.Contains(pair.Key));
 			} else {
 				partsToInclude = messageDictionary;
+			}
+
+			// If this message was deserialized, include only those explicitly included message parts (excludes defaulted values)
+			// in the signature.
+			var originalPayloadMessage = (IMessageOriginalPayload)message;
+			if (originalPayloadMessage.OriginalPayload != null) {
+				partsToInclude = partsToInclude.Where(pair => originalPayloadMessage.OriginalPayload.ContainsKey(pair.Key));
 			}
 
 			foreach (var pair in OAuthChannel.GetUriEscapedParameters(partsToInclude)) {

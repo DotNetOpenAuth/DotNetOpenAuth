@@ -66,6 +66,7 @@
 															$(ProjectRoot)**\*.sln.cache;
 															$(ProjectRoot)**\*.suo;
 															$(ProjectRoot)**\*.user;
+															$(ProjectRoot)**\*.vs10x;
 															$(ProjectRoot)**\*.gitignore;
 															$(ProjectRoot)**\*.ldf;
 															$(ProjectRoot)**\*.log*;

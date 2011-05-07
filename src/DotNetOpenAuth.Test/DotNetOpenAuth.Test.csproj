@@ -74,6 +74,7 @@
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsExtraRewriteOptions />
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -111,6 +112,7 @@
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsExtraRewriteOptions />
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -150,6 +152,7 @@
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsExtraRewriteOptions />
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net" />
@@ -306,6 +309,9 @@
     <Compile Include="OpenId\RelyingParty\IdentifierDiscoveryResultTests.cs" />
     <Compile Include="OpenId\UriIdentifierTests.cs" />
     <Compile Include="OpenId\XriIdentifierTests.cs" />
+    <Compile Include="Performance\CodeTimers.cs" />
+    <Compile Include="Performance\HighPerformance.cs" />
+    <Compile Include="Performance\PerformanceTestUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="OAuth\AppendixScenarios.cs" />

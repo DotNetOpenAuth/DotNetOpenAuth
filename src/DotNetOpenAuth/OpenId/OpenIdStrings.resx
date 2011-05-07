@@ -337,8 +337,8 @@ Discovered endpoint info:
   <data name="BadExtension" xml:space="preserve">
     <value>The {0} extension failed to deserialize and will be skipped.  {1}</value>
   </data>
-  <data name="PositiveAssertionFromNonWhitelistedProvider" xml:space="preserve">
-    <value>An positive OpenID assertion was received from OP endpoint {0} that is not on this relying party's whitelist.</value>
+  <data name="PositiveAssertionFromNonQualifiedProvider" xml:space="preserve">
+    <value>An positive OpenID assertion was received from OP endpoint {0} and was rejected based on this site's security settings.</value>
   </data>
   <data name="HeadTagMustIncludeRunatServer" xml:space="preserve">
     <value>The HTML head tag must include runat="server".</value>
@@ -354,5 +354,23 @@ Discovered endpoint info:
   </data>
   <data name="MissingElement" xml:space="preserve">
     <value>Missing {0} element.</value>
+  </data>
+  <data name="DiffieHellmanAssociationRequired" xml:space="preserve">
+    <value>The associate request instance must be a Diffie-Hellman instance.</value>
+  </data>
+  <data name="InvalidDSig" xml:space="preserve">
+    <value>Invalid XmlDSig signature on XRDS document.</value>
+  </data>
+  <data name="MisdirectedSigningCertificate" xml:space="preserve">
+    <value>X.509 signing certificate issued to {0}, but a certificate for {1} was expected.</value>
+  </data>
+  <data name="PopupRedirectMissingResponse" xml:space="preserve">
+    <value>OpenID popup window or iframe did not recognize an OpenID response in the request.</value>
+  </data>
+  <data name="UnsupportedCanonicalizationMethod" xml:space="preserve">
+    <value>Unrecognized or missing canonicalization method.</value>
+  </data>
+  <data name="UnsupportedSignatureMethod" xml:space="preserve">
+    <value>Unrecognized or missing signature method.</value>
   </data>
 </root>

@@ -27,6 +27,7 @@
 											 $(OutputPath)$(ProductName).dll;
 											 $(OutputPath)$(SignedSubPath)$(ProductName).dll;
 											 $(ProjectRoot)lib\Microsoft.Contracts.dll;
+											 $(OutputPath)System.Web.Mvc.dll;
 											 " />
 			
 			<!-- add the PDBs -->

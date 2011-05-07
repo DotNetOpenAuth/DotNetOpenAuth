@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </remarks>
 		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
-			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, "request");
+			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, OpenIdStrings.DiffieHellmanAssociationRequired);
 
 			HashAlgorithm hasher = DiffieHellmanUtilities.Lookup(Protocol, this.SessionType);
 			byte[] associationSecret = DiffieHellmanUtilities.SHAHashXorSecret(hasher, diffieHellmanRequest.Algorithm, this.DiffieHellmanServerPublic, this.EncodedMacKey);
@@ -86,14 +86,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			// that will be transmitted to the Relying Party.  The RP will perform an inverse operation
 			// using its part of a DH secret in order to decrypt the shared secret we just invented 
 			// above when we created the association.
-			DiffieHellman dh = new DiffieHellmanManaged(
+			using (DiffieHellman dh = new DiffieHellmanManaged(
 				diffieHellmanRequest.DiffieHellmanModulus ?? AssociateDiffieHellmanRequest.DefaultMod,
 				diffieHellmanRequest.DiffieHellmanGen ?? AssociateDiffieHellmanRequest.DefaultGen,
-				AssociateDiffieHellmanRequest.DefaultX);
-			HashAlgorithm hasher = DiffieHellmanUtilities.Lookup(this.Protocol, this.SessionType);
-			this.DiffieHellmanServerPublic = DiffieHellmanUtilities.EnsurePositive(dh.CreateKeyExchange());
-			this.EncodedMacKey = DiffieHellmanUtilities.SHAHashXorSecret(hasher, dh, diffieHellmanRequest.DiffieHellmanConsumerPublic, association.SecretKey);
-
+				AssociateDiffieHellmanRequest.DefaultX)) {
+				HashAlgorithm hasher = DiffieHellmanUtilities.Lookup(this.Protocol, this.SessionType);
+				this.DiffieHellmanServerPublic = DiffieHellmanUtilities.EnsurePositive(dh.CreateKeyExchange());
+				this.EncodedMacKey = DiffieHellmanUtilities.SHAHashXorSecret(hasher, dh, diffieHellmanRequest.DiffieHellmanConsumerPublic, association.SecretKey);
+			}
 			return association;
 		}
 	}

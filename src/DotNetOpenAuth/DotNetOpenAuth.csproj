@@ -84,7 +84,7 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
     <CodeContractsExtraRewriteOptions />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -125,7 +125,7 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
     <CodeContractsExtraRewriteOptions />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNoUI|AnyCPU'">
@@ -165,6 +165,7 @@ http://opensource.org/licenses/ms-pl.html
     <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsExtraRewriteOptions />
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -181,7 +182,7 @@ http://opensource.org/licenses/ms-pl.html
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
     </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>Preconditions</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
     <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
@@ -296,6 +297,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\ReportingElement.cs" />
+    <Compile Include="Configuration\TrustedProviderConfigurationCollection.cs" />
+    <Compile Include="Configuration\TrustedProviderEndpointConfigurationElement.cs" />
     <Compile Include="Configuration\TypeConfigurationCollection.cs" />
     <Compile Include="Configuration\TypeConfigurationElement.cs" />
     <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
@@ -318,6 +321,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
+    <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
     <Compile Include="Messaging\EnumerableCache.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
@@ -866,6 +870,7 @@ http://opensource.org/licenses/ms-pl.html
              OutputFile="$(ILMergeOutputAssembly)"
              KeyFile="$(PublicKeyFile)"
              DelaySign="true"
+             ToolPath="$(ProjectRoot)tools\ILMerge"
              TargetPlatformVersion="$(ClrVersion).0"
              TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
   </Target>

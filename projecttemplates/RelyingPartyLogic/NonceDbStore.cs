@@ -101,7 +101,7 @@ namespace RelyingPartyLogic {
 		/// </summary>
 		protected class TransactedDatabaseEntities : DatabaseEntities {
 			/// <summary>
-			/// Initializes a new instance of the <see cref="NonceDbStore.TransactedDatabaseEntities"/> class.
+			/// Initializes a new instance of the <see cref="TransactedDatabaseEntities"/> class.
 			/// </summary>
 			/// <param name="isolationLevel">The isolation level.</param>
 			public TransactedDatabaseEntities(IsolationLevel isolationLevel) {

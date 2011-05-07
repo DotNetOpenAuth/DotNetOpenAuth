@@ -124,7 +124,7 @@
 			private readonly Action<HttpWebRequest> action;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="Util.WrappingWebRequestHandler"/> class.
+			/// Initializes a new instance of the <see cref="WrappingWebRequestHandler"/> class.
 			/// </summary>
 			/// <param name="wrappedHandler">The HTTP handler to wrap.</param>
 			/// <param name="action">The action to perform on outgoing HTTP requests.</param>

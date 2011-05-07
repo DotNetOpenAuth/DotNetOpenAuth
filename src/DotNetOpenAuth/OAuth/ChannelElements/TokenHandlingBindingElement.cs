@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -34,6 +35,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="securitySettings">The security settings.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contract"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		internal TokenHandlingBindingElement(IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");

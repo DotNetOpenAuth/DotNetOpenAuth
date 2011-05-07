@@ -176,7 +176,13 @@ namespace DotNetOpenAuth.Messaging {
 			} catch (ArgumentException ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorDeserializingMessage, this.messageType.Name);
 			}
+
 			messageDictionary.Message.EnsureValidMessage();
+
+			var originalPayloadMessage = messageDictionary.Message as IMessageOriginalPayload;
+			if (originalPayloadMessage != null) {
+				originalPayloadMessage.OriginalPayload = fields;
+			}
 		}
 
 		/// <summary>
