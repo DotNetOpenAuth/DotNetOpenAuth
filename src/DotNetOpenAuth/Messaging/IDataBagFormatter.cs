@@ -4,10 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth2.ChannelElements {
+namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics.Contracts;
-	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A serializer for <see cref="DataBag"/>-derived types

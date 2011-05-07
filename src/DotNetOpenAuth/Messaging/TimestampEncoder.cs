@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth2.ChannelElements {
+namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging.Reflection;
