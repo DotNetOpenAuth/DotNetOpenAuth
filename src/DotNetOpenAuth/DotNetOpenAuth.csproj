@@ -360,7 +360,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\ChannelElements\OAuth2ChannelBase.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ClientChannel.cs" />
     <Compile Include="OAuth2\ChannelElements\ScopeEncoder.cs" />
-    <Compile Include="OAuth2\ChannelElements\UriStyleMessageFormatter.cs" />
+    <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
     <Compile Include="OAuth2\ChannelElements\IAuthorizationDescription.cs" />
     <Compile Include="OAuth2\ChannelElements\ITokenCarryingRequest.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ResourceServerChannel.cs" />

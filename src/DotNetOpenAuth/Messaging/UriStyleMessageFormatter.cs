@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth2.ChannelElements {
+namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
-		internal UriStyleMessageFormatter(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
+		private UriStyleMessageFormatter(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
 			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
 			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
 
@@ -194,7 +194,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			if (this.signed) {
 				// Verify that the verification code was issued by message authorization server.
-				ErrorUtilities.VerifyProtocol(this.IsSignatureValid(message), Protocol.bad_verification_code);
+				ErrorUtilities.VerifyProtocol(this.IsSignatureValid(message), MessagingStrings.SignatureInvalid);
 			}
 
 			if (this.maximumAge.HasValue) {
