@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The storage to use for saving and retrieving associations.  May be null.
 		/// </summary>
-		private readonly IAssociationStore<Uri> associationStore;
+		private readonly IAssociationStore associationStore;
 
 		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="channel">The channel the relying party is using.</param>
 		/// <param name="associationStore">The association store.  May be null for dumb mode relying parties.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal AssociationManager(Channel channel, IAssociationStore<Uri> associationStore, RelyingPartySecuritySettings securitySettings) {
+		internal AssociationManager(Channel channel, IAssociationStore associationStore, RelyingPartySecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(channel != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the storage to use for saving and retrieving associations.  May be null.
 		/// </summary>
-		internal IAssociationStore<Uri> AssociationStoreTestHook {
+		internal IAssociationStore AssociationStoreTestHook {
 			get { return this.associationStore; }
 		}
 
@@ -196,7 +196,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponse;
 				var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
 				if (associateSuccessfulResponse != null) {
-					Association association = associateSuccessfulResponse.CreateAssociation(associateRequest, null);
+					Association association = associateSuccessfulResponse.CreateAssociation(associateRequest, null, null);
 					this.associationStore.StoreAssociation(provider.Uri, association);
 					return association;
 				} else if (associateUnsuccessfulResponse != null) {

@@ -44,10 +44,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			this.IsValid = request.IsValid;
 
 			// Confirm the RP should invalidate the association handle only if the association
-			// really doesn't exist.  OpenID 2.0 section 11.4.2.2.
+			// is not valid (any longer).  OpenID 2.0 section 11.4.2.2.
 			IndirectSignedResponse signedResponse = new IndirectSignedResponse(request, provider.Channel);
 			string invalidateHandle = ((ITamperResistantOpenIdMessage)signedResponse).InvalidateHandle;
-			if (!string.IsNullOrEmpty(invalidateHandle) && provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, invalidateHandle) == null) {
+			if (!string.IsNullOrEmpty(invalidateHandle) && provider.AssociationStore.IsValid(signedResponse, AssociationRelyingPartyType.Smart, invalidateHandle) == null) {
 				this.InvalidateHandle = invalidateHandle;
 			}
 		}

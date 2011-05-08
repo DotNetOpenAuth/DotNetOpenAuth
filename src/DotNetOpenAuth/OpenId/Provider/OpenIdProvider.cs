@@ -55,7 +55,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		public OpenIdProvider()
 			: this(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
-			Contract.Ensures(this.AssociationStore != null);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 		}
@@ -65,9 +64,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
 		public OpenIdProvider(IProviderApplicationStore applicationStore)
-			: this(applicationStore, applicationStore) {
+			: this((INonceStore)applicationStore) {
 			Contract.Requires<ArgumentNullException>(applicationStore != null);
-			Contract.Ensures(this.AssociationStore == applicationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 		}
@@ -77,14 +75,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
-		private OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore) {
-			Contract.Requires<ArgumentNullException>(associationStore != null);
+		private OpenIdProvider(INonceStore nonceStore) {
 			Contract.Requires<ArgumentNullException>(nonceStore != null);
-			Contract.Ensures(this.AssociationStore == associationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 
-			this.AssociationStore = associationStore;
+			this.AssociationStore = new ProviderAssociationStore();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
@@ -93,7 +89,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
 
-			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
+			Reporting.RecordFeatureAndDependencyUse(this, nonceStore);
 		}
 
 		/// <summary>
@@ -175,17 +171,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the association store.
-		/// </summary>
-		internal IAssociationStore<AssociationRelyingPartyType> AssociationStore { get; private set; }
-
-		/// <summary>
 		/// Gets the web request handler to use for discovery and the part of
 		/// authentication where direct messages are sent to an untrusted remote party.
 		/// </summary>
 		internal IDirectWebRequestHandler WebRequestHandler {
 			get { return this.Channel.WebRequestHandler; }
 		}
+
+		internal ProviderAssociationStore AssociationStore { get; private set; }
 
 		/// <summary>
 		/// Gets the relying party used for discovery of identifiers sent in unsolicited assertions.

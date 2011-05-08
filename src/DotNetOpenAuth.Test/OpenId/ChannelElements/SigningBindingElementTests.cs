@@ -23,10 +23,10 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public void SignaturesMatchKnownGood() {
 			Protocol protocol = Protocol.V20;
 			var settings = new ProviderSecuritySettings();
-			var store = new AssociationMemoryStore<AssociationRelyingPartyType>();
+			var store = new ProviderAssociationStore();
 			byte[] associationSecret = Convert.FromBase64String("rsSwv1zPWfjPRQU80hciu8FPDC+GONAMJQ/AvSo1a2M=");
-			Association association = HmacShaAssociation.Create("mock", associationSecret, TimeSpan.FromDays(1));
-			store.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+			string handle = store.Encode(new AssociationDataBag { Secret = associationSecret, ExpiresUtc = DateTime.UtcNow.AddDays(1), AssociationType = AssociationRelyingPartyType.Smart });
+			Association association = HmacShaAssociation.Create(handle, associationSecret, TimeSpan.FromDays(1));
 			SigningBindingElement signer = new SigningBindingElement(store, settings);
 			signer.Channel = new TestChannel(this.MessageDescriptions);
 
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestCase]
 		public void SignedResponsesIncludeExtraDataInSignature() {
 			Protocol protocol = Protocol.Default;
-			SigningBindingElement sbe = new SigningBindingElement(new AssociationMemoryStore<AssociationRelyingPartyType>(), new ProviderSecuritySettings());
+			SigningBindingElement sbe = new SigningBindingElement(new ProviderAssociationStore(), new ProviderSecuritySettings());
 			sbe.Channel = new TestChannel(this.MessageDescriptions);
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ReturnTo = RPUri;

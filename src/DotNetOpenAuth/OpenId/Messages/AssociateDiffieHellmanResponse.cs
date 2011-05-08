@@ -72,14 +72,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderSecuritySettings securitySettings) {
+		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyInternal(diffieHellmanRequest != null, "Expected a DH request type.");
 
 			this.SessionType = this.SessionType ?? request.SessionType;
 
 			// Go ahead and create the association first, complete with its secret that we're about to share.
-			Association association = HmacShaAssociation.Create(this.Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, securitySettings);
+			Association association = HmacShaAssociation.Create(this.Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 
 			// We now need to securely communicate the secret to the relying party using Diffie-Hellman.
 			// We do this by performing a DH algorithm on the secret and setting a couple of properties

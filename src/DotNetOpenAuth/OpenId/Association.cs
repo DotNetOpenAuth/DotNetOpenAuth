@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets a unique handle by which this <see cref="Association"/> may be stored or retrieved.
 		/// </summary>
-		public string Handle { get; private set; }
+		public string Handle { get; internal set; }
 
 		/// <summary>
 		/// Gets the UTC time when this <see cref="Association"/> will expire.
@@ -85,6 +85,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets or sets the UTC time that this <see cref="Association"/> was first created.
 		/// </summary>
+		[MessagePart]
 		internal DateTime Issued { get; set; }
 
 		/// <summary>
@@ -102,6 +103,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the shared secret key between the consumer and provider.
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "It is a buffer.")]
+		[MessagePart("key")]
 		protected internal byte[] SecretKey { get; private set; }
 
 		/// <summary>
@@ -117,6 +119,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the lifetime the OpenID provider permits this <see cref="Association"/>.
 		/// </summary>
+		[MessagePart("ttl")]
 		protected TimeSpan TotalLifeLength { get; private set; }
 
 		/// <summary>

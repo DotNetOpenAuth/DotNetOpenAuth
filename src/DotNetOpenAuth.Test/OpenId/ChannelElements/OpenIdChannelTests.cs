@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[SetUp]
 		public void Setup() {
 			this.webHandler = new Mocks.TestWebRequestHandler();
-			this.channel = new OpenIdChannel(new AssociationMemoryStore<Uri>(), new NonceMemoryStore(maximumMessageAge), new RelyingPartySecuritySettings());
+			this.channel = new OpenIdChannel(new AssociationMemoryStore(), new NonceMemoryStore(maximumMessageAge), new RelyingPartySecuritySettings());
 			this.channel.WebRequestHandler = this.webHandler;
 		}
 

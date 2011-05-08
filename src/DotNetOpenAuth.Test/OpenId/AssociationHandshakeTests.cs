@@ -353,8 +353,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			if (expectSuccess) {
 				Assert.IsNotNull(rpAssociation);
 				Assert.AreSame(rpAssociation, coordinator.RelyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, rpAssociation.Handle));
-				opAssociation = coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, rpAssociation.Handle);
-				Assert.IsNotNull(opAssociation, "The Provider should have stored the association.");
+				opAssociation = coordinator.Provider.AssociationStore.Decode(new TestSignedDirectedMessage(), AssociationRelyingPartyType.Smart, rpAssociation.Handle);
+				Assert.IsNotNull(opAssociation, "The Provider could not decode the association handle.");
 
 				Assert.AreEqual(opAssociation.Handle, rpAssociation.Handle);
 				Assert.AreEqual(expectedAssociationType, rpAssociation.GetAssociationType(protocol));
@@ -372,7 +372,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 				}
 			} else {
 				Assert.IsNull(coordinator.RelyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, new RelyingPartySecuritySettings()));
-				Assert.IsNull(coordinator.Provider.AssociationStore.GetAssociation(AssociationRelyingPartyType.Smart, new ProviderSecuritySettings()));
 			}
 		}
 	}

@@ -102,12 +102,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="securitySettings">The security settings for the Provider.  Should be <c>null</c> for Relying Parties.</param>
 		/// <returns>The created association.</returns>
 		/// <remarks>
-		/// 	<para>The response message is updated to include the details of the created association by this method,
-		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
-		/// 	<para>This method is called by both the Provider and the Relying Party, but actually performs
-		/// quite different operations in either scenario.</para>
+		/// The response message is updated to include the details of the created association by this method.
+		/// This method is called by both the Provider and the Relying Party, but actually performs
+		/// quite different operations in either scenario.
 		/// </remarks>
-		internal Association CreateAssociation(AssociateRequest request, ProviderSecuritySettings securitySettings) {
+		internal Association CreateAssociation(AssociateRequest request, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			ErrorUtilities.VerifyInternal(!this.associationCreated, "The association has already been created.");
 
@@ -119,7 +118,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				association = this.CreateAssociationAtRelyingParty(request);
 			} else {
 				ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
-				association = this.CreateAssociationAtProvider(request, securitySettings);
+				association = this.CreateAssociationAtProvider(request, associationStore, securitySettings);
 				this.ExpiresIn = association.SecondsTillExpiration;
 				this.AssociationHandle = association.Handle;
 			}
@@ -142,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// 	<para>The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
 		/// </remarks>
-		protected abstract Association CreateAssociationAtProvider(AssociateRequest request, ProviderSecuritySettings securitySettings);
+		protected abstract Association CreateAssociationAtProvider(AssociateRequest request, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings);
 
 		/// <summary>
 		/// Called to create the Association based on a request previously given by the Relying Party.

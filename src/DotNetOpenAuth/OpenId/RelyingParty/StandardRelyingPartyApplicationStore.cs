@@ -23,17 +23,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The association store to use.
 		/// </summary>
-		private readonly IAssociationStore<Uri> associationStore;
+		private readonly IAssociationStore associationStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
 		/// </summary>
 		public StandardRelyingPartyApplicationStore() {
 			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
-			this.associationStore = new AssociationMemoryStore<Uri>();
+			this.associationStore = new AssociationMemoryStore();
 		}
 
-		#region IAssociationStore<Uri> Members
+		#region IAssociationStore Members
 
 		/// <summary>
 		/// Saves an <see cref="Association"/> for later recall.

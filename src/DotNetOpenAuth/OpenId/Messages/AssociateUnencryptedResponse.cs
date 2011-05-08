@@ -48,8 +48,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// 	<para>The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
 		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderSecuritySettings securitySettings) {
-			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, securitySettings);
+		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 			this.MacKey = association.SecretKey;
 			return association;
 		}

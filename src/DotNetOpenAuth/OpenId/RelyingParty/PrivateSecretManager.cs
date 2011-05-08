@@ -36,14 +36,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The association store
 		/// </summary>
-		private IAssociationStore<Uri> store;
+		private IAssociationStore store;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PrivateSecretManager"/> class.
 		/// </summary>
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="store">The association store.</param>
-		internal PrivateSecretManager(RelyingPartySecuritySettings securitySettings, IAssociationStore<Uri> store) {
+		internal PrivateSecretManager(RelyingPartySecuritySettings securitySettings, IAssociationStore store) {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentNullException>(store != null);
 

@@ -12,9 +12,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
-	/// A hybrid of all the store interfaces that a Provider requires in order
-	/// to operate in "smart" mode.
+	/// A hybrid of all the store interfaces that an OpenID Provider must implement.
 	/// </summary>
-	public interface IProviderApplicationStore : IAssociationStore<AssociationRelyingPartyType>, INonceStore {
+	public interface IProviderApplicationStore : INonceStore {
 	}
 }

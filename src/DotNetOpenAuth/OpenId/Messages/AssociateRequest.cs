@@ -129,7 +129,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Creates a Provider's response to an incoming association request.
 		/// </summary>
-		/// <param name="associationStore">The association store where a new association (if created) will be stored.  Must not be null.</param>
 		/// <param name="securitySettings">The security settings on the Provider.</param>
 		/// <returns>
 		/// The appropriate association response that is ready to be sent back to the Relying Party.
@@ -140,8 +139,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
-		internal IProtocolMessage CreateResponse(IAssociationStore<AssociationRelyingPartyType> associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(associationStore != null);
+		internal IProtocolMessage CreateResponse(ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			IProtocolMessage response;
@@ -152,8 +151,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				// Create and store the association if this is a successful response.
 				var successResponse = response as AssociateSuccessfulResponse;
 				if (successResponse != null) {
-					Association association = successResponse.CreateAssociation(this, securitySettings);
-					associationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+					successResponse.CreateAssociation(this, associationStore, securitySettings);
 				}
 			} else {
 				response = this.CreateUnsuccessfulResponse(securitySettings);

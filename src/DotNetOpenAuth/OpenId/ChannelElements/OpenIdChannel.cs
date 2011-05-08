@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="associationStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
-		internal OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
+		internal OpenIdChannel(IAssociationStore associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
 			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings, false) {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
@@ -58,11 +58,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
 		/// for use by a Provider.
 		/// </summary>
-		/// <param name="associationStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
+		internal OpenIdChannel(ProviderAssociationStore associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
 			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
+			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
 
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
-		private OpenIdChannel(IAssociationStore<Uri> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
+		private OpenIdChannel(IAssociationStore associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
 			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings, nonVerifying)) {
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
@@ -90,8 +90,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		private OpenIdChannel(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
-			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings, false)) {
+		private OpenIdChannel(ProviderAssociationStore associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
+			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings)) {
+			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
@@ -302,7 +303,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Initializes the binding elements.
 		/// </summary>
-		/// <typeparam name="T">The distinguishing factor used by the association store.</typeparam>
 		/// <param name="associationStore">The association store.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
@@ -310,56 +310,35 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
-		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Needed for code contracts.")]
-		private static IChannelBindingElement[] InitializeBindingElements<T>(IAssociationStore<T> associationStore, INonceStore nonceStore, SecuritySettings securitySettings, bool nonVerifying) {
+		private static IChannelBindingElement[] InitializeBindingElements(IAssociationStore associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings, bool nonVerifying) {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			Contract.Requires<ArgumentException>(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
-
-			var rpSecuritySettings = securitySettings as RelyingPartySecuritySettings;
-			var opSecuritySettings = securitySettings as ProviderSecuritySettings;
-			ErrorUtilities.VerifyInternal(rpSecuritySettings != null || opSecuritySettings != null, "Expected an RP or OP security settings instance.");
-			ErrorUtilities.VerifyInternal(!nonVerifying || rpSecuritySettings != null, "Non-verifying channels can only be constructed for relying parties.");
-			bool isRelyingPartyRole = rpSecuritySettings != null;
-
-			var rpAssociationStore = associationStore as IAssociationStore<Uri>;
-			var opAssociationStore = associationStore as IAssociationStore<AssociationRelyingPartyType>;
-			ErrorUtilities.VerifyInternal(isRelyingPartyRole || opAssociationStore != null, "Providers MUST have an association store.");
 
 			SigningBindingElement signingElement;
-			if (isRelyingPartyRole) {
-				signingElement = nonVerifying ? null : new SigningBindingElement(rpAssociationStore);
-			} else {
-				signingElement = new SigningBindingElement(opAssociationStore, opSecuritySettings);
-			}
+			signingElement = nonVerifying ? null : new SigningBindingElement(associationStore);
 
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(8);
 			elements.Add(new ExtensionsBindingElement(extensionFactory, securitySettings));
-			if (isRelyingPartyRole) {
-				elements.Add(new RelyingPartySecurityOptions(rpSecuritySettings));
-				elements.Add(new BackwardCompatibilityBindingElement());
-				ReturnToNonceBindingElement requestNonceElement = null;
+			elements.Add(new RelyingPartySecurityOptions(securitySettings));
+			elements.Add(new BackwardCompatibilityBindingElement());
+			ReturnToNonceBindingElement requestNonceElement = null;
 
-				if (associationStore != null) {
-					if (nonceStore != null) {
-						// There is no point in having a ReturnToNonceBindingElement without
-						// a ReturnToSignatureBindingElement because the nonce could be
-						// artificially changed without it.
-						requestNonceElement = new ReturnToNonceBindingElement(nonceStore, rpSecuritySettings);
-						elements.Add(requestNonceElement);
-					}
-
-					// It is important that the return_to signing element comes last
-					// so that the nonce is included in the signature.
-					elements.Add(new ReturnToSignatureBindingElement(rpAssociationStore, rpSecuritySettings));
+			if (associationStore != null) {
+				if (nonceStore != null) {
+					// There is no point in having a ReturnToNonceBindingElement without
+					// a ReturnToSignatureBindingElement because the nonce could be
+					// artificially changed without it.
+					requestNonceElement = new ReturnToNonceBindingElement(nonceStore, securitySettings);
+					elements.Add(requestNonceElement);
 				}
 
-				ErrorUtilities.VerifyOperation(!rpSecuritySettings.RejectUnsolicitedAssertions || requestNonceElement != null, OpenIdStrings.UnsolicitedAssertionRejectionRequiresNonceStore);
-			} else {
-				// Providers must always have a nonce store.
-				ErrorUtilities.VerifyArgumentNotNull(nonceStore, "nonceStore");
+				// It is important that the return_to signing element comes last
+				// so that the nonce is included in the signature.
+				elements.Add(new ReturnToSignatureBindingElement(associationStore, securitySettings));
 			}
+
+			ErrorUtilities.VerifyOperation(!securitySettings.RejectUnsolicitedAssertions || requestNonceElement != null, OpenIdStrings.UnsolicitedAssertionRejectionRequiresNonceStore);
 
 			if (nonVerifying) {
 				elements.Add(new SkipSecurityBindingElement());
@@ -371,6 +350,35 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				elements.Add(new StandardExpirationBindingElement());
 				elements.Add(signingElement);
 			}
+
+			return elements.ToArray();
+		}
+
+		/// <summary>
+		/// Initializes the binding elements.
+		/// </summary>
+		/// <param name="associationStore">The association store.</param>
+		/// <param name="nonceStore">The nonce store to use.</param>
+		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
+		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
+		/// <returns>
+		/// An array of binding elements which may be used to construct the channel.
+		/// </returns>
+		private static IChannelBindingElement[] InitializeBindingElements(ProviderAssociationStore associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings) {
+			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
+
+			SigningBindingElement signingElement;
+			signingElement = new SigningBindingElement(associationStore, securitySettings);
+
+			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
+
+			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(8);
+			elements.Add(new ExtensionsBindingElement(extensionFactory, securitySettings));
+			elements.Add(new StandardReplayProtectionBindingElement(nonceStore, true));
+			elements.Add(new StandardExpirationBindingElement());
+			elements.Add(signingElement);
 
 			return elements.ToArray();
 		}

@@ -492,7 +492,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="OpenId\Association.cs" />
-    <Compile Include="OpenId\AssociationMemoryStore.cs" />
+    <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
+    <Compile Include="OpenId\RelyingParty\AssociationMemoryStore.cs" />
+    <Compile Include="OpenId\Provider\ProviderAssociationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\IAssociationStore.cs" />
     <Compile Include="OpenId\Associations.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
@@ -573,6 +576,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
+    <Compile Include="OpenId\Provider\AssociationRelyingPartyType.cs" />
     <Compile Include="OpenId\Provider\PrivatePersonalIdentifierProviderBase.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequestEventArgs.cs" />
@@ -607,7 +611,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\DiffieHellman\mono\PrimeGeneratorBase.cs" />
     <Compile Include="OpenId\DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="OpenId\HmacShaAssociation.cs" />
-    <Compile Include="OpenId\IAssociationStore.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
     <Compile Include="OpenId\Provider\OpenIdProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
@@ -865,14 +868,7 @@ http://opensource.org/licenses/ms-pl.html
       <ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
     </PropertyGroup>
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
-    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-             InputAssemblies="@(ILMergeInputAssemblies)"
-             OutputFile="$(ILMergeOutputAssembly)"
-             KeyFile="$(PublicKeyFile)"
-             DelaySign="true"
-             ToolPath="$(ProjectRoot)tools\ILMerge"
-             TargetPlatformVersion="$(ClrVersion).0"
-             TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
+    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeInputAssemblies)" OutputFile="$(ILMergeOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" ToolPath="$(ProjectRoot)tools\ILMerge" TargetPlatformVersion="$(ClrVersion).0" TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

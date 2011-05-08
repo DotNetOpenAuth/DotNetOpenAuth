@@ -138,8 +138,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void ParameterizedAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool immediate, bool tamper) {
 			Contract.Requires<ArgumentException>(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
 			Contract.Requires<ArgumentException>(positive || !tamper, "Cannot tamper with a negative response.");
-			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
-			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings) : null;
+			var securitySettings = new ProviderSecuritySettings();
+			var associationStore = new ProviderAssociationStore();
+			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					var request = new CheckIdRequest(protocol.Version, OPUri, immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup);
@@ -196,10 +197,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				},
 				op => {
-					if (association != null) {
-						op.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
-					}
-
+					op.AssociationStore.Secret = associationStore.Secret;
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
 					Assert.IsNotNull(request);
 					IProtocolMessage response;
