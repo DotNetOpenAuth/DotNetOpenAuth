@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
-		private OpenIdRelyingParty(IAssociationStore associationStore, INonceStore nonceStore) {
+		private OpenIdRelyingParty(IRelyingPartyAssociationStore associationStore, INonceStore nonceStore) {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.

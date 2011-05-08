@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.response.ReturnToParametersSignatureValidated) {
 				return this.GetUntrustedCallbackArgument(key);
 			} else {
-				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
+				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IRelyingPartyAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
 				return null;
 			}
 		}
@@ -214,7 +214,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.response.ReturnToParametersSignatureValidated) {
 				return this.GetUntrustedCallbackArguments();
 			} else {
-				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
+				Logger.OpenId.WarnFormat(OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IRelyingPartyAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
 				return EmptyDictionary<string, string>.Instance;
 			}
 		}

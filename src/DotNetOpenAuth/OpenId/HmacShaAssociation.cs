@@ -152,7 +152,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <remarks>
 		/// The new association is NOT automatically put into an association store.  This must be done by the caller.
 		/// </remarks>
-		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(protocol != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
 			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
@@ -173,7 +173,7 @@ namespace DotNetOpenAuth.OpenId {
 				lifetime = DumbSecretLifetime;
 			}
 
-			string handle = associationStore.Encode(new AssociationDataBag { ExpiresUtc = DateTime.UtcNow + lifetime, Secret = secret, AssociationType = associationUse });
+			string handle = associationStore.Serialize(secret, DateTime.UtcNow + lifetime, associationUse == AssociationRelyingPartyType.Dumb);
 
 			Contract.Assert(protocol != null); // All the way up to the method call, the condition holds, yet we get a Requires failure next
 			Contract.Assert(secret != null);

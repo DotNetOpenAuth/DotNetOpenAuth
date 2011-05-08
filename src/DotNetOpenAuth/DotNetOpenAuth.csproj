@@ -496,9 +496,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
+    <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\AssociationMemoryStore.cs" />
-    <Compile Include="OpenId\Provider\ProviderAssociationStore.cs" />
-    <Compile Include="OpenId\RelyingParty\IAssociationStore.cs" />
+    <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
+    <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\Associations.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">

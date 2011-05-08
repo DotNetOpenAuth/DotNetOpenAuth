@@ -15,10 +15,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <remarks>
 	/// This class should be used for low-to-medium traffic relying party sites that can afford to lose associations
 	/// if the app pool was ever restarted.  High traffic relying parties and providers should write their own
-	/// implementation of <see cref="IAssociationStore"/> that works against their own database schema
+	/// implementation of <see cref="IRelyingPartyAssociationStore"/> that works against their own database schema
 	/// to allow for persistance and recall of associations across servers in a web farm and server restarts.
 	/// </remarks>
-	internal class AssociationMemoryStore : IAssociationStore {
+	internal class AssociationMemoryStore : IRelyingPartyAssociationStore {
 		/// <summary>
 		/// How many association store requests should occur between each spring cleaning.
 		/// </summary>

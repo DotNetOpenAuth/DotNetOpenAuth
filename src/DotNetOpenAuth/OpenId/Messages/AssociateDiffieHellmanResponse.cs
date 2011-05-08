@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		protected override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyInternal(diffieHellmanRequest != null, "Expected a DH request type.");
 

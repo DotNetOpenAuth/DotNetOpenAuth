@@ -353,7 +353,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			if (expectSuccess) {
 				Assert.IsNotNull(rpAssociation);
 				Assert.AreSame(rpAssociation, coordinator.RelyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, rpAssociation.Handle));
-				opAssociation = coordinator.Provider.AssociationStore.Decode(new TestSignedDirectedMessage(), AssociationRelyingPartyType.Smart, rpAssociation.Handle);
+				opAssociation = coordinator.Provider.AssociationStore.Deserialize(new TestSignedDirectedMessage(), false, rpAssociation.Handle);
 				Assert.IsNotNull(opAssociation, "The Provider could not decode the association handle.");
 
 				Assert.AreEqual(opAssociation.Handle, rpAssociation.Handle);

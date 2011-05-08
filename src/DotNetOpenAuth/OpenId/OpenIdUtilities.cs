@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
 	/// </summary>
-	public static class OpenIdUtilities {
+	internal static class OpenIdUtilities {
 		/// <summary>
 		/// The prefix to designate this library's proprietary parameters added to the protocol.
 		/// </summary>
@@ -155,6 +155,27 @@ namespace DotNetOpenAuth.OpenId {
 			var aggregator = factory as OpenIdExtensionFactoryAggregator;
 			ErrorUtilities.VerifyOperation(aggregator != null, OpenIdStrings.UnsupportedChannelConfiguration);
 			return aggregator.Factories;
+		}
+
+		/// <summary>
+		/// Determines whether the association with the specified handle is (still) valid.
+		/// </summary>
+		/// <param name="associationStore">The association store.</param>
+		/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
+		/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+		/// <param name="handle">The association handle.</param>
+		/// <returns>
+		///   <c>true</c> if the specified containing message is valid; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsValid(this IProviderAssociationStore associationStore, IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
+			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
+			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			try {
+				return associationStore.Deserialize(containingMessage, isPrivateAssociation, handle) != null;
+			} catch (ProtocolException) {
+				return false;
+			}
 		}
 	}
 }

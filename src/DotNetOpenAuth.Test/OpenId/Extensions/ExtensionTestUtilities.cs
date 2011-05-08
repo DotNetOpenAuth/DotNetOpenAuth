@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			IEnumerable<IOpenIdMessageExtension> requests,
 			IEnumerable<IOpenIdMessageExtension> responses) {
 			var securitySettings = new ProviderSecuritySettings();
-			var associationStore = new ProviderAssociationStore();
+			var associationStore = new ProviderAssociationHandleEncoder();
 			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 			var coordinator = new OpenIdCoordinator(
 				rp => {
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 				},
 				op => {
 					RegisterExtension(op.Channel, Mocks.MockOpenIdExtension.Factory);
-					op.AssociationStore.Secret = associationStore.Secret;
+					((ProviderAssociationHandleEncoder)op.AssociationStore).Secret = associationStore.Secret;
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
 					var response = new PositiveAssertionResponse(request);
 					var receivedRequests = request.Extensions.Cast<IOpenIdMessageExtension>();

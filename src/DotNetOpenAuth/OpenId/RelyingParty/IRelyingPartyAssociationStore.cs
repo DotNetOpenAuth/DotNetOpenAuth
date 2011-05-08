@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="IAssociationStore.cs" company="Andrew Arnott">
+// <copyright file="IRelyingPartyAssociationStore.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -19,8 +19,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// to not be a performance drain.  Because this balance can vary by host, it is the
 	/// responsibility of the host to initiate this cleaning.
 	/// </remarks>
-	[ContractClass(typeof(IAssociationStoreContract))]
-	public interface IAssociationStore {
+	[ContractClass(typeof(IRelyingPartyAssociationStoreContract))]
+	public interface IRelyingPartyAssociationStore {
 		/// <summary>
 		/// Saves an <see cref="Association"/> for later recall.
 		/// </summary>
@@ -70,10 +70,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	}
 
 	/// <summary>
-	/// Code Contract for the <see cref="IAssociationStore"/> class.
+	/// Code Contract for the <see cref="IRelyingPartyAssociationStore"/> class.
 	/// </summary>
-	[ContractClassFor(typeof(IAssociationStore))]
-	internal abstract class IAssociationStoreContract : IAssociationStore {
+	[ContractClassFor(typeof(IRelyingPartyAssociationStore))]
+	internal abstract class IRelyingPartyAssociationStoreContract : IRelyingPartyAssociationStore {
 		#region IAssociationStore Members
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// TODO: what should implementations do on association handle conflict?
 		/// </remarks>
-		void IAssociationStore.StoreAssociation(Uri providerEndpoint, Association association) {
+		void IRelyingPartyAssociationStore.StoreAssociation(Uri providerEndpoint, Association association) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires<ArgumentNullException>(association != null);
 			throw new NotImplementedException();
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Associations that are returned that do not meet the security requirements will be
 		/// ignored and a new association created.
 		/// </remarks>
-		Association IAssociationStore.GetAssociation(Uri providerEndpoint, SecuritySettings securityRequirements) {
+		Association IRelyingPartyAssociationStore.GetAssociation(Uri providerEndpoint, SecuritySettings securityRequirements) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires<ArgumentNullException>(securityRequirements != null);
 			throw new NotImplementedException();
@@ -121,7 +121,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key and handle.
 		/// </returns>
-		Association IAssociationStore.GetAssociation(Uri providerEndpoint, string handle) {
+		Association IRelyingPartyAssociationStore.GetAssociation(Uri providerEndpoint, string handle) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires(!String.IsNullOrEmpty(handle));
 			throw new NotImplementedException();
@@ -139,7 +139,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// No exception should be thrown if the association does not exist in the store
 		/// before this call.
 		/// </remarks>
-		bool IAssociationStore.RemoveAssociation(Uri providerEndpoint, string handle) {
+		bool IRelyingPartyAssociationStore.RemoveAssociation(Uri providerEndpoint, string handle) {
 			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
 			Contract.Requires(!String.IsNullOrEmpty(handle));
 			throw new NotImplementedException();

@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The association store to use.
 		/// </summary>
-		private readonly IAssociationStore associationStore;
+		private readonly IRelyingPartyAssociationStore associationStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.

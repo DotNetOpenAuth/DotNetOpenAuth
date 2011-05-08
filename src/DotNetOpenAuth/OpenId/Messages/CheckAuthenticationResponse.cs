@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			// is not valid (any longer).  OpenID 2.0 section 11.4.2.2.
 			IndirectSignedResponse signedResponse = new IndirectSignedResponse(request, provider.Channel);
 			string invalidateHandle = ((ITamperResistantOpenIdMessage)signedResponse).InvalidateHandle;
-			if (!string.IsNullOrEmpty(invalidateHandle) && !provider.AssociationStore.IsValid(signedResponse, AssociationRelyingPartyType.Smart, invalidateHandle)) {
+			if (!string.IsNullOrEmpty(invalidateHandle) && !provider.AssociationStore.IsValid(signedResponse, false, invalidateHandle)) {
 				this.InvalidateHandle = invalidateHandle;
 			}
 		}

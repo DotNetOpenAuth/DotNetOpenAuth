@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This method is called by both the Provider and the Relying Party, but actually performs
 		/// quite different operations in either scenario.
 		/// </remarks>
-		internal Association CreateAssociation(AssociateRequest request, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		internal Association CreateAssociation(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			ErrorUtilities.VerifyInternal(!this.associationCreated, "The association has already been created.");
 
@@ -147,7 +147,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		///   <para>The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
 		/// </remarks>
-		protected abstract Association CreateAssociationAtProvider(AssociateRequest request, ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings);
+		protected abstract Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings);
 
 		/// <summary>
 		/// Called to create the Association based on a request previously given by the Relying Party.

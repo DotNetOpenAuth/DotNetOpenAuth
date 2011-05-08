@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The storage to use for saving and retrieving associations.  May be null.
 		/// </summary>
-		private readonly IAssociationStore associationStore;
+		private readonly IRelyingPartyAssociationStore associationStore;
 
 		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="channel">The channel the relying party is using.</param>
 		/// <param name="associationStore">The association store.  May be null for dumb mode relying parties.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal AssociationManager(Channel channel, IAssociationStore associationStore, RelyingPartySecuritySettings securitySettings) {
+		internal AssociationManager(Channel channel, IRelyingPartyAssociationStore associationStore, RelyingPartySecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(channel != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the storage to use for saving and retrieving associations.  May be null.
 		/// </summary>
-		internal IAssociationStore AssociationStoreTestHook {
+		internal IRelyingPartyAssociationStore AssociationStoreTestHook {
 			get { return this.associationStore; }
 		}
 

@@ -28,12 +28,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// The association store used by Relying Parties to look up the secrets needed for signing.
 		/// </summary>
-		private readonly IAssociationStore rpAssociations;
+		private readonly IRelyingPartyAssociationStore rpAssociations;
 
 		/// <summary>
 		/// The association store used by Providers to look up the secrets needed for signing.
 		/// </summary>
-		private readonly ProviderAssociationStore opAssociations;
+		private readonly IProviderAssociationStore opAssociations;
 
 		/// <summary>
 		/// The security settings at the Provider.
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the SigningBindingElement class for use by a Relying Party.
 		/// </summary>
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.  May be null for dumb Relying Parties.</param>
-		internal SigningBindingElement(IAssociationStore associationStore) {
+		internal SigningBindingElement(IRelyingPartyAssociationStore associationStore) {
 			this.rpAssociations = associationStore;
 		}
 
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal SigningBindingElement(ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		internal SigningBindingElement(IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
@@ -378,8 +378,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					// Since we have an association handle, we're either signing with a smart association,
 					// or verifying a dumb one.
 					bool signing = string.IsNullOrEmpty(signedMessage.Signature);
-					AssociationRelyingPartyType type = signing ? AssociationRelyingPartyType.Smart : AssociationRelyingPartyType.Dumb;
-					association = this.opAssociations.Decode(signedMessage, type, signedMessage.AssociationHandle);
+					bool isPrivateAssociation = !signing;
+					association = this.opAssociations.Deserialize(signedMessage, isPrivateAssociation, signedMessage.AssociationHandle);
 					if (association == null) {
 						// There was no valid association with the requested handle.
 						// Let's tell the RP to forget about that association.

@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 
-			this.AssociationStore = new ProviderAssociationStore();
+			this.AssociationStore = new ProviderAssociationHandleEncoder();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
@@ -163,6 +163,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Gets or sets the association store.
+		/// </summary>
+		public IProviderAssociationStore AssociationStore { get; set; }
+
+		/// <summary>
 		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
 		/// </summary>
 		internal IList<IIdentifierDiscoveryService> DiscoveryServices {
@@ -176,11 +181,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal IDirectWebRequestHandler WebRequestHandler {
 			get { return this.Channel.WebRequestHandler; }
 		}
-
-		/// <summary>
-		/// Gets the association store.
-		/// </summary>
-		internal ProviderAssociationStore AssociationStore { get; private set; }
 
 		/// <summary>
 		/// Gets the relying party used for discovery of identifiers sent in unsolicited assertions.

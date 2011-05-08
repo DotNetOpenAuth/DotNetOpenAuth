@@ -212,7 +212,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void AddCallbackArguments(IDictionary<string, string> arguments) {
-			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
+			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IRelyingPartyAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgsMustBeSigned = true;
 			foreach (var pair in arguments) {
@@ -239,7 +239,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void AddCallbackArguments(string key, string value) {
-			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
+			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IRelyingPartyAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgsMustBeSigned = true;
 			this.returnToArgs.Add(key, value);
@@ -260,7 +260,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// small to ensure successful authentication.  About 1.5KB is about all that should be stored.</para>
 		/// </remarks>
 		public void SetCallbackArgument(string key, string value) {
-			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
+			ErrorUtilities.VerifyOperation(this.RelyingParty.CanSignCallbackArguments, OpenIdStrings.CallbackArgumentsRequireSecretStore, typeof(IRelyingPartyAssociationStore).Name, typeof(OpenIdRelyingParty).Name);
 
 			this.returnToArgsMustBeSigned = true;
 			this.returnToArgs[key] = value;

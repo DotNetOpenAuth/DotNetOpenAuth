@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		///   <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
-		internal IProtocolMessage CreateResponse(ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		internal IProtocolMessage CreateResponse(IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
