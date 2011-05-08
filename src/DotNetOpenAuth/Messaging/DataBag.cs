@@ -81,14 +81,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets or sets the UTC creation date of this token.
 		/// </summary>
 		/// <value>The UTC creation date.</value>
-		[MessagePart("timestamp", IsRequired = true, Encoder = typeof(TimestampEncoder))]
+		[MessagePart("ts", IsRequired = true, Encoder = typeof(TimestampEncoder))]
 		internal DateTime UtcCreationDate { get; set; }
 
 		/// <summary>
 		/// Gets or sets the signature.
 		/// </summary>
 		/// <value>The signature.</value>
-		[MessagePart("sig")]
 		internal byte[] Signature { get; set; }
 
 		/// <summary>
@@ -104,8 +103,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// This ensures that one token cannot be misused as another kind of token.
 		/// </remarks>
 		[MessagePart("t", IsRequired = true, AllowEmpty = false)]
-		private string BagType {
-			get { return this.GetType().Name; }
+		private Type BagType {
+			get { return this.GetType(); }
 		}
 
 		#region IMessage Methods

@@ -320,6 +320,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="InfoCard\WellKnownIssuers.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
+    <Compile Include="Messaging\DataBagFormatterBase.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
