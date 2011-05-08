@@ -1343,6 +1343,31 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Writes a buffer, prefixed with its own length.
+		/// </summary>
+		/// <param name="writer">The binary writer.</param>
+		/// <param name="buffer">The buffer.</param>
+		internal static void WriteBuffer(this BinaryWriter writer, byte[] buffer) {
+			Contract.Requires<ArgumentNullException>(writer != null, "writer");
+			Contract.Requires<ArgumentNullException>(buffer != null, "buffer");
+			writer.Write(buffer.Length);
+			writer.Write(buffer, 0, buffer.Length);
+		}
+
+		/// <summary>
+		/// Reads a buffer that is prefixed with its own length.
+		/// </summary>
+		/// <param name="reader">The binary reader positioned at the buffer length.</param>
+		/// <returns>The read buffer.</returns>
+		internal static byte[] ReadBuffer(this BinaryReader reader) {
+			Contract.Requires<ArgumentNullException>(reader != null, "reader");
+			int length = reader.ReadInt32();
+			byte[] buffer = new byte[length];
+			ErrorUtilities.VerifyProtocol(reader.Read(buffer, 0, length) == length, "Unexpected buffer length.");
+			return buffer;
+		}
+
+		/// <summary>
 		/// Constructs a Javascript expression that will create an object
 		/// on the user agent when assigned to a variable.
 		/// </summary>

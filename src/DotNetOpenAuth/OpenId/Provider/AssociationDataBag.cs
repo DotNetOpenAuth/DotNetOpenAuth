@@ -7,11 +7,12 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
-	internal class AssociationDataBag : DataBag {
+	internal class AssociationDataBag : DataBag, IStreamSerializingMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociationDataBag"/> class.
 		/// </summary>
@@ -33,7 +34,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal AssociationRelyingPartyType AssociationType { get; set; }
 
 		internal static IDataBagFormatter<AssociationDataBag> CreateFormatter(byte[] symmetricSecret) {
-			return new UriStyleMessageFormatter<AssociationDataBag>(symmetricSecret, signed: true, encrypted: true);
+			return new BinaryDataBagFormatter<AssociationDataBag>(symmetricSecret, signed: true, encrypted: true);
+		}
+
+		public void Serialize(Stream stream) {
+			var writer = new BinaryWriter(stream);
+			writer.Write(this.IsPrivateAssociation);
+			writer.WriteBuffer(this.Secret);
+			writer.Write((int)(this.ExpiresUtc - TimestampEncoder.Epoch).TotalSeconds);
+			writer.Flush();
+		}
+
+		public void Deserialize(Stream stream) {
+			var reader = new BinaryReader(stream);
+			this.IsPrivateAssociation = reader.ReadBoolean();
+			this.Secret = reader.ReadBuffer();
+			this.ExpiresUtc = TimestampEncoder.Epoch + TimeSpan.FromSeconds(reader.ReadInt32());
 		}
 	}
 }
