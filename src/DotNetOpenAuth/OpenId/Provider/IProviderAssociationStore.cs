@@ -15,6 +15,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// Provides association serialization and deserialization.
 	/// </summary>
+	/// <remarks>
+	/// Implementations may choose to store the association details in memory or a database table and simply return a
+	/// short, randomly generated string that is the key to that data.  Alternatively, an implementation may
+	/// sign and encrypt the association details and then encode the results as a base64 string and return that value
+	/// as the association handle, thereby avoiding any association persistence at the OpenID Provider.
+	/// When taking the latter approach however, it is of course imperative that the association be encrypted
+	/// to avoid disclosing the secret to anyone who sees the association handle, which itself isn't considered to
+	/// be confidential.
+	/// </remarks>
 	[ContractClass(typeof(IProviderAssociationStoreContract))]
 	public interface IProviderAssociationStore {
 		/// <summary>
