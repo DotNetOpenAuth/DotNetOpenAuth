@@ -70,9 +70,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	}
 
 	/// <summary>
-	/// Code Contract for the <see cref="IAssociationStore&lt;Uri&gt;"/> class.
+	/// Code Contract for the <see cref="IAssociationStore"/> class.
 	/// </summary>
-	/// <typeparam name="Uri">The type of the key.</typeparam>
 	[ContractClassFor(typeof(IAssociationStore))]
 	internal abstract class IAssociationStoreContract : IAssociationStore {
 		#region IAssociationStore Members

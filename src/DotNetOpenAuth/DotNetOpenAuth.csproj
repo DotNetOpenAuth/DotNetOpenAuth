@@ -341,6 +341,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\IncomingWebResponseContract.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
+    <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\MultipartPostPart.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
@@ -498,7 +499,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\IAssociationStore.cs" />
-    <Compile Include="OpenId\Associations.cs" />
+    <Compile Include="OpenId\RelyingParty\Associations.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
       <AutoGen>True</AutoGen>

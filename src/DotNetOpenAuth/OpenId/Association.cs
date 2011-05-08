@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Stores a secret used in signing and verifying messages.
@@ -159,7 +160,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The newly dehydrated <see cref="Association"/>, which can be returned
 		/// from a custom association store's 
-		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey, SecuritySettings)"/> method.
+		/// <see cref="IAssociationStore.GetAssociation(Uri, SecuritySettings)"/> method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expiresUtc, byte[] privateData) {
 			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(handle));

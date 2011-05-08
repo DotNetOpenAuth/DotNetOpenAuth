@@ -73,7 +73,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
-		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
 		private OpenIdProvider(INonceStore nonceStore) {
 			Contract.Requires<ArgumentNullException>(nonceStore != null);
@@ -178,6 +177,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			get { return this.Channel.WebRequestHandler; }
 		}
 
+		/// <summary>
+		/// Gets the association store.
+		/// </summary>
 		internal ProviderAssociationStore AssociationStore { get; private set; }
 
 		/// <summary>

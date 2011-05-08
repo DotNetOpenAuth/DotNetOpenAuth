@@ -144,8 +144,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="associationType">Type of the association (i.e. HMAC-SHA1 or HMAC-SHA256)</param>
 		/// <param name="associationUse">A value indicating whether the new association will be used privately by the Provider for "dumb mode" authentication
 		/// or shared with the Relying Party for "smart mode" authentication.</param>
+		/// <param name="associationStore">The Provider's association store.</param>
 		/// <param name="securitySettings">The security settings of the Provider.</param>
-		/// <returns>The newly created association.</returns>
+		/// <returns>
+		/// The newly created association.
+		/// </returns>
 		/// <remarks>
 		/// The new association is NOT automatically put into an association store.  This must be done by the caller.
 		/// </remarks>

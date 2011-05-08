@@ -252,14 +252,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			}
 		}
 
-		internal void SetValueAsObject(IMessage message, object value) {
-			if (this.property != null) {
-				this.property.SetValue(message, value, null);
-			} else {
-				this.field.SetValue(message, value);
-			}
-		}
-
 		/// <summary>
 		/// Gets the normalized form of a value of a member of a given message.
 		/// Used in serialization.
@@ -301,19 +293,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				return !this.GetValueAsObject(message).Equals(this.defaultMemberValue);
 			} else {
 				return this.defaultMemberValue != this.GetValueAsObject(message);
-			}
-		}
-
-		/// <summary>
-		/// Gets the value of the message part, without converting it to/from a string.
-		/// </summary>
-		/// <param name="message">The message instance to read from.</param>
-		/// <returns>The value of the member.</returns>
-		internal object GetValueAsObject(IMessage message) {
-			if (this.property != null) {
-				return this.property.GetValue(message, null);
-			} else {
-				return this.field.GetValue(message);
 			}
 		}
 
@@ -388,6 +367,32 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			}
 
 			return encoder;
+		}
+
+		/// <summary>
+		/// Gets the value of the message part, without converting it to/from a string.
+		/// </summary>
+		/// <param name="message">The message instance to read from.</param>
+		/// <returns>The value of the member.</returns>
+		private object GetValueAsObject(IMessage message) {
+			if (this.property != null) {
+				return this.property.GetValue(message, null);
+			} else {
+				return this.field.GetValue(message);
+			}
+		}
+
+		/// <summary>
+		/// Sets the value of a message part directly with a given value.
+		/// </summary>
+		/// <param name="message">The message instance to read from.</param>
+		/// <param name="value">The value to set on the this part.</param>
+		private void SetValueAsObject(IMessage message, object value) {
+			if (this.property != null) {
+				this.property.SetValue(message, value, null);
+			} else {
+				this.field.SetValue(message, value);
+			}
 		}
 
 		/// <summary>

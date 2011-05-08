@@ -17,8 +17,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 			: base(badConstructorParam ? null : new TestMessageFactory()) {
 		}
 
-		internal new void Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
-			base.Create301RedirectResponse(message, fields);
+		internal new void Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields, bool payloadInFragment = false) {
+			base.Create301RedirectResponse(message, fields, payloadInFragment);
 		}
 
 		internal new void CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {

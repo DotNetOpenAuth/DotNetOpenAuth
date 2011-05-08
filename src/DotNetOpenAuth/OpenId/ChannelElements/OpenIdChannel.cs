@@ -58,6 +58,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
 		/// for use by a Provider.
 		/// </summary>
+		/// <param name="associationStore">The OpenID Provider's association store or handle encoder.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal OpenIdChannel(ProviderAssociationStore associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
@@ -357,10 +358,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Initializes the binding elements.
 		/// </summary>
-		/// <param name="associationStore">The association store.</param>
+		/// <param name="associationStore">The OpenID Provider's association store or handle encoder.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
-		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>

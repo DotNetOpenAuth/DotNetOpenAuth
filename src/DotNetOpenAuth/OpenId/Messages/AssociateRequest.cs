@@ -129,14 +129,15 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Creates a Provider's response to an incoming association request.
 		/// </summary>
+		/// <param name="associationStore">The association store.</param>
 		/// <param name="securitySettings">The security settings on the Provider.</param>
 		/// <returns>
 		/// The appropriate association response that is ready to be sent back to the Relying Party.
 		/// </returns>
 		/// <remarks>
-		/// <para>If an association is created, it will be automatically be added to the provided
+		///   <para>If an association is created, it will be automatically be added to the provided
 		/// association store.</para>
-		/// <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
+		///   <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
 		internal IProtocolMessage CreateResponse(ProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {

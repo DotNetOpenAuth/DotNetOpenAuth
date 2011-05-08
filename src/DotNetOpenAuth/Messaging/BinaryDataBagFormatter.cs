@@ -14,37 +14,18 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
 
-	[ContractClass(typeof(IStreamSerializingMessageContract))]
-	internal interface IStreamSerializingMessage {
-		void Serialize(Stream stream);
-
-		void Deserialize(Stream stream);
-	}
-
-	[ContractClassFor(typeof(IStreamSerializingMessage))]
-	internal abstract class IStreamSerializingMessageContract : IStreamSerializingMessage {
-		void IStreamSerializingMessage.Serialize(Stream stream) {
-			Contract.Requires(stream != null);
-			Contract.Requires(stream.CanWrite);
-			throw new NotImplementedException();
-		}
-
-		void IStreamSerializingMessage.Deserialize(Stream stream) {
-			Contract.Requires(stream != null);
-			Contract.Requires(stream.CanRead);
-			throw new NotImplementedException();
-		}
-	}
-
-
-	internal class BinaryDataBagFormatter<T> : DataBagFormatterBase<T> where T : DataBag, IStreamSerializingMessage, new() {
+	/// <summary>
+	/// A compact binary <see cref="DataBag"/> serialization class.
+	/// </summary>
+	/// <typeparam name="T">The <see cref="DataBag"/>-derived type to serialize/deserialize.</typeparam>
+	internal class BinaryDataBagFormatter<T> : DataBagFormatterBase<T> where T : DataBag, IStreamSerializingDataBag, new() {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="signingKey">The crypto service provider with the asymmetric key to use for signing or verifying the token.</param>
 		/// <param name="encryptingKey">The crypto service provider with the asymmetric key to use for encrypting or decrypting the token.</param>
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
-		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
+		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected internal BinaryDataBagFormatter(RSACryptoServiceProvider signingKey = null, RSACryptoServiceProvider encryptingKey = null, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(signingKey, encryptingKey, compressed, maximumAge, decodeOnceOnly) {
@@ -57,19 +38,29 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="signed">A value indicating whether the data in this instance will be protected against tampering.</param>
 		/// <param name="encrypted">A value indicating whether the data in this instance will be protected against eavesdropping.</param>
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
-		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
+		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected internal BinaryDataBagFormatter(byte[] symmetricSecret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(symmetricSecret, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
 			Contract.Requires<ArgumentException>(symmetricSecret != null || (!signed && !encrypted), "A secret is required when signing or encrypting is required.");
 		}
 
+		/// <summary>
+		/// Serializes the <see cref="DataBag"/> instance to a buffer.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <returns>The buffer containing the serialized data.</returns>
 		protected override byte[] SerializeCore(T message) {
 			var stream = new MemoryStream();
 			message.Serialize(stream);
 			return stream.ToArray();
 		}
 
+		/// <summary>
+		/// Deserializes the <see cref="DataBag"/> instance from a buffer.
+		/// </summary>
+		/// <param name="message">The message instance to initialize with data from the buffer.</param>
+		/// <param name="data">The data buffer.</param>
 		protected override void DeserializeCore(T message, byte[] data) {
 			var stream = new MemoryStream(data);
 			message.Deserialize(stream);

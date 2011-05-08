@@ -66,8 +66,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Creates the association at the provider side after the association request has been received.
 		/// </summary>
 		/// <param name="request">The association request.</param>
+		/// <param name="associationStore">The OpenID Provider's association store or handle encoder.</param>
 		/// <param name="securitySettings">The security settings of the Provider.</param>
-		/// <returns>The newly created association.</returns>
+		/// <returns>
+		/// The newly created association.
+		/// </returns>
 		/// <remarks>
 		/// The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.

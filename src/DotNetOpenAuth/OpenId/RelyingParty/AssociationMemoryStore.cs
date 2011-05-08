@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// Manages a set of associations in memory only (no database).
 	/// </summary>
-	/// <typeparam name="Uri">The type of the key.</typeparam>
 	/// <remarks>
 	/// This class should be used for low-to-medium traffic relying party sites that can afford to lose associations
 	/// if the app pool was ever restarted.  High traffic relying parties and providers should write their own

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.IO;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -15,7 +16,6 @@ namespace DotNetOpenAuth.Messaging {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
-	using System.IO;
 
 	/// <summary>
 	/// A serializer for <see cref="DataBag"/>-derived types
@@ -23,14 +23,14 @@ namespace DotNetOpenAuth.Messaging {
 	/// <typeparam name="T">The DataBag-derived type that is to be serialized/deserialized.</typeparam>
 	internal abstract class DataBagFormatterBase<T> : IDataBagFormatter<T> where T : DataBag, new() {
 		/// <summary>
-		/// The length of the nonce to include in tokens that can be decoded once only.
-		/// </summary>
-		private const int NonceLength = 6;
-
-		/// <summary>
 		/// The message description cache to use for data bag types.
 		/// </summary>
 		protected static readonly MessageDescriptionCollection MessageDescriptions = new MessageDescriptionCollection();
+
+		/// <summary>
+		/// The length of the nonce to include in tokens that can be decoded once only.
+		/// </summary>
+		private const int NonceLength = 6;
 
 		/// <summary>
 		/// The symmetric secret used for signing/encryption of verification codes and refresh tokens.
@@ -85,29 +85,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="signed">A value indicating whether the data in this instance will be protected against tampering.</param>
-		/// <param name="encrypted">A value indicating whether the data in this instance will be protected against eavesdropping.</param>
-		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
-		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
-		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
-		private DataBagFormatterBase(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
-			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
-			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
-
-			this.signed = signed;
-			this.maximumAge = maximumAge;
-			this.decodeOnceOnly = decodeOnceOnly;
-			this.encrypted = encrypted;
-			this.compressed = compressed;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
-		/// </summary>
 		/// <param name="signingKey">The crypto service provider with the asymmetric key to use for signing or verifying the token.</param>
 		/// <param name="encryptingKey">The crypto service provider with the asymmetric key to use for encrypting or decrypting the token.</param>
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
-		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
+		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected DataBagFormatterBase(RSACryptoServiceProvider signingKey = null, RSACryptoServiceProvider encryptingKey = null, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signingKey != null, encryptingKey != null, compressed, maximumAge, decodeOnceOnly) {
@@ -123,7 +104,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="signed">A value indicating whether the data in this instance will be protected against tampering.</param>
 		/// <param name="encrypted">A value indicating whether the data in this instance will be protected against eavesdropping.</param>
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
-		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <see cref="decodeOnceOnly"/> is <c>true</c>.</param>
+		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected DataBagFormatterBase(byte[] symmetricSecret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
@@ -137,7 +118,26 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Serializes the specified message.
+		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
+		/// </summary>
+		/// <param name="signed">A value indicating whether the data in this instance will be protected against tampering.</param>
+		/// <param name="encrypted">A value indicating whether the data in this instance will be protected against eavesdropping.</param>
+		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
+		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
+		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
+		private DataBagFormatterBase(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
+			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
+			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
+
+			this.signed = signed;
+			this.maximumAge = maximumAge;
+			this.decodeOnceOnly = decodeOnceOnly;
+			this.encrypted = encrypted;
+			this.compressed = compressed;
+		}
+
+		/// <summary>
+		/// Serializes the specified message, including compression, encryption, signing, and nonce handling where applicable.
 		/// </summary>
 		/// <param name="message">The message to serialize.  Must not be null.</param>
 		/// <returns>A non-null, non-empty value.</returns>
@@ -175,12 +175,8 @@ namespace DotNetOpenAuth.Messaging {
 			return Convert.ToBase64String(finalStream.ToArray());
 		}
 
-		protected abstract byte[] SerializeCore(T message);
-
-		protected abstract void DeserializeCore(T message, byte[] data);
-
 		/// <summary>
-		/// Deserializes a <see cref="DataBag"/>.
+		/// Deserializes a <see cref="DataBag"/>, including decompression, decryption, signature and nonce validation where applicable.
 		/// </summary>
 		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
@@ -235,11 +231,26 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Serializes the <see cref="DataBag"/> instance to a buffer.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <returns>The buffer containing the serialized data.</returns>
+		protected abstract byte[] SerializeCore(T message);
+
+		/// <summary>
+		/// Deserializes the <see cref="DataBag"/> instance from a buffer.
+		/// </summary>
+		/// <param name="message">The message instance to initialize with data from the buffer.</param>
+		/// <param name="data">The data buffer.</param>
+		protected abstract void DeserializeCore(T message, byte[] data);
+
+		/// <summary>
 		/// Determines whether the signature on this instance is valid.
 		/// </summary>
-		/// <param name="message">The message whose signature is to be checked.</param>
+		/// <param name="signedData">The signed data.</param>
+		/// <param name="signature">The signature.</param>
 		/// <returns>
-		/// 	<c>true</c> if the signature is valid; otherwise, <c>false</c>.
+		///   <c>true</c> if the signature is valid; otherwise, <c>false</c>.
 		/// </returns>
 		private bool IsSignatureValid(byte[] signedData, byte[] signature) {
 			Contract.Requires<ArgumentNullException>(signedData != null, "message");
@@ -255,8 +266,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Calculates the signature for the data in this verification code.
 		/// </summary>
-		/// <param name="message">The message whose signature is to be calculated.</param>
-		/// <returns>The calculated signature.</returns>
+		/// <param name="bytesToSign">The bytes to sign.</param>
+		/// <returns>
+		/// The calculated signature.
+		/// </returns>
 		private byte[] CalculateSignature(byte[] bytesToSign) {
 			Contract.Requires<ArgumentNullException>(bytesToSign != null, "bytesToSign");
 			Contract.Requires<InvalidOperationException>(this.asymmetricSigning != null || this.symmetricHasher != null);
