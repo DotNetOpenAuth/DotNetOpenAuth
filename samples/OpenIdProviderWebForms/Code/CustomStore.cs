@@ -8,6 +8,7 @@ namespace OpenIdProviderWebForms.Code {
 	using System;
 	using System.Data;
 	using System.Globalization;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
@@ -24,52 +25,41 @@ namespace OpenIdProviderWebForms.Code {
 	public class CustomStore : IProviderApplicationStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
-		#region IAssociationStore<AssociationRelyingPartyType> Members
+		#region IProviderAssociationStore
 
-		public void StoreAssociation(AssociationRelyingPartyType distinguishingFactor, Association assoc) {
+		/// <summary>
+		/// Stores an association and returns a handle for it.
+		/// </summary>
+		/// <param name="secret">The association secret.</param>
+		/// <param name="expiresUtc">The UTC time that the association should expire.</param>
+		/// <param name="privateAssociation">A value indicating whether this is a private association.</param>
+		/// <returns>
+		/// The association handle that represents this association.
+		/// </returns>
+		public string Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
 			var assocRow = dataSet.Association.NewAssociationRow();
-			assocRow.DistinguishingFactor = distinguishingFactor.ToString();
-			assocRow.Handle = assoc.Handle;
-			assocRow.Expires = assoc.Expires.ToLocalTime();
-			assocRow.PrivateData = assoc.SerializePrivateData();
+			assocRow.IsPrivateAssociation = privateAssociation;
+			assocRow.Expires = expiresUtc;
+			assocRow.PrivateData = secret;
+			assocRow.Handle = OpenIdUtilities.GenerateRandomAssociationHandle();
 			dataSet.Association.AddAssociationRow(assocRow);
+
+			return assocRow.Handle;
 		}
 
-		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, SecuritySettings securitySettings) {
-			// TODO: properly consider the securitySettings when picking an association to return.
-			// properly escape the URL to prevent injection attacks.
-			string value = distinguishingFactor.ToString();
-			string filter = string.Format(
-				CultureInfo.InvariantCulture,
-				"{0} = '{1}'",
-				dataSet.Association.DistinguishingFactorColumn.ColumnName,
-				value);
-			string sort = dataSet.Association.ExpiresColumn.ColumnName + " DESC";
-			DataView view = new DataView(dataSet.Association, filter, sort, DataViewRowState.CurrentRows);
-			if (view.Count == 0) {
-				return null;
-			}
-			var row = (CustomStoreDataSet.AssociationRow)view[0].Row;
-			return Association.Deserialize(row.Handle, row.Expires.ToUniversalTime(), row.PrivateData);
-		}
-
-		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, string handle) {
-			var assocRow = dataSet.Association.FindByDistinguishingFactorHandle(distinguishingFactor.ToString(), handle);
+		/// <summary>
+		/// Retrieves an association given an association handle.
+		/// </summary>
+		/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
+		/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+		/// <param name="handle">The association handle.</param>
+		/// <returns>
+		/// An association instance, or <c>null</c> if the association has expired or the signature is incorrect (which may be because the OP's symmetric key has changed).
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
+		public Association Deserialize(DotNetOpenAuth.Messaging.IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
+			var assocRow = dataSet.Association.FindByIsPrivateAssociationHandle(isPrivateAssociation, handle);
 			return Association.Deserialize(assocRow.Handle, assocRow.Expires, assocRow.PrivateData);
-		}
-
-		public bool RemoveAssociation(AssociationRelyingPartyType distinguishingFactor, string handle) {
-			var row = dataSet.Association.FindByDistinguishingFactorHandle(distinguishingFactor.ToString(), handle);
-			if (row != null) {
-				dataSet.Association.RemoveAssociationRow(row);
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		public void ClearExpiredAssociations() {
-			this.removeExpiredRows(dataSet.Association, dataSet.Association.ExpiresColumn.ColumnName);
 		}
 
 		#endregion

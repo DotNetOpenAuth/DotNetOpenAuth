@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <see cref="IProviderApplicationStore"/> interface to use instead of this
 	/// class.
 	/// </remarks>
-	public class StandardProviderApplicationStore : IProviderApplicationStore {
+	public class StandardProviderApplicationStore : ProviderAssociationHandleEncoder, IProviderApplicationStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>

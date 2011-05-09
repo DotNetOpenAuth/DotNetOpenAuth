@@ -116,11 +116,11 @@
 			}
 		}
 
-		public void ClearExpiredAssociations() {
+		#endregion
+
+		internal void ClearExpiredAssociations() {
 			this.removeExpiredRows(dataSet.Association, dataSet.Association.ExpiresColumn.ColumnName);
 		}
-
-		#endregion
 
 		private void removeExpiredRows(DataTable table, string expiredColumnName) {
 			string filter = string.Format(CultureInfo.InvariantCulture, "{0} < #{1}#", expiredColumnName, DateTime.Now);

@@ -14,6 +14,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <summary>
 	/// A hybrid of all the store interfaces that an OpenID Provider must implement.
 	/// </summary>
-	public interface IProviderApplicationStore : INonceStore {
+	public interface IProviderApplicationStore : IProviderAssociationStore, INonceStore {
 	}
 }

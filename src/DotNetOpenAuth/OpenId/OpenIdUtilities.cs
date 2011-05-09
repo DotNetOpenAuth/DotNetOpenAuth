@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
@@ -23,11 +24,24 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
 	/// </summary>
-	internal static class OpenIdUtilities {
+	public static class OpenIdUtilities {
 		/// <summary>
 		/// The prefix to designate this library's proprietary parameters added to the protocol.
 		/// </summary>
 		internal const string CustomParameterPrefix = "dnoa.";
+
+		/// <summary>
+		/// Creates a random association handle.
+		/// </summary>
+		/// <returns>The association handle.</returns>
+		public static string GenerateRandomAssociationHandle() {
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+
+			// Generate the handle.  It must be unique, and preferably unpredictable,
+			// so we use a time element and a random data element to generate it.
+			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
+			return string.Format(CultureInfo.InvariantCulture, "{{{0}}}{{{1}}}", DateTime.UtcNow.Ticks, uniq);
+		}
 
 		/// <summary>
 		/// Gets the OpenID protocol instance for the version in a message.

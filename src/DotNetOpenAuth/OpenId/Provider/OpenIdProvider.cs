@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
 		public OpenIdProvider(IProviderApplicationStore applicationStore)
-			: this((INonceStore)applicationStore) {
+			: this((INonceStore)applicationStore, (IProviderAssociationStore)applicationStore) {
 			Contract.Requires<ArgumentNullException>(applicationStore != null);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
@@ -74,12 +74,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
-		private OpenIdProvider(INonceStore nonceStore) {
+		private OpenIdProvider(INonceStore nonceStore, IProviderAssociationStore associationStore) {
 			Contract.Requires<ArgumentNullException>(nonceStore != null);
+			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 
-			this.AssociationStore = new ProviderAssociationHandleEncoder();
+			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {

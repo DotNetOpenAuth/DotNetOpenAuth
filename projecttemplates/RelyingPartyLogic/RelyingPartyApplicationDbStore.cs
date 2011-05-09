@@ -23,7 +23,7 @@ namespace RelyingPartyLogic {
 		public RelyingPartyApplicationDbStore() {
 		}
 
-		#region IAssociationStore<Uri> Members
+		#region IRelyingPartyApplicationStore Members
 
 		/// <summary>
 		/// Saves an <see cref="Association"/> for later recall.
@@ -123,6 +123,8 @@ namespace RelyingPartyLogic {
 			}
 		}
 
+		#endregion
+
 		/// <summary>
 		/// Clears all expired associations from the store.
 		/// </summary>
@@ -132,13 +134,11 @@ namespace RelyingPartyLogic {
 		/// This should be done frequently enough to avoid a memory leak, but sparingly enough
 		/// to not be a performance drain.
 		/// </remarks>
-		public void ClearExpiredAssociations() {
+		internal void ClearExpiredAssociations() {
 			using (var dataContext = new TransactedDatabaseEntities(IsolationLevel.ReadCommitted)) {
 				dataContext.ClearExpiredAssociations(dataContext.Transaction);
 			}
 		}
-
-		#endregion
 
 		/// <summary>
 		/// Deserializes an association from the database.
