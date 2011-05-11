@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					lock (this.syncObject) {
 						if (this.secret == null) {
 							Logger.OpenId.Info("Generating a symmetric secret for signing and encrypting association handles.");
-							this.secret = MessagingUtilities.GetCryptoRandomData(16);
+							this.secret = MessagingUtilities.GetCryptoRandomData(32); // 256-bit symmetric key protects association secrets.
 						}
 					}
 				}
