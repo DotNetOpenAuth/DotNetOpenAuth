@@ -84,16 +84,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Creates the new association handle.
-		/// </summary>
-		/// <returns>The ASCII-encoded handle name.</returns>
-		private static string CreateNewAssociationHandle() {
-			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
-			string handle = "{" + DateTime.UtcNow.Ticks + "}{" + uniq + "}";
-			return handle;
-		}
-
-		/// <summary>
 		/// Gets an association to use for signing new data.
 		/// </summary>
 		/// <returns>
@@ -105,7 +95,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (privateAssociation == null || !privateAssociation.HasUsefulLifeRemaining) {
 				int secretLength = HmacShaAssociation.GetSecretLength(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.Best);
 				byte[] secret = MessagingUtilities.GetCryptoRandomData(secretLength);
-				privateAssociation = HmacShaAssociation.Create(CreateNewAssociationHandle(), secret, this.securitySettings.PrivateSecretMaximumAge);
+				privateAssociation = HmacShaAssociation.Create(OpenIdUtilities.GenerateRandomAssociationHandle(), secret, this.securitySettings.PrivateSecretMaximumAge);
 				if (!privateAssociation.HasUsefulLifeRemaining) {
 					Logger.OpenId.WarnFormat(
 						"Brand new private association has a shorter lifespan ({0}) than the maximum allowed authentication time for a user ({1}).  This may lead to login failures.",

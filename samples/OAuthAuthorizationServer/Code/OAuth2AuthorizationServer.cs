@@ -25,7 +25,7 @@
 			// TODO: Replace this sample code with real code.
 			// For this sample, we just generate random secrets.
 			RandomNumberGenerator crypto = new RNGCryptoServiceProvider();
-			var secret = new byte[16];
+			var secret = new byte[32]; // 256-bit symmetric key to protect all protected resources.
 			crypto.GetBytes(secret);
 			return secret;
 		}
