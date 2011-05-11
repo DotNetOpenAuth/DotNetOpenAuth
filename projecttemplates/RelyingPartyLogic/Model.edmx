@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+    <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
         <EntityContainer Name="DatabaseModelStoreContainer">
           <EntitySet Name="AuthenticationToken" EntityType="DatabaseModel.Store.AuthenticationToken" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Client" EntityType="DatabaseModel.Store.Client" store:Type="Tables" Schema="dbo" />
@@ -83,7 +83,7 @@
             <PropertyRef Name="AssociationId" />
           </Key>
           <Property Name="AssociationId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="DistinguishingFactor" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="ProviderEndpoint" Type="varchar" Nullable="false" MaxLength="255" />
           <Property Name="AssociationHandle" Type="varchar" Nullable="false" MaxLength="255" />
           <Property Name="Expiration" Type="datetime" Nullable="false" />
           <Property Name="PrivateData" Type="binary" Nullable="false" MaxLength="64" />
@@ -269,13 +269,14 @@
           <Key>
             <PropertyRef Name="AssociationId" /></Key>
           <Property Name="AssociationId" Type="Int32" Nullable="false" />
-          <Property Name="DistinguishingFactor" Type="String" Nullable="false">
+          <Property Name="ProviderEndpoint" Type="String" Nullable="false" FixedLength="false" MaxLength="255" Unicode="false">
             <Documentation>
               <Summary>Gets or sets the Provider Endpoint URL the association is with.</Summary></Documentation></Property>
           <Property Name="AssociationHandle" Type="String" Nullable="false" />
           <Property Name="ExpirationUtc" Type="DateTime" Nullable="false" />
           <Property Name="PrivateData" Type="Binary" Nullable="false" />
-          <Property Name="PrivateDataLength" Type="Int32" Nullable="false" /></EntityType>
+          <Property Name="PrivateDataLength" Type="Int32" Nullable="false" />
+          </EntityType>
         <EntityType Name="Client">
           <Key>
             <PropertyRef Name="ClientId" />
@@ -364,11 +365,11 @@
           <EntitySetMapping Name="OpenIdAssociations">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.OpenIdAssociation)">
               <MappingFragment StoreEntitySet="OpenIDAssociation">
+                <ScalarProperty Name="ProviderEndpoint" ColumnName="ProviderEndpoint" />
                 <ScalarProperty Name="PrivateDataLength" ColumnName="PrivateDataLength" />
                 <ScalarProperty Name="PrivateData" ColumnName="PrivateData" />
                 <ScalarProperty Name="ExpirationUtc" ColumnName="Expiration" />
                 <ScalarProperty Name="AssociationHandle" ColumnName="AssociationHandle" />
-                <ScalarProperty Name="DistinguishingFactor" ColumnName="DistinguishingFactor" />
                 <ScalarProperty Name="AssociationId" ColumnName="AssociationId" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
           <FunctionImportMapping FunctionImportName="ClearExpiredNonces" FunctionName="DatabaseModel.Store.ClearExpiredNonces" />
           <EntitySetMapping Name="Clients">
@@ -441,7 +442,7 @@
           <ConnectorPoint PointX="4.625" PointY="1.9324446614583337" />
           <ConnectorPoint PointX="5.25" PointY="1.9324446614583337" /></AssociationConnector>
         <EntityTypeShape EntityType="DatabaseModel.Nonce" Width="1.5" PointX="9.375" PointY="0.75" Height="1.9802864583333326" />
-        <EntityTypeShape EntityType="DatabaseModel.OpenIdAssociation" Width="1.75" PointX="7.375" PointY="0.75" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="DatabaseModel.OpenIdAssociation" Width="1.75" PointX="7.375" PointY="0.75" Height="2.172587890625" />
         <EntityTypeShape EntityType="DatabaseModel.Client" Width="1.625" PointX="5.25" PointY="3.75" Height="2.1725878906249996" />
         <EntityTypeShape EntityType="DatabaseModel.ClientAuthorization" Width="1.75" PointX="2.875" PointY="3.75" Height="2.1725878906250031" />
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_Consumer" >

@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Stores a given association for later recall.
 		/// </summary>
-		/// <param name="providerEndpoint">The distinguishing factor, either an OP Endpoint or smart/dumb mode.</param>
+		/// <param name="providerEndpoint">The OP Endpoint with which the association is established.</param>
 		/// <param name="association">The association to store.</param>
 		public void StoreAssociation(Uri providerEndpoint, Association association) {
 			lock (this) {
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the server associations for a given OP Endpoint or dumb/smart mode.
 		/// </summary>
-		/// <param name="providerEndpoint">The distinguishing factor, either an OP Endpoint (for relying parties) or smart/dumb (for providers).</param>
+		/// <param name="providerEndpoint">The OP Endpoint with which the association is established.</param>
 		/// <returns>The collection of associations that fit the <paramref name="providerEndpoint"/>.</returns>
 		internal Associations GetServerAssociations(Uri providerEndpoint) {
 			lock (this) {

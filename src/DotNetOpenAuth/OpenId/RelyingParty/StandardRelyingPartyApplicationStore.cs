@@ -38,40 +38,40 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Saves an <see cref="Association"/> for later recall.
 		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for providers).</param>
+		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for providers).</param>
 		/// <param name="association">The association to store.</param>
-		public void StoreAssociation(Uri distinguishingFactor, Association association) {
-			this.associationStore.StoreAssociation(distinguishingFactor, association);
+		public void StoreAssociation(Uri providerEndpoint, Association association) {
+			this.associationStore.StoreAssociation(providerEndpoint, association);
 		}
 
 		/// <summary>
 		/// Gets the best association (the one with the longest remaining life) for a given key.
 		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
+		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
 		/// <param name="securityRequirements">The security settings.</param>
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
 		/// </returns>
-		public Association GetAssociation(Uri distinguishingFactor, SecuritySettings securityRequirements) {
-			return this.associationStore.GetAssociation(distinguishingFactor, securityRequirements);
+		public Association GetAssociation(Uri providerEndpoint, SecuritySettings securityRequirements) {
+			return this.associationStore.GetAssociation(providerEndpoint, securityRequirements);
 		}
 
 		/// <summary>
 		/// Gets the association for a given key and handle.
 		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
+		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
 		/// <param name="handle">The handle of the specific association that must be recalled.</param>
 		/// <returns>
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key and handle.
 		/// </returns>
-		public Association GetAssociation(Uri distinguishingFactor, string handle) {
-			return this.associationStore.GetAssociation(distinguishingFactor, handle);
+		public Association GetAssociation(Uri providerEndpoint, string handle) {
+			return this.associationStore.GetAssociation(providerEndpoint, handle);
 		}
 
 		/// <summary>
 		/// Removes a specified handle that may exist in the store.
 		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
+		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
 		/// <param name="handle">The handle of the specific association that must be deleted.</param>
 		/// <returns>
 		/// True if the association existed in this store previous to this call.
@@ -80,8 +80,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// No exception should be thrown if the association does not exist in the store
 		/// before this call.
 		/// </remarks>
-		public bool RemoveAssociation(Uri distinguishingFactor, string handle) {
-			return this.associationStore.RemoveAssociation(distinguishingFactor, handle);
+		public bool RemoveAssociation(Uri providerEndpoint, string handle) {
+			return this.associationStore.RemoveAssociation(providerEndpoint, handle);
 		}
 
 		#endregion

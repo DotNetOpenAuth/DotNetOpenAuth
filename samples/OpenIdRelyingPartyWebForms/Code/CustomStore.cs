@@ -72,21 +72,21 @@
 
 		#endregion
 
-		#region IAssociationStore<Uri> Members
+		#region IRelyingPartyAssociationStore Members
 
-		public void StoreAssociation(Uri distinguishingFactor, Association assoc) {
+		public void StoreAssociation(Uri providerEndpoint, Association assoc) {
 			var assocRow = dataSet.Association.NewAssociationRow();
-			assocRow.DistinguishingFactor = distinguishingFactor.AbsoluteUri;
+			assocRow.DistinguishingFactor = providerEndpoint.AbsoluteUri;
 			assocRow.Handle = assoc.Handle;
 			assocRow.Expires = assoc.Expires.ToLocalTime();
 			assocRow.PrivateData = assoc.SerializePrivateData();
 			dataSet.Association.AddAssociationRow(assocRow);
 		}
 
-		public Association GetAssociation(Uri distinguishingFactor, SecuritySettings securitySettings) {
+		public Association GetAssociation(Uri providerEndpoint, SecuritySettings securitySettings) {
 			// TODO: properly consider the securitySettings when picking an association to return.
 			// properly escape the URL to prevent injection attacks.
-			string value = distinguishingFactor.AbsoluteUri.Replace("'", "''");
+			string value = providerEndpoint.AbsoluteUri.Replace("'", "''");
 			string filter = string.Format(
 				CultureInfo.InvariantCulture,
 				"{0} = '{1}'",
@@ -101,13 +101,13 @@
 			return Association.Deserialize(row.Handle, row.Expires.ToUniversalTime(), row.PrivateData);
 		}
 
-		public Association GetAssociation(Uri distinguishingFactor, string handle) {
-			var assocRow = dataSet.Association.FindByDistinguishingFactorHandle(distinguishingFactor.AbsoluteUri, handle);
+		public Association GetAssociation(Uri providerEndpoint, string handle) {
+			var assocRow = dataSet.Association.FindByDistinguishingFactorHandle(providerEndpoint.AbsoluteUri, handle);
 			return Association.Deserialize(assocRow.Handle, assocRow.Expires, assocRow.PrivateData);
 		}
 
-		public bool RemoveAssociation(Uri distinguishingFactor, string handle) {
-			var row = dataSet.Association.FindByDistinguishingFactorHandle(distinguishingFactor.AbsoluteUri, handle);
+		public bool RemoveAssociation(Uri providerEndpoint, string handle) {
+			var row = dataSet.Association.FindByDistinguishingFactorHandle(providerEndpoint.AbsoluteUri, handle);
 			if (row != null) {
 				dataSet.Association.RemoveAssociationRow(row);
 				return true;

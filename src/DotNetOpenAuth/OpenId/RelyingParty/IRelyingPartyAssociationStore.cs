@@ -10,8 +10,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 	/// <summary>
 	/// Stores <see cref="Association"/>s for lookup by their handle, keeping
-	/// associations separated by a given distinguishing factor (like which server the
-	/// association is with).
+	/// associations separated by a given OP Endpoint.
 	/// </summary>
 	/// <remarks>
 	/// Expired associations should be periodically cleared out of an association store.
@@ -27,7 +26,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="providerEndpoint">The OP Endpoint with which the association is established.</param>
 		/// <param name="association">The association to store.</param>
 		/// <remarks>
-		/// TODO: what should implementations do on association handle conflict?
+		/// If the new association conflicts (in OP endpoint and association handle) with an existing association,
+		/// (which should never happen by the way) implementations may overwrite the previously saved association.
 		/// </remarks>
 		void StoreAssociation(Uri providerEndpoint, Association association);
 
