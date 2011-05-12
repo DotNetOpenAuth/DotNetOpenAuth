@@ -15,15 +15,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	internal class PrivateSecretManager {
 		/// <summary>
-		/// The optimal length for a private secret used for signing using the HMACSHA256 class.
-		/// </summary>
-		/// <remarks>
-		/// The 64-byte length is optimized for highest security when used with HMACSHA256.
-		/// See HMACSHA256.HMACSHA256(byte[]) documentation for more information.
-		/// </remarks>
-		private const int OptimalPrivateSecretLength = 64;
-
-		/// <summary>
 		/// The URI to use for private associations at this RP.
 		/// </summary>
 		private static readonly Uri SecretUri = new Uri("https://localhost/dnoa/secret");
