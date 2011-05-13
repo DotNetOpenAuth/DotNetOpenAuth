@@ -46,11 +46,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
 		/// for use by a Relying Party.
 		/// </summary>
-		/// <param name="associationStore">The association store to use.</param>
+		/// <param name="cryptoKeyStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
-		internal OpenIdChannel(IRelyingPartyAssociationStore associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
-			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings, false) {
+		internal OpenIdChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
+			: this(cryptoKeyStore, nonceStore, new OpenIdMessageFactory(), securitySettings, false) {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
 
@@ -71,13 +71,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
 		/// for use by a Relying Party.
 		/// </summary>
-		/// <param name="associationStore">The association store to use.</param>
+		/// <param name="cryptoKeyStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
-		private OpenIdChannel(IRelyingPartyAssociationStore associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
-			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings, nonVerifying)) {
+		private OpenIdChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
+			this(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying)) {
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentException>(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
@@ -311,11 +311,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
-		private static IChannelBindingElement[] InitializeBindingElements(IRelyingPartyAssociationStore associationStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings, bool nonVerifying) {
+		private static IChannelBindingElement[] InitializeBindingElements(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings, bool nonVerifying) {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			SigningBindingElement signingElement;
-			signingElement = nonVerifying ? null : new SigningBindingElement(associationStore);
+			signingElement = nonVerifying ? null : new SigningBindingElement(new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore));
 
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
@@ -325,7 +325,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			elements.Add(new BackwardCompatibilityBindingElement());
 			ReturnToNonceBindingElement requestNonceElement = null;
 
-			if (associationStore != null) {
+			if (cryptoKeyStore != null) {
 				if (nonceStore != null) {
 					// There is no point in having a ReturnToNonceBindingElement without
 					// a ReturnToSignatureBindingElement because the nonce could be
@@ -336,7 +336,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				// It is important that the return_to signing element comes last
 				// so that the nonce is included in the signature.
-				elements.Add(new ReturnToSignatureBindingElement(associationStore, securitySettings));
+				elements.Add(new ReturnToSignatureBindingElement(cryptoKeyStore));
 			}
 
 			ErrorUtilities.VerifyOperation(!securitySettings.RejectUnsolicitedAssertions || requestNonceElement != null, OpenIdStrings.UnsolicitedAssertionRejectionRequiresNonceStore);

@@ -27,6 +27,13 @@ namespace DotNetOpenAuth.Messaging {
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
 	/// </summary>
 	public static class MessagingUtilities {
+		private const int SymmetricSecretHandleLength = 4; // TODO: replace this with an unnamed secret concept.
+
+		/// <summary>
+		/// The default lifetime of a private secret.
+		/// </summary>
+		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.PrivateSecretMaximumAge;
+
 		/// <summary>
 		/// The cryptographically strong random data generator used for creating secrets.
 		/// </summary>
@@ -52,6 +59,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// The set of base 10 digits.
 		/// </summary>
 		internal const string Digits = "0123456789";
+
+		/// <summary>
+		/// The set of digits and alphabetic letters (upper and lowercase).
+		/// </summary>
+		internal const string AlphaNumeric = UppercaseLetters + LowercaseLetters + Digits;
 
 		/// <summary>
 		/// The set of digits, and alphabetic letters (upper and lowercase) that are clearly
@@ -651,6 +663,45 @@ namespace DotNetOpenAuth.Messaging {
 			var finalDecryptedBuffer = new byte[actualDecryptedLength];
 			Array.Copy(decryptedBuffer, finalDecryptedBuffer, actualDecryptedLength);
 			return finalDecryptedBuffer;
+		}
+
+		/// <summary>
+		/// Gets a key from a given bucket with the longest remaining life, or creates a new one if necessary.
+		/// </summary>
+		/// <param name="cryptoKeyStore">The crypto key store.</param>
+		/// <param name="bucket">The bucket where the key should be found or stored.</param>
+		/// <param name="minimumRemainingLife">The minimum remaining life required on the returned key.</param>
+		/// <param name="keySize">The required size of the key, in bits.</param>
+		/// <returns>
+		/// A key-value pair whose key is the secret's handle and whose value is the cryptographic key.
+		/// </returns>
+		internal static KeyValuePair<string, CryptoKey> GetCurrentKey(this ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan minimumRemainingLife, int keySize = 256) {
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
+			Contract.Requires<ArgumentException>(keySize % 8 == 0);
+
+			var cryptoKeyPair = cryptoKeyStore.GetKeys(bucket).FirstOrDefault(pair => pair.Value.Key.Length == keySize / 8);
+			if (cryptoKeyPair.Value == null || cryptoKeyPair.Value.ExpiresUtc < DateTime.UtcNow + minimumRemainingLife) {
+				// No key exists with enough remaining life for the required purpose.  Create a new key.
+				ErrorUtilities.VerifyProtocol(minimumRemainingLife <= SymmetricSecretKeyLifespan, "Unable to create a new symmetric key with the required lifespan of {0} because it is beyond the limit of {1}.", minimumRemainingLife, SymmetricSecretKeyLifespan);
+				byte[] secret = GetCryptoRandomData(keySize / 8);
+				DateTime expires = DateTime.UtcNow + SymmetricSecretKeyLifespan;
+				var cryptoKey = new CryptoKey(secret, expires);
+
+				// Store this key so we can find and use it later.
+				int failedAttempts = 0;
+			tryAgain:
+				try {
+					string handle = GetRandomString(SymmetricSecretHandleLength, AlphaNumeric);
+					cryptoKeyPair = new KeyValuePair<string, CryptoKey>(handle, cryptoKey);
+					cryptoKeyStore.StoreKey(bucket, handle, cryptoKey);
+				} catch (CryptoKeyCollisionException) {
+					ErrorUtilities.VerifyInternal(++failedAttempts < 3, "Unable to derive a unique handle to a private symmetric key.");
+					goto tryAgain;
+				}
+			}
+
+			return cryptoKeyPair;
 		}
 
 		/// <summary>

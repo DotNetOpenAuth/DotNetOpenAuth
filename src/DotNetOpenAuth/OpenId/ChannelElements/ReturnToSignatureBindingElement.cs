@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Web;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -43,19 +44,24 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private const string ReturnToSignatureHandleParameterName = OpenIdUtilities.CustomParameterPrefix + "return_to_sig_handle";
 
 		/// <summary>
-		/// The hashing algorithm used to generate the private signature on the return_to parameter.
+		/// The URI to use for private associations at this RP.
 		/// </summary>
-		private PrivateSecretManager secretManager;
+		private static readonly Uri SecretUri = new Uri("https://localhost/dnoa/secret");
+
+		/// <summary>
+		/// The key store used to generate the private signature on the return_to parameter.
+		/// </summary>
+		private ICryptoKeyStore cryptoKeyStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReturnToSignatureBindingElement"/> class.
 		/// </summary>
 		/// <param name="secretStore">The secret store from which to retrieve the secret used for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal ReturnToSignatureBindingElement(IRelyingPartyAssociationStore secretStore, RelyingPartySecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(secretStore != null);
+		internal ReturnToSignatureBindingElement(ICryptoKeyStore cryptoKeyStore) {
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 
-			this.secretManager = new PrivateSecretManager(securitySettings, secretStore);
+			this.cryptoKeyStore = cryptoKeyStore;
 		}
 
 		#region IChannelBindingElement Members
@@ -96,8 +102,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null && request.ReturnTo != null && request.SignReturnTo) {
-				request.AddReturnToArguments(ReturnToSignatureHandleParameterName, this.secretManager.CurrentHandle);
-				request.AddReturnToArguments(ReturnToSignatureParameterName, this.GetReturnToSignature(request.ReturnTo));
+				var cryptoKeyPair = this.cryptoKeyStore.GetCurrentKey(SecretUri.AbsoluteUri, DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+				request.AddReturnToArguments(ReturnToSignatureHandleParameterName, cryptoKeyPair.Key);
+				string signature = Convert.ToBase64String(this.GetReturnToSignature(request.ReturnTo, cryptoKeyPair.Value));
+				request.AddReturnToArguments(ReturnToSignatureParameterName, signature);
 
 				// We return none because we are not signing the entire message (only a part).
 				return MessageProtections.None;
@@ -134,10 +142,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				// Only check the return_to signature if one is present.
 				if (returnToParameters[ReturnToSignatureHandleParameterName] != null) {
 					// Set the safety flag showing whether the return_to url had a valid signature.
-					string expected = this.GetReturnToSignature(response.ReturnTo);
+					byte[] expectedBytes = this.GetReturnToSignature(response.ReturnTo);
 					string actual = returnToParameters[ReturnToSignatureParameterName];
 					actual = OpenIdUtilities.FixDoublyUriDecodedBase64String(actual);
-					response.ReturnToParametersSignatureValidated = actual == expected;
+					byte[] actualBytes = Convert.FromBase64String(actual);
+					response.ReturnToParametersSignatureValidated = MessagingUtilities.AreEquivalentConstantTime(actualBytes, expectedBytes);
 					if (!response.ReturnToParametersSignatureValidated) {
 						Logger.Bindings.WarnFormat("The return_to signature failed verification.");
 					}
@@ -161,7 +170,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// itself, in order that OPs that might change the return_to's implicit port :80 part
 		/// or other minor changes do not invalidate the signature.
 		/// </remarks>
-		private string GetReturnToSignature(Uri returnTo) {
+		private byte[] GetReturnToSignature(Uri returnTo, CryptoKey cryptoKey = null) {
 			Contract.Requires<ArgumentNullException>(returnTo != null);
 
 			// Assemble the dictionary to sign, taking care to remove the signature itself
@@ -182,12 +191,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			byte[] bytesToSign = KeyValueFormEncoding.GetBytes(sortedReturnToParameters);
 			byte[] signature;
 			try {
-				signature = this.secretManager.Sign(bytesToSign, returnToParameters[ReturnToSignatureHandleParameterName]);
+				if (cryptoKey == null) {
+					cryptoKey = this.cryptoKeyStore.GetKey(SecretUri.AbsoluteUri, returnToParameters[ReturnToSignatureHandleParameterName]);
+				}
+
+				var signer = new HMACSHA256(cryptoKey.Key);
+				signature = signer.ComputeHash(bytesToSign);
 			} catch (ProtocolException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.MaximumAuthenticationTimeExpired);
 			}
-			string signatureBase64 = Convert.ToBase64String(signature);
-			return signatureBase64;
+
+			return signature;
 		}
 	}
 }

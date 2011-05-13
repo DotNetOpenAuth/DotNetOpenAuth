@@ -307,6 +307,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
     <Compile Include="CryptoKey.cs" />
+    <Compile Include="CryptoKeyCollisionException.cs" />
     <Compile Include="ICryptoKeyStore.cs" />
     <Compile Include="IEmbeddedResourceRetrieval.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
@@ -321,6 +322,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="InfoCard\Token\TokenUtility.cs" />
     <Compile Include="InfoCard\Token\TokenDecryptor.cs" />
     <Compile Include="InfoCard\WellKnownIssuers.cs" />
+    <Compile Include="MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
@@ -500,7 +502,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
     <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
-    <Compile Include="OpenId\RelyingParty\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
     <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
@@ -660,7 +661,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
-    <Compile Include="OpenId\RelyingParty\PrivateSecretManager.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />

@@ -45,6 +45,7 @@ namespace DotNetOpenAuth {
 		/// <param name="bucket">The name of the bucket to store the key in.  Case sensitive.</param>
 		/// <param name="handle">The handle to the key, unique within the bucket.  Case sensitive.</param>
 		/// <param name="key">The key to store.</param>
+		/// <exception cref="CryptoKeyCollisionException">Thrown in the event of a conflict with an existing key in the same bucket and with the same handle.</exception>
 		void StoreKey(string bucket, string handle, CryptoKey key);
 
 		/// <summary>

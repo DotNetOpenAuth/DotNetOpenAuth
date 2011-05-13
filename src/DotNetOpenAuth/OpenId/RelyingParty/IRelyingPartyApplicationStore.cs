@@ -16,6 +16,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A hybrid of all the store interfaces that a Relying Party requires in order
 	/// to operate in "smart" mode.
 	/// </summary>
-	public interface IRelyingPartyApplicationStore : IRelyingPartyAssociationStore, INonceStore {
+	public interface IRelyingPartyApplicationStore : ICryptoKeyStore, INonceStore {
 	}
 }

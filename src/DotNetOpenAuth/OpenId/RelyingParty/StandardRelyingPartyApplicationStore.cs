@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.Generic;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
@@ -23,65 +24,59 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The association store to use.
 		/// </summary>
-		private readonly IRelyingPartyAssociationStore associationStore;
+		private readonly ICryptoKeyStore keyStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
 		/// </summary>
 		public StandardRelyingPartyApplicationStore() {
 			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
-			this.associationStore = new AssociationMemoryStore();
+			this.keyStore = new MemoryCryptoKeyStore();
 		}
 
-		#region IAssociationStore Members
+		#region ICryptoKeyStore Members
 
 		/// <summary>
-		/// Saves an <see cref="Association"/> for later recall.
+		/// Gets the key in a given bucket and handle.
 		/// </summary>
-		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for providers).</param>
-		/// <param name="association">The association to store.</param>
-		public void StoreAssociation(Uri providerEndpoint, Association association) {
-			this.associationStore.StoreAssociation(providerEndpoint, association);
-		}
-
-		/// <summary>
-		/// Gets the best association (the one with the longest remaining life) for a given key.
-		/// </summary>
-		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="securityRequirements">The security settings.</param>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <param name="handle">The key handle.  Case sensitive.</param>
 		/// <returns>
-		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
+		/// The cryptographic key, or <c>null</c> if no matching key was found.
 		/// </returns>
-		public Association GetAssociation(Uri providerEndpoint, SecuritySettings securityRequirements) {
-			return this.associationStore.GetAssociation(providerEndpoint, securityRequirements);
+		public CryptoKey GetKey(string bucket, string handle) {
+			return this.keyStore.GetKey(bucket, handle);
 		}
 
 		/// <summary>
-		/// Gets the association for a given key and handle.
+		/// Gets a sequence of existing keys within a given bucket.
 		/// </summary>
-		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="handle">The handle of the specific association that must be recalled.</param>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
 		/// <returns>
-		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key and handle.
+		/// A sequence of handles and keys, ordered by descending <see cref="CryptoKey.ExpiresUtc"/>.
 		/// </returns>
-		public Association GetAssociation(Uri providerEndpoint, string handle) {
-			return this.associationStore.GetAssociation(providerEndpoint, handle);
+		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
+			return this.keyStore.GetKeys(bucket);
 		}
 
 		/// <summary>
-		/// Removes a specified handle that may exist in the store.
+		/// Stores a cryptographic key.
 		/// </summary>
-		/// <param name="providerEndpoint">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="handle">The handle of the specific association that must be deleted.</param>
-		/// <returns>
-		/// True if the association existed in this store previous to this call.
-		/// </returns>
-		/// <remarks>
-		/// No exception should be thrown if the association does not exist in the store
-		/// before this call.
-		/// </remarks>
-		public bool RemoveAssociation(Uri providerEndpoint, string handle) {
-			return this.associationStore.RemoveAssociation(providerEndpoint, handle);
+		/// <param name="bucket">The name of the bucket to store the key in.  Case sensitive.</param>
+		/// <param name="handle">The handle to the key, unique within the bucket.  Case sensitive.</param>
+		/// <param name="key">The key to store.</param>
+		/// <exception cref="CryptoKeyCollisionException">Thrown in the event of a conflict with an existing key in the same bucket and with the same handle.</exception>
+		public void StoreKey(string bucket, string handle, CryptoKey key) {
+			this.keyStore.StoreKey(bucket, handle, key);
+		}
+
+		/// <summary>
+		/// Removes the key.
+		/// </summary>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <param name="handle">The key handle.  Case sensitive.</param>
+		public void RemoveKey(string bucket, string handle) {
+			this.keyStore.RemoveKey(bucket, handle);
 		}
 
 		#endregion

@@ -107,14 +107,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
+		/// <param name="cryptoKeyStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
-		private OpenIdRelyingParty(IRelyingPartyAssociationStore associationStore, INonceStore nonceStore) {
+		private OpenIdRelyingParty(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore) {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
-			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
+			Contract.Requires<ArgumentException>(cryptoKeyStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
@@ -137,10 +137,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
-			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
+			this.channel = new OpenIdChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
+			this.AssociationManager = new AssociationManager(this.Channel, new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore), this.SecuritySettings);
 
-			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
+			Reporting.RecordFeatureAndDependencyUse(this, cryptoKeyStore, nonceStore);
 		}
 
 		/// <summary>
