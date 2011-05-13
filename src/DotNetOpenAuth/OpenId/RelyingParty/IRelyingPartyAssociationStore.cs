@@ -61,7 +61,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>Removes a specified handle that may exist in the store.</summary>
 		/// <param name="providerEndpoint">The OP Endpoint with which the association is established.</param>
 		/// <param name="handle">The handle of the specific association that must be deleted.</param>
-		/// <returns>True if the association existed in this store previous to this call.</returns>
+		/// <returns>
+		/// Deprecated.  The return value is insignificant.
+		/// Previously: True if the association existed in this store previous to this call.
+		/// </returns>
 		/// <remarks>
 		/// No exception should be thrown if the association does not exist in the store
 		/// before this call.

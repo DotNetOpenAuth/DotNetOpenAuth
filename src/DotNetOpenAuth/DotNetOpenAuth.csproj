@@ -502,6 +502,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\AssociationMemoryStore.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
+    <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\Associations.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
