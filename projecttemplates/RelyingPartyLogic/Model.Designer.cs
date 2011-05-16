@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(RelyingPartyLogic.User), "ClientAuthorization", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.ClientAuthorization))]
 
 // Original file name:
-// Generation date: 5/10/2011 6:33:00 AM
+// Generation date: 5/15/2011 5:33:40 PM
 namespace RelyingPartyLogic
 {
     
@@ -118,23 +118,6 @@ namespace RelyingPartyLogic
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
         private global::System.Data.Objects.ObjectQuery<Nonce> _Nonces;
         /// <summary>
-        /// There are no comments for OpenIdAssociations in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public global::System.Data.Objects.ObjectQuery<OpenIdAssociation> OpenIdAssociations
-        {
-            get
-            {
-                if ((this._OpenIdAssociations == null))
-                {
-                    this._OpenIdAssociations = base.CreateQuery<OpenIdAssociation>("[OpenIdAssociations]");
-                }
-                return this._OpenIdAssociations;
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private global::System.Data.Objects.ObjectQuery<OpenIdAssociation> _OpenIdAssociations;
-        /// <summary>
         /// There are no comments for Clients in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
@@ -169,6 +152,23 @@ namespace RelyingPartyLogic
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
         private global::System.Data.Objects.ObjectQuery<ClientAuthorization> _ClientAuthorizations;
         /// <summary>
+        /// There are no comments for SymmetricCryptoKeys in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public global::System.Data.Objects.ObjectQuery<SymmetricCryptoKey> SymmetricCryptoKeys
+        {
+            get
+            {
+                if ((this._SymmetricCryptoKeys == null))
+                {
+                    this._SymmetricCryptoKeys = base.CreateQuery<SymmetricCryptoKey>("[SymmetricCryptoKeys]");
+                }
+                return this._SymmetricCryptoKeys;
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        private global::System.Data.Objects.ObjectQuery<SymmetricCryptoKey> _SymmetricCryptoKeys;
+        /// <summary>
         /// There are no comments for Roles in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
@@ -201,14 +201,6 @@ namespace RelyingPartyLogic
             base.AddObject("Nonces", nonce);
         }
         /// <summary>
-        /// There are no comments for OpenIdAssociations in the schema.
-        /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public void AddToOpenIdAssociations(OpenIdAssociation openIdAssociation)
-        {
-            base.AddObject("OpenIdAssociations", openIdAssociation);
-        }
-        /// <summary>
         /// There are no comments for Clients in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
@@ -223,6 +215,14 @@ namespace RelyingPartyLogic
         public void AddToClientAuthorizations(ClientAuthorization clientAuthorization)
         {
             base.AddObject("ClientAuthorizations", clientAuthorization);
+        }
+        /// <summary>
+        /// There are no comments for SymmetricCryptoKeys in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public void AddToSymmetricCryptoKeys(SymmetricCryptoKey symmetricCryptoKey)
+        {
+            base.AddObject("SymmetricCryptoKeys", symmetricCryptoKey);
         }
     }
     /// <summary>
@@ -980,201 +980,6 @@ namespace RelyingPartyLogic
         partial void OnExpiresUtcChanged();
     }
     /// <summary>
-    /// There are no comments for DatabaseModel.OpenIdAssociation in the schema.
-    /// </summary>
-    /// <KeyProperties>
-    /// AssociationId
-    /// </KeyProperties>
-    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="OpenIdAssociation")]
-    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
-    [global::System.Serializable()]
-    public partial class OpenIdAssociation : global::System.Data.Objects.DataClasses.EntityObject
-    {
-        /// <summary>
-        /// Create a new OpenIdAssociation object.
-        /// </summary>
-        /// <param name="associationId">Initial value of AssociationId.</param>
-        /// <param name="providerEndpoint">Initial value of ProviderEndpoint.</param>
-        /// <param name="associationHandle">Initial value of AssociationHandle.</param>
-        /// <param name="expirationUtc">Initial value of ExpirationUtc.</param>
-        /// <param name="privateData">Initial value of PrivateData.</param>
-        /// <param name="privateDataLength">Initial value of PrivateDataLength.</param>
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public static OpenIdAssociation CreateOpenIdAssociation(int associationId, string providerEndpoint, string associationHandle, global::System.DateTime expirationUtc, byte[] privateData, int privateDataLength)
-        {
-            OpenIdAssociation openIdAssociation = new OpenIdAssociation();
-            openIdAssociation.AssociationId = associationId;
-            openIdAssociation.ProviderEndpoint = providerEndpoint;
-            openIdAssociation.AssociationHandle = associationHandle;
-            openIdAssociation.ExpirationUtc = expirationUtc;
-            openIdAssociation.PrivateData = privateData;
-            openIdAssociation.PrivateDataLength = privateDataLength;
-            return openIdAssociation;
-        }
-        /// <summary>
-        /// There are no comments for property AssociationId in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public int AssociationId
-        {
-            get
-            {
-                return this._AssociationId;
-            }
-            set
-            {
-                this.OnAssociationIdChanging(value);
-                this.ReportPropertyChanging("AssociationId");
-                this._AssociationId = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
-                this.ReportPropertyChanged("AssociationId");
-                this.OnAssociationIdChanged();
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private int _AssociationId;
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnAssociationIdChanging(int value);
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnAssociationIdChanged();
-        /// <summary>
-        /// Gets or sets the Provider Endpoint URL the association is with.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public string ProviderEndpoint
-        {
-            get
-            {
-                return this._ProviderEndpoint;
-            }
-            set
-            {
-                this.OnProviderEndpointChanging(value);
-                this.ReportPropertyChanging("ProviderEndpoint");
-                this._ProviderEndpoint = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
-                this.ReportPropertyChanged("ProviderEndpoint");
-                this.OnProviderEndpointChanged();
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private string _ProviderEndpoint;
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnProviderEndpointChanging(string value);
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnProviderEndpointChanged();
-        /// <summary>
-        /// There are no comments for property AssociationHandle in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public string AssociationHandle
-        {
-            get
-            {
-                return this._AssociationHandle;
-            }
-            set
-            {
-                this.OnAssociationHandleChanging(value);
-                this.ReportPropertyChanging("AssociationHandle");
-                this._AssociationHandle = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
-                this.ReportPropertyChanged("AssociationHandle");
-                this.OnAssociationHandleChanged();
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private string _AssociationHandle;
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnAssociationHandleChanging(string value);
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnAssociationHandleChanged();
-        /// <summary>
-        /// There are no comments for property ExpirationUtc in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public global::System.DateTime ExpirationUtc
-        {
-            get
-            {
-                return this._ExpirationUtc;
-            }
-            set
-            {
-                this.OnExpirationUtcChanging(value);
-                this.ReportPropertyChanging("ExpirationUtc");
-                this._ExpirationUtc = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
-                this.ReportPropertyChanged("ExpirationUtc");
-                this.OnExpirationUtcChanged();
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private global::System.DateTime _ExpirationUtc;
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnExpirationUtcChanging(global::System.DateTime value);
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnExpirationUtcChanged();
-        /// <summary>
-        /// There are no comments for property PrivateData in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public byte[] PrivateData
-        {
-            get
-            {
-                return global::System.Data.Objects.DataClasses.StructuralObject.GetValidValue(this._PrivateData);
-            }
-            set
-            {
-                this.OnPrivateDataChanging(value);
-                this.ReportPropertyChanging("PrivateData");
-                this._PrivateData = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
-                this.ReportPropertyChanged("PrivateData");
-                this.OnPrivateDataChanged();
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private byte[] _PrivateData;
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnPrivateDataChanging(byte[] value);
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnPrivateDataChanged();
-        /// <summary>
-        /// There are no comments for property PrivateDataLength in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        public int PrivateDataLength
-        {
-            get
-            {
-                return this._PrivateDataLength;
-            }
-            set
-            {
-                this.OnPrivateDataLengthChanging(value);
-                this.ReportPropertyChanging("PrivateDataLength");
-                this._PrivateDataLength = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
-                this.ReportPropertyChanged("PrivateDataLength");
-                this.OnPrivateDataLengthChanged();
-            }
-        }
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        private int _PrivateDataLength;
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnPrivateDataLengthChanging(int value);
-        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
-        partial void OnPrivateDataLengthChanged();
-    }
-    /// <summary>
     /// There are no comments for DatabaseModel.Client in the schema.
     /// </summary>
     /// <KeyProperties>
@@ -1568,5 +1373,171 @@ namespace RelyingPartyLogic
                 }
             }
         }
+    }
+    /// <summary>
+    /// There are no comments for DatabaseModel.SymmetricCryptoKey in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// CryptoKeyId
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="DatabaseModel", Name="SymmetricCryptoKey")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class SymmetricCryptoKey : global::System.Data.Objects.DataClasses.EntityObject
+    {
+        /// <summary>
+        /// Create a new SymmetricCryptoKey object.
+        /// </summary>
+        /// <param name="cryptoKeyId">Initial value of CryptoKeyId.</param>
+        /// <param name="bucket">Initial value of Bucket.</param>
+        /// <param name="handle">Initial value of Handle.</param>
+        /// <param name="expirationUtc">Initial value of ExpirationUtc.</param>
+        /// <param name="secret">Initial value of Secret.</param>
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public static SymmetricCryptoKey CreateSymmetricCryptoKey(int cryptoKeyId, string bucket, string handle, global::System.DateTime expirationUtc, byte[] secret)
+        {
+            SymmetricCryptoKey symmetricCryptoKey = new SymmetricCryptoKey();
+            symmetricCryptoKey.CryptoKeyId = cryptoKeyId;
+            symmetricCryptoKey.Bucket = bucket;
+            symmetricCryptoKey.Handle = handle;
+            symmetricCryptoKey.ExpirationUtc = expirationUtc;
+            symmetricCryptoKey.Secret = secret;
+            return symmetricCryptoKey;
+        }
+        /// <summary>
+        /// There are no comments for property CryptoKeyId in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public int CryptoKeyId
+        {
+            get
+            {
+                return this._CryptoKeyId;
+            }
+            set
+            {
+                this.OnCryptoKeyIdChanging(value);
+                this.ReportPropertyChanging("CryptoKeyId");
+                this._CryptoKeyId = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("CryptoKeyId");
+                this.OnCryptoKeyIdChanged();
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        private int _CryptoKeyId;
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnCryptoKeyIdChanging(int value);
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnCryptoKeyIdChanged();
+        /// <summary>
+        /// There are no comments for property Bucket in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public string Bucket
+        {
+            get
+            {
+                return this._Bucket;
+            }
+            set
+            {
+                this.OnBucketChanging(value);
+                this.ReportPropertyChanging("Bucket");
+                this._Bucket = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("Bucket");
+                this.OnBucketChanged();
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        private string _Bucket;
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnBucketChanging(string value);
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnBucketChanged();
+        /// <summary>
+        /// There are no comments for property Handle in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public string Handle
+        {
+            get
+            {
+                return this._Handle;
+            }
+            set
+            {
+                this.OnHandleChanging(value);
+                this.ReportPropertyChanging("Handle");
+                this._Handle = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("Handle");
+                this.OnHandleChanged();
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        private string _Handle;
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnHandleChanging(string value);
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnHandleChanged();
+        /// <summary>
+        /// There are no comments for property ExpirationUtc in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public global::System.DateTime ExpirationUtc
+        {
+            get
+            {
+                return this._ExpirationUtc;
+            }
+            set
+            {
+                this.OnExpirationUtcChanging(value);
+                this.ReportPropertyChanging("ExpirationUtc");
+                this._ExpirationUtc = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ExpirationUtc");
+                this.OnExpirationUtcChanged();
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        private global::System.DateTime _ExpirationUtc;
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnExpirationUtcChanging(global::System.DateTime value);
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnExpirationUtcChanged();
+        /// <summary>
+        /// There are no comments for property Secret in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        public byte[] Secret
+        {
+            get
+            {
+                return global::System.Data.Objects.DataClasses.StructuralObject.GetValidValue(this._Secret);
+            }
+            set
+            {
+                this.OnSecretChanging(value);
+                this.ReportPropertyChanging("Secret");
+                this._Secret = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("Secret");
+                this.OnSecretChanged();
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        private byte[] _Secret;
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnSecretChanging(byte[] value);
+        [global::System.CodeDom.Compiler.GeneratedCode("System.Data.Entity.Design.EntityClassGenerator", "4.0.0.0")]
+        partial void OnSecretChanged();
     }
 }

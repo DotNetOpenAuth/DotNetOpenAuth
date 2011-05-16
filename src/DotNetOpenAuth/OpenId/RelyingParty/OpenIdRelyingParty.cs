@@ -137,6 +137,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
+			if (cryptoKeyStore == null) {
+				cryptoKeyStore = new MemoryCryptoKeyStore();
+			}
+
 			this.channel = new OpenIdChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore), this.SecuritySettings);
 

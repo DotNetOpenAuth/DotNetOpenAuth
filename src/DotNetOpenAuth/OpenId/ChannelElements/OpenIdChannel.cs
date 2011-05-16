@@ -315,7 +315,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			SigningBindingElement signingElement;
-			signingElement = nonVerifying ? null : new SigningBindingElement(new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore));
+			signingElement = nonVerifying ? null : new SigningBindingElement(new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore ?? new MemoryCryptoKeyStore()));
 
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
