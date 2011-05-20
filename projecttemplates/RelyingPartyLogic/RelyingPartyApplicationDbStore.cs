@@ -9,15 +9,13 @@ namespace RelyingPartyLogic {
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
-	using System.Text;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// A database-backed state store for OpenID relying parties.
 	/// </summary>
-	public class RelyingPartyApplicationDbStore : NonceDbStore, IRelyingPartyApplicationStore {
+	public class RelyingPartyApplicationDbStore : NonceDbStore, IOpenIdApplicationStore {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelyingPartyApplicationDbStore"/> class.
 		/// </summary>

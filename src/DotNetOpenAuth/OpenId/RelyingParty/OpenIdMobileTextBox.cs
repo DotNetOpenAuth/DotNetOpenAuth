@@ -524,7 +524,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// If set, this property must be set in each Page Load event
 		/// as it is not persisted across postbacks.
 		/// </remarks>
-		public IRelyingPartyApplicationStore CustomApplicationStore { get; set; }
+		public IOpenIdApplicationStore CustomApplicationStore { get; set; }
 
 		#endregion
 
@@ -759,7 +759,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If we're in stateful mode, first use the explicitly given one on this control if there
 			// is one.  Then try the configuration file specified one.  Finally, use the default
 			// in-memory one that's built into OpenIdRelyingParty.
-			IRelyingPartyApplicationStore store = this.Stateless ? null :
+			IOpenIdApplicationStore store = this.Stateless ? null :
 				(this.CustomApplicationStore ?? DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore));
 			var rp = new OpenIdRelyingParty(store);
 			try {

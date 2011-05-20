@@ -11,9 +11,7 @@ namespace OpenIdProviderWebForms.Code {
 	using System.Globalization;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.Configuration;
-	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// This custom store serializes all elements to demonstrate peristent and/or shared storage.
@@ -25,7 +23,7 @@ namespace OpenIdProviderWebForms.Code {
 	/// But we "persist" all associations and nonces into a DataTable to demonstrate
 	/// that using a database is possible.
 	/// </remarks>
-	public class CustomStore : IProviderApplicationStore {
+	public class CustomStore : IOpenIdApplicationStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region INonceStore Members

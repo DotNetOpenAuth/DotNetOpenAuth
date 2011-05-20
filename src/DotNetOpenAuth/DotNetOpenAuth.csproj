@@ -599,7 +599,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
     <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
-    <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IProviderBehavior.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
@@ -660,7 +659,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Protocol.cs" />
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
-    <Compile Include="OpenId\RelyingParty\IRelyingPartyApplicationStore.cs" />
+    <Compile Include="OpenId\IOpenIdApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />

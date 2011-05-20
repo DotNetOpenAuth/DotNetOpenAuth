@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
-		public OpenIdRelyingParty(IRelyingPartyApplicationStore applicationStore)
+		public OpenIdRelyingParty(IOpenIdApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
 		}
 
@@ -164,17 +164,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static IRelyingPartyApplicationStore HttpApplicationStore {
+		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
-				Contract.Ensures(Contract.Result<IRelyingPartyApplicationStore>() != null);
+				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
 
 				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
-				var store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey];
+				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
+				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
 							context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
 						}
 					} finally {

@@ -18,10 +18,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// out of the box on most single-server web sites.  It is highly recommended
 	/// that high traffic web sites consider using a database to store the information
 	/// used by an OpenID Provider and write a custom implementation of the
-	/// <see cref="IProviderApplicationStore"/> interface to use instead of this
+	/// <see cref="IOpenIdApplicationStore"/> interface to use instead of this
 	/// class.
 	/// </remarks>
-	public class StandardProviderApplicationStore : IProviderApplicationStore {
+	public class StandardProviderApplicationStore : IOpenIdApplicationStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>

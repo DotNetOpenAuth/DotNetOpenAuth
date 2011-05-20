@@ -3,11 +3,9 @@
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
-	using System.Security.Cryptography;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// This custom store serializes all elements to demonstrate peristent and/or shared storage.
@@ -19,7 +17,7 @@
 	/// But we "persist" all associations and nonces into a DataTable to demonstrate
 	/// that using a database is possible.
 	/// </remarks>
-	public class CustomStore : IRelyingPartyApplicationStore {
+	public class CustomStore : IOpenIdApplicationStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region INonceStore Members

@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// An in-memory store for Relying Parties, suitable for single server, single process
 	/// ASP.NET web sites.
 	/// </summary>
-	public class StandardRelyingPartyApplicationStore : IRelyingPartyApplicationStore {
+	public class StandardRelyingPartyApplicationStore : IOpenIdApplicationStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>

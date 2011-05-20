@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
-		public OpenIdProvider(IProviderApplicationStore applicationStore)
+		public OpenIdProvider(IOpenIdApplicationStore applicationStore)
 			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore) {
 			Contract.Requires<ArgumentNullException>(applicationStore != null);
 			Contract.Ensures(this.SecuritySettings != null);
@@ -98,16 +98,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static IProviderApplicationStore HttpApplicationStore {
+		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
 				Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-				Contract.Ensures(Contract.Result<IProviderApplicationStore>() != null);
+				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
 				HttpContext context = HttpContext.Current;
-				var store = (IProviderApplicationStore)context.Application[ApplicationStoreKey];
+				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IProviderApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
 							context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore();
 						}
 					} finally {
