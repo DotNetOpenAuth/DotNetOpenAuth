@@ -6,7 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Threading;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -14,46 +16,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// details in the handle.
 	/// </summary>
 	public class ProviderAssociationHandleEncoder : IProviderAssociationStore {
-		/// <summary>
-		/// The thread synchronization object.
-		/// </summary>
-		private readonly object syncObject = new object();
+		internal const string AssociationHandleEncodingSecretBucket = "https://localhost/dnoa/association_handles";
 
-		/// <summary>
-		/// Backing field for the <see cref="Secret"/> property.
-		/// </summary>
-		private byte[] secret;
+		private readonly ICryptoKeyStore cryptoKeyStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProviderAssociationHandleEncoder"/> class.
 		/// </summary>
-		public ProviderAssociationHandleEncoder() {
-		}
-
-		/// <summary>
-		/// Gets or sets the symmetric secret this Provider uses for protecting messages to itself.
-		/// </summary>
-		/// <remarks>
-		/// If the value is not set by the time this property is requested, a random key will be generated.
-		/// </remarks>
-		public byte[] Secret {
-			get {
-				if (this.secret == null) {
-					lock (this.syncObject) {
-						if (this.secret == null) {
-							Logger.OpenId.Info("Generating a symmetric secret for signing and encrypting association handles.");
-							this.secret = MessagingUtilities.GetCryptoRandomData(32); // 256-bit symmetric key protects association secrets.
-						}
-					}
-				}
-
-				return this.secret;
-			}
-
-			set {
-				ErrorUtilities.VerifyOperation(this.secret == null, "The symmetric secret has already been set.");
-				this.secret = value;
-			}
+		public ProviderAssociationHandleEncoder(ICryptoKeyStore cryptoKeyStore) {
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
+			this.cryptoKeyStore = cryptoKeyStore;
 		}
 
 		/// <summary>
@@ -71,8 +43,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				IsPrivateAssociation = isPrivateAssociation,
 				ExpiresUtc = expiresUtc,
 			};
-			var formatter = AssociationDataBag.CreateFormatter(this.Secret);
-			return formatter.Serialize(associationDataBag);
+
+			var encodingSecret = this.cryptoKeyStore.GetCurrentKey(AssociationHandleEncodingSecretBucket, DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+			var formatter = AssociationDataBag.CreateFormatter(encodingSecret.Value.Key);
+			return encodingSecret.Key + "!" + formatter.Serialize(associationDataBag);
 		}
 
 		/// <summary>
@@ -86,10 +60,20 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
 		public Association Deserialize(IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
-			var formatter = AssociationDataBag.CreateFormatter(this.Secret);
+			int privateHandleIndex = handle.IndexOf('!');
+			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, containingMessage.GetProtocol().openid.assoc_handle, handle);
+			string privateHandle = handle.Substring(0, privateHandleIndex);
+			string encodedHandle = handle.Substring(privateHandleIndex + 1);
+			var encodingSecret = this.cryptoKeyStore.GetKey(AssociationHandleEncodingSecretBucket, privateHandle);
+			if (encodingSecret == null) {
+				Logger.OpenId.Error("Rejecting an association because the symmetric secret it was encoded with is missing or has expired.");
+				return null;
+			}
+
+			var formatter = AssociationDataBag.CreateFormatter(encodingSecret.Key);
 			AssociationDataBag bag;
 			try {
-				bag = formatter.Deserialize(containingMessage, handle);
+				bag = formatter.Deserialize(containingMessage, encodedHandle);
 			} catch (ProtocolException) {
 				return null;
 			}

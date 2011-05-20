@@ -58,12 +58,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
 		/// for use by a Provider.
 		/// </summary>
-		/// <param name="associationStore">The OpenID Provider's association store or handle encoder.</param>
+		/// <param name="cryptoKeyStore">The OpenID Provider's association store or handle encoder.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal OpenIdChannel(IProviderAssociationStore associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
-			: this(associationStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
-			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
+		internal OpenIdChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
+			: this(cryptoKeyStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
 
@@ -87,13 +87,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
 		/// for use by a Provider.
 		/// </summary>
-		/// <param name="associationStore">The association store to use.</param>
+		/// <param name="cryptoKeyStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		private OpenIdChannel(IProviderAssociationStore associationStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
-			this(messageTypeProvider, InitializeBindingElements(associationStore, nonceStore, securitySettings)) {
-			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
+		private OpenIdChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
+			this(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings)) {
+				Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
@@ -358,19 +358,19 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Initializes the binding elements.
 		/// </summary>
-		/// <param name="associationStore">The OpenID Provider's association store or handle encoder.</param>
+		/// <param name="cryptoKeyStore">The OpenID Provider's crypto key store.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
-		private static IChannelBindingElement[] InitializeBindingElements(IProviderAssociationStore associationStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
+		private static IChannelBindingElement[] InitializeBindingElements(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings) {
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
 
 			SigningBindingElement signingElement;
-			signingElement = new SigningBindingElement(associationStore, securitySettings);
+			signingElement = new SigningBindingElement(cryptoKeyStore, securitySettings);
 
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 

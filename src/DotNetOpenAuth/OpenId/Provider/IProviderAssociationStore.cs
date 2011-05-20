@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// be confidential.
 	/// </remarks>
 	[ContractClass(typeof(IProviderAssociationStoreContract))]
-	public interface IProviderAssociationStore {
+	internal interface IProviderAssociationStore {
 		/// <summary>
 		/// Stores an association and returns a handle for it.
 		/// </summary>

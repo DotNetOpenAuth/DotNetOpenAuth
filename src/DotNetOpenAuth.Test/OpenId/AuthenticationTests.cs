@@ -139,7 +139,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Contract.Requires<ArgumentException>(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
 			Contract.Requires<ArgumentException>(positive || !tamper, "Cannot tamper with a negative response.");
 			var securitySettings = new ProviderSecuritySettings();
-			var associationStore = new ProviderAssociationHandleEncoder();
+			var cryptoKeyStore = new MemoryCryptoKeyStore();
+			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
 			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(
 				rp => {
@@ -197,7 +198,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				},
 				op => {
-					((ProviderAssociationHandleEncoder)op.AssociationStore).Secret = associationStore.Secret;
+					op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, association.Handle, cryptoKeyStore.GetKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, association.Handle));
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
 					Assert.IsNotNull(request);
 					IProtocolMessage response;

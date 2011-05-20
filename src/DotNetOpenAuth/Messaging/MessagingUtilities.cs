@@ -66,6 +66,17 @@ namespace DotNetOpenAuth.Messaging {
 		internal const string AlphaNumeric = UppercaseLetters + LowercaseLetters + Digits;
 
 		/// <summary>
+		/// All the characters that are allowed for use as a base64 encoding character.
+		/// </summary>
+		internal const string Base64Characters = AlphaNumeric + "+" + "/";
+
+		/// <summary>
+		/// All the characters that are allowed for use as a base64 encoding character
+		/// in the "web safe" context.
+		/// </summary>
+		internal const string Base64WebSafeCharacters = AlphaNumeric + "-" + "_";
+
+		/// <summary>
 		/// The set of digits, and alphabetic letters (upper and lowercase) that are clearly
 		/// visually distinguishable.
 		/// </summary>
@@ -692,7 +703,7 @@ namespace DotNetOpenAuth.Messaging {
 				int failedAttempts = 0;
 			tryAgain:
 				try {
-					string handle = GetRandomString(SymmetricSecretHandleLength, AlphaNumeric);
+					string handle = GetRandomString(SymmetricSecretHandleLength, Base64WebSafeCharacters);
 					cryptoKeyPair = new KeyValuePair<string, CryptoKey>(handle, cryptoKey);
 					cryptoKeyStore.StoreKey(bucket, handle, cryptoKey);
 				} catch (CryptoKeyCollisionException) {
@@ -731,6 +742,42 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return decompressedDataStream.ToArray();
+		}
+
+		/// <summary>
+		/// Converts to data buffer to a base64-encoded string, using web safe characters and with the padding removed.
+		/// </summary>
+		/// <param name="data">The data buffer.</param>
+		/// <returns>A web-safe base64-encoded string without padding.</returns>
+		internal static string ConvertToBase64WebSafeString(byte[] data) {
+			var builder = new StringBuilder(Convert.ToBase64String(data));
+
+			// Swap out the URL-unsafe characters, and trim the padding characters.
+			builder.Replace('+', '-').Replace('/', '_');
+			while (builder[builder.Length - 1] == '=') { // should happen at most twice.
+				builder.Length -= 1;
+			}
+
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Decodes a (web-safe) base64-string back to its binary buffer form.
+		/// </summary>
+		/// <param name="base64WebSafe">The base64-encoded string.  May be web-safe encoded.</param>
+		/// <returns>A data buffer.</returns>
+		internal static byte[] FromBase64WebSafeString(string base64WebSafe) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(base64WebSafe));
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			// Restore the padding characters and original URL-unsafe characters.
+			int missingPaddingCharacters = 4 - (base64WebSafe.Length % 4);
+			ErrorUtilities.VerifyInternal(missingPaddingCharacters <= 2, "No more than two padding characters should be present for base64.");
+			var builder = new StringBuilder(base64WebSafe, base64WebSafe.Length + missingPaddingCharacters);
+			builder.Replace('-', '+').Replace('_', '/');
+			builder.Append('=', missingPaddingCharacters);
+
+			return Convert.FromBase64String(builder.ToString());
 		}
 
 		/// <summary>

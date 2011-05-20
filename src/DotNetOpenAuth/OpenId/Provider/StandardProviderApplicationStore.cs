@@ -21,17 +21,20 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// <see cref="IProviderApplicationStore"/> interface to use instead of this
 	/// class.
 	/// </remarks>
-	public class StandardProviderApplicationStore : ProviderAssociationHandleEncoder, IProviderApplicationStore {
+	public class StandardProviderApplicationStore : IProviderApplicationStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>
 		private readonly INonceStore nonceStore;
+
+		private readonly ICryptoKeyStore cryptoKeyStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardProviderApplicationStore"/> class.
 		/// </summary>
 		public StandardProviderApplicationStore() {
 			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+			this.cryptoKeyStore = new MemoryCryptoKeyStore();
 		}
 
 		#region INonceStore Members
@@ -56,6 +59,26 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public bool StoreNonce(string context, string nonce, DateTime timestampUtc) {
 			return this.nonceStore.StoreNonce(context, nonce, timestampUtc);
+		}
+
+		#endregion
+
+		#region ICryptoKeyStore
+
+		public CryptoKey GetKey(string bucket, string handle) {
+			return this.cryptoKeyStore.GetKey(bucket, handle);
+		}
+
+		public System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
+			return this.cryptoKeyStore.GetKeys(bucket);
+		}
+
+		public void StoreKey(string bucket, string handle, CryptoKey key) {
+			this.cryptoKeyStore.StoreKey(bucket, handle, key);
+		}
+
+		public void RemoveKey(string bucket, string handle) {
+			this.cryptoKeyStore.RemoveKey(bucket, handle);
 		}
 
 		#endregion
