@@ -236,6 +236,13 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="privateSecretMaximumAge" type="xs:string">
+							<xs:annotation>
+								<xs:documentation>
+									The maximum age of a secret used for private signing or encryption before it is renewed.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="openid">
@@ -335,13 +342,6 @@
 														<xs:documentation>
 															Shared associaitons with OpenID Providers will only be formed or used if they
 															are willing to form associations equal to or less than a given level of protection.
-														</xs:documentation>
-													</xs:annotation>
-												</xs:attribute>
-												<xs:attribute name="privateSecretMaximumAge" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>
-															The maximum age of a secret used for private signing before it is renewed.
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>

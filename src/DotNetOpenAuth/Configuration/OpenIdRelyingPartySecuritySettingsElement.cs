@@ -61,11 +61,6 @@ namespace DotNetOpenAuth.Configuration {
 		private const string IgnoreUnsignedExtensionsConfigName = "ignoreUnsignedExtensions";
 
 		/// <summary>
-		/// Gets the name of the @privateSecretMaximumAge attribute.
-		/// </summary>
-		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
-
-		/// <summary>
 		/// Gets the name of the @allowDualPurposeIdentifiers attribute.
 		/// </summary>
 		private const string AllowDualPurposeIdentifiersConfigName = "allowDualPurposeIdentifiers";
@@ -149,17 +144,6 @@ namespace DotNetOpenAuth.Configuration {
 		public int MaximumHashBitLength {
 			get { return (int)this[MaximumHashBitLengthConfigName]; }
 			set { this[MaximumHashBitLengthConfigName] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the maximum allowable age of the secret a Relying Party
-		/// uses to its return_to URLs and nonces with 1.0 Providers.
-		/// </summary>
-		/// <value>The default value is 7 days.</value>
-		[ConfigurationProperty(PrivateSecretMaximumAgeConfigName, DefaultValue = "07:00:00")]
-		public TimeSpan PrivateSecretMaximumAge {
-			get { return (TimeSpan)this[PrivateSecretMaximumAgeConfigName]; }
-			set { this[PrivateSecretMaximumAgeConfigName] = value; }
 		}
 
 		/// <summary>
@@ -263,7 +247,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
-			settings.PrivateSecretMaximumAge = this.PrivateSecretMaximumAge;
+			settings.PrivateSecretMaximumAge = DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;

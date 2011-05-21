@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The default lifetime of a private secret.
 		/// </summary>
-		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.PrivateSecretMaximumAge;
+		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
 
 		/// <summary>
 		/// The cryptographically strong random data generator used for creating secrets.

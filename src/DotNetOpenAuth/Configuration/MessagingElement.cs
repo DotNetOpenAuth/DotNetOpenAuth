@@ -56,12 +56,28 @@ namespace DotNetOpenAuth.Configuration {
 		private const string MaximumIndirectMessageUrlLengthConfigName = "maximumIndirectMessageUrlLength";
 
 		/// <summary>
+		/// Gets the name of the @privateSecretMaximumAge attribute.
+		/// </summary>
+		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
+
+		/// <summary>
 		/// Gets the actual maximum message lifetime that a program should allow.
 		/// </summary>
 		/// <value>The sum of the <see cref="MaximumMessageLifetime"/> and 
 		/// <see cref="MaximumClockSkew"/> property values.</value>
 		public TimeSpan MaximumMessageLifetime {
 			get { return this.MaximumMessageLifetimeNoSkew + this.MaximumClockSkew; }
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum lifetime of a private symmetric secret,
+		/// that may be used for signing or encryption.
+		/// </summary>
+		/// <value>The default value is 7 days.</value>
+		[ConfigurationProperty(PrivateSecretMaximumAgeConfigName, DefaultValue = "07:00:00")]
+		public TimeSpan PrivateSecretMaximumAge {
+			get { return (TimeSpan)this[PrivateSecretMaximumAgeConfigName]; }
+			set { this[PrivateSecretMaximumAgeConfigName] = value; }
 		}
 
 		/// <summary>
