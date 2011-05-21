@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				ExpiresUtc = expiresUtc,
 			};
 
-			var encodingSecret = this.cryptoKeyStore.GetCurrentKey(AssociationHandleEncodingSecretBucket, DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+			var encodingSecret = this.cryptoKeyStore.GetCurrentKey(AssociationHandleEncodingSecretBucket, expiresUtc - DateTime.UtcNow);
 			var formatter = AssociationDataBag.CreateFormatter(encodingSecret.Value.Key);
 			return encodingSecret.Key + "!" + formatter.Serialize(associationDataBag);
 		}
