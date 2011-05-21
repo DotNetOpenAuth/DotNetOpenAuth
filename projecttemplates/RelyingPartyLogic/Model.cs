@@ -27,8 +27,8 @@ namespace RelyingPartyLogic {
 		/// Clears the expired associations.
 		/// </summary>
 		/// <param name="transaction">The transaction to use, if any.</param>
-		internal void ClearExpiredAssociations(EntityTransaction transaction) {
-			this.ExecuteCommand(transaction, "DatabaseEntities.ClearExpiredAssociations");
+		internal void ClearExpiredCryptoKeys(EntityTransaction transaction) {
+			this.ExecuteCommand(transaction, "DatabaseEntities.ClearExpiredCryptoKeys");
 		}
 	}
 }

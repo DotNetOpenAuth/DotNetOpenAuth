@@ -15,7 +15,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("DatabaseModel", "FK_IssuedToken_User", "User", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(RelyingPartyLogic.User), "ClientAuthorization", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(RelyingPartyLogic.ClientAuthorization))]
 
 // Original file name:
-// Generation date: 5/15/2011 5:33:40 PM
+// Generation date: 5/20/2011 5:13:47 PM
 namespace RelyingPartyLogic
 {
     

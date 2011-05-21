@@ -84,9 +84,9 @@ namespace RelyingPartyLogic {
 		/// This should be done frequently enough to avoid a memory leak, but sparingly enough
 		/// to not be a performance drain.
 		/// </remarks>
-		internal void ClearExpiredAssociations() {
+		internal void ClearExpiredCryptoKeys() {
 			using (var dataContext = new TransactedDatabaseEntities(IsolationLevel.ReadCommitted)) {
-				dataContext.ClearExpiredAssociations(dataContext.Transaction);
+				dataContext.ClearExpiredCryptoKeys(dataContext.Transaction);
 			}
 		}
 	}

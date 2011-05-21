@@ -184,7 +184,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="ClearExpiredAssociations" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="ClearExpiredCryptoKeys" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="ClearExpiredNonces" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
