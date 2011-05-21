@@ -56,8 +56,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReturnToSignatureBindingElement"/> class.
 		/// </summary>
-		/// <param name="secretStore">The secret store from which to retrieve the secret used for signing.</param>
-		/// <param name="securitySettings">The security settings.</param>
+		/// <param name="cryptoKeyStore">The crypto key store.</param>
 		internal ReturnToSignatureBindingElement(ICryptoKeyStore cryptoKeyStore) {
 			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 

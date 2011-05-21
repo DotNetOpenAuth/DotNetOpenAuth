@@ -572,13 +572,26 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// association handle encoding modes.
 		/// </summary>
 		private class SwitchingAssociationStore : IProviderAssociationStore {
+			/// <summary>
+			/// The security settings of the Provider.
+			/// </summary>
 			private readonly ProviderSecuritySettings securitySettings;
 
+			/// <summary>
+			/// The association store that records association secrets in the association handles themselves.
+			/// </summary>
 			private IProviderAssociationStore associationHandleEncoder;
 
+			/// <summary>
+			/// The association store that records association secrets in a secret store.
+			/// </summary>
 			private IProviderAssociationStore associationSecretStorage;
 
-
+			/// <summary>
+			/// Initializes a new instance of the <see cref="SwitchingAssociationStore"/> class.
+			/// </summary>
+			/// <param name="cryptoKeyStore">The crypto key store.</param>
+			/// <param name="securitySettings">The security settings.</param>
 			internal SwitchingAssociationStore(ICryptoKeyStore cryptoKeyStore, ProviderSecuritySettings securitySettings) {
 				Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
 				Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
@@ -588,14 +601,36 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				this.associationSecretStorage = new ProviderAssociationKeyStorage(cryptoKeyStore);
 			}
 
+			/// <summary>
+			/// Gets the association store that applies given the Provider's current security settings.
+			/// </summary>
 			internal IProviderAssociationStore AssociationStore {
 				get { return this.securitySettings.EncodeAssociationSecretsInHandles ? this.associationHandleEncoder : this.associationSecretStorage; }
 			}
 
+			/// <summary>
+			/// Stores an association and returns a handle for it.
+			/// </summary>
+			/// <param name="secret">The association secret.</param>
+			/// <param name="expiresUtc">The UTC time that the association should expire.</param>
+			/// <param name="privateAssociation">A value indicating whether this is a private association.</param>
+			/// <returns>
+			/// The association handle that represents this association.
+			/// </returns>
 			public string Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
 				return this.AssociationStore.Serialize(secret, expiresUtc, privateAssociation);
 			}
 
+			/// <summary>
+			/// Retrieves an association given an association handle.
+			/// </summary>
+			/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
+			/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+			/// <param name="handle">The association handle.</param>
+			/// <returns>
+			/// An association instance, or <c>null</c> if the association has expired or the signature is incorrect (which may be because the OP's symmetric key has changed).
+			/// </returns>
+			/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
 			public Association Deserialize(IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
 				return this.AssociationStore.Deserialize(containingMessage, isPrivateAssociation, handle);
 			}

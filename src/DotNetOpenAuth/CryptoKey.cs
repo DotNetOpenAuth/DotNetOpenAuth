@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -67,7 +67,7 @@ namespace DotNetOpenAuth {
 		/// </returns>
 		/// <exception cref="T:System.NullReferenceException">
 		/// The <paramref name="obj"/> parameter is null.
-		///   </exception>
+		/// </exception>
 		public override bool Equals(object obj) {
 			var other = obj as CryptoKey;
 			if (other == null) {

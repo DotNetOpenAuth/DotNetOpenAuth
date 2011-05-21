@@ -99,8 +99,12 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Decrypts the specified key.
 		/// </summary>
+		/// <param name="bucket">The bucket.</param>
+		/// <param name="handle">The handle.</param>
 		/// <param name="encryptedCryptoKey">The encrypted key.</param>
-		/// <returns>The decrypted key.</returns>
+		/// <returns>
+		/// The decrypted key.
+		/// </returns>
 		private CryptoKey Decrypt(string bucket, string handle, CryptoKey encryptedCryptoKey) {
 			if (encryptedCryptoKey == null) {
 				return null;
@@ -140,7 +144,7 @@ namespace DotNetOpenAuth {
 			}
 
 			/// <summary>
-			/// Gets or sets the encrypted key.
+			/// Gets the encrypted key.
 			/// </summary>
 			internal byte[] EncryptedKey { get; private set; }
 

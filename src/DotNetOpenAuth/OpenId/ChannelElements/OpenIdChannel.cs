@@ -304,7 +304,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Initializes the binding elements.
 		/// </summary>
-		/// <param name="associationStore">The association store.</param>
+		/// <param name="cryptoKeyStore">The crypto key store.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
