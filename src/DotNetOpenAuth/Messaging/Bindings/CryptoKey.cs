@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth {
+namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;

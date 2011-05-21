@@ -21,13 +21,21 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 	using System.Web;
 	using System.Web.Mvc;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
 	/// </summary>
 	public static class MessagingUtilities {
-		private const int SymmetricSecretHandleLength = 4; // TODO: replace this with an unnamed secret concept.
+		/// <summary>
+		/// The length of private symmetric secret handles.
+		/// </summary>
+		/// <remarks>
+		/// This value needn't be high, as we only expect to have a small handful of unexpired secrets at a time,
+		/// and handle recycling is permissible.
+		/// </remarks>
+		private const int SymmetricSecretHandleLength = 4;
 
 		/// <summary>
 		/// The default lifetime of a private secret.

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
 	using System.Linq;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;

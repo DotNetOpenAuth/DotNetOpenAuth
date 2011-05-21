@@ -10,6 +10,7 @@ namespace RelyingPartyLogic {
 	using System.Data;
 	using System.Linq;
 	using DotNetOpenAuth;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 
 	/// <summary>

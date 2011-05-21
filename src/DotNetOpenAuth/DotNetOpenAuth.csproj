@@ -275,7 +275,7 @@ http://opensource.org/licenses/ms-pl.html
     <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsymmetricCryptoKeyStoreWrapper.cs" />
+    <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
     <Compile Include="ComponentModel\ConverterBase.cs" />
     <Compile Include="ComponentModel\SuggestedStringsConverterContract.cs" />
@@ -306,9 +306,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
-    <Compile Include="CryptoKey.cs" />
-    <Compile Include="CryptoKeyCollisionException.cs" />
-    <Compile Include="ICryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKey.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
+    <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
     <Compile Include="IEmbeddedResourceRetrieval.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\InfoCardImage.cs" />
@@ -322,7 +322,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="InfoCard\Token\TokenUtility.cs" />
     <Compile Include="InfoCard\Token\TokenDecryptor.cs" />
     <Compile Include="InfoCard\WellKnownIssuers.cs" />
-    <Compile Include="MemoryCryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />

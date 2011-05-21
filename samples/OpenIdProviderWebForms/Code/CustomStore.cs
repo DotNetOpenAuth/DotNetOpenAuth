@@ -11,6 +11,7 @@ namespace OpenIdProviderWebForms.Code {
 	using System.Globalization;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 
 	/// <summary>
