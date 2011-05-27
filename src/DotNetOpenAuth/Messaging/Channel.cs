@@ -48,6 +48,11 @@ namespace DotNetOpenAuth.Messaging {
 		protected internal const string JsonEncoded = "application/json";
 
 		/// <summary>
+		/// The "text/javascript" content-type that some servers return instead of the standard <see cref="JsonEncoded"/> one.
+		/// </summary>
+		protected internal const string JsonTextEncoded = "text/javascript";
+
+		/// <summary>
 		/// The content-type for plain text.
 		/// </summary>
 		protected internal const string PlainTextEncoded = "text/plain";
