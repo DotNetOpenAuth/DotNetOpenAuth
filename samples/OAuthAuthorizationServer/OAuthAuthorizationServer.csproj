@@ -70,13 +70,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\Client.cs" />
-    <Compile Include="Code\DatabaseNonceStore.cs" />
+    <Compile Include="Code\DatabaseKeyNonceStore.cs" />
     <Compile Include="Code\DataClasses.designer.cs">
       <DependentUpon>DataClasses.dbml</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Code\OAuth2AuthorizationServer.cs" />
+    <Compile Include="Code\Utilities.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OAuthController.cs" />

@@ -34,15 +34,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="symmetricSecret">The symmetric secret to use for signing and encrypting.</param>
+		/// <param name="cryptoKeyStore">The crypto key store used when signing or encrypting.</param>
+		/// <param name="bucket">The bucket in which symmetric keys are stored for signing/encrypting data.</param>
 		/// <param name="signed">A value indicating whether the data in this instance will be protected against tampering.</param>
 		/// <param name="encrypted">A value indicating whether the data in this instance will be protected against eavesdropping.</param>
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
+		/// <param name="minimumAge">The minimum age.</param>
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
-		protected internal BinaryDataBagFormatter(byte[] symmetricSecret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
-			: base(symmetricSecret, signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Contract.Requires<ArgumentException>(symmetricSecret != null || (!signed && !encrypted), "A secret is required when signing or encrypting is required.");
+		protected internal BinaryDataBagFormatter(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+			: base(cryptoKeyStore, bucket, signed, encrypted, compressed, minimumAge, maximumAge, decodeOnceOnly) {
+			Contract.Requires<ArgumentException>((cryptoKeyStore != null && bucket != null) || (!signed && !encrypted), "A secret is required when signing or encrypting is required.");
 		}
 
 		/// <summary>

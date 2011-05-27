@@ -233,7 +233,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 
 				if (includeRefreshToken) {
-					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.Secret);
+					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.CryptoKeyStore);
 					var refreshToken = new RefreshToken(tokenRequest.AuthorizationDescription);
 					response.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
 				}

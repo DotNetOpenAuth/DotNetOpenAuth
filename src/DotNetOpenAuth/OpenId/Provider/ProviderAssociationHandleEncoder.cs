@@ -17,13 +17,20 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// details in the handle.
 	/// </summary>
 	public class ProviderAssociationHandleEncoder : IProviderAssociationStore {
+		/// <summary>
+		/// The name of the bucket in which to store keys that encrypt association data into association handles.
+		/// </summary>
 		internal const string AssociationHandleEncodingSecretBucket = "https://localhost/dnoa/association_handles";
 
+		/// <summary>
+		/// The crypto key store used to persist encryption keys.
+		/// </summary>
 		private readonly ICryptoKeyStore cryptoKeyStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProviderAssociationHandleEncoder"/> class.
 		/// </summary>
+		/// <param name="cryptoKeyStore">The crypto key store.</param>
 		public ProviderAssociationHandleEncoder(ICryptoKeyStore cryptoKeyStore) {
 			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
 			this.cryptoKeyStore = cryptoKeyStore;
@@ -45,9 +52,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				ExpiresUtc = expiresUtc,
 			};
 
-			var encodingSecret = this.cryptoKeyStore.GetCurrentKey(AssociationHandleEncodingSecretBucket, expiresUtc - DateTime.UtcNow);
-			var formatter = AssociationDataBag.CreateFormatter(encodingSecret.Value.Key);
-			return encodingSecret.Key + "!" + formatter.Serialize(associationDataBag);
+			var formatter = AssociationDataBag.CreateFormatter(this.cryptoKeyStore, AssociationHandleEncodingSecretBucket, expiresUtc - DateTime.UtcNow);
+			return formatter.Serialize(associationDataBag);
 		}
 
 		/// <summary>
@@ -61,21 +67,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
 		public Association Deserialize(IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
-			int privateHandleIndex = handle.IndexOf('!');
-			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, containingMessage.GetProtocol().openid.assoc_handle, handle);
-			string privateHandle = handle.Substring(0, privateHandleIndex);
-			string encodedHandle = handle.Substring(privateHandleIndex + 1);
-			var encodingSecret = this.cryptoKeyStore.GetKey(AssociationHandleEncodingSecretBucket, privateHandle);
-			if (encodingSecret == null) {
-				Logger.OpenId.Error("Rejecting an association because the symmetric secret it was encoded with is missing or has expired.");
-				return null;
-			}
-
-			var formatter = AssociationDataBag.CreateFormatter(encodingSecret.Key);
+			var formatter = AssociationDataBag.CreateFormatter(this.cryptoKeyStore, AssociationHandleEncodingSecretBucket);
 			AssociationDataBag bag;
 			try {
-				bag = formatter.Deserialize(containingMessage, encodedHandle);
-			} catch (ProtocolException) {
+				bag = formatter.Deserialize(containingMessage, handle);
+			} catch (ProtocolException ex) {
+				Logger.OpenId.Error("Rejecting an association because deserialization of the encoded handle failed.", ex);
 				return null;
 			}
 

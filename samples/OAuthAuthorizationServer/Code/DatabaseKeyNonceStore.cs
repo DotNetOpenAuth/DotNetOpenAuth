@@ -1,16 +1,18 @@
 ﻿namespace OAuthAuthorizationServer.Code {
 	using System;
+	using System.Collections.Generic;
 	using System.Data.SqlClient;
+	using System.Linq;
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// A database-persisted nonce store.
 	/// </summary>
-	public class DatabaseNonceStore : INonceStore {
+	public class DatabaseKeyNonceStore : INonceStore, ICryptoKeyStore {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DatabaseNonceStore"/> class.
+		/// Initializes a new instance of the <see cref="DatabaseKeyNonceStore"/> class.
 		/// </summary>
-		public DatabaseNonceStore() {
+		public DatabaseKeyNonceStore() {
 		}
 
 		#region INonceStore Members
@@ -47,6 +49,44 @@
 				return false;
 			} catch (SqlException) {
 				return false;
+			}
+		}
+
+		#endregion
+
+		#region ICryptoKeyStore Members
+
+		public CryptoKey GetKey(string bucket, string handle) {
+			// It is critical that this lookup be case-sensitive, which can only be configured at the database.
+			var matches = from key in MvcApplication.DataContext.SymmetricCryptoKeys
+						  where key.Bucket == bucket && key.Handle == handle
+						  select new CryptoKey(key.Secret, key.ExpiresUtc.AsUtc());
+
+			return matches.FirstOrDefault();
+		}
+
+		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
+			return from key in MvcApplication.DataContext.SymmetricCryptoKeys
+				   orderby key.ExpiresUtc descending
+				   select new KeyValuePair<string, CryptoKey>(key.Handle, new CryptoKey(key.Secret, key.ExpiresUtc.AsUtc()));
+		}
+
+		public void StoreKey(string bucket, string handle, CryptoKey key) {
+			var keyRow = new SymmetricCryptoKey() {
+				Bucket = bucket,
+				Handle = handle,
+				Secret = key.Key,
+				ExpiresUtc = key.ExpiresUtc,
+			};
+
+			MvcApplication.DataContext.SymmetricCryptoKeys.InsertOnSubmit(keyRow);
+			MvcApplication.DataContext.SubmitChanges();
+		}
+
+		public void RemoveKey(string bucket, string handle) {
+			var match = MvcApplication.DataContext.SymmetricCryptoKeys.FirstOrDefault(k => k.Bucket == bucket && k.Handle == handle);
+			if (match != null) {
+				MvcApplication.DataContext.SymmetricCryptoKeys.DeleteOnSubmit(match);
 			}
 		}
 

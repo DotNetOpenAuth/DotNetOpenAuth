@@ -8,6 +8,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Security.Permissions;
 
+	/// <summary>
+	/// Thrown by a hosting application or web site when a cryptographic key is created with a
+	/// bucket and handle that conflicts with a previously stored and unexpired key.
+	/// </summary>
 	[Serializable]
 	public class CryptoKeyCollisionException : ArgumentException {
 		/// <summary>

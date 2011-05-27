@@ -236,7 +236,7 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
-						<xs:attribute name="privateSecretMaximumAge" type="xs:string">
+						<xs:attribute name="privateSecretMaximumAge" type="xs:string" default="28.00:00:00">
 							<xs:annotation>
 								<xs:documentation>
 									The maximum age of a secret used for private signing or encryption before it is renewed.

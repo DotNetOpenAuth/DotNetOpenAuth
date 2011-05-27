@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Collections.Generic;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging.Bindings;
 
@@ -27,6 +28,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		private readonly INonceStore nonceStore;
 
+		/// <summary>
+		/// The crypto key store where symmetric keys are persisted.
+		/// </summary>
 		private readonly ICryptoKeyStore cryptoKeyStore;
 
 		/// <summary>
@@ -65,18 +69,45 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 		#region ICryptoKeyStore
 
+		/// <summary>
+		/// Gets the key in a given bucket and handle.
+		/// </summary>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <param name="handle">The key handle.  Case sensitive.</param>
+		/// <returns>
+		/// The cryptographic key, or <c>null</c> if no matching key was found.
+		/// </returns>
 		public CryptoKey GetKey(string bucket, string handle) {
 			return this.cryptoKeyStore.GetKey(bucket, handle);
 		}
 
-		public System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
+		/// <summary>
+		/// Gets a sequence of existing keys within a given bucket.
+		/// </summary>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <returns>
+		/// A sequence of handles and keys, ordered by descending <see cref="CryptoKey.ExpiresUtc"/>.
+		/// </returns>
+		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
 			return this.cryptoKeyStore.GetKeys(bucket);
 		}
 
+		/// <summary>
+		/// Stores a cryptographic key.
+		/// </summary>
+		/// <param name="bucket">The name of the bucket to store the key in.  Case sensitive.</param>
+		/// <param name="handle">The handle to the key, unique within the bucket.  Case sensitive.</param>
+		/// <param name="key">The key to store.</param>
+		/// <exception cref="CryptoKeyCollisionException">Thrown in the event of a conflict with an existing key in the same bucket and with the same handle.</exception>
 		public void StoreKey(string bucket, string handle, CryptoKey key) {
 			this.cryptoKeyStore.StoreKey(bucket, handle, key);
 		}
 
+		/// <summary>
+		/// Removes the key.
+		/// </summary>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <param name="handle">The key handle.  Case sensitive.</param>
 		public void RemoveKey(string bucket, string handle) {
 			this.cryptoKeyStore.RemoveKey(bucket, handle);
 		}

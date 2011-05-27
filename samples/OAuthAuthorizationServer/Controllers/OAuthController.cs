@@ -35,16 +35,6 @@
 #endif
 
 		/// <summary>
-		/// Creates the resource server's encryption service provider with private key.
-		/// </summary>
-		/// <returns>An RSA crypto service provider.</returns>
-		internal static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
-			var resourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
-			resourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
-			return resourceServerEncryptionServiceProvider;
-		}
-
-		/// <summary>
 		/// The OAuth 2.0 token endpoint.
 		/// </summary>
 		/// <returns>The response to the Client.</returns>
@@ -132,6 +122,16 @@
 			}
 
 			return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
+		}
+
+		/// <summary>
+		/// Creates the resource server's encryption service provider with private key.
+		/// </summary>
+		/// <returns>An RSA crypto service provider.</returns>
+		internal static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
+			var resourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
+			resourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
+			return resourceServerEncryptionServiceProvider;
 		}
 	}
 }

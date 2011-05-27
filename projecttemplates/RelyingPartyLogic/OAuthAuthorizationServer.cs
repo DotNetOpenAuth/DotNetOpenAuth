@@ -9,9 +9,9 @@ namespace RelyingPartyLogic {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Security.Cryptography;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Web;
-
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -23,30 +23,18 @@ namespace RelyingPartyLogic {
 	public class OAuthAuthorizationServer : IAuthorizationServer {
 		private static readonly RSAParameters AsymmetricKey = CreateRSAKey();
 
-		private static readonly byte[] secret = CreateSecret();
-
 		private readonly INonceStore nonceStore = new NonceDbStore();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthAuthorizationServer"/> class.
 		/// </summary>
 		public OAuthAuthorizationServer() {
+			this.CryptoKeyStore = new RelyingPartyApplicationDbStore();
 		}
 
 		#region IAuthorizationServer Members
 
-		/// <summary>
-		/// Gets the secret used to symmetrically encrypt and sign authorization codes and refresh tokens.
-		/// </summary>
-		/// <value></value>
-		/// <remarks>
-		/// This secret should be kept strictly confidential in the authorization server(s)
-		/// and NOT shared with the resource server.  Anyone with this secret can mint
-		/// tokens to essentially grant themselves access to anything they want.
-		/// </remarks>
-		public byte[] Secret {
-			get { return secret; }
-		}
+		public ICryptoKeyStore CryptoKeyStore { get; private set; }
 
 		/// <summary>
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
@@ -139,19 +127,6 @@ namespace RelyingPartyLogic {
 			var serviceProvider = new RSACryptoServiceProvider();
 			serviceProvider.ImportParameters(AsymmetricKey);
 			return serviceProvider;
-		}
-
-		/// <summary>
-		/// Creates a symmetric secret used to sign and encrypt authorization server refresh tokens.
-		/// </summary>
-		/// <returns>A cryptographically strong symmetric key.</returns>
-		private static byte[] CreateSecret() {
-			// TODO: Replace this sample code with real code.
-			// For this sample, we just generate random secrets.
-			RandomNumberGenerator crypto = new RNGCryptoServiceProvider();
-			var secret = new byte[16];
-			crypto.GetBytes(secret);
-			return secret;
 		}
 
 		/// <summary>

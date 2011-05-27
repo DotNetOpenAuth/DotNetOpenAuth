@@ -33,14 +33,19 @@ namespace DotNetOpenAuth.Messaging {
 		private const int NonceLength = 6;
 
 		/// <summary>
-		/// The symmetric secret used for signing/encryption of verification codes and refresh tokens.
+		/// The minimum allowable lifetime for the key used to encrypt/decrypt or sign this databag.
 		/// </summary>
-		private readonly byte[] symmetricSecret;
+		private readonly TimeSpan minimumAge = TimeSpan.FromDays(1);
 
 		/// <summary>
-		/// The hashing algorithm to use while signing when using a symmetric secret.
+		/// The symmetric key store with the secret used for signing/encryption of verification codes and refresh tokens.
 		/// </summary>
-		private readonly HashAlgorithm symmetricHasher;
+		private readonly ICryptoKeyStore cryptoKeyStore;
+
+		/// <summary>
+		/// The bucket for symmetric keys.
+		/// </summary>
+		private readonly string cryptoKeyBucket;
 
 		/// <summary>
 		/// The crypto to use for signing access tokens.
@@ -100,21 +105,24 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="symmetricSecret">The symmetric secret to use for signing and encrypting.</param>
+		/// <param name="cryptoKeyStore">The crypto key store used when signing or encrypting.</param>
+		/// <param name="bucket">The bucket in which symmetric keys are stored for signing/encrypting data.</param>
 		/// <param name="signed">A value indicating whether the data in this instance will be protected against tampering.</param>
 		/// <param name="encrypted">A value indicating whether the data in this instance will be protected against eavesdropping.</param>
 		/// <param name="compressed">A value indicating whether the data in this instance will be GZip'd.</param>
+		/// <param name="minimumAge">The required minimum lifespan within which this token must be decodable and verifiable; useful only when <paramref name="signed"/> and/or <paramref name="encrypted"/> is true.</param>
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
-		protected DataBagFormatterBase(byte[] symmetricSecret = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
+		protected DataBagFormatterBase(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Contract.Requires<ArgumentException>(symmetricSecret != null || (!signed && !encrypted), "A secret is required when signing or encrypting is required.");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket) || cryptoKeyStore == null);
+			Contract.Requires<ArgumentException>(cryptoKeyStore != null || (!signed && !encrypted), "A secret is required when signing or encrypting is required.");
 
-			if (symmetricSecret != null) {
-				this.symmetricHasher = new HMACSHA256(symmetricSecret);
+			this.cryptoKeyStore = cryptoKeyStore;
+			this.cryptoKeyBucket = bucket;
+			if (minimumAge.HasValue) {
+				this.minimumAge = minimumAge.Value;
 			}
-
-			this.symmetricSecret = symmetricSecret;
 		}
 
 		/// <summary>
@@ -154,12 +162,13 @@ namespace DotNetOpenAuth.Messaging {
 				encoded = MessagingUtilities.Compress(encoded);
 			}
 
+			string symmetricSecretHandle = null;
 			if (this.encrypted) {
-				encoded = this.Encrypt(encoded);
+				encoded = this.Encrypt(encoded, out symmetricSecretHandle);
 			}
 
 			if (this.signed) {
-				message.Signature = this.CalculateSignature(encoded);
+				message.Signature = this.CalculateSignature(encoded, symmetricSecretHandle);
 			}
 
 			int capacity = this.signed ? 4 + message.Signature.Length + 4 + encoded.Length : encoded.Length;
@@ -172,7 +181,13 @@ namespace DotNetOpenAuth.Messaging {
 			writer.WriteBuffer(encoded);
 			writer.Flush();
 
-			return Convert.ToBase64String(finalStream.ToArray());
+			string payload = MessagingUtilities.ConvertToBase64WebSafeString(finalStream.ToArray());
+			string result = payload;
+			if (symmetricSecretHandle != null && (this.signed || this.encrypted)) {
+				result = MessagingUtilities.CombineKeyHandleAndPayload(symmetricSecretHandle, payload);
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -182,8 +197,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <returns>The deserialized value.  Never null.</returns>
 		public T Deserialize(IProtocolMessage containingMessage, string value) {
+			string symmetricSecretHandle = null;
+			if (this.encrypted && this.cryptoKeyStore != null) {
+				string valueWithoutHandle;
+				MessagingUtilities.ExtractKeyHandleAndPayload(containingMessage, "<TODO>", value, out symmetricSecretHandle, out valueWithoutHandle);
+				value = valueWithoutHandle;
+			}
+
 			var message = new T { ContainingMessage = containingMessage };
-			byte[] data = Convert.FromBase64String(value);
+			byte[] data = MessagingUtilities.FromBase64WebSafeString(value);
 
 			byte[] signature = null;
 			if (this.signed) {
@@ -193,11 +215,11 @@ namespace DotNetOpenAuth.Messaging {
 				data = dataReader.ReadBuffer();
 
 				// Verify that the verification code was issued by message authorization server.
-				ErrorUtilities.VerifyProtocol(this.IsSignatureValid(data, signature), MessagingStrings.SignatureInvalid);
+				ErrorUtilities.VerifyProtocol(this.IsSignatureValid(data, signature, symmetricSecretHandle), MessagingStrings.SignatureInvalid);
 			}
 
 			if (this.encrypted) {
-				data = this.Decrypt(data);
+				data = this.Decrypt(data, symmetricSecretHandle);
 			}
 
 			if (this.compressed) {
@@ -249,17 +271,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="signedData">The signed data.</param>
 		/// <param name="signature">The signature.</param>
+		/// <param name="symmetricSecretHandle">The symmetric secret handle.  <c>null</c> when using an asymmetric algorithm.</param>
 		/// <returns>
 		///   <c>true</c> if the signature is valid; otherwise, <c>false</c>.
 		/// </returns>
-		private bool IsSignatureValid(byte[] signedData, byte[] signature) {
+		private bool IsSignatureValid(byte[] signedData, byte[] signature, string symmetricSecretHandle) {
 			Contract.Requires<ArgumentNullException>(signedData != null, "message");
 			Contract.Requires<ArgumentNullException>(signature != null, "signature");
 
 			if (this.asymmetricSigning != null) {
 				return this.asymmetricSigning.VerifyData(signedData, this.hasherForAsymmetricSigning, signature);
 			} else {
-				return MessagingUtilities.AreEquivalentConstantTime(signature, this.CalculateSignature(signedData));
+				return MessagingUtilities.AreEquivalentConstantTime(signature, this.CalculateSignature(signedData, symmetricSecretHandle));
 			}
 		}
 
@@ -267,18 +290,22 @@ namespace DotNetOpenAuth.Messaging {
 		/// Calculates the signature for the data in this verification code.
 		/// </summary>
 		/// <param name="bytesToSign">The bytes to sign.</param>
+		/// <param name="symmetricSecretHandle">The symmetric secret handle.  <c>null</c> when using an asymmetric algorithm.</param>
 		/// <returns>
 		/// The calculated signature.
 		/// </returns>
-		private byte[] CalculateSignature(byte[] bytesToSign) {
+		private byte[] CalculateSignature(byte[] bytesToSign, string symmetricSecretHandle) {
 			Contract.Requires<ArgumentNullException>(bytesToSign != null, "bytesToSign");
-			Contract.Requires<InvalidOperationException>(this.asymmetricSigning != null || this.symmetricHasher != null);
+			Contract.Requires<InvalidOperationException>(this.asymmetricSigning != null || this.cryptoKeyStore != null);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (this.asymmetricSigning != null) {
 				return this.asymmetricSigning.SignData(bytesToSign, this.hasherForAsymmetricSigning);
 			} else {
-				return this.symmetricHasher.ComputeHash(bytesToSign);
+				var key = this.cryptoKeyStore.GetKey(this.cryptoKeyBucket, symmetricSecretHandle);
+				ErrorUtilities.VerifyProtocol(key != null, "Missing decryption key.");
+				var symmetricHasher = new HMACSHA256(key.Key);
+				return symmetricHasher.ComputeHash(bytesToSign);
 			}
 		}
 
@@ -286,14 +313,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// Encrypts the specified value using either the symmetric or asymmetric encryption algorithm as appropriate.
 		/// </summary>
 		/// <param name="value">The value.</param>
-		/// <returns>The encrypted value.</returns>
-		private byte[] Encrypt(byte[] value) {
-			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.symmetricSecret != null);
+		/// <param name="symmetricSecretHandle">Receives the symmetric secret handle.  <c>null</c> when using an asymmetric algorithm.</param>
+		/// <returns>
+		/// The encrypted value.
+		/// </returns>
+		private byte[] Encrypt(byte[] value, out string symmetricSecretHandle) {
+			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.cryptoKeyStore != null);
 
 			if (this.asymmetricEncrypting != null) {
+				symmetricSecretHandle = null;
 				return this.asymmetricEncrypting.EncryptWithRandomSymmetricKey(value);
 			} else {
-				return MessagingUtilities.Encrypt(value, this.symmetricSecret);
+				var cryptoKey = this.cryptoKeyStore.GetCurrentKey(this.cryptoKeyBucket, this.minimumAge);
+				symmetricSecretHandle = cryptoKey.Key;
+				return MessagingUtilities.Encrypt(value, cryptoKey.Value.Key);
 			}
 		}
 
@@ -301,14 +334,19 @@ namespace DotNetOpenAuth.Messaging {
 		/// Decrypts the specified value using either the symmetric or asymmetric encryption algorithm as appropriate.
 		/// </summary>
 		/// <param name="value">The value.</param>
-		/// <returns>The decrypted value.</returns>
-		private byte[] Decrypt(byte[] value) {
-			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.symmetricSecret != null);
+		/// <param name="symmetricSecretHandle">The symmetric secret handle.  <c>null</c> when using an asymmetric algorithm.</param>
+		/// <returns>
+		/// The decrypted value.
+		/// </returns>
+		private byte[] Decrypt(byte[] value, string symmetricSecretHandle) {
+			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || symmetricSecretHandle != null);
 
 			if (this.asymmetricEncrypting != null) {
 				return this.asymmetricEncrypting.DecryptWithRandomSymmetricKey(value);
 			} else {
-				return MessagingUtilities.Decrypt(value, this.symmetricSecret);
+				var key = this.cryptoKeyStore.GetKey(this.cryptoKeyBucket, symmetricSecretHandle);
+				ErrorUtilities.VerifyProtocol(key != null, "Missing decryption key.");
+				return MessagingUtilities.Decrypt(value, key.Key);
 			}
 		}
 	}

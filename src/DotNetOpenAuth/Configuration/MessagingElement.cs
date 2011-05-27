@@ -73,8 +73,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the maximum lifetime of a private symmetric secret,
 		/// that may be used for signing or encryption.
 		/// </summary>
-		/// <value>The default value is 7 days.</value>
-		[ConfigurationProperty(PrivateSecretMaximumAgeConfigName, DefaultValue = "07:00:00")]
+		/// <value>The default value is 28 days (twice the age of the longest association).</value>
+		[ConfigurationProperty(PrivateSecretMaximumAgeConfigName, DefaultValue = "28.00:00:00")]
 		public TimeSpan PrivateSecretMaximumAge {
 			get { return (TimeSpan)this[PrivateSecretMaximumAgeConfigName]; }
 			set { this[PrivateSecretMaximumAgeConfigName] = value; }

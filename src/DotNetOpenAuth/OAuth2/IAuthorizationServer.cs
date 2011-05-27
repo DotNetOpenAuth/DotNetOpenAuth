@@ -20,14 +20,14 @@ namespace DotNetOpenAuth.OAuth2 {
 	[ContractClass(typeof(IAuthorizationServerContract))]
 	public interface IAuthorizationServer {
 		/// <summary>
-		/// Gets the secret used to symmetrically encrypt and sign authorization codes and refresh tokens.
+		/// Gets the store for storeing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
 		/// <remarks>
-		/// This secret should be kept strictly confidential in the authorization server(s)
-		/// and NOT shared with the resource server.  Anyone with this secret can mint
+		/// This store should be kept strictly confidential in the authorization server(s)
+		/// and NOT shared with the resource server.  Anyone with these secrets can mint
 		/// tokens to essentially grant themselves access to anything they want.
 		/// </remarks>
-		byte[] Secret { get; }
+		ICryptoKeyStore CryptoKeyStore { get; }
 
 		/// <summary>
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
@@ -92,17 +92,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Gets the secret used to symmetrically encrypt and sign authorization codes and refresh tokens.
+		/// Gets the store for storeing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
-		/// <value></value>
-		/// <remarks>
-		/// This secret should be kept strictly confidential in the authorization server(s)
-		/// and NOT shared with the resource server.  Anyone with this secret can mint
-		/// tokens to essentially grant themselves access to anything they want.
-		/// </remarks>
-		byte[] IAuthorizationServer.Secret {
+		ICryptoKeyStore IAuthorizationServer.CryptoKeyStore {
 			get {
-				Contract.Ensures(Contract.Result<byte[]>() != null);
+				Contract.Ensures(Contract.Result<ICryptoKeyStore>() != null);
 				throw new NotImplementedException();
 			}
 		}

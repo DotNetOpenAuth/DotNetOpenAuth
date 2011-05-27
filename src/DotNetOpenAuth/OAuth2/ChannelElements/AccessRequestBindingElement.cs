@@ -55,8 +55,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var response = message as ITokenCarryingRequest;
 			if (response != null) {
-				switch (response.CodeOrTokenType)
-				{
+				switch (response.CodeOrTokenType) {
 					case CodeOrTokenType.AuthorizationCode:
 						var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
 						var code = (AuthorizationCode)response.AuthorizationDescription;
@@ -70,8 +69,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			}
 
 			var accessTokenResponse = message as AccessTokenSuccessResponse;
-			if (accessTokenResponse != null)
-			{
+			if (accessTokenResponse != null) {
 				var directResponseMessage = (IDirectResponseProtocolMessage)accessTokenResponse;
 				var accessTokenRequest = (AccessTokenRequestBase)directResponseMessage.OriginatingRequest;
 				ErrorUtilities.VerifyProtocol(accessTokenRequest.GrantType != GrantType.None || accessTokenResponse.RefreshToken == null, OAuthStrings.NoGrantNoRefreshToken);
@@ -108,7 +106,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 							tokenRequest.AuthorizationDescription = verificationCode;
 							break;
 						case CodeOrTokenType.RefreshToken:
-							var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.Secret);
+							var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
 							var refreshToken = refreshTokenFormatter.Deserialize(message, tokenRequest.CodeOrToken);
 							tokenRequest.AuthorizationDescription = refreshToken;
 							break;

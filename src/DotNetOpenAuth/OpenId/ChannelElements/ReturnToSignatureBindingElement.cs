@@ -164,7 +164,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Gets the return to signature.
 		/// </summary>
 		/// <param name="returnTo">The return to.</param>
-		/// <returns>The generated signature.</returns>
+		/// <param name="cryptoKey">The crypto key.</param>
+		/// <returns>
+		/// The generated signature.
+		/// </returns>
 		/// <remarks>
 		/// Only the parameters in the return_to URI are signed, rather than the base URI
 		/// itself, in order that OPs that might change the return_to's implicit port :80 part

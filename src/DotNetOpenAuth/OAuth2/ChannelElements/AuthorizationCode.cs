@@ -18,6 +18,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// </summary>
 	internal class AuthorizationCode : AuthorizationDataBag {
 		/// <summary>
+		/// The name of the bucket for symmetric keys used to sign authorization codes.
+		/// </summary>
+		internal const string AuthorizationCodeKeyBucket = "https://localhost/dnoa/oauth_authorization_code";
+
+		/// <summary>
 		/// The hash algorithm used on the callback URI.
 		/// </summary>
 		private readonly HashAlgorithm hasher = new SHA256Managed();
@@ -61,12 +66,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);
 
 			return new UriStyleMessageFormatter<AuthorizationCode>(
-				authorizationServer.Secret,
-				true,
-				true,
-				false,
-				AuthorizationCodeBindingElement.MaximumMessageAge,
-				authorizationServer.VerificationCodeNonceStore);
+				authorizationServer.CryptoKeyStore,
+				AuthorizationCodeKeyBucket,
+				signed: true,
+				encrypted: true,
+				compressed: false,
+				maximumAge: AuthorizationCodeBindingElement.MaximumMessageAge,
+				decodeOnceOnly: authorizationServer.VerificationCodeNonceStore);
 		}
 
 		/// <summary>

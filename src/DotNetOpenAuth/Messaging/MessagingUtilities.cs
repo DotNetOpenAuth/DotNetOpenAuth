@@ -29,20 +29,6 @@ namespace DotNetOpenAuth.Messaging {
 	/// </summary>
 	public static class MessagingUtilities {
 		/// <summary>
-		/// The length of private symmetric secret handles.
-		/// </summary>
-		/// <remarks>
-		/// This value needn't be high, as we only expect to have a small handful of unexpired secrets at a time,
-		/// and handle recycling is permissible.
-		/// </remarks>
-		private const int SymmetricSecretHandleLength = 4;
-
-		/// <summary>
-		/// The default lifetime of a private secret.
-		/// </summary>
-		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
-
-		/// <summary>
 		/// The cryptographically strong random data generator used for creating secrets.
 		/// </summary>
 		/// <remarks>The random number generator is thread-safe.</remarks>
@@ -89,6 +75,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// visually distinguishable.
 		/// </summary>
 		internal const string AlphaNumericNoLookAlikes = "23456789abcdefghjkmnpqrstwxyzABCDEFGHJKMNPQRSTWXYZ";
+
+		/// <summary>
+		/// The length of private symmetric secret handles.
+		/// </summary>
+		/// <remarks>
+		/// This value needn't be high, as we only expect to have a small handful of unexpired secrets at a time,
+		/// and handle recycling is permissible.
+		/// </remarks>
+		private const int SymmetricSecretHandleLength = 4;
+
+		/// <summary>
+		/// The default lifetime of a private secret.
+		/// </summary>
+		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
 
 		/// <summary>
 		/// A character array containing just the = character.
@@ -424,6 +424,40 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return Enumerable.Empty<KeyValuePair<string, string>>();
+		}
+
+		/// <summary>
+		/// Encodes a symmetric key handle and the blob that is encrypted/signed with that key into a single string
+		/// that can be decoded by <see cref="ExtractKeyHandleAndPayload"/>.
+		/// </summary>
+		/// <param name="handle">The cryptographic key handle.</param>
+		/// <param name="payload">The encrypted/signed blob.</param>
+		/// <returns>The combined encoded value.</returns>
+		internal static string CombineKeyHandleAndPayload(string handle, string payload) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(payload));
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+
+			return handle + "!" + payload;
+		}
+
+		/// <summary>
+		/// Extracts the key handle and encrypted blob from a string previously returned from <see cref="CombineKeyHandleAndPayload"/>.
+		/// </summary>
+		/// <param name="containingMessage">The containing message.</param>
+		/// <param name="messagePart">The message part.</param>
+		/// <param name="keyHandleAndBlob">The value previously returned from <see cref="CombineKeyHandleAndPayload"/>.</param>
+		/// <param name="handle">The crypto key handle.</param>
+		/// <param name="dataBlob">The encrypted/signed data.</param>
+		internal static void ExtractKeyHandleAndPayload(IProtocolMessage containingMessage, string messagePart, string keyHandleAndBlob, out string handle, out string dataBlob) {
+			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(messagePart));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(keyHandleAndBlob));
+
+			int privateHandleIndex = keyHandleAndBlob.IndexOf('!');
+			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, messagePart, keyHandleAndBlob);
+			handle = keyHandleAndBlob.Substring(0, privateHandleIndex);
+			dataBlob = keyHandleAndBlob.Substring(privateHandleIndex + 1);
 		}
 
 		/// <summary>
@@ -779,8 +813,20 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			// Restore the padding characters and original URL-unsafe characters.
-			int missingPaddingCharacters = 4 - (base64WebSafe.Length % 4);
-			ErrorUtilities.VerifyInternal(missingPaddingCharacters <= 2, "No more than two padding characters should be present for base64.");
+			int missingPaddingCharacters;
+			switch (base64WebSafe.Length % 4) {
+				case 3:
+					missingPaddingCharacters = 1;
+					break;
+				case 2:
+					missingPaddingCharacters = 2;
+					break;
+				case 0:
+					missingPaddingCharacters = 0;
+					break;
+				default:
+					throw ErrorUtilities.ThrowInternal("No more than two padding characters should be present for base64.");
+			}
 			var builder = new StringBuilder(base64WebSafe, base64WebSafe.Length + missingPaddingCharacters);
 			builder.Replace('-', '+').Replace('_', '/');
 			builder.Append('=', missingPaddingCharacters);

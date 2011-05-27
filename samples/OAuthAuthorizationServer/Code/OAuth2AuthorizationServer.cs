@@ -13,18 +13,14 @@
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
 		private static readonly RSAParameters AsymmetricTokenSigningPrivateKey = CreateRSAKey();
 
-		private static readonly byte[] secret = CreateSecret();
-
-		private readonly INonceStore nonceStore = new DatabaseNonceStore();
-
 		#region Implementation of IAuthorizationServer
 
-		public byte[] Secret {
-			get { return secret; }
+		public ICryptoKeyStore CryptoKeyStore {
+			get { return MvcApplication.KeyNonceStore; }
 		}
 
 		public INonceStore VerificationCodeNonceStore {
-			get { return this.nonceStore; }
+			get { return MvcApplication.KeyNonceStore; }
 		}
 
 		public RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider() {
@@ -75,19 +71,6 @@
 		}
 
 		/// <summary>
-		/// Creates a symmetric secret used to sign and encrypt authorization server refresh tokens.
-		/// </summary>
-		/// <returns>A cryptographically strong symmetric key.</returns>
-		private static byte[] CreateSecret() {
-			// TODO: Replace this sample code with real code.
-			// For this sample, we just generate random secrets.
-			RandomNumberGenerator crypto = new RNGCryptoServiceProvider();
-			var secret = new byte[32]; // 256-bit symmetric key to protect all protected resources.
-			crypto.GetBytes(secret);
-			return secret;
-		}
-
-		/// <summary>
 		/// Creates the RSA key used by all the crypto service provider instances we create.
 		/// </summary>
 		/// <returns>RSA data that includes the private key.</returns>
@@ -126,12 +109,12 @@
 
 		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username) {
 			var grantedScopeStrings = from auth in MvcApplication.DataContext.ClientAuthorizations
-									  where
-										auth.Client.ClientIdentifier == clientIdentifier &&
-										auth.CreatedOnUtc <= issuedUtc &&
-										(!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
-										auth.User.OpenIDClaimedIdentifier == username
-									  select auth.Scope;
+			                          where
+			                              auth.Client.ClientIdentifier == clientIdentifier &&
+			                              auth.CreatedOnUtc <= issuedUtc &&
+			                              (!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
+			                              auth.User.OpenIDClaimedIdentifier == username
+			                          select auth.Scope;
 
 			if (!grantedScopeStrings.Any()) {
 				// No granted authorizations prior to the issuance of this token, so it must have been revoked.

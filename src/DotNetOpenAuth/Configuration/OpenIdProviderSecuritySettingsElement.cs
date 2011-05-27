@@ -35,6 +35,9 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		private const string AssociationsConfigName = "associations";
 
+		/// <summary>
+		/// The name of the @encodeAssociationSecretsInHandles attribute.
+		/// </summary>
 		private const string EncodeAssociationSecretsInHandlesConfigName = "encodeAssociationSecretsInHandles";
 
 		/// <summary>

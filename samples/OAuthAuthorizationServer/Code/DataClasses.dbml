@@ -37,4 +37,12 @@
       <Column Name="Timestamp" Type="System.DateTime" IsPrimaryKey="true" CanBeNull="false" />
     </Type>
   </Table>
+  <Table Name="" Member="SymmetricCryptoKeys">
+    <Type Name="SymmetricCryptoKey">
+      <Column Name="Bucket" Type="System.String" IsPrimaryKey="true" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="Handle" Type="System.String" IsPrimaryKey="true" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="ExpiresUtc" Type="System.DateTime" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="Secret" Type="System.Byte[]" CanBeNull="false" UpdateCheck="Never" />
+    </Type>
+  </Table>
 </Database>

@@ -7,10 +7,12 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// A signed and encrypted serialization of an association.
@@ -77,10 +79,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Creates the formatter used for serialization of this type.
 		/// </summary>
-		/// <param name="symmetricSecret">The OpenID Provider's private symmetric secret to use to encrypt and sign the association data.</param>
-		/// <returns>A formatter for serialization.</returns>
-		internal static IDataBagFormatter<AssociationDataBag> CreateFormatter(byte[] symmetricSecret) {
-			return new BinaryDataBagFormatter<AssociationDataBag>(symmetricSecret, signed: true, encrypted: true);
+		/// <param name="cryptoKeyStore">The crypto key store used when signing or encrypting.</param>
+		/// <param name="bucket">The bucket in which symmetric keys are stored for signing/encrypting data.</param>
+		/// <param name="minimumAge">The minimum age.</param>
+		/// <returns>
+		/// A formatter for serialization.
+		/// </returns>
+		internal static IDataBagFormatter<AssociationDataBag> CreateFormatter(ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan? minimumAge = null) {
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
+			Contract.Ensures(Contract.Result<IDataBagFormatter<AssociationDataBag>>() != null);
+			return new BinaryDataBagFormatter<AssociationDataBag>(cryptoKeyStore, bucket, signed: true, encrypted: true, minimumAge: minimumAge);
 		}
 	}
 }

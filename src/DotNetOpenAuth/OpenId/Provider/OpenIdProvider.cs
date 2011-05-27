@@ -74,6 +74,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
+		/// <param name="cryptoKeyStore">The crypto key store.  Cannot be null.</param>
 		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore) {
 			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
 			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "associationStore");
