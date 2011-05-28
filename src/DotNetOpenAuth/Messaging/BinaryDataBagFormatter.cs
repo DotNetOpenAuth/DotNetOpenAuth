@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// <typeparam name="T">The <see cref="DataBag"/>-derived type to serialize/deserialize.</typeparam>
 	internal class BinaryDataBagFormatter<T> : DataBagFormatterBase<T> where T : DataBag, IStreamSerializingDataBag, new() {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
+		/// Initializes a new instance of the <see cref="BinaryDataBagFormatter&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="signingKey">The crypto service provider with the asymmetric key to use for signing or verifying the token.</param>
 		/// <param name="encryptingKey">The crypto service provider with the asymmetric key to use for encrypting or decrypting the token.</param>
@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
+		/// Initializes a new instance of the <see cref="BinaryDataBagFormatter&lt;T&gt;"/> class.
 		/// </summary>
 		/// <param name="cryptoKeyStore">The crypto key store used when signing or encrypting.</param>
 		/// <param name="bucket">The bucket in which symmetric keys are stored for signing/encrypting data.</param>

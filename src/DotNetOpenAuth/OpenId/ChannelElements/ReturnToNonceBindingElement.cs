@@ -229,7 +229,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			private byte[] randomPart;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="ReturnToNonceBindingElement.CustomNonce"/> class.
+			/// Initializes a new instance of the <see cref="CustomNonce"/> class.
 			/// </summary>
 			/// <param name="creationDate">The creation date of the nonce.</param>
 			/// <param name="randomPart">The random bits that help make the nonce unique.</param>

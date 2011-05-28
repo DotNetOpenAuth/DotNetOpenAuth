@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		private readonly DateTime expiresUtc;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CryptoKey"/> struct.
+		/// Initializes a new instance of the <see cref="CryptoKey"/> class.
 		/// </summary>
 		/// <param name="key">The cryptographic key.</param>
 		/// <param name="expiresUtc">The expires UTC.</param>
