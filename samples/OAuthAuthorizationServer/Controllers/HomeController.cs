@@ -4,7 +4,7 @@
 	using System.IO;
 	using System.Linq;
 	using System.Web.Mvc;
-
+	using System.Web.Security;
 	using OAuthAuthorizationServer.Code;
 
 	[HandleError]
@@ -39,6 +39,10 @@
 				});
 
 				dc.SubmitChanges();
+
+				// Force the user to log out because a new database warrants a new row in the users table, which we create
+				// when the user logs in.
+				FormsAuthentication.SignOut();
 				ViewData["Success"] = true;
 			} catch (SqlException ex) {
 				ViewData["Error"] = string.Join("<br>", ex.Errors.OfType<SqlError>().Select(er => er.Message).ToArray());

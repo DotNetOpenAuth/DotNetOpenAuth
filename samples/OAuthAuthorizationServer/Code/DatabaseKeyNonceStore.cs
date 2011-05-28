@@ -67,6 +67,7 @@
 
 		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
 			return from key in MvcApplication.DataContext.SymmetricCryptoKeys
+				   where key.Bucket == bucket
 				   orderby key.ExpiresUtc descending
 				   select new KeyValuePair<string, CryptoKey>(key.Handle, new CryptoKey(key.Secret, key.ExpiresUtc.AsUtc()));
 		}

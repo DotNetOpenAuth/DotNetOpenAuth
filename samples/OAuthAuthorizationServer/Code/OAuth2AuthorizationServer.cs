@@ -108,6 +108,10 @@
 		}
 
 		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username) {
+			// If db precision exceeds token time precision (which is common), the following query would
+			// often disregard a token that is minted immediately after the authorization record is stored in the db.
+			// To compensate for this, we'll increase the timestamp on the token's issue date by 1 second.
+			issuedUtc += TimeSpan.FromSeconds(1);
 			var grantedScopeStrings = from auth in MvcApplication.DataContext.ClientAuthorizations
 			                          where
 			                              auth.Client.ClientIdentifier == clientIdentifier &&

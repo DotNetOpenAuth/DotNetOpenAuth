@@ -113,6 +113,7 @@
 						User = MvcApplication.LoggedInUser,
 						CreatedOnUtc = DateTime.UtcNow,
 					});
+				MvcApplication.DataContext.SubmitChanges(); // submit now so that this new row can be retrieved later in this same HTTP request
 
 				// In this simple sample, the user either agrees to the entire scope requested by the client or none of it.  
 				// But in a real app, you could grant a reduced scope of access to the client by passing a scope parameter to this method.
