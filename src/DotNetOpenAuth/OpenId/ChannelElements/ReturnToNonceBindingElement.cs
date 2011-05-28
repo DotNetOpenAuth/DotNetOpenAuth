@@ -53,6 +53,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		internal const string NonceParameter = OpenIdUtilities.CustomParameterPrefix + "request_nonce";
 
 		/// <summary>
+		/// The context within which return_to nonces must be unique -- they all go into the same bucket.
+		/// </summary>
+		private const string ReturnToNonceContext = "https://localhost/dnoa/return_to_nonce";
+
+		/// <summary>
 		/// The length of the generated nonce's random part.
 		/// </summary>
 		private const int NonceByteLength = 128 / 8; // 128-bit nonce
@@ -186,7 +191,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				}
 
 				IReplayProtectedProtocolMessage replayResponse = response;
-				if (!this.nonceStore.StoreNonce(replayResponse.NonceContext, nonce.RandomPartAsString, nonce.CreationDateUtc)) {
+				if (!this.nonceStore.StoreNonce(ReturnToNonceContext, nonce.RandomPartAsString, nonce.CreationDateUtc)) {
 					Logger.OpenId.ErrorFormat("Replayed nonce detected ({0} {1}).  Rejecting message.", replayResponse.Nonce, replayResponse.UtcCreationDate);
 					throw new ReplayedMessageException(message);
 				}
@@ -261,7 +266,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			internal static CustomNonce Deserialize(string value) {
 				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
 
-				byte[] nonce = Convert.FromBase64String(value);
+				byte[] nonce = MessagingUtilities.FromBase64WebSafeString(value);
 				Contract.Assume(nonce != null);
 				DateTime creationDateUtc = new DateTime(BitConverter.ToInt64(nonce, 0), DateTimeKind.Utc);
 				byte[] randomPart = new byte[NonceByteLength];
@@ -278,7 +283,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				byte[] nonce = new byte[timestamp.Length + this.randomPart.Length];
 				timestamp.CopyTo(nonce, 0);
 				this.randomPart.CopyTo(nonce, timestamp.Length);
-				string base64Nonce = Convert.ToBase64String(nonce);
+				string base64Nonce = MessagingUtilities.ConvertToBase64WebSafeString(nonce);
 				return base64Nonce;
 			}
 		}
