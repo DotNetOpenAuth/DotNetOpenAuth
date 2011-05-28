@@ -1,8 +1,15 @@
-﻿namespace OpenIdRelyingPartyWebForms.Code {
+﻿//-----------------------------------------------------------------------
+// <copyright file="CustomStore.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace OpenIdRelyingPartyWebForms.Code {
 	using System;
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
+	using System.Linq;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -94,7 +101,7 @@
 				yield break;
 			}
 
-			foreach (CustomStoreDataSet.CryptoKeyRow row in view) {
+			foreach (CustomStoreDataSet.CryptoKeyRow row in view.Cast<DataRowView>().Select(rv => rv.Row)) {
 				yield return new KeyValuePair<string, CryptoKey>(row.Handle, new CryptoKey(row.Secret, row.ExpiresUtc));
 			}
 		}
