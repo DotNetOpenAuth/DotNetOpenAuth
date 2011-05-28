@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="authorization">The authorization to be described by the access token.</param>
 		/// <param name="lifetime">The lifetime of the access token.</param>
 		internal AccessToken(IAuthorizationDescription authorization, TimeSpan? lifetime) {
-			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
+			Contract.Requires<ArgumentNullException>(authorization != null);
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
 			this.UtcCreationDate = authorization.UtcIssued;

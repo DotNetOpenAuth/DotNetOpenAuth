@@ -76,8 +76,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
 		/// <param name="cryptoKeyStore">The crypto key store.  Cannot be null.</param>
 		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore) {
-			Contract.Requires<ArgumentNullException>(nonceStore != null, "nonceStore");
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "associationStore");
+			Contract.Requires<ArgumentNullException>(nonceStore != null);
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 
@@ -594,8 +594,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			/// <param name="cryptoKeyStore">The crypto key store.</param>
 			/// <param name="securitySettings">The security settings.</param>
 			internal SwitchingAssociationStore(ICryptoKeyStore cryptoKeyStore, ProviderSecuritySettings securitySettings) {
-				Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
-				Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
+				Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
+				Contract.Requires<ArgumentNullException>(securitySettings != null);
 				this.securitySettings = securitySettings;
 
 				this.associationHandleEncoder = new ProviderAssociationHandleEncoder(cryptoKeyStore);

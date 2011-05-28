@@ -58,11 +58,6 @@ namespace DotNetOpenAuth.Messaging {
 		private readonly RSACryptoServiceProvider asymmetricEncrypting;
 
 		/// <summary>
-		/// The hashing algorithm to use for asymmetric signatures.
-		/// </summary>
-		private readonly HashAlgorithm hasherForAsymmetricSigning;
-
-		/// <summary>
 		/// A value indicating whether the data in this instance will be protected against tampering.
 		/// </summary>
 		private readonly bool signed;
@@ -99,7 +94,6 @@ namespace DotNetOpenAuth.Messaging {
 			: this(signingKey != null, encryptingKey != null, compressed, maximumAge, decodeOnceOnly) {
 			this.asymmetricSigning = signingKey;
 			this.asymmetricEncrypting = encryptingKey;
-			this.hasherForAsymmetricSigning = new SHA1CryptoServiceProvider();
 		}
 
 		/// <summary>
@@ -116,7 +110,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected DataBagFormatterBase(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket) || cryptoKeyStore == null);
-			Contract.Requires<ArgumentException>(cryptoKeyStore != null || (!signed && !encrypted), "A secret is required when signing or encrypting is required.");
+			Contract.Requires<ArgumentException>(cryptoKeyStore != null || (!signed && !encrypted));
 
 			this.cryptoKeyStore = cryptoKeyStore;
 			this.cryptoKeyBucket = bucket;
@@ -134,8 +128,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		private DataBagFormatterBase(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
-			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null, "A signature must be applied if this data is meant to be decoded only once.");
-			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null, "A maximum age must be given if a message can only be decoded once.");
+			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null);
+			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null);
 
 			this.signed = signed;
 			this.maximumAge = maximumAge;
@@ -172,22 +166,23 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			int capacity = this.signed ? 4 + message.Signature.Length + 4 + encoded.Length : encoded.Length;
-			var finalStream = new MemoryStream(capacity);
-			var writer = new BinaryWriter(finalStream);
-			if (this.signed) {
-				writer.WriteBuffer(message.Signature);
+			using (var finalStream = new MemoryStream(capacity)) {
+				var writer = new BinaryWriter(finalStream);
+				if (this.signed) {
+					writer.WriteBuffer(message.Signature);
+				}
+
+				writer.WriteBuffer(encoded);
+				writer.Flush();
+
+				string payload = MessagingUtilities.ConvertToBase64WebSafeString(finalStream.ToArray());
+				string result = payload;
+				if (symmetricSecretHandle != null && (this.signed || this.encrypted)) {
+					result = MessagingUtilities.CombineKeyHandleAndPayload(symmetricSecretHandle, payload);
+				}
+
+				return result;
 			}
-
-			writer.WriteBuffer(encoded);
-			writer.Flush();
-
-			string payload = MessagingUtilities.ConvertToBase64WebSafeString(finalStream.ToArray());
-			string result = payload;
-			if (symmetricSecretHandle != null && (this.signed || this.encrypted)) {
-				result = MessagingUtilities.CombineKeyHandleAndPayload(symmetricSecretHandle, payload);
-			}
-
-			return result;
 		}
 
 		/// <summary>
@@ -209,10 +204,11 @@ namespace DotNetOpenAuth.Messaging {
 
 			byte[] signature = null;
 			if (this.signed) {
-				var dataStream = new MemoryStream(data);
-				var dataReader = new BinaryReader(dataStream);
-				signature = dataReader.ReadBuffer();
-				data = dataReader.ReadBuffer();
+				using (var dataStream = new MemoryStream(data)) {
+					var dataReader = new BinaryReader(dataStream);
+					signature = dataReader.ReadBuffer();
+					data = dataReader.ReadBuffer();
+				}
 
 				// Verify that the verification code was issued by message authorization server.
 				ErrorUtilities.VerifyProtocol(this.IsSignatureValid(data, signature, symmetricSecretHandle), MessagingStrings.SignatureInvalid);
@@ -276,11 +272,13 @@ namespace DotNetOpenAuth.Messaging {
 		///   <c>true</c> if the signature is valid; otherwise, <c>false</c>.
 		/// </returns>
 		private bool IsSignatureValid(byte[] signedData, byte[] signature, string symmetricSecretHandle) {
-			Contract.Requires<ArgumentNullException>(signedData != null, "message");
-			Contract.Requires<ArgumentNullException>(signature != null, "signature");
+			Contract.Requires<ArgumentNullException>(signedData != null);
+			Contract.Requires<ArgumentNullException>(signature != null);
 
 			if (this.asymmetricSigning != null) {
-				return this.asymmetricSigning.VerifyData(signedData, this.hasherForAsymmetricSigning, signature);
+				using (var hasher = new SHA1CryptoServiceProvider()) {
+					return this.asymmetricSigning.VerifyData(signedData, hasher, signature);
+				}
 			} else {
 				return MessagingUtilities.AreEquivalentConstantTime(signature, this.CalculateSignature(signedData, symmetricSecretHandle));
 			}
@@ -295,17 +293,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// The calculated signature.
 		/// </returns>
 		private byte[] CalculateSignature(byte[] bytesToSign, string symmetricSecretHandle) {
-			Contract.Requires<ArgumentNullException>(bytesToSign != null, "bytesToSign");
+			Contract.Requires<ArgumentNullException>(bytesToSign != null);
 			Contract.Requires<InvalidOperationException>(this.asymmetricSigning != null || this.cryptoKeyStore != null);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (this.asymmetricSigning != null) {
-				return this.asymmetricSigning.SignData(bytesToSign, this.hasherForAsymmetricSigning);
+				using (var hasher = new SHA1CryptoServiceProvider()) {
+					return this.asymmetricSigning.SignData(bytesToSign, hasher);
+				}
 			} else {
 				var key = this.cryptoKeyStore.GetKey(this.cryptoKeyBucket, symmetricSecretHandle);
 				ErrorUtilities.VerifyProtocol(key != null, "Missing decryption key.");
-				var symmetricHasher = new HMACSHA256(key.Key);
-				return symmetricHasher.ComputeHash(bytesToSign);
+				using (var symmetricHasher = new HMACSHA256(key.Key)) {
+					return symmetricHasher.ComputeHash(bytesToSign);
+				}
 			}
 		}
 

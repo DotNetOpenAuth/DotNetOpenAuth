@@ -318,8 +318,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
 		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
-			Contract.Requires<ArgumentNullException>(toString != null, "toString");
-			Contract.Requires<ArgumentNullException>(toValue != null, "toValue");
+			Contract.Requires<ArgumentNullException>(toString != null);
+			Contract.Requires<ArgumentNullException>(toValue != null);
 
 			if (toOriginalString == null) {
 				toOriginalString = toString;

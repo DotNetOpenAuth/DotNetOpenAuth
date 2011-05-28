@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="version">The protocol version.</param>
 		internal UnauthorizedResponse(ProtocolException exception, Version version = null)
 			: base(version ?? Protocol.Default.Version) {
-			Contract.Requires<ArgumentNullException>(exception != null, "exception");
+			Contract.Requires<ArgumentNullException>(exception != null);
 			this.ErrorMessage = exception.Message;
 		}
 
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="exception">The exception.</param>
 		internal UnauthorizedResponse(IDirectedProtocolMessage request, ProtocolException exception)
 			: this(request) {
-			Contract.Requires<ArgumentNullException>(exception != null, "exception");
+			Contract.Requires<ArgumentNullException>(exception != null);
 			this.ErrorMessage = exception.Message;
 		}
 

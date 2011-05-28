@@ -860,6 +860,7 @@ http://opensource.org/licenses/ms-pl.html
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
     <Content Include="DotNetOpenAuth.ico" />
   </ItemGroup>
   <ItemGroup>

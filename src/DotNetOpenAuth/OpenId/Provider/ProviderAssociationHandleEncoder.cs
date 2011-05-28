@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="cryptoKeyStore">The crypto key store.</param>
 		public ProviderAssociationHandleEncoder(ICryptoKeyStore cryptoKeyStore) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			this.cryptoKeyStore = cryptoKeyStore;
 		}
 
@@ -41,14 +41,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="secret">The symmetric secret.</param>
 		/// <param name="expiresUtc">The UTC time that the association should expire.</param>
-		/// <param name="isPrivateAssociation">A value indicating whether this is a private association.</param>
+		/// <param name="privateAssociation">A value indicating whether this is a private association.</param>
 		/// <returns>
 		/// The association handle that represents this association.
 		/// </returns>
-		public string Serialize(byte[] secret, DateTime expiresUtc, bool isPrivateAssociation) {
+		public string Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
 			var associationDataBag = new AssociationDataBag {
 				Secret = secret,
-				IsPrivateAssociation = isPrivateAssociation,
+				IsPrivateAssociation = privateAssociation,
 				ExpiresUtc = expiresUtc,
 			};
 
@@ -60,13 +60,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Retrieves an association given an association handle.
 		/// </summary>
 		/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
-		/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+		/// <param name="privateAssociation">A value indicating whether a private association is expected.</param>
 		/// <param name="handle">The association handle.</param>
 		/// <returns>
 		/// An association instance, or <c>null</c> if the association has expired or the signature is incorrect (which may be because the OP's symmetric key has changed).
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
-		public Association Deserialize(IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
+		public Association Deserialize(IProtocolMessage containingMessage, bool privateAssociation, string handle) {
 			var formatter = AssociationDataBag.CreateFormatter(this.cryptoKeyStore, AssociationHandleEncodingSecretBucket);
 			AssociationDataBag bag;
 			try {
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				return null;
 			}
 
-			ErrorUtilities.VerifyProtocol(bag.IsPrivateAssociation == isPrivateAssociation, "Unexpected association type.");
+			ErrorUtilities.VerifyProtocol(bag.IsPrivateAssociation == privateAssociation, "Unexpected association type.");
 			Association assoc = Association.Deserialize(handle, bag.ExpiresUtc, bag.Secret);
 			return assoc.IsExpired ? null : assoc;
 		}

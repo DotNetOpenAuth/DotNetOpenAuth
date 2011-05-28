@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationEndpoint">The authorization endpoint.</param>
 		public UserAgentClient(Uri authorizationEndpoint)
 			: base(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint }) {
-			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null, "authorizationEndpoint");
+			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
 		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
 		public Uri RequestUserAuthorization(IAuthorizationState authorization) {
-			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
+			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 
 			if (authorization.Callback == null) {
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationState">The authorization.</param>
 		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
 		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorizationState = null) {
-			Contract.Requires<ArgumentNullException>(actualRedirectUrl != null, "actualRedirectUrl");
+			Contract.Requires<ArgumentNullException>(actualRedirectUrl != null);
 
 			if (authorizationState == null) {
 				authorizationState = new AuthorizationState();
@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			EndUserAuthorizationSuccessAuthCodeResponse authCodeSuccess;
 			EndUserAuthorizationFailedResponse failure;
 			if ((accessTokenSuccess = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
-				this.UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
+				UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
 			} else if ((authCodeSuccess = response as EndUserAuthorizationSuccessAuthCodeResponse) != null) {
 				this.UpdateAuthorizationWithResponse(authorizationState, authCodeSuccess);
 			} else if ((failure = response as EndUserAuthorizationFailedResponse) != null) {

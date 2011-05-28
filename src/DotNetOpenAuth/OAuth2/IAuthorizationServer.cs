@@ -164,7 +164,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// account or piece of hardware in which the tokens were stored. </para>
 		/// </remarks>
 		bool IAuthorizationServer.IsAuthorizationValid(IAuthorizationDescription authorization) {
-			Contract.Requires<ArgumentNullException>(authorization != null, "authorization");
+			Contract.Requires<ArgumentNullException>(authorization != null);
 			throw new NotImplementedException();
 		}
 	}

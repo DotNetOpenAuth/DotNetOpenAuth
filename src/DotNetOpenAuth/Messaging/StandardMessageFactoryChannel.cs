@@ -34,8 +34,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="bindingElements">The binding elements to apply to the channel.</param>
 		protected StandardMessageFactoryChannel(ICollection<Type> messageTypes, ICollection<Version> versions, params IChannelBindingElement[] bindingElements)
 			: base(new StandardMessageFactory(), bindingElements) {
-			Contract.Requires<ArgumentNullException>(messageTypes != null, "messageTypes");
-			Contract.Requires<ArgumentNullException>(versions != null, "versions");
+			Contract.Requires<ArgumentNullException>(messageTypes != null);
+			Contract.Requires<ArgumentNullException>(versions != null);
 
 			this.messageTypes = messageTypes;
 			this.versions = versions;
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets or sets the message descriptions.
 		/// </summary>
-		internal override MessageDescriptionCollection MessageDescriptions {
+		internal sealed override MessageDescriptionCollection MessageDescriptions {
 			get {
 				return base.MessageDescriptions;
 			}
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets or sets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
-		protected override IMessageFactory MessageFactory {
+		protected sealed override IMessageFactory MessageFactory {
 			get {
 				return (StandardMessageFactory)base.MessageFactory;
 			}
@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated/retrieved message descriptions.</returns>
 		private static IEnumerable<MessageDescription> GetMessageDescriptions(ICollection<Type> messageTypes, ICollection<Version> versions, MessageDescriptionCollection descriptionsCache)
 		{
-			Contract.Requires<ArgumentNullException>(messageTypes != null, "messageTypes");
+			Contract.Requires<ArgumentNullException>(messageTypes != null);
 			Contract.Requires<ArgumentNullException>(descriptionsCache != null);
 			Contract.Ensures(Contract.Result<IEnumerable<MessageDescription>>() != null);
 

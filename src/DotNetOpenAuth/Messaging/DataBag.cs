@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 
 	/// <summary>
@@ -102,6 +103,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This ensures that one token cannot be misused as another kind of token.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Accessed by reflection")]
 		[MessagePart("t", IsRequired = true, AllowEmpty = false)]
 		private Type BagType {
 			get { return this.GetType(); }

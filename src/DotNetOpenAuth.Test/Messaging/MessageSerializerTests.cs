@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 			var ms = new MemoryStream();
 			var writer = JsonReaderWriterFactory.CreateJsonWriter(ms, Encoding.UTF8);
-			serializer.Serialize(this.MessageDescriptions.GetAccessor(message), writer);
+			MessageSerializer.Serialize(this.MessageDescriptions.GetAccessor(message), writer);
 			writer.Flush();
 
 			string actual = Encoding.UTF8.GetString(ms.ToArray());
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			ms.Position = 0;
 			var deserialized = new Mocks.TestDirectedMessage();
 			var reader = JsonReaderWriterFactory.CreateJsonReader(ms, XmlDictionaryReaderQuotas.Max);
-			serializer.Deserialize(this.MessageDescriptions.GetAccessor(deserialized), reader);
+			MessageSerializer.Deserialize(this.MessageDescriptions.GetAccessor(deserialized), reader);
 			Assert.AreEqual(message.Age, deserialized.Age);
 			Assert.AreEqual(message.EmptyMember, deserialized.EmptyMember);
 			Assert.AreEqual(message.Location, deserialized.Location);
@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void DeserializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			serializer.Deserialize(null, null);
+			MessageSerializer.Deserialize(null, null);
 		}
 
 		[TestCase]

@@ -38,8 +38,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The authorization request from the user agent on behalf of the client.</param>
 		internal EndUserAuthorizationSuccessResponseBase(Uri clientCallback, EndUserAuthorizationRequest request)
 			: base(request, clientCallback) {
-			Contract.Requires<ArgumentNullException>(clientCallback != null, "clientCallback");
-			Contract.Requires<ArgumentNullException>(request != null, "request");
+			Contract.Requires<ArgumentNullException>(clientCallback != null);
+			Contract.Requires<ArgumentNullException>(request != null);
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}

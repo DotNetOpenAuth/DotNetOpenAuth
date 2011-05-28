@@ -124,7 +124,7 @@
 			}
 
 			var httpRequest = (HttpWebRequest)WebRequest.Create(wcfClient.Endpoint.Address.Uri);
-			Client.AuthorizeRequest(httpRequest, Authorization.AccessToken);
+			ClientBase.AuthorizeRequest(httpRequest, Authorization.AccessToken);
 
 			var httpDetails = new HttpRequestMessageProperty();
 			httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];

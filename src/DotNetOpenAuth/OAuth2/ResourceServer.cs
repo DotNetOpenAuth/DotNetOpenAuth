@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
@@ -28,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="accessTokenAnalyzer">The access token analyzer.</param>
 		public ResourceServer(IAccessTokenAnalyzer accessTokenAnalyzer) {
-			Contract.Requires<ArgumentNullException>(accessTokenAnalyzer != null, "accessTokenAnalyzer");
+			Contract.Requires<ArgumentNullException>(accessTokenAnalyzer != null);
 
 			this.AccessTokenAnalyzer = accessTokenAnalyzer;
 			this.Channel = new OAuth2ResourceServerChannel();
@@ -49,29 +50,33 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
-		/// <param name="username">The name on the account the client has access to.</param>
+		/// <param name="userName">The name on the account the client has access to.</param>
 		/// <param name="scope">The set of operations the client is authorized for.</param>
 		/// <returns>An error to return to the client if access is not authorized; <c>null</c> if access is granted.</returns>
-		public OutgoingWebResponse VerifyAccess(out string username, out HashSet<string> scope) {
-			return this.VerifyAccess(this.Channel.GetRequestFromContext(), out username, out scope);
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#", Justification = "Try pattern")]
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
+		public OutgoingWebResponse VerifyAccess(out string userName, out HashSet<string> scope) {
+			return this.VerifyAccess(this.Channel.GetRequestFromContext(), out userName, out scope);
 		}
 
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request info.</param>
-		/// <param name="username">The name on the account the client has access to.</param>
+		/// <param name="userName">The name on the account the client has access to.</param>
 		/// <param name="scope">The set of operations the client is authorized for.</param>
 		/// <returns>
 		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
 		/// </returns>
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string username, out HashSet<string> scope) {
-			Contract.Requires<ArgumentNullException>(httpRequestInfo != null, "httpRequestInfo");
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
+		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string userName, out HashSet<string> scope) {
+			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
 
 			AccessProtectedResourceRequest request = null;
 			try {
 				if (this.Channel.TryReadFromRequest<AccessProtectedResourceRequest>(httpRequestInfo, out request)) {
-					if (this.AccessTokenAnalyzer.TryValidateAccessToken(request, request.AccessToken, out username, out scope)) {
+					if (this.AccessTokenAnalyzer.TryValidateAccessToken(request, request.AccessToken, out userName, out scope)) {
 						// No errors to return.
 						return null;
 					}
@@ -80,14 +85,14 @@ namespace DotNetOpenAuth.OAuth2 {
 				} else {
 					var response = new UnauthorizedResponse(new ProtocolException("Missing access token"));
 
-					username = null;
+					userName = null;
 					scope = null;
 					return this.Channel.PrepareResponse(response);
 				}
 			} catch (ProtocolException ex) {
 				var response = request != null ? new UnauthorizedResponse(request, ex) : new UnauthorizedResponse(ex);
 
-				username = null;
+				userName = null;
 				scope = null;
 				return this.Channel.PrepareResponse(response);
 			}
@@ -101,6 +106,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
 		/// </returns>
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out IPrincipal principal) {
 			string username;
 			HashSet<string> scope;
@@ -118,9 +124,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
 		/// </returns>
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
 		public virtual OutgoingWebResponse VerifyAccess(HttpRequestMessageProperty request, Uri requestUri, out IPrincipal principal) {
-			Contract.Requires<ArgumentNullException>(request != null, "request");
-			Contract.Requires<ArgumentNullException>(requestUri != null, "requestUri");
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(requestUri != null);
 
 			return this.VerifyAccess(new HttpRequestInfo(request, requestUri), out principal);
 		}

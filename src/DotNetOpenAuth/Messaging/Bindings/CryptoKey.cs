@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -32,7 +33,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="key">The cryptographic key.</param>
 		/// <param name="expiresUtc">The expires UTC.</param>
 		public CryptoKey(byte[] key, DateTime expiresUtc) {
-			Contract.Requires<ArgumentNullException>(key != null, "key");
+			Contract.Requires<ArgumentNullException>(key != null);
 			Contract.Requires<ArgumentException>(expiresUtc.Kind == DateTimeKind.Utc);
 			this.key = key;
 			this.expiresUtc = expiresUtc;
@@ -41,6 +42,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <summary>
 		/// Gets the key.
 		/// </summary>
+		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "It's a buffer")]
 		public byte[] Key {
 			get {
 				Contract.Ensures(Contract.Result<byte[]>() != null);

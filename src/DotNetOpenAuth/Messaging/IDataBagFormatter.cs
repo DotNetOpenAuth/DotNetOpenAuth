@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to serialize.  Must not be null.</param>
 		/// <returns>A non-null, non-empty value.</returns>
 		string IDataBagFormatter<T>.Serialize(T message) {
-			Contract.Requires<ArgumentNullException>(message != null, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
 			throw new System.NotImplementedException();
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <returns>The deserialized value.  Never null.</returns>
 		T IDataBagFormatter<T>.Deserialize(IProtocolMessage containingMessage, string data) {
-			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
+			Contract.Requires<ArgumentNullException>(containingMessage != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(data));
 			Contract.Ensures(Contract.Result<T>() != null);
 

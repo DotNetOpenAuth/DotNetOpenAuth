@@ -41,13 +41,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Retrieves an association given an association handle.
 		/// </summary>
 		/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
-		/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+		/// <param name="privateAssociation">A value indicating whether a private association is expected.</param>
 		/// <param name="handle">The association handle.</param>
 		/// <returns>
 		/// An association instance, or <c>null</c> if the association has expired or the signature is incorrect (which may be because the OP's symmetric key has changed).
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
-		Association Deserialize(IProtocolMessage containingMessage, bool isPrivateAssociation, string handle);
+		Association Deserialize(IProtocolMessage containingMessage, bool privateAssociation, string handle);
 	}
 
 	/// <summary>
@@ -60,11 +60,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="secret">The association secret.</param>
 		/// <param name="expiresUtc">The expires UTC.</param>
-		/// <param name="isPrivateAssociation">A value indicating whether this is a private association.</param>
+		/// <param name="privateAssociation">A value indicating whether this is a private association.</param>
 		/// <returns>
 		/// The association handle that represents this association.
 		/// </returns>
-		string IProviderAssociationStore.Serialize(byte[] secret, DateTime expiresUtc, bool isPrivateAssociation) {
+		string IProviderAssociationStore.Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
 			Contract.Requires<ArgumentNullException>(secret != null);
 			Contract.Requires<ArgumentException>(expiresUtc.Kind == DateTimeKind.Utc);
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -75,14 +75,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Retrieves an association given an association handle.
 		/// </summary>
 		/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
-		/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+		/// <param name="privateAssociation">A value indicating whether a private association is expected.</param>
 		/// <param name="handle">The association handle.</param>
 		/// <returns>
 		/// An association instance, or <c>null</c> if the association has expired or the signature is incorrect (which may be because the OP's symmetric key has changed).
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
-		Association IProviderAssociationStore.Deserialize(IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
-			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
+		Association IProviderAssociationStore.Deserialize(IProtocolMessage containingMessage, bool privateAssociation, string handle) {
+			Contract.Requires<ArgumentNullException>(containingMessage != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
 			throw new NotImplementedException();
 		}

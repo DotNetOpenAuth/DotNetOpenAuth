@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -26,6 +27,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="user">The user whose data is accessible with this access token.</param>
 		/// <param name="scope">The scope of access authorized by this access token.</param>
 		/// <returns>A value indicating whether this access token is valid.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
+		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
 		bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope);
 	}
 
@@ -51,7 +54,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// A value indicating whether this access token is valid.
 		/// </returns>
 		bool IAccessTokenAnalyzer.TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope) {
-			Contract.Requires<ArgumentNullException>(message != null, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
 			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<string>(out user) != null));
 

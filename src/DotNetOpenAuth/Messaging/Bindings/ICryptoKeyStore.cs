@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -37,6 +38,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <param name="bucket">The bucket name.  Case sensitive.</param>
 		/// <returns>A sequence of handles and keys, ordered by descending <see cref="CryptoKey.ExpiresUtc"/>.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Important for scalability")]
 		IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket);
 
 		/// <summary>
@@ -98,7 +100,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		void ICryptoKeyStore.StoreKey(string bucket, string handle, CryptoKey key) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
-			Contract.Requires<ArgumentNullException>(key != null, "key");
+			Contract.Requires<ArgumentNullException>(key != null);
 			throw new NotImplementedException();
 		}
 

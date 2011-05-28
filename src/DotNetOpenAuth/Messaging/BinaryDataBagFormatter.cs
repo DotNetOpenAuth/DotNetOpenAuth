@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected internal BinaryDataBagFormatter(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(cryptoKeyStore, bucket, signed, encrypted, compressed, minimumAge, maximumAge, decodeOnceOnly) {
-			Contract.Requires<ArgumentException>((cryptoKeyStore != null && bucket != null) || (!signed && !encrypted), "A secret is required when signing or encrypting is required.");
+			Contract.Requires<ArgumentException>((cryptoKeyStore != null && bucket != null) || (!signed && !encrypted));
 		}
 
 		/// <summary>
@@ -53,9 +53,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message.</param>
 		/// <returns>The buffer containing the serialized data.</returns>
 		protected override byte[] SerializeCore(T message) {
-			var stream = new MemoryStream();
-			message.Serialize(stream);
-			return stream.ToArray();
+			using (var stream = new MemoryStream()) {
+				message.Serialize(stream);
+				return stream.ToArray();
+			}
 		}
 
 		/// <summary>
@@ -64,8 +65,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message instance to initialize with data from the buffer.</param>
 		/// <param name="data">The data buffer.</param>
 		protected override void DeserializeCore(T message, byte[] data) {
-			var stream = new MemoryStream(data);
-			message.Deserialize(stream);
+			using (var stream = new MemoryStream(data)) {
+				message.Deserialize(stream);
+			}
 
 			// Perform basic validation on message that the MessageSerializer would have normally performed.
 			var messageDescription = MessageDescriptions.Get(message);

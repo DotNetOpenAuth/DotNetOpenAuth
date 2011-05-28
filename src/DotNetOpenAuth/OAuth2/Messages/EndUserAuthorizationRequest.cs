@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -46,11 +47,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets the grant type that the client expects of the authorization server.
 		/// </summary>
-		/// <value>Always <see cref="EndUserAuthorizationResponseType.AuthorizationCode"/>.  Other response types are not supported.</value>
+		/// <value>Always <see cref="EndUserAuthorizationResponseTypes.AuthorizationCode"/>.  Other response types are not supported.</value>
 		[MessagePart(Protocol.response_type, IsRequired = true, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
-		public EndUserAuthorizationResponseType ResponseType
+		public static EndUserAuthorizationResponseTypes ResponseType
 		{
-			get { return EndUserAuthorizationResponseType.AuthorizationCode; }
+			get { return EndUserAuthorizationResponseTypes.AuthorizationCode; }
 		}
 
 		/// <summary>

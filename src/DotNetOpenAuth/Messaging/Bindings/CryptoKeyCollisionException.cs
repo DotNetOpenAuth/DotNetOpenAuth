@@ -6,12 +6,14 @@
 
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Security.Permissions;
 
 	/// <summary>
 	/// Thrown by a hosting application or web site when a cryptographic key is created with a
 	/// bucket and handle that conflicts with a previously stored and unexpired key.
 	/// </summary>
+	[SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Justification = "Specialized exception has no need of a message parameter.")]
 	[Serializable]
 	public class CryptoKeyCollisionException : ArgumentException {
 		/// <summary>
@@ -23,16 +25,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CryptoKeyCollisionException"/> class.
 		/// </summary>
-		/// <param name="message">A message describing the specific error the occurred or was detected.</param>
-		public CryptoKeyCollisionException(string message) : base(message) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CryptoKeyCollisionException"/> class.
-		/// </summary>
-		/// <param name="message">A message describing the specific error the occurred or was detected.</param>
 		/// <param name="inner">The inner exception to include.</param>
-		public CryptoKeyCollisionException(string message, Exception inner) : base(message, inner) {
+		public CryptoKeyCollisionException(Exception inner) : base(null, inner) {
 		}
 
 		/// <summary>

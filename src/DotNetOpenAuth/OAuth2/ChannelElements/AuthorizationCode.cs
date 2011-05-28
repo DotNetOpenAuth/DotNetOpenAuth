@@ -23,11 +23,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		internal const string AuthorizationCodeKeyBucket = "https://localhost/dnoa/oauth_authorization_code";
 
 		/// <summary>
-		/// The hash algorithm used on the callback URI.
-		/// </summary>
-		private readonly HashAlgorithm hasher = new SHA256Managed();
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationCode"/> class.
 		/// </summary>
 		public AuthorizationCode() {
@@ -42,10 +37,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="username">The name on the account that authorized access.</param>
 		internal AuthorizationCode(string clientIdentifier, Uri callback, IEnumerable<string> scopes, string username) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
-			Contract.Requires<ArgumentNullException>(callback != null, "callback");
+			Contract.Requires<ArgumentNullException>(callback != null);
 
 			this.ClientIdentifier = clientIdentifier;
-			this.CallbackHash = this.CalculateCallbackHash(callback);
+			this.CallbackHash = CalculateCallbackHash(callback);
 			this.Scope.ResetContents(scopes);
 			this.User = username;
 		}
@@ -62,7 +57,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="authorizationServer">The authorization server that will be serializing/deserializing this authorization code.  Must not be null.</param>
 		/// <returns>A DataBag formatter.</returns>
 		internal static IDataBagFormatter<AuthorizationCode> CreateFormatter(IAuthorizationServer authorizationServer) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);
 
 			return new UriStyleMessageFormatter<AuthorizationCode>(
@@ -85,7 +80,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown when the callback URLs do not match.</exception>
 		internal void VerifyCallback(Uri callback) {
-			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalent(this.CallbackHash, this.CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
+			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalent(this.CallbackHash, CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
 		}
 
 		/// <summary>
@@ -95,8 +90,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// A base64 encoding of the hash of the URL.
 		/// </returns>
-		private byte[] CalculateCallbackHash(Uri callback) {
-			return this.hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
+		private static byte[] CalculateCallbackHash(Uri callback) {
+			using (var hasher = new SHA256Managed()) {
+				return hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
+			}
 		}
 	}
 }

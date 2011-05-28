@@ -40,8 +40,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="dataStore">The data store.</param>
 		/// <param name="asymmetricCrypto">The asymmetric protection to apply to symmetric keys.  Must include the private key.</param>
 		public AsymmetricCryptoKeyStoreWrapper(ICryptoKeyStore dataStore, RSACryptoServiceProvider asymmetricCrypto) {
-			Contract.Requires<ArgumentNullException>(dataStore != null, "dataStore");
-			Contract.Requires<ArgumentNullException>(asymmetricCrypto != null, "asymmetricCrypto");
+			Contract.Requires<ArgumentNullException>(dataStore != null);
+			Contract.Requires<ArgumentNullException>(asymmetricCrypto != null);
 			Contract.Requires<ArgumentException>(!asymmetricCrypto.PublicOnly);
 			this.dataStore = dataStore;
 			this.asymmetricCrypto = asymmetricCrypto;
@@ -78,6 +78,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="bucket">The name of the bucket to store the key in.  Case sensitive.</param>
 		/// <param name="handle">The handle to the key, unique within the bucket.  Case sensitive.</param>
 		/// <param name="decryptedCryptoKey">The key to store.</param>
+		[SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration", MessageId = "2#", Justification = "Helps readability because multiple keys are involved.")]
 		public void StoreKey(string bucket, string handle, CryptoKey decryptedCryptoKey) {
 			byte[] encryptedKey = this.asymmetricCrypto.Encrypt(decryptedCryptoKey.Key, true);
 			var encryptedCryptoKey = new CryptoKey(encryptedKey, decryptedCryptoKey.ExpiresUtc);
@@ -105,6 +106,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <returns>
 		/// The decrypted key.
 		/// </returns>
+		[SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration", MessageId = "2#", Justification = "Helps readability because multiple keys are involved.")]
 		private CryptoKey Decrypt(string bucket, string handle, CryptoKey encryptedCryptoKey) {
 			if (encryptedCryptoKey == null) {
 				return null;

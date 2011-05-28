@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="cryptoKeyStore">The store where association secrets will be recorded.</param>
 		internal ProviderAssociationKeyStorage(ICryptoKeyStore cryptoKeyStore) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null, "cryptoKeyStore");
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			this.cryptoKeyStore = cryptoKeyStore;
 		}
 

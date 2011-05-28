@@ -198,8 +198,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					cryptoKey = this.cryptoKeyStore.GetKey(SecretUri.AbsoluteUri, returnToParameters[ReturnToSignatureHandleParameterName]);
 				}
 
-				var signer = new HMACSHA256(cryptoKey.Key);
-				signature = signer.ComputeHash(bytesToSign);
+				using (var signer = new HMACSHA256(cryptoKey.Key)) {
+					signature = signer.ComputeHash(bytesToSign);
+				}
 			} catch (ProtocolException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.MaximumAuthenticationTimeExpired);
 			}

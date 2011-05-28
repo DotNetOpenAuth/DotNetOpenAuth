@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The authorization request from the user agent on behalf of the client.</param>
 		internal EndUserAuthorizationFailedResponse(Uri clientCallback, EndUserAuthorizationRequest request)
 			: base(((IProtocolMessage)request).Version, MessageTransport.Indirect, clientCallback) {
-			Contract.Requires<ArgumentNullException>(request != null, "request");
+			Contract.Requires<ArgumentNullException>(request != null);
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
 

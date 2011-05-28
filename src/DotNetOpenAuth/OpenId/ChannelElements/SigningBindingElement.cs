@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal SigningBindingElement(IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
+			Contract.Requires<ArgumentNullException>(associationStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.opAssociations = associationStore;

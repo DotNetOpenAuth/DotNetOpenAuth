@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			var matches = this.requestMessageTypes.Keys
 				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
-				.OrderByDescending(message => this.CountInCommon(message.Mapping.Keys, fields.Keys))
+				.OrderByDescending(message => CountInCommon(message.Mapping.Keys, fields.Keys))
 				.ThenByDescending(message => message.Mapping.Count)
 				.CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
@@ -181,7 +181,7 @@ namespace DotNetOpenAuth.Messaging {
 			               let ctors = this.FindMatchingResponseConstructors(message, request.GetType())
 			               where ctors.Any()
 			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType()),
-			                 this.CountInCommon(message.Mapping.Keys, fields.Keys) descending,
+			                 CountInCommon(message.Mapping.Keys, fields.Keys) descending,
 			                 message.Mapping.Count descending
 			               select message).CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
@@ -247,8 +247,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="derivedType">The concrete class that implements the <paramref name="assignableType"/>.</param>
 		/// <returns>The distance between the two types.  0 if the types are equivalent, 1 if the type immediately derives from or implements the base type, or progressively higher integers.</returns>
 		private static int GetDerivationDistance(Type assignableType, Type derivedType) {
-			Contract.Requires<ArgumentNullException>(assignableType != null, "assignableType");
-			Contract.Requires<ArgumentNullException>(derivedType != null, "derivedType");
+			Contract.Requires<ArgumentNullException>(assignableType != null);
+			Contract.Requires<ArgumentNullException>(derivedType != null);
 			Contract.Requires<ArgumentException>(assignableType.IsAssignableFrom(derivedType));
 
 			// If this is the two types are equivalent...
@@ -268,6 +268,21 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Counts how many strings are in the intersection of two collections.
+		/// </summary>
+		/// <param name="collection1">The first collection.</param>
+		/// <param name="collection2">The second collection.</param>
+		/// <param name="comparison">The string comparison method to use.</param>
+		/// <returns>A non-negative integer no greater than the count of elements in the smallest collection.</returns>
+		private static int CountInCommon(ICollection<string> collection1, ICollection<string> collection2, StringComparison comparison = StringComparison.Ordinal) {
+			Contract.Requires<ArgumentNullException>(collection1 != null);
+			Contract.Requires<ArgumentNullException>(collection2 != null);
+			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= Math.Min(collection1.Count, collection2.Count));
+
+			return collection1.Count(value1 => collection2.Any(value2 => string.Equals(value1, value2, comparison)));
+		}
+
+		/// <summary>
 		/// Finds constructors for response messages that take a given request message type.
 		/// </summary>
 		/// <param name="messageDescription">The message description.</param>
@@ -278,21 +293,6 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentNullException>(requestType != null);
 
 			return this.responseMessageTypes[messageDescription].Where(pair => pair.Key.IsAssignableFrom(requestType)).Select(pair => pair.Value);
-		}
-
-		/// <summary>
-		/// Counts how many strings are in the intersection of two collections.
-		/// </summary>
-		/// <param name="collection1">The first collection.</param>
-		/// <param name="collection2">The second collection.</param>
-		/// <param name="comparison">The string comparison method to use.</param>
-		/// <returns>A non-negative integer no greater than the count of elements in the smallest collection.</returns>
-		private int CountInCommon(ICollection<string> collection1, ICollection<string> collection2, StringComparison comparison = StringComparison.Ordinal) {
-			Contract.Requires<ArgumentNullException>(collection1 != null, "collection1");
-			Contract.Requires<ArgumentNullException>(collection2 != null, "collection2");
-			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= Math.Min(collection1.Count, collection2.Count));
-
-			return collection1.Count(value1 => collection2.Any(value2 => string.Equals(value1, value2, comparison)));
 		}
 	}
 }

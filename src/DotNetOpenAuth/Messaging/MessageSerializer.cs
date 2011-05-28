@@ -59,8 +59,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message dictionary to fill with the JSON-deserialized data.</param>
 		/// <param name="reader">The JSON reader.</param>
 		internal static void DeserializeJsonAsFlatDictionary(IDictionary<string, string> messageDictionary, XmlDictionaryReader reader) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null, "messageDictionary");
-			Contract.Requires<ArgumentNullException>(reader != null, "reader");
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Contract.Requires<ArgumentNullException>(reader != null);
 
 			reader.Read(); // one extra one to skip the root node.
 			while (reader.Read()) {
@@ -74,6 +74,73 @@ namespace DotNetOpenAuth.Messaging {
 				string value = reader.ReadContentAsString();
 				messageDictionary[key] = value;
 			}
+		}
+
+		/// <summary>
+		/// Reads the data from a message instance and writes a XML/JSON encoding of it.
+		/// </summary>
+		/// <param name="messageDictionary">The message to be serialized.</param>
+		/// <param name="writer">The writer to use for the serialized form.</param>
+		/// <remarks>
+		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter(System.IO.Stream)"/>
+		/// to create the <see cref="XmlDictionaryWriter"/> instance capable of emitting JSON.
+		/// </remarks>
+		[Pure]
+		internal static void Serialize(MessageDictionary messageDictionary, XmlDictionaryWriter writer) {
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Contract.Requires<ArgumentNullException>(writer != null);
+
+			writer.WriteStartElement("root");
+			writer.WriteAttributeString("type", "object");
+			foreach (var pair in messageDictionary) {
+				bool include = false;
+				string type = "string";
+				MessagePart partDescription;
+				if (messageDictionary.Description.Mapping.TryGetValue(pair.Key, out partDescription)) {
+					Contract.Assume(partDescription != null);
+					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
+						include = true;
+						if (IsNumeric(partDescription.MemberDeclaredType)) {
+							type = "number";
+						} else if (partDescription.MemberDeclaredType.IsAssignableFrom(typeof(bool))) {
+							type = "boolean";
+						}
+					}
+				} else {
+					// This is extra data.  We always write it out.
+					include = true;
+				}
+
+				if (include) {
+					writer.WriteStartElement(pair.Key);
+					writer.WriteAttributeString("type", type);
+					writer.WriteString(pair.Value);
+					writer.WriteEndElement();
+				}
+			}
+
+			writer.WriteEndElement();
+		}
+
+		/// <summary>
+		/// Reads XML/JSON into a message dictionary.
+		/// </summary>
+		/// <param name="messageDictionary">The message to deserialize into.</param>
+		/// <param name="reader">The XML/JSON to read into the message.</param>
+		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
+		/// <remarks>
+		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader(System.IO.Stream, System.Xml.XmlDictionaryReaderQuotas)"/>
+		/// to create the <see cref="XmlDictionaryReader"/> instance capable of reading JSON.
+		/// </remarks>
+		internal static void Deserialize(MessageDictionary messageDictionary, XmlDictionaryReader reader) {
+			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Contract.Requires<ArgumentNullException>(reader != null);
+
+			DeserializeJsonAsFlatDictionary(messageDictionary, reader);
+
+			// Make sure all the required parts are present and valid.
+			messageDictionary.Description.EnsureMessagePartsPassBasicValidation(messageDictionary);
+			messageDictionary.Message.EnsureValidMessage();
 		}
 
 		/// <summary>
@@ -109,52 +176,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Reads the data from a message instance and writes a XML/JSON encoding of it.
-		/// </summary>
-		/// <param name="messageDictionary">The message to be serialized.</param>
-		/// <param name="writer">The writer to use for the serialized form.</param>
-		/// <remarks>
-		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter(System.IO.Stream)"/>
-		/// to create the <see cref="XmlDictionaryWriter"/> instance capable of emitting JSON.
-		/// </remarks>
-		[Pure]
-		internal void Serialize(MessageDictionary messageDictionary, XmlDictionaryWriter writer) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
-			Contract.Requires<ArgumentNullException>(writer != null, "writer");
-
-			writer.WriteStartElement("root");
-			writer.WriteAttributeString("type", "object");
-			foreach (var pair in messageDictionary) {
-				bool include = false;
-				string type = "string";
-				MessagePart partDescription;
-				if (messageDictionary.Description.Mapping.TryGetValue(pair.Key, out partDescription)) {
-					Contract.Assume(partDescription != null);
-					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
-						include = true;
-						if (IsNumeric(partDescription.MemberDeclaredType)) {
-							type = "number";
-						} else if (partDescription.MemberDeclaredType.IsAssignableFrom(typeof(bool))) {
-							type = "boolean";
-						}
-					}
-				} else {
-					// This is extra data.  We always write it out.
-					include = true;
-				}
-
-				if (include) {
-					writer.WriteStartElement(pair.Key);
-					writer.WriteAttributeString("type", type);
-					writer.WriteString(pair.Value);
-					writer.WriteEndElement();
-				}
-			}
-
-			writer.WriteEndElement();
-		}
-
-		/// <summary>
 		/// Reads name=value pairs into a message.
 		/// </summary>
 		/// <param name="fields">The name=value pairs that were read in from the transport.</param>
@@ -183,27 +204,6 @@ namespace DotNetOpenAuth.Messaging {
 			if (originalPayloadMessage != null) {
 				originalPayloadMessage.OriginalPayload = fields;
 			}
-		}
-
-		/// <summary>
-		/// Reads XML/JSON into a message dictionary.
-		/// </summary>
-		/// <param name="messageDictionary">The message to deserialize into.</param>
-		/// <param name="reader">The XML/JSON to read into the message.</param>
-		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
-		/// <remarks>
-		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader(System.IO.Stream, System.Xml.XmlDictionaryReaderQuotas)"/>
-		/// to create the <see cref="XmlDictionaryReader"/> instance capable of reading JSON.
-		/// </remarks>
-		internal void Deserialize(MessageDictionary messageDictionary, XmlDictionaryReader reader) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
-			Contract.Requires<ArgumentNullException>(reader != null, "reader");
-
-			DeserializeJsonAsFlatDictionary(messageDictionary, reader);
-
-			// Make sure all the required parts are present and valid.
-			messageDictionary.Description.EnsureMessagePartsPassBasicValidation(messageDictionary);
-			messageDictionary.Message.EnsureValidMessage();
 		}
 
 		/// <summary>

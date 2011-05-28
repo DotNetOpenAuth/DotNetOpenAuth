@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.OpenId {
 		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(protocol != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
-			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
+			Contract.Requires<ArgumentNullException>(associationStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 

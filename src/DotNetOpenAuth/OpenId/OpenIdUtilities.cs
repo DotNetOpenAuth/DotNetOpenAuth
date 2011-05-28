@@ -182,8 +182,8 @@ namespace DotNetOpenAuth.OpenId {
 		///   <c>true</c> if the specified containing message is valid; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsValid(this IProviderAssociationStore associationStore, IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
-			Contract.Requires<ArgumentNullException>(associationStore != null, "associationStore");
-			Contract.Requires<ArgumentNullException>(containingMessage != null, "containingMessage");
+			Contract.Requires<ArgumentNullException>(associationStore != null);
+			Contract.Requires<ArgumentNullException>(containingMessage != null);
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
 			try {
 				return associationStore.Deserialize(containingMessage, isPrivateAssociation, handle) != null;
