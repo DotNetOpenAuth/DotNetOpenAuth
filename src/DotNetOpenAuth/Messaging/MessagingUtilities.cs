@@ -281,6 +281,17 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Tests whether two timespans are within reasonable approximation of each other.
+		/// </summary>
+		/// <param name="self">One TimeSpan.</param>
+		/// <param name="other">The other TimeSpan.</param>
+		/// <param name="marginOfError">The allowable margin of error.</param>
+		/// <returns><c>true</c> if the two TimeSpans are within <paramref name="marginOfError"/> of each other.</returns>
+		public static bool Equals(this TimeSpan self, TimeSpan other, TimeSpan marginOfError) {
+			return TimeSpan.FromMilliseconds(Math.Abs((self - other).TotalMilliseconds)) < marginOfError;
+		}
+
+		/// <summary>
 		/// Clears any existing elements in a collection and fills the collection with a given set of values.
 		/// </summary>
 		/// <typeparam name="T">The type of value kept in the collection.</typeparam>

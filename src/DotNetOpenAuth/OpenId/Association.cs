@@ -223,7 +223,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			if (a.Handle != this.Handle ||
 				a.Issued != this.Issued ||
-				a.TotalLifeLength != this.TotalLifeLength) {
+				!MessagingUtilities.Equals(a.TotalLifeLength, this.TotalLifeLength, TimeSpan.FromSeconds(1))) {
 				return false;
 			}
 

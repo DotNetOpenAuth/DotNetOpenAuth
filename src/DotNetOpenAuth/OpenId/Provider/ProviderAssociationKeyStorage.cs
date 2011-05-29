@@ -18,12 +18,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// The bucket to use when recording shared associations.
 		/// </summary>
-		private const string SharedAssociationBucket = "https://localhost/dnoa/shared_associations";
+		internal const string SharedAssociationBucket = "https://localhost/dnoa/shared_associations";
 
 		/// <summary>
 		/// The bucket to use when recording private associations.
 		/// </summary>
-		private const string PrivateAssociationBucket = "https://localhost/dnoa/private_associations";
+		internal const string PrivateAssociationBucket = "https://localhost/dnoa/private_associations";
 
 		/// <summary>
 		/// The backing crypto key store.

@@ -24,10 +24,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public void SignaturesMatchKnownGood() {
 			Protocol protocol = Protocol.V20;
 			var settings = new ProviderSecuritySettings();
-			var store = new ProviderAssociationHandleEncoder(new MemoryCryptoKeyStore());
+			var cryptoStore = new MemoryCryptoKeyStore();
 			byte[] associationSecret = Convert.FromBase64String("rsSwv1zPWfjPRQU80hciu8FPDC+GONAMJQ/AvSo1a2M=");
-			string handle = store.Serialize(associationSecret, DateTime.UtcNow.AddDays(1), false);
-			Association association = HmacShaAssociation.Create(handle, associationSecret, TimeSpan.FromDays(1));
+			string handle = "mock";
+			cryptoStore.StoreKey(ProviderAssociationKeyStorage.SharedAssociationBucket, handle, new CryptoKey(associationSecret, DateTime.UtcNow.AddDays(1)));
+
+			var store = new ProviderAssociationKeyStorage(cryptoStore);
 			SigningBindingElement signer = new SigningBindingElement(store, settings);
 			signer.Channel = new TestChannel(this.MessageDescriptions);
 
@@ -35,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			ITamperResistantOpenIdMessage signedMessage = message;
 			message.ProviderEndpoint = new Uri("http://provider");
 			signedMessage.UtcCreationDate = DateTime.Parse("1/1/2009");
-			signedMessage.AssociationHandle = association.Handle;
+			signedMessage.AssociationHandle = handle;
 			Assert.IsNotNull(signer.ProcessOutgoingMessage(message));
 			Assert.AreEqual("o9+uN7qTaUS9v0otbHTuNAtbkpBm14+es9QnNo6IHD4=", signedMessage.Signature);
 		}

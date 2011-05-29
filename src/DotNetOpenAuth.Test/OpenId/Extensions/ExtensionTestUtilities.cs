@@ -60,7 +60,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 				},
 				op => {
 					RegisterExtension(op.Channel, Mocks.MockOpenIdExtension.Factory);
-					op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, association.Handle, cryptoKeyStore.GetKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, association.Handle));
+					var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
+					op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
 					var response = new PositiveAssertionResponse(request);
 					var receivedRequests = request.Extensions.Cast<IOpenIdMessageExtension>();

@@ -198,7 +198,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				},
 				op => {
-					op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, association.Handle, cryptoKeyStore.GetKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, association.Handle));
+					if (association != null) {
+						var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
+						op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
+					}
+
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
 					Assert.IsNotNull(request);
 					IProtocolMessage response;
