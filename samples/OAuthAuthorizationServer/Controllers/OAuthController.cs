@@ -35,16 +35,6 @@
 #endif
 
 		/// <summary>
-		/// Creates the resource server's encryption service provider with private key.
-		/// </summary>
-		/// <returns>An RSA crypto service provider.</returns>
-		internal static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
-			var resourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
-			resourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
-			return resourceServerEncryptionServiceProvider;
-		}
-
-		/// <summary>
 		/// The OAuth 2.0 token endpoint.
 		/// </summary>
 		/// <returns>The response to the Client.</returns>
@@ -123,6 +113,7 @@
 						User = MvcApplication.LoggedInUser,
 						CreatedOnUtc = DateTime.UtcNow,
 					});
+				MvcApplication.DataContext.SubmitChanges(); // submit now so that this new row can be retrieved later in this same HTTP request
 
 				// In this simple sample, the user either agrees to the entire scope requested by the client or none of it.  
 				// But in a real app, you could grant a reduced scope of access to the client by passing a scope parameter to this method.
@@ -132,6 +123,16 @@
 			}
 
 			return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
+		}
+
+		/// <summary>
+		/// Creates the resource server's encryption service provider with private key.
+		/// </summary>
+		/// <returns>An RSA crypto service provider.</returns>
+		internal static RSACryptoServiceProvider CreateResourceServerEncryptionServiceProvider() {
+			var resourceServerEncryptionServiceProvider = new RSACryptoServiceProvider();
+			resourceServerEncryptionServiceProvider.ImportParameters(ResourceServerEncryptionPublicKey);
+			return resourceServerEncryptionServiceProvider;
 		}
 	}
 }

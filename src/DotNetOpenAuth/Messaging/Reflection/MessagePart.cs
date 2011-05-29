@@ -100,6 +100,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
 			Map<CultureInfo>(c => c.Name, null, str => new CultureInfo(str));
 			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), null, str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
+			Map<Type>(t => t.FullName, null, str => Type.GetType(str));
 		}
 
 		/// <summary>
@@ -244,11 +245,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 							value));
 					}
 				} else {
-					if (this.property != null) {
-						this.property.SetValue(message, this.ToValue(value), null);
-					} else {
-						this.field.SetValue(message, this.ToValue(value));
-					}
+					this.SetValueAsObject(message, this.ToValue(value));
 				}
 			} catch (Exception ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartReadFailure, message.GetType(), this.Name, value);
@@ -321,8 +318,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
 		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
-			Contract.Requires<ArgumentNullException>(toString != null, "toString");
-			Contract.Requires<ArgumentNullException>(toValue != null, "toValue");
+			Contract.Requires<ArgumentNullException>(toString != null);
+			Contract.Requires<ArgumentNullException>(toValue != null);
 
 			if (toOriginalString == null) {
 				toOriginalString = toString;
@@ -373,6 +370,32 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
+		/// Gets the value of the message part, without converting it to/from a string.
+		/// </summary>
+		/// <param name="message">The message instance to read from.</param>
+		/// <returns>The value of the member.</returns>
+		private object GetValueAsObject(IMessage message) {
+			if (this.property != null) {
+				return this.property.GetValue(message, null);
+			} else {
+				return this.field.GetValue(message);
+			}
+		}
+
+		/// <summary>
+		/// Sets the value of a message part directly with a given value.
+		/// </summary>
+		/// <param name="message">The message instance to read from.</param>
+		/// <param name="value">The value to set on the this part.</param>
+		private void SetValueAsObject(IMessage message, object value) {
+			if (this.property != null) {
+				this.property.SetValue(message, value, null);
+			} else {
+				this.field.SetValue(message, value);
+			}
+		}
+
+		/// <summary>
 		/// Converts a string representation of the member's value to the appropriate type.
 		/// </summary>
 		/// <param name="value">The string representation of the member's value.</param>
@@ -393,19 +416,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </returns>
 		private string ToString(object value, bool originalString) {
 			return originalString ? this.converter.ValueToOriginalString(value) : this.converter.ValueToString(value);
-		}
-
-		/// <summary>
-		/// Gets the value of the message part, without converting it to/from a string.
-		/// </summary>
-		/// <param name="message">The message instance to read from.</param>
-		/// <returns>The value of the member.</returns>
-		private object GetValueAsObject(IMessage message) {
-			if (this.property != null) {
-				return this.property.GetValue(message, null);
-			} else {
-				return this.field.GetValue(message);
-			}
 		}
 
 		/// <summary>

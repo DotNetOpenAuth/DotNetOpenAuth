@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			securitySettings,
 			new OAuthConsumerMessageFactory()) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
 			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 		}
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			securitySettings,
 			new OAuthServiceProviderMessageFactory(tokenManager)) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
 			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 		}
@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider)
 			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
 			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 

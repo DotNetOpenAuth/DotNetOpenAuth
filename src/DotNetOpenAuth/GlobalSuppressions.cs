@@ -67,3 +67,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "iframe", Scope = "resource", Target = "DotNetOpenAuth.OpenId.OpenIdStrings.resources")]
 [assembly: SuppressMessage("Microsoft.Naming", "CA1703:ResourceStringsShouldBeSpelledCorrectly", MessageId = "Sig", Scope = "resource", Target = "DotNetOpenAuth.OpenId.OpenIdStrings.resources")]
 [assembly: SuppressMessage("Microsoft.Naming", "CA1701:ResourceStringCompoundWordsShouldBeCasedCorrectly", MessageId = "DSig", Scope = "resource", Target = "DotNetOpenAuth.OpenId.OpenIdStrings.resources")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenAuth.OAuth2.ChannelElements")]

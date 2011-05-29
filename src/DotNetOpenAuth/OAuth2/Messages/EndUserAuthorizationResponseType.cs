@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// after the user has granted authorized access.
 	/// </summary>
 	[Flags]
-	public enum EndUserAuthorizationResponseType {
+	public enum EndUserAuthorizationResponseTypes {
 		/// <summary>
 		/// An access token should be returned immediately.
 		/// </summary>

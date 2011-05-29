@@ -28,10 +28,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthPrincipal"/> class.
 		/// </summary>
-		/// <param name="username">The username.</param>
+		/// <param name="userName">The username.</param>
 		/// <param name="roles">The roles this user belongs to.</param>
-		public OAuthPrincipal(string username, string[] roles)
-			: this(new OAuthIdentity(username), roles) {
+		public OAuthPrincipal(string userName, string[] roles)
+			: this(new OAuthIdentity(userName), roles) {
 		}
 
 		/// <summary>

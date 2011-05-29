@@ -28,12 +28,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// The association store used by Relying Parties to look up the secrets needed for signing.
 		/// </summary>
-		private readonly IAssociationStore<Uri> rpAssociations;
+		private readonly IRelyingPartyAssociationStore rpAssociations;
 
 		/// <summary>
 		/// The association store used by Providers to look up the secrets needed for signing.
 		/// </summary>
-		private readonly IAssociationStore<AssociationRelyingPartyType> opAssociations;
+		private readonly IProviderAssociationStore opAssociations;
 
 		/// <summary>
 		/// The security settings at the Provider.
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Initializes a new instance of the SigningBindingElement class for use by a Relying Party.
 		/// </summary>
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.  May be null for dumb Relying Parties.</param>
-		internal SigningBindingElement(IAssociationStore<Uri> associationStore) {
+		internal SigningBindingElement(IRelyingPartyAssociationStore associationStore) {
 			this.rpAssociations = associationStore;
 		}
 
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal SigningBindingElement(IAssociationStore<AssociationRelyingPartyType> associationStore, ProviderSecuritySettings securitySettings) {
+		internal SigningBindingElement(IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(associationStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Gets a value indicating whether this binding element is on a Provider channel.
 		/// </summary>
 		private bool IsOnProvider {
-			get { return this.opAssociations != null; }
+			get { return this.opSecuritySettings != null; }
 		}
 
 		#region IChannelBindingElement Methods
@@ -232,14 +232,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// get included in the list of checked parameters.
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 			var partsRequiringProtection = from part in this.Channel.MessageDescriptions.Get(signedMessage).Mapping.Values
-			                               where part.RequiredProtection != ProtectionLevel.None
-			                               where part.IsRequired || part.IsNondefaultValueSet(signedMessage)
-			                               select part.Name;
+										   where part.RequiredProtection != ProtectionLevel.None
+										   where part.IsRequired || part.IsNondefaultValueSet(signedMessage)
+										   select part.Name;
 			ErrorUtilities.VerifyInternal(partsRequiringProtection.All(name => name.StartsWith(protocol.openid.Prefix, StringComparison.Ordinal)), "Signing only works when the parameters start with the 'openid.' prefix.");
 			string[] signedParts = signedMessage.SignedParameterOrder.Split(',');
 			var unsignedParts = from partName in partsRequiringProtection
-			                    where !signedParts.Contains(partName.Substring(protocol.openid.Prefix.Length))
-			                    select partName;
+								where !signedParts.Contains(partName.Substring(protocol.openid.Prefix.Length))
+								select partName;
 			ErrorUtilities.VerifyProtocol(!unsignedParts.Any(), OpenIdStrings.SignatureDoesNotIncludeMandatoryParts, string.Join(", ", unsignedParts.ToArray()));
 		}
 
@@ -293,7 +293,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			MessageDescription description = this.Channel.MessageDescriptions.Get(signedMessage);
 			var signedParts = from part in description.Mapping.Values
 			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
-			                        && part.GetValue(signedMessage) != null
+			                      && part.GetValue(signedMessage) != null
 			                  select part.Name;
 			string prefix = Protocol.V20.openid.Prefix;
 			ErrorUtilities.VerifyInternal(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
@@ -378,8 +378,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					// Since we have an association handle, we're either signing with a smart association,
 					// or verifying a dumb one.
 					bool signing = string.IsNullOrEmpty(signedMessage.Signature);
-					AssociationRelyingPartyType type = signing ? AssociationRelyingPartyType.Smart : AssociationRelyingPartyType.Dumb;
-					association = this.opAssociations.GetAssociation(type, signedMessage.AssociationHandle);
+					bool isPrivateAssociation = !signing;
+					association = this.opAssociations.Deserialize(signedMessage, isPrivateAssociation, signedMessage.AssociationHandle);
 					if (association == null) {
 						// There was no valid association with the requested handle.
 						// Let's tell the RP to forget about that association.
@@ -403,12 +403,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// If no assoc_handle was given or it was invalid, the only thing 
 			// left to do is sign a message using a 'dumb' mode association.
 			Protocol protocol = Protocol.Default;
-			Association association = this.opAssociations.GetAssociation(AssociationRelyingPartyType.Dumb, this.opSecuritySettings);
-			if (association == null) {
-				association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.HMAC_SHA256, AssociationRelyingPartyType.Dumb, this.opSecuritySettings);
-				this.opAssociations.StoreAssociation(AssociationRelyingPartyType.Dumb, association);
-			}
-
+			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.HMAC_SHA256, AssociationRelyingPartyType.Dumb, this.opAssociations, this.opSecuritySettings);
 			return association;
 		}
 	}

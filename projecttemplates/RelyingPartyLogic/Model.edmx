@@ -4,13 +4,13 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+    <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
         <EntityContainer Name="DatabaseModelStoreContainer">
           <EntitySet Name="AuthenticationToken" EntityType="DatabaseModel.Store.AuthenticationToken" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Client" EntityType="DatabaseModel.Store.Client" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ClientAuthorization" EntityType="DatabaseModel.Store.ClientAuthorization" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CryptoKey" EntityType="DatabaseModel.Store.CryptoKey" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Nonce" EntityType="DatabaseModel.Store.Nonce" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="OpenIDAssociation" EntityType="DatabaseModel.Store.OpenIDAssociation" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Role" EntityType="DatabaseModel.Store.Role" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="User" EntityType="DatabaseModel.Store.User" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="UserRole" EntityType="DatabaseModel.Store.UserRole" store:Type="Tables" Schema="dbo" />
@@ -68,6 +68,16 @@
           <Property Name="ExpirationDate" Type="datetime" />
           <Property Name="Scope" Type="varchar" MaxLength="2048" />
         </EntityType>
+        <EntityType Name="CryptoKey">
+          <Key>
+            <PropertyRef Name="CryptoKeyId" />
+          </Key>
+          <Property Name="CryptoKeyId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Bucket" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="Handle" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="Expiration" Type="datetime" Nullable="false" />
+          <Property Name="Secret" Type="varbinary" Nullable="false" MaxLength="4096" />
+        </EntityType>
         <EntityType Name="Nonce">
           <Key>
             <PropertyRef Name="NonceId" />
@@ -77,17 +87,6 @@
           <Property Name="Code" Type="varchar" Nullable="false" MaxLength="255" />
           <Property Name="Issued" Type="datetime" Nullable="false" />
           <Property Name="Expires" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="OpenIDAssociation">
-          <Key>
-            <PropertyRef Name="AssociationId" />
-          </Key>
-          <Property Name="AssociationId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="DistinguishingFactor" Type="varchar" Nullable="false" MaxLength="255" />
-          <Property Name="AssociationHandle" Type="varchar" Nullable="false" MaxLength="255" />
-          <Property Name="Expiration" Type="datetime" Nullable="false" />
-          <Property Name="PrivateData" Type="binary" Nullable="false" MaxLength="64" />
-          <Property Name="PrivateDataLength" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -185,7 +184,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="ClearExpiredAssociations" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="ClearExpiredCryptoKeys" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="ClearExpiredNonces" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -203,7 +202,6 @@
             <End Role="User" EntitySet="Users" />
             <End Role="AuthenticationToken" EntitySet="AuthenticationTokens" /></AssociationSet>
           <EntitySet Name="Nonces" EntityType="DatabaseModel.Nonce" />
-          <EntitySet Name="OpenIdAssociations" EntityType="DatabaseModel.OpenIdAssociation" />
           <FunctionImport Name="ClearExpiredNonces" />
           <EntitySet Name="Clients" EntityType="DatabaseModel.Client" />
           <EntitySet Name="ClientAuthorizations" EntityType="DatabaseModel.ClientAuthorization" />
@@ -215,6 +213,7 @@
             <End Role="User" EntitySet="Users" />
             <End Role="ClientAuthorization" EntitySet="ClientAuthorizations" />
           </AssociationSet>
+          <EntitySet Name="SymmetricCryptoKeys" EntityType="DatabaseModel.SymmetricCryptoKey" />
           </EntityContainer>
         <EntityType Name="AuthenticationToken" Abstract="false">
           <Key>
@@ -265,17 +264,6 @@
           <Property Name="Code" Type="String" Nullable="false" />
           <Property Name="IssuedUtc" Type="DateTime" Nullable="false" />
           <Property Name="ExpiresUtc" Type="DateTime" Nullable="false" /></EntityType>
-        <EntityType Name="OpenIdAssociation" a:TypeAccess="Public" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration">
-          <Key>
-            <PropertyRef Name="AssociationId" /></Key>
-          <Property Name="AssociationId" Type="Int32" Nullable="false" />
-          <Property Name="DistinguishingFactor" Type="String" Nullable="false">
-            <Documentation>
-              <Summary>Gets or sets the Provider Endpoint URL the association is with.</Summary></Documentation></Property>
-          <Property Name="AssociationHandle" Type="String" Nullable="false" />
-          <Property Name="ExpirationUtc" Type="DateTime" Nullable="false" />
-          <Property Name="PrivateData" Type="Binary" Nullable="false" />
-          <Property Name="PrivateDataLength" Type="Int32" Nullable="false" /></EntityType>
         <EntityType Name="Client">
           <Key>
             <PropertyRef Name="ClientId" />
@@ -305,7 +293,17 @@
         <Association Name="FK_IssuedToken_User">
           <End Type="DatabaseModel.User" Role="User" Multiplicity="1" />
           <End Type="DatabaseModel.ClientAuthorization" Role="ClientAuthorization" Multiplicity="*" />
-        </Association></Schema>
+        </Association>
+        <EntityType Name="SymmetricCryptoKey">
+          <Key>
+            <PropertyRef Name="CryptoKeyId" />
+          </Key>
+          <Property Type="Int32" Name="CryptoKeyId" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="String" Name="Bucket" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Handle" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ExpirationUtc" Nullable="false" />
+          <Property Type="Binary" Name="Secret" Nullable="false" MaxLength="4096" FixedLength="false" />
+        </EntityType></Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -361,15 +359,6 @@
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="Context" ColumnName="Context" />
                 <ScalarProperty Name="NonceId" ColumnName="NonceId" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <EntitySetMapping Name="OpenIdAssociations">
-            <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.OpenIdAssociation)">
-              <MappingFragment StoreEntitySet="OpenIDAssociation">
-                <ScalarProperty Name="PrivateDataLength" ColumnName="PrivateDataLength" />
-                <ScalarProperty Name="PrivateData" ColumnName="PrivateData" />
-                <ScalarProperty Name="ExpirationUtc" ColumnName="Expiration" />
-                <ScalarProperty Name="AssociationHandle" ColumnName="AssociationHandle" />
-                <ScalarProperty Name="DistinguishingFactor" ColumnName="DistinguishingFactor" />
-                <ScalarProperty Name="AssociationId" ColumnName="AssociationId" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
           <FunctionImportMapping FunctionImportName="ClearExpiredNonces" FunctionName="DatabaseModel.Store.ClearExpiredNonces" />
           <EntitySetMapping Name="Clients">
             <EntityTypeMapping TypeName="DatabaseModel.Client">
@@ -407,7 +396,18 @@
             <EndProperty Name="User">
               <ScalarProperty Name="UserId" ColumnName="UserId" />
             </EndProperty>
-          </AssociationSetMapping></EntityContainerMapping>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="SymmetricCryptoKeys">
+            <EntityTypeMapping TypeName="DatabaseModel.SymmetricCryptoKey">
+              <MappingFragment StoreEntitySet="CryptoKey">
+                <ScalarProperty Name="Secret" ColumnName="Secret" />
+                <ScalarProperty Name="ExpirationUtc" ColumnName="Expiration" />
+                <ScalarProperty Name="Handle" ColumnName="Handle" />
+                <ScalarProperty Name="Bucket" ColumnName="Bucket" />
+                <ScalarProperty Name="CryptoKeyId" ColumnName="CryptoKeyId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping></EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
@@ -440,8 +440,7 @@
         <AssociationConnector Association="DatabaseModel.FK_AuthenticationToken_User">
           <ConnectorPoint PointX="4.625" PointY="1.9324446614583337" />
           <ConnectorPoint PointX="5.25" PointY="1.9324446614583337" /></AssociationConnector>
-        <EntityTypeShape EntityType="DatabaseModel.Nonce" Width="1.5" PointX="9.375" PointY="0.75" Height="1.9802864583333326" />
-        <EntityTypeShape EntityType="DatabaseModel.OpenIdAssociation" Width="1.75" PointX="7.375" PointY="0.75" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="DatabaseModel.Nonce" Width="1.5" PointX="9.625" PointY="0.75" Height="1.9802864583333326" />
         <EntityTypeShape EntityType="DatabaseModel.Client" Width="1.625" PointX="5.25" PointY="3.75" Height="2.1725878906249996" />
         <EntityTypeShape EntityType="DatabaseModel.ClientAuthorization" Width="1.75" PointX="2.875" PointY="3.75" Height="2.1725878906250031" />
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_Consumer" >
@@ -451,6 +450,7 @@
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_User" >
           <ConnectorPoint PointX="3.75" PointY="3.2494921875" />
           <ConnectorPoint PointX="3.75" PointY="3.75" />
-        </AssociationConnector></Diagram></edmx:Diagrams>
+        </AssociationConnector>
+        <EntityTypeShape EntityType="DatabaseModel.SymmetricCryptoKey" Width="1.875" PointX="7.5" PointY="0.75" Height="1.9802864583333317" /></Diagram></edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

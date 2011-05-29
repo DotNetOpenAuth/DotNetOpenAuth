@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The reference date and time for calculating time stamps.
 		/// </summary>
-		private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		internal static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TimestampEncoder"/> class.

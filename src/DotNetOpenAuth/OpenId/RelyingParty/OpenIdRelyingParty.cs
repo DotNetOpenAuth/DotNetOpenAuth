@@ -100,21 +100,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
-		public OpenIdRelyingParty(IRelyingPartyApplicationStore applicationStore)
+		public OpenIdRelyingParty(IOpenIdApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
+		/// <param name="cryptoKeyStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
-		private OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore) {
+		private OpenIdRelyingParty(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore) {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
-			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
+			Contract.Requires<ArgumentException>(cryptoKeyStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
@@ -137,10 +137,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
-			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
+			if (cryptoKeyStore == null) {
+				cryptoKeyStore = new MemoryCryptoKeyStore();
+			}
 
-			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
+			this.channel = new OpenIdChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
+			this.AssociationManager = new AssociationManager(this.Channel, new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore), this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, cryptoKeyStore, nonceStore);
 		}
 
 		/// <summary>
@@ -160,17 +164,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static IRelyingPartyApplicationStore HttpApplicationStore {
+		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
-				Contract.Ensures(Contract.Result<IRelyingPartyApplicationStore>() != null);
+				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
 
 				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
-				var store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey];
+				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
+				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
 							context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
 						}
 					} finally {

@@ -13,21 +13,61 @@
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
 		private static readonly RSAParameters AsymmetricTokenSigningPrivateKey = CreateRSAKey();
 
-		private static readonly byte[] secret = CreateSecret();
+		#region Implementation of IAuthorizationServer
 
-		private readonly INonceStore nonceStore = new DatabaseNonceStore();
+		public ICryptoKeyStore CryptoKeyStore {
+			get { return MvcApplication.KeyNonceStore; }
+		}
 
-		/// <summary>
-		/// Creates a symmetric secret used to sign and encrypt authorization server refresh tokens.
-		/// </summary>
-		/// <returns>A cryptographically strong symmetric key.</returns>
-		private static byte[] CreateSecret() {
-			// TODO: Replace this sample code with real code.
-			// For this sample, we just generate random secrets.
-			RandomNumberGenerator crypto = new RNGCryptoServiceProvider();
-			var secret = new byte[16];
-			crypto.GetBytes(secret);
-			return secret;
+		public INonceStore VerificationCodeNonceStore {
+			get { return MvcApplication.KeyNonceStore; }
+		}
+
+		public RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider() {
+			var asymmetricTokenSigningServiceProvider = new RSACryptoServiceProvider();
+			asymmetricTokenSigningServiceProvider.ImportParameters(AsymmetricTokenSigningPrivateKey);
+			return asymmetricTokenSigningServiceProvider;
+		}
+
+		public IConsumerDescription GetClient(string clientIdentifier) {
+			var consumerRow = MvcApplication.DataContext.Clients.SingleOrDefault(
+				consumerCandidate => consumerCandidate.ClientIdentifier == clientIdentifier);
+			if (consumerRow == null) {
+				throw new ArgumentOutOfRangeException("clientIdentifier");
+			}
+
+			return consumerRow;
+		}
+
+		#endregion
+
+		public bool IsAuthorizationValid(IAuthorizationDescription authorization) {
+			return this.IsAuthorizationValid(authorization.Scope, authorization.ClientIdentifier, authorization.UtcIssued, authorization.User);
+		}
+
+		public bool CanBeAutoApproved(EndUserAuthorizationRequest authorizationRequest) {
+			if (authorizationRequest == null) {
+				throw new ArgumentNullException("authorizationRequest");
+			}
+
+			// NEVER issue an auto-approval to a client that would end up getting an access token immediately
+			// (without a client secret), as that would allow ANY client to spoof an approved client's identity
+			// and obtain unauthorized access to user data.
+			if (EndUserAuthorizationRequest.ResponseType == EndUserAuthorizationResponseTypes.AuthorizationCode) {
+				// Never issue auto-approval if the client secret is blank, since that too makes it easy to spoof
+				// a client's identity and obtain unauthorized access.
+				var requestingClient = MvcApplication.DataContext.Clients.First(c => c.ClientIdentifier == authorizationRequest.ClientIdentifier);
+				if (!string.IsNullOrEmpty(requestingClient.ClientSecret)) {
+					return this.IsAuthorizationValid(
+						authorizationRequest.Scope,
+						authorizationRequest.ClientIdentifier,
+						DateTime.UtcNow,
+						HttpContext.Current.User.Identity.Name);
+				}
+			}
+
+			// Default to not auto-approving.
+			return false;
 		}
 
 		/// <summary>
@@ -67,71 +107,18 @@
 #endif
 		}
 
-		#region Implementation of IAuthorizationServer
-
-		public byte[] Secret {
-			get { return secret; }
-		}
-
-		public INonceStore VerificationCodeNonceStore {
-			get { return this.nonceStore; }
-		}
-
-		public RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider() {
-			var asymmetricTokenSigningServiceProvider = new RSACryptoServiceProvider();
-			asymmetricTokenSigningServiceProvider.ImportParameters(AsymmetricTokenSigningPrivateKey);
-			return asymmetricTokenSigningServiceProvider;
-		}
-
-		public IConsumerDescription GetClient(string clientIdentifier) {
-			var consumerRow = MvcApplication.DataContext.Clients.SingleOrDefault(
-				consumerCandidate => consumerCandidate.ClientIdentifier == clientIdentifier);
-			if (consumerRow == null) {
-				throw new ArgumentOutOfRangeException("clientIdentifier");
-			}
-
-			return consumerRow;
-		}
-
-		#endregion
-
-		public bool IsAuthorizationValid(IAuthorizationDescription authorization) {
-			return this.IsAuthorizationValid(authorization.Scope, authorization.ClientIdentifier, authorization.UtcIssued, authorization.User);
-		}
-
-		public bool CanBeAutoApproved(EndUserAuthorizationRequest authorizationRequest) {
-			if (authorizationRequest == null) {
-				throw new ArgumentNullException("authorizationRequest");
-			}
-
-			// NEVER issue an auto-approval to a client that would end up getting an access token immediately
-			// (without a client secret), as that would allow ANY client to spoof an approved client's identity
-			// and obtain unauthorized access to user data.
-			if (authorizationRequest.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
-				// Never issue auto-approval if the client secret is blank, since that too makes it easy to spoof
-				// a client's identity and obtain unauthorized access.
-				var requestingClient = MvcApplication.DataContext.Clients.First(c => c.ClientIdentifier == authorizationRequest.ClientIdentifier);
-				if (!string.IsNullOrEmpty(requestingClient.ClientSecret)) {
-					return this.IsAuthorizationValid(
-						authorizationRequest.Scope,
-						authorizationRequest.ClientIdentifier,
-						DateTime.UtcNow,
-						HttpContext.Current.User.Identity.Name);
-				}
-			}
-
-			// Default to not auto-approving.
-			return false;
-		}
-
 		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username) {
+			// If db precision exceeds token time precision (which is common), the following query would
+			// often disregard a token that is minted immediately after the authorization record is stored in the db.
+			// To compensate for this, we'll increase the timestamp on the token's issue date by 1 second.
+			issuedUtc += TimeSpan.FromSeconds(1);
 			var grantedScopeStrings = from auth in MvcApplication.DataContext.ClientAuthorizations
-									  where
-										auth.Client.ClientIdentifier == clientIdentifier &&
-										auth.CreatedOnUtc <= issuedUtc &&
-										(!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
-										auth.User.OpenIDClaimedIdentifier == username
-									  select auth.Scope;
+			                          where
+			                              auth.Client.ClientIdentifier == clientIdentifier &&
+			                              auth.CreatedOnUtc <= issuedUtc &&
+			                              (!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
+			                              auth.User.OpenIDClaimedIdentifier == username
+			                          select auth.Scope;
 
 			if (!grantedScopeStrings.Any()) {
 				// No granted authorizations prior to the issuance of this token, so it must have been revoked.

@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Collections.Generic;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging.Bindings;
 
@@ -18,89 +19,27 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// out of the box on most single-server web sites.  It is highly recommended
 	/// that high traffic web sites consider using a database to store the information
 	/// used by an OpenID Provider and write a custom implementation of the
-	/// <see cref="IProviderApplicationStore"/> interface to use instead of this
+	/// <see cref="IOpenIdApplicationStore"/> interface to use instead of this
 	/// class.
 	/// </remarks>
-	public class StandardProviderApplicationStore : IProviderApplicationStore {
+	public class StandardProviderApplicationStore : IOpenIdApplicationStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>
 		private readonly INonceStore nonceStore;
 
 		/// <summary>
-		/// The association store to use.
+		/// The crypto key store where symmetric keys are persisted.
 		/// </summary>
-		private readonly IAssociationStore<AssociationRelyingPartyType> associationStore;
+		private readonly ICryptoKeyStore cryptoKeyStore;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardProviderApplicationStore"/> class.
 		/// </summary>
 		public StandardProviderApplicationStore() {
 			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
-			this.associationStore = new AssociationMemoryStore<AssociationRelyingPartyType>();
+			this.cryptoKeyStore = new MemoryCryptoKeyStore();
 		}
-
-		#region IAssociationStore<AssociationRelyingPartyType> Members
-
-		/// <summary>
-		/// Saves an <see cref="Association"/> for later recall.
-		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for providers).</param>
-		/// <param name="association">The association to store.</param>
-		public void StoreAssociation(AssociationRelyingPartyType distinguishingFactor, Association association) {
-			this.associationStore.StoreAssociation(distinguishingFactor, association);
-		}
-
-		/// <summary>
-		/// Gets the best association (the one with the longest remaining life) for a given key.
-		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="securityRequirements">The security requirements that the returned association must meet.</param>
-		/// <returns>
-		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key.
-		/// </returns>
-		/// <remarks>
-		/// In the event that multiple associations exist for the given
-		/// <paramref name="distinguishingFactor"/>, it is important for the
-		/// implementation for this method to use the <paramref name="securityRequirements"/>
-		/// to pick the best (highest grade or longest living as the host's policy may dictate)
-		/// association that fits the security requirements.
-		/// Associations that are returned that do not meet the security requirements will be
-		/// ignored and a new association created.
-		/// </remarks>
-		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, SecuritySettings securityRequirements) {
-			return this.associationStore.GetAssociation(distinguishingFactor, securityRequirements);
-		}
-
-		/// <summary>
-		/// Gets the association for a given key and handle.
-		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="handle">The handle of the specific association that must be recalled.</param>
-		/// <returns>
-		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key and handle.
-		/// </returns>
-		public Association GetAssociation(AssociationRelyingPartyType distinguishingFactor, string handle) {
-			return this.associationStore.GetAssociation(distinguishingFactor, handle);
-		}
-
-		/// <summary>
-		/// Removes a specified handle that may exist in the store.
-		/// </summary>
-		/// <param name="distinguishingFactor">The Uri (for relying parties) or Smart/Dumb (for Providers).</param>
-		/// <param name="handle">The handle of the specific association that must be deleted.</param>
-		/// <returns>
-		/// True if the association existed in this store previous to this call.
-		/// </returns>
-		/// <remarks>
-		/// No exception should be thrown if the association does not exist in the store
-		/// before this call.
-		/// </remarks>
-		public bool RemoveAssociation(AssociationRelyingPartyType distinguishingFactor, string handle) {
-			return this.associationStore.RemoveAssociation(distinguishingFactor, handle);
-		}
-
-		#endregion
 
 		#region INonceStore Members
 
@@ -124,6 +63,53 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public bool StoreNonce(string context, string nonce, DateTime timestampUtc) {
 			return this.nonceStore.StoreNonce(context, nonce, timestampUtc);
+		}
+
+		#endregion
+
+		#region ICryptoKeyStore
+
+		/// <summary>
+		/// Gets the key in a given bucket and handle.
+		/// </summary>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <param name="handle">The key handle.  Case sensitive.</param>
+		/// <returns>
+		/// The cryptographic key, or <c>null</c> if no matching key was found.
+		/// </returns>
+		public CryptoKey GetKey(string bucket, string handle) {
+			return this.cryptoKeyStore.GetKey(bucket, handle);
+		}
+
+		/// <summary>
+		/// Gets a sequence of existing keys within a given bucket.
+		/// </summary>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <returns>
+		/// A sequence of handles and keys, ordered by descending <see cref="CryptoKey.ExpiresUtc"/>.
+		/// </returns>
+		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
+			return this.cryptoKeyStore.GetKeys(bucket);
+		}
+
+		/// <summary>
+		/// Stores a cryptographic key.
+		/// </summary>
+		/// <param name="bucket">The name of the bucket to store the key in.  Case sensitive.</param>
+		/// <param name="handle">The handle to the key, unique within the bucket.  Case sensitive.</param>
+		/// <param name="key">The key to store.</param>
+		/// <exception cref="CryptoKeyCollisionException">Thrown in the event of a conflict with an existing key in the same bucket and with the same handle.</exception>
+		public void StoreKey(string bucket, string handle, CryptoKey key) {
+			this.cryptoKeyStore.StoreKey(bucket, handle, key);
+		}
+
+		/// <summary>
+		/// Removes the key.
+		/// </summary>
+		/// <param name="bucket">The bucket name.  Case sensitive.</param>
+		/// <param name="handle">The key handle.  Case sensitive.</param>
+		public void RemoveKey(string bucket, string handle) {
+			this.cryptoKeyStore.RemoveKey(bucket, handle);
 		}
 
 		#endregion

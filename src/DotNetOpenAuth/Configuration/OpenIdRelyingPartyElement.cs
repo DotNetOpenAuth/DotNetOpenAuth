@@ -87,8 +87,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the type to use for storing application state.
 		/// </summary>
 		[ConfigurationProperty(StoreConfigName)]
-		public TypeConfigurationElement<IRelyingPartyApplicationStore> ApplicationStore {
-			get { return (TypeConfigurationElement<IRelyingPartyApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IRelyingPartyApplicationStore>(); }
+		public TypeConfigurationElement<IOpenIdApplicationStore> ApplicationStore {
+			get { return (TypeConfigurationElement<IOpenIdApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IOpenIdApplicationStore>(); }
 			set { this[StoreConfigName] = value; }
 		}
 

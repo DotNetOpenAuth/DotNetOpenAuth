@@ -138,7 +138,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			private readonly Version version;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="MessageDescriptionCollection.MessageTypeAndVersion"/> struct.
+			/// Initializes a new instance of the <see cref="MessageTypeAndVersion"/> struct.
 			/// </summary>
 			/// <param name="messageType">Type of the message.</param>
 			/// <param name="messageVersion">The message version.</param>

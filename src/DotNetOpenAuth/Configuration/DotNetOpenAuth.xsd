@@ -236,6 +236,13 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="privateSecretMaximumAge" type="xs:string" default="28.00:00:00">
+							<xs:annotation>
+								<xs:documentation>
+									The maximum age of a secret used for private signing or encryption before it is renewed.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="openid">
@@ -335,13 +342,6 @@
 														<xs:documentation>
 															Shared associaitons with OpenID Providers will only be formed or used if they
 															are willing to form associations equal to or less than a given level of protection.
-														</xs:documentation>
-													</xs:annotation>
-												</xs:attribute>
-												<xs:attribute name="privateSecretMaximumAge" type="xs:string">
-													<xs:annotation>
-														<xs:documentation>
-															The maximum age of a secret used for private signing before it is renewed.
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>
@@ -578,6 +578,15 @@
 														<xs:documentation>
 															Provides automatic security protections to OpenID 1.x relying parties
 															so security is comparable to OpenID 2.0 relying parties.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="encodeAssociationSecretsInHandles" type="xs:boolean" default="true">
+													<xs:annotation>
+														<xs:documentation>
+															Whether the Provider should ease the burden of storing associations
+															by encoding their secrets (in signed, encrypted form) into the association handles themselves, storing only
+															a few rotating, private symmetric keys in the Provider's store instead.
 														</xs:documentation>
 													</xs:annotation>
 												</xs:attribute>

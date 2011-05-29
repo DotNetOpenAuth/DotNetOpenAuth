@@ -4,13 +4,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Test.OpenId {
+namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using NUnit.Framework;
 
 	[TestFixture]

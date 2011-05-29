@@ -58,8 +58,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
+			// Others return text/javascript.  Again bad.
 			string body = response.GetResponseReader().ReadToEnd();
-			if (response.ContentType.MediaType == JsonEncoded) {
+			if (response.ContentType.MediaType == JsonEncoded || response.ContentType.MediaType == JsonTextEncoded) {
 				return this.DeserializeFromJson(body);
 			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
 				return HttpUtility.ParseQueryString(body).ToDictionary();

@@ -55,7 +55,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		public OpenIdProvider()
 			: this(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
-			Contract.Ensures(this.AssociationStore != null);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 		}
@@ -64,10 +63,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
-		public OpenIdProvider(IProviderApplicationStore applicationStore)
-			: this(applicationStore, applicationStore) {
+		public OpenIdProvider(IOpenIdApplicationStore applicationStore)
+			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore) {
 			Contract.Requires<ArgumentNullException>(applicationStore != null);
-			Contract.Ensures(this.AssociationStore == applicationStore);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 		}
@@ -75,25 +73,25 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
-		/// <param name="associationStore">The association store to use.  Cannot be null.</param>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
-		private OpenIdProvider(IAssociationStore<AssociationRelyingPartyType> associationStore, INonceStore nonceStore) {
-			Contract.Requires<ArgumentNullException>(associationStore != null);
+		/// <param name="cryptoKeyStore">The crypto key store.  Cannot be null.</param>
+		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore) {
 			Contract.Requires<ArgumentNullException>(nonceStore != null);
-			Contract.Ensures(this.AssociationStore == associationStore);
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 
-			this.AssociationStore = associationStore;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
 			}
 
+			this.AssociationStore = new SwitchingAssociationStore(cryptoKeyStore, this.SecuritySettings);
 			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
+			this.CryptoKeyStore = cryptoKeyStore;
 
-			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
+			Reporting.RecordFeatureAndDependencyUse(this, nonceStore);
 		}
 
 		/// <summary>
@@ -101,16 +99,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static IProviderApplicationStore HttpApplicationStore {
+		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
 				Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-				Contract.Ensures(Contract.Result<IProviderApplicationStore>() != null);
+				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
 				HttpContext context = HttpContext.Current;
-				var store = (IProviderApplicationStore)context.Application[ApplicationStoreKey];
+				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IProviderApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
 							context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore();
 						}
 					} finally {
@@ -168,16 +166,28 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Gets the crypto key store.
+		/// </summary>
+		public ICryptoKeyStore CryptoKeyStore { get; private set; }
+
+		/// <summary>
+		/// Gets the association store.
+		/// </summary>
+		internal IProviderAssociationStore AssociationStore { get; private set; }
+
+		/// <summary>
+		/// Gets the channel.
+		/// </summary>
+		internal OpenIdChannel OpenIdChannel {
+			get { return (OpenIdChannel)this.Channel; }
+		}
+
+		/// <summary>
 		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
 		/// </summary>
 		internal IList<IIdentifierDiscoveryService> DiscoveryServices {
 			get { return this.RelyingParty.DiscoveryServices; }
 		}
-
-		/// <summary>
-		/// Gets the association store.
-		/// </summary>
-		internal IAssociationStore<AssociationRelyingPartyType> AssociationStore { get; private set; }
 
 		/// <summary>
 		/// Gets the web request handler to use for discovery and the part of
@@ -555,6 +565,75 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			foreach (IProviderBehavior profile in e.NewItems) {
 				profile.ApplySecuritySettings(this.SecuritySettings);
 				Reporting.RecordFeatureUse(profile);
+			}
+		}
+
+		/// <summary>
+		/// Provides a single OP association store instance that can handle switching between
+		/// association handle encoding modes.
+		/// </summary>
+		private class SwitchingAssociationStore : IProviderAssociationStore {
+			/// <summary>
+			/// The security settings of the Provider.
+			/// </summary>
+			private readonly ProviderSecuritySettings securitySettings;
+
+			/// <summary>
+			/// The association store that records association secrets in the association handles themselves.
+			/// </summary>
+			private IProviderAssociationStore associationHandleEncoder;
+
+			/// <summary>
+			/// The association store that records association secrets in a secret store.
+			/// </summary>
+			private IProviderAssociationStore associationSecretStorage;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="SwitchingAssociationStore"/> class.
+			/// </summary>
+			/// <param name="cryptoKeyStore">The crypto key store.</param>
+			/// <param name="securitySettings">The security settings.</param>
+			internal SwitchingAssociationStore(ICryptoKeyStore cryptoKeyStore, ProviderSecuritySettings securitySettings) {
+				Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
+				Contract.Requires<ArgumentNullException>(securitySettings != null);
+				this.securitySettings = securitySettings;
+
+				this.associationHandleEncoder = new ProviderAssociationHandleEncoder(cryptoKeyStore);
+				this.associationSecretStorage = new ProviderAssociationKeyStorage(cryptoKeyStore);
+			}
+
+			/// <summary>
+			/// Gets the association store that applies given the Provider's current security settings.
+			/// </summary>
+			internal IProviderAssociationStore AssociationStore {
+				get { return this.securitySettings.EncodeAssociationSecretsInHandles ? this.associationHandleEncoder : this.associationSecretStorage; }
+			}
+
+			/// <summary>
+			/// Stores an association and returns a handle for it.
+			/// </summary>
+			/// <param name="secret">The association secret.</param>
+			/// <param name="expiresUtc">The UTC time that the association should expire.</param>
+			/// <param name="privateAssociation">A value indicating whether this is a private association.</param>
+			/// <returns>
+			/// The association handle that represents this association.
+			/// </returns>
+			public string Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
+				return this.AssociationStore.Serialize(secret, expiresUtc, privateAssociation);
+			}
+
+			/// <summary>
+			/// Retrieves an association given an association handle.
+			/// </summary>
+			/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
+			/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+			/// <param name="handle">The association handle.</param>
+			/// <returns>
+			/// An association instance, or <c>null</c> if the association has expired or the signature is incorrect (which may be because the OP's symmetric key has changed).
+			/// </returns>
+			/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
+			public Association Deserialize(IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
+				return this.AssociationStore.Deserialize(containingMessage, isPrivateAssociation, handle);
 			}
 		}
 	}

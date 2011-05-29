@@ -38,9 +38,10 @@
     <Recovery>SIMPLE</Recovery>
     <RecursiveTriggersEnabled>False</RecursiveTriggersEnabled>
     <ServiceBrokerOption>DisableBroker</ServiceBrokerOption>
+    <SupplementalLoggingOn>False</SupplementalLoggingOn>
     <TornPageDetection>False</TornPageDetection>
     <Trustworthy>False</Trustworthy>
     <UpdateOptions>READ_WRITE</UpdateOptions>
-    <VardecimalStorageFormatOn>False</VardecimalStorageFormatOn>
+    <VardecimalStorageFormatOn>True</VardecimalStorageFormatOn>
   </Properties>
 </CatalogProperties>

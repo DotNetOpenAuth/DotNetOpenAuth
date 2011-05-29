@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="scopes">The scopes to serialize.</param>
 		/// <returns>A space-delimited list.</returns>
 		public static string JoinScopes(HashSet<string> scopes) {
-			Contract.Requires<ArgumentNullException>(scopes != null, "scopes");
+			Contract.Requires<ArgumentNullException>(scopes != null);
 			return string.Join(" ", scopes.ToArray());
 		}
 

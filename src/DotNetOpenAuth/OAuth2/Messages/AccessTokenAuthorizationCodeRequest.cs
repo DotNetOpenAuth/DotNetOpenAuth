@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		internal AccessTokenAuthorizationCodeRequest(AuthorizationServerDescription authorizationServer)
 			: this(authorizationServer.TokenEndpoint, authorizationServer.Version)
 		{
-			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 		}
 
 		/// <summary>

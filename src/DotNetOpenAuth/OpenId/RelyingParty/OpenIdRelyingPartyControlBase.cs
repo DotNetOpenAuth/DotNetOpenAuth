@@ -792,7 +792,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
+			IOpenIdApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
 			return this.CreateRelyingParty(store);
 		}
 
@@ -801,7 +801,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="store">The store to pass to the relying party constructor.</param>
 		/// <returns>The instantiated relying party.</returns>
-		protected virtual OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store) {
+		protected virtual OpenIdRelyingParty CreateRelyingParty(IOpenIdApplicationStore store) {
 			return new OpenIdRelyingParty(store);
 		}
 

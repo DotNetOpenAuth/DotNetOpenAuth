@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="authorizationServer">The authorization server.</param>
 		protected internal OAuth2AuthorizationServerChannel(IAuthorizationServer authorizationServer)
 			: base(InitializeBindingElements(authorizationServer)) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			this.AuthorizationServer = authorizationServer;
 		}
 
@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
 		private static IChannelBindingElement[] InitializeBindingElements(IAuthorizationServer authorizationServer) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null, "authorizationServer");
+			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 			var bindingElements = new List<IChannelBindingElement>();
 
 			bindingElements.Add(new AuthServerAllFlowsBindingElement());

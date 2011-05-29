@@ -117,7 +117,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Model.OpenIdAssociation.cs" />
     <Compile Include="Model.User.cs" />
     <Compile Include="NonceDbStore.cs" />
     <Compile Include="OAuthAuthorizationServer.cs" />

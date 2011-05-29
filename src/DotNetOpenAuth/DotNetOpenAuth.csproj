@@ -275,6 +275,7 @@ http://opensource.org/licenses/ms-pl.html
     <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
     <Compile Include="ComponentModel\ConverterBase.cs" />
     <Compile Include="ComponentModel\SuggestedStringsConverterContract.cs" />
@@ -305,6 +306,9 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKey.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
+    <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
     <Compile Include="IEmbeddedResourceRetrieval.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\InfoCardImage.cs" />
@@ -318,8 +322,11 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="InfoCard\Token\TokenUtility.cs" />
     <Compile Include="InfoCard\Token\TokenDecryptor.cs" />
     <Compile Include="InfoCard\WellKnownIssuers.cs" />
+    <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
+    <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
+    <Compile Include="Messaging\DataBagFormatterBase.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
@@ -339,6 +346,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\IncomingWebResponseContract.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
+    <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\MultipartPostPart.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
@@ -360,7 +368,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\ChannelElements\OAuth2ChannelBase.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ClientChannel.cs" />
     <Compile Include="OAuth2\ChannelElements\ScopeEncoder.cs" />
-    <Compile Include="OAuth2\ChannelElements\UriStyleMessageFormatter.cs" />
+    <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
     <Compile Include="OAuth2\ChannelElements\IAuthorizationDescription.cs" />
     <Compile Include="OAuth2\ChannelElements\ITokenCarryingRequest.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ResourceServerChannel.cs" />
@@ -492,8 +500,13 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="OpenId\Association.cs" />
-    <Compile Include="OpenId\AssociationMemoryStore.cs" />
-    <Compile Include="OpenId\Associations.cs" />
+    <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
+    <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
+    <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
+    <Compile Include="OpenId\Provider\ProviderAssociationKeyStorage.cs" />
+    <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\Associations.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -573,6 +586,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
+    <Compile Include="OpenId\Provider\AssociationRelyingPartyType.cs" />
     <Compile Include="OpenId\Provider\PrivatePersonalIdentifierProviderBase.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequestEventArgs.cs" />
@@ -585,7 +599,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
     <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
-    <Compile Include="OpenId\Provider\IProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\IProviderBehavior.cs" />
     <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
@@ -607,7 +620,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\DiffieHellman\mono\PrimeGeneratorBase.cs" />
     <Compile Include="OpenId\DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="OpenId\HmacShaAssociation.cs" />
-    <Compile Include="OpenId\IAssociationStore.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
     <Compile Include="OpenId\Provider\OpenIdProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
@@ -647,9 +659,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Protocol.cs" />
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
-    <Compile Include="OpenId\RelyingParty\IRelyingPartyApplicationStore.cs" />
+    <Compile Include="OpenId\IOpenIdApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
-    <Compile Include="OpenId\RelyingParty\PrivateSecretManager.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
@@ -849,6 +860,7 @@ http://opensource.org/licenses/ms-pl.html
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
     <Content Include="DotNetOpenAuth.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -865,14 +877,7 @@ http://opensource.org/licenses/ms-pl.html
       <ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
     </PropertyGroup>
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
-    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-             InputAssemblies="@(ILMergeInputAssemblies)"
-             OutputFile="$(ILMergeOutputAssembly)"
-             KeyFile="$(PublicKeyFile)"
-             DelaySign="true"
-             ToolPath="$(ProjectRoot)tools\ILMerge"
-             TargetPlatformVersion="$(ClrVersion).0"
-             TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
+    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeInputAssemblies)" OutputFile="$(ILMergeOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" ToolPath="$(ProjectRoot)tools\ILMerge" TargetPlatformVersion="$(ClrVersion).0" TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

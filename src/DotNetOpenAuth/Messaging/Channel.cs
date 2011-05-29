@@ -48,8 +48,14 @@ namespace DotNetOpenAuth.Messaging {
 		protected internal const string JsonEncoded = "application/json";
 
 		/// <summary>
+		/// The "text/javascript" content-type that some servers return instead of the standard <see cref="JsonEncoded"/> one.
+		/// </summary>
+		protected internal const string JsonTextEncoded = "text/javascript";
+
+		/// <summary>
 		/// The content-type for plain text.
 		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PlainText", Justification = "Not 'Plaintext' in the crypographic sense.")]
 		protected internal const string PlainTextEncoded = "text/plain";
 
 		/// <summary>
@@ -763,7 +769,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
-			Contract.Requires<ArgumentException>((message.HttpMethods & (HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest)) != 0, "Neither GET nor POST are allowed for this message.");
+			Contract.Requires<ArgumentException>((message.HttpMethods & (HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest)) != 0);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			Contract.Assert(message != null && message.Recipient != null);
@@ -918,18 +924,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to serialize.</param>
 		/// <returns>A JSON string.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		protected virtual string SerializeAsJson(IMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null, "message");
+			Contract.Requires<ArgumentNullException>(message != null);
 
 			MessageDictionary messageDictionary = this.MessageDescriptions.GetAccessor(message);
-			var memoryStream = new MemoryStream();
-			var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, Encoding.UTF8);
-			var serializer = MessageSerializer.Get(message.GetType());
-			serializer.Serialize(messageDictionary, jsonWriter);
-			jsonWriter.Flush();
+			using (var memoryStream = new MemoryStream()) {
+				using (var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, Encoding.UTF8)) {
+					MessageSerializer.Serialize(messageDictionary, jsonWriter);
+					jsonWriter.Flush();
+				}
 
-			string json = Encoding.UTF8.GetString(memoryStream.ToArray());
-			return json;
+				string json = Encoding.UTF8.GetString(memoryStream.ToArray());
+				return json;
+			}
 		}
 
 		/// <summary>
@@ -941,8 +949,9 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(json));
 
 			var dictionary = new Dictionary<string, string>();
-			var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), this.XmlDictionaryReaderQuotas);
-			MessageSerializer.DeserializeJsonAsFlatDictionary(dictionary, jsonReader);
+			using (var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), this.XmlDictionaryReaderQuotas)) {
+				MessageSerializer.DeserializeJsonAsFlatDictionary(dictionary, jsonReader);
+			}
 			return dictionary;
 		}
 

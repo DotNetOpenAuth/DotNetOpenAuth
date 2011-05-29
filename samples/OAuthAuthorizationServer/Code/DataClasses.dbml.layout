@@ -40,5 +40,11 @@
         <classShapeMoniker Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" />
       </nodes>
     </associationConnector>
+    <classShape Id="93df6fa9-cc66-44a9-8885-960b1e670dd7" absoluteBounds="4.125, 6.25, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/DataClassesDataContext/SymmetricCryptoKey" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0b486eb8-31a4-4f11-b58f-09540c56319b" absoluteBounds="4.14, 6.71, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
   </nestedChildShapes>
 </ordesignerObjectsDiagram>

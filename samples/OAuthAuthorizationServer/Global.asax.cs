@@ -26,7 +26,7 @@
 		/// </summary>
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthAuthorizationServer");
 
-		public static DatabaseNonceStore NonceStore { get; set; }
+		public static DatabaseKeyNonceStore KeyNonceStore { get; set; }
 
 		/// <summary>
 		/// Gets the transaction-protected database connection for the current request.
@@ -81,7 +81,7 @@
 
 			RegisterRoutes(RouteTable.Routes);
 
-			NonceStore = new DatabaseNonceStore();
+			KeyNonceStore = new DatabaseKeyNonceStore();
 
 			log4net.Config.XmlConfigurator.Configure();
 			Logger.Info("Sample starting...");

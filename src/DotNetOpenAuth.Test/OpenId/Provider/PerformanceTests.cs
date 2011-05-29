@@ -78,8 +78,8 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				protocol,
 				assocType,
 				AssociationRelyingPartyType.Smart,
+				this.provider.AssociationStore,
 				this.provider.SecuritySettings);
-			this.provider.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, assoc);
 			var checkidRequest = this.CreateCheckIdRequest(true);
 			MeasurePerformance(
 				() => {

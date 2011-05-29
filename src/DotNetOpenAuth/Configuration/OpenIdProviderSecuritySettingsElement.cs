@@ -36,6 +36,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string AssociationsConfigName = "associations";
 
 		/// <summary>
+		/// The name of the @encodeAssociationSecretsInHandles attribute.
+		/// </summary>
+		private const string EncodeAssociationSecretsInHandlesConfigName = "encodeAssociationSecretsInHandles";
+
+		/// <summary>
 		/// Gets the name of the @requireSsl attribute.
 		/// </summary>
 		private const string RequireSslConfigName = "requireSsl";
@@ -116,6 +121,17 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the Provider should ease the burden of storing associations
+		/// by encoding their secrets (in signed, encrypted form) into the association handles themselves, storing only
+		/// a few rotating, private symmetric keys in the Provider's store instead.
+		/// </summary>
+		[ConfigurationProperty(EncodeAssociationSecretsInHandlesConfigName, DefaultValue = ProviderSecuritySettings.EncodeAssociationSecretsInHandlesDefault)]
+		public bool EncodeAssociationSecretsInHandles {
+			get { return (bool)this[EncodeAssociationSecretsInHandlesConfigName]; }
+			set { this[EncodeAssociationSecretsInHandlesConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -126,6 +142,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
 			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
 			settings.UnsolicitedAssertionVerification = this.UnsolicitedAssertionVerification;
+			settings.EncodeAssociationSecretsInHandles = this.EncodeAssociationSecretsInHandles;
 			foreach (AssociationTypeElement element in this.AssociationLifetimes) {
 				Contract.Assume(element != null);
 				settings.AssociationLifetimes.Add(element.AssociationType, element.MaximumLifetime);

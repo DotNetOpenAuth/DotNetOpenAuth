@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 
@@ -87,7 +88,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Implementations of this interface should ensure that this property never returns null.
 		/// </remarks>
 		Version IMessage.Version {
-			get { return this.version; }
+			get { return this.Version; }
 		}
 
 		/// <summary>
@@ -110,7 +111,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value><see cref="MessageProtections.None"/></value>
 		MessageProtections IProtocolMessage.RequiredProtection {
-			get { return MessageProtections.None; }
+			get { return RequiredProtection; }
 		}
 
 		/// <summary>
@@ -118,7 +119,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value></value>
 		MessageTransport IProtocolMessage.Transport {
-			get { return this.messageTransport; }
+			get { return this.Transport; }
 		}
 
 		#endregion
@@ -152,10 +153,31 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the originating request message that caused this response to be formed.
 		/// </summary>
 		IDirectedProtocolMessage IDirectResponseProtocolMessage.OriginatingRequest {
-			get { return this.originatingRequest; }
+			get { return this.OriginatingRequest; }
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the level of protection this message requires.
+		/// </summary>
+		protected static MessageProtections RequiredProtection {
+			get { return MessageProtections.None; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this is a direct or indirect message.
+		/// </summary>
+		protected MessageTransport Transport {
+			get { return this.messageTransport; }
+		}
+
+		/// <summary>
+		/// Gets the version of the protocol or extension this message is prepared to implement.
+		/// </summary>
+		protected Version Version {
+			get { return this.version; }
+		}
 
 		/// <summary>
 		/// Gets or sets the preferred method of transport for the message.
@@ -166,6 +188,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// to automate submission.
 		/// </remarks>
 		protected HttpDeliveryMethods HttpMethods { get; set; }
+
+		/// <summary>
+		/// Gets the originating request message that caused this response to be formed.
+		/// </summary>
+		protected IDirectedProtocolMessage OriginatingRequest {
+			get { return this.originatingRequest; }
+		}
 
 		/// <summary>
 		/// Gets the URL of the intended receiver of this message.

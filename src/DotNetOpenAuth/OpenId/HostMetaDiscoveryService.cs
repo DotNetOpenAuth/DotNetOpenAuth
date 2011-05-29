@@ -435,7 +435,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By design")]
 		public class HostMetaProxy {
 			/// <summary>
-			/// Initializes a new instance of the <see cref="HostMetaDiscoveryService.HostMetaProxy"/> class.
+			/// Initializes a new instance of the <see cref="HostMetaProxy"/> class.
 			/// </summary>
 			/// <param name="proxyFormat">The proxy formatting string.</param>
 			/// <param name="signingHostFormat">The signing host formatting string.</param>

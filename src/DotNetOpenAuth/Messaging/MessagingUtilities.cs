@@ -21,11 +21,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 	using System.Web;
 	using System.Web.Mvc;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Utility class touches lots of surface area")]
 	public static class MessagingUtilities {
 		/// <summary>
 		/// The cryptographically strong random data generator used for creating secrets.
@@ -54,10 +56,40 @@ namespace DotNetOpenAuth.Messaging {
 		internal const string Digits = "0123456789";
 
 		/// <summary>
+		/// The set of digits and alphabetic letters (upper and lowercase).
+		/// </summary>
+		internal const string AlphaNumeric = UppercaseLetters + LowercaseLetters + Digits;
+
+		/// <summary>
+		/// All the characters that are allowed for use as a base64 encoding character.
+		/// </summary>
+		internal const string Base64Characters = AlphaNumeric + "+" + "/";
+
+		/// <summary>
+		/// All the characters that are allowed for use as a base64 encoding character
+		/// in the "web safe" context.
+		/// </summary>
+		internal const string Base64WebSafeCharacters = AlphaNumeric + "-" + "_";
+
+		/// <summary>
 		/// The set of digits, and alphabetic letters (upper and lowercase) that are clearly
 		/// visually distinguishable.
 		/// </summary>
 		internal const string AlphaNumericNoLookAlikes = "23456789abcdefghjkmnpqrstwxyzABCDEFGHJKMNPQRSTWXYZ";
+
+		/// <summary>
+		/// The length of private symmetric secret handles.
+		/// </summary>
+		/// <remarks>
+		/// This value needn't be high, as we only expect to have a small handful of unexpired secrets at a time,
+		/// and handle recycling is permissible.
+		/// </remarks>
+		private const int SymmetricSecretHandleLength = 4;
+
+		/// <summary>
+		/// The default lifetime of a private secret.
+		/// </summary>
+		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
 
 		/// <summary>
 		/// A character array containing just the = character.
@@ -240,12 +272,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="collection">The collection to add to.</param>
 		/// <param name="values">The values to add to the collection.</param>
 		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> values) {
-			Contract.Requires<ArgumentNullException>(collection != null, "collection");
-			Contract.Requires<ArgumentNullException>(values != null, "values");
+			Contract.Requires<ArgumentNullException>(collection != null);
+			Contract.Requires<ArgumentNullException>(values != null);
 
 			foreach (var value in values) {
 				collection.Add(value);
 			}
+		}
+
+		/// <summary>
+		/// Tests whether two timespans are within reasonable approximation of each other.
+		/// </summary>
+		/// <param name="self">One TimeSpan.</param>
+		/// <param name="other">The other TimeSpan.</param>
+		/// <param name="marginOfError">The allowable margin of error.</param>
+		/// <returns><c>true</c> if the two TimeSpans are within <paramref name="marginOfError"/> of each other.</returns>
+		public static bool Equals(this TimeSpan self, TimeSpan other, TimeSpan marginOfError) {
+			return TimeSpan.FromMilliseconds(Math.Abs((self - other).TotalMilliseconds)) < marginOfError;
 		}
 
 		/// <summary>
@@ -255,7 +298,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="collection">The collection to modify.</param>
 		/// <param name="values">The new values to fill the collection.</param>
 		internal static void ResetContents<T>(this ICollection<T> collection, IEnumerable<T> values) {
-			Contract.Requires<ArgumentNullException>(collection != null, "collection");
+			Contract.Requires<ArgumentNullException>(collection != null);
 
 			collection.Clear();
 			if (values != null) {
@@ -270,8 +313,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDescription">The message description whose parts should be removed from the URL.</param>
 		/// <returns>A cleaned URL.</returns>
 		internal static Uri StripMessagePartsFromQueryString(this Uri uri, MessageDescription messageDescription) {
-			Contract.Requires<ArgumentNullException>(uri != null, "uri");
-			Contract.Requires<ArgumentNullException>(messageDescription != null, "messageDescription");
+			Contract.Requires<ArgumentNullException>(uri != null);
+			Contract.Requires<ArgumentNullException>(messageDescription != null);
 
 			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
 			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => messageDescription.Mapping.ContainsKey(key)).ToList();
@@ -348,7 +391,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A value prepared for an HTTP header.</returns>
 		internal static string AssembleAuthorizationHeader(string scheme, IEnumerable<KeyValuePair<string, string>> fields) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(scheme));
-			Contract.Requires<ArgumentNullException>(fields != null, "fields");
+			Contract.Requires<ArgumentNullException>(fields != null);
 
 			var authorization = new StringBuilder();
 			authorization.Append(scheme);
@@ -393,6 +436,40 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return Enumerable.Empty<KeyValuePair<string, string>>();
+		}
+
+		/// <summary>
+		/// Encodes a symmetric key handle and the blob that is encrypted/signed with that key into a single string
+		/// that can be decoded by <see cref="ExtractKeyHandleAndPayload"/>.
+		/// </summary>
+		/// <param name="handle">The cryptographic key handle.</param>
+		/// <param name="payload">The encrypted/signed blob.</param>
+		/// <returns>The combined encoded value.</returns>
+		internal static string CombineKeyHandleAndPayload(string handle, string payload) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(payload));
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+
+			return handle + "!" + payload;
+		}
+
+		/// <summary>
+		/// Extracts the key handle and encrypted blob from a string previously returned from <see cref="CombineKeyHandleAndPayload"/>.
+		/// </summary>
+		/// <param name="containingMessage">The containing message.</param>
+		/// <param name="messagePart">The message part.</param>
+		/// <param name="keyHandleAndBlob">The value previously returned from <see cref="CombineKeyHandleAndPayload"/>.</param>
+		/// <param name="handle">The crypto key handle.</param>
+		/// <param name="dataBlob">The encrypted/signed data.</param>
+		internal static void ExtractKeyHandleAndPayload(IProtocolMessage containingMessage, string messagePart, string keyHandleAndBlob, out string handle, out string dataBlob) {
+			Contract.Requires<ArgumentNullException>(containingMessage != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(messagePart));
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(keyHandleAndBlob));
+
+			int privateHandleIndex = keyHandleAndBlob.IndexOf('!');
+			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, messagePart, keyHandleAndBlob);
+			handle = keyHandleAndBlob.Substring(0, privateHandleIndex);
+			dataBlob = keyHandleAndBlob.Substring(privateHandleIndex + 1);
 		}
 
 		/// <summary>
@@ -455,8 +532,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
 		internal static string ComputeHash(this HashAlgorithm algorithm, string value, Encoding encoding = null) {
-			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
-			Contract.Requires<ArgumentNullException>(value != null, "value");
+			Contract.Requires<ArgumentNullException>(algorithm != null);
+			Contract.Requires<ArgumentNullException>(value != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			encoding = encoding ?? Encoding.UTF8;
@@ -474,8 +551,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
 		internal static string ComputeHash(this HashAlgorithm algorithm, IDictionary<string, string> data, Encoding encoding = null) {
-			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
-			Contract.Requires<ArgumentNullException>(data != null, "data");
+			Contract.Requires<ArgumentNullException>(algorithm != null);
+			Contract.Requires<ArgumentNullException>(data != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			// Assemble the dictionary to sign, taking care to remove the signature itself
@@ -495,8 +572,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
 		internal static string ComputeHash(this HashAlgorithm algorithm, IEnumerable<KeyValuePair<string, string>> sortedData, Encoding encoding = null) {
-			Contract.Requires<ArgumentNullException>(algorithm != null, "algorithm");
-			Contract.Requires<ArgumentNullException>(sortedData != null, "sortedData");
+			Contract.Requires<ArgumentNullException>(algorithm != null);
+			Contract.Requires<ArgumentNullException>(sortedData != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return ComputeHash(algorithm, CreateQueryString(sortedData), encoding);
@@ -509,19 +586,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, or 256 bytes in length.</param>
 		/// <returns>The encrypted buffer</returns>
 		internal static byte[] Encrypt(byte[] buffer, byte[] key) {
-			SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key);
+			using (SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key)) {
+				using (var ms = new MemoryStream()) {
+					var binaryWriter = new BinaryWriter(ms);
+					binaryWriter.Write((byte)1); // version of encryption algorithm
+					binaryWriter.Write(crypto.IV);
+					binaryWriter.Flush();
 
-			var ms = new MemoryStream();
-			var binaryWriter = new BinaryWriter(ms);
-			binaryWriter.Write((byte)1); // version of encryption algorithm
-			binaryWriter.Write(crypto.IV);
-			binaryWriter.Flush();
+					var cryptoStream = new CryptoStream(ms, crypto.CreateEncryptor(), CryptoStreamMode.Write);
+					cryptoStream.Write(buffer, 0, buffer.Length);
+					cryptoStream.FlushFinalBlock();
 
-			var cryptoStream = new CryptoStream(ms, crypto.CreateEncryptor(), CryptoStreamMode.Write);
-			cryptoStream.Write(buffer, 0, buffer.Length);
-			cryptoStream.FlushFinalBlock();
-
-			return ms.ToArray();
+					return ms.ToArray();
+				}
+			}
 		}
 
 		/// <summary>
@@ -530,28 +608,30 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to decrypt.</param>
 		/// <param name="key">The symmetric secret to use to decrypt the buffer.  Allowed values are 128, 192, and 256.</param>
 		/// <returns>The encrypted buffer</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] Decrypt(byte[] buffer, byte[] key) {
-			SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key);
+			using (SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key)) {
+				using (var ms = new MemoryStream(buffer)) {
+					var binaryReader = new BinaryReader(ms);
+					int algorithmVersion = binaryReader.ReadByte();
+					ErrorUtilities.VerifyProtocol(algorithmVersion == 1, MessagingStrings.UnsupportedEncryptionAlgorithm);
+					crypto.IV = binaryReader.ReadBytes(crypto.IV.Length);
 
-			var ms = new MemoryStream(buffer);
-			var binaryReader = new BinaryReader(ms);
-			int algorithmVersion = binaryReader.ReadByte();
-			ErrorUtilities.VerifyProtocol(algorithmVersion == 1, MessagingStrings.UnsupportedEncryptionAlgorithm);
-			crypto.IV = binaryReader.ReadBytes(crypto.IV.Length);
+					// Allocate space for the decrypted buffer.  We don't know how long it will be yet,
+					// but it will never be larger than the encrypted buffer.
+					var decryptedBuffer = new byte[buffer.Length];
+					int actualDecryptedLength;
 
-			// Allocate space for the decrypted buffer.  We don't know how long it will be yet,
-			// but it will never be larger than the encrypted buffer.
-			var decryptedBuffer = new byte[buffer.Length];
-			int actualDecryptedLength;
+					using (var cryptoStream = new CryptoStream(ms, crypto.CreateDecryptor(), CryptoStreamMode.Read)) {
+						actualDecryptedLength = cryptoStream.Read(decryptedBuffer, 0, decryptedBuffer.Length);
+					}
 
-			using (var cryptoStream = new CryptoStream(ms, crypto.CreateDecryptor(), CryptoStreamMode.Read)) {
-				actualDecryptedLength = cryptoStream.Read(decryptedBuffer, 0, decryptedBuffer.Length);
+					// Create a new buffer with only the decrypted data.
+					var finalDecryptedBuffer = new byte[actualDecryptedLength];
+					Array.Copy(decryptedBuffer, finalDecryptedBuffer, actualDecryptedLength);
+					return finalDecryptedBuffer;
+				}
 			}
-
-			// Create a new buffer with only the decrypted data.
-			var finalDecryptedBuffer = new byte[actualDecryptedLength];
-			Array.Copy(decryptedBuffer, finalDecryptedBuffer, actualDecryptedLength);
-			return finalDecryptedBuffer;
 		}
 
 		/// <summary>
@@ -585,30 +665,31 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to encrypt.</param>
 		/// <returns>The encrypted data.</returns>
 		internal static byte[] EncryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
-			Contract.Requires<ArgumentNullException>(crypto != null, "crypto");
-			Contract.Requires<ArgumentNullException>(buffer != null, "buffer");
+			Contract.Requires<ArgumentNullException>(crypto != null);
+			Contract.Requires<ArgumentNullException>(buffer != null);
 
-			var symmetricCrypto = new RijndaelManaged {
-				Mode = CipherMode.CBC,
-			};
+			using (var symmetricCrypto = new RijndaelManaged()) {
+				symmetricCrypto.Mode = CipherMode.CBC;
 
-			var encryptedStream = new MemoryStream();
-			var encryptedStreamWriter = new BinaryWriter(encryptedStream);
+				using (var encryptedStream = new MemoryStream()) {
+					var encryptedStreamWriter = new BinaryWriter(encryptedStream);
 
-			byte[] prequel = new byte[symmetricCrypto.Key.Length + symmetricCrypto.IV.Length];
-			Array.Copy(symmetricCrypto.Key, prequel, symmetricCrypto.Key.Length);
-			Array.Copy(symmetricCrypto.IV, 0, prequel, symmetricCrypto.Key.Length, symmetricCrypto.IV.Length);
-			byte[] encryptedPrequel = crypto.Encrypt(prequel, false);
+					byte[] prequel = new byte[symmetricCrypto.Key.Length + symmetricCrypto.IV.Length];
+					Array.Copy(symmetricCrypto.Key, prequel, symmetricCrypto.Key.Length);
+					Array.Copy(symmetricCrypto.IV, 0, prequel, symmetricCrypto.Key.Length, symmetricCrypto.IV.Length);
+					byte[] encryptedPrequel = crypto.Encrypt(prequel, false);
 
-			encryptedStreamWriter.Write(encryptedPrequel.Length);
-			encryptedStreamWriter.Write(encryptedPrequel);
-			encryptedStreamWriter.Flush();
+					encryptedStreamWriter.Write(encryptedPrequel.Length);
+					encryptedStreamWriter.Write(encryptedPrequel);
+					encryptedStreamWriter.Flush();
 
-			var cryptoStream = new CryptoStream(encryptedStream, symmetricCrypto.CreateEncryptor(), CryptoStreamMode.Write);
-			cryptoStream.Write(buffer, 0, buffer.Length);
-			cryptoStream.FlushFinalBlock();
+					var cryptoStream = new CryptoStream(encryptedStream, symmetricCrypto.CreateEncryptor(), CryptoStreamMode.Write);
+					cryptoStream.Write(buffer, 0, buffer.Length);
+					cryptoStream.FlushFinalBlock();
 
-			return encryptedStream.ToArray();
+					return encryptedStream.ToArray();
+				}
+			}
 		}
 
 		/// <summary>
@@ -617,40 +698,81 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="crypto">The asymmetric encryption provider to use for decryption.</param>
 		/// <param name="buffer">The buffer to decrypt.</param>
 		/// <returns>The decrypted data.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] DecryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
-			Contract.Requires<ArgumentNullException>(crypto != null, "crypto");
-			Contract.Requires<ArgumentNullException>(buffer != null, "buffer");
+			Contract.Requires<ArgumentNullException>(crypto != null);
+			Contract.Requires<ArgumentNullException>(buffer != null);
 
-			var encryptedStream = new MemoryStream(buffer);
-			var encryptedStreamReader = new BinaryReader(encryptedStream);
+			using (var encryptedStream = new MemoryStream(buffer)) {
+				var encryptedStreamReader = new BinaryReader(encryptedStream);
 
-			byte[] encryptedPrequel = encryptedStreamReader.ReadBytes(encryptedStreamReader.ReadInt32());
-			byte[] prequel = crypto.Decrypt(encryptedPrequel, false);
+				byte[] encryptedPrequel = encryptedStreamReader.ReadBytes(encryptedStreamReader.ReadInt32());
+				byte[] prequel = crypto.Decrypt(encryptedPrequel, false);
 
-			var symmetricCrypto = new RijndaelManaged {
-				Mode = CipherMode.CBC,
-			};
+				using (var symmetricCrypto = new RijndaelManaged()) {
+					symmetricCrypto.Mode = CipherMode.CBC;
 
-			byte[] symmetricKey = new byte[symmetricCrypto.Key.Length];
-			byte[] symmetricIV = new byte[symmetricCrypto.IV.Length];
-			Array.Copy(prequel, symmetricKey, symmetricKey.Length);
-			Array.Copy(prequel, symmetricKey.Length, symmetricIV, 0, symmetricIV.Length);
-			symmetricCrypto.Key = symmetricKey;
-			symmetricCrypto.IV = symmetricIV;
+					byte[] symmetricKey = new byte[symmetricCrypto.Key.Length];
+					byte[] symmetricIV = new byte[symmetricCrypto.IV.Length];
+					Array.Copy(prequel, symmetricKey, symmetricKey.Length);
+					Array.Copy(prequel, symmetricKey.Length, symmetricIV, 0, symmetricIV.Length);
+					symmetricCrypto.Key = symmetricKey;
+					symmetricCrypto.IV = symmetricIV;
 
-			// Allocate space for the decrypted buffer.  We don't know how long it will be yet,
-			// but it will never be larger than the encrypted buffer.
-			var decryptedBuffer = new byte[encryptedStream.Length - encryptedStream.Position];
-			int actualDecryptedLength;
+					// Allocate space for the decrypted buffer.  We don't know how long it will be yet,
+					// but it will never be larger than the encrypted buffer.
+					var decryptedBuffer = new byte[encryptedStream.Length - encryptedStream.Position];
+					int actualDecryptedLength;
 
-			using (var cryptoStream = new CryptoStream(encryptedStream, symmetricCrypto.CreateDecryptor(), CryptoStreamMode.Read)) {
-				actualDecryptedLength = cryptoStream.Read(decryptedBuffer, 0, decryptedBuffer.Length);
+					using (var cryptoStream = new CryptoStream(encryptedStream, symmetricCrypto.CreateDecryptor(), CryptoStreamMode.Read)) {
+						actualDecryptedLength = cryptoStream.Read(decryptedBuffer, 0, decryptedBuffer.Length);
+					}
+
+					// Create a new buffer with only the decrypted data.
+					var finalDecryptedBuffer = new byte[actualDecryptedLength];
+					Array.Copy(decryptedBuffer, finalDecryptedBuffer, actualDecryptedLength);
+					return finalDecryptedBuffer;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets a key from a given bucket with the longest remaining life, or creates a new one if necessary.
+		/// </summary>
+		/// <param name="cryptoKeyStore">The crypto key store.</param>
+		/// <param name="bucket">The bucket where the key should be found or stored.</param>
+		/// <param name="minimumRemainingLife">The minimum remaining life required on the returned key.</param>
+		/// <param name="keySize">The required size of the key, in bits.</param>
+		/// <returns>
+		/// A key-value pair whose key is the secret's handle and whose value is the cryptographic key.
+		/// </returns>
+		internal static KeyValuePair<string, CryptoKey> GetCurrentKey(this ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan minimumRemainingLife, int keySize = 256) {
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
+			Contract.Requires<ArgumentException>(keySize % 8 == 0);
+
+			var cryptoKeyPair = cryptoKeyStore.GetKeys(bucket).FirstOrDefault(pair => pair.Value.Key.Length == keySize / 8);
+			if (cryptoKeyPair.Value == null || cryptoKeyPair.Value.ExpiresUtc < DateTime.UtcNow + minimumRemainingLife) {
+				// No key exists with enough remaining life for the required purpose.  Create a new key.
+				ErrorUtilities.VerifyHost(minimumRemainingLife <= SymmetricSecretKeyLifespan, "Unable to create a new symmetric key with the required lifespan of {0} because it is beyond the limit of {1}.", minimumRemainingLife, SymmetricSecretKeyLifespan);
+				byte[] secret = GetCryptoRandomData(keySize / 8);
+				DateTime expires = DateTime.UtcNow + SymmetricSecretKeyLifespan;
+				var cryptoKey = new CryptoKey(secret, expires);
+
+				// Store this key so we can find and use it later.
+				int failedAttempts = 0;
+			tryAgain:
+				try {
+					string handle = GetRandomString(SymmetricSecretHandleLength, Base64WebSafeCharacters);
+					cryptoKeyPair = new KeyValuePair<string, CryptoKey>(handle, cryptoKey);
+					cryptoKeyStore.StoreKey(bucket, handle, cryptoKey);
+				} catch (CryptoKeyCollisionException) {
+					ErrorUtilities.VerifyInternal(++failedAttempts < 3, "Unable to derive a unique handle to a private symmetric key.");
+					goto tryAgain;
+				}
 			}
 
-			// Create a new buffer with only the decrypted data.
-			var finalDecryptedBuffer = new byte[actualDecryptedLength];
-			Array.Copy(decryptedBuffer, finalDecryptedBuffer, actualDecryptedLength);
-			return finalDecryptedBuffer;
+			return cryptoKeyPair;
 		}
 
 		/// <summary>
@@ -658,13 +780,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="buffer">The buffer to compress.</param>
 		/// <returns>The compressed data.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] Compress(byte[] buffer) {
-			var ms = new MemoryStream();
-			using (var compressingStream = new DeflateStream(ms, CompressionMode.Compress, true)) {
-				compressingStream.Write(buffer, 0, buffer.Length);
-			}
+			Contract.Requires<ArgumentNullException>(buffer != null);
+			Contract.Ensures(Contract.Result<byte[]>() != null);
 
-			return ms.ToArray();
+			using (var ms = new MemoryStream()) {
+				using (var compressingStream = new DeflateStream(ms, CompressionMode.Compress, true)) {
+					compressingStream.Write(buffer, 0, buffer.Length);
+				}
+
+				return ms.ToArray();
+			}
 		}
 
 		/// <summary>
@@ -673,13 +800,66 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to decompress.</param>
 		/// <returns>The decompressed data.</returns>
 		internal static byte[] Decompress(byte[] buffer) {
-			var compressedDataStream = new MemoryStream(buffer);
-			var decompressedDataStream = new MemoryStream();
-			using (var decompressingStream = new DeflateStream(compressedDataStream, CompressionMode.Decompress, true)) {
-				decompressingStream.CopyTo(decompressedDataStream);
+			Contract.Requires<ArgumentNullException>(buffer != null);
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			using (var compressedDataStream = new MemoryStream(buffer)) {
+				using (var decompressedDataStream = new MemoryStream()) {
+					using (var decompressingStream = new DeflateStream(compressedDataStream, CompressionMode.Decompress, true)) {
+						decompressingStream.CopyTo(decompressedDataStream);
+					}
+
+					return decompressedDataStream.ToArray();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Converts to data buffer to a base64-encoded string, using web safe characters and with the padding removed.
+		/// </summary>
+		/// <param name="data">The data buffer.</param>
+		/// <returns>A web-safe base64-encoded string without padding.</returns>
+		internal static string ConvertToBase64WebSafeString(byte[] data) {
+			var builder = new StringBuilder(Convert.ToBase64String(data));
+
+			// Swap out the URL-unsafe characters, and trim the padding characters.
+			builder.Replace('+', '-').Replace('/', '_');
+			while (builder[builder.Length - 1] == '=') { // should happen at most twice.
+				builder.Length -= 1;
 			}
 
-			return decompressedDataStream.ToArray();
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Decodes a (web-safe) base64-string back to its binary buffer form.
+		/// </summary>
+		/// <param name="base64WebSafe">The base64-encoded string.  May be web-safe encoded.</param>
+		/// <returns>A data buffer.</returns>
+		internal static byte[] FromBase64WebSafeString(string base64WebSafe) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(base64WebSafe));
+			Contract.Ensures(Contract.Result<byte[]>() != null);
+
+			// Restore the padding characters and original URL-unsafe characters.
+			int missingPaddingCharacters;
+			switch (base64WebSafe.Length % 4) {
+				case 3:
+					missingPaddingCharacters = 1;
+					break;
+				case 2:
+					missingPaddingCharacters = 2;
+					break;
+				case 0:
+					missingPaddingCharacters = 0;
+					break;
+				default:
+					throw ErrorUtilities.ThrowInternal("No more than two padding characters should be present for base64.");
+			}
+			var builder = new StringBuilder(base64WebSafe, base64WebSafe.Length + missingPaddingCharacters);
+			builder.Replace('-', '+').Replace('_', '/');
+			builder.Append('=', missingPaddingCharacters);
+
+			return Convert.FromBase64String(builder.ToString());
 		}
 
 		/// <summary>
@@ -1235,7 +1415,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="sequence">The sequence.</param>
 		/// <returns>A dictionary.</returns>
 		internal static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> sequence) {
-			Contract.Requires<ArgumentNullException>(sequence != null, "sequence");
+			Contract.Requires<ArgumentNullException>(sequence != null);
 			return sequence.ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
 
@@ -1340,6 +1520,31 @@ namespace DotNetOpenAuth.Messaging {
 		internal static bool IsDirectResponse(this IDirectResponseProtocolMessage message) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			return message.OriginatingRequest != null;
+		}
+
+		/// <summary>
+		/// Writes a buffer, prefixed with its own length.
+		/// </summary>
+		/// <param name="writer">The binary writer.</param>
+		/// <param name="buffer">The buffer.</param>
+		internal static void WriteBuffer(this BinaryWriter writer, byte[] buffer) {
+			Contract.Requires<ArgumentNullException>(writer != null);
+			Contract.Requires<ArgumentNullException>(buffer != null);
+			writer.Write(buffer.Length);
+			writer.Write(buffer, 0, buffer.Length);
+		}
+
+		/// <summary>
+		/// Reads a buffer that is prefixed with its own length.
+		/// </summary>
+		/// <param name="reader">The binary reader positioned at the buffer length.</param>
+		/// <returns>The read buffer.</returns>
+		internal static byte[] ReadBuffer(this BinaryReader reader) {
+			Contract.Requires<ArgumentNullException>(reader != null);
+			int length = reader.ReadInt32();
+			byte[] buffer = new byte[length];
+			ErrorUtilities.VerifyProtocol(reader.Read(buffer, 0, length) == length, "Unexpected buffer length.");
+			return buffer;
 		}
 
 		/// <summary>
@@ -1450,10 +1655,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="key">The symmetric key to use for encryption/decryption.</param>
 		/// <returns>A symmetric algorithm.</returns>
 		private static SymmetricAlgorithm CreateSymmetricAlgorithm(byte[] key) {
-			return new RijndaelManaged {
-				Mode = CipherMode.CBC,
-				Key = key,
-			};
+			SymmetricAlgorithm result = null;
+			try {
+				result = new RijndaelManaged();
+				result.Mode = CipherMode.CBC;
+				result.Key = key;
+				return result;
+			} catch {
+				IDisposable disposableResult = result;
+				if (disposableResult != null) {
+					disposableResult.Dispose();
+				}
+
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -1467,7 +1682,7 @@ namespace DotNetOpenAuth.Messaging {
 			private Comparison<T> comparison;
 
 			/// <summary>
-			/// Initializes a new instance of the MessagingUtilities.ComparisonHelper class.
+			/// Initializes a new instance of the ComparisonHelper class.
 			/// </summary>
 			/// <param name="comparison">The comparison method to use.</param>
 			internal ComparisonHelper(Comparison<T> comparison) {
