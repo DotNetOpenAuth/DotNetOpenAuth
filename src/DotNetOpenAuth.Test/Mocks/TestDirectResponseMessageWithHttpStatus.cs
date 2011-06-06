@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
@@ -23,8 +24,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <summary>
 		/// Gets or sets the HTTP status code that the direct respones should be sent with.
 		/// </summary>
-		/// <value></value>
-		public System.Net.HttpStatusCode HttpStatusCode { get; set;  }
+		public HttpStatusCode HttpStatusCode { get; set;  }
+
+		/// <summary>
+		/// Gets the HTTP headers to add to the response.
+		/// </summary>
+		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
+		public WebHeaderCollection Headers {
+			get { return new WebHeaderCollection(); }
+		}
 
 		#endregion
 	}

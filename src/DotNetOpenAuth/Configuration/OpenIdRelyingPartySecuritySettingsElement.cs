@@ -61,11 +61,6 @@ namespace DotNetOpenAuth.Configuration {
 		private const string IgnoreUnsignedExtensionsConfigName = "ignoreUnsignedExtensions";
 
 		/// <summary>
-		/// Gets the name of the @privateSecretMaximumAge attribute.
-		/// </summary>
-		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
-
-		/// <summary>
 		/// Gets the name of the @allowDualPurposeIdentifiers attribute.
 		/// </summary>
 		private const string AllowDualPurposeIdentifiersConfigName = "allowDualPurposeIdentifiers";
@@ -79,6 +74,11 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the name of the @protectDownlevelReplayAttacks attribute.
 		/// </summary>
 		private const string ProtectDownlevelReplayAttacksConfigName = "protectDownlevelReplayAttacks";
+
+		/// <summary>
+		/// The name of the &lt;trustedProviders&gt; sub-element.
+		/// </summary>
+		private const string TrustedProvidersElementName = "trustedProviders";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartySecuritySettingsElement"/> class.
@@ -144,17 +144,6 @@ namespace DotNetOpenAuth.Configuration {
 		public int MaximumHashBitLength {
 			get { return (int)this[MaximumHashBitLengthConfigName]; }
 			set { this[MaximumHashBitLengthConfigName] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the maximum allowable age of the secret a Relying Party
-		/// uses to its return_to URLs and nonces with 1.0 Providers.
-		/// </summary>
-		/// <value>The default value is 7 days.</value>
-		[ConfigurationProperty(PrivateSecretMaximumAgeConfigName, DefaultValue = "07:00:00")]
-		public TimeSpan PrivateSecretMaximumAge {
-			get { return (TimeSpan)this[PrivateSecretMaximumAgeConfigName]; }
-			set { this[PrivateSecretMaximumAgeConfigName] = value; }
 		}
 
 		/// <summary>
@@ -235,6 +224,16 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets the set of trusted OpenID Provider Endpoints.
+		/// </summary>
+		[ConfigurationProperty(TrustedProvidersElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TrustedProviderConfigurationCollection))]
+		public TrustedProviderConfigurationCollection TrustedProviders {
+			get { return (TrustedProviderConfigurationCollection)this[TrustedProvidersElementName] ?? new TrustedProviderConfigurationCollection(); }
+			set { this[TrustedProvidersElementName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -248,13 +247,18 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
-			settings.PrivateSecretMaximumAge = this.PrivateSecretMaximumAge;
+			settings.PrivateSecretMaximumAge = DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;
 			settings.AllowDualPurposeIdentifiers = this.AllowDualPurposeIdentifiers;
 			settings.AllowApproximateIdentifierDiscovery = this.AllowApproximateIdentifierDiscovery;
 			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
+
+			settings.RejectAssertionsFromUntrustedProviders = this.TrustedProviders.RejectAssertionsFromUntrustedProviders;
+			foreach (TrustedProviderEndpointConfigurationElement opEndpoint in this.TrustedProviders) {
+				settings.TrustedProviderEndpoints.Add(opEndpoint.ProviderEndpoint);
+			}
 
 			return settings;
 		}

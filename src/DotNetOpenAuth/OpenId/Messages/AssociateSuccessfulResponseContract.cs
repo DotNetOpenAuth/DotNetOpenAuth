@@ -15,8 +15,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		protected AssociateSuccessfulResponseContract() : base(null, null) {
 		}
 
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, ProviderSecuritySettings securitySettings) {
+		protected override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentNullException>(associationStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			throw new NotImplementedException();
 		}

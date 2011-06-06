@@ -3,31 +3,26 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Diagnostics;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Security.Cryptography.X509Certificates;
 	using System.ServiceModel;
 	using System.ServiceModel.Channels;
-	using System.Text;
-	using System.Threading;
 	using System.Windows;
 	using System.Windows.Controls;
-	using System.Windows.Data;
-	using System.Windows.Documents;
-	using System.Windows.Input;
-	using System.Windows.Media;
-	using System.Windows.Media.Imaging;
-	using System.Windows.Navigation;
-	using System.Windows.Shapes;
-	using System.Xml;
 	using System.Xml.Linq;
-	using System.Xml.XPath;
-	using DotNetOpenAuth;
+
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Samples.OAuthConsumerWpf.WcfSampleService;
+
+	using OAuth2;
+
+	using OAuth2 = DotNetOpenAuth.OAuth2;
+	using ProtocolVersion = DotNetOpenAuth.OAuth.ProtocolVersion;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -86,7 +81,7 @@
 				return;
 			}
 
-			Authorize auth = new Authorize(
+			var auth = new Authorize(
 				this.google,
 				(DesktopConsumer consumer, out string requestToken) =>
 				GoogleConsumer.RequestAuthorization(
@@ -196,6 +191,54 @@
 				}
 			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);
+			}
+		}
+
+		private void oauth2BeginButton_Click(object sender, RoutedEventArgs e) {
+			var authServer = new DotNetOpenAuth.OAuth2.AuthorizationServerDescription {
+				AuthorizationEndpoint = new Uri(this.oauth2AuthorizationUrlBox.Text),
+			};
+			if (this.oauth2TokenEndpointBox.Text.Length > 0) {
+				authServer.TokenEndpoint = new Uri(this.oauth2TokenEndpointBox.Text);
+			}
+
+			try {
+				var client = new OAuth2.UserAgentClient(authServer, this.oauth2ClientIdentifierBox.Text, this.oauth2ClientSecretBox.Text);
+
+				var authorization = new AuthorizationState(OAuthUtilities.SplitScopes(this.oauth2ScopeBox.Text));
+				var authorizePopup = new Authorize2(client, authorization);
+				authorizePopup.Owner = this;
+				bool? result = authorizePopup.ShowDialog();
+				if (result.HasValue && result.Value) {
+					var requestUri = new UriBuilder(this.oauth2ResourceUrlBox.Text);
+					if (this.oauth2ResourceHttpMethodList.SelectedIndex > 0) {
+						requestUri.AppendQueryArgument("access_token", authorization.AccessToken);
+					}
+
+					var request = (HttpWebRequest)WebRequest.Create(requestUri.Uri);
+					request.Method = this.oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
+					if (this.oauth2ResourceHttpMethodList.SelectedIndex == 0) {
+						client.AuthorizeRequest(request, authorization);
+					}
+
+					using (var resourceResponse = request.GetResponse()) {
+						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
+							this.oauth2ResultsBox.Text = responseStream.ReadToEnd();
+						}
+					}
+				} else {
+					return;
+				}
+			} catch (Messaging.ProtocolException ex) {
+				MessageBox.Show(this, ex.Message);
+			} catch (WebException ex) {
+				string responseText = string.Empty;
+				if (ex.Response != null) {
+					using (var responseReader = new StreamReader(ex.Response.GetResponseStream())) {
+						responseText = responseReader.ReadToEnd();
+					}
+				}
+				MessageBox.Show(this, ex.Message + "  " + responseText);
 			}
 		}
 	}

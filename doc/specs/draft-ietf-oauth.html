@@ -1,0 +1,3072 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0052)http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html -->
+<HTML lang="en"><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><TITLE>The OAuth 2.0 Protocol</TITLE>
+
+<META name="description" content="The OAuth 2.0 Protocol">
+<META name="generator" content="xml2rfc v1.35 (http://xml.resource.org/)">
+<META name="viewport" content="width=600;">
+<STYLE type="text/css"><!--
+        body {
+                font-family: verdana, charcoal, helvetica, arial, sans-serif;
+                font-size: 85%;
+		max-width: 80ex; 
+		color: #000; background-color: #FFF;
+                margin: 2em;
+        }
+        h1, h2, h3, h4, h5, h6 {
+                font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+                font-weight: bold; font-style: normal;
+        }
+        h1 { color: #900; background-color: transparent; text-align: right; }
+        h3 { color: #333; background-color: transparent; }
+
+        td.RFCbug {
+                font-size: x-small; text-decoration: none;
+                width: 30px; height: 30px; padding-top: 2px;
+                text-align: justify; vertical-align: middle;
+                background-color: #000;
+        }
+        td.RFCbug span.RFC {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: bold; color: #666;
+        }
+        td.RFCbug span.hotText {
+                font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: normal; text-align: center; color: #FFF;
+        }
+
+        table.TOCbug { width: 30px; height: 15px; }
+        td.TOCbug {
+                text-align: center; width: 30px; height: 15px;
+                color: #FFF; background-color: #900;
+        }
+        td.TOCbug a {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+                font-weight: bold; font-size: x-small; text-decoration: none;
+                color: #FFF; background-color: transparent;
+        }
+
+        td.header {
+                font-family: arial, helvetica, sans-serif; font-size: x-small;
+                vertical-align: top; width: 33%;
+                color: #FFF; background-color: #666;
+        }
+        td.author { font-weight: bold; font-size: x-small; margin-left: 4em; }
+        td.author-text { font-size: x-small; }
+
+        /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+        a.info {
+                /* This is the key. */
+                position: relative;
+                z-index: 24;
+                text-decoration: none;
+        }
+        a.info:hover {
+                z-index: 25;
+                color: #FFF; background-color: #900;
+        }
+        a.info span { display: none; }
+        a.info:hover span.info {
+                /* The span will display just on :hover state. */
+                display: block;
+                position: absolute;
+                font-size: smaller;
+                top: 2em; left: -5em; width: 15em;
+                padding: 2px; border: 1px solid #333;
+                color: #900; background-color: #EEE;
+                text-align: left;
+        }
+
+        a { font-weight: bold; }
+        a:link    { color: #900; background-color: transparent; }
+        a:visited { color: #633; background-color: transparent; }
+        a:active  { color: #633; background-color: transparent; }
+
+        p { margin-left: 2em; margin-right: 2em; }
+        p.copyright { font-size: x-small; }
+        p.toc { font-size: 85%;
+		max-width: 80ex; 
+		font-weight: bold; margin-left: 3em; }
+        table.toc { margin: 0 0 0 3em; padding: 0; border: 0; vertical-align: text-top; }
+        td.toc { font-size: 85%;
+		max-width: 80ex; 
+		font-weight: bold; vertical-align: text-top; }
+
+        ol.text { margin-left: 2em; margin-right: 2em; }
+        ul.text { margin-left: 2em; margin-right: 2em; }
+        li      { margin-left: 3em; }
+
+        /* RFC-2629 <spanx>s and <artwork>s. */
+        em     { font-style: italic; }
+        strong { font-weight: bold; }
+        dfn    { font-weight: bold; font-style: normal; }
+        cite   { font-weight: normal; font-style: normal; }
+        tt     { color: #036; }
+        tt, pre, pre dfn, pre em, pre cite, pre span {
+                font-family: "Courier New", Courier, monospace; font-size: small;
+        }
+        pre {
+                text-align: left; padding: 4px;
+                color: #000; background-color: #CCC;
+        }
+        pre dfn  { color: #900; }
+        pre em   { color: #66F; background-color: #FFC; font-weight: normal; }
+        pre .key { color: #33C; font-weight: bold; }
+        pre .id  { color: #900; }
+        pre .str { color: #000; background-color: #CFF; }
+        pre .val { color: #066; }
+        pre .rep { color: #909; }
+        pre .oth { color: #000; background-color: #FCF; }
+        pre .err { background-color: #FCC; }
+
+        /* RFC-2629 <texttable>s. */
+        table.all, table.full, table.headers, table.none {
+                font-size: 85%;
+		max-width: 80ex; 
+		text-align: center; border-width: 2px;
+                vertical-align: top; border-collapse: collapse;
+        }
+        table.all, table.full { border-style: solid; border-color: black; }
+        table.headers, table.none { border-style: none; }
+        th {
+                font-weight: bold; border-color: black;
+                border-width: 2px 2px 3px 2px;
+        }
+        table.all th, table.full th { border-style: solid; }
+        table.headers th { border-style: none none solid none; }
+        table.none th { border-style: none; }
+        table.all td {
+                border-style: solid; border-color: #333;
+                border-width: 1px 2px;
+        }
+        table.full td, table.headers td, table.none td { border-style: none; }
+
+        hr { height: 1px; }
+        hr.insert {
+                width: 80%; border-style: none; border-width: 0;
+                color: #CCC; background-color: #CCC;
+        }
+--></STYLE>
+</HEAD><BODY>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<TABLE summary="layout" width="66%" border="0" cellpadding="0" cellspacing="0"><TBODY><TR><TD><TABLE summary="layout" width="100%" border="0" cellpadding="2" cellspacing="1">
+<TBODY><TR><TD class="header">Network Working Group</TD><TD class="header">E. Hammer-Lahav, Ed.</TD></TR>
+<TR><TD class="header">Internet-Draft</TD><TD class="header">Yahoo!</TD></TR>
+<TR><TD class="header">Obsoletes: <A href="http://tools.ietf.org/html/rfc5849">5849</A> (if&nbsp;approved)</TD><TD class="header">D. Recordon</TD></TR>
+<TR><TD class="header">Intended status: Standards Track</TD><TD class="header">Facebook</TD></TR>
+<TR><TD class="header">Expires: January 12, 2011</TD><TD class="header">D. Hardt</TD></TR>
+<TR><TD class="header">&nbsp;</TD><TD class="header">Microsoft</TD></TR>
+<TR><TD class="header">&nbsp;</TD><TD class="header">July 11, 2010</TD></TR>
+</TBODY></TABLE></TD></TR></TBODY></TABLE>
+<H1><BR>The OAuth 2.0 Protocol<BR>draft-ietf-oauth-v2-10</H1>
+
+<H3>Abstract</H3>
+
+<P>
+        This specification describes the OAuth 2.0 protocol.
+      
+</P>
+<H3>Status of this Memo</H3>
+<P>
+This Internet-Draft is submitted  in full
+conformance with the provisions of BCP&nbsp;78 and BCP&nbsp;79.</P>
+<P>
+Internet-Drafts are working documents of the Internet Engineering
+Task Force (IETF).  Note that other groups may also distribute
+working documents as Internet-Drafts.  The list of current
+Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</P>
+<P>
+Internet-Drafts are draft documents valid for a maximum of six months
+and may be updated, replaced, or obsoleted by other documents at any time.
+It is inappropriate to use Internet-Drafts as reference material or to cite
+them other than as “work in progress.”</P>
+<P>
+This Internet-Draft will expire on January 12, 2011.</P>
+
+<H3>Copyright Notice</H3>
+<P>
+Copyright (c) 2010 IETF Trust and the persons identified as the
+document authors.  All rights reserved.</P>
+<P>
+This document is subject to BCP 78 and the IETF Trust's Legal
+Provisions Relating to IETF Documents
+(http://trustee.ietf.org/license-info) in effect on the date of
+publication of this document.  Please review these documents
+carefully, as they describe your rights and restrictions with respect
+to this document. Code Components extracted from this document must
+include Simplified BSD License text as described in Section 4.e of
+the Trust Legal Provisions and are provided without warranty as
+described in the Simplified BSD License.</P>
+<A name="toc"></A><BR><HR>
+<H3>Table of Contents</H3>
+<P class="toc">
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor1">1.</A>&nbsp;
+Introduction<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor2">1.1.</A>&nbsp;
+Notational Conventions<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor3">1.2.</A>&nbsp;
+Terminology<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor4">1.3.</A>&nbsp;
+Overview<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor5">1.4.</A>&nbsp;
+Client Profiles<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor6">1.4.1.</A>&nbsp;
+Web Server<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-agent">1.4.2.</A>&nbsp;
+User-Agent<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor7">1.4.3.</A>&nbsp;
+Native Application<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor8">1.4.4.</A>&nbsp;
+Autonomous<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">2.</A>&nbsp;
+Client Credentials<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor9">2.1.</A>&nbsp;
+Client Password Credentials<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-authorization">3.</A>&nbsp;
+Obtaining End-User Authorization<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor10">3.1.</A>&nbsp;
+Authorization Response<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#auth-error">3.2.</A>&nbsp;
+Error Response<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#auth-error-codes">3.2.1.</A>&nbsp;
+Error Codes<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#obtaining-token">4.</A>&nbsp;
+Obtaining an Access Token<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-grant-types">4.1.</A>&nbsp;
+Access Grant Types<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor11">4.1.1.</A>&nbsp;
+Authorization Code<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor12">4.1.2.</A>&nbsp;
+Resource Owner Password Credentials<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor13">4.1.3.</A>&nbsp;
+Assertion<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#token-refresh">4.1.4.</A>&nbsp;
+Refresh Token<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-token-response">4.2.</A>&nbsp;
+Access Token Response<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#token-error">4.3.</A>&nbsp;
+Error Response<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#token-error-codes">4.3.1.</A>&nbsp;
+Error Codes<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-resource">5.</A>&nbsp;
+Accessing a Protected Resource<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor14">5.1.</A>&nbsp;
+Authenticated Requests<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authz-header">5.1.1.</A>&nbsp;
+The Authorization Request Header Field<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#query-param">5.1.2.</A>&nbsp;
+URI Query Parameter<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#body-param">5.1.3.</A>&nbsp;
+Form-Encoded Body Parameter<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authn-header">5.2.</A>&nbsp;
+The WWW-Authenticate Response Header Field<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#resource-error-codes">5.2.1.</A>&nbsp;
+Error Codes<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor15">6.</A>&nbsp;
+Extensibility<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor16">6.1.</A>&nbsp;
+Defining New Client Credentials Types<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor17">6.2.</A>&nbsp;
+Defining New Endpoint Parameters<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor18">6.3.</A>&nbsp;
+Defining New Header Field Parameters<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor19">6.4.</A>&nbsp;
+Defining New Access Grant Types<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor20">7.</A>&nbsp;
+Security Considerations<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor21">8.</A>&nbsp;
+IANA Considerations<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#parameters-registry">8.1.</A>&nbsp;
+The OAuth Parameters Registry<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor22">8.1.1.</A>&nbsp;
+Registration Template<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor23">8.1.2.</A>&nbsp;
+Example<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor24">Appendix&nbsp;A.</A>&nbsp;
+Examples<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor25">Appendix&nbsp;B.</A>&nbsp;
+Contributors<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor26">Appendix&nbsp;C.</A>&nbsp;
+Acknowledgements<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#anchor27">Appendix&nbsp;D.</A>&nbsp;
+Document History<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#rfc.references1">9.</A>&nbsp;
+References<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#rfc.references1">9.1.</A>&nbsp;
+Normative References<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#rfc.references2">9.2.</A>&nbsp;
+Informative References<BR>
+<A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#rfc.authors">§</A>&nbsp;
+Authors' Addresses<BR>
+</P>
+<BR clear="all">
+
+<A name="anchor1"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1"></A><H3>1.&nbsp;
+Introduction</H3>
+
+<P>
+        With the increasing use of distributed web services and cloud computing, third-party
+        applications require access to server-hosted resources. These resources are usually
+        protected and require authentication using the resource owner's credentials (typically a
+        username and password).
+      
+</P>
+<P>
+        In the traditional client-server authentication model, the client accesses a protected
+        resource on the server by authenticating with the server using the resource owner's
+        credentials. In order to provide third-party applications access to protected resources,
+        the resource owner shares its credentials with the third-party. This creates several
+        problems and limitations:
+        
+        </P>
+<UL class="text">
+<LI>
+            Third-party applications are required to store the resource-owner's credentials
+            for future use, typically a password in clear-text.
+          
+</LI>
+<LI>
+            Servers are required to support password (symmetric) authentication, despite the
+            security weaknesses created by passwords.
+          
+</LI>
+<LI>
+            Third-party applications gain overly broad access to the resource-owner's protected
+            resources, leaving resource owners without any ability to restrict access to a limited
+            subset of resources, to limit access duration, or to limit access to the methods
+            supported by these resources.
+          
+</LI>
+<LI>
+            Resource owners cannot revoke access to an individual third-party without revoking
+            access to all third-parties, and must do so by changing their password.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        OAuth address these issues by separating the role of the client from that of the
+        resource owner. In OAuth, the client (which is usually not the resource owner, but is
+        acting on the resource owner's behalf) requests access to resources controlled by the
+        resource owner and hosted by the resource server, and is issued a different set of
+        credentials than those of the resource owner.
+      
+</P>
+<P>
+        Instead of using the resource owner's credentials to access protected resources, clients
+        obtain an access token (a string which denotes a specific scope, duration, and other
+        attributes). The format and structure of access tokens is beyond the scope of this
+        specification.
+      
+</P>
+<P>
+        Tokens are issued to third-party clients by an authorization server with the approval of
+        the resource owner. The client uses the access token to access the protected resources
+        hosted by the resource server. The interaction between the authorization server and
+        resource server is beyond the scope of this specification.
+      
+</P>
+<P>
+        For example, a web user (resource owner) can grant a printing service (client) access to
+        her protected photos stored at a photo sharing service (resource server), without sharing
+        her username and password with the printing service. Instead, she authenticates directly
+        with an authentication service trusted by the photo sharing service (authorization server)
+        which issues the printing service delegation-specific credentials (token).
+      
+</P>
+<P>
+        This specification defines the use of OAuth over <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2616">HTTP<SPAN> (</SPAN><SPAN class="info">Fielding, R., Gettys, J., Mogul, J., Frystyk, H., Masinter, L., Leach, P., and T. Berners-Lee, “Hypertext Transfer Protocol -- HTTP/1.1,” June&nbsp;1999.</SPAN><SPAN>)</SPAN></A> [RFC2616]
+        (or HTTP over TLS as defined by <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2818">[RFC2818]<SPAN> (</SPAN><SPAN class="info">Rescorla, E., “HTTP Over TLS,” May&nbsp;2000.</SPAN><SPAN>)</SPAN></A>). Other specifications may
+        extend it for use with other transport protocols.
+      
+</P>
+<A name="anchor2"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.1"></A><H3>1.1.&nbsp;
+Notational Conventions</H3>
+
+<P>
+          The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL NOT', 'SHOULD', 'SHOULD
+          NOT', 'RECOMMENDED', 'MAY', and 'OPTIONAL' in this document are to be interpreted as
+          described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2119">[RFC2119]<SPAN> (</SPAN><SPAN class="info">Bradner, S., “Key words for use in RFCs to Indicate Requirement Levels,” March&nbsp;1997.</SPAN><SPAN>)</SPAN></A>.
+        
+</P>
+<P>
+          This document uses the Augmented Backus-Naur Form (ABNF) notation of
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#I-D.ietf-httpbis-p1-messaging">[I‑D.ietf‑httpbis‑p1‑messaging]<SPAN> (</SPAN><SPAN class="info">Fielding, R., Gettys, J., Mogul, J., Nielsen, H., Masinter, L., Leach, P., Berners-Lee, T., and J. Reschke, “HTTP/1.1, part 1: URIs, Connections, and Message Parsing,” March&nbsp;2010.</SPAN><SPAN>)</SPAN></A>. Additionally, the following rules are
+          included from <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2617">[RFC2617]<SPAN> (</SPAN><SPAN class="info">Franks, J., Hallam-Baker, P., Hostetler, J., Lawrence, S., Leach, P., Luotonen, A., and L. Stewart, “HTTP Authentication: Basic and Digest Access Authentication,” June&nbsp;1999.</SPAN><SPAN>)</SPAN></A>: realm, auth-param; from
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC3986">[RFC3986]<SPAN> (</SPAN><SPAN class="info">Berners-Lee, T., Fielding, R., and L. Masinter, “Uniform Resource Identifier (URI): Generic Syntax,” January&nbsp;2005.</SPAN><SPAN>)</SPAN></A>: URI-Reference; and from
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#I-D.ietf-httpbis-p1-messaging">[I‑D.ietf‑httpbis‑p1‑messaging]<SPAN> (</SPAN><SPAN class="info">Fielding, R., Gettys, J., Mogul, J., Nielsen, H., Masinter, L., Leach, P., Berners-Lee, T., and J. Reschke, “HTTP/1.1, part 1: URIs, Connections, and Message Parsing,” March&nbsp;2010.</SPAN><SPAN>)</SPAN></A>: OWS, RWS, and quoted-string.
+        
+</P>
+<P>
+          Unless otherwise noted, all the protocol parameter names and values are case sensitive.
+        
+</P>
+<A name="anchor3"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.2"></A><H3>1.2.&nbsp;
+Terminology</H3>
+
+<P>
+          </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>protected resource</DT>
+<DD>
+              
+              An access-restricted resource which can be obtained using an OAuth-authenticated
+              request.
+            
+</DD>
+<DT>resource server</DT>
+<DD>
+              
+              A server capable of accepting and responding to protected resource requests.
+            
+</DD>
+<DT>client</DT>
+<DD>
+              
+              An application obtaining authorization and making protected resource requests.
+            
+</DD>
+<DT>resource owner</DT>
+<DD>
+              
+              An entity capable of granting access to a protected resource.
+            
+</DD>
+<DT>end-user</DT>
+<DD>
+              
+              A human resource owner.
+            
+</DD>
+<DT>token</DT>
+<DD>
+              
+              A string representing an access authorization issued to the client. The string is
+              usually opaque to the client. Tokens represent specific scopes and durations of
+              access, granted by the resource owner, and enforced by the resource server and
+              authorization servers. The token may denote an identifier used to retrieve the
+              authorization information, or self-contain the authorization information in a
+              verifiable manner (i.e. a token string consisting of some data and a signature).
+              Tokens may be pure capabilities. Specific additional authentication credentials may
+              be required in order for a client to use a token.
+            
+</DD>
+<DT>access token</DT>
+<DD>
+              
+              A token used by the client to make authenticated requests on behalf of the resource
+              owner.
+            
+</DD>
+<DT>refresh token</DT>
+<DD>
+              
+              A token used by the client to obtain a new access token without having to involve
+              the resource owner.
+            
+</DD>
+<DT>authorization code</DT>
+<DD>
+              A short-lived token representing the access grant provided by the end-user. The
+              authorization code is used to obtain an access token and a refresh token.
+            
+</DD>
+<DT>authorization server</DT>
+<DD>
+              
+              A server capable of issuing tokens after successfully authenticating the resource
+              owner and obtaining authorization. The authorization server may be the same server as
+              the resource server, or a separate entity.
+            
+</DD>
+<DT>end-user authorization endpoint</DT>
+<DD>
+              
+              The authorization server's HTTP endpoint capable of authenticating the end-user and
+              obtaining authorization. The end-user authorization endpoint is described in
+              <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-authorization">Section&nbsp;3<SPAN> (</SPAN><SPAN class="info">Obtaining End-User Authorization</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>token endpoint</DT>
+<DD>
+              
+              The authorization server's HTTP endpoint capable of issuing tokens and refreshing
+              expired tokens. The token endpoint is described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#obtaining-token">Section&nbsp;4<SPAN> (</SPAN><SPAN class="info">Obtaining an Access Token</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>client identifier</DT>
+<DD>
+              
+              A unique identifier issued to the client to identify itself to the authorization
+              server. Client identifiers may have a matching secret. The client identifier is
+              described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">Section&nbsp;2<SPAN> (</SPAN><SPAN class="info">Client Credentials</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+</DL></BLOCKQUOTE><P>
+        
+</P>
+<A name="anchor4"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.3"></A><H3>1.3.&nbsp;
+Overview</H3>
+
+<P>
+          OAuth provides a method for clients to access a protected resource on behalf of a
+          resource owner. Before a client can access a protected resource, it must first obtain
+          authorization from the resource owner, then exchange the access grant for an access token
+          (representing the grant's scope, duration, and other attributes). The client accesses the
+          protected resource by presenting the access token to the resource server.
+        
+</P><BR><HR class="insert">
+<A name="Figure 1"></A>
+<DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  +--------+                                  +---------------+
+  |        |--(A)-- Authorization Request ---&gt;|   Resource    |
+  |        |                                  |     Owner     |
+  |        |&lt;-(B)------ Access Grant ---------|               |
+  |        |                                  +---------------+
+  |        |
+  |        |         Client Credentials &amp;     +---------------+
+  |        |--(C)------ Access Grant --------&gt;| Authorization |
+  | Client |                                  |     Server    |
+  |        |&lt;-(D)------ Access Token ---------|               |
+  |        |      (w/ Optional Refresh Token) +---------------+
+  |        |
+  |        |                                  +---------------+
+  |        |--(E)------ Access Token --------&gt;|    Resource   |
+  |        |                                  |     Server    |
+  |        |&lt;-(F)---- Protected Resource -----|               |
+  +--------+                                  +---------------+
+
+</PRE></DIV><TABLE border="0" cellpadding="0" cellspacing="2" align="center"><TBODY><TR><TD align="center"><FONT face="monaco, MS Sans Serif" size="1"><B>&nbsp;Figure&nbsp;1: Abstract Protocol Flow&nbsp;</B></FONT><BR></TD></TR></TBODY></TABLE><HR class="insert">
+
+<P>
+          The abstract flow illustrated in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#Figure 1">Figure&nbsp;1<SPAN> (</SPAN><SPAN class="info">Abstract Protocol Flow</SPAN><SPAN>)</SPAN></A> includes the following
+          steps:
+
+          </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>(A)</DT>
+<DD>
+              The client requests authorization from the resource owner. The client should not
+              request the resource owner's credentials directly. Instead, it should request
+              authorization via an authorization server or other entities. For example, the client
+              directs the resource owner to the authorization server which in turn issues it an
+              access grant. When unavoidable, the client interacts directly with the end-user,
+              asking for the end-user's username and password. If the client is acting
+              autonomously, the authorization request is beyond the scope of this specification.
+            
+</DD>
+<DT>(B)</DT>
+<DD>
+              The client is issued an access grant which represents the authorization provided by
+              the resource owner. The access grant can be expressed as:
+
+              
+<UL class="text">
+<LI>
+                  Authorization code - an access grant obtained via an authorization server.
+                  <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-authorization">Section&nbsp;3<SPAN> (</SPAN><SPAN class="info">Obtaining End-User Authorization</SPAN><SPAN>)</SPAN></A> describes how to obtain an authorization
+                  code when the end-user is present and using a user-agent.
+                
+</LI>
+<LI>
+                  Assertion - an access grant obtained using a different trust framework.
+                  Assertions enable the client to utilize existing trust relationships to obtain an
+                  access token. They provide a bridge between OAuth and other trust frameworks. The
+                  access grant represented by an assertion depends on the assertion type, its
+                  content, and how it was issued, which are beyond the scope of this specification.
+                
+</LI>
+<LI>
+                  Resource owner password credentials - obtained when interacting directly with a
+                  resource-owner. Resource owner password credentials (i.e. a username and
+                  password) should only be used when there is a high degree of trust between the
+                  resource owner and the client (e.g. its computer operating system or a highly
+                  privileged application). However, unlike the HTTP Basic authentication scheme
+                  defined in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2617">[RFC2617]<SPAN> (</SPAN><SPAN class="info">Franks, J., Hallam-Baker, P., Hostetler, J., Lawrence, S., Leach, P., Luotonen, A., and L. Stewart, “HTTP Authentication: Basic and Digest Access Authentication,” June&nbsp;1999.</SPAN><SPAN>)</SPAN></A>, the resource owner's credentials are used
+                  for a single request and are exchanged for an access token and refresh token.
+                  This eliminates the need for the client to store the resource-owner's credentials
+                  for future use.
+                
+</LI>
+</UL>
+            
+</DD>
+<DT>(C)</DT>
+<DD>
+              The client requests an access token by authenticating with the authorization server,
+              and presenting the access grant. The token request is described in
+              <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#obtaining-token">Section&nbsp;4<SPAN> (</SPAN><SPAN class="info">Obtaining an Access Token</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>(D)</DT>
+<DD>
+              The authorization server validates the client credentials and the access grant, and
+              issues an access token with an optional refresh token. Access tokens usually have a
+              shorter lifetime than the access grant. Refresh tokens usually have a lifetime equal
+              to the duration of the access grant. When an access token expires, the refresh token
+              is used to obtain a new access token without having to request another access grant
+              from the resource owner.
+            
+</DD>
+<DT>(E)</DT>
+<DD>
+              The client makes a protected resource request to the resource server, and presents
+              the access token in order to gain access. Accessing a protected resource is described
+              in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-resource">Section&nbsp;5<SPAN> (</SPAN><SPAN class="info">Accessing a Protected Resource</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>(F)</DT>
+<DD>
+              The resource server validates the access token, and if valid, serves the request.
+            
+</DD>
+</DL></BLOCKQUOTE><P>
+        
+</P>
+<P>
+          When the client is acting on its own behalf (the client is also the resource owner),
+          the client does not obtain an access grant. The simplified protocol flow is illustrated
+          in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#Figure 2">Figure&nbsp;2<SPAN> (</SPAN><SPAN class="info">Protocol Flow for Client Acting On Its Own Behalf</SPAN><SPAN>)</SPAN></A>:
+        
+</P><BR><HR class="insert">
+<A name="Figure 2"></A>
+<DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  +--------+                                  +---------------+
+  |        |--(C)--- Client Credentials -----&gt;| Authorization |
+  |        |                                  |     Server    |
+  |        |&lt;-(D)------ Access Token ---------|               |
+  |        |                                  +---------------+
+  | Client |
+  |        |                                  +---------------+
+  |        |--(E)------ Access Token --------&gt;|    Resource   |
+  |        |                                  |     Server    |
+  |        |&lt;-(F)---- Protected Resource -----|               |
+  +--------+                                  +---------------+
+
+</PRE></DIV><TABLE border="0" cellpadding="0" cellspacing="2" align="center"><TBODY><TR><TD align="center"><FONT face="monaco, MS Sans Serif" size="1"><B>&nbsp;Figure&nbsp;2: Protocol Flow for Client Acting On Its Own Behalf&nbsp;</B></FONT><BR></TD></TR></TBODY></TABLE><HR class="insert">
+
+<P>
+          When the client uses the user-agent profile (described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-agent">Section&nbsp;1.4.2<SPAN> (</SPAN><SPAN class="info">User-Agent</SPAN><SPAN>)</SPAN></A>),
+          the authorization request results in an access token, as illustrated in
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#Figure 3">Figure&nbsp;3<SPAN> (</SPAN><SPAN class="info">Indirect Access Grant Protocol Flow</SPAN><SPAN>)</SPAN></A>:
+        
+</P><BR><HR class="insert">
+<A name="Figure 3"></A>
+<DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  +--------+                        +----------+   +---------------+
+  |        |--(A)-- Authorization --+-        -+--&gt;|               |
+  |        |           Request      | Resource |   | Authorization |
+  |        |                        |   Owner  |   |     Server    |
+  |        |&lt;-(D)-- Access Token ---+-        -+---|               |
+  |        |                        +----------+   +---------------+
+  | Client |
+  |        |                                       +---------------+
+  |        |--(E)-------- Access Token -----------&gt;|    Resource   |
+  |        |                                       |     Server    |
+  |        |&lt;-(F)------ Protected Resource --------|               |
+  +--------+                                       +---------------+
+
+</PRE></DIV><TABLE border="0" cellpadding="0" cellspacing="2" align="center"><TBODY><TR><TD align="center"><FONT face="monaco, MS Sans Serif" size="1"><B>&nbsp;Figure&nbsp;3: Indirect Access Grant Protocol Flow&nbsp;</B></FONT><BR></TD></TR></TBODY></TABLE><HR class="insert">
+
+<A name="anchor5"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.4"></A><H3>1.4.&nbsp;
+Client Profiles</H3>
+
+<P>
+          OAuth supports a wide range of client types by providing a rich and extensible framework
+          for establishing authorization and exchanging it for an access token. The methods detailed
+          in this specification were designed to accommodate four client types: web servers,
+          user-agents, native applications, and autonomous clients. Additional authorization flows
+          and client profiles may be defined by other specifications to cover additional scenarios
+          and client types.
+        
+</P>
+<A name="anchor6"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.4.1"></A><H3>1.4.1.&nbsp;
+Web Server</H3>
+
+<P>
+            The web server profile is suitable for clients capable of interacting with the end-user's
+            user-agent (typically a web browser) and capable of receiving incoming requests from the
+            authorization server (capable of acting as an HTTP server).
+          
+</P><BR><HR class="insert">
+<A name="Figure 4"></A>
+<DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  +----------+          Client Identifier      +---------------+
+  |         -+----(A)--- &amp; Redirect URI ------&gt;|               |
+  | End-user |                                 | Authorization |
+  |    at    |&lt;---(B)-- User authenticates ---&gt;|     Server    |
+  | Browser  |                                 |               |
+  |         -+----(C)-- Authorization Code ---&lt;|               |
+  +-|----|---+                                 +---------------+
+    |    |                                         ^      v
+   (A)  (C)                                        |      |
+    |    |                                         |      |
+    ^    v                                         |      |
+  +---------+                                      |      |
+  |         |&gt;---(D)-- Client Credentials, --------'      |
+  |   Web   |          Authorization Code,                |
+  |  Client |            &amp; Redirect URI                   |
+  |         |                                             |
+  |         |&lt;---(E)----- Access Token -------------------'
+  +---------+       (w/ Optional Refresh Token)
+
+</PRE></DIV><TABLE border="0" cellpadding="0" cellspacing="2" align="center"><TBODY><TR><TD align="center"><FONT face="monaco, MS Sans Serif" size="1"><B>&nbsp;Figure&nbsp;4: Web Server Flow&nbsp;</B></FONT><BR></TD></TR></TBODY></TABLE><HR class="insert">
+
+<P>
+            The web server flow illustrated in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#Figure 4">Figure&nbsp;4<SPAN> (</SPAN><SPAN class="info">Web Server Flow</SPAN><SPAN>)</SPAN></A> includes the following
+            steps:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>(A)</DT>
+<DD>
+                The web client initiates the flow by redirecting the end-user's user-agent to the
+                end-user authorization endpoint as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-authorization">Section&nbsp;3<SPAN> (</SPAN><SPAN class="info">Obtaining End-User Authorization</SPAN><SPAN>)</SPAN></A>.
+                The client includes its client identifier, requested scope, local state, and a
+                redirect URI to which the authorization server will send the end-user back once
+                access is granted (or denied).
+              
+</DD>
+<DT>(B)</DT>
+<DD>
+                The authorization server authenticates the end-user (via the user-agent) and
+                establishes whether the end-user grants or denies the client's access request.
+              
+</DD>
+<DT>(C)</DT>
+<DD>
+                Assuming the end-user granted access, the authorization server redirects the
+                user-agent back to the client to the redirection URI provided earlier. The
+                authorization includes an authorization code for the client to use to obtain an
+                access token.
+              
+</DD>
+<DT>(D)</DT>
+<DD>
+                The client requests an access token from the authorization server by authenticating
+                and including the authorization code received in the previous step as described in
+                <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#obtaining-token">Section&nbsp;4<SPAN> (</SPAN><SPAN class="info">Obtaining an Access Token</SPAN><SPAN>)</SPAN></A>.
+              
+</DD>
+<DT>(E)</DT>
+<DD>
+                The authorization server validates the client credentials and the authorization
+                code and responds back with the access token.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<A name="user-agent"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.4.2"></A><H3>1.4.2.&nbsp;
+User-Agent</H3>
+
+<P>
+            The user-agent profile is suitable for client applications residing in a user-agent,
+            typically implemented in a browser using a scripting language such as JavaScript. These
+            clients cannot keep client secrets confidential and the authentication of the client is
+            based on the user-agent's same-origin policy.
+          
+</P>
+<P>
+            Unlike other profiles in which the client makes separate requests for end-user
+            authorization and access token, the client receives the access token as a result of the
+            end-user authorization request in the form of an HTTP redirection. The client requests
+            the authorization server to redirect the user-agent to another web server or local
+            resource accessible to the user-agent which is capable of extracting the access token
+            from the response and passing it to the client.
+          
+</P>
+<P>
+            This user-agent profile does not utilize the client secret since the client executables
+            reside on the end-user's computer or device which makes the client secret accessible
+            and exploitable. Because the access token is encoded into the redirection URI, it may
+            be exposed to the end-user and other applications residing on the computer or device.
+          
+</P><BR><HR class="insert">
+<A name="Figure 5"></A>
+<DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+         +----------+          Client Identifier     +----------------+
+         |          |&gt;---(A)-- &amp; Redirection URI ---&gt;|                |
+         |          |                                |                |
+  End &lt;--+  -  -  - +----(B)-- User authenticates --&gt;|  Authorization |
+  User   |          |                                |     Server     |
+         |          |&lt;---(C)--- Redirect URI -------&lt;|                |
+         |  Client  |         with Access Token      |                |
+         |    in    |            in Fragment         +----------------+
+         |  Browser |
+         |          |                                +----------------+
+         |          |&gt;---(D)--- Redirect URI -------&gt;|                |
+         |          |         without Fragment       |   Web Server   |
+         |          |                                |   with Client  |
+         |    (F)   |&lt;---(E)--- Web Page with ------&lt;|    Resource    |
+         |  Access  |              Script            |                |
+         |   Token  |                                +----------------+
+         +----------+
+
+</PRE></DIV><TABLE border="0" cellpadding="0" cellspacing="2" align="center"><TBODY><TR><TD align="center"><FONT face="monaco, MS Sans Serif" size="1"><B>&nbsp;Figure&nbsp;5: User-Agent Flow&nbsp;</B></FONT><BR></TD></TR></TBODY></TABLE><HR class="insert">
+
+<P>
+            The user-agent flow illustrated in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#Figure 5">Figure&nbsp;5<SPAN> (</SPAN><SPAN class="info">User-Agent Flow</SPAN><SPAN>)</SPAN></A> includes the following
+            steps:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>(A)</DT>
+<DD>
+                The client sends the user-agent to the end-user authorization endpoint as described
+                in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-authorization">Section&nbsp;3<SPAN> (</SPAN><SPAN class="info">Obtaining End-User Authorization</SPAN><SPAN>)</SPAN></A>. The client includes its client identifier,
+                requested scope, local state, and a redirect URI to which the authorization server
+                will send the end-user back once authorization is granted (or denied).
+              
+</DD>
+<DT>(B)</DT>
+<DD>
+                The authorization server authenticates the end-user (via the user-agent) and
+                establishes whether the end-user grants or denies the client's access request.
+              
+</DD>
+<DT>(C)</DT>
+<DD>
+                If the end-user granted access, the authorization server redirects the
+                user-agent to the redirection URI provided earlier. The redirection URI includes
+                the access token in the URI fragment.
+              
+</DD>
+<DT>(D)</DT>
+<DD>
+                The user-agent follows the redirection instructions by making a request to the web
+                server which does not include the fragment. The user-agent retains the fragment
+                information locally.
+              
+</DD>
+<DT>(E)</DT>
+<DD>
+                The web server returns a web page  (typically an HTML page with an embedded script)
+                capable of accessing the full redirection URI including the fragment retained by the
+                user-agent, and extracting the access token (and other parameters) contained in the
+                fragment.
+              
+</DD>
+<DT>(F)</DT>
+<DD>
+                The user-agent executes the script provided by the web server locally, which
+                extracts the access token and passes it to the client.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<A name="anchor7"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.4.3"></A><H3>1.4.3.&nbsp;
+Native Application</H3>
+
+<P>
+            Native application are clients running as native code on the end-user's computer or
+            device (i.e. executing outside a user-agent or as a desktop program). These clients are
+            often capable of interacting with (or embedding) the end-user's user-agent but are
+            limited in how such interaction affects their end-user experience. In many cases,
+            native applications are incapable of receiving direct callback requests from the
+            server (e.g. firewall, operating system restrictions).
+          
+</P>
+<P>
+            Native application clients can be implemented in different ways based on their
+            requirements and desired end-user experience. Native application clients can:
+
+            </P>
+<UL class="text">
+<LI>
+                Utilize the end-user authorization endpoint as described in
+                <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-authorization">Section&nbsp;3<SPAN> (</SPAN><SPAN class="info">Obtaining End-User Authorization</SPAN><SPAN>)</SPAN></A> by launching an external user-agent. The
+                client can capture the response by providing a redirection URI with a custom URI
+                scheme (registered with the operating system to invoke the client application), or
+                by providing a redirection URI pointing to a server-hosted resource under the
+                client's control which makes the response available to the client (e.g. using the
+                window title or other locations accessible from outside the user-agent).
+              
+</LI>
+<LI>
+                Utilize the end-user authorization endpoint as described in
+                <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#user-authorization">Section&nbsp;3<SPAN> (</SPAN><SPAN class="info">Obtaining End-User Authorization</SPAN><SPAN>)</SPAN></A> by using an embedded user-agent. The client
+                obtains the response by directly communicating with the embedded user-agent.
+              
+</LI>
+<LI>
+                Prompt end-users for their password and use them directly to obtain an access
+                token. This is generally discouraged, as it hands the end-user's password directly
+                to the third-party client which in turn has to store it in clear-text. It also
+                requires the server to support password-based authentication.
+              
+</LI>
+</UL><P>
+          
+</P>
+<P>
+            When choosing between launching an external browser and an embedded user-agent,
+            developers should consider the following:
+
+            </P>
+<UL class="text">
+<LI>
+                External user-agents may improve completion rate as the end-user may already be
+                logged-in and not have to re-authenticate.
+              
+</LI>
+<LI>
+                Embedded user-agents often offer a better end-user flow, as they remove the need to
+                switch context and open new windows.
+              
+</LI>
+<LI>
+                Embedded user-agents pose a security challenge because users are authenticating in
+                an unidentified window without access to the visual protections offered by many
+                user-agents.
+              
+</LI>
+</UL><P>
+          
+</P>
+<A name="anchor8"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1.4.4"></A><H3>1.4.4.&nbsp;
+Autonomous</H3>
+
+<P>
+            Autonomous clients utilize an existing trust relationship or framework to establish
+            authorization. Autonomous clients can be implemented in different ways based on their
+            requirements and the existing trust framework they rely upon. Autonomous clients can:
+
+            </P>
+<UL class="text">
+<LI>
+                Obtain an access token by authenticating with the authorization server using their
+                client credentials. The scope of the access token is limited to the protected
+                resources under the control of the client, or that of another resource owner
+                previously arranged with the authorization server.
+              
+</LI>
+<LI>
+                Use an existing access grant expressed as an assertion using an assertion format
+                supported by the authorization server. Using assertions requires the client to
+                obtain a assertion (such as a <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#OASIS.saml-core-2.0-os">SAML<SPAN> (</SPAN><SPAN class="info">Cantor, S., Kemp, J., Philpott, R., and E. Maler, “Assertions and Protocol for the OASIS Security Assertion Markup Language             (SAML) V2.0,” March&nbsp;2005.</SPAN><SPAN>)</SPAN></A> [OASIS.saml‑core‑2.0‑os]
+                assertion) from an assertion issuer or to self-issue an assertion. The assertion
+                format, the process by which the assertion is obtained, and the method of
+                validating the assertion are defined by the assertion issuer and the authorization
+                server, and are beyond the scope of this specification.
+              
+</LI>
+</UL><P>
+          
+</P>
+<A name="client-authentication"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.2"></A><H3>2.&nbsp;
+Client Credentials</H3>
+
+<P>
+        When interacting with the authorization server, the client identifies itself using a client
+        identifier and authenticates using a set of client credentials. This specification provides
+        one mechanism for authenticating the client using password credentials.
+      
+</P>
+<P>
+        The means through which the client obtains its credentials are beyond the scope of this
+        specification, but usually involve registration with the authorization server.
+        [[ OAuth Discovery provides one way of obtaining a client password ]]
+      
+</P>
+<P>
+        Due to the nature of some clients, authorization servers SHOULD NOT make assumptions
+        about the confidentiality of client secrets without establishing trust with the
+        client operator. Authorization servers SHOULD NOT issue client secrets to clients
+        incapable of keeping their secrets confidential.
+      
+</P>
+<P>
+        The authorization server MAY authenticate the client using any appropriate set of
+        credentials and authentication scheme. The client MUST NOT utilize more than one set of
+        credentials or authentication mechanism with each request.
+      
+</P>
+<A name="anchor9"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.2.1"></A><H3>2.1.&nbsp;
+Client Password Credentials</H3>
+
+<P>
+          The client password credentials use a shared symmetric secret to authenticate the client.
+          The client identifier and password are included in the request using the
+          HTTP Basic authentication scheme as defined in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2617">[RFC2617]<SPAN> (</SPAN><SPAN class="info">Franks, J., Hallam-Baker, P., Hostetler, J., Lawrence, S., Leach, P., Luotonen, A., and L. Stewart, “HTTP Authentication: Basic and Digest Access Authentication,” June&nbsp;1999.</SPAN><SPAN>)</SPAN></A> by including the
+          client identifier as the username and client password as the password.
+        
+</P>
+<P>
+            For example (line breaks are for display purposes only):
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  POST /token HTTP/1.1
+  Host: server.example.com
+  Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+  Content-Type: application/x-www-form-urlencoded
+
+  grant_type=authorization_code&amp;client_id=s6BhdRkqt3&amp;code=i1WsRn1uB1&amp;
+  redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+
+</PRE></DIV>
+<P>
+          Alternatively, the client MAY include the password in the request body using the
+          following parameter:
+
+          </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>client_secret</DT>
+<DD>
+              REQUIRED. The client password.
+            
+</DD>
+</DL></BLOCKQUOTE><P>
+        
+</P>
+<P>
+            For example (line breaks are for display purposes only):
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  POST /token HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+
+  grant_type=authorization_code&amp;client_id=s6BhdRkqt3&amp;
+  client_secret=gX1fBat3bV&amp;code=i1WsRn1uB1&amp;
+  redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+
+</PRE></DIV>
+<P>
+          The authorization server MUST accept the client credentials using both the request
+          parameter, and the HTTP Basic authentication scheme. The authorization server MAY
+          support additional authentication schemes suitable for the transmission of a password.
+        
+</P>
+<A name="user-authorization"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.3"></A><H3>3.&nbsp;
+Obtaining End-User Authorization</H3>
+
+<P>
+        When the client interacts with an end-user, the end-user MUST first grant the client
+        authorization to access its protected resources. Once obtained, the end-user access
+        grant is expressed as an authorization code which the client uses to obtain an access
+        token. To obtain an end-user authorization, the client sends the end-user to the
+        end-user authorization endpoint.
+      
+</P>
+<P>
+        At the end-user authorization endpoint, the end-user first authenticates with the
+        authorization server, and then grants or denies the access request. The way in which the
+        authorization server authenticates the end-user (e.g. username and password login, OpenID,
+        session cookies) and in which the authorization server obtains the end-user's
+        authorization, including whether it uses a secure channel such as TLS, is beyond the scope
+        of this specification. However, the authorization server MUST first verify the identity of
+        the end-user.
+      
+</P>
+<P>
+        The location of the end-user authorization endpoint can be found in the service
+        documentation, or can be obtained by using [[ OAuth Discovery ]]. The end-user
+        authorization endpoint URI MAY include a query component as defined by
+        <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC3986">[RFC3986]<SPAN> (</SPAN><SPAN class="info">Berners-Lee, T., Fielding, R., and L. Masinter, “Uniform Resource Identifier (URI): Generic Syntax,” January&nbsp;2005.</SPAN><SPAN>)</SPAN></A> section 3, which must be retained when adding additional
+        query parameters.
+      
+</P>
+<P>
+        Since requests to the end-user authorization endpoint result in user authentication and
+        the transmission of sensitive information, the authorization server SHOULD require the
+        use of a transport-layer security mechanism such as TLS when sending requests to the
+        end-user authorization endpoint.
+      
+</P>
+<P>
+        In order to direct the end-user's user-agent to the authorization server, the client
+        constructs the request URI by adding the following parameters to the end-user
+        authorization endpoint URI query component using the
+        <TT>application/x-www-form-urlencoded</TT> format as defined by
+        <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#W3C.REC-html401-19991224">[W3C.REC‑html401‑19991224]<SPAN> (</SPAN><SPAN class="info">Raggett, D., Hors, A., and I. Jacobs, “HTML 4.01 Specification,” December&nbsp;1999.</SPAN><SPAN>)</SPAN></A>:
+
+        </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>response_type</DT>
+<DD>
+            
+            REQUIRED. The requested response: an access token, an authorization code, or both. The
+            parameter value MUST be set to <TT>token</TT> for requesting an
+            access token, <TT>code</TT> for requesting an authorization code, or
+            <TT>code_and_token</TT> to request both. The authorization server
+            MAY decline to provide one or more of these response types. [[ The 'code_and_token'
+            type is pending use cases and may be removed for the specification ]]
+          
+</DD>
+<DT>client_id</DT>
+<DD>
+            
+            REQUIRED. The client identifier as described in
+            <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">Section&nbsp;2<SPAN> (</SPAN><SPAN class="info">Client Credentials</SPAN><SPAN>)</SPAN></A>.
+          
+</DD>
+<DT>redirect_uri</DT>
+<DD>
+            
+            REQUIRED, unless a redirection URI has been established between the client and
+            authorization server via other means. An absolute URI to which the authorization
+            server will redirect the user-agent to when the end-user authorization step is
+            completed. The authorization server SHOULD require the client to pre-register
+            their redirection URI.
+          
+</DD>
+<DT>scope</DT>
+<DD>
+            
+            OPTIONAL. The scope of the access request expressed as a list of space-delimited
+            strings. The value of the <TT>scope</TT> parameter is defined
+            by the authorization server. If the value contains multiple space-delimited
+            strings, their order does not matter, and each string adds an additional access
+            range to the requested scope.
+          
+</DD>
+<DT>state</DT>
+<DD>
+            
+            OPTIONAL. An opaque value used by the client to maintain state between the request
+            and callback. The authorization server includes this value when redirecting the
+            user-agent back to the client.
+          
+</DD>
+</DL></BLOCKQUOTE><P>
+      
+</P>
+<P>
+        The client directs the end-user to the constructed URI using an HTTP redirection
+        response, or by other means available to it via the end-user's user-agent. The
+        authorization server MUST support the use of the HTTP <TT>GET</TT>
+        method for the end-user authorization endpoint, and MAY support the use of the
+        <TT>POST</TT> method as well.
+      
+</P>
+<P>
+          For example, the client directs the end-user's user-agent to make the following HTTP
+          request using transport-layer security (line breaks are for display purposes only):
+        
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  GET /authorize?response_type=code&amp;client_id=s6BhdRkqt3&amp;
+      redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1
+  Host: server.example.com
+
+</PRE></DIV>
+<P>
+        If the client has previously registered a redirection URI with the authorization server,
+        the authorization server MUST verify that the redirection URI received matches the
+        registered URI associated with the client identifier. [[ provide guidance on how to
+        perform matching ]]
+      
+</P>
+<P>
+        Parameters sent without a value MUST be treated as if they were omitted from the request.
+        The authorization server SHOULD ignore unrecognized request parameters.
+      
+</P>
+<P>
+        The authorization server validates the request to ensure all required parameters are
+        present and valid. If the request is invalid, the authorization server immediately
+        redirects the user-agent back to the client using the redirection URI provided with the
+        appropriate error code as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#auth-error">Section&nbsp;3.2<SPAN> (</SPAN><SPAN class="info">Error Response</SPAN><SPAN>)</SPAN></A>.
+      
+</P>
+<P>
+        The authorization server authenticates the end-user and obtains an authorization
+        decision (by asking the end-user or by establishing approval via other means). When a
+        decision has been established, the authorization server directs the end-user's
+        user-agent to the provided client redirection URI using an HTTP redirection response,
+        or by other means available to it via the end-user's user-agent.
+      
+</P>
+<A name="anchor10"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.3.1"></A><H3>3.1.&nbsp;
+Authorization Response</H3>
+
+<P>
+          If the end-user grants the access request, the authorization server issues an access
+          token, an authorization code, or both, and delivers them to the client by adding the
+          following parameters to the redirection URI (as described below):
+
+          </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>code</DT>
+<DD>
+              
+              REQUIRED if the response type is <TT>code</TT> or
+              <TT>code_and_token</TT>, otherwise MUST NOT be included. The
+              authorization code generated by the authorization server. The authorization code
+              SHOULD expire shortly after it is issued. The authorization server MUST invalidate
+              the authorization code after a single usage. The authorization code is bound to the
+              client identifier and redirection URI.
+            
+</DD>
+<DT>access_token</DT>
+<DD>
+              
+              REQUIRED if the response type is <TT>token</TT> or
+              <TT>code_and_token</TT>, otherwise MUST NOT be included. The
+              access token issued by the authorization server. The access token string MUST comply
+              with the access-token rule defined in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authz-header">Section&nbsp;5.1.1<SPAN> (</SPAN><SPAN class="info">The Authorization Request Header Field</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>expires_in</DT>
+<DD>
+              
+              OPTIONAL. The duration in seconds of the access token lifetime if an access token
+              is included. For example, the value <TT>3600</TT> denotes that the
+              access token will expire in one hour from the time the response was generated by the
+              authorization server.
+            
+</DD>
+<DT>scope</DT>
+<DD>
+              
+              OPTIONAL. The scope of the access token as a list of space-delimited strings if an
+              access token is included. The value of the <TT>scope</TT>
+              parameter is defined by the authorization server. If the value contains multiple
+              space-delimited strings, their order does not matter, and each string adds an
+              additional access range to the requested scope. The authorization server SHOULD
+              include the parameter if the requested scope is different from the one requested by
+              the client.
+            
+</DD>
+<DT>state</DT>
+<DD>
+              
+              REQUIRED if the <TT>state</TT> parameter was present in the
+              client authorization request. Set to the exact value received from the client.
+            
+</DD>
+</DL></BLOCKQUOTE><P>
+        
+</P>
+<P>
+          The method in which the authorization server adds the parameter to the redirection
+          URI is determined by the response type requested by the client in the authorization
+          request using the <TT>response_type</TT> parameter.
+        
+</P>
+<P>
+          If the response type is <TT>code</TT>, the authorization
+          server adds the parameters to the redirection URI query component using the
+          <TT>application/x-www-form-urlencoded</TT> format as defined by
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#W3C.REC-html401-19991224">[W3C.REC‑html401‑19991224]<SPAN> (</SPAN><SPAN class="info">Raggett, D., Hors, A., and I. Jacobs, “HTML 4.01 Specification,” December&nbsp;1999.</SPAN><SPAN>)</SPAN></A>.
+        
+</P>
+<P>
+            For example, the authorization server redirects the end-user's user-agent by
+            sending the following HTTP response:
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 302 Found
+  Location: https://client.example.com/cb?code=i1WsRn1uB1
+
+</PRE></DIV>
+<P>
+          If the response type is <TT>token</TT>, the authorization
+          server adds the parameters to the redirection URI fragment component using the
+          <TT>application/x-www-form-urlencoded</TT> format as defined by
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#W3C.REC-html401-19991224">[W3C.REC‑html401‑19991224]<SPAN> (</SPAN><SPAN class="info">Raggett, D., Hors, A., and I. Jacobs, “HTML 4.01 Specification,” December&nbsp;1999.</SPAN><SPAN>)</SPAN></A>.
+        
+</P>
+<P>
+            For example, the authorization server redirects the end-user's user-agent by
+            sending the following HTTP response:
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 302 Found
+  Location: http://example.com/rd#access_token=FJQbwq9&amp;expires_in=3600
+
+</PRE></DIV>
+<P>
+          If the response type is <TT>code_and_token</TT>, the authorization
+          server adds the <TT>code</TT> and <TT>state</TT>
+          parameters to the redirection URI query component and the
+          <TT>access_token</TT>, <TT>scope</TT>, and
+          <TT>expires_in</TT> to the redirection URI fragment using the
+          <TT>application/x-www-form-urlencoded</TT> format as defined by
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#W3C.REC-html401-19991224">[W3C.REC‑html401‑19991224]<SPAN> (</SPAN><SPAN class="info">Raggett, D., Hors, A., and I. Jacobs, “HTML 4.01 Specification,” December&nbsp;1999.</SPAN><SPAN>)</SPAN></A>.
+        
+</P>
+<P>
+            For example, the authorization server redirects the end-user's user-agent by
+            sending the following HTTP response (line breaks are for display purposes only):
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 302 Found
+  Location: http://example.com/rd?code=i1WsRn1uB1
+            #access_token=FJQbwq9&amp;expires_in=3600
+
+</PRE></DIV>
+<P>
+          Clients SHOULD ignore unrecognized response parameters. The sizes of tokens and other
+          values received from the authorization server, are left undefined by this specification.
+          Clients should avoid making assumptions about value sizes. Servers should document the
+          expected size of any value they issue.
+        
+</P>
+<A name="auth-error"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.3.2"></A><H3>3.2.&nbsp;
+Error Response</H3>
+
+<P>
+          If the end-user denies the access request or if the request is invalid, the authorization
+          server informs the client by adding the following parameters to the redirection URI query
+          component using the <TT>application/x-www-form-urlencoded</TT> format
+          as defined by <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#W3C.REC-html401-19991224">[W3C.REC‑html401‑19991224]<SPAN> (</SPAN><SPAN class="info">Raggett, D., Hors, A., and I. Jacobs, “HTML 4.01 Specification,” December&nbsp;1999.</SPAN><SPAN>)</SPAN></A>:
+
+          </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>error</DT>
+<DD>
+              
+              REQUIRED. A single error code as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#auth-error-codes">Section&nbsp;3.2.1<SPAN> (</SPAN><SPAN class="info">Error Codes</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>error_description</DT>
+<DD>
+              OPTIONAL. A human-readable text providing additional information, used to assist in
+              the understanding and resolution of the error occurred.
+            
+</DD>
+<DT>error_uri</DT>
+<DD>
+              OPTIONAL. A URI identifying a human-readable web page with information about the
+              error, used to provide the end-user with additional information about the error.
+            
+</DD>
+<DT>state</DT>
+<DD>
+              
+              REQUIRED if the <TT>state</TT> parameter was present in the
+              client authorization request. Set to the exact value received from the client.
+            
+</DD>
+</DL></BLOCKQUOTE><P>
+        
+</P>
+<P>
+            For example, the authorization server redirects the end-user's user-agent by
+            sending the following HTTP response:
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 302 Found
+  Location: https://client.example.com/cb?error=access-denied
+
+</PRE></DIV>
+<A name="auth-error-codes"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.3.2.1"></A><H3>3.2.1.&nbsp;
+Error Codes</H3>
+
+<P>
+            The authorization server includes one of the following error codes with the error
+            response:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>invalid_request</DT>
+<DD>
+                
+                The request is missing a required parameter, includes an unsupported parameter or
+                parameter value, or is otherwise malformed.
+              
+</DD>
+<DT>invalid_client</DT>
+<DD>
+                
+                The client identifier provided is invalid.
+              
+</DD>
+<DT>unauthorized_client</DT>
+<DD>
+                
+                The client is not authorized to use the requested response type.
+              
+</DD>
+<DT>redirect_uri_mismatch</DT>
+<DD>
+                
+                The redirection URI provided does not match a pre-registered value.
+              
+</DD>
+<DT>access_denied</DT>
+<DD>
+                
+                The end-user or authorization server denied the request.
+              
+</DD>
+<DT>unsupported_response_type</DT>
+<DD>
+                
+                The requested response type is not supported by the authorization server.
+              
+</DD>
+<DT>invalid_scope</DT>
+<DD>
+                
+                The requested scope is invalid, unknown, or malformed.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<P>
+            [[ Add mechanism for extending error codes ]]
+          
+</P>
+<A name="obtaining-token"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4"></A><H3>4.&nbsp;
+Obtaining an Access Token</H3>
+
+<P>
+        The client obtains an access token by authenticating with the authorization server and
+        presenting its access grant (in the form of an authorization code, resource owner
+        credentials, an assertion, or a refresh token).
+      
+</P>
+<P>
+        Since requests to the token endpoint result in the transmission of plain text
+        credentials in the HTTP request and response, the authorization server MUST require the
+        use of a transport-layer security mechanism when sending requests to the token endpoints.
+        Servers MUST support TLS 1.2 as defined in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC5246">[RFC5246]<SPAN> (</SPAN><SPAN class="info">Dierks, T. and E. Rescorla, “The Transport Layer Security (TLS) Protocol Version 1.2,” August&nbsp;2008.</SPAN><SPAN>)</SPAN></A>, and MAY support
+        additional transport-layer security mechanisms.
+      
+</P>
+<P>
+        The client requests an access token by making an HTTP <TT>POST</TT>
+        request to the token endpoint. The location of the token endpoint can be found in the
+        service documentation, or can be obtained by using [[ OAuth Discovery ]]. The token
+        endpoint URI MAY include a query component.
+      
+</P>
+<P>
+        The client authenticates with the authorization server by adding its client credentials to
+        the request as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">Section&nbsp;2<SPAN> (</SPAN><SPAN class="info">Client Credentials</SPAN><SPAN>)</SPAN></A>. The authorization
+        server MAY allow unauthenticated access token requests when the client identity does not
+        matter (e.g. anonymous client) or when the client identity is established via other means
+        (e.g. using an assertion access grant).
+      
+</P>
+<P>
+        The client constructs the request by including the following parameters using the
+        <TT>application/x-www-form-urlencoded</TT> format in the HTTP request
+        entity-body:
+
+        </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>grant_type</DT>
+<DD>
+            
+            REQUIRED. The access grant type included in the request. Value MUST be one of
+            <TT>authorization_code</TT>,
+            <TT>password</TT>,
+            <TT>assertion</TT>,
+            <TT>refresh_token</TT>, or <TT>none</TT>.
+          
+</DD>
+<DT>client_id</DT>
+<DD>
+            
+            REQUIRED, unless the client identity can be establish via other means (e.g. assertion).
+            The client identifier as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">Section&nbsp;2<SPAN> (</SPAN><SPAN class="info">Client Credentials</SPAN><SPAN>)</SPAN></A>.
+          
+</DD>
+<DT>scope</DT>
+<DD>
+            
+            OPTIONAL. The scope of the access request expressed as a list of space-delimited
+            strings. The value of the <TT>scope</TT> parameter is defined
+            by the authorization server. If the value contains multiple space-delimited
+            strings, their order does not matter, and each string adds an additional access
+            range to the requested scope. If the access grant being used already represents an
+            approved scope (e.g. authorization code, assertion), the requested scope MUST be equal
+            or lesser than the scope previously granted.
+          
+</DD>
+</DL></BLOCKQUOTE><P>
+      
+</P>
+<P>
+        In addition, the client MUST include the appropriate parameters listed for the selected
+        access grant type as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-grant-types">Section&nbsp;4.1<SPAN> (</SPAN><SPAN class="info">Access Grant Types</SPAN><SPAN>)</SPAN></A>. 
+      
+</P>
+<P>
+        Parameters sent without a value MUST be treated as if they were omitted from the request.
+        The authorization server SHOULD ignore unrecognized request parameters.
+      
+</P>
+<A name="access-grant-types"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1"></A><H3>4.1.&nbsp;
+Access Grant Types</H3>
+
+<P>
+          The client requests an access token using one of the four types of access grants:
+          authorization code, password credentials, assertion, or refresh token.
+        
+</P>
+<P>
+          When requesting an access token using the <TT>none</TT> access grant
+          type (no access grant is included), the client is requesting access to the protected
+          resources under its control, or those of another resource owner which has been previously
+          arranged with the authorization server (the method of which is beyond the scope of this
+          specification).
+        
+</P>
+<A name="anchor11"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.1"></A><H3>4.1.1.&nbsp;
+Authorization Code</H3>
+
+<P>
+            The client includes the authorization code using the
+            <TT>authorization_code</TT> access grant type and the following
+            parameters:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>code</DT>
+<DD>
+                
+                REQUIRED. The authorization code received from the authorization server.
+              
+</DD>
+<DT>redirect_uri</DT>
+<DD>
+                
+                REQUIRED. The redirection URI used in the initial request.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<P>
+              For example, the client makes the following HTTP request by including its client
+              credentials via the <TT>client_secret</TT> parameter described in
+              <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">Section&nbsp;2<SPAN> (</SPAN><SPAN class="info">Client Credentials</SPAN><SPAN>)</SPAN></A> and using transport-layer security (line
+              breaks are for display purposes only):
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  POST /token HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+
+  grant_type=authorization_code&amp;client_id=s6BhdRkqt3&amp;
+  client_secret=gX1fBat3bV&amp;code=i1WsRn1uB1&amp;
+  redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+
+</PRE></DIV>
+<P>
+            The authorization server MUST:
+            
+            </P>
+<UL class="text">
+<LI>
+                Validate the client credentials (if present) and ensure they match the
+                authorization code.
+              
+</LI>
+<LI>
+                Verify that the authorization code and redirection URI are all valid and match its
+                stored association.
+              
+</LI>
+</UL><P>
+          
+</P>
+<P>
+            If the request is valid, the authorization server issues a successful response as
+            described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-token-response">Section&nbsp;4.2<SPAN> (</SPAN><SPAN class="info">Access Token Response</SPAN><SPAN>)</SPAN></A>.
+          
+</P>
+<A name="anchor12"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.2"></A><H3>4.1.2.&nbsp;
+Resource Owner Password Credentials</H3>
+
+<P>
+            The client includes the resource owner credentials using the
+            <TT>password</TT> access grant type and the following
+            parameters: [[ add internationalization consideration for username and password ]]
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>username</DT>
+<DD>
+                
+                REQUIRED. The resource owner's username.
+              
+</DD>
+<DT>password</DT>
+<DD>
+                
+                REQUIRED. The resource owner's password.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<P>
+              For example, the client makes the following HTTP request by including its client
+              credentials via the <TT>client_secret</TT> parameter described in
+              <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">Section&nbsp;2<SPAN> (</SPAN><SPAN class="info">Client Credentials</SPAN><SPAN>)</SPAN></A> and using transport-layer security (line
+              breaks are for display purposes only):
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  POST /token HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+
+  grant_type=password&amp;client_id=s6BhdRkqt3&amp;
+  client_secret=47HDu8s&amp;username=johndoe&amp;password=A3ddj3w
+
+</PRE></DIV>
+<P>
+            The authorization server MUST validate the client credentials (if present) and end-user
+            credentials and if valid issue an access token response as described in
+            <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-token-response">Section&nbsp;4.2<SPAN> (</SPAN><SPAN class="info">Access Token Response</SPAN><SPAN>)</SPAN></A>.
+          
+</P>
+<A name="anchor13"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.3"></A><H3>4.1.3.&nbsp;
+Assertion</H3>
+
+<P>
+            The client includes the assertion using the <TT>assertion</TT> access
+            grant type and the following parameters:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>assertion_type</DT>
+<DD>
+                
+                REQUIRED. The format of the assertion as defined by the authorization server. The
+                value MUST be an absolute URI.
+              
+</DD>
+<DT>assertion</DT>
+<DD>
+                
+                REQUIRED. The assertion.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<P>
+              For example, the client makes the following HTTP request using transport-layer
+              security, and client authentication is achieved via the assertion (line breaks are
+              for display purposes only):
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  POST /token HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+
+  grant_type=assertion&amp;
+  assertion_type=urn%3Aoasis%3Anames%3Atc%3ASAML%3A2.0%3Aassertion&amp;
+  assertion=PHNhbWxwOl...[omitted for brevity]...ZT4%3D
+
+</PRE></DIV>
+<P>
+            The authorization server MUST validate the client credentials (if present) and the
+            assertion and if valid issues an access token response as described in
+            <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-token-response">Section&nbsp;4.2<SPAN> (</SPAN><SPAN class="info">Access Token Response</SPAN><SPAN>)</SPAN></A>. The authorization server SHOULD NOT issue a
+            refresh token (instead, require the client to use the same or new assertion).
+          
+</P>
+<P>
+            Authorization servers SHOULD issue access tokens with a limited lifetime and require
+            clients to refresh them by requesting a new access token using the same assertion if it
+            is still valid. Otherwise the client MUST obtain a new valid assertion.
+          
+</P>
+<A name="token-refresh"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.4"></A><H3>4.1.4.&nbsp;
+Refresh Token</H3>
+
+<P>
+            The client includes the refresh token using the
+            <TT>refresh_token</TT> access grant type and the following
+            parameter:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>refresh_token</DT>
+<DD>
+                
+                REQUIRED. The refresh token associated with the access token to be refreshed.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<P>
+              For example, the client makes the following HTTP request by including its client
+              credentials via the <TT>client_secret</TT> parameter described in
+              <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#client-authentication">Section&nbsp;2<SPAN> (</SPAN><SPAN class="info">Client Credentials</SPAN><SPAN>)</SPAN></A> and using transport-layer security (line
+              breaks are for display purposes only):
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  POST /token HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+
+  grant_type=refresh_token&amp;client_id=s6BhdRkqt3&amp;
+  client_secret=8eSEIpnqmM&amp;refresh_token=n4E9O119d
+
+</PRE></DIV>
+<P>
+            The authorization server MUST verify the client credentials (if present), the validity
+            of the refresh token, and that the resource owner's authorization is still valid. If
+            the request is valid, the authorization server issues an access token response as
+            described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#access-token-response">Section&nbsp;4.2<SPAN> (</SPAN><SPAN class="info">Access Token Response</SPAN><SPAN>)</SPAN></A>. The authorization server MAY
+            issue a new refresh token.
+          
+</P>
+<A name="access-token-response"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.2"></A><H3>4.2.&nbsp;
+Access Token Response</H3>
+
+<P>
+          After receiving and verifying a valid and authorized access token request from the
+          client, the authorization server issues the access token and optional refresh token,
+          and constructs the response by adding the following parameters to the entity body of
+          the HTTP response with a 200 (OK) status code:
+        
+</P>
+<P>
+          The token response contains the following parameters:
+
+          </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>access_token</DT>
+<DD>
+              
+              REQUIRED. The access token issued by the authorization server. The access token
+              string MUST comply with the access-token rule defined in
+              <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authz-header">Section&nbsp;5.1.1<SPAN> (</SPAN><SPAN class="info">The Authorization Request Header Field</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>expires_in</DT>
+<DD>
+              
+              OPTIONAL. The duration in seconds of the access token lifetime. For example, the
+              value <TT>3600</TT> denotes that the access token will expire in
+              one hour from the time the response was generated by the authorization server.
+            
+</DD>
+<DT>refresh_token</DT>
+<DD>
+              
+              OPTIONAL. The refresh token used to obtain new access tokens using the same
+              end-user access grant as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#token-refresh">Section&nbsp;4.1.4<SPAN> (</SPAN><SPAN class="info">Refresh Token</SPAN><SPAN>)</SPAN></A>. The
+              authorization server SHOULD NOT issue a refresh token when the access grant type is
+              set to <TT>none</TT>.
+            
+</DD>
+<DT>scope</DT>
+<DD>
+              
+              OPTIONAL. The scope of the access token as a list of space-delimited strings. The
+              value of the <TT>scope</TT> parameter is defined by the
+              authorization server. If the value contains multiple space-delimited strings,
+              their order does not matter, and each string adds an additional access range to
+              the requested scope. The authorization server SHOULD include the parameter if the
+              requested scope is different from the one requested by the client.
+            
+</DD>
+</DL></BLOCKQUOTE><P>
+        
+</P>
+<P>
+          The parameters are including in the entity body of the HTTP response using the
+          <TT>application/json</TT> media type as defined by
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC4627">[RFC4627]<SPAN> (</SPAN><SPAN class="info">Crockford, D., “The application/json Media Type for JavaScript Object Notation (JSON),” July&nbsp;2006.</SPAN><SPAN>)</SPAN></A>. The parameters are serialized into a JSON structure by
+          adding each parameter at the highest structure level. Parameter names and string values
+          are included as JSON strings. Numerical values are included as JSON numbers.
+        
+</P>
+<P>
+          The authorization server MUST include the HTTP <TT>Cache-Control</TT>
+          response header field with a value of <TT>no-store</TT> in any
+          response containing tokens, secrets, or other sensitive information.
+        
+</P>
+<P>
+            For example:
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 200 OK
+  Content-Type: application/json
+  Cache-Control: no-store
+
+  {
+    "access_token":"SlAV32hkKG",
+    "expires_in":3600,
+    "refresh_token":"8xLOxBtZp8"
+  }
+
+</PRE></DIV>
+<P>
+          Clients SHOULD ignore unrecognized response parameters. The sizes of tokens and other
+          values received from the authorization server, are left undefined by this specification.
+          Clients should avoid making assumptions about value sizes. Servers should document the
+          expected size of any value they issue.
+        
+</P>
+<A name="token-error"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.3"></A><H3>4.3.&nbsp;
+Error Response</H3>
+
+<P>
+          If the token request is invalid or unauthorized, the authorization server constructs
+          the response by adding the following parameter to the entity body of the HTTP
+          response using the <TT>application/json</TT> media type:
+
+          </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>error</DT>
+<DD>
+              
+              REQUIRED. A single error code as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#token-error-codes">Section&nbsp;4.3.1<SPAN> (</SPAN><SPAN class="info">Error Codes</SPAN><SPAN>)</SPAN></A>.
+            
+</DD>
+<DT>error_description</DT>
+<DD>
+              OPTIONAL. A human-readable text providing additional information, used to assist in
+              the understanding and resolution of the error occurred.
+            
+</DD>
+<DT>error_uri</DT>
+<DD>
+              OPTIONAL. A URI identifying a human-readable web page with information about the
+              error, used to provide the end-user with additional information about the error.
+            
+</DD>
+</DL></BLOCKQUOTE><P>
+        
+</P>
+<P>
+            For example:
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 400 Bad Request
+  Content-Type: application/json
+  Cache-Control: no-store
+
+  {
+    "error":"invalid_request"
+  }
+
+</PRE></DIV>
+<P>
+          If the client provided invalid credentials using an HTTP authentication scheme via the
+          <TT>Authorization</TT> request header field, the authorization server
+          MUST respond with the HTTP 401 (Unauthorized) status code. Otherwise, the authorization
+          server SHALL respond with the HTTP 400 (Bad Request) status code.
+        
+</P>
+<A name="token-error-codes"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.3.1"></A><H3>4.3.1.&nbsp;
+Error Codes</H3>
+
+<P>
+            The authorization server includes one of the following error codes with the error
+            response:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>invalid_request</DT>
+<DD>
+                
+                The request is missing a required parameter, includes an unsupported parameter or
+                parameter value, repeats a parameter, includes multiple credentials, utilizes
+                more than one mechanism for authenticating the client, or is otherwise malformed.
+              
+</DD>
+<DT>invalid_client</DT>
+<DD>
+                
+                The client identifier provided is invalid, the client failed to authenticate, the
+                client did not include its credentials, provided multiple client credentials, or
+                used unsupported credentials type.
+              
+</DD>
+<DT>unauthorized_client</DT>
+<DD>
+                
+                The authenticated client is not authorized to use the access grant type provided.
+              
+</DD>
+<DT>invalid_grant</DT>
+<DD>
+                
+                The provided access grant is invalid, expired, or revoked (e.g. invalid assertion,
+                expired authorization token, bad end-user password credentials, or mismatching
+                authorization code and redirection URI).
+              
+</DD>
+<DT>unsupported_grant_type</DT>
+<DD>
+                
+                The access grant included - its type or another attribute - is not supported by the
+                authorization server.
+              
+</DD>
+<DT>invalid_scope</DT>
+<DD>
+                
+                The requested scope is invalid, unknown, malformed, or exceeds the previously
+                granted scope.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<P>
+            [[ Add mechanism for extending error codes ]]
+          
+</P>
+<A name="access-resource"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5"></A><H3>5.&nbsp;
+Accessing a Protected Resource</H3>
+
+<P>
+        Clients access protected resources by presenting an access token to the resource server.
+        Access tokens act as bearer tokens, where the token string acts as a shared symmetric
+        secret. This requires treating the access token with the same care as other secrets (e.g.
+        end-user passwords). Access tokens SHOULD NOT be sent in the clear over an insecure
+        channel.
+      
+</P>
+<P>
+        However, when it is necessary to transmit access tokens in the clear without a secure
+        channel, authorization servers SHOULD issue access tokens with limited scope and lifetime
+        to reduce the potential risk from a compromised access token.
+      
+</P>
+<P>
+        Clients MUST NOT make authenticated requests with an access token to unfamiliar resource
+        servers, regardless of the presence of a secure channel.
+      
+</P>
+<P>
+        The resource server MUST validate the access token and ensure it has not expired and
+        that its scope covers the requested resource. The methods used by the resource server
+        to validate the access token are beyond the scope of this specification, but generally
+        involve an interaction or coordination between the resource server and authorization
+        server.
+      
+</P>
+<A name="anchor14"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.1"></A><H3>5.1.&nbsp;
+Authenticated Requests</H3>
+
+<P>
+          Clients make authenticated token requests using the
+          <TT>Authorization</TT> request header field. Resource servers MUST
+          accept authenticated requests using the <TT>OAuth</TT> HTTP
+          authentication scheme as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authz-header">Section&nbsp;5.1.1<SPAN> (</SPAN><SPAN class="info">The Authorization Request Header Field</SPAN><SPAN>)</SPAN></A>, and MAY support
+          additional methods.
+        
+</P>
+<P>
+          Alternatively, clients MAY attempt to include the access token using the HTTP request
+          URI in the query component as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#query-param">Section&nbsp;5.1.2<SPAN> (</SPAN><SPAN class="info">URI Query Parameter</SPAN><SPAN>)</SPAN></A>, or in the HTTP
+          body when using the <TT>application/x-www-form-urlencoded</TT> content
+          type as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#body-param">Section&nbsp;5.1.3<SPAN> (</SPAN><SPAN class="info">Form-Encoded Body Parameter</SPAN><SPAN>)</SPAN></A>. Resource server MAY support these
+          alternative methods.
+        
+</P>
+<P>
+          Clients SHOULD only use the request URI or body when the
+          <TT>Authorization</TT> request header field is not available, and MUST
+          NOT use more than one method in each request.
+        
+</P>
+<A name="authz-header"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.1.1"></A><H3>5.1.1.&nbsp;
+The Authorization Request Header Field</H3>
+
+<P>
+            The <TT>Authorization</TT> request header field is used by clients
+            to make authenticated token requests. The client uses the
+            <TT>OAuth</TT> authentication scheme to include the access token in
+            the request.
+          
+</P>
+<P>
+              For example:
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  GET /resource HTTP/1.1
+  Host: server.example.com
+  Authorization: OAuth vF9dft4qmT
+
+</PRE></DIV>
+<P>
+            The <TT>Authorization</TT> header field uses the framework defined by
+            <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2617">[RFC2617]<SPAN> (</SPAN><SPAN class="info">Franks, J., Hallam-Baker, P., Hostetler, J., Lawrence, S., Leach, P., Luotonen, A., and L. Stewart, “HTTP Authentication: Basic and Digest Access Authentication,” June&nbsp;1999.</SPAN><SPAN>)</SPAN></A> as follows:
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  credentials    = "OAuth" RWS access-token [ CS 1#auth-param ]
+  access-token   = 1*( quoted-char / &lt;"&gt; )
+
+  CS             = OWS "," OWS
+
+  quoted-char    =   "!" / "#" / "$" / "%" / "&amp;" / "'" / "("
+                   / ")" / "*" / "+" / "-" / "." / "/" / DIGIT
+                   / ":" / "&lt;" / "=" / "&gt;" / "?" / "@" / ALPHA
+                   / "[" / "]" / "^" / "_" / "`" / "{" / "|"
+                   / "}" / "~" / "\" / "," / ";"
+
+</PRE></DIV>
+<P>
+            </P>
+<BLOCKQUOTE class="text">
+<P>
+                NOTE: <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC5849">[RFC5849]<SPAN> (</SPAN><SPAN class="info">Hammer-Lahav, E., “The OAuth 1.0 Protocol,” April&nbsp;2010.</SPAN><SPAN>)</SPAN></A> defines a different format for the
+                <TT>OAuth</TT> authentication scheme. Resource servers can
+                differentiate between the two protocol versions based on the presence of the
+                <TT>oauth_signature_method</TT> which is REQUIRED in the
+                previous version and is not supported by this specification.
+              
+</P>
+</BLOCKQUOTE><P>
+          
+</P>
+<A name="query-param"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.1.2"></A><H3>5.1.2.&nbsp;
+URI Query Parameter</H3>
+
+<P>
+            When including the access token in the HTTP request URI, the client adds the access
+            token to the request URI query component as defined by <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC3986">[RFC3986]<SPAN> (</SPAN><SPAN class="info">Berners-Lee, T., Fielding, R., and L. Masinter, “Uniform Resource Identifier (URI): Generic Syntax,” January&nbsp;2005.</SPAN><SPAN>)</SPAN></A> using
+            the <TT>oauth_token</TT> parameter.
+          
+</P>
+<P>
+              For example, the client makes the following HTTP request using transport-layer
+              security:
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  GET /resource?oauth_token=vF9dft4qmT HTTP/1.1
+  Host: server.example.com
+
+</PRE></DIV>
+<P>
+            The HTTP request URI query can include other request-specific parameters, in which
+            case, the <TT>oauth_token</TT> parameters SHOULD be appended
+            following the request-specific parameters, properly separated by an
+            <TT>&amp;</TT> character (ASCII code 38).
+          
+</P>
+<P>
+              For example:
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  http://example.com/resource?x=y&amp;oauth_token=vF9dft4qmT
+
+</PRE></DIV>
+<P>
+            </P>
+<BLOCKQUOTE class="text">
+<P>
+                NOTE: The <TT>oauth_token</TT> parameter is used by the previous
+                version of the OAuth protocol as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC5849">[RFC5849]<SPAN> (</SPAN><SPAN class="info">Hammer-Lahav, E., “The OAuth 1.0 Protocol,” April&nbsp;2010.</SPAN><SPAN>)</SPAN></A>. Resource
+                servers can differentiate between the two protocol versions based on the presence
+                of the <TT>oauth_signature_method</TT> which is REQUIRED in the
+                previous version and is not supported by this specification.
+              
+</P>
+</BLOCKQUOTE><P>
+          
+</P>
+<A name="body-param"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.1.3"></A><H3>5.1.3.&nbsp;
+Form-Encoded Body Parameter</H3>
+
+<P>
+            When including the access token in the HTTP request entity-body, the client adds the
+            access token to the request body using the <TT>oauth_token</TT>
+            parameter. The client can use this method only if the following REQUIRED conditions are
+            met:
+
+            </P>
+<UL class="text">
+<LI>
+                The entity-body is single-part.
+              
+</LI>
+<LI>
+                The entity-body follows the encoding requirements of the
+                <TT>application/x-www-form-urlencoded</TT> content-type as
+                defined by <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#W3C.REC-html401-19991224">[W3C.REC‑html401‑19991224]<SPAN> (</SPAN><SPAN class="info">Raggett, D., Hors, A., and I. Jacobs, “HTML 4.01 Specification,” December&nbsp;1999.</SPAN><SPAN>)</SPAN></A>.
+              
+</LI>
+<LI>
+                The HTTP request entity-header includes the <TT>Content-Type</TT>
+                header field set to <TT>application/x-www-form-urlencoded</TT>.
+              
+</LI>
+<LI>
+                The HTTP request method is <TT>POST</TT>,
+                <TT>PUT</TT>, or <TT>DELETE</TT>.
+              
+</LI>
+</UL><P>
+          
+</P>
+<P>
+            The entity-body can include other request-specific parameters, in which case, the
+            <TT>oauth_token</TT> parameters SHOULD be appended following the
+            request-specific parameters, properly separated by an <TT>&amp;</TT>
+            character (ASCII code 38).
+          
+</P>
+<P>
+              For example, the client makes the following HTTP request using transport-layer
+              security:
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  POST /resource HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+
+  oauth_token=vF9dft4qmT
+
+</PRE></DIV>
+<P>
+            </P>
+<BLOCKQUOTE class="text">
+<P>
+                NOTE: The <TT>oauth_token</TT> parameter is used by the previous
+                version of the OAuth protocol as described in <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC5849">[RFC5849]<SPAN> (</SPAN><SPAN class="info">Hammer-Lahav, E., “The OAuth 1.0 Protocol,” April&nbsp;2010.</SPAN><SPAN>)</SPAN></A>. Resource
+                servers can differentiate between the two protocol versions based on the presence
+                of the <TT>oauth_signature_method</TT> which is REQUIRED in the
+                previous version and is not supported by this specification.
+              
+</P>
+</BLOCKQUOTE><P>
+          
+</P>
+<A name="authn-header"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.2"></A><H3>5.2.&nbsp;
+The WWW-Authenticate Response Header Field</H3>
+
+<P>
+          If the protected resource request contains an invalid access token or is malformed, the
+          resource server MUST include the HTTP <TT>WWW-Authenticate</TT>
+          response header field. The <TT>WWW-Authenticate</TT> header field
+          uses the framework defined by <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2617">[RFC2617]<SPAN> (</SPAN><SPAN class="info">Franks, J., Hallam-Baker, P., Hostetler, J., Lawrence, S., Leach, P., Luotonen, A., and L. Stewart, “HTTP Authentication: Basic and Digest Access Authentication,” June&nbsp;1999.</SPAN><SPAN>)</SPAN></A> as follows:
+        
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  challenge       = "OAuth" RWS token-challenge
+
+  token-challenge = realm
+                    [ CS error ]
+                    [ CS error-desc ]
+                    [ CS error-uri ]
+                    [ CS scope ]
+                    [ CS 1#auth-param ]
+
+  error           = "error" "=" &lt;"&gt; token &lt;"&gt;
+  error-desc      = "error_description" "=" quoted-string
+  error-uri       = "error_uri" = &lt;"&gt; URI-Reference &lt;"&gt;
+  scope           = quoted-value /
+                    &lt;"&gt; quoted-value *( 1*SP quoted-value ) &lt;"&gt;
+  quoted-value    = 1*quoted-char
+
+</PRE></DIV>
+<P>
+            For example:
+          
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 401 Unauthorized
+  WWW-Authenticate: OAuth realm='Example Service', error='expired-token'
+
+</PRE></DIV>
+<P>
+          The <TT>realm</TT> attribute is used to provide the protected
+          resources partition as defined by <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC2617">[RFC2617]<SPAN> (</SPAN><SPAN class="info">Franks, J., Hallam-Baker, P., Hostetler, J., Lawrence, S., Leach, P., Luotonen, A., and L. Stewart, “HTTP Authentication: Basic and Digest Access Authentication,” June&nbsp;1999.</SPAN><SPAN>)</SPAN></A>. [[ add explanation ]]
+        
+</P>
+<P>
+          The <TT>error</TT> attribute is used to provide the client with the
+          reason why the access request was declined. The parameter values are described in
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#resource-error-codes">Section&nbsp;5.2.1<SPAN> (</SPAN><SPAN class="info">Error Codes</SPAN><SPAN>)</SPAN></A>.
+        
+</P>
+<P>
+          The <TT>error_description</TT> attribute provides a human-readable
+          text containing additional information, used to assist in the understanding and
+          resolution of the error occurred.
+        
+</P>
+<P>
+          The <TT>error_uri</TT> attribute provides a URI identifying a
+          human-readable web page with information about the error, used to offer the end-user
+          with additional information about the error. If the value is not an absolute URI, it is
+          relative to the URI of the requested protected resource.
+        
+</P>
+<P>
+          The <TT>scope</TT> attribute is a space-delimited list of scope values
+          indicating the required scope of the access token for accessing the requested resource.
+        
+</P>
+<A name="resource-error-codes"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.2.1"></A><H3>5.2.1.&nbsp;
+Error Codes</H3>
+
+<P>
+            The authorization server includes one of the following error codes with the error
+            response:
+
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>invalid_request</DT>
+<DD>
+                
+                The request is missing a required parameter, includes an unsupported parameter or
+                parameter value, repeats the same parameter, uses more than one method for
+                including an access token, or is otherwise malformed. The resource server MUST
+                respond with the HTTP 400 (Bad Request) status code.
+              
+</DD>
+<DT>invalid_token</DT>
+<DD>
+                
+                The access token provided is invalid. Resource servers SHOULD use this error code
+                when receiving an expired token which cannot be refreshed to indicate to the client
+                that a new authorization is necessary. The resource server MUST respond with the
+                HTTP 401 (Unauthorized) status code.
+              
+</DD>
+<DT>expired_token</DT>
+<DD>
+                
+                The access token provided has expired. Resource servers SHOULD only use this error
+                code when the client is expected to be able to handle the response and request a
+                new access token using the refresh token issued with the expired access token. The
+                resource server MUST respond with the HTTP 401 (Unauthorized) status code.
+              
+</DD>
+<DT>insufficient_scope</DT>
+<DD>
+                
+                The request requires higher privileges than provided by the access token. The
+                resource server SHOULD respond with the HTTP 403 (Forbidden) status code and MAY
+                include the <TT>scope</TT> attribute with the scope necessary to
+                access the protected resource.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<P>
+            [[ Add mechanism for extending error codes ]]
+          
+</P>
+<P>
+            If the request lacks any authentication information (i.e. the client was unaware
+            authentication is necessary or attempted using an unsupported authentication method),
+            the resource server SHOULD not include an error code or other error information.
+          
+</P>
+<P>
+              For example:
+            
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  HTTP/1.1 401 Unauthorized
+  WWW-Authenticate: OAuth realm='Example Service'
+
+</PRE></DIV>
+<A name="anchor15"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.6"></A><H3>6.&nbsp;
+Extensibility</H3>
+
+<A name="anchor16"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.6.1"></A><H3>6.1.&nbsp;
+Defining New Client Credentials Types</H3>
+
+<P>
+          [[ TBD ]]
+        
+</P>
+<A name="anchor17"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.6.2"></A><H3>6.2.&nbsp;
+Defining New Endpoint Parameters</H3>
+
+<P>
+          Applications that wish to define new request or response parameters for use with the
+          end-user authorization endpoint or the token endpoint SHALL do so in one of two ways:
+          register them in the parameters registry (following the procedures in 
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#parameters-registry">Section&nbsp;8.1<SPAN> (</SPAN><SPAN class="info">The OAuth Parameters Registry</SPAN><SPAN>)</SPAN></A>), or use the <TT>x_</TT>
+          parameter name prefix.
+        
+</P>
+<P>
+          Parameters utilizing the <TT>x_</TT> parameter name prefix MUST be
+          limited to vendor-specific extensions that are not commonly applicable, and are specific
+          to the implementation details of the authorization server where they are used. All other
+          new parameters MUST be registered, and MUST NOT use the <TT>x_</TT>
+          parameter name prefix.
+        
+</P>
+<P>
+          Parameter names MUST conform to the param-name ABNF, and parameter values syntax MUST be
+          well-defined (e.g., using ABNF, or a reference to the syntax of an existing parameter).
+        
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  param-name  = 1*name-char
+  name-char   = "-" / "." / "_" / DIGIT / ALPHA
+
+</PRE></DIV>
+<A name="anchor18"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.6.3"></A><H3>6.3.&nbsp;
+Defining New Header Field Parameters</H3>
+
+<P>
+          Applications that wish to define new parameters for use in the OAuth
+          <TT>Authorization</TT> or <TT>WWW-Authenticate</TT>
+          header fields MUST register them in the parameters registry, following the procedures in
+          <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#parameters-registry">Section&nbsp;8.1<SPAN> (</SPAN><SPAN class="info">The OAuth Parameters Registry</SPAN><SPAN>)</SPAN></A>.
+        
+</P>
+<P>
+          Parameter names MUST conform to the param-name ABNF and MUST NOT begin with
+          <TT>x_</TT>. Parameter values MUST conform to the param-value ABNF and
+          their syntax MUST be well-defined (e.g., using ABNF, or a reference to the syntax of an
+          existing parameter).
+        
+</P><DIV style="display: table; width: 0; margin-left: 3em; margin-right: auto"><PRE>
+  param-value  = quoted-value | quoted-string
+
+</PRE></DIV>
+<A name="anchor19"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.6.4"></A><H3>6.4.&nbsp;
+Defining New Access Grant Types</H3>
+
+<P>
+          The assertion access grant type was designed to allow the authorization server to
+          accept additional access grants not specified. Applications that wish to define
+          additional access grant types can do so by utilizing a new or existing assertion type
+          and format.
+        
+</P>
+<A name="anchor20"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.7"></A><H3>7.&nbsp;
+Security Considerations</H3>
+
+<P>
+        [[ TBD ]]
+      
+</P>
+<A name="anchor21"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.8"></A><H3>8.&nbsp;
+IANA Considerations</H3>
+
+<A name="parameters-registry"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.8.1"></A><H3>8.1.&nbsp;
+The OAuth Parameters Registry</H3>
+
+<P>
+          This document establishes the OAuth parameters registry.
+        
+</P>
+<P>
+          Additional parameters to be use in the end-user authorization endpoint request, the
+          end-user authorization endpoint response, the token endpoint request, the token endpoint
+          response, the <TT>Authorization</TT> header field, or the
+          <TT>WWW-Authenticate</TT> header field, are registered on the advice
+          of one or more Designated Experts (appointed by the IESG or their delegate), with a
+          Specification Required (using terminology from <A class="info" href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#RFC5226">[RFC5226]<SPAN> (</SPAN><SPAN class="info">Narten, T. and H. Alvestrand, “Guidelines for Writing an IANA Considerations Section in RFCs,” May&nbsp;2008.</SPAN><SPAN>)</SPAN></A>). However, to
+          allow for the allocation of values prior to publication, the Designated Expert(s) may
+          approve registration once they are satisfied that such a specification will be published.
+        
+</P>
+<P>
+          Registration requests should be sent to the [TBD]@ietf.org mailing list for review and
+          comment, with an appropriate subject (e.g., "Request for parameter: example").
+          [[ Note to RFC-EDITOR: The name of the mailing list should be determined in consultation
+          with the IESG and IANA. Suggested name: oauth-ext-review. ]]
+        
+</P>
+<P>
+          Before a period of 14 days has passed, the Designated Expert(s) will either approve or
+          deny the registration request, communicating this decision both to the review list and to
+          IANA. Denials should include an explanation and, if applicable, suggestions as to how to
+          make the request successful. Registration requests that are undetermined for a period
+          longer than 21 days can be brought to the IESG's attention (using the iesg@iesg.org
+          mailing list) for resolution.
+        
+</P>
+<A name="anchor22"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.8.1.1"></A><H3>8.1.1.&nbsp;
+Registration Template</H3>
+
+<P>
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>Parameter name:</DT>
+<DD>
+                The name requested (e.g., "example").
+              
+</DD>
+<DT>Parameter usage location:</DT>
+<DD>
+                The location(s) where parameter can be used. The possible locations are: the
+                end-user authorization endpoint request, the end-user authorization endpoint
+                response, the token endpoint request, the token endpoint response, the
+                <TT>Authorization</TT> header field, or the
+                <TT>WWW-Authenticate</TT> header field.
+              
+</DD>
+<DT>Change controller:</DT>
+<DD>
+                For standards-track RFCs, state "IETF". For others, give the name of the
+                responsible party. Other details (e.g., postal address, e-mail address, home page
+                URI) may also be included.
+              
+</DD>
+<DT>Specification document(s):</DT>
+<DD>
+                Reference to document that specifies the parameter, preferably including a URI that
+                can be used to retrieve a copy of the document. An indication of the relevant
+                sections may also be included, but is not required.
+              
+</DD>
+<DT>Related information:</DT>
+<DD>
+                Optionally, citations to additional documents containing further relevant
+                information.
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<A name="anchor23"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.8.1.2"></A><H3>8.1.2.&nbsp;
+Example</H3>
+
+<P>
+            The following is the parameter registration request for the
+            <TT>scope</TT> parameter as defined in this specification:
+            
+            </P>
+<BLOCKQUOTE class="text"><DL>
+<DT>Parameter name:</DT>
+<DD>
+                scope
+              
+</DD>
+<DT>Parameter usage location:</DT>
+<DD>
+                The end-user authorization endpoint request, the end-user authorization endpoint
+                response, the token endpoint request, the token endpoint response, and the
+                <TT>WWW-Authenticate</TT> header field.
+              
+</DD>
+<DT>Change controller:</DT>
+<DD>
+                IETF
+              
+</DD>
+<DT>Specification document(s):</DT>
+<DD>
+                [[ this document ]]
+              
+</DD>
+<DT>Related information:</DT>
+<DD>
+                None
+              
+</DD>
+</DL></BLOCKQUOTE><P>
+          
+</P>
+<A name="anchor24"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.A"></A><H3>Appendix A.&nbsp;
+Examples</H3>
+
+<P>
+        [[ TBD ]]
+      
+</P>
+<A name="anchor25"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.B"></A><H3>Appendix B.&nbsp;
+Contributors</H3>
+
+<P>
+        The following people contributed to preliminary versions of this document:
+        Blaine Cook (BT), Brian Eaton (Google), Yaron Goland (Microsoft), Brent Goldman (Facebook),
+        Raffi Krikorian (Twitter), Luke Shepard (Facebook), and Allen Tom (Yahoo!). The content and
+        concepts within are a product of the OAuth community, WRAP community, and the OAuth Working
+        Group.
+      
+</P>
+<P>
+        The OAuth Working Group has dozens of very active contributors who proposed ideas and
+        wording for this document, including: [[ If your name is missing or you think someone
+        should be added here, please send Eran a note - don't be shy ]]
+      
+</P>
+<P>
+        Michael Adams, Andrew Arnott, Dirk Balfanz, Brian Campbell, Leah Culver, Brian Ellin,
+        Igor Faynberg, George Fletcher, Evan Gilbert, Justin Hart, John Kemp, Chasen Le Hara,
+        Torsten Lodderstedt, Eve Maler, James Manger, Laurence Miao, Chuck Mortimore,
+        Justin Richer, Peter Saint-Andre, Nat Sakimura, Rob Sayre, Marius Scurtescu, Justin Smith,
+        Jeremy Suriel, and Franklin Tse.
+      
+</P>
+<A name="anchor26"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.C"></A><H3>Appendix C.&nbsp;
+Acknowledgements</H3>
+
+<P>
+        [[ Add OAuth 1.0a authors + WG contributors ]]
+      
+</P>
+<A name="anchor27"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.D"></A><H3>Appendix D.&nbsp;
+Document History</H3>
+
+<P>
+        [[ to be removed by RFC editor before publication as an RFC ]]
+      
+</P>
+<P>
+        -10
+        
+        </P>
+<UL class="text">
+<LI>
+            Fixed typos. Many editorial changes. Rewrote introduction. removed terminology
+            grouping.
+          
+</LI>
+<LI>
+            Allowed POST for end-user authorization endpoint.
+          
+</LI>
+<LI>
+            Fixed token endpoint to not require client authentication.
+          
+</LI>
+<LI>
+            Made URI query and POST body 'oauth_token' parameter optional.
+          
+</LI>
+<LI>
+            Moved all parameter names and values to use underscores.
+          
+</LI>
+<LI>
+            Changed 'basic_credentials' to 'password', 'invalid_client_credentials' and
+            'invalid_client_id' to 'invalid_client'.
+          
+</LI>
+<LI>
+            Added note that access token requests without an access grant should not include
+            a refresh token.
+          
+</LI>
+<LI>
+            Changed scheme name from 'Token' to 'OAuth', simplified request format to simple
+            string for token instead of key=value pair (still supported for extensions).
+          
+</LI>
+<LI>
+            Defined permitted access token string characters (suitable for inclusion in an HTTP
+            header).
+          
+</LI>
+<LI>
+            Added a note about conflicts with previous versions.
+          
+</LI>
+<LI>
+            Moved 'client_id' definition from client authentication to access token endpoint.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -09
+
+        </P>
+<UL class="text">
+<LI>
+            Fixed typos, editorial changes.
+          
+</LI>
+<LI>
+            Added token expiration example.
+          
+</LI>
+<LI>
+            Added scope parameter to end-user authorization endpoint response.
+          
+</LI>
+<LI>
+            Added note about parameters with empty values (same as omitted).
+          
+</LI>
+<LI>
+            Changed parameter values to use '-' instead of '_'. Parameter names still use '_'.
+          
+</LI>
+<LI>
+            Changed authorization endpoint client type to response type with values: code, token,
+            and both.
+          
+</LI>
+<LI>
+            Complete cleanup of error codes. Added support for error description and URI.
+          
+</LI>
+<LI>
+            Add initial extensibility support.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -08
+
+        </P>
+<UL class="text">
+<LI>
+            Renamed verification code to authorization code.
+          
+</LI>
+<LI>
+            Revised terminology, structured section, added new terms.
+          
+</LI>
+<LI>
+            Changed flows to profiles and moved to introduction.
+          
+</LI>
+<LI>
+            Added support for access token rescoping.
+          
+</LI>
+<LI>
+            Cleaned up client credentials section.
+          
+</LI>
+<LI>
+            New introduction overview.
+          
+</LI>
+<LI>
+            Added error code for invalid username and password, and renamed error code to be more
+            consistent.
+          
+</LI>
+<LI>
+            Added access grant type parameter to token endpoint.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -07
+
+        </P>
+<UL class="text">
+<LI>
+            Major rewrite of entire document structure.
+          
+</LI>
+<LI>
+            Removed device profile.
+          
+</LI>
+<LI>
+            Added verification code support to user-agent flow.
+          
+</LI>
+<LI>
+            Removed multiple formats support, leaving JSON as the only format.
+          
+</LI>
+<LI>
+            Changed assertion <TT>assertion_format</TT> parameter to
+            <TT>assertion_type</TT>.
+          
+</LI>
+<LI>
+            Removed <TT>type</TT> parameter from token endpoint.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -06
+
+        </P>
+<UL class="text">
+<LI>
+            Editorial changes, corrections, clarifications, etc.
+          
+</LI>
+<LI>
+            Removed conformance section.
+          
+</LI>
+<LI>
+            Moved authors section to contributors appendix.
+          
+</LI>
+<LI>
+            Added section on native applications.
+          
+</LI>
+<LI>
+            Changed error response to use the requested format. Added support for HTTP
+            <TT>Accept</TT> header.
+          
+</LI>
+<LI>
+            Flipped the order of the web server and user-agent flows.
+          
+</LI>
+<LI>
+            Renamed assertion flow <TT>format</TT> parameter name to
+            <TT>assertion_format</TT> to resolve conflict.
+          
+</LI>
+<LI>
+            Removed the term identifier from token definitions. Added a cryptographic token
+            definition.
+          
+</LI>
+<LI>
+            Added figure titles.
+          
+</LI>
+<LI>
+            Added server response 401 when client tried to authenticate using multiple credentials.
+          
+</LI>
+<LI>
+            Clarified support for TLS alternatives, and added requirement for TLS 1.2 support for
+            token endpoint.
+          
+</LI>
+<LI>
+            Removed all signature and cryptography.
+          
+</LI>
+<LI>
+            Removed all discovery.
+          
+</LI>
+<LI>
+            Updated HTML4 reference.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -05
+
+        </P>
+<UL class="text">
+<LI>
+            Corrected device example.
+          
+</LI>
+<LI>
+            Added client credentials parameters to the assertion flow as OPTIONAL.
+          
+</LI>
+<LI>
+            Added the ability to send client credentials using an HTTP authentication scheme.
+          
+</LI>
+<LI>
+            Initial text for the <TT>WWW-Authenticate</TT> header (also added
+            scope support).
+          
+</LI>
+<LI>
+            Change authorization endpoint to end-user endpoint.
+          
+</LI>
+<LI>
+            In the device flow, change the <TT>user_uri</TT> parameter to
+            <TT>verification_uri</TT> to avoid confusion with the end-user
+            endpoint.
+          
+</LI>
+<LI>
+            Add <TT>format</TT> request parameter and support for XML and
+            form-encoded responses.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -04
+
+        </P>
+<UL class="text">
+<LI>
+            Changed all token endpoints to use <TT>POST</TT>
+          
+</LI>
+<LI>
+            Clarified the authorization server's ability to issue a new refresh token when
+            refreshing a token.
+          
+</LI>
+<LI>
+            Changed the flow categories to clarify the autonomous group.
+          
+</LI>
+<LI>
+            Changed client credentials language not to always be server-issued.
+          
+</LI>
+<LI>
+            Added a <TT>scope</TT> response parameter.
+          
+</LI>
+<LI>
+            Fixed typos.
+          
+</LI>
+<LI>
+            Fixed broken document structure.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -03
+
+        </P>
+<UL class="text">
+<LI>
+            Fixed typo in JSON error examples.
+          
+</LI>
+<LI>
+            Fixed general typos.
+          
+</LI>
+<LI>
+            Moved all flows sections up one level.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -02
+
+        </P>
+<UL class="text">
+<LI>
+            Removed restriction on <TT>redirect_uri</TT> including a query.
+          
+</LI>
+<LI>
+            Added <TT>scope</TT> parameter.
+          
+</LI>
+<LI>
+            Initial proposal for a JSON-based token response format.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -01
+
+        </P>
+<UL class="text">
+<LI>
+            Editorial changes based on feedback from Brian Eaton, Bill Keenan, and Chuck Mortimore.
+          
+</LI>
+<LI>
+            Changed device flow <TT>type</TT> parameter values and switch to use
+            only the token endpoint.
+          
+</LI>
+</UL><P>
+      
+</P>
+<P>
+        -00
+
+        </P>
+<UL class="text">
+<LI>
+            Initial draft based on a combination of WRAP and OAuth 1.0a.
+          
+</LI>
+</UL><P>
+      
+</P>
+<A name="rfc.references"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.9"></A><H3>9.&nbsp;
+References</H3>
+
+<A name="rfc.references1"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<H3>9.1.&nbsp;Normative References</H3>
+<TABLE width="99%" border="0">
+<TBODY><TR><TD class="author-text" valign="top"><A name="I-D.ietf-httpbis-p1-messaging">[I-D.ietf-httpbis-p1-messaging]</A></TD>
+<TD class="author-text">Fielding, R., Gettys, J., Mogul, J., Nielsen, H., Masinter, L., Leach, P., Berners-Lee, T., and J. Reschke, “<A href="http://www.ietf.org/internet-drafts/draft-ietf-httpbis-p1-messaging-09.txt">HTTP/1.1, part 1: URIs, Connections, and Message Parsing</A>,” draft-ietf-httpbis-p1-messaging-09 (work in progress), March&nbsp;2010 (<A href="http://www.ietf.org/internet-drafts/draft-ietf-httpbis-p1-messaging-09.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="NIST FIPS-180-3">[NIST FIPS-180-3]</A></TD>
+<TD class="author-text">National Institute of Standards and Technology, “<A href="http://csrc.nist.gov/publications/fips/fips180-3/fips180-3_final.pdf">Secure Hash Standard (SHS). FIPS PUB 180-3, October 2008</A>.”</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC2045">[RFC2045]</A></TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=ned@innosoft.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Freed, N.</A> and <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=nsb@nsb.fv.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">N. Borenstein</A>, “<A href="http://tools.ietf.org/html/rfc2045">Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies</A>,” RFC&nbsp;2045, November&nbsp;1996 (<A href="http://www.rfc-editor.org/rfc/rfc2045.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC2104">[RFC2104]</A></TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=hugo@watson.ibm.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Krawczyk, H.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=mihir@cs.ucsd.edu&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Bellare, M.</A>, and <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=canetti@watson.ibm.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">R. Canetti</A>, “<A href="http://tools.ietf.org/html/rfc2104">HMAC: Keyed-Hashing for Message Authentication</A>,” RFC&nbsp;2104, February&nbsp;1997 (<A href="http://www.rfc-editor.org/rfc/rfc2104.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC2119">[RFC2119]</A></TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=sob@harvard.edu&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Bradner, S.</A>, “<A href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</A>,” BCP&nbsp;14, RFC&nbsp;2119, March&nbsp;1997 (<A href="http://www.rfc-editor.org/rfc/rfc2119.txt">TXT</A>, <A href="http://xml.resource.org/public/rfc/html/rfc2119.html">HTML</A>, <A href="http://xml.resource.org/public/rfc/xml/rfc2119.xml">XML</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC2616">[RFC2616]</A></TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=fielding@ics.uci.edu&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Fielding, R.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=jg@w3.org&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Gettys, J.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=mogul@wrl.dec.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Mogul, J.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=frystyk@w3.org&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Frystyk, H.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=masinter@parc.xerox.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Masinter, L.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=paulle@microsoft.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Leach, P.</A>, and <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=timbl@w3.org&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">T. Berners-Lee</A>, “<A href="http://tools.ietf.org/html/rfc2616">Hypertext Transfer Protocol -- HTTP/1.1</A>,” RFC&nbsp;2616, June&nbsp;1999 (<A href="http://www.rfc-editor.org/rfc/rfc2616.txt">TXT</A>, <A href="http://www.rfc-editor.org/rfc/rfc2616.ps">PS</A>, <A href="http://www.rfc-editor.org/rfc/rfc2616.pdf">PDF</A>, <A href="http://xml.resource.org/public/rfc/html/rfc2616.html">HTML</A>, <A href="http://xml.resource.org/public/rfc/xml/rfc2616.xml">XML</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC2617">[RFC2617]</A></TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=john@math.nwu.edu&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Franks, J.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=pbaker@verisign.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Hallam-Baker, P.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=jeff@AbiSource.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Hostetler, J.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=lawrence@agranat.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Lawrence, S.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=paulle@microsoft.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Leach, P.</A>, Luotonen, A., and <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=stewart@OpenMarket.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">L. Stewart</A>, “<A href="http://tools.ietf.org/html/rfc2617">HTTP Authentication: Basic and Digest Access Authentication</A>,” RFC&nbsp;2617, June&nbsp;1999 (<A href="http://www.rfc-editor.org/rfc/rfc2617.txt">TXT</A>, <A href="http://xml.resource.org/public/rfc/html/rfc2617.html">HTML</A>, <A href="http://xml.resource.org/public/rfc/xml/rfc2617.xml">XML</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC2818">[RFC2818]</A></TD>
+<TD class="author-text">Rescorla, E., “<A href="http://tools.ietf.org/html/rfc2818">HTTP Over TLS</A>,” RFC&nbsp;2818, May&nbsp;2000 (<A href="http://www.rfc-editor.org/rfc/rfc2818.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC3023">[RFC3023]</A></TD>
+<TD class="author-text">Murata, M., St. Laurent, S., and D. Kohn, “<A href="http://tools.ietf.org/html/rfc3023">XML Media Types</A>,” RFC&nbsp;3023, January&nbsp;2001 (<A href="http://www.rfc-editor.org/rfc/rfc3023.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC3447">[RFC3447]</A></TD>
+<TD class="author-text">Jonsson, J. and B. Kaliski, “<A href="http://tools.ietf.org/html/rfc3447">Public-Key Cryptography Standards (PKCS) #1: RSA Cryptography Specifications Version 2.1</A>,” RFC&nbsp;3447, February&nbsp;2003 (<A href="http://www.rfc-editor.org/rfc/rfc3447.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC3629">[RFC3629]</A></TD>
+<TD class="author-text">Yergeau, F., “<A href="http://tools.ietf.org/html/rfc3629">UTF-8, a transformation format of ISO 10646</A>,” STD&nbsp;63, RFC&nbsp;3629, November&nbsp;2003 (<A href="http://www.rfc-editor.org/rfc/rfc3629.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC3986">[RFC3986]</A></TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=timbl@w3.org&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Berners-Lee, T.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=fielding@gbiv.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Fielding, R.</A>, and <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=LMM@acm.org&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">L. Masinter</A>, “<A href="http://tools.ietf.org/html/rfc3986">Uniform Resource Identifier (URI): Generic Syntax</A>,” STD&nbsp;66, RFC&nbsp;3986, January&nbsp;2005 (<A href="http://www.rfc-editor.org/rfc/rfc3986.txt">TXT</A>, <A href="http://xml.resource.org/public/rfc/html/rfc3986.html">HTML</A>, <A href="http://xml.resource.org/public/rfc/xml/rfc3986.xml">XML</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC4627">[RFC4627]</A></TD>
+<TD class="author-text">Crockford, D., “<A href="http://tools.ietf.org/html/rfc4627">The application/json Media Type for JavaScript Object Notation (JSON)</A>,” RFC&nbsp;4627, July&nbsp;2006 (<A href="http://www.rfc-editor.org/rfc/rfc4627.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC5226">[RFC5226]</A></TD>
+<TD class="author-text">Narten, T. and H. Alvestrand, “<A href="http://tools.ietf.org/html/rfc5226">Guidelines for Writing an IANA Considerations Section in RFCs</A>,” BCP&nbsp;26, RFC&nbsp;5226, May&nbsp;2008 (<A href="http://www.rfc-editor.org/rfc/rfc5226.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC5246">[RFC5246]</A></TD>
+<TD class="author-text">Dierks, T. and E. Rescorla, “<A href="http://tools.ietf.org/html/rfc5246">The Transport Layer Security (TLS) Protocol Version 1.2</A>,” RFC&nbsp;5246, August&nbsp;2008 (<A href="http://www.rfc-editor.org/rfc/rfc5246.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="RFC5849">[RFC5849]</A></TD>
+<TD class="author-text">Hammer-Lahav, E., “<A href="http://tools.ietf.org/html/rfc5849">The OAuth 1.0 Protocol</A>,” RFC&nbsp;5849, April&nbsp;2010 (<A href="http://www.rfc-editor.org/rfc/rfc5849.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="W3C.REC-html401-19991224">[W3C.REC-html401-19991224]</A></TD>
+<TD class="author-text">Raggett, D., Hors, A., and I. Jacobs, “<A href="http://www.w3.org/TR/1999/REC-html401-19991224">HTML 4.01 Specification</A>,” World Wide Web Consortium Recommendation&nbsp;REC-html401-19991224, December&nbsp;1999 (<A href="http://www.w3.org/TR/1999/REC-html401-19991224">HTML</A>).</TD></TR>
+</TBODY></TABLE>
+
+<A name="rfc.references2"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<H3>9.2.&nbsp;Informative References</H3>
+<TABLE width="99%" border="0">
+<TBODY><TR><TD class="author-text" valign="top"><A name="I-D.hammer-oauth">[I-D.hammer-oauth]</A></TD>
+<TD class="author-text">Hammer-Lahav, E., “<A href="http://www.ietf.org/internet-drafts/draft-hammer-oauth-10.txt">The OAuth 1.0 Protocol</A>,” draft-hammer-oauth-10 (work in progress), February&nbsp;2010 (<A href="http://www.ietf.org/internet-drafts/draft-hammer-oauth-10.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="I-D.hardt-oauth">[I-D.hardt-oauth]</A></TD>
+<TD class="author-text">Hardt, D., Tom, A., Eaton, B., and Y. Goland, “<A href="http://www.ietf.org/internet-drafts/draft-hardt-oauth-01.txt">OAuth Web Resource Authorization Profiles</A>,” draft-hardt-oauth-01 (work in progress), January&nbsp;2010 (<A href="http://www.ietf.org/internet-drafts/draft-hardt-oauth-01.txt">TXT</A>).</TD></TR>
+<TR><TD class="author-text" valign="top"><A name="OASIS.saml-core-2.0-os">[OASIS.saml-core-2.0-os]</A></TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=cantor.2@osu.edu&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Cantor, S.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=John.Kemp@nokia.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Kemp, J.</A>, <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=rphilpott@rsasecurity.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">Philpott, R.</A>, and <A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=eve.maler@sun.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">E. Maler</A>, “<A href="http://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf">Assertions and Protocol for the OASIS Security Assertion Markup Language
+            (SAML) V2.0</A>,” OASIS Standard&nbsp;saml-core-2.0-os, March&nbsp;2005.</TD></TR>
+</TBODY></TABLE>
+
+<A name="rfc.authors"></A><BR><HR>
+<TABLE summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><TBODY><TR><TD class="TOCbug"><A href="http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<H3>Authors' Addresses</H3>
+<TABLE width="99%" border="0" cellpadding="0" cellspacing="0">
+<TBODY><TR><TD class="author-text">&nbsp;</TD>
+<TD class="author-text">Eran Hammer-Lahav (editor)</TD></TR>
+<TR><TD class="author-text">&nbsp;</TD>
+<TD class="author-text">Yahoo!</TD></TR>
+<TR><TD class="author" align="right">Email:&nbsp;</TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=eran@hueniverse.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">eran@hueniverse.com</A></TD></TR>
+<TR><TD class="author" align="right">URI:&nbsp;</TD>
+<TD class="author-text"><A href="http://hueniverse.com/">http://hueniverse.com</A></TD></TR>
+<TR cellpadding="3"><TD>&nbsp;</TD><TD>&nbsp;</TD></TR>
+<TR><TD class="author-text">&nbsp;</TD>
+<TD class="author-text">David Recordon</TD></TR>
+<TR><TD class="author-text">&nbsp;</TD>
+<TD class="author-text">Facebook</TD></TR>
+<TR><TD class="author" align="right">Email:&nbsp;</TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=davidrecordon@facebook.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">davidrecordon@facebook.com</A></TD></TR>
+<TR><TD class="author" align="right">URI:&nbsp;</TD>
+<TD class="author-text"><A href="http://www.davidrecordon.com/">http://www.davidrecordon.com/</A></TD></TR>
+<TR cellpadding="3"><TD>&nbsp;</TD><TD>&nbsp;</TD></TR>
+<TR><TD class="author-text">&nbsp;</TD>
+<TD class="author-text">Dick Hardt</TD></TR>
+<TR><TD class="author-text">&nbsp;</TD>
+<TD class="author-text">Microsoft</TD></TR>
+<TR><TD class="author" align="right">Email:&nbsp;</TD>
+<TD class="author-text"><A href="javascript:void(0)" onclick="window.open(&#39;http://mail.google.com/mail/?view=cm&amp;fs=1&amp;tf=1&amp;to=dick.hardt@gmail.com&#39;,&#39;Compose new message&#39;,&#39;width=640,height=480&#39;)" rel="noreferrer">dick.hardt@gmail.com</A></TD></TR>
+<TR><TD class="author" align="right">URI:&nbsp;</TD>
+<TD class="author-text"><A href="http://dickhardt.org/">http://dickhardt.org/</A></TD></TR>
+</TBODY></TABLE>
+
+</BODY><STYLE type="text/css">#AdContainer,#RadAd_Skyscraper,#ad-frame,#bbccom_leaderboard,#bbccom_mpu,#center_banner,#footer_adcode,#hbBHeaderSpon,#header_adcode,#hiddenHeaderSpon,#navbar_adcode,#pagelet_adbox,#rightAds,#rightcolumn_adcode,#top-advertising,#topMPU,#tracker_advertorial,.ad-now,.adbox,.adspot,.dfpad,.prWrap,.sponsored,[id^="ad_block"],[id^="adbrite"],[id^="dclkAds"],[id^="konaLayer"],[id^="ew"][id$="_bannerDiv"],a.kLink span[id^="preLoadWrap"][class="preLoadWrap"],A[href^="http://adserver.adpredictive.com"],A[href^="http://ad."][href*=".doubleclick.net/"],div[class^="dms_ad_IDS"],DIV[id="adxLeaderboard"],DIV[id="rm_container"],div[id^="sponsorads"],div[id^="y5_direct"],DIV[id="FFN_Banner_Holder"],DIV[id="FFN_imBox_Container"],DIV[id="p360-format-box"],div[id="tooltipbox"][class^="itxt"],div[id^="adKontekst_"],div[id^="google_ads_div"],div[id^="kona_"][id$="_wrapper"],div[class="wnDVUtilityBlock"],embed[flashvars*="AdID"],embed[id="Advertisement"][name="Advertisement"],iframe[class="chitikaAdBlock"],iframe[id^="dapIfM"],iframe[name^="AdBrite"],iframe[name^="google_ads_"],iframe[src*="clicksor.com"],img[src*="clicksor.com"],IMG[src^="http://cdn.adnxs.com"],ispan#ab_pointer,object[id="flashad"],object[id="ve_threesixty_swf"][name="ve_threesixty_swf"],[src*="sixsigmatraffic.com"],div#dir_ads_site,div#tads table[align="center"][width="100%"],div#rhs div#rhs_block table#mbEnd,#A9AdsMiddleBoxTop,#A9AdsOutOfStockWidgetTop,#A9AdsServicesWidgetTop,#AD_CONTROL_22,#ADsmallWrapper,#Ad1,#Ad2,#Ad3Left,#Ad3Right,#AdBanner_F1,#AdBar1,#AdContainerTop,#AdHeader,#AdMiddle,#AdRectangle,#AdSenseDiv,#AdShowcase_F1,#AdSky23,#AdSkyscraper,#AdSponsor_SF,#AdTargetControl1_iframe,#AdText,#Ad_Block,#Ad_Center1,#Ad_Top,#Adbanner,#Adrectangle,#AdsContent,#AdsWrap,#AdvertMPU23b,#AdvertiseFrame,#Advertisement,#Advertorial,#BannerAdvert,#BigBoxAd,#CompanyDetailsNarrowGoogleAdsPresentationControl,#CompanyDetailsWideGoogleAdsPresentationControl,#ContentAd,#ContentAd1,#ContentAd2,#ContentAdPlaceHolder1,#ContentAdPlaceHolder2,#ContentAdXXL,#ContentPolepositionAds_Result,#FooterAd,#FooterAdContainer,#GoogleAdsense,#HEADERAD,#HOME_TOP_RIGHT_BOXAD,#HeaderAdsBlock,#HeaderAdsBlockFront,#HeaderBannerAdSpacer,#HeaderTextAd,#HeroAd,#HomeAd1,#HouseAd,#ID_Ad_Sky,#Journal_Ad_125,#Journal_Ad_300,#LeftAd,#LeftAdF1,#LeftAdF2,#LowerContentAd,#PREFOOTER_LEFT_BOXAD,#PREFOOTER_RIGHT_BOXAD,#PageLeaderAd,#RightAd,#RightSponsoredAd,#SectionAd300-250,#SidebarAdContainer,#SkyAd,#SpecialAds,#SponsoredAd,#TOP_ADROW,#TOP_RIGHT_BOXAD,#TopAdPos,#VM-MPU-adspace,#VM-footer-adspace,#VM-header-adspace,#VM-header-adwrap,#XEadLeaderboard,#XEadSkyscraper,#_ads,#ad-120x600-sidebar,#ad-160x600,#ad-160x600-sidebar,#ad-250x300,#ad-300,#ad-300x250,#ad-300x250-sidebar,#ad-300x250Div,#ad-728,#ad-article,#ad-banner,#ad-bottom,#ad-bottom-wrapper,#ad-colB-1,#ad-column,#ad-container,#ad-footer,#ad-footprint-160x600,#ad-front-footer,#ad-front-sponsoredlinks,#ad-halfpage,#ad-label,#ad-leaderboard,#ad-leaderboard-bottom,#ad-leaderboard-spot,#ad-leaderboard-top,#ad-left,#ad-list-row,#ad-lrec,#ad-medium-rectangle,#ad-middlethree,#ad-middletwo,#ad-module,#ad-mpu,#ad-mpu1-spot,#ad-mpu2-spot,#ad-placard,#ad-rectangle,#ad-righttop,#ad-side-text,#ad-skyscraper,#ad-slug-wrapper,#ad-space,#ad-splash,#ad-spot,#ad-target,#ad-target-Leaderbord,#ad-teaser,#ad-top,#ad-top-text-low,#ad-tower,#ad-trailerboard-spot,#ad-typ1,#ad-west,#ad-wrap,#ad-wrap-right,#ad-wrapper,#ad-wrapper1,#ad-yahoo-simple,#ad1,#ad125BL,#ad125BR,#ad125TL,#ad125TR,#ad125x125,#ad160x600,#ad160x600right,#ad1Sp,#ad2,#ad2Sp,#ad3,#ad300,#ad300-250,#ad300X250,#ad300_x_250,#ad300x150,#ad300x250,#ad300x250Module,#ad300x60,#ad300x600,#ad300x600_callout,#ad336,#ad336x280,#ad375x85,#ad468,#ad468x60,#ad526x250,#ad600,#ad7,#ad728,#ad728Wrapper,#ad728x90,#adB,#adBadges,#adBanner,#adBanner120x600,#adBannerTable,#adBannerTop,#adBar,#adBlock125,#adBlocks,#adBox,#adContainer,#adDiv,#adFps,#adFtofrs,#adGallery,#adGroup1,#adHeader,#adL,#adLB,#adLeaderboard,#adMPU,#adMiddle0Frontpage,#adMiniPremiere,#adP,#adPlaceHolderRight,#adRight,#adSenseModule,#adServer_marginal,#adSidebar,#adSidebarSq,#adSky,#adSkyscraper,#adSlider,#adSpace3,#adSpace300_ifrMain,#adSpace4,#adSpace5,#adSpace6,#adSpace7,#adSpace_footer,#adSpace_top,#adSpecial,#adSpot-Leader,#adSpot-banner,#adSpot-mrec1,#adSpot-sponsoredlinks,#adSpot-textbox1,#adSpot-widestrip,#adSpotAdvertorial,#adSpotIsland,#adSpotSponsoredLinks,#adSquare,#adStaticA,#adStrip,#adSuperPremiere,#adTableCell,#adTag1,#adTag2,#adText,#adText_container,#adTop,#adTopboxright,#adUnit,#adWrapper,#adZoneTop,#ad_160x160,#ad_160x600,#ad_190x90,#ad_300,#ad_300_250,#ad_300x250,#ad_468_60,#ad_5,#ad_728_foot,#ad_728x90,#ad_A,#ad_B,#ad_Banner,#ad_C,#ad_C2,#ad_D,#ad_E,#ad_F,#ad_G,#ad_H,#ad_I,#ad_J,#ad_K,#ad_L,#ad_M,#ad_N,#ad_O,#ad_P,#ad_YieldManager-300x250,#ad_anchor,#ad_banner,#ad_banner_top,#ad_bar,#ad_block_1,#ad_block_2,#ad_bottom,#ad_box_colspan,#ad_branding,#ad_bs_area,#ad_center_monster,#ad_container,#ad_content_wrap,#ad_feature,#ad_footer,#ad_haha_1,#ad_haha_4,#ad_halfpage,#ad_head,#ad_header,#ad_horseshoe_left,#ad_horseshoe_right,#ad_horseshoe_spacer,#ad_horseshoe_top,#ad_hotpots,#ad_island,#ad_label,#ad_layer2,#ad_leader,#ad_leaderBoard,#ad_leaderboard,#ad_lwr_square,#ad_medium_rectangle,#ad_medium_rectangular,#ad_middle,#ad_mpu,#ad_mrcontent,#ad_overlay,#ad_play_300,#ad_rect,#ad_rect_body,#ad_rect_bottom,#ad_rectangle,#ad_related_links_div,#ad_related_links_div_program,#ad_replace_div_1,#ad_report_leaderboard,#ad_report_rectangle,#ad_right,#ad_right_main,#ad_ros_tower,#ad_rr_1,#ad_sidebar1,#ad_sidebar2,#ad_sidebar3,#ad_skyscraper,#ad_slot_livesky,#ad_space,#ad_square,#ad_ss,#ad_term_bottom_place,#ad_top,#ad_top_holder,#ad_tp_banner_1,#ad_tp_banner_2,#ad_vertical,#ad_window,#ad_wrapper,#adbanner,#adbnr,#adboard,#adbottom,#adbox,#adbox2,#adclear,#adcode1,#adcode2,#adcode3,#adcode4,#adcolumnwrapper,#adcontainer,#adcontainsm,#adcontrolPushSite,#addiv-bottom,#addiv-top,#adfooter_728x90,#adframe:not(frameset),#adhead,#adhead_g,#adheader,#adhome,#adiframe1_iframe,#adiframe2_iframe,#adiframe3_iframe,#adimg,#adition_content_ad,#adlabel,#adlabelFooter,#adleaderboard,#adlinks,#adlinkws,#admid,#admiddle3center,#admiddle3left,#adposition,#adposition-C,#adposition-FPMM,#adposition2,#adposition3,#adposition4,#adrectanglea,#adrectangleb,#adright,#adright2,#ads,#ads-468,#ads-area,#ads-block,#ads-bot,#ads-bottom,#ads-dell,#ads-horizontal,#ads-indextext,#ads-leaderboard1,#ads-lrec,#ads-prices,#ads-rhs,#ads-top,#ads160left,#ads2,#ads300,#ads336x280,#ads7,#ads728bottom,#ads728top,#ads790,#adsDisplay,#adsID,#ads_160,#ads_300,#ads_728,#ads_belowforumlist,#ads_belownav,#ads_bottom_outer,#ads_catDiv,#ads_footer,#ads_right,#ads_sidebar_roadblock,#ads_top,#adsbottom,#adscolumn,#adsense,#adsense-text,#adsenseWrap,#adsense_inline,#adsense_leaderboard,#adsense_placeholder_2,#adsensetopplay,#adskyscraper,#adslot,#adsonar,#adspace,#adspace-300x250,#adspace300x250,#adspaceBox,#adspaceBox300,#adspace_header,#adspot-a,#adsright,#adstop,#adt,#adtech_googleslot_03c,#adtech_takeover,#adtop,#adv-masthead,#adv_google_300,#adv_google_728,#adv_top_banner_wrapper,#adv_wide_banner,#adver1,#adver2,#adver3,#adver4,#advert,#advert-1,#advert-boomer,#advert-display,#advert-header,#advert-leaderboard,#advert-top,#advert1,#advertBanner,#advert_250x250,#advert_box,#advert_leaderboard,#advert_lrec_format,#advert_mpu,#advertbox,#advertbox2,#advertbox3,#advertbox4,#adverthome,#advertise,#advertise-now,#advertise1,#advertisement,#advertisement160x600,#advertisement728x90,#advertisementLigatus,#advertisementPrio2,#advertiser-container,#advertiserLinks,#advertising,#advertising-skyscraper,#advertisingModule160x600,#advertisingModule728x90,#advertorial,#adwhitepaperwidget,#adwin_rec,#adwith,#adwords-4-container,#adwrapper,#adxtop,#adzerk,#adzoneBANNER,#agi-ad300x250,#agi-ad300x250overlay,#agi-sponsored,#anchorAd,#annoying_ad,#ap_adframe,#araHealthSponsorAd,#article-ad-container,#article-box-ad,#articleAdReplacement,#articleSideAd,#article_ad,#article_box_ad,#asinglead,#atlasAdDivGame,#banner-ad,#banner-ad-container,#banner-ads,#banner468x60,#banner728x90,#bannerAd,#bannerAdTop,#bannerAd_ctr,#banner_ad,#banner_ads,#banner_topad,#bannerad,#bannerad2,#bbccom_mpu,#bbo_ad1,#bg_YieldManager-300x250,#bigAd,#bigBoxAd,#bigadbox,#bigadspot,#billboard_ad,#block-ad_cube-1,#block-thewrap_ads_250x300-0,#block_advert,#blox-big-ad,#blox-halfpage-ad,#blox-tile-ad,#botad,#bott_ad2,#bott_ad2_300,#bottom-ad-container,#bottom-ads,#bottomAd,#bottomAdCCBucket,#bottomAdContainer,#bottomAdSense,#bottomAdSenseDiv,#bottomAds,#bottomRightAd,#bottomRightAdSpace,#bottom_ad,#bottom_ad_area,#bottom_ads,#bottom_banner_ad,#bottom_overture,#bottom_sponsor_ads,#bottom_sponsored_links,#bottom_text_ad,#bottomad,#bottomadsense,#box-googleadsense-1,#box-googleadsense-r,#box1ad,#boxAd300,#boxAdContainer,#box_ad,#box_mod_googleadsense,#boxad1,#boxad2,#boxad3,#boxad4,#boxad5,#bps-header-ad-container,#btr_horiz_ad,#burn_header_ad,#button-ads-horizontal,#button-ads-vertical,#button_ad_container,#button_ad_wrap,#cellAd,#channel_ad,#channel_ads,#ciHomeRHSAdslot,#circ_ad,#cnnRR336ad,#cnnTopAd,#colRightAd,#column4-google-ads,#commercial_ads,#common_right_lower_player_adspace,#common_right_player_adspace,#common_top_adspace,#containerLocalAds,#containerMrecAd,#content-ad-header,#contentAd,#content_ad,#content_ad_square,#content_ad_top,#content_ads_content,#content_box_300body_sponsoredoffers,#content_box_adright300_google,#contentad,#contentad_imtext,#contentad_right,#contentads,#contentinlineAd,#contextual-ads-block,#contextualad,#coverads,#ctl00_BottomAd,#ctl00_LHTowerAd,#ctl00_LeftHandAd,#ctl00_MasterHolder_IBanner_adHolder,#ctl00_TopAd,#ctl00_TowerAd,#ctl00_VBanner_adHolder,#ctl00_adFooter,#ctl00_atop_bt,#ctl00_cphMain_hlAd1,#ctl00_cphMain_hlAd2,#ctl00_cphMain_hlAd3,#ctl00_ctl00_MainPlaceHolder_itvAdSkyscraper,#ctl00_ctl00_ctl00_Main_Main_PlaceHolderGoogleTopBanner_MPTopBannerAd,#ctl00_ctl00_ctl00_Main_Main_SideBar_MPSideAd,#ctl00_ctl00_ctl00_tableAdsTop,#ctl00_m_skinTracker_m_adLBL,#ctl00_phCrackerMain_ucAffiliateAdvertDisplayMiddle_pnlAffiliateAdvert,#ctl00_phCrackerMain_ucAffiliateAdvertDisplayRight_pnlAffiliateAdvert,#ctrlsponsored,#cubeAd,#cube_ads,#cube_ads_inner,#cubead,#cubead-2,#dc-display-right-ad-1,#dcol-sponsored,#defer-adright,#detail_page_vid_topads,#divAd,#divAdBox,#divWrapper_Ad,#div_video_ads,#dlads,#dni-header-ad,#download_ads,#ds-mpu,#editorsmpu,#evotopTen_advert,#exads,#featuread,#featuredAdContainer2,#featuredAds,#feed_links_ad_container,#first_ad_unit,#firstad,#fl_hdrAd,#footer-ad,#footer-sponsored,#footerAd,#footerAdDiv,#footerAds,#footerAdverts,#footer_ad,#footer_ad_block,#footer_ads,#footer_adspace,#footer_text_ad,#footerad,#fr_ad_center,#frnContentAd,#from_our_sponsors,#front_advert,#front_mpu,#ft-ad,#ft-ad-1,#ft-ad-container,#ft_mpu,#fusionad,#fw-advertisement,#g_ad,#g_adsense,#ga_300x250,#gad,#gallery-ad-m0,#gallery_ads,#game-info-ad,#global_header_ad_area,#gmi-ResourcePageAd,#gmi-ResourcePageLowerAd,#google-ad,#google-ad-art,#google-ad-tower,#google-ads,#google-ads-bottom,#google-ads-left-side,#google-adsense-mpusize,#googleAd,#googleAds,#googleAdsense,#googleAdsenseBanner,#googleAdsenseBannerBlog,#googleAdwordsModule,#googleAfcContainer,#googleShoppingAdsRight,#googleShoppingAdsTop,#google_ad,#google_ad_test,#google_ads,#google_ads_frame1,#google_ads_test,#googlead,#googleads,#googlesponsor,#grid_ad,#gsyadrectangleload,#gsyadrightload,#gsyadtop,#gsyadtopload,#gtopadvts,#halfPageAd,#halfe-page-ad-box,#hdtv_ad_ss,#head-ad,#head_advert,#header-ad,#header-ads,#header-advert,#headerAd,#headerAdBackground,#headerAdContainer,#headerAdWrap,#headerAdsWrapper,#headerTopAd,#header_ad,#header_adcode,#header_ads,#header_advertisement_top,#header_leaderboard_ad_container,#headerad,#headeradbox,#headline_ad,#hiddenadAC,#homeTopRightAd,#home_ad,#home_contentad,#home_spensoredlinks,#homepage-ad,#homepage_right_ad,#homepage_right_ad_container,#hometop_234x60ad,#hor_ad,#horizontal-banner-ad,#horizontal_ad,#horizontal_ad_top,#horizontalads,#houseAd,#hp-store-ad,#hpV2_300x250Ad,#hpV2_googAds,#icePage_SearchLinks_AdRightDiv,#icePage_SearchLinks_DownloadToolbarAdRightDiv,#indexad,#inlinead,#inlinegoogleads,#inner-advert-row,#insider_ad_wrapper,#instoryad,#int-ad,#interstitial_ad_wrapper,#islandAd,#j_ad,#jmp-ad-buttons,#joead,#joead2,#ka_adRightSkyscraperWide,#landing-adserver,#largead,#lateAd,#lb-sponsor-left,#lb-sponsor-right,#leader-board-ad,#leader-sponsor,#leaderAdContainer,#leaderad,#leaderad_section,#leaderboard-ad,#leaderboard-bottom-ad,#leaderboard_ad,#left-ad-skin,#leftAdContainer,#leftAd_rdr,#leftAdvert,#leftSectionAd300-100,#left_ad,#left_adspace,#leftad,#leftads,#lg-banner-ad,#linkAds,#live-ad,#longAdSpace,#lowerthirdad,#mBannerAd,#main-ad,#main-ad160x600,#main-ad160x600-img,#main-ad728x90,#mainAd,#mainAdUnit,#mainAdvert,#main_ad,#main_rec_ad,#mastAdvert,#mastad,#masthead_ad,#masthead_topad,#medRecAd,#media_ad,#menuAds,#mi_story_assets_ad,#mid-ad300x250,#mid-table-ad,#mid_ad_title,#mid_mpu,#middlead,#middleads,#midrect_ad,#midstrip_ad,#mini-ad,#module-google_ads,#module_ad,#module_box_ad,#moogleAd,#most_popular_ad,#mpu,#mpu-advert,#mpuAd,#mpuDiv,#mpuWrapper,#mpuWrapperAd,#mpu_banner,#mpu_holder,#mpu_text_ad,#mpuad,#mrecAdContainer,#ms_ad,#msad,#multiLinkAdContainer,#n_sponsor_ads,#namecom_ad_hosting_main,#narrow_ad_unit,#natadad300x250,#national_microlink_ads,#navi_banner_ad_780,#nba300Ad,#nbaMidAds,#nbaVid300Ad,#new_topad,#ng_rtcol_ad,#noresultsads,#northad,#oanda_ads,#onespot-ads,#p-googleadsense,#page-header-ad,#pageAds,#pageAdsDiv,#page_content_top_ad,#pcworldAdBottom,#pcworldAdTop,#pinball_ad,#player_ad,#player_ads,#portlet-advertisement-left,#portlet-advertisement-right,#post5_adbox,#post_ad,#priceGrabberAd,#print_ads,#printads,#product-adsense,#promo-ad,#promoAds,#ps-vertical-ads,#pub468x60,#publicidad,#pushdown_ad,#r1SoftAd,#rail_ad1,#rail_ad2,#realEstateAds,#rect_ad,#rectangle-ad,#rectangle_ad,#refine-300-ad,#region-top-ad,#rh-ad-container,#rh_tower_ad,#rhsadvert,#right-ad,#right-ad-skin,#right-box-ad,#rightAd,#rightAd300x250,#rightAdColumn,#rightAd_rdr,#rightColAd,#rightColumnMpuAd,#rightColumnSkyAd,#right_ad_wrapper,#right_ads,#right_advertisement,#right_advertising,#right_column_ads,#rightad,#rightadvertbar-doubleclickads,#rightbar-ad,#rightside_ad,#rm_ad_text,#ros_ad,#rotatingads,#row2AdContainer,#rtMod_ad,#sAdsBox,#sb-ad-sq,#sb_advert,#search-google-ads,#search_ads,#secondBoxAdContainer,#section-container-ddc_ads,#section_advertorial_feature,#servfail-ads,#sew-ad1,#shoppingads,#show-ad,#side-ad,#side-ad-container,#sideAd,#sideBarAd,#side_ad_wrapper,#side_ads_by_google,#sidead,#sidebar-125x125-ads,#sidebar-125x125-ads-below-index,#sidebar-ad,#sidebar-ad-boxes,#sidebar-ad-space,#sidebar-ad-wrap,#sidebar-ads,#sidebar2ads,#sidebar_ad_widget,#sidebar_ads,#sidebar_sponsoredresult_body,#sidebarad,#sideline-ad,#single-mpu,#singlead,#site-leaderboard-ads,#site_top_ad,#sky-ad,#skyAd,#skyScrapperAd,#sky_ad,#sky_advert,#skyscraper-ad,#skyscraperAd,#skyscraper_ad,#skyscraper_advert,#sliderAdHolder,#slideshow_ad_300x250,#sm-banner-ad,#small_ad,#smallerAd,#speeds_ads,#speeds_ads_fstitem,#sphereAd,#splinks,#sponLinkDiv_1,#sponlink,#sponsAds,#sponsLinks,#spons_left,#sponseredlinks,#sponsor-search,#sponsorAd1,#sponsorAd2,#sponsorAdDiv,#sponsorLinks,#sponsorTextLink,#sponsor_banderole,#sponsor_box,#sponsor_deals,#sponsor_panSponsor,#sponsored,#sponsored-ads,#sponsored-features,#sponsored-links,#sponsored-resources,#sponsored1,#sponsoredBox1,#sponsoredBox2,#sponsoredLinks,#sponsoredList,#sponsoredResults,#sponsoredSiteMainline,#sponsoredSiteSidebar,#sponsored_ads_v4,#sponsored_content,#sponsored_game_row_listing,#sponsored_links,#sponsoredlinks,#sponsoredlinks_cntr,#sponsoredresults_top,#sponsorlink,#spotlightAds,#spotlightad,#squareAd,#squareAdSpace,#square_ad,#start_middle_container_advertisment,#sticky-ad,#stickyBottomAd,#story-ad-a,#story-ad-b,#story-sponsoredlinks,#storyAd,#storyAdWrap,#subpage-ad-right,#subpage-ad-top,#swads,#synch-ad,#tabAdvertising,#tblAd,#tbl_googlead,#template_ad_leaderboard,#tertiary_advertising,#text-ad,#textAd,#textAds,#text_ad,#text_advert,#the-last-ad-standing,#thefooterad,#themis-ads,#tile-ad,#tmglBannerAd,#top-ad,#top-ad-container,#top-ad-menu,#top-ads,#top-ads-tabs,#top-advertisement,#top-banner-ad,#top-search-ad-wrapper,#topAd,#topAd728x90,#topAdBanner,#topAdContainer,#topAdSenseDiv,#topAds,#topAdsContainer,#topAdvert,#topBannerAd,#topNavLeaderboardAdHolder,#top_ad,#top_ad_area,#top_ad_game,#top_ad_wrapper,#top_ads,#top_advertise,#top_advertising,#top_right_ad,#top_wide_ad,#topad,#topad_left,#topad_right,#topadblock,#topads,#topadzone,#topcustomad,#toprightAdvert,#toptextad,#towerad,#ttp_ad_slot1,#ttp_ad_slot2,#twogamesAd,#txt_link_ads,#undergameAd,#upperMpu,#upperad,#urban_contentad_article,#v_ad,#vert_ad,#vertical_ad,#vertical_ads,#video_cnv_ad,#video_overlay_ad,#walltopad,#welcomeAdsContainer,#welcome_ad_mrec,#welcome_advertisement,#wgtAd,#whatsnews_top_ad,#whitepaper-ad,#whoisRightAdContainer,#wide_ad_unit_top,#widget_advertisement,#wrapAdRight,#wrapAdTop,#y708-ad-expedia,#y708-ad-lrec,#y708-ad-partners,#y708-ad-ysm,#y708-advertorial-marketplace,#yahoo-ads,#yahoo-sponsors,#yahoo_ads,#yahoo_ads_2010,#yahooad-tbl,#yan-sponsored,#ybf-ads,#yfi_fp_ad_mort,#yfi_fp_ad_nns,#yfi_pf_ad_mort,#ygrp-sponsored-links,#ymap_adbanner,#yn-gmy-ad-lrec,#yreSponsoredLinks,#ysm_ad_iframe,#zoneAdserverMrec,#zoneAdserverSuper,.ADBAR,.ADPod,.AD_MOVIE_ITEM,.AD_MOVIE_ITEMLIST,.AD_MOVIE_ITEMROW,.Ad120x600,.Ad160x600,.Ad247x90,.Ad300x250,.Ad300x250L,.Ad728x90,.AdBox,.AdBox7,.AdContainerBox308,.AdHere,.AdInfo,.AdPlaceHolder,.AdRingtone,.AdSense,.AdSpace,.AdTitle,.AdUnit,.AdUnit300,.Ad_C,.Ad_D_Wrapper,.Ad_E_Wrapper,.Ad_Right,.Ads,.AdsBoxSection,.AdsLinks1,.AdsLinks2,.AdvertMidPage,.AdvertiseWithUs,.AdvertisementTextTag,.ArticleInlineAd,.BannerAd,.BlockAd,.BottomAffiliate,.CG_adkit_leaderboard,.CommentAd,.DeptAd,.FT_Ad,.FlatAds,.HPNewAdsBannerDiv,.HomeContentAd,.LeftTowerAd,.M2Advertisement,.MD_adZone,.MPU,.MPUHolder,.MiddleAdContainer,.OpenXad,.PU_DoubleClickAdsContent,.Post5ad,.RBboxAd,.RelatedAds,.RightRailTop300x250Ad,.RightSponsoredAdTitle,.RightTowerAd,.SidebarAd,.SponsoredAdTitle,.SponsoredContent,.SponsoredLinks,.SponsoredLinksGrayBox,.SquareAd,.StandardAdLeft,.StandardAdRight,.TextAd,.TheEagleGoogleAdSense300x250,.TopAd,.TopAdL,.TopAdR,.UIStandardFrame_SidebarAds,.UIWashFrame_SidebarAds,.UnderAd,.VerticalAd,.WidgetAdvertiser,.ad-160x600,.ad-250,.ad-300,.ad-300-block,.ad-300-blog,.ad-300x100,.ad-300x250,.ad-600,.ad-728,.ad-adlink-bottom,.ad-adlink-side,.ad-background,.ad-banner,.ad-bigsize,.ad-block,.ad-blog2biz,.ad-bottom,.ad-box,.ad-break,.ad-btn,.ad-btn-heading,.ad-button,.ad-cell,.ad-container,.ad-div,.ad-feedback,.ad-filler,.ad-footer,.ad-footer-leaderboard,.ad-google,.ad-gray,.ad-hdr,.ad-head,.ad-holder,.ad-homeleaderboard,.ad-img,.ad-island,.ad-leaderboard,.ad-links,.ad-medium,.ad-medium-two,.ad-mpu,.ad-other,.ad-permalink,.ad-placeholder,.ad-postText,.ad-poster,.ad-rect,.ad-rectangle,.ad-rectangle-text,.ad-related,.ad-rh,.ad-ri,.ad-right,.ad-right-header,.ad-right-txt,.ad-section,.ad-sidebar300,.ad-slot,.ad-slot-234-60,.ad-slot-300-250,.ad-slot-728-90,.ad-space,.ad-space-mpu-box,.ad-spot,.ad-statement,.ad-text,.ad-tile,.ad-top,.ad-top-left,.ad-unit,.ad-unit-300,.ad-unit-300-wrapper,.ad-unit-anchor,.ad-vtu,.ad-wrap,.ad-wrapper,.ad-zone-s-q-l,.ad0,.ad1,.ad10,.ad120,.ad160,.ad160x600,.ad18,.ad19,.ad2,.ad21,.ad250c,.ad3,.ad300,.ad300_250,.ad300x100,.ad300x250,.ad300x250Top,.ad300x250_container,.ad300x250box,.ad300x600,.ad310,.ad336x280,.ad343x290,.ad450,.ad468,.ad468_60,.ad468x60,.ad6,.ad620x70,.ad626X35,.ad7,.ad728,.ad728_90,.ad728x90,.ad728x90_container,.ad8,.adAgate,.adBanner,.adBannerTyp1,.adBannerTypSortableList,.adBannerTypW300,.adBgBottom,.adBgMId,.adBgTop,.adBox,.adBoxContent,.adBoxSidebar,.adBoxSingle,.adCMRight,.adColumn,.adContainer,.adContour,.adCreative,.adDiv,.adElement,.adFrame,.adFtr,.adFullWidthMiddle,.adGoogle,.adHeader,.adHeadline,.adHolder,.adHome300x250,.adInNews,.adLabel,.adLeader,.adLeaderForum,.adLeaderboard,.adLeft,.adMastheadLeft,.adMastheadRight,.adMkt2Colw,.adModule,.adNewsChannel,.adNoOutline,.adNoticeOut,.adObj,.adPageBorderL,.adPageBorderR,.adPanel,.adRect,.adRight,.adSelfServiceAdvertiseLink,.adServer,.adSlot,.adSpBelow,.adSpace,.adSpacer,.adSpot,.adSpot-searchAd,.adSpot-textBox,.adSpot-twin,.adSpotIsland,.adSquare,.adSummary,.adSuperboard,.adTag,.adText,.adTileWrap,.adTiler,.adTitle,.adTout,.adTxt,.adWithTab,.adWrap,.adWrapper,.ad_1,.ad_125,.ad_130x90,.ad_160,.ad_160x600,.ad_2,.ad_3,.ad_300,.ad_300_250,.ad_300x250,.ad_336,.ad_336x280,.ad_350x250,.ad_468,.ad_600,.ad_728,.ad_728x90,.ad_amazon,.ad_biz,.ad_block_338,.ad_bottom_leaderboard,.ad_box,.ad_box2,.ad_callout,.ad_caption,.ad_contain,.ad_container,.ad_content,.ad_content_wide,.ad_contents,.ad_descriptor,.ad_footer,.ad_framed,.ad_front_promo,.ad_header,.ad_hpm,.ad_info_block,.ad_label,.ad_launchpad,.ad_leader,.ad_leaderboard,.ad_left,.ad_linkunit,.ad_loc,.ad_lrec,.ad_medrect,.ad_mpu,.ad_mr,.ad_mrec,.ad_mrec_title_article,.ad_notice,.ad_p360,.ad_partner,.ad_partners,.ad_plus,.ad_post,.ad_power,.ad_rectangle,.ad_right,.ad_sidebar,.ad_skyscraper,.ad_slug_table,.ad_space,.ad_space_300_250,.ad_sponsor,.ad_sponsoredsection,.ad_spot_b,.ad_spot_c,.ad_square_r,.ad_square_top,.ad_text,.ad_title,.ad_top,.ad_top_leaderboard,.ad_tower,.ad_unit,.ad_unit_rail,.ad_warning,.ad_wide,.ad_wrap,.ad_wrapper,.ad_wrapper_fixed,.ad_wrapper_top,.ad_zone,.adarea,.adbanner,.adbannerright,.adbar,.adborder,.adbot,.adbottom,.adbottomright,.adbox,.adbox-outer,.adbox_366x280,.adbox_468X60,.adbox_bottom,.adboxclass,.adcode,.adcolumn_wrapper,.adcontainer,.adcopy,.addiv,.adfoot,.adfootbox,.adframe,.adhead,.adheader,.adheader100,.adhere,.adhoriz,.adi,.adinfo,.adinside,.adjlink,.adkit,.adkit-advert,.adkit-lb-footer,.adlabel-horz,.adlabel-vert,.adleft,.adline,.adlink,.adlinks,.adlist,.adlnklst,.admarker,.admedrec,.admessage,.admodule,.admpu,.adnotice,.adops,.adpadding,.adpic,.adright,.adrotate_widget,.adrow,.adrow-post,.adrule,.ads-banner,.ads-categories-bsa,.ads-favicon,.ads-links-general,.ads-mpu,.ads-profile,.ads-right,.ads-sidebar,.ads-sky,.ads-text,.ads2,.ads3,.ads:not(body),.adsArea,.adsBelowHeadingNormal,.adsBox,.adsImages,.adsTextHouse,.adsTower2,.adsTowerWrap,.adsWithUs,.ads_300,.ads_728x90,.ads_big,.ads_big-half,.ads_brace,.ads_catDiv,.ads_container,.ads_disc_anchor,.ads_disc_leader,.ads_disc_lwr_square,.ads_disc_skyscraper,.ads_disc_square,.ads_div,.ads_header,.ads_leaderboard,.ads_mpu,.ads_outer,.ads_right,.ads_sc_bl_i,.ads_sc_tl_i,.ads_side,.ads_takeover,.ads_tr,.adsborder,.adsbyyahoo,.adsc,.adscontainer,.adscreen,.adsection_a2,.adsection_c2,.adsense,.adsense-heading,.adsense-right,.adsense-title,.adsenseBlock,.adsenseContainer,.adsenseblock,.adsenselr,.adsensesq,.adsidebox,.adsingle,.adslogan,.adspace,.adspace-MR,.adspace_buysell,.adspace_rotate,.adspacer,.adspot,.adstrip,.adtag,.adtext,.adtext_gray,.adtext_onwhite,.adtop,.adtravel,.adv-mpu,.adverTag,.adver_cont_below,.advert,.advert-box,.advert-head,.advert-horizontal,.advert-mpu,.advert-skyscraper,.advert-text,.advertCont,.advertContainer,.advertHeadline,.advertRight,.advertText,.advert_468x60,.advert_box,.advert_cont,.advert_leaderboard,.advert_note,.advertise,.advertise-here,.advertise-homestrip,.advertise-horz,.advertise-leaderboard,.advertise-vert,.advertiseContainer,.advertiseText,.advertisement,.advertisement-728x90,.advertisement-block,.advertisement-top,.advertisement468,.advertisementColumnGroup,.advertisementContainer,.advertisementLabel,.advertisementPanel,.advertisement_caption,.advertisement_g,.advertisement_header,.advertisement_horizontal,.advertiser,.advertising,.advertising-header,.advertising2,.advertisingTable,.advertising_block,.advertisment,.advertisment_two,.advertize,.advertorial,.advertorial-promo-box,.adverts,.advt,.advt-banner-3,.advt300,.advt720,.adwordListings,.adwrapper,.adwrapper-lrec,.adwrapper948,.affiliate,.affiliate-link,.affiliate-sidebar,.affiliateAdvertText,.agi-adsaleslinks,.alt_ad,.anchorAd,.answer_ad_content,.aolSponsoredLinks,.aopsadvert,.article-ads,.articleAd,.articleAds,.articleAdsL,.articleEmbeddedAdBox,.article_ad,.article_adbox,.article_mpu_box,.articleads,.aseadn,.aux-ad-widget-2,.b-astro-sponsored-links_horizontal,.b-astro-sponsored-links_vertical,.banner-ad,.banner-ads,.banner-adverts,.banner300x100,.banner300x250,.banner468,.bannerAd,.bannerAdWrapper300x250,.bannerAdWrapper730x86,.banner_300x250,.banner_728x90,.banner_ad,.banner_ad_footer,.banner_ad_leaderboard,.bannerad,.barkerAd,.base-ad-mpu,.base_ad,.bgnavad,.big-ads,.bigAd,.big_ad,.big_ads,.bigad,.bigad2,.billboard_ad,.block-ad,.block-adsense,.block_ad,.block_ad_sb_text,.block_ad_sponsored_links,.block_ad_sponsored_links-wrapper,.blocked-ads,.blog-ads-container,.blogAd,.blogAdvertisement,.blogBigAd,.blog_ad,.blogads,.body_ad,.body_sponsoredresults_bottom,.body_sponsoredresults_middle,.body_sponsoredresults_top,.bookseller-header-advt,.bottomAd,.bottomAds,.bottom_ad_block,.bottom_sponsor,.bottomad,.bottomrightrailAd,.bottomvidad,.box-ad,.box-ads,.boxAd,.box_ad,.box_advertisment_62_border,.box_content_ad,.box_content_ads,.boxad,.bps-ad-wrapper,.bps-advertisement,.bps-advertisement-inline-ads,.bullet-sponsored-links,.bullet-sponsored-links-gray,.burstContentAdIndex,.buttonAd,.buttonAds,.buttonadbox,.bx_ad,.bx_ad_right,.cA-adStrap,.cColumn-TextAdsBox,.care2_adspace,.cb-ad-container,.cb_footer_sponsor,.cb_navigation_ad,.cbstv_ad_label,.cbzadvert,.cdAdTitle,.cdmainlineSearchAdParent,.cdsidebarSearchAdParent,.centerAd,.center_ad,.centerad,.clearerad,.cm_ads,.cms-Advert,.cnn160AdFooter,.cnnAd,.cnnMosaic160Container,.cnnStoreAd,.cnnStoryElementBoxAd,.cnnWCAdBox,.cnnWireAdLtgBox,.cnn_728adbin,.cnn_adcntr300x100,.cnn_adspc336cntr,.cnn_adtitle,.column2-ad,.conductor_ad,.confirm_ad_left,.confirm_ad_right,.confirm_leader_ad,.consoleAd,.container-adwords,.containerSqAd,.container_serendipity_plugin_google_adsense,.contentAd,.content_ad,.content_adsq,.contentad,.contenttextad,.contest_ad,.cp_ad,.cpmstarHeadline,.cpmstarText,.cs-mpu,.cspAd,.ct_ad,.cubeAd,.cube_ads,.currency_ad,.darla_ad,.dartAdImage,.dart_ad,.dart_tag,.dartadvert,.dartiframe,.dc-ad,.dcAdvertHeader,.deckAd,.deckads,.detail-ads,.detailMpu,.divAd,.divads,.divider_ad,.dmco_advert_iabrighttitle,.download_ad,.downloadad,.dynamic_ad,.e-ad,.ec-ads,.entryad,.ez-clientAd,.f_Ads,.featuredAds,.featuredadvertising,.flagads,.flash_advert,.flashad,.flexiad,.flipbook_v2_sponsor_ad,.footerAd,.footerAdModule,.footerTextAd,.footer_ad,.footer_ads,.footer_block_ad,.footer_line_ad,.footerad,.ft-ad,.ftdContentAd,.full_ad_box,.fullbannerad,.g3rtn-ad-site,.g_ggl_ad,.ga-textads-bottom,.ga-textads-top,.gads_cb,.gglAds,.googads,.google-ad-container,.google-ads,.google-ads-boxout,.google-ads-slim,.google-right-ad,.google-sponsored-ads,.google468_60,.googleAd,.googleAd-content,.googleAd-list,.googleAdBox,.googleAdSense,.googleAd_body,.googleAds,.googleAds_article_page_above_comments,.googleAdsense,.googleProfileAd,.google_ads_bom_title,.googlead,.googleaddiv,.googleaddiv2,.googleads,.googleads_300x250,.googleads_title,.gpAds,.gradientAd,.gsfAd,.gt_ad,.gt_ad_300x250,.gt_ad_728x90,.gt_adlabel,.gutter-ad-left,.gutter-ad-right,.h_Ads,.h_ad,.hd_advert,.header-ad,.header-advert,.headerAd,.headerAds,.headerAdvert,.header_ad,.header_ad_center,.header_advertisment,.hi5-ad,.highlightsAd,.hm_advertisment,.home-ad-links,.homeAd,.homeMediumAdGroup,.home_ad_bottom,.homead,.homepage-ad,.homepageFlexAdOuter,.homepageMPU,.hor_ad,.horiz_adspace,.horizontalAd,.horizontal_ad,.hortad,.houseAdsStyle,.hp2-adtag,.hp_ad_cont,.hp_ad_text,.hp_t_ad,.hp_w_ad,.ic-ads,.ico-adv,.idMultiAd,.image-advertisement,.imageads,.in-page-ad,.in-story-text-ad,.indy_googleads,.inline-mpu-left,.inlineSideAd,.inline_ad_title,.inlinead,.inlist-ad,.inner-advt-banner-3,.innerAds,.innerad,.inpostad,.is24-adplace,.islandAd,.islandAdvert,.islandad,.jp-advertisment-promotional,.js-advert,.kw_advert,.kw_advert_pair,.l_ad_sub,.l_banner.ads_show_if,.largeRectangleAd,.leader_ad,.leaderboardAd,.leaderboardad,.left-ad,.leftAd,.left_ads,.leftad,.leftbar_ad_160_600,.leftnavad,.lgRecAd,.lg_ad,.linead,.link_advertise,.live-search-list-ad-container,.log_ads,.lowerAds,.m4-adsbygoogle,.m_banner_ads,.macAd,.macad,.main-ad,.main-tabs-ad-block,.main_ad,.main_adbox,.map_media_banner_ad,.marginadsthin,.marketing-ad,.mdl-ad,.media-advert,.mediaAd,.mediaAdContainer,.medium-rectangle-ad,.menuItemBannerAd,.messageBoardAd,.micro_ad,.mid_ad,.midad,.min_navi_ad,.miniad,.mobile-sponsoring,.mod-ad-lrec,.mod-ad-n,.mod-adopenx,.mod_admodule,.module-ad-small,.module-ads,.moduleAdvertContent,.modulegad,.moduletable-advert,.moduletablesquaread,.mpu,.mpu-ad,.mpu-footer,.mpu-fp,.mpu-title,.mpu-top-left,.mpu-top-right,.mpuAd,.mpuBox,.mpuContainer,.mpuTextAd,.mpu_ad,.mpu_gold,.mpu_holder,.mpu_platinum,.mpu_text_ad,.mpuad,.mpuholderportalpage,.mrec_advert,.ms-ads-link,.msfg-shopping-mpu,.mwaads,.nSponsoredLcContent,.nSponsoredLcTopic,.nadvt300,.narrow_ad_unit,.narrow_ads,.naviad,.nba300Ad,.nbaT3Ad160,.nbaTVPodAd,.nbaTwo130Ads,.nbc_ad_carousel_wrp,.newTopAdContainer,.newad,.nf-adbox,.nn-mpu,.noAdForLead,.normalAds,.nrAds,.oas-bottom-ads,.oio-banner-zone,.oio-link-sidebar,.oio-zone-position,.onethirdadholder,.openx,.openx-ad,.other_adv2,.ov_spns,.pageGoogleAd,.pageGoogleAdFlat,.pageLeaderAd,.pagead,.partnersTextLinks,.pencil_ad,.player_ad_box,.player_page_ad_box,.pnp_ad,.podSponsoredLink,.post-ad,.post_ad,.post_sponsor_unit,.postbit_adbit_register,.postbit_adcode,.prebodyads,.premium_ad_container,.promoAd,.promoAds,.promo_ad,.publication-ad,.publicidad,.puff-advertorials,.qa_ad_left,.quigo-ad,.qzvAdDiv,.r_ad_box,.rad_container,.rectad,.rectangleAd,.rectanglead,.redads_cont,.regularad,.relatedAds,.remads,.result_ad,.results_sponsor,.results_sponsor_right,.reviewMidAdvertAlign,.rght300x250,.rhads,.rhs-ad,.rhs-ads-panel,.right-ad,.right-ad-holder,.right-ad2,.right-ads2,.rightAd,.right_ad,.right_ad_text,.right_ads,.right_col_ad,.right_hand_advert_column,.rightad,.rightad_1,.rightad_2,.rightads,.rightadunit,.rightcol_boxad,.rightcoladvert,.rnav_ad,.rt_ad1_300x90,.rt_ad_300x250,.rt_ad_call,.savvyad_unit,.sb-ad-sq-bg,.sbAdUnitContainer,.sb_adsN,.sb_adsNv2,.sb_adsW,.sb_adsWv2,.scanAd,.scc_advert,.sci-ad-main,.sci-ad-sub,.search-results-ad,.search-sponsor,.search-sponsored,.searchAd,.searchSponsoredResultsBox,.search_column_results_sponsored,.search_results_sponsored_top,.section-sponsor,.section_mpu_wrapper,.selfServeAds,.sidbaread,.side-ad,.side-ads,.side_ad,.side_ad2,.sidead,.sideadsbox,.sideadvert,.sidebar-ad,.sidebar-text-ad,.sidebarAd,.sidebarAdUnit,.sidebarAdvert,.sidebar_ad,.sidebar_ad_300_250,.sidebar_box_ad,.sidebarad,.sidebarad_bottom,.sideheadnarrowad,.sideheadsponsorsad,.singleAd,.singleAdsContainer,.singlead,.sitesponsor,.skinAd,.skin_ad_638,.sky-ad,.skyAd,.skyAdd,.sky_ad,.skyad,.skyscraper-ad,.slideshow-ad,.slinks,.slpBigSlimAdUnit,.slpSquareAdUnit,.sm_ad,.smallSkyAd1,.smallSkyAd2,.small_ad,.small_ads,.smallad-left,.smallsponsorad,.specialAd175x90,.speedyads,.sphereAdContainer,.spl_ad,.spl_ad2,.spl_ad_plus,.splitAd,.spons-link,.sponslink,.sponsor-ad,.sponsor-links,.sponsorArea,.sponsorPost,.sponsorPostWrap,.sponsor_ad_area,.sponsor_line,.sponsor_links,.sponsoradtitle,.sponsorbox,.sponsored,.sponsored-chunk,.sponsored-editorial,.sponsored-links,.sponsored-links-holder,.sponsored-post,.sponsored-results,.sponsored-text,.sponsoredLinks,.sponsoredLinksHeader,.sponsored_ads,.sponsored_box,.sponsored_box_search,.sponsored_by,.sponsored_links,.sponsored_links_title_container,.sponsored_links_title_container_top,.sponsored_links_top,.sponsored_results,.sponsoredibbox,.sponsoredlinks,.sponsoredtextlink_container,.sponsoredtextlink_container_ovt,.sponsorlink,.sponsorlink2,.spotlightAd,.squareAd,.square_ad,.squared_ad,.ss-ad-mpu,.staticAd,.store-ads,.story_AD,.subad,.subcontent-ad,.supercommentad_left,.supercommentad_right,.supportAdItem,.surveyad,.t10ad,.tab_ad,.tab_ad_area,.tablebordersponsor,.tadsanzeige,.tadsbanner,.tadselement,.tallad,.tblTopAds,.tbl_ad,.teaser-sponsor,.teaserAdContainer,.teaser_adtiles,.text-ad-links,.text-g-advertisement,.text-g-group-short-rec-ad,.text-g-net-grp-google-ads-article-page,.textAd,.textAds,.text_ad,.text_ads,.textad,.textad_headline,.textadbox,.textads,.textadsfoot,.textlink-ads,.thisIsAd,.thisIsAnAd,.ticket-ad,.tileAds,.title-ad,.title_adbig,.tncms-region-ads,.toolad,.toolbar-ad,.top-ad,.top-ad-space,.top-ads,.top-menu-ads,.topAdWrap,.topAds,.topAdvertisement,.topBannerAd,.top_Ad,.top_ad,.top_ad_728_90,.top_ad_disclaimer,.top_ad_wrapper,.top_ads,.top_advert,.top_advertising_lb,.top_container_ad,.top_sponsor,.topad,.topadbox,.topads,.topadspot,.topcontentadvertisement,.topic_inad,.topstoriesad,.towerAd,.towerAdLeft,.towerAds,.tower_ad_disclaimer,.ts-ad_unit_bigbox,.ts-banner_ad,.ttlAdsensel,.tto-sponsored-element,.twoColumnAd,.twoadcoll,.twoadcolr,.tx_smartadserver_pi1,.txt-ads,.txtadvertise,.type_miniad,.type_promoads,.undertimyads,.usenext,.vertad,.videoAd,.videoBoxAd,.video_ad,.view-promo-mpu-right,.wide-ad,.wide-skyscraper-ad,.wideAdTable,.wide_ad_unit_top,.wide_ads,.wide_google_ads,.widget-ad,.widget-entry-ads-160,.wikia_ad_placeholder,.withAds,.wnMultiAd,.wp125ad,.wpn_ad_content,.wsSponsoredLinksRight,.wsTopSposoredLinks,.x03-adunit,.x04-adunit,.y-ads,.y-ads-wide,.y7-advertisement,.yahoo-sponsored,.yahoo_ads,.yan-sponsored,.ygrp-ad,.yrail_ad_wrap,.yrail_ads,.ysmsponsor,.ysponsor,a[href^="http://adserving.liveuniversenetwork.com/"],a[href^="http://latestdownloads.net/download.php?"],a[href^="http://secure.signup-page.com/"],a[href^="http://secure.signup-way.com/"],a[href^="http://www.FriendlyDuck.com/AF_"],a[href^="http://www.adbrite.com/mb/commerce/purchase_form.php?"],a[href^="http://www.friendlyduck.com/AF_"],a[href^="http://www.google.com/aclk?"],a[href^="http://www.liutilities.com/aff"],a[href^="http://www.my-dirty-hobby.com/?sub="],a[href^="http://www.ringtonematcher.com/"],#mbEnd[cellspacing="0"][style="padding: 0pt; white-space: nowrap;"],div#mclip_container:first-child:last-child,div#tads.c,table.ra[align="left"][width="30%"],table.ra[align="right"][width="30%"] { visibility:hidden !important;    display:none !important; }</STYLE></HTML>

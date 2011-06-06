@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Stores a secret used in signing and verifying messages.
@@ -51,7 +52,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets a unique handle by which this <see cref="Association"/> may be stored or retrieved.
 		/// </summary>
-		public string Handle { get; private set; }
+		public string Handle { get; internal set; }
 
 		/// <summary>
 		/// Gets the UTC time when this <see cref="Association"/> will expire.
@@ -85,6 +86,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets or sets the UTC time that this <see cref="Association"/> was first created.
 		/// </summary>
+		[MessagePart]
 		internal DateTime Issued { get; set; }
 
 		/// <summary>
@@ -102,6 +104,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the shared secret key between the consumer and provider.
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "It is a buffer.")]
+		[MessagePart("key")]
 		protected internal byte[] SecretKey { get; private set; }
 
 		/// <summary>
@@ -117,6 +120,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the lifetime the OpenID provider permits this <see cref="Association"/>.
 		/// </summary>
+		[MessagePart("ttl")]
 		protected TimeSpan TotalLifeLength { get; private set; }
 
 		/// <summary>
@@ -156,7 +160,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The newly dehydrated <see cref="Association"/>, which can be returned
 		/// from a custom association store's 
-		/// <see cref="IAssociationStore&lt;TKey&gt;.GetAssociation(TKey, SecuritySettings)"/> method.
+		/// <see cref="IRelyingPartyAssociationStore.GetAssociation(Uri, SecuritySettings)"/> method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expiresUtc, byte[] privateData) {
 			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(handle));
@@ -219,7 +223,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			if (a.Handle != this.Handle ||
 				a.Issued != this.Issued ||
-				a.TotalLifeLength != this.TotalLifeLength) {
+				!MessagingUtilities.Equals(a.TotalLifeLength, this.TotalLifeLength, TimeSpan.FromSeconds(1))) {
 				return false;
 			}
 

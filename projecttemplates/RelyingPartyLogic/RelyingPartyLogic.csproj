@@ -101,37 +101,33 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.Mobile" />
-    <Reference Include="System.Web.ApplicationServices">
+    <Reference Include="System.Web.ApplicationServices" Condition=" '$(TargetFrameworkVersion)' != 'v3.5' ">
       <RequiredTargetFramework>v4.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model.cs" />
-    <Compile Include="Model.IssuedToken.cs" />
+    <Compile Include="Model.ClientAuthorization.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DataRoleProvider.cs" />
     <Compile Include="Model.AuthenticationToken.cs" />
-    <Compile Include="Model.Consumer.cs" />
+    <Compile Include="Model.Client.cs" />
     <Compile Include="Model.Designer.cs">
       <DependentUpon>Model.edmx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Model.IssuedAccessToken.cs" />
-    <Compile Include="Model.IssuedRequestToken.cs" />
-    <Compile Include="Model.OpenIdAssociation.cs" />
     <Compile Include="Model.User.cs" />
     <Compile Include="NonceDbStore.cs" />
+    <Compile Include="OAuthAuthorizationServer.cs" />
     <Compile Include="OAuthAuthenticationModule.cs" />
     <Compile Include="OAuthAuthorizationManager.cs" />
-    <Compile Include="OAuthConsumerTokenManager.cs" />
     <Compile Include="OAuthPrincipalAuthorizationPolicy.cs" />
     <Compile Include="OAuthServiceProvider.cs" />
-    <Compile Include="OAuthServiceProviderTokenManager.cs" />
-    <Compile Include="OAuthTokenManager.cs" />
     <Compile Include="Policies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelyingPartyApplicationDbStore.cs" />
+    <Compile Include="SpecialAccessTokenAnalyzer.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -145,12 +141,12 @@
       <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
       <Name>DotNetOpenAuth</Name>
     </ProjectReference>
-		<ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj">
-			<Name>RelyingPartyDatabase</Name>
-			<!-- Deploy the latest SQL script first, so that this project can embed the latest version. -->
-			<Targets>Build;Deploy</Targets>
-			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-		</ProjectReference>
+    <ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj">
+      <Name>RelyingPartyDatabase</Name>
+      <!-- Deploy the latest SQL script first, so that this project can embed the latest version. -->
+      <Targets>Build;Deploy</Targets>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CreateDatabase.sql" />

@@ -84,8 +84,8 @@
     </Compile>
     <Compile Include="Models\AccountAuthorizeModel.cs" />
     <Compile Include="Models\AccountInfoModel.cs" />
-    <Compile Include="OAuth.ashx.cs">
-      <DependentUpon>OAuth.ashx</DependentUpon>
+    <Compile Include="OAuthTokenEndpoint.ashx.cs">
+      <DependentUpon>OAuthTokenEndpoint.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.aspx.cs">
@@ -176,15 +176,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\images\infocard_23x16.png" />
-    <Content Include="OAuth.ashx" />
     <Content Include="Views\Account\AuthenticationTokens.ascx" />
     <Content Include="Views\Account\Authorize.aspx" />
-    <Content Include="Views\Account\AuthorizeApproved.aspx" />
     <Content Include="Views\Account\AuthorizedApps.ascx" />
-    <Content Include="Views\Account\AuthorizeDenied.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OAuthTokenEndpoint.ashx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

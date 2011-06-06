@@ -1,0 +1,11 @@
+﻿<Window x:Class="DotNetOpenAuth.Samples.OAuthConsumerWpf.Authorize2"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Authorize" Height="500" Width="500">
+	<DockPanel LastChildFill="True">
+		<WindowsFormsHost Name="windowsFormsHost1">
+			<wf:WebBrowser x:Name="webBrowser" Dock="Fill" Navigating="webBrowser_Navigating" Navigated="webBrowser_Navigated" LocationChanged="webBrowser_LocationChanged" IsWebBrowserContextMenuEnabled="False" />
+		</WindowsFormsHost>
+	</DockPanel>
+</Window>

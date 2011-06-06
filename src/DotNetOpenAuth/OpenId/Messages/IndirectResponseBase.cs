@@ -16,7 +16,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// A common base class from which indirect response messages should derive.
 	/// </summary>
 	[Serializable]
-	internal class IndirectResponseBase : RequestBase {
+	internal class IndirectResponseBase : RequestBase, IProtocolMessageWithExtensions {
+		/// <summary>
+		/// Backing store for the <see cref="Extensions"/> property.
+		/// </summary>
+		private IList<IExtensionMessage> extensions = new List<IExtensionMessage>();
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="IndirectResponseBase"/> class.
 		/// </summary>
@@ -40,6 +45,35 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="mode">The value to use for the openid.mode parameter.</param>
 		protected IndirectResponseBase(Version version, Uri relyingPartyReturnTo, string mode)
 			: base(version, relyingPartyReturnTo, mode, MessageTransport.Indirect) {
+		}
+
+		#region IProtocolMessageWithExtensions Members
+
+		/// <summary>
+		/// Gets the list of extensions that are included with this message.
+		/// </summary>
+		/// <value></value>
+		/// <remarks>
+		/// Implementations of this interface should ensure that this property never returns null.
+		/// </remarks>
+		public IList<IExtensionMessage> Extensions {
+			get { return this.extensions; }
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets the signed extensions on this message.
+		/// </summary>
+		internal IEnumerable<IOpenIdMessageExtension> SignedExtensions {
+			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => ext.IsSignedByRemoteParty); }
+		}
+
+		/// <summary>
+		/// Gets the unsigned extensions on this message.
+		/// </summary>
+		internal IEnumerable<IOpenIdMessageExtension> UnsignedExtensions {
+			get { return this.extensions.OfType<IOpenIdMessageExtension>().Where(ext => !ext.IsSignedByRemoteParty); }
 		}
 
 		/// <summary>

@@ -39,6 +39,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// Provides the programmatic facilities to act as an OpenID relying party.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
 	[ContractVerification(true)]
 	public class OpenIdRelyingParty : IDisposable {
 		/// <summary>
@@ -99,20 +100,21 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
-		public OpenIdRelyingParty(IRelyingPartyApplicationStore applicationStore)
+		public OpenIdRelyingParty(IOpenIdApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="associationStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
+		/// <param name="cryptoKeyStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
-		private OpenIdRelyingParty(IAssociationStore<Uri> associationStore, INonceStore nonceStore) {
+		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
+		private OpenIdRelyingParty(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore) {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
-			Contract.Requires<ArgumentException>(associationStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
+			Contract.Requires<ArgumentException>(cryptoKeyStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
@@ -135,10 +137,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			this.channel = new OpenIdChannel(associationStore, nonceStore, this.SecuritySettings);
-			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
+			if (cryptoKeyStore == null) {
+				cryptoKeyStore = new MemoryCryptoKeyStore();
+			}
 
-			Reporting.RecordFeatureAndDependencyUse(this, associationStore, nonceStore);
+			this.channel = new OpenIdChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
+			this.AssociationManager = new AssociationManager(this.Channel, new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore), this.SecuritySettings);
+
+			Reporting.RecordFeatureAndDependencyUse(this, cryptoKeyStore, nonceStore);
 		}
 
 		/// <summary>
@@ -158,17 +164,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static IRelyingPartyApplicationStore HttpApplicationStore {
+		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
-				Contract.Ensures(Contract.Result<IRelyingPartyApplicationStore>() != null);
+				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
 
 				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IRelyingPartyApplicationStore).Name);
-				var store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey];
+				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
+				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
 					context.Application.Lock();
 					try {
-						if ((store = (IRelyingPartyApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
 							context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
 						}
 					} finally {
@@ -542,15 +548,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				NegativeAssertionResponse negativeAssertion;
 				IndirectSignedResponse positiveExtensionOnly;
 				if ((positiveAssertion = message as PositiveAssertionResponse) != null) {
-					if (this.EndpointFilter != null) {
-						// We need to make sure that this assertion is coming from an endpoint
-						// that the host deems acceptable.
-						var providerEndpoint = new SimpleXrdsProviderEndpoint(positiveAssertion);
-						ErrorUtilities.VerifyProtocol(
-							this.EndpointFilter(providerEndpoint),
-							OpenIdStrings.PositiveAssertionFromNonWhitelistedProvider,
-							providerEndpoint.Uri);
-					}
+					// We need to make sure that this assertion is coming from an endpoint
+					// that the host deems acceptable.
+					var providerEndpoint = new SimpleXrdsProviderEndpoint(positiveAssertion);
+					ErrorUtilities.VerifyProtocol(
+						this.FilterEndpoint(providerEndpoint),
+						OpenIdStrings.PositiveAssertionFromNonQualifiedProvider,
+						providerEndpoint.Uri);
 
 					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
 					foreach (var behavior in this.Behaviors) {
@@ -660,8 +664,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		internal static OpenIdRelyingParty CreateNonVerifying() {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
-			rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
-			return rp;
+			try {
+				rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
+				return rp;
+			} catch {
+				rp.Dispose();
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -672,13 +681,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The HTTP response to send to this HTTP request.
 		/// </returns>
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "real word"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "iframe", Justification = "Code contracts")]
 		internal OutgoingWebResponse ProcessResponseFromPopup(HttpRequestInfo request, Action<AuthenticationStatus> callback) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			string extensionsJson = null;
 			var authResponse = this.NonVerifyingRelyingParty.GetResponse();
-			ErrorUtilities.VerifyProtocol(authResponse != null, "OpenID popup window or iframe did not recognize an OpenID response in the request.");
+			ErrorUtilities.VerifyProtocol(authResponse != null, OpenIdStrings.PopupRedirectMissingResponse);
 
 			// Give the caller a chance to notify the hosting page and fill up the clientScriptExtensions collection.
 			if (callback != null) {
@@ -758,6 +768,38 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			return results;
+		}
+
+		/// <summary>
+		/// Checks whether a given OP Endpoint is permitted by the host relying party.
+		/// </summary>
+		/// <param name="endpoint">The OP endpoint.</param>
+		/// <returns><c>true</c> if the OP Endpoint is allowed; <c>false</c> otherwise.</returns>
+		protected internal bool FilterEndpoint(IProviderEndpoint endpoint) {
+			if (this.SecuritySettings.RejectAssertionsFromUntrustedProviders) {
+				if (!this.SecuritySettings.TrustedProviderEndpoints.Contains(endpoint.Uri)) {
+					Logger.OpenId.InfoFormat("Filtering out OP endpoint {0} because it is not on the exclusive trusted provider whitelist.", endpoint.Uri.AbsoluteUri);
+					return false;
+				}
+			}
+
+			if (endpoint.Version < Protocol.Lookup(this.SecuritySettings.MinimumRequiredOpenIdVersion).Version) {
+				Logger.OpenId.InfoFormat(
+					"Filtering out OP endpoint {0} because it implements OpenID {1} but this relying party requires OpenID {2} or later.",
+					endpoint.Uri.AbsoluteUri,
+					endpoint.Version,
+					Protocol.Lookup(this.SecuritySettings.MinimumRequiredOpenIdVersion).Version);
+				return false;
+			}
+
+			if (this.EndpointFilter != null) {
+				if (!this.EndpointFilter(endpoint)) {
+					Logger.OpenId.InfoFormat("Filtering out OP endpoint {0} because the host rejected it.", endpoint.Uri.AbsoluteUri);
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		/// <summary>

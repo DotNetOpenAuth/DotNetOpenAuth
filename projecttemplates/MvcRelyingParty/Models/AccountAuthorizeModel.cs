@@ -4,11 +4,13 @@
 	using System.Linq;
 	using System.Web;
 
+	using DotNetOpenAuth.OAuth2.Messages;
+
 	public class AccountAuthorizeModel {
-		public string ConsumerApp { get; set; }
+		public string ClientApp { get; set; }
 
-		public bool IsUnsafeRequest { get; set; }
+		public HashSet<string> Scope { get; set; }
 
-		public string VerificationCode { get; set; }
+		public EndUserAuthorizationRequest AuthorizationRequest { get; set; }
 	}
 }

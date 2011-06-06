@@ -10,38 +10,36 @@ namespace RelyingPartyLogic {
 	using System.Linq;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuth;
-	using DotNetOpenAuth.OAuth.ChannelElements;
-	using DotNetOpenAuth.OAuth.Messages;
+	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	public class OAuthServiceProvider {
 		private const string PendingAuthorizationRequestSessionKey = "PendingAuthorizationRequest";
 
 		/// <summary>
+		/// The lock to synchronize initialization of the <see cref="authorizationServer"/> field.
+		/// </summary>
+		private static readonly object InitializerLock = new object();
+
+		/// <summary>
 		/// The shared service description for this web site.
 		/// </summary>
-		private static ServiceProviderDescription serviceDescription;
-
-		private static OAuthServiceProviderTokenManager tokenManager;
+		private static AuthorizationServerDescription authorizationServerDescription;
 
 		/// <summary>
-		/// The shared service provider object.
+		/// The shared authorization server.
 		/// </summary>
-		private static ServiceProvider serviceProvider;
-
-		/// <summary>
-		/// The lock to synchronize initialization of the <see cref="serviceProvider"/> field.
-		/// </summary>
-		private static object initializerLock = new object();
+		private static AuthorizationServer authorizationServer;
 
 		/// <summary>
 		/// Gets the service provider.
 		/// </summary>
 		/// <value>The service provider.</value>
-		public static ServiceProvider ServiceProvider {
+		public static AuthorizationServer AuthorizationServer {
 			get {
 				EnsureInitialized();
-				return serviceProvider;
+				return authorizationServer;
 			}
 		}
 
@@ -49,83 +47,28 @@ namespace RelyingPartyLogic {
 		/// Gets the service description.
 		/// </summary>
 		/// <value>The service description.</value>
-		public static ServiceProviderDescription ServiceDescription {
+		public static AuthorizationServerDescription AuthorizationServerDescription {
 			get {
 				EnsureInitialized();
-				return serviceDescription;
+				return authorizationServerDescription;
 			}
-		}
-
-		public static UserAuthorizationRequest PendingAuthorizationRequest {
-			get { return HttpContext.Current.Session[PendingAuthorizationRequestSessionKey] as UserAuthorizationRequest; }
-			set { HttpContext.Current.Session[PendingAuthorizationRequestSessionKey] = value; }
-		}
-
-		public static Consumer PendingAuthorizationConsumer {
-			get {
-				ITokenContainingMessage message = PendingAuthorizationRequest;
-				if (message == null) {
-					throw new InvalidOperationException();
-				}
-
-				return Database.DataContext.IssuedTokens.OfType<IssuedRequestToken>().Include("Consumer").First(t => t.Token == message.Token).Consumer;
-			}
-		}
-
-		public static void AuthorizePendingRequestToken() {
-			var response = AuthorizePendingRequestTokenAndGetResponse();
-			if (response != null) {
-				serviceProvider.Channel.Send(response);
-			}
-		}
-
-		public static OutgoingWebResponse AuthorizePendingRequestTokenAsWebResponse() {
-			var response = AuthorizePendingRequestTokenAndGetResponse();
-			if (response != null) {
-				return serviceProvider.Channel.PrepareResponse(response);
-			} else {
-				return null;
-			}
-		}
-
-		private static UserAuthorizationResponse AuthorizePendingRequestTokenAndGetResponse() {
-			var pendingRequest = PendingAuthorizationRequest;
-			if (pendingRequest == null) {
-				throw new InvalidOperationException("No pending authorization request to authorize.");
-			}
-
-			ITokenContainingMessage msg = pendingRequest;
-			var token = Database.DataContext.IssuedTokens.OfType<IssuedRequestToken>().First(t => t.Token == msg.Token);
-			token.Authorize();
-
-			PendingAuthorizationRequest = null;
-			var response = serviceProvider.PrepareAuthorizationResponse(pendingRequest);
-			return response;
 		}
 
 		/// <summary>
-		/// Initializes the <see cref="serviceProvider"/> field if it has not yet been initialized.
+		/// Initializes the <see cref="authorizationServer"/> field if it has not yet been initialized.
 		/// </summary>
 		private static void EnsureInitialized() {
-			if (serviceProvider == null) {
-				lock (initializerLock) {
-					if (serviceDescription == null) {
-						var postEndpoint = new MessageReceivingEndpoint(new Uri(Utilities.ApplicationRoot, "OAuth.ashx"), HttpDeliveryMethods.PostRequest);
-						var getEndpoint = new MessageReceivingEndpoint(postEndpoint.Location, HttpDeliveryMethods.GetRequest);
-						serviceDescription = new ServiceProviderDescription {
-							TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-							RequestTokenEndpoint = postEndpoint,
-							AccessTokenEndpoint = postEndpoint,
-							UserAuthorizationEndpoint = getEndpoint,
+			if (authorizationServer == null) {
+				lock (InitializerLock) {
+					if (authorizationServerDescription == null) {
+						authorizationServerDescription = new AuthorizationServerDescription {
+							AuthorizationEndpoint = new Uri(Utilities.ApplicationRoot, "OAuth.ashx"),
+							TokenEndpoint = new Uri(Utilities.ApplicationRoot, "OAuth.ashx"),
 						};
 					}
 
-					if (tokenManager == null) {
-						tokenManager = new OAuthServiceProviderTokenManager();
-					}
-
-					if (serviceProvider == null) {
-						serviceProvider = new ServiceProvider(serviceDescription, tokenManager);
+					if (authorizationServer == null) {
+						authorizationServer = new AuthorizationServer(new OAuthAuthorizationServer());
 					}
 				}
 			}

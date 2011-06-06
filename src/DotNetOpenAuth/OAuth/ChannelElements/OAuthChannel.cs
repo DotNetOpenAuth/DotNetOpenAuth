@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
@@ -31,12 +32,19 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager)
+		/// <param name="securitySettings">The security settings.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings)
 			: this(
 			signingBindingElement,
 			store,
 			tokenManager,
+			securitySettings,
 			new OAuthConsumerMessageFactory()) {
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
+			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 		}
 
 		/// <summary>
@@ -45,12 +53,19 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager)
+		/// <param name="securitySettings">The security settings.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings)
 			: this(
 			signingBindingElement,
 			store,
 			tokenManager,
+			securitySettings,
 			new OAuthServiceProviderMessageFactory(tokenManager)) {
+			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
+			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 		}
 
 		/// <summary>
@@ -59,14 +74,15 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The ITokenManager instance to use.</param>
-		/// <param name="messageTypeProvider">
-		/// An injected message type provider instance.
+		/// <param name="securitySettings">The security settings.</param>
+		/// <param name="messageTypeProvider">An injected message type provider instance.
 		/// Except for mock testing, this should always be one of
-		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.
-		/// </param>
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, IMessageFactory messageTypeProvider)
-			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager)) {
+		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
+		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider)
+			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
 			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 
@@ -116,36 +132,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="request">The HTTP request to search.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			var fields = new Dictionary<string, string>();
-
 			// First search the Authorization header.
 			string authorization = request.Headers[HttpRequestHeader.Authorization];
-			if (authorization != null) {
-				string[] authorizationSections = authorization.Split(';'); // TODO: is this the right delimiter?
-				string oauthPrefix = Protocol.AuthorizationHeaderScheme + " ";
-
-				// The Authorization header may have multiple uses, and OAuth may be just one of them.
-				// Go through each one looking for an OAuth one.
-				foreach (string auth in authorizationSections) {
-					string trimmedAuth = auth.Trim();
-					if (trimmedAuth.StartsWith(oauthPrefix, StringComparison.Ordinal)) {
-						// We found an Authorization: OAuth header.  
-						// Parse it according to the rules in section 5.4.1 of the V1.0 spec.
-						foreach (string stringPair in trimmedAuth.Substring(oauthPrefix.Length).Split(',')) {
-							string[] keyValueStringPair = stringPair.Trim().Split('=');
-							string key = Uri.UnescapeDataString(keyValueStringPair[0]);
-							string value = Uri.UnescapeDataString(keyValueStringPair[1].Trim('"'));
-							fields.Add(key, value);
-						}
-					}
-				}
-
-				fields.Remove("realm"); // ignore the realm parameter, since we don't use it, and it must be omitted from signature base string.
-			}
+			var fields = MessagingUtilities.ParseAuthorizationHeader(Protocol.AuthorizationHeaderScheme, authorization).ToDictionary();
+			fields.Remove("realm"); // ignore the realm parameter, since we don't use it, and it must be omitted from signature base string.
 
 			// Scrape the entity
 			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
-				ContentType contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
+				var contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
 				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
 					foreach (string key in request.Form) {
 						if (key != null) {
@@ -265,8 +259,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="signingBindingElement">The signing binding element.</param>
 		/// <param name="store">The nonce store.</param>
 		/// <param name="tokenManager">The token manager.</param>
-		/// <returns>An array of binding elements used to initialize the channel.</returns>
-		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager) {
+		/// <param name="securitySettings">The security settings.</param>
+		/// <returns>
+		/// An array of binding elements used to initialize the channel.
+		/// </returns>
+		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
+			Contract.Requires(securitySettings != null);
+
 			var bindingElements = new List<IChannelBindingElement> {
 				new OAuthHttpMethodBindingElement(),
 				signingBindingElement,
@@ -275,8 +274,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			};
 
 			var spTokenManager = tokenManager as IServiceProviderTokenManager;
-			if (spTokenManager != null) {
-				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager));
+			var serviceProviderSecuritySettings = securitySettings as ServiceProviderSecuritySettings;
+			if (spTokenManager != null && serviceProviderSecuritySettings != null) {
+				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager, serviceProviderSecuritySettings));
 			}
 
 			return bindingElements.ToArray();
@@ -346,20 +346,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			httpRequest = (HttpWebRequest)WebRequest.Create(recipientBuilder.Uri);
 			httpRequest.Method = GetHttpMethod(requestMessage);
 
-			StringBuilder authorization = new StringBuilder();
-			authorization.Append(Protocol.AuthorizationHeaderScheme);
-			authorization.Append(" ");
-			foreach (var pair in fields) {
-				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
-				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
-				authorization.Append(key);
-				authorization.Append("=\"");
-				authorization.Append(value);
-				authorization.Append("\",");
-			}
-			authorization.Length--; // remove trailing comma
-
-			httpRequest.Headers.Add(HttpRequestHeader.Authorization, authorization.ToString());
+			httpRequest.Headers.Add(HttpRequestHeader.Authorization, MessagingUtilities.AssembleAuthorizationHeader(Protocol.AuthorizationHeaderScheme, fields));
 
 			if (hasEntity) {
 				// WARNING: We only set up the request stream for the caller if there is

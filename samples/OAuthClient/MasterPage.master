@@ -1,0 +1,23 @@
+﻿<%@ Master Language="C#" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<script runat="server">
+
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+	<title>DotNetOpenAuth OAuth 2.0 Client sample</title>
+	<asp:ContentPlaceHolder ID="head" runat="server"/>
+</head>
+<body>
+	<form id="form1" runat="server">
+	<h1>DotNetOpenAuth OAuth 2.0 Client ASP.NET WebForms sample</h1>
+	<div>
+		<asp:ContentPlaceHolder ID="Body" runat="server">
+		</asp:ContentPlaceHolder>
+	</div>
+	</form>
+</body>
+</html>

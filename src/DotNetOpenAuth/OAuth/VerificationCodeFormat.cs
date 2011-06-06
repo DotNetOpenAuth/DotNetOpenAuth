@@ -37,6 +37,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Alikes", Justification = "Breaking change of existing API")]
 		[SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "AlphaNumeric", Justification = "Breaking change of existing API")]
+		[SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "LookAlikes", Justification = "Breaking change of existing API")]
 		AlphaNumericNoLookAlikes,
 
 		/// <summary>

@@ -41,6 +41,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="audience">The audience.  May be <c>null</c> to avoid audience checking.</param>
 		/// <param name="decryptor">The decryptor to use to decrypt the token, if necessary..</param>
 		/// <exception cref="InformationCardException">Thrown for any problem decoding or decrypting the token.</exception>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type."), SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
 			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(tokenXml));
 			Contract.Requires<ArgumentException>(decryptor != null || !IsEncrypted(tokenXml));
@@ -64,7 +65,14 @@ namespace DotNetOpenAuth.InfoCard {
 				}
 			}
 
-			this.Xml = new XPathDocument(new StringReader(decryptedString)).CreateNavigator();
+			var stringReader = new StringReader(decryptedString);
+			try {
+				this.Xml = new XPathDocument(stringReader).CreateNavigator();
+			} catch {
+				stringReader.Dispose();
+				throw;
+			}
+
 			Logger.InfoCard.DebugFormat("Incoming SAML token, after any decryption: {0}", this.Xml.InnerXml);
 			this.AuthorizationContext = TokenUtility.AuthenticateToken(this.Xml.ReadSubtree(), audience);
 		}
@@ -191,13 +199,26 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>
 		/// 	<c>true</c> if the specified token XML is encrypted; otherwise, <c>false</c>.
 		/// </returns>
-		[Pure]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive"), Pure]
 		internal static bool IsEncrypted(string tokenXml) {
 			Contract.Requires<ArgumentNullException>(tokenXml != null);
 
-			using (XmlReader tokenReader = XmlReader.Create(new StringReader(tokenXml))) {
+			var stringReader = new StringReader(tokenXml);
+			XmlReader tokenReader;
+			try {
+				tokenReader = XmlReader.Create(stringReader);
+			} catch {
+				stringReader.Dispose();
+				throw;
+			}
+
+			try {
 				Contract.Assume(tokenReader != null); // CC missing for XmlReader.Create
 				return IsEncrypted(tokenReader);
+			} catch {
+				IDisposable disposableReader = tokenReader;
+				disposableReader.Dispose();
+				throw;
 			}
 		}
 

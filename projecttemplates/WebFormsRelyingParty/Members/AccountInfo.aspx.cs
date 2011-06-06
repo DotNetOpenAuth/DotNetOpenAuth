@@ -20,16 +20,16 @@ namespace WebFormsRelyingParty.Members {
 			Database.LoggedInUser.AuthenticationTokens.Load();
 			this.Repeater1.DataSource = Database.LoggedInUser.AuthenticationTokens;
 
-			if (!Database.LoggedInUser.IssuedTokens.IsLoaded) {
-				Database.LoggedInUser.IssuedTokens.Load();
+			if (!Database.LoggedInUser.ClientAuthorizations.IsLoaded) {
+				Database.LoggedInUser.ClientAuthorizations.Load();
 			}
-			this.tokenListRepeater.DataSource = Database.LoggedInUser.IssuedTokens;
-			foreach (var token in Database.LoggedInUser.IssuedTokens) {
-				if (!token.ConsumerReference.IsLoaded) {
-					token.ConsumerReference.Load();
+			this.tokenListRepeater.DataSource = Database.LoggedInUser.ClientAuthorizations;
+			foreach (var token in Database.LoggedInUser.ClientAuthorizations) {
+				if (!token.ClientReference.IsLoaded) {
+					token.ClientReference.Load();
 				}
 			}
-			this.authorizedClientsPanel.Visible = Database.LoggedInUser.IssuedTokens.Count > 0;
+			this.authorizedClientsPanel.Visible = Database.LoggedInUser.ClientAuthorizations.Count > 0;
 
 			if (!IsPostBack) {
 				this.Repeater1.DataBind();
@@ -71,14 +71,14 @@ namespace WebFormsRelyingParty.Members {
 		}
 
 		protected void revokeToken_Command(object sender, CommandEventArgs e) {
-			string token = (string)e.CommandArgument;
-			var tokenToRevoke = Database.DataContext.IssuedTokens.FirstOrDefault(t => t.Token == token && t.User.UserId == Database.LoggedInUser.UserId);
+			int authorizationId = Convert.ToInt32(e.CommandArgument);
+			var tokenToRevoke = Database.DataContext.ClientAuthorizations.FirstOrDefault(a => a.AuthorizationId == authorizationId && a.User.UserId == Database.LoggedInUser.UserId);
 			if (tokenToRevoke != null) {
 				Database.DataContext.DeleteObject(tokenToRevoke);
 			}
 
 			this.tokenListRepeater.DataBind();
-			this.noAuthorizedClientsPanel.Visible = Database.LoggedInUser.IssuedTokens.Count == 0;
+			this.noAuthorizedClientsPanel.Visible = Database.LoggedInUser.ClientAuthorizations.Count == 0;
 		}
 
 		private void AddIdentifier(string claimedId, string friendlyId) {

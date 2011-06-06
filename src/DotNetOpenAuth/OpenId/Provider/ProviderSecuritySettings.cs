@@ -24,6 +24,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal const bool ProtectDownlevelReplayAttacksDefault = true;
 
 		/// <summary>
+		/// The default value for the <see cref="EncodeAssociationSecretsInHandles"/> property.
+		/// </summary>
+		internal const bool EncodeAssociationSecretsInHandlesDefault = true;
+
+		/// <summary>
 		/// The default value for the <see cref="SignOutgoingExtensions"/> property.
 		/// </summary>
 		internal const bool SignOutgoingExtensionsDefault = true;
@@ -100,6 +105,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <value>The default value is <see cref="UnsolicitedAssertionVerificationLevel.RequireSuccess"/>.</value>
 		public UnsolicitedAssertionVerificationLevel UnsolicitedAssertionVerification { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the Provider should ease the burden of storing associations
+		/// by encoding them in signed, encrypted form into the association handles themselves, storing only
+		/// a few rotating, private symmetric keys in the Provider's store instead.
+		/// </summary>
+		/// <value>The default value for this property is <c>true</c>.</value>
+		public bool EncodeAssociationSecretsInHandles { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether OpenID 1.x relying parties that may not be

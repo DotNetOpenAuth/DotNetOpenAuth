@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DataClasses">
+  <DataContextMoniker Name="/DataClassesDataContext" />
+  <nestedChildShapes>
+    <classShape Id="696d2c69-040e-411d-9257-bb664b743834" absoluteBounds="0.5, 0.5, 2.125, 1.3862939453125">
+      <DataClassMoniker Name="/DataClassesDataContext/User" />
+      <nestedChildShapes>
+        <elementListCompartment Id="cd90aeff-476c-44a9-897f-a986e4a8305b" absoluteBounds="0.515, 0.96, 2.0949999999999998, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="f909becb-85b1-4fe6-bb16-3feb3e4fe3ee" absoluteBounds="0.5, 3.5, 2, 1.7708968098958327">
+      <DataClassMoniker Name="/DataClassesDataContext/Client" />
+      <nestedChildShapes>
+        <elementListCompartment Id="464308c4-d112-4448-b0c9-d9b82fb0ca4e" absoluteBounds="0.515, 3.96, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" absoluteBounds="3.5, 3.125, 2, 1.9631982421874996">
+      <DataClassMoniker Name="/DataClassesDataContext/ClientAuthorization" />
+      <nestedChildShapes>
+        <elementListCompartment Id="403126d0-3d2a-4af4-b0b8-c489a830bbd4" absoluteBounds="3.515, 3.585, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="a63562a7-acf2-4ed9-9686-52a1ad85633e" absoluteBounds="1.375, 6.375, 2, 1.3862939453124996">
+      <DataClassMoniker Name="/DataClassesDataContext/Nonce" />
+      <nestedChildShapes>
+        <elementListCompartment Id="9e4514ef-bc7b-4179-88e6-05363bf6ee5e" absoluteBounds="1.39, 6.835, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.5 : 4.29409912109375); (3.5 : 4.29409912109375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/DataClassesDataContext/Client/Client_ClientAuthorization" />
+      <nodes>
+        <classShapeMoniker Id="f909becb-85b1-4fe6-bb16-3feb3e4fe3ee" />
+        <classShapeMoniker Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(2.59375 : 1.8862939453125); (2.59375 : 3.28125); (3.5 : 3.28125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/DataClassesDataContext/User/User_ClientAuthorization" />
+      <nodes>
+        <classShapeMoniker Id="696d2c69-040e-411d-9257-bb664b743834" />
+        <classShapeMoniker Id="895ebbc8-8352-4c04-9e53-b8e6c8302d36" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="93df6fa9-cc66-44a9-8885-960b1e670dd7" absoluteBounds="4.125, 6.25, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/DataClassesDataContext/SymmetricCryptoKey" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0b486eb8-31a4-4f11-b58f-09540c56319b" absoluteBounds="4.14, 6.71, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

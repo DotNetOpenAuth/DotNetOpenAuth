@@ -19,6 +19,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 	internal class OAuthCoordinator : CoordinatorBase<WebConsumer, ServiceProvider> {
 		private ConsumerDescription consumerDescription;
 		private ServiceProviderDescription serviceDescription;
+		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
 
 		/// <summary>Initializes a new instance of the <see cref="OAuthCoordinator"/> class.</summary>
 		/// <param name="consumerDescription">The description of the consumer.</param>
@@ -50,8 +52,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 			serviceTokenManager.AddConsumer(this.consumerDescription);
 
 			// Prepare channels that will pass messages directly back and forth.
-			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, (IConsumerTokenManager)consumerTokenManager);
-			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(spSigningElement, (IServiceProviderTokenManager)serviceTokenManager);
+			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, (IConsumerTokenManager)consumerTokenManager, this.consumerSecuritySettings);
+			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(spSigningElement, (IServiceProviderTokenManager)serviceTokenManager, this.serviceProviderSecuritySettings);
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 

@@ -38,6 +38,188 @@ ul ul li { padding-bottom: 0; }
 dt { font-weight: bold }
 --></style>
 
+<h3>NUnit 2.5.9 - Version 2.5.9.10348 - December 14, 2010</h3>
+
+<h4>Bug Fixes</h4>
+
+<ul>
+<li>423611 	Bug 686560 AppDomainUnloadedException not fixed
+<li>498664 	SetUp failure reported as FailureSite.Test
+<li>602761 	nunit-agent hangs after tests complete
+<li>612052 	NUnit-agent should be reused on reload
+<li>655882 	Make CategoryAttribute inherited
+<li>666800 	Throws.Nothing doesn't work properly
+<li>669317 	Loading test in separate process causes exception under Mono+Linux
+<li>669684 	Change Menu text from "Recent Files" to "Recent Projects"
+<li>669689 	Info from last run remains while loading a new project
+<li>671349	Add doc page for SetUICultureAttribute
+<li>671432	Upgrade NAnt to 0.90 or 0.91
+<li>673691 	nunit.exe session degrades with ever-lengthening "Reloading..." phase when test project is recompiled
+<li>674718	Reload when assembly changes setting disabled on Linux
+<li>674860	Using() modifier missing on NUnit.Framework.Contains.Item()
+<li>684513 	NUnit 2.5.8 Build Problems
+<li>684598 	Number of asserts in XML result file always stays 0
+<li>684821 	ResultSummarizer doesn't count tests with [RequiresSTA]
+</ul>
+<style><!--
+li { padding-bottom: .5em; }
+ul ul li { padding-bottom: 0; }
+dt { font-weight: bold }
+--></style>
+
+<h3>NUnit 2.5.8 - Version 2.5.8.10295 - October 22, 2010</h3>
+
+<h4>General</h4>
+
+<ul>
+<li>The test file mock-assembly.dll has been enhanced to contain examples of all
+types of test suites for use in development of custom test reports.
+</ul>
+
+<h4>Framework</h4>
+
+<ul>
+<li>SubDirectoryConstraint has been removed and is replaced by SubPathConstraint, which operates on paths without the need to access the underlying directories.
+<li>Custom attributes may now be derived from ExplicitAttribute.
+<li>New key words "Windows7" and "Windows2008ServerR2" are recognized by the PlatformAttribute.
+<li>A warning is now given if a test changes the current directory.
+</ul>
+
+<h4>Console Runner</h4>
+
+<ul>
+<li>A new /trace option may be used to set NUnit's internal trace level for a console run.
+</ul>
+
+<h4>Gui Runner</h4>
+
+<ul>
+<li>Stability problems with the NUnit Gui under Linux have been resolved and NUnit 2.5.8 is the recommended release for all platforms. Various cosmetic fixes have been made under Linux as well, so that the Gui functions in the same way as it does under Windows.
+<li>A new setting dialog allows control of NUnit's InternalTrace facility, which was previously controlled by an entry in the config file.
+<li>Tests run out of process may be debugged by attaching to the nunit-agent process once,
+since the same process is now used across multiple reloads of the test assembly.
+</ul>
+
+<h4>Bug Fixes</h4>
+
+<ul>
+<li>487999  	 RequiresThreadAttribute not working on Windows 7 64-bit
+<li>491300  	 Self containing enumerables cause stack overflow when compared for equality
+<li>524474  	 NUnit GUI issue: /exclude categories are saved each time
+<li>602761  	 nunit-agent hangs after tests complete
+<li>603088  	 NUnit Gui: Project Config Change from Menu Does Not Change AssemblyWatcher
+<li>608897  	 Incorrect program name in Test Assemblies display under Mono
+<li>612052  	 NUnit-agent should be reused on reload
+<li>613031  	 Subclasses of ExplicitAttribute ignored
+<li>615340  	 Give warning if CurrentDirectory is changed
+<li>624603  	 Outdated copyright notice
+<li>631620  	 UnauthorizedAccessException in DirectoryAssert
+<li>631809  	 Misleading doc of CollectionAssert.AreEqual() and .AreEquivalent()
+<li>633884  	 TestCaseSource does not use Arguments, Categories etc as described in documentation for 2.5.7
+<li>641423  	 Timeout test fails under Mono on Linux
+<li>644252  	 Memory leak in ParameterizedMethodSuite
+<li>644643  	 NUnit uses fonts which may not be present on Linux
+<li>644682  	 Tab text not properly aligned under linux
+<li>644684  	 Tree display text is sometimes centered under linux
+<li>645430  	 Status bar panels not sized correctly under Linux
+<li>650598  	 Exception thrown when nunit-console run from networked drive on unit-tests built with .Net 4
+<li>654788  	 TestContext is null when the test/fixture has a timeout attribute
+<li>655674  	 New Fixture Object Suite requires pre-constructed objects to have a no-arg constructor
+<li>657797  	 Remove InternalTrace settings from config file
+<li>664081  	 Add Server2008 R2 and Windows 7 to PlatformAttribute
+<li>665236  	 Support for Mono 4.0 profile not detected in Linux
+</ul>
+<style><!--
+li { padding-bottom: .5em; }
+ul ul li { padding-bottom: 0; }
+dt { font-weight: bold }
+--></style>
+
+<h3>NUnit 2.5.7 - Version 2.5.7.10213 - August 1, 2010</h3>
+
+<h4>Features</h4>
+
+<ul>
+<li>The new <b>TestContext</b> class allows tests to
+access information about themselves. The following properties
+are supported:
+<ul>
+<li><b>TestName</b> gets the name of the test
+<li><b>Properties</b> gets the test properties dictionary
+<li><b>State</b> gets the TestState
+<li><b>Status</b> gets the TestStatus
+</ul>
+<br><b>Notes:</b> 
+<ol>
+<li>This is an experimental feature and could change in future releases. It is not included in the docs at this time.
+<li><b>TestState</b> and <b>TestStatus</b> are intended for use in a TearDown method. Consult the intellisense for values of each enumeration. 
+<li><b>TestStatus</b> should preferred over <b>TestState</b> for compatibility with future releases.
+</ol>
+</ul>
+
+<h4>Bug Fixes</h4>
+
+<ul>
+<li>570162  FileNotFoundException when loading .nunit file
+<li>595683  NUnit console runner fails to load assemblies
+<li>611325  Allow Teardown to detect if last test failed
+<li>611938  Generic Test Instances disappear
+</ul>
+<style><!--
+li { padding-bottom: .5em; }
+ul ul li { padding-bottom: 0; }
+dt { font-weight: bold }
+--></style>
+
+<h3>NUnit 2.5.6 - Version 2.5.6.10205 - July 24, 2010</h3>
+
+<h4>Features</h4>
+
+<ul>
+<li><b>ReusableConstraint</b> provides reusability of constraint
+expressions within the test code. This feature is experimental.
+<li>The <b>Mono 4.0</b> profile is now listed in the Gui when support for it is detected.
+<li>Multiple test names may be supplied to the console <b>/run</b> option.
+<li><b>Dictionaries</b> and <b>Hashtables</b> may be tested for equality without regard to order of entries.
+<li><b>PNunit</b> has been updated to match the latest release available.
+<li><b>DirectoryAssert</b>, xxxx and xxx are now marked as Obsolete.
+</ul>
+
+<h4>Bug Fixes</h4>
+
+<ul>
+<li>441022 	Setup not called when test method inherited
+<li>498656 	TestCase should show array values in GUI
+<li>532488 	Constraints from ConstraintExpression/ConstraintBuilder are not reusable
+<li>548841  [Explicit] does not get overridden if there is another category exclude
+<li>570162 	FileNotFoundException when loading .nunit file
+<li>571256 	NUnit 2.5.5 Console Runner Requires /framework flag to run with .NET 4
+<li>574408 	DirectoryAssert fails to recognise the sub folder using IsWithin
+<li>590717 	Category contains dash or trail spaces is not selectable
+<li>590970 	Static TestFixtureSetUp/TestFixtureTearDown methods in base classes are not run
+<li>591622 	When SetUp method fails, no clear indication in GUI
+<li>595996 	Missing files in source package
+<li>600554 	NUnit uses wrong priority-scheme for addins
+<li>600555 	NullReferenceException when ISuiteBuilder.BuildFrom(Type) returns null
+<li>600627 	Assertion message formatted poorly by PropertyConstraint
+<li>601108 	Duplicate test using abstract test fixtures
+<li>601129 	Mono 4.0 not supported
+<li>601645 	Parameterized test should try to convert data type from source to parameter
+<li>602798 	NUnitConfiguration.MonoExePath returns wrong path
+<li>604861 	Console runner /run option should allow multiple test names
+<li>605432  ToString not working properly for some properties
+<li>605793 	Multiple instances of Nunit runners, which use nunit-agent, cannot be run in parallel
+<li>607924 	PNUnit is out of date
+<li>608875 	NUnit Equality Comparer incorrectly defines equality for Dictionary objects
+<li>606548 	Deprecate Directory Assert
+<li>609509  Test assembly file lock in version 2.5.5 
+</ul>
+<style><!--
+li { padding-bottom: .5em; }
+ul ul li { padding-bottom: 0; }
+dt { font-weight: bold }
+--></style>
+
 <h3>NUnit 2.5.5 - Version 2.5.5.10112 - April 22, 2010</h3>
 
 <h4>Features</h4>
@@ -1161,7 +1343,7 @@ this release may be removed or changed in future releases.
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -1180,7 +1362,7 @@ this release may be removed or changed in future releases.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

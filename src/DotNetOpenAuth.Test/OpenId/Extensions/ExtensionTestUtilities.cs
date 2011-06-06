@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -33,8 +34,10 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Protocol protocol,
 			IEnumerable<IOpenIdMessageExtension> requests,
 			IEnumerable<IOpenIdMessageExtension> responses) {
-			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
-			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings);
+			var securitySettings = new ProviderSecuritySettings();
+			var cryptoKeyStore = new MemoryCryptoKeyStore();
+			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
+			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
@@ -57,7 +60,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 				},
 				op => {
 					RegisterExtension(op.Channel, Mocks.MockOpenIdExtension.Factory);
-					op.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+					var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
+					op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
 					var response = new PositiveAssertionResponse(request);
 					var receivedRequests = request.Extensions.Cast<IOpenIdMessageExtension>();

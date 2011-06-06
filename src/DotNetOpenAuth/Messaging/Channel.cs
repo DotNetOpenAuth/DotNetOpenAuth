@@ -17,14 +17,17 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Net;
 	using System.Net.Cache;
 	using System.Net.Mime;
+	using System.Runtime.Serialization.Json;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// Manages sending direct messages to a remote party and receiving responses.
 	/// </summary>
+	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable.")]
 	[ContractVerification(true)]
 	[ContractClass(typeof(ChannelContract))]
 	public abstract class Channel : IDisposable {
@@ -40,19 +43,27 @@ namespace DotNetOpenAuth.Messaging {
 		protected internal const string HttpFormUrlEncoded = "application/x-www-form-urlencoded";
 
 		/// <summary>
+		/// The content-type used for JSON serialized objects.
+		/// </summary>
+		protected internal const string JsonEncoded = "application/json";
+
+		/// <summary>
+		/// The "text/javascript" content-type that some servers return instead of the standard <see cref="JsonEncoded"/> one.
+		/// </summary>
+		protected internal const string JsonTextEncoded = "text/javascript";
+
+		/// <summary>
+		/// The content-type for plain text.
+		/// </summary>
+		[SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "PlainText", Justification = "Not 'Plaintext' in the crypographic sense.")]
+		protected internal const string PlainTextEncoded = "text/plain";
+
+		/// <summary>
 		/// The content-type used on HTTP POST requests where the POST entity is a
 		/// URL-encoded series of key=value pairs.
 		/// This includes the <see cref="PostEntityEncoding"/> character encoding.
 		/// </summary>
 		protected internal static readonly ContentType HttpFormUrlEncodedContentType = new ContentType(HttpFormUrlEncoded) { CharSet = PostEntityEncoding.WebName };
-
-		/// <summary>
-		/// The maximum allowable size for a 301 Redirect response before we send
-		/// a 200 OK response with a scripted form POST with the parameters instead
-		/// in order to ensure successfully sending a large payload to another server
-		/// that might have a maximum allowable size restriction on its GET request.
-		/// </summary>
-		private const int IndirectMessageGetToPostThreshold = 2 * 1024; // 2KB, recommended by OpenID group
 
 		/// <summary>
 		/// The HTML that should be returned to the user agent as part of a 301 Redirect.
@@ -120,6 +131,11 @@ namespace DotNetOpenAuth.Messaging {
 		private RequestCachePolicy cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
 
 		/// <summary>
+		/// Backing field for the <see cref="MaximumIndirectMessageUrlLength"/> property.
+		/// </summary>
+		private int maximumIndirectMessageUrlLength = Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumIndirectMessageUrlLength;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
 		/// </summary>
 		/// <param name="messageTypeProvider">
@@ -132,6 +148,13 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
+			this.XmlDictionaryReaderQuotas = new XmlDictionaryReaderQuotas {
+				MaxArrayLength = 1,
+				MaxDepth = 2,
+				MaxBytesPerRead = 8 * 1024,
+				MaxStringContentLength = 16 * 1024,
+			};
+
 			this.outgoingBindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
 			this.incomingBindingElements = new List<IChannelBindingElement>(this.outgoingBindingElements);
 			this.incomingBindingElements.Reverse();
@@ -157,9 +180,27 @@ namespace DotNetOpenAuth.Messaging {
 		public IDirectWebRequestHandler WebRequestHandler { get; set; }
 
 		/// <summary>
+		/// Gets or sets the maximum allowable size for a 301 Redirect response before we send
+		/// a 200 OK response with a scripted form POST with the parameters instead
+		/// in order to ensure successfully sending a large payload to another server
+		/// that might have a maximum allowable size restriction on its GET request.
+		/// </summary>
+		/// <value>The default value is 2048.</value>
+		public int MaximumIndirectMessageUrlLength {
+			get {
+				return this.maximumIndirectMessageUrlLength;
+			}
+
+			set {
+				Contract.Requires<ArgumentOutOfRangeException>(value >= 500 && value <= 4096);
+				this.maximumIndirectMessageUrlLength = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the message descriptions.
 		/// </summary>
-		internal MessageDescriptionCollection MessageDescriptions {
+		internal virtual MessageDescriptionCollection MessageDescriptions {
 			get {
 				return this.messageDescriptions;
 			}
@@ -217,11 +258,12 @@ namespace DotNetOpenAuth.Messaging {
 		protected internal bool IsDisposed { get; set; }
 
 		/// <summary>
-		/// Gets a tool that can figure out what kind of message is being received
+		/// Gets or sets a tool that can figure out what kind of message is being received
 		/// so it can be deserialized.
 		/// </summary>
-		protected IMessageFactory MessageFactory {
+		protected virtual IMessageFactory MessageFactory {
 			get { return this.messageTypeProvider; }
+			set { this.messageTypeProvider = value; }
 		}
 
 		/// <summary>
@@ -238,6 +280,12 @@ namespace DotNetOpenAuth.Messaging {
 				this.cachePolicy = value;
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the XML dictionary reader quotas.
+		/// </summary>
+		/// <value>The XML dictionary reader quotas.</value>
+		protected virtual XmlDictionaryReaderQuotas XmlDictionaryReaderQuotas { get; set; }
 
 		/// <summary>
 		/// Sends an indirect message (either a request or response) 
@@ -678,7 +726,7 @@ namespace DotNetOpenAuth.Messaging {
 			try {
 				recipient = request.GetRecipient();
 			} catch (ArgumentException ex) {
-				Logger.Messaging.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
+				Logger.Messaging.WarnFormat("Unrecognized HTTP request: {0}", ex);
 				return null;
 			}
 
@@ -694,6 +742,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
 			Contract.Requires<ArgumentNullException>(fields != null);
 
+			this.FilterReceivedFields(fields);
 			IProtocolMessage message = this.MessageFactory.GetNewRequestMessage(recipient, fields);
 
 			// If there was no data, or we couldn't recognize it as a message, abort.
@@ -720,6 +769,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
+			Contract.Requires<ArgumentException>((message.HttpMethods & (HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest)) != 0);
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			Contract.Assert(message != null && message.Recipient != null);
@@ -727,10 +777,30 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Assert(message != null && message.Recipient != null);
 			var fields = messageAccessor.Serialize();
 
-			// First try creating a 301 redirect, and fallback to a form POST
-			// if the message is too big.
-			OutgoingWebResponse response = this.Create301RedirectResponse(message, fields);
-			if (response.Headers[HttpResponseHeader.Location].Length > IndirectMessageGetToPostThreshold) {
+			OutgoingWebResponse response = null;
+			bool tooLargeForGet = false;
+			if ((message.HttpMethods & HttpDeliveryMethods.GetRequest) == HttpDeliveryMethods.GetRequest) {
+				bool payloadInFragment = false;
+				var httpIndirect = message as IHttpIndirectResponse;
+				if (httpIndirect != null) {
+					payloadInFragment = httpIndirect.Include301RedirectPayloadInFragment;
+				}
+
+				// First try creating a 301 redirect, and fallback to a form POST
+				// if the message is too big.
+				response = this.Create301RedirectResponse(message, fields, payloadInFragment);
+				tooLargeForGet = response.Headers[HttpResponseHeader.Location].Length > this.MaximumIndirectMessageUrlLength;
+			}
+
+			// Make sure that if the message is too large for GET that POST is allowed.
+			if (tooLargeForGet) {
+				ErrorUtilities.VerifyProtocol(
+					(message.HttpMethods & HttpDeliveryMethods.PostRequest) == HttpDeliveryMethods.PostRequest,
+					"Message too large for a HTTP GET, and HTTP POST is not allowed for this message type.");
+			}
+
+			// If GET didn't work out, for whatever reason...
+			if (response == null || tooLargeForGet) {
 				response = this.CreateFormPostResponse(message, fields);
 			}
 
@@ -743,9 +813,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to forward.</param>
 		/// <param name="fields">The pre-serialized fields from the message.</param>
+		/// <param name="payloadInFragment">if set to <c>true</c> the redirect will contain the message payload in the #fragment portion of the URL rather than the ?querystring.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		[Pure]
-		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
+		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields, bool payloadInFragment = false) {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(message.Recipient != null, MessagingStrings.DirectedMessageMissingRecipient);
 			Contract.Requires<ArgumentNullException>(fields != null);
@@ -755,7 +826,12 @@ namespace DotNetOpenAuth.Messaging {
 			// such as WebSense.
 			WebHeaderCollection headers = new WebHeaderCollection();
 			UriBuilder builder = new UriBuilder(message.Recipient);
-			MessagingUtilities.AppendQueryArgs(builder, fields);
+			if (payloadInFragment) {
+				builder.AppendFragmentArgs(fields);
+			} else {
+				builder.AppendQueryArgs(fields);
+			}
+
 			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
 			headers.Add(HttpResponseHeader.ContentType, "text/html; charset=utf-8");
 			Logger.Http.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
@@ -822,7 +898,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="RequestCore"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCore"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
 		protected virtual HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
@@ -842,6 +918,42 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
 		protected abstract OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response);
+
+		/// <summary>
+		/// Serializes the given message as a JSON string.
+		/// </summary>
+		/// <param name="message">The message to serialize.</param>
+		/// <returns>A JSON string.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		protected virtual string SerializeAsJson(IMessage message) {
+			Contract.Requires<ArgumentNullException>(message != null);
+
+			MessageDictionary messageDictionary = this.MessageDescriptions.GetAccessor(message);
+			using (var memoryStream = new MemoryStream()) {
+				using (var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, Encoding.UTF8)) {
+					MessageSerializer.Serialize(messageDictionary, jsonWriter);
+					jsonWriter.Flush();
+				}
+
+				string json = Encoding.UTF8.GetString(memoryStream.ToArray());
+				return json;
+			}
+		}
+
+		/// <summary>
+		/// Deserializes from flat data from a JSON object.
+		/// </summary>
+		/// <param name="json">A JSON string.</param>
+		/// <returns>The simple "key":"value" pairs from a JSON-encoded object.</returns>
+		protected virtual IDictionary<string, string> DeserializeFromJson(string json) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(json));
+
+			var dictionary = new Dictionary<string, string>();
+			using (var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), this.XmlDictionaryReaderQuotas)) {
+				MessageSerializer.DeserializeJsonAsFlatDictionary(dictionary, jsonReader);
+			}
+			return dictionary;
+		}
 
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
@@ -959,7 +1071,7 @@ namespace DotNetOpenAuth.Messaging {
 			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
 			var fields = messageAccessor.Serialize();
 
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			var httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
 
@@ -1126,6 +1238,14 @@ namespace DotNetOpenAuth.Messaging {
 			// message deserializer did for us.  It would be too late to do it here since
 			// they might look initialized by the time we have an IProtocolMessage instance.
 			message.EnsureValidMessage();
+		}
+
+		/// <summary>
+		/// Allows preprocessing and validation of message data before an appropriate message type is
+		/// selected or deserialized.
+		/// </summary>
+		/// <param name="fields">The received message data.</param>
+		protected virtual void FilterReceivedFields(IDictionary<string, string> fields) {
 		}
 
 		/// <summary>

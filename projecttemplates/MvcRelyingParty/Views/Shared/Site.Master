@@ -43,7 +43,7 @@
 			</div>
 		</div>
 	</div>
-	<% if (Request.Url.IsLoopback) { %>
+	<% if (false && Request.Url.IsLoopback) { /* for some reason, Request.Url.IsLoopback fails on Casini. TODO: learn more and fix this. */%>
 		<script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery-1.3.2.min.js") %>'></script>
 		<script type="text/javascript" src='<%= Url.Content("~/Scripts/jquery-ui-personalized-1.6rc6.min.js") %>'></script>
 	<% } else { %>

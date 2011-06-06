@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
@@ -58,8 +59,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the type to use for storing application state.
 		/// </summary>
 		[ConfigurationProperty(StoreConfigName)]
-		public TypeConfigurationElement<IProviderApplicationStore> ApplicationStore {
-			get { return (TypeConfigurationElement<IProviderApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IProviderApplicationStore>(); }
+		public TypeConfigurationElement<IOpenIdApplicationStore> ApplicationStore {
+			get { return (TypeConfigurationElement<IOpenIdApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IOpenIdApplicationStore>(); }
 			set { this[StoreConfigName] = value; }
 		}
 	}

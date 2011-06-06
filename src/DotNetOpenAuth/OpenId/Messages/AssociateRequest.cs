@@ -129,18 +129,18 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Creates a Provider's response to an incoming association request.
 		/// </summary>
-		/// <param name="associationStore">The association store where a new association (if created) will be stored.  Must not be null.</param>
+		/// <param name="associationStore">The association store.</param>
 		/// <param name="securitySettings">The security settings on the Provider.</param>
 		/// <returns>
 		/// The appropriate association response that is ready to be sent back to the Relying Party.
 		/// </returns>
 		/// <remarks>
-		/// <para>If an association is created, it will be automatically be added to the provided
+		///   <para>If an association is created, it will be automatically be added to the provided
 		/// association store.</para>
-		/// <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
+		///   <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
-		internal IProtocolMessage CreateResponse(IAssociationStore<AssociationRelyingPartyType> associationStore, ProviderSecuritySettings securitySettings) {
+		internal IProtocolMessage CreateResponse(IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(associationStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
@@ -152,8 +152,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				// Create and store the association if this is a successful response.
 				var successResponse = response as AssociateSuccessfulResponse;
 				if (successResponse != null) {
-					Association association = successResponse.CreateAssociation(this, securitySettings);
-					associationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+					successResponse.CreateAssociation(this, associationStore, securitySettings);
 				}
 			} else {
 				response = this.CreateUnsuccessfulResponse(securitySettings);

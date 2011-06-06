@@ -73,6 +73,16 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.IsTrue(v30.Mapping["OptionalIn10RequiredIn25AndLater"].IsRequired);
 		}
 
+		/// <summary>
+		/// Verifies that the constructors cache is properly initialized.
+		/// </summary>
+		[TestCase]
+		public void CtorsCache() {
+			var message = new MessageDescription(typeof(MultiVersionMessage), new Version(1, 0));
+			Assert.IsNotNull(message.Constructors);
+			Assert.AreEqual(1, message.Constructors.Length);
+		}
+
 		private class MultiVersionMessage : Mocks.TestBaseMessage {
 #pragma warning disable 0649 // these fields are never written to, but part of the test
 			[MessagePart]

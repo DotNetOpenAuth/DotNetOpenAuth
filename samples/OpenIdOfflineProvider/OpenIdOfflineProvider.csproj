@@ -119,7 +119,7 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xaml">
+    <Reference Include="System.Xaml" Condition=" '$(TargetFrameworkVersion)' != 'v3.5' ">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
@@ -210,6 +210,29 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <ILMergeProjectOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(TargetName)$(TargetExt)</ILMergeProjectOutputAssembly>
+    <!-- Don't sign the non-unified version of the assembly. -->
+    <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
+  </PropertyGroup>
+  <!-- These items should never be visible.  In the project source tree, they're invisible because of an ItemDefinitionGroup
+       in DotNetOpenAuth.props.  But in the shipping samples that file is not included, so we must still set Visible=false explicitly.. -->
+  <ItemGroup>
+    <SignDependsOn Include="BuildUnified">
+      <Visible>false</Visible>
+    </SignDependsOn>
+    <DelaySignedAssemblies Include="$(ILMergeProjectOutputAssembly)">
+      <Visible>false</Visible>
+    </DelaySignedAssemblies>
+    <ILMergeProjectInputAssemblies Include="$(TargetPath);
+                                            $(ProjectRoot)lib\Microsoft.Contracts.dll; ">
+      <Visible>false</Visible>
+    </ILMergeProjectInputAssemblies>
+  </ItemGroup>
+  <Target Name="BuildUnified" DependsOnTargets="Build" Inputs="@(ILMergeProjectInputAssemblies)" Outputs="$(ILMergeProjectOutputAssembly)">
+    <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
+    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeProjectInputAssemblies)" OutputFile="$(ILMergeProjectOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" />
+  </Target>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
 </Project>
