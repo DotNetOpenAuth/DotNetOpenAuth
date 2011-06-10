@@ -341,7 +341,7 @@ namespace DotNetOpenAuth.OAuth {
 			Contract.Requires<ArgumentException>((consumerKey == null) == (scope == null));
 			Contract.Requires<InvalidOperationException>(this.TokenManager is ICombinedOpenIdProviderTokenManager);
 			var openidTokenManager = (ICombinedOpenIdProviderTokenManager)this.TokenManager;
-			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), "The consumer key and the realm did not match according to the token manager.");
+			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), OAuthStrings.OpenIdOAuthRealmConsumerKeyDoNotMatch);
 
 			this.AttachAuthorizationResponse(openIdAuthenticationRequest, scope);
 		}

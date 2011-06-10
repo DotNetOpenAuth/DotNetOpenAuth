@@ -218,6 +218,16 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="maximumIndirectMessageUrlLength" type="xs:int" default="2048">
+							<xs:annotation>
+								<xs:documentation>
+									The maximum allowable size for a 301 Redirect response before we send
+									a 200 OK response with a scripted form POST with the parameters instead
+									in order to ensure successfully sending a large payload to another server
+									that might have a maximum allowable size restriction on its GET request.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="openid">
@@ -243,6 +253,44 @@
 												</xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="trustedProviders">
+														<xs:complexType>
+															<xs:choice minOccurs="0" maxOccurs="unbounded">
+																<xs:element name="add">
+																	<xs:complexType>
+																		<xs:attribute name="endpoint" type="xs:string" use="required">
+																			<xs:annotation>
+																				<xs:documentation>
+																					The OpenID Provider Endpoint (aka "OP Endpoint") that this relying party trusts.
+																				</xs:documentation>
+																			</xs:annotation>
+																		</xs:attribute>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="remove">
+																	<xs:complexType>
+																		<xs:attribute name="endpoint" type="xs:string" use="required" />
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="clear">
+																	<xs:complexType>
+																		<!--tag is empty-->
+																	</xs:complexType>
+																</xs:element>
+															</xs:choice>
+															<xs:attribute name="rejectAssertionsFromUntrustedProviders" type="xs:boolean" default="false">
+																<xs:annotation>
+																	<xs:documentation>
+																		A value indicating whether any login attempt coming from an OpenID Provider Endpoint that is not on this
+																		whitelist of trusted OP Endpoints will be rejected.  If the trusted providers list is empty and this value
+																		is true, all assertions are rejected.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
 												<xs:attribute name="requireSsl" type="xs:boolean" default="false">
 													<xs:annotation>
 														<xs:documentation>
@@ -269,7 +317,7 @@
 												<xs:attribute name="minimumHashBitLength" type="xs:int">
 													<xs:annotation>
 														<xs:documentation>
-															Shared associations with OpenID Providers will only be formed or used if they 
+															Shared associations with OpenID Providers will only be formed or used if they
 															are willing to form associations equal to or greater than a given level of protection.
 														</xs:documentation>
 													</xs:annotation>
@@ -524,7 +572,7 @@
 															so security is comparable to OpenID 2.0 relying parties.
 														</xs:documentation>
 													</xs:annotation>
-												</xs:attribute>	
+												</xs:attribute>
 												<xs:attribute name="unsolicitedAssertionVerification">
 													<xs:annotation>
 														<xs:documentation>
@@ -735,7 +783,7 @@
 												</xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
-												
+
 											</xs:complexType>
 										</xs:element>
 									</xs:choice>
@@ -856,7 +904,7 @@
 						<xs:attribute name="includeEventStatistics" type="xs:boolean" default="true">
 							<xs:annotation>
 								<xs:documentation>
-									Whether a set of counters that track how often certain events (such as an 
+									Whether a set of counters that track how often certain events (such as an
 									successful or failed authentication) is included in the report.
 								</xs:documentation>
 							</xs:annotation>

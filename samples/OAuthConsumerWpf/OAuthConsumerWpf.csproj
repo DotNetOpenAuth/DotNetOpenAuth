@@ -107,7 +107,7 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xaml">
+    <Reference Include="System.Xaml" Condition=" '$(TargetFrameworkVersion)' != 'v3.5' ">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>

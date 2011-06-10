@@ -444,9 +444,14 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(copyFrom.CanRead);
 
 			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
-			copyFrom.CopyTo(copyTo);
-			copyTo.Position = 0;
-			return copyTo;
+			try {
+				copyFrom.CopyTo(copyTo);
+				copyTo.Position = 0;
+				return copyTo;
+			} catch {
+				copyTo.Dispose();
+				throw;
+			}
 		}
 
 		/// <summary>

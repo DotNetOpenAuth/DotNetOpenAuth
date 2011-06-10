@@ -18,7 +18,7 @@
 		</MSBuild>
 
 		<PropertyGroup>
-			<ProjectTemplatesVsi>$(DropDirectoryNoSlash).vsi</ProjectTemplatesVsi>
+			<ProjectTemplatesVsi>$(DropsRoot)$(ProductName) SDK-$(BuildVersion)-vs2008.vsi</ProjectTemplatesVsi>
 		</PropertyGroup>
 		<ItemGroup>
 			<RedistributableFiles Include="$(ProjectTemplatesVsi)">

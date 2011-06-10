@@ -81,6 +81,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string ProtectDownlevelReplayAttacksConfigName = "protectDownlevelReplayAttacks";
 
 		/// <summary>
+		/// The name of the &lt;trustedProviders&gt; sub-element.
+		/// </summary>
+		private const string TrustedProvidersElementName = "trustedProviders";
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartySecuritySettingsElement"/> class.
 		/// </summary>
 		public OpenIdRelyingPartySecuritySettingsElement() {
@@ -235,6 +240,16 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets the set of trusted OpenID Provider Endpoints.
+		/// </summary>
+		[ConfigurationProperty(TrustedProvidersElementName, IsDefaultCollection = false)]
+		[ConfigurationCollection(typeof(TrustedProviderConfigurationCollection))]
+		public TrustedProviderConfigurationCollection TrustedProviders {
+			get { return (TrustedProviderConfigurationCollection)this[TrustedProvidersElementName] ?? new TrustedProviderConfigurationCollection(); }
+			set { this[TrustedProvidersElementName] = value; }
+		}
+
+		/// <summary>
 		/// Initializes a programmatically manipulatable bag of these security settings with the settings from the config file.
 		/// </summary>
 		/// <returns>The newly created security settings object.</returns>
@@ -255,6 +270,11 @@ namespace DotNetOpenAuth.Configuration {
 			settings.AllowDualPurposeIdentifiers = this.AllowDualPurposeIdentifiers;
 			settings.AllowApproximateIdentifierDiscovery = this.AllowApproximateIdentifierDiscovery;
 			settings.ProtectDownlevelReplayAttacks = this.ProtectDownlevelReplayAttacks;
+
+			settings.RejectAssertionsFromUntrustedProviders = this.TrustedProviders.RejectAssertionsFromUntrustedProviders;
+			foreach (TrustedProviderEndpointConfigurationElement opEndpoint in this.TrustedProviders) {
+				settings.TrustedProviderEndpoints.Add(opEndpoint.ProviderEndpoint);
+			}
 
 			return settings;
 		}

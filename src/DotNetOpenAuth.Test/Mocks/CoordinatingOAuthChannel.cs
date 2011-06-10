@@ -24,29 +24,29 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
 		/// </summary>
-		/// <param name="signingBindingElement">
-		/// The signing element for the Consumer to use.  Null for the Service Provider.
-		/// </param>
+		/// <param name="signingBindingElement">The signing element for the Consumer to use.  Null for the Service Provider.</param>
 		/// <param name="tokenManager">The token manager to use.</param>
-		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IConsumerTokenManager tokenManager)
+		/// <param name="securitySettings">The security settings.</param>
+		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IConsumerTokenManager tokenManager, DotNetOpenAuth.OAuth.ConsumerSecuritySettings securitySettings)
 			: base(
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge),
-			tokenManager) {
+			tokenManager,
+			securitySettings) {
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
 		/// </summary>
-		/// <param name="signingBindingElement">
-		/// The signing element for the Consumer to use.  Null for the Service Provider.
-		/// </param>
+		/// <param name="signingBindingElement">The signing element for the Consumer to use.  Null for the Service Provider.</param>
 		/// <param name="tokenManager">The token manager to use.</param>
-		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IServiceProviderTokenManager tokenManager)
+		/// <param name="securitySettings">The security settings.</param>
+		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IServiceProviderTokenManager tokenManager, DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings securitySettings)
 			: base(
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge),
-			tokenManager) {
+			tokenManager,
+			securitySettings) {
 		}
 
 		/// <summary>

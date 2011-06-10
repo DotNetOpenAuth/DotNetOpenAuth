@@ -501,14 +501,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Contract.Requires<ArgumentNullException>(endpoints != null);
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
 
-			// Construct the endpoints filters based on criteria given by the host web site.
-			EndpointSelector versionFilter = ep => ep.Version >= Protocol.Lookup(relyingParty.SecuritySettings.MinimumRequiredOpenIdVersion).Version;
-			EndpointSelector hostingSiteFilter = relyingParty.EndpointFilter ?? (ep => true);
-
 			bool anyFilteredOut = false;
 			var filteredEndpoints = new List<IdentifierDiscoveryResult>();
 			foreach (var endpoint in endpoints) {
-				if (versionFilter(endpoint) && hostingSiteFilter(endpoint)) {
+				if (relyingParty.FilterEndpoint(endpoint)) {
 					filteredEndpoints.Add(endpoint);
 				} else {
 					anyFilteredOut = true;

@@ -117,6 +117,15 @@
 
 		private void Application_Error(object sender, EventArgs e) {
 			Logger.Error("An unhandled exception occurred in ASP.NET processing: " + Server.GetLastError(), Server.GetLastError());
+
+			// In the event of an unhandled exception, reverse any changes that were made to the database to avoid any partial database updates.
+			var dataContext = dataContextSimple;
+			if (dataContext != null) {
+				dataContext.Transaction.Rollback();
+				dataContext.Connection.Close();
+				dataContext.Dispose();
+				dataContextSimple = null;
+			}
 		}
 
 		private void Application_EndRequest(object sender, EventArgs e) {

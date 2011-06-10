@@ -58,7 +58,7 @@
 		<ItemGroup>
 			<VSGalleryVsixRawSources Include="$(ExtensionVsixLayoutDirectory)*"
 															 Exclude="$(ExtensionVsixLayoutDirectory)*.vsixmanifest">
-				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(ProjectTemplateZipTargets.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(ProjectTemplateZipTargets.FileName)-$(BuildVersion)-vs2010.vsix</VSGalleryVsix>
 				<TopLevelTemplate>%(ProjectTemplateZipTargets.FileName)</TopLevelTemplate>
 			</VSGalleryVsixRawSources>
 			<VSGalleryVsixSources Include="@(VSGalleryVsixRawSources)">
@@ -68,13 +68,13 @@
 			<VSGalleryVsixZipSources Include="$(ExtensionVsixLayoutDirectory)**\*.zip" />
 			<VSGalleryVsixSources Include="@(VSGalleryVsixZipSources)">
 				<TopLevelTemplate>%(FileName)</TopLevelTemplate>
-				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(FileName)-$(BuildVersion)-vs2010.vsix</VSGalleryVsix>
 				<!-- The A in the path below used to be %(FileName), but to fit inside MAX_PATH when VS expands, we shorten it. -->
 				<TargetPath>$(IntermediatePath)%(FileName).vsix\%(RecursiveDir)A%(Extension)</TargetPath>
 			</VSGalleryVsixSources>
 
 			<VSGalleryVsixSources Include="@(ProjectTemplateZipTargets->'$(ProjectRoot)projecttemplates\%(FileName).vsixmanifest')">
-				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(ProjectTemplateZipTargets.FileName)-$(BuildVersion).vsix</VSGalleryVsix>
+				<VSGalleryVsix>$(DropsRoot)$(ProductName) %(ProjectTemplateZipTargets.FileName)-$(BuildVersion)-vs2010.vsix</VSGalleryVsix>
 				<TopLevelTemplate>%(ProjectTemplateZipTargets.FileName)</TopLevelTemplate>
 				<TargetPath>$(IntermediatePath)%(ProjectTemplateZipTargets.FileName).vsix\extension.vsixmanifest</TargetPath>
 				<Transform>true</Transform>
@@ -104,7 +104,7 @@
 
 	<Target Name="Build" DependsOnTargets="Layout;VSGalleryVsixLayout" Returns="@(GeneratedVsix)">
 		<PropertyGroup>
-			<ExtensionVsix>$(DropsRoot)$(ProductName) SDK-$(BuildVersion).vsix</ExtensionVsix>
+			<ExtensionVsix>$(DropsRoot)$(ProductName) SDK-$(BuildVersion)-vs2010.vsix</ExtensionVsix>
 		</PropertyGroup>
 		<ItemGroup>
 			<GeneratedVsix Include="$(ExtensionVsix)">

@@ -40,10 +40,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the content disposition.
+		/// Gets or sets the content disposition.
 		/// </summary>
 		/// <value>The content disposition.</value>
-		public string ContentDisposition { get; private set; }
+		public string ContentDisposition { get; set; }
 
 		/// <summary>
 		/// Gets the key=value attributes that appear on the same line as the Content-Disposition.
@@ -103,9 +103,14 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(value != null);
 
 			var part = new MultipartPostPart("form-data");
-			part.ContentAttributes["name"] = name;
-			part.Content = new MemoryStream(Encoding.UTF8.GetBytes(value));
-			return part;
+			try {
+				part.ContentAttributes["name"] = name;
+				part.Content = new MemoryStream(Encoding.UTF8.GetBytes(value));
+				return part;
+			} catch {
+				part.Dispose();
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -121,7 +126,13 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(contentType));
 
 			string fileName = Path.GetFileName(filePath);
-			return CreateFormFilePart(name, fileName, contentType, File.OpenRead(filePath));
+			var fileStream = File.OpenRead(filePath);
+			try {
+				return CreateFormFilePart(name, fileName, contentType, fileStream);
+			} catch {
+				fileStream.Dispose();
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -139,14 +150,20 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Requires<ArgumentException>(content != null);
 
 			var part = new MultipartPostPart("file");
-			part.ContentAttributes["name"] = name;
-			part.ContentAttributes["filename"] = fileName;
-			part.PartHeaders[HttpRequestHeader.ContentType] = contentType;
-			if (!contentType.StartsWith("text/", StringComparison.Ordinal)) {
-				part.PartHeaders["Content-Transfer-Encoding"] = "binary";
+			try {
+				part.ContentAttributes["name"] = name;
+				part.ContentAttributes["filename"] = fileName;
+				part.PartHeaders[HttpRequestHeader.ContentType] = contentType;
+				if (!contentType.StartsWith("text/", StringComparison.Ordinal)) {
+					part.PartHeaders["Content-Transfer-Encoding"] = "binary";
+				}
+
+				part.Content = content;
+				return part;
+			} catch {
+				part.Dispose();
+				throw;
 			}
-			part.Content = content;
-			return part;
 		}
 
 		/// <summary>
