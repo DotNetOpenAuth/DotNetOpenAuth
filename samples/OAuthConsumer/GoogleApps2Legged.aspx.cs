@@ -1,15 +1,15 @@
 ﻿namespace OAuthConsumer {
 	using System;
 	using System.Collections.Generic;
+	using System.Configuration;
 	using System.Linq;
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.ApplicationBlock;
-	using System.Configuration;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
-	using DotNetOpenAuth.Messaging;
 
 	public partial class GoogleApps2Legged : System.Web.UI.Page {
 		private InMemoryTokenManager TokenManager {
