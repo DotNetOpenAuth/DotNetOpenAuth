@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The type of the grant.</value>
 		internal override GrantType GrantType {
-			get { return Messages.GrantType.None; }
+			get { return Messages.GrantType.ClientCredentials; }
 		}
 	}
 }

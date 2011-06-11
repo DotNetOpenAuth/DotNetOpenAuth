@@ -187,12 +187,11 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			var client = this.AuthorizationServerServices.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 			EndUserAuthorizationSuccessResponseBase response;
-			switch (EndUserAuthorizationRequest.ResponseType) {
-				case EndUserAuthorizationResponseTypes.AccessToken:
+			switch (authorizationRequest.ResponseType) {
+				case EndUserAuthorizationResponseType.AccessToken:
 					response = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
 					break;
-				case EndUserAuthorizationResponseTypes.Both:
-				case EndUserAuthorizationResponseTypes.AuthorizationCode:
+				case EndUserAuthorizationResponseType.AuthorizationCode:
 					response = new EndUserAuthorizationSuccessAuthCodeResponse(callback, authorizationRequest);
 					break;
 				default:

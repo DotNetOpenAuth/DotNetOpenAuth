@@ -33,8 +33,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var responseType = (GrantType)value;
 			switch (responseType)
 			{
-				case GrantType.None:
-					return Protocol.GrantTypes.None;
+				case GrantType.ClientCredentials:
+					return Protocol.GrantTypes.ClientCredentials;
 				case GrantType.AuthorizationCode:
 					return Protocol.GrantTypes.AuthorizationCode;
 					case GrantType.RefreshToken:
@@ -58,8 +58,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <exception cref="FormatException">Thrown when the string value given cannot be decoded into the required object type.</exception>
 		public object Decode(string value) {
 			switch (value) {
-				case Protocol.GrantTypes.None:
-					return GrantType.None;
+				case Protocol.GrantTypes.ClientCredentials:
+					return GrantType.ClientCredentials;
 				case Protocol.GrantTypes.Assertion:
 					return GrantType.Assertion;
 				case Protocol.GrantTypes.Password:

@@ -124,6 +124,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal const string access_token_secret = "access_token_secret";
 
 		/// <summary>
+		/// The "token_type" string.
+		/// </summary>
+		internal const string token_type = "token_type";
+
+		/// <summary>
 		/// The "refresh_token" string.
 		/// </summary>
 		internal const string refresh_token = "refresh_token";
@@ -230,11 +235,20 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 		}
 
+		/// <summary>
+		/// Values for the "response_type" parameter.
+		/// </summary>
 		internal static class ResponseTypes
 		{
+			/// <summary>
+			/// The string "code".
+			/// </summary>
 			internal const string Code = "code";
+
+			/// <summary>
+			/// The string "token".
+			/// </summary>
 			internal const string Token = "token";
-			internal const string CodeAndToken = "code_and_token";
 		}
 
 		internal static class GrantTypes
@@ -247,7 +261,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			internal const string RefreshToken = "refresh_token";
 
-			internal const string None = "none";
+			internal const string ClientCredentials = "client_credentials";
 		}
 
 		/// <summary>

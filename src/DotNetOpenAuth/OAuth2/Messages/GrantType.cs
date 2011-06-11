@@ -37,6 +37,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// When requesting an access token using the none access grant type (no access grant is included), the client is requesting access to the protected resources under its control, or those of another resource owner which has been previously arranged with the authorization server (the method of which is beyond the scope of this specification).
 		/// </remarks>
-		None,
+		ClientCredentials,
 	}
 }
