@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DotNetOpenAuth.OAuth2.Messages.MessageBase" Collapsed="true">
-    <Position X="0.5" Y="4" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAMACQAQAAAgAkAAAAIAAYACgAAIAAAIACAACAAAIA=</HashCode>
       <FileName>OAuth2\Messages\MessageBase.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenAssertionRequest" Collapsed="true">
-    <Position X="11" Y="5.5" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAAIAAAAAAAAAAAAAgAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>OAuth2\Messages\AccessTokenAssertionRequest.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenAuthorizationCodeRequest" Collapsed="true">
-    <Position X="11" Y="6.5" Width="3" />
+    <Position X="6.75" Y="6.75" Width="3" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.AccessTokenRequestBase" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="6.441" />
+        <Point X="6.5" Y="7.062" />
+        <Point X="6.75" Y="7.062" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>CCAAAAAAAAACAAAAAAAAAAAQAAAAAAAAAAAAAAAAQAA=</HashCode>
       <FileName>OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs</FileName>
@@ -24,14 +24,28 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenClientCredentialsRequest" Collapsed="true">
-    <Position X="11" Y="3.75" Width="2.75" />
+    <Position X="8.5" Y="8.75" Width="2.75" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.ScopedAccessTokenRequest" FixedToPoint="true">
+      <Path>
+        <Point X="7.875" Y="8.441" />
+        <Point X="7.875" Y="9.062" />
+        <Point X="8.5" Y="9.062" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\AccessTokenClientCredentialsRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenFailedResponse" Collapsed="true">
-    <Position X="3.25" Y="1.75" Width="2.25" />
+    <Position X="3.25" Y="8.5" Width="2.25" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.MessageBase" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="1.062" />
+        <Point X="1.25" Y="8.812" />
+        <Point X="3.25" Y="8.812" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAAAQAAAABAAAQAAAAAAAEQAAAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\AccessTokenFailedResponse.cs</FileName>
@@ -39,34 +53,48 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenRefreshRequest" Collapsed="true">
-    <Position X="11" Y="4.75" Width="2.25" />
+    <Position X="8.5" Y="9.75" Width="2.25" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.ScopedAccessTokenRequest" FixedToPoint="true">
+      <Path>
+        <Point X="7.875" Y="8.441" />
+        <Point X="7.875" Y="10.125" />
+        <Point X="8.5" Y="10.125" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>CCAAAAAAQAACAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>CCAAAAAAQAACACAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\AccessTokenRefreshRequest.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenRequestBase" Collapsed="true">
-    <Position X="7.75" Y="7.25" Width="2" />
+    <Position X="5.75" Y="5.75" Width="2" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.AuthenticatedClientRequestBase" FixedFromPoint="true">
+      <Path>
+        <Point X="4.375" Y="5.941" />
+        <Point X="4.375" Y="6.096" />
+        <Point X="5.75" Y="6.096" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAQAAAACAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\AccessTokenRequestBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenResourceOwnerPasswordCredentialsRequest" Collapsed="true">
-    <Position X="11" Y="7.25" Width="4" />
+    <Position X="8.5" Y="10.5" Width="4" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAACAQAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAQAAAAAAACAQAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenSuccessResponse" Collapsed="true">
-    <Position X="3.25" Y="2.75" Width="2.25" />
+    <Position X="3.25" Y="7.5" Width="2.25" />
     <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.MessageBase" FixedToPoint="true">
       <Path>
-        <Point X="1.25" Y="4" />
-        <Point X="1.25" Y="3.125" />
-        <Point X="3.25" Y="3.125" />
+        <Point X="1.25" Y="1.062" />
+        <Point X="1.25" Y="7.812" />
+        <Point X="3.25" Y="7.812" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -76,14 +104,21 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AuthenticatedClientRequestBase" Collapsed="true">
-    <Position X="3.25" Y="7.25" Width="2.25" />
+    <Position X="3.25" Y="5.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\AuthenticatedClientRequestBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationFailedResponse" Collapsed="true">
-    <Position X="3.25" Y="6.5" Width="2.75" />
+    <Position X="3.25" Y="4.5" Width="2.75" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.MessageBase" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="1.062" />
+        <Point X="1.25" Y="4.875" />
+        <Point X="3.25" Y="4.875" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAAAQAAAAAAAAgAAAAAAAEAAAAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\EndUserAuthorizationFailedResponse.cs</FileName>
@@ -91,14 +126,21 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationRequest" Collapsed="true">
-    <Position X="3.25" Y="5.5" Width="2.25" />
+    <Position X="3.25" Y="0.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAQAAAACAAAAAAAACAAAQAAAQAAAAAAAAAQAA=</HashCode>
       <FileName>OAuth2\Messages\EndUserAuthorizationRequest.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessAccessTokenResponse" Collapsed="true">
-    <Position X="6.75" Y="4.25" Width="3.75" />
+    <Position X="6.25" Y="3.75" Width="3.75" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessResponseBase" FixedToPoint="true">
+      <Path>
+        <Point X="4.625" Y="2.191" />
+        <Point X="4.625" Y="4.062" />
+        <Point X="6.25" Y="4.062" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>CCAAAAAAAAACAAAAAAAAAAACEAAAAAAAAAAAAAAAAgA=</HashCode>
       <FileName>OAuth2\Messages\EndUserAuthorizationSuccessAccessTokenResponse.cs</FileName>
@@ -106,13 +148,12 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessAuthCodeResponse" Collapsed="true">
-    <Position X="6.75" Y="3" Width="3.5" />
-    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessResponseBase" FixedFromPoint="true">
+    <Position X="6.25" Y="2.5" Width="3.5" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessResponseBase" FixedToPoint="true">
       <Path>
-        <Point X="6" Y="4.062" />
-        <Point X="6.375" Y="4.062" />
-        <Point X="6.375" Y="3.346" />
-        <Point X="6.75" Y="3.346" />
+        <Point X="4.625" Y="2.191" />
+        <Point X="4.625" Y="2.875" />
+        <Point X="6.25" Y="2.875" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -122,7 +163,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessResponseBase" Collapsed="true">
-    <Position X="3.25" Y="3.75" Width="2.75" />
+    <Position X="3.25" Y="1.5" Width="2.75" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.MessageBase" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="1.062" />
+        <Point X="1.25" Y="1.75" />
+        <Point X="3.25" Y="1.75" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAACAAAAAAAAgAAAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>OAuth2\Messages\EndUserAuthorizationSuccessResponseBase.cs</FileName>
@@ -130,7 +178,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessProtectedResourceRequest" Collapsed="true">
-    <Position X="3.25" Y="4.75" Width="2.5" />
+    <Position X="3.25" Y="9.75" Width="2.5" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.MessageBase" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="1.062" />
+        <Point X="1.25" Y="10" />
+        <Point X="3.25" Y="10" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>CCAAAAAAQAACAAAAAAACAAAAEAAAAAAAAAEAAAQACAE=</HashCode>
       <FileName>OAuth2\Messages\AccessProtectedResourceRequest.cs</FileName>
@@ -138,12 +193,33 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DotNetOpenAuth.OAuth2.Messages.UnauthorizedResponse" Collapsed="true">
-    <Position X="3.25" Y="0.75" Width="2" />
+    <Position X="3.25" Y="10.75" Width="2" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.MessageBase" FixedToPoint="true">
+      <Path>
+        <Point X="1.25" Y="1.062" />
+        <Point X="1.25" Y="11.125" />
+        <Point X="3.25" Y="11.125" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AUABAAAAAAAAACAAAAAAAAQIAAAAAAAQAAAAAAAAABA=</HashCode>
       <FileName>OAuth2\Messages\UnauthorizedResponse.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.ScopedAccessTokenRequest" Collapsed="true">
+    <Position X="6.75" Y="7.75" Width="2.25" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.Messages.AccessTokenRequestBase" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="6.441" />
+        <Point X="6.5" Y="8.125" />
+        <Point X="6.75" Y="8.125" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\ScopedAccessTokenRequest.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Interface Name="DotNetOpenAuth.OAuth2.Messages.IMessageWithClientState">
     <Position X="11.5" Y="0.5" Width="2" />

@@ -126,8 +126,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					var client = this.AuthorizationServer.GetClientOrThrow(accessRequest.ClientIdentifier);
 					ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(client.Secret, accessRequest.ClientSecret), Protocol.incorrect_client_credentials);
 
-					// Make sure the scope the client is requesting does not exceed the scope in the grant.
-					ErrorUtilities.VerifyProtocol(accessRequest.Scope.IsSubsetOf(tokenRequest.AuthorizationDescription.Scope), OAuthStrings.AccessScopeExceedsGrantScope, accessRequest.Scope, tokenRequest.AuthorizationDescription.Scope);
+					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
+					if (scopedAccessRequest != null) {
+						// Make sure the scope the client is requesting does not exceed the scope in the grant.
+						ErrorUtilities.VerifyProtocol(scopedAccessRequest.Scope.IsSubsetOf(tokenRequest.AuthorizationDescription.Scope), OAuthStrings.AccessScopeExceedsGrantScope, scopedAccessRequest.Scope, tokenRequest.AuthorizationDescription.Scope);
+					}
 				}
 
 				// Make sure the authorization this token represents hasn't already been revoked.

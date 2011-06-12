@@ -25,7 +25,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		protected AccessTokenRequestBase(Uri tokenEndpoint, Version version)
 			: base(tokenEndpoint, version) {
 			this.HttpMethods = HttpDeliveryMethods.PostRequest;
-			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 
 		/// <summary>
@@ -34,13 +33,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The type of the grant.</value>
 		[MessagePart(Protocol.grant_type, IsRequired = true, Encoder = typeof(GrantTypeEncoder))]
 		internal abstract GrantType GrantType { get; }
-
-		/// <summary>
-		/// Gets the set of scopes the Client would like the access token to provide access to.
-		/// </summary>
-		/// <value>A set of scopes.  Never null.</value>
-		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
-		internal HashSet<string> Scope { get; private set; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

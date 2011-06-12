@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
+	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
@@ -13,7 +14,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A request from the client to the token endpoint for a new access token
 	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
-	internal class AccessTokenRefreshRequest : AccessTokenRequestBase, ITokenCarryingRequest {
+	internal class AccessTokenRefreshRequest : ScopedAccessTokenRequest, ITokenCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenRefreshRequest"/> class.
 		/// </summary>

@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <remarks>
 	/// This is somewhat analogous to 2-legged OAuth.
 	/// </remarks>
-	internal class AccessTokenClientCredentialsRequest : AccessTokenRequestBase {
+	internal class AccessTokenClientCredentialsRequest : ScopedAccessTokenRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenClientCredentialsRequest"/> class.
 		/// </summary>

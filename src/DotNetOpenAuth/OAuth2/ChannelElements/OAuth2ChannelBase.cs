@@ -24,7 +24,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			typeof(AccessTokenRefreshRequest),
 			typeof(AccessTokenAuthorizationCodeRequest),
 			typeof(AccessTokenResourceOwnerPasswordCredentialsRequest),
-			typeof(AccessTokenAssertionRequest),
 			typeof(AccessTokenClientCredentialsRequest),
 			typeof(AccessTokenSuccessResponse),
 			typeof(AccessTokenFailedResponse),
