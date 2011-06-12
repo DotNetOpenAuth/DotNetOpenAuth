@@ -26,6 +26,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		internal AccessTokenSuccessResponse(AccessTokenRequestBase request)
 			: base(request) {
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
+			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
 		/// <summary>
