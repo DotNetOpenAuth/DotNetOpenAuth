@@ -122,18 +122,6 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(AccessTokenClientCredentialsRequest), request);
 		}
 
-		[TestCase]
-		public void AccessTokenAssertionRequest() {
-			var fields = new Dictionary<string, string> {
-				{ Protocol.client_id, "abc" },
-				{ Protocol.assertion_type, "abc" },
-				{ Protocol.assertion, "abc" },
-				{ Protocol.grant_type, "assertion" },
-			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenAssertionRequest), request);
-		}
-
 		#endregion
 	}
 }
