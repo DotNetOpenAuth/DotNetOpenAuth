@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as ITokenCarryingRequest;
+			var response = message as IAuthorizationCarryingRequest;
 			if (response != null) {
 				switch (response.CodeOrTokenType) {
 					case CodeOrTokenType.AuthorizationCode:
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var tokenRequest = message as ITokenCarryingRequest;
+			var tokenRequest = message as IAuthorizationCarryingRequest;
 			if (tokenRequest != null) {
 				try {
 					switch (tokenRequest.CodeOrTokenType) {

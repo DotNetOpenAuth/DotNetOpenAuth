@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <summary>
 	/// A message that accompanies an HTTP request to a resource server that provides authorization.
 	/// </summary>
-	internal class AccessProtectedResourceRequest : MessageBase, ITokenCarryingRequest {
+	internal class AccessProtectedResourceRequest : MessageBase, IAuthorizationCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
 		/// </summary>
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the type of the code or token.
 		/// </summary>
 		/// <value>The type of the code or token.</value>
-		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.AccessToken; }
 		}
 
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>
 		/// <value>The code or token.</value>
-		string ITokenCarryingRequest.CodeOrToken {
+		string IAuthorizationCarryingRequest.CodeOrToken {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
 		}
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
-		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
 		/// Gets or sets the access token.

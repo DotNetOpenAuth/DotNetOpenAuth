@@ -220,7 +220,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(accessTokenEncryptingPublicKey != null);
 
-			var tokenRequest = (ITokenCarryingRequest)request;
+			var tokenRequest = (IAuthorizationCarryingRequest)request;
 			using (var crypto = this.AuthorizationServerServices.CreateAccessTokenSigningCryptoServiceProvider()) {
 				var accessTokenFormatter = AccessToken.CreateFormatter(crypto, accessTokenEncryptingPublicKey);
 				var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);

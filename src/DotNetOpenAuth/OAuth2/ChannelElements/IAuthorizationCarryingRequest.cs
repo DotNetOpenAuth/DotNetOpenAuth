@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ITokenCarryingRequest.cs" company="Andrew Arnott">
+// <copyright file="IAuthorizationCarryingRequest.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// A message that carries some kind of token from the client to the authorization or resource server.
 	/// </summary>
-	internal interface ITokenCarryingRequest : IDirectedProtocolMessage {
+	internal interface IAuthorizationCarryingRequest : IDirectedProtocolMessage {
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>
