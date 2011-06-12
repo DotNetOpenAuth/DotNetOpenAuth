@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
 
-			OAuthUtilities.AuthorizeWithOAuthWrap(request, accessToken);
+			OAuthUtilities.AuthorizeWithBearerToken(request, accessToken);
 		}
 
 		/// <summary>

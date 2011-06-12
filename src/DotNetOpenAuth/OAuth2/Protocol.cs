@@ -24,14 +24,25 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	internal class Protocol {
 		/// <summary>
-		/// The HTTP authorization scheme "OAuth";
+		/// The HTTP authorization scheme "Bearer";
 		/// </summary>
-		internal const string HttpAuthorizationScheme = "OAuth";
+		internal const string BearerHttpAuthorizationScheme = "Bearer";
 
 		/// <summary>
-		/// The format of the HTTP Authorization header value that authorizes OAuth 2.0 requests.
+		/// The HTTP authorization scheme "Bearer ";
 		/// </summary>
-		internal const string HttpAuthorizationHeaderFormat = "OAuth token=\"{0}\"";
+		internal const string BearerHttpAuthorizationSchemeWithTrailingSpace = BearerHttpAuthorizationScheme + " ";
+
+		/// <summary>
+		/// The format of the HTTP Authorization header value that authorizes OAuth 2.0 requests using bearer access tokens.
+		/// </summary>
+		internal const string BearerHttpAuthorizationHeaderFormat = BearerHttpAuthorizationSchemeWithTrailingSpace + "{0}";
+
+		/// <summary>
+		/// The name of the parameter whose value is an OAuth 2.0 bearer access token, as it is defined
+		/// in a URL-encoded POST entity or URL query string.
+		/// </summary>
+		internal const string BearerTokenEncodedUrlParameterName = "bearer_token";
 
 		/// <summary>
 		/// The "type" string.
@@ -324,6 +335,16 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// The requested scope is invalid, unknown, or malformed.
 			/// </summary>
 			internal const string InvalidScope = "invalid_scope";
+		}
+
+		/// <summary>
+		/// Recognized access token types.
+		/// </summary>
+		internal static class AccessTokenTypes {
+			/// <summary>
+			/// The "bearer" token type.
+			/// </summary>
+			internal const string Bearer = "bearer";
 		}
 	}
 }
