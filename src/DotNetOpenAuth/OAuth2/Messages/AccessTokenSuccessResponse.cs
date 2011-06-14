@@ -26,6 +26,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		internal AccessTokenSuccessResponse(AccessTokenRequestBase request)
 			: base(request) {
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
+			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
 		/// <summary>
@@ -55,6 +56,16 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The access token.</value>
 		[MessagePart(Protocol.access_token, IsRequired = true)]
 		public string AccessToken { get; internal set; }
+
+		/// <summary>
+		/// Gets or sets the token type.
+		/// </summary>
+		/// <value>Usually "bearer".</value>
+		/// <remarks>
+		/// Described in OAuth 2.0 section 7.1.
+		/// </remarks>
+		[MessagePart(Protocol.token_type, IsRequired = true)]
+		public string TokenType { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the lifetime of the access token.

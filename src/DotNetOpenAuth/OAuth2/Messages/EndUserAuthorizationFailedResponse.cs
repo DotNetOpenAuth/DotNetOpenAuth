@@ -42,7 +42,15 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the error.
 		/// </summary>
-		/// <value>One of the values given in <see cref="Protocol.EndUserAuthorizationRequestErrorCodes"/>.</value>
+		/// <value>
+		/// One of the values given in <see cref="Protocol.EndUserAuthorizationRequestErrorCodes"/>.
+		/// OR a numerical HTTP status code from the 4xx or 5xx
+		/// range, with the exception of the 400 (Bad Request) and
+		/// 401 (Unauthorized) status codes.  For example, if the
+		/// service is temporarily unavailable, the authorization
+		/// server MAY return an error response with "error" set to
+		/// "503".
+		/// </value>
 		[MessagePart(Protocol.error, IsRequired = true)]
 		public string Error { get; set; }
 

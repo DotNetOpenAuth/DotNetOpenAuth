@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, carrying only an access token,
 	/// and to return the user to the Client where they started their experience.
 	/// </summary>
-	internal class EndUserAuthorizationSuccessAccessTokenResponse : EndUserAuthorizationSuccessResponseBase, ITokenCarryingRequest {
+	internal class EndUserAuthorizationSuccessAccessTokenResponse : EndUserAuthorizationSuccessResponseBase, IAuthorizationCarryingRequest, IHttpIndirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessAccessTokenResponse"/> class.
 		/// </summary>
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>
 		/// <value>The code or token.</value>
-		string ITokenCarryingRequest.CodeOrToken {
+		string IAuthorizationCarryingRequest.CodeOrToken {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
 		}
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the type of the code or token.
 		/// </summary>
 		/// <value>The type of the code or token.</value>
-		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.AccessToken; }
 		}
 
@@ -66,15 +66,37 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
 		/// <value></value>
-		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
 
 		#endregion
+
+		#region IHttpIndirectResponse Members
+
+		/// <summary>
+		/// Gets a value indicating whether the payload for the message should be included
+		/// in the redirect fragment instead of the query string or POST entity.
+		/// </summary>
+		bool IHttpIndirectResponse.Include301RedirectPayloadInFragment {
+			get { return true; }
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Gets or sets the token type.
+		/// </summary>
+		/// <value>Usually "bearer".</value>
+		/// <remarks>
+		/// Described in OAuth 2.0 section 7.1.
+		/// </remarks>
+		[MessagePart(Protocol.token_type, IsRequired = true)]
+		public string TokenType { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>
 		[MessagePart(Protocol.access_token, IsRequired = true)]
-		internal string AccessToken { get; set; }
+		public string AccessToken { get; set; }
 	}
 }

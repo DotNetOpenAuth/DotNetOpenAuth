@@ -30,14 +30,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The <paramref name="value"/> in string form, ready for message transport.
 		/// </returns>
 		public string Encode(object value) {
-			var responseType = (EndUserAuthorizationResponseTypes)value;
+			var responseType = (EndUserAuthorizationResponseType)value;
 			switch (responseType)
 			{
-				case EndUserAuthorizationResponseTypes.Both:
-					return Protocol.ResponseTypes.CodeAndToken;
-				case EndUserAuthorizationResponseTypes.AccessToken:
+				case EndUserAuthorizationResponseType.AccessToken:
 					return Protocol.ResponseTypes.Token;
-				case EndUserAuthorizationResponseTypes.AuthorizationCode:
+				case EndUserAuthorizationResponseType.AuthorizationCode:
 					return Protocol.ResponseTypes.Code;
 				default:
 					throw ErrorUtilities.ThrowFormat(MessagingStrings.UnexpectedMessagePartValue, Protocol.response_type, value);
@@ -54,12 +52,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <exception cref="FormatException">Thrown when the string value given cannot be decoded into the required object type.</exception>
 		public object Decode(string value) {
 			switch (value) {
-				case Protocol.ResponseTypes.CodeAndToken:
-					return EndUserAuthorizationResponseTypes.Both;
 				case Protocol.ResponseTypes.Token:
-					return EndUserAuthorizationResponseTypes.AccessToken;
+					return EndUserAuthorizationResponseType.AccessToken;
 				case Protocol.ResponseTypes.Code:
-					return EndUserAuthorizationResponseTypes.AuthorizationCode;
+					return EndUserAuthorizationResponseType.AuthorizationCode;
 				default:
 					throw ErrorUtilities.ThrowFormat(MessagingStrings.UnexpectedMessagePartValue, Protocol.response_type, value);
 			}

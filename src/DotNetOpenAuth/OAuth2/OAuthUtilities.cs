@@ -90,14 +90,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">The request to authorize.</param>
 		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
-		internal static void AuthorizeWithOAuthWrap(this HttpWebRequest request, string accessToken) {
+		internal static void AuthorizeWithBearerToken(this HttpWebRequest request, string accessToken) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
 			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), "The access token contains characters that must not appear in the HTTP Authorization header.");
 
 			request.Headers[HttpRequestHeader.Authorization] = string.Format(
 				CultureInfo.InvariantCulture,
-				Protocol.HttpAuthorizationHeaderFormat,
+				Protocol.BearerHttpAuthorizationHeaderFormat,
 				accessToken);
 		}
 

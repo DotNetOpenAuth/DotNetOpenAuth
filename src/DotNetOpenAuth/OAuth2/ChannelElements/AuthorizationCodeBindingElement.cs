@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (response != null) {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (EndUserAuthorizationRequest)directResponse.OriginatingRequest;
-				ITokenCarryingRequest tokenCarryingResponse = response;
+				IAuthorizationCarryingRequest tokenCarryingResponse = response;
 				tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(request.ClientIdentifier, request.Callback, request.Scope, response.AuthorizingUsername);
 
 				return MessageProtections.None;
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var request = message as AccessTokenAuthorizationCodeRequest;
 			if (request != null) {
-				ITokenCarryingRequest tokenRequest = request;
+				IAuthorizationCarryingRequest tokenRequest = request;
 				((AuthorizationCode)tokenRequest.AuthorizationDescription).VerifyCallback(request.Callback);
 
 				return MessageProtections.None;

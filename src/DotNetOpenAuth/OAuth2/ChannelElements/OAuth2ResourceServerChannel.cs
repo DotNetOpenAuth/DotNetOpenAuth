@@ -49,39 +49,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			// First search the Authorization header.
-			var fields = MessagingUtilities.ParseAuthorizationHeader(
-				Protocol.HttpAuthorizationScheme,
-				request.Headers[HttpRequestHeader.Authorization]).ToDictionary();
-
-			// Failing that, try the query string (for GET or POST or any other method)
-			if (fields.Count == 0) {
-				if (request.QueryStringBeforeRewriting["oauth_token"] != null) {
-					// We're only interested in the oauth_token parameter -- not the others that can appear in an Authorization header.
-					// Note that we intentionally change the name of the key here
-					// because depending on the method used to obtain the token, the token's key changes
-					// but we need to consolidate to one name so it works with the rest of the system.
-					fields.Add("token", request.QueryStringBeforeRewriting["oauth_token"]);
-				}
-			}
-
-			// Failing that, scan the entity
-			if (fields.Count == 0) {
-				// The spec calls out that this is allowed only for these three HTTP methods.
-				if (request.HttpMethod == "POST" || request.HttpMethod == "DELETE" || request.HttpMethod == "PUT") {
-					if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
-						var contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
-						if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
-							if (request.Form["oauth_token"] != null) {
-								// We're only interested in the oauth_token parameter -- not the others that can appear in an Authorization header.
-								// Note that we intentionally change the name of the key here
-								// because depending on the method used to obtain the token, the token's key changes
-								// but we need to consolidate to one name so it works with the rest of the system.
-								fields.Add("token", request.Form["oauth_token"]);
-							}
-						}
-					}
-				}
+			var fields = new Dictionary<string, string>();
+			string accessToken;
+			if ((accessToken = SearchForBearerAccessTokenInRequest(request)) != null) {
+				fields["token_type"] = Protocol.AccessTokenTypes.Bearer;
+				fields["access_token"] = accessToken;
 			}
 
 			if (fields.Count > 0) {
@@ -92,9 +64,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					Logger.OAuth.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
 					return null;
 				}
-
-				// TODO: remove this after signatures are supported.
-				ErrorUtilities.VerifyProtocol(!fields.ContainsKey("signature"), "OAuth signatures not supported yet.");
 
 				// Deserialize the message using all the data we've collected.
 				var message = (IDirectedProtocolMessage)this.Receive(fields, recipient);
@@ -145,8 +114,44 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			// Now serialize all the message parts into the WWW-Authenticate header.
 			var fields = this.MessageDescriptions.GetAccessor(response);
-			webResponse.Headers[HttpResponseHeader.WwwAuthenticate] = MessagingUtilities.AssembleAuthorizationHeader(Protocol.HttpAuthorizationScheme, fields);
+			webResponse.Headers[HttpResponseHeader.WwwAuthenticate] = MessagingUtilities.AssembleAuthorizationHeader(Protocol.BearerHttpAuthorizationScheme, fields);
 			return webResponse;
+		}
+
+		/// <summary>
+		/// Searches for a bearer access token in the request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>The bearer access token, if one exists.  Otherwise <c>null</c>.</returns>
+		private static string SearchForBearerAccessTokenInRequest(HttpRequestInfo request) {
+			Contract.Requires<ArgumentNullException>(request != null, "request");
+
+			// First search the authorization header.
+			string authorizationHeader = request.Headers[HttpRequestHeader.Authorization];
+			if (authorizationHeader.StartsWith(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace, StringComparison.OrdinalIgnoreCase)) {
+				return authorizationHeader.Substring(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace.Length);
+			}
+
+			// Failing that, scan the entity
+			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
+				var contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
+				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
+					if (request.Form[Protocol.BearerTokenEncodedUrlParameterName] != null) {
+						// We're only interested in the oauth_token parameter -- not the others that can appear in an Authorization header.
+						// Note that we intentionally change the name of the key here
+						// because depending on the method used to obtain the token, the token's key changes
+						// but we need to consolidate to one name so it works with the rest of the system.
+						return request.Form[Protocol.BearerTokenEncodedUrlParameterName];
+					}
+				}
+			}
+
+			// Finally, check the least desirable location: the query string
+			if (!String.IsNullOrEmpty(request.QueryStringBeforeRewriting[Protocol.BearerTokenEncodedUrlParameterName])) {
+				return request.QueryStringBeforeRewriting[Protocol.BearerTokenEncodedUrlParameterName];
+			}
+
+			return null;
 		}
 	}
 }

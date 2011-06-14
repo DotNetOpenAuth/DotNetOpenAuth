@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <summary>
 	/// A request from a Client to an Authorization Server to exchange the user's username and password for an access token.
 	/// </summary>
-	internal class AccessTokenResourceOwnerPasswordCredentialsRequest : AccessTokenRequestBase {
+	internal class AccessTokenResourceOwnerPasswordCredentialsRequest : ScopedAccessTokenRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenResourceOwnerPasswordCredentialsRequest"/> class.
 		/// </summary>

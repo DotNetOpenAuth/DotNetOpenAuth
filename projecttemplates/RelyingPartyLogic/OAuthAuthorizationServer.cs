@@ -98,7 +98,7 @@ namespace RelyingPartyLogic {
 			// NEVER issue an auto-approval to a client that would end up getting an access token immediately
 			// (without a client secret), as that would allow ANY client to spoof an approved client's identity
 			// and obtain unauthorized access to user data.
-			if (EndUserAuthorizationRequest.ResponseType == EndUserAuthorizationResponseTypes.AuthorizationCode) {
+			if (authorizationRequest.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 				// Never issue auto-approval if the client secret is blank, since that too makes it easy to spoof
 				// a client's identity and obtain unauthorized access.
 				var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == authorizationRequest.ClientIdentifier);

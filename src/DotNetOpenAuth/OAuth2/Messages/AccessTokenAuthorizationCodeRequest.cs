@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <summary>
 	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token.
 	/// </summary>
-	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, ITokenCarryingRequest {
+	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, IAuthorizationCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
 		/// </summary>
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the type of the code or token.
 		/// </summary>
 		/// <value>The type of the code or token.</value>
-		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.AuthorizationCode; }
 		}
 
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>
 		/// <value>The code or token.</value>
-		string ITokenCarryingRequest.CodeOrToken {
+		string IAuthorizationCarryingRequest.CodeOrToken {
 			get { return this.AuthorizationCode; }
 			set { this.AuthorizationCode = value; }
 		}
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
-		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
 		/// Gets the type of the grant.

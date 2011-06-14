@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public string Encode(object value) {
 			var scopes = (IEnumerable<string>)value;
 			ErrorUtilities.VerifyProtocol(!scopes.Any(scope => scope.Contains(" ")), OAuthStrings.ScopesMayNotContainSpaces);
-			return scopes != null ? string.Join(" ", scopes.ToArray()) : null;
+			return (scopes != null && scopes.Any()) ? string.Join(" ", scopes.ToArray()) : null;
 		}
 
 		/// <summary>

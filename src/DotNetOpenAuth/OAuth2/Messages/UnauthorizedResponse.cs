@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		WebHeaderCollection IHttpDirectResponse.Headers {
 			get {
 				return new WebHeaderCollection() {
-					{ HttpResponseHeader.WwwAuthenticate, Protocol.HttpAuthorizationScheme },
+					{ HttpResponseHeader.WwwAuthenticate, Protocol.BearerHttpAuthorizationScheme },
 				};
 			}
 		}

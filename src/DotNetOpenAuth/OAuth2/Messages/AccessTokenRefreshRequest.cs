@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
+	using System.Collections.Generic;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
@@ -13,7 +14,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A request from the client to the token endpoint for a new access token
 	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
-	internal class AccessTokenRefreshRequest : AccessTokenRequestBase, ITokenCarryingRequest {
+	internal class AccessTokenRefreshRequest : ScopedAccessTokenRequest, IAuthorizationCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenRefreshRequest"/> class.
 		/// </summary>
@@ -35,7 +36,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the type of the code or token.
 		/// </summary>
 		/// <value>The type of the code or token.</value>
-		CodeOrTokenType ITokenCarryingRequest.CodeOrTokenType {
+		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
 			get { return CodeOrTokenType.RefreshToken; }
 		}
 
@@ -43,7 +44,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>
 		/// <value>The code or token.</value>
-		string ITokenCarryingRequest.CodeOrToken {
+		string IAuthorizationCarryingRequest.CodeOrToken {
 			get { return this.RefreshToken; }
 			set { this.RefreshToken = value; }
 		}
@@ -51,7 +52,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
-		IAuthorizationDescription ITokenCarryingRequest.AuthorizationDescription { get; set; }
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
 		/// Gets or sets the refresh token.

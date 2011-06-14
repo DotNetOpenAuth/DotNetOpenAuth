@@ -421,10 +421,10 @@ namespace DotNetOpenAuth.Messaging {
 			string prefix = scheme + " ";
 			if (authorizationHeader != null) {
 				// The authorization header may have multiple sections.  Look for the appropriate one.
-				string[] authorizationSections = authorizationHeader.Split(';'); // TODO: is this the right delimiter?
+				string[] authorizationSections = new string[] { authorizationHeader }; // what is the right delimiter, if any?
 				foreach (string authorization in authorizationSections) {
 					string trimmedAuth = authorization.Trim();
-					if (trimmedAuth.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
+					if (trimmedAuth.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) { // RFC 2617 says this is case INsensitive
 						string data = trimmedAuth.Substring(prefix.Length);
 						return from element in data.Split(CommaArray)
 							   let parts = element.Split(EqualsArray, 2)

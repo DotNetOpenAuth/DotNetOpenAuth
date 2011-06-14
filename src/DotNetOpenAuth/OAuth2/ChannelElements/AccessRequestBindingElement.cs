@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as ITokenCarryingRequest;
+			var response = message as IAuthorizationCarryingRequest;
 			if (response != null) {
 				switch (response.CodeOrTokenType) {
 					case CodeOrTokenType.AuthorizationCode:
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (accessTokenResponse != null) {
 				var directResponseMessage = (IDirectResponseProtocolMessage)accessTokenResponse;
 				var accessTokenRequest = (AccessTokenRequestBase)directResponseMessage.OriginatingRequest;
-				ErrorUtilities.VerifyProtocol(accessTokenRequest.GrantType != GrantType.None || accessTokenResponse.RefreshToken == null, OAuthStrings.NoGrantNoRefreshToken);
+				ErrorUtilities.VerifyProtocol(accessTokenRequest.GrantType != GrantType.ClientCredentials || accessTokenResponse.RefreshToken == null, OAuthStrings.NoGrantNoRefreshToken);
 			}
 
 			return null;
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var tokenRequest = message as ITokenCarryingRequest;
+			var tokenRequest = message as IAuthorizationCarryingRequest;
 			if (tokenRequest != null) {
 				try {
 					switch (tokenRequest.CodeOrTokenType) {
@@ -124,10 +124,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 					// Check that the client secret is correct.
 					var client = this.AuthorizationServer.GetClientOrThrow(accessRequest.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(string.Equals(client.Secret, accessRequest.ClientSecret, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
+					ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(client.Secret, accessRequest.ClientSecret), Protocol.incorrect_client_credentials);
 
-					// Make sure the scope the client is requesting does not exceed the scope in the grant.
-					ErrorUtilities.VerifyProtocol(accessRequest.Scope.IsSubsetOf(tokenRequest.AuthorizationDescription.Scope), OAuthStrings.AccessScopeExceedsGrantScope, accessRequest.Scope, tokenRequest.AuthorizationDescription.Scope);
+					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
+					if (scopedAccessRequest != null) {
+						// Make sure the scope the client is requesting does not exceed the scope in the grant.
+						ErrorUtilities.VerifyProtocol(scopedAccessRequest.Scope.IsSubsetOf(tokenRequest.AuthorizationDescription.Scope), OAuthStrings.AccessScopeExceedsGrantScope, scopedAccessRequest.Scope, tokenRequest.AuthorizationDescription.Scope);
+					}
 				}
 
 				// Make sure the authorization this token represents hasn't already been revoked.

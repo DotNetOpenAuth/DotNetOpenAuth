@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <remarks>
 	/// This is somewhat analogous to 2-legged OAuth.
 	/// </remarks>
-	internal class AccessTokenClientCredentialsRequest : AccessTokenRequestBase {
+	internal class AccessTokenClientCredentialsRequest : ScopedAccessTokenRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenClientCredentialsRequest"/> class.
 		/// </summary>
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The type of the grant.</value>
 		internal override GrantType GrantType {
-			get { return Messages.GrantType.None; }
+			get { return Messages.GrantType.ClientCredentials; }
 		}
 	}
 }
