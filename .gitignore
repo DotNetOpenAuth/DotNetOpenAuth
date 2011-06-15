@@ -22,3 +22,4 @@ PrecompiledWeb
 *.dbproj.schemaview
 _ReSharper*
 *.vs10x
+*.docstates
