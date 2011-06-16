@@ -35,7 +35,7 @@
 		<%= Html.Hidden("redirect_uri", Model.AuthorizationRequest.Callback) %>
 		<%= Html.Hidden("state", Model.AuthorizationRequest.ClientState) %>
 		<%= Html.Hidden("scope", OAuthUtilities.JoinScopes(Model.AuthorizationRequest.Scope)) %>
-		<%= Html.Hidden("response_type", "code") %>
+		<%= Html.Hidden("response_type", Model.AuthorizationRequest.ResponseType == DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationResponseType.AccessToken ? "token" : "code") %>
 		<div style="display: none" id="responseButtonsDiv">
 			<input type="submit" value="Yes" onclick="document.getElementsByName('IsApproved')[0].value = true; return true;" />
 			<input type="submit" value="No" onclick="document.getElementsByName('IsApproved')[0].value = false; return true;" />
