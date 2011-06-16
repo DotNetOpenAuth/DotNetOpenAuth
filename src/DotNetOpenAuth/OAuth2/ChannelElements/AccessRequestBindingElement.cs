@@ -61,6 +61,24 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						var code = (AuthorizationCode)response.AuthorizationDescription;
 						response.CodeOrToken = codeFormatter.Serialize(code);
 						break;
+					case CodeOrTokenType.AccessToken:
+						var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
+						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+
+						// TODO: consider moving this AccessToken construction to its own binding element.
+						response.AuthorizationDescription = new AccessToken {
+							ClientIdentifier = request.ClientIdentifier,
+							UtcCreationDate = DateTime.UtcNow,
+							User = ((EndUserAuthorizationSuccessResponseBase)response).AuthorizingUsername,
+						};
+						response.AuthorizationDescription.Scope.ResetContents(request.Scope);
+
+						using (var resourceServerKey = this.AuthorizationServer.CreateAccessTokenEncryptionKey(request)) {
+							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
+							var token = (AccessToken)response.AuthorizationDescription;
+							response.CodeOrToken = tokenFormatter.Serialize(token);
+							break;
+						}
 					default:
 						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));
 				}

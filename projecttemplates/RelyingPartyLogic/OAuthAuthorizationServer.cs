@@ -21,7 +21,7 @@ namespace RelyingPartyLogic {
 	/// Provides OAuth 2.0 authorization server information to DotNetOpenAuth.
 	/// </summary>
 	public class OAuthAuthorizationServer : IAuthorizationServer {
-		private static readonly RSAParameters AsymmetricKey = CreateRSAKey();
+		private static readonly RSACryptoServiceProvider SigningKey = new RSACryptoServiceProvider();
 
 		private readonly INonceStore nonceStore = new NonceDbStore();
 
@@ -44,8 +44,26 @@ namespace RelyingPartyLogic {
 			get { return this.nonceStore; }
 		}
 
-		public RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider() {
-			return CreateAsymmetricKeyServiceProvider();
+		/// <summary>
+		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// </summary>
+		/// <value>
+		/// Must not be null, and must contain the private key.
+		/// </value>
+		/// <returns>A crypto service provider instance that contains the private key.</returns>
+		public RSACryptoServiceProvider AccessTokenSigningKey {
+			get { return SigningKey; }
+		}
+
+		/// <summary>
+		/// Creates the access token encryption key.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		public RSACryptoServiceProvider CreateAccessTokenEncryptionKey(IAccessTokenRequest request) {
+			// For this sample, we assume just one resource server.
+			// If this authorization server needs to mint access tokens for more than one resource server,
+			// we'd look at the request message passed to us and decide which public key to return.
+			return OAuthResourceServer.CreateRSA();
 		}
 
 		/// <summary>
@@ -114,35 +132,7 @@ namespace RelyingPartyLogic {
 			// Default to not auto-approving.
 			return false;
 		}
-
-		/// <summary>
-		/// Creates the asymmetric crypto service provider.
-		/// </summary>
-		/// <returns>An RSA crypto service provider.</returns>
-		/// <remarks>
-		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
-		/// In this sample we just create one for each incoming request.  Be sure to call Dispose on them to release native handles.
-		/// </remarks>
-		internal static RSACryptoServiceProvider CreateAsymmetricKeyServiceProvider() {
-			var serviceProvider = new RSACryptoServiceProvider();
-			serviceProvider.ImportParameters(AsymmetricKey);
-			return serviceProvider;
-		}
-
-		/// <summary>
-		/// Creates the RSA key used by all the crypto service provider instances we create.
-		/// </summary>
-		/// <returns>RSA data that includes the private key.</returns>
-		private static RSAParameters CreateRSAKey() {
-			// As we generate a new random key, we need to set the UseMachineKeyStore flag so that this doesn't
-			// crash on IIS. For more information: 
-			// http://social.msdn.microsoft.com/Forums/en-US/clr/thread/7ea48fd0-8d6b-43ed-b272-1a0249ae490f?prof=required
-			var cspParameters = new CspParameters();
-			cspParameters.Flags = CspProviderFlags.UseArchivableKey | CspProviderFlags.UseMachineKeyStore;
-			var asymmetricKey = new RSACryptoServiceProvider(cspParameters);
-			return asymmetricKey.ExportParameters(true);
-		}
-
+		
 		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username) {
 			var grantedScopeStrings = from auth in Database.DataContext.ClientAuthorizations
 									  where

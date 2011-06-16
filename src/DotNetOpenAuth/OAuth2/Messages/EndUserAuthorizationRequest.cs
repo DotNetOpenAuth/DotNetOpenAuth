@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to issue an access token to the Consumer if permission is granted.
 	/// </summary>
 	[Serializable]
-	public class EndUserAuthorizationRequest : MessageBase {
+	public class EndUserAuthorizationRequest : MessageBase, IAccessTokenRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequest"/> class.
 		/// </summary>
@@ -57,6 +57,16 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		[MessagePart(Protocol.client_id, IsRequired = true)]
 		public string ClientIdentifier { get; set; }
+
+		/// <summary>
+		/// Gets a value indicating whether the client requesting the access token has authenticated itself.
+		/// </summary>
+		/// <value>
+		/// Always false because authorization requests only include the client_id, without a secret.
+		/// </value>
+		bool IAccessTokenRequest.ClientAuthenticated {
+			get { return false; }
+		}
 
 		/// <summary>
 		/// Gets or sets the callback URL.

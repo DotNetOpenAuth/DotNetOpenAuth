@@ -396,6 +396,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\Messages\GrantType.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRefreshRequest.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationResponseType.cs" />
+    <Compile Include="OAuth2\Messages\IAccessTokenRequest.cs" />
     <Compile Include="OAuth2\Messages\IMessageWithClientState.cs" />
     <Compile Include="OAuth2\Messages\ScopedAccessTokenRequest.cs" />
     <Compile Include="OAuth2\Messages\UnauthorizedResponse.cs" />

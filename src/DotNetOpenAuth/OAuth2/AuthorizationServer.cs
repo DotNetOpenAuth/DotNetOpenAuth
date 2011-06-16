@@ -122,11 +122,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			var request = this.ReadAccessTokenRequest(httpRequestInfo);
 			if (request != null) {
-				// This convenience method only encrypts access tokens assuming that this auth server
-				// doubles as the resource server.
-				using (var resourceServerPublicKey = this.AuthorizationServerServices.CreateAccessTokenSigningCryptoServiceProvider()) {
-					response = this.PrepareAccessTokenResponse(request, resourceServerPublicKey);
-				}
+				response = this.PrepareAccessTokenResponse(request);
 
 				return true;
 			}
@@ -212,17 +208,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Prepares the response to an access token request.
 		/// </summary>
 		/// <param name="request">The request for an access token.</param>
-		/// <param name="accessTokenEncryptingPublicKey">The crypto service provider with the public key to encrypt the access token to, such that the resource server will be able to decrypt it.</param>
 		/// <param name="accessTokenLifetime">The access token's lifetime.</param>
 		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
-		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, RSACryptoServiceProvider accessTokenEncryptingPublicKey, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
+		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
 			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(accessTokenEncryptingPublicKey != null);
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
-			using (var crypto = this.AuthorizationServerServices.CreateAccessTokenSigningCryptoServiceProvider()) {
-				var accessTokenFormatter = AccessToken.CreateFormatter(crypto, accessTokenEncryptingPublicKey);
+			using (var resourceServerEncryptionKey = this.AuthorizationServerServices.CreateAccessTokenEncryptionKey(request)) {
+				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerServices.AccessTokenSigningKey, resourceServerEncryptionKey);
 				var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
 
 				var response = new AccessTokenSuccessResponse(request) {

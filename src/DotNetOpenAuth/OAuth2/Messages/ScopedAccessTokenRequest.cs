@@ -30,5 +30,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>A set of scopes.  Never null.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
 		internal HashSet<string> Scope { get; private set; }
+
+		/// <summary>
+		/// Gets the scope of operations the client is allowed to invoke.
+		/// </summary>
+		protected override HashSet<string> RequestedScope {
+			get { return this.Scope; }
+		}
 	}
 }

@@ -123,6 +123,7 @@
     <Compile Include="OAuthAuthenticationModule.cs" />
     <Compile Include="OAuthAuthorizationManager.cs" />
     <Compile Include="OAuthPrincipalAuthorizationPolicy.cs" />
+    <Compile Include="OAuthResourceServer.cs" />
     <Compile Include="OAuthServiceProvider.cs" />
     <Compile Include="Policies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

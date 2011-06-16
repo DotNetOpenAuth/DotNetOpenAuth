@@ -29,6 +29,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: base(clientCallback, version) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
+			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
 		/// <summary>
@@ -41,6 +42,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
 			Contract.Requires<ArgumentNullException>(request != null);
 			((IMessageWithClientState)this).ClientState = request.ClientState;
+			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
 		#region ITokenCarryingRequest Members

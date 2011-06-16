@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
 	/// Provides host-specific authorization server services needed by this library.
@@ -36,16 +38,28 @@ namespace DotNetOpenAuth.OAuth2 {
 		INonceStore VerificationCodeNonceStore { get; }
 
 		/// <summary>
-		/// Creates a new instance of the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
 		/// </summary>
 		/// <returns>A crypto service provider instance that contains the private key.</returns>
 		/// <value>Must not be null, and must contain the private key.</value>
 		/// <remarks>
 		/// The public key in the private/public key pair will be used by the resource
 		/// servers to validate that the access token is minted by a trusted authorization server.
-		/// The caller is responsible to dispose of the returned instance.
 		/// </remarks>
-		RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider();
+		RSACryptoServiceProvider AccessTokenSigningKey { get; }
+
+		/// <summary>
+		/// Gets the crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
+		/// </summary>
+		/// <param name="accessTokenRequestMessage">The access token request message.</param>
+		/// <returns>
+		/// A crypto service provider instance that contains the public key.
+		/// </returns>
+		/// <value>Must not be null.</value>
+		/// <remarks>
+		/// The caller is responsible to dispose of the returned value.
+		/// </remarks>
+		RSACryptoServiceProvider CreateAccessTokenEncryptionKey(IAccessTokenRequest accessTokenRequestMessage);
 
 		/// <summary>
 		/// Gets the client with a given identifier.
@@ -115,6 +129,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
 		/// </summary>
+		/// <value>
+		/// Must not be null, and must contain the private key.
+		/// </value>
+		/// <returns>A crypto service provider instance that contains the private key.</returns>
+		RSACryptoServiceProvider IAuthorizationServer.AccessTokenSigningKey {
+			get {
+				Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
+				Contract.Ensures(!Contract.Result<RSACryptoServiceProvider>().PublicOnly);
+				throw new NotImplementedException();
+			}
+		}
+
+		/// <summary>
+		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// </summary>
 		/// <returns>
 		/// A crypto service provider instance that contains the private key.
 		/// </returns>
@@ -123,9 +152,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The public key in the private/public key pair will be used by the resource
 		/// servers to validate that the access token is minted by a trusted authorization server.
 		/// </remarks>
-		RSACryptoServiceProvider IAuthorizationServer.CreateAccessTokenSigningCryptoServiceProvider() {
+		RSACryptoServiceProvider IAuthorizationServer.CreateAccessTokenEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
 			Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
-			Contract.Ensures(!Contract.Result<RSACryptoServiceProvider>().PublicOnly);
 			throw new NotImplementedException();
 		}
 

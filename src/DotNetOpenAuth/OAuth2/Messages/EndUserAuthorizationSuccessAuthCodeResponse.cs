@@ -72,12 +72,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The authorization code.</value>
 		[MessagePart(Protocol.code, IsRequired = true)]
 		internal string AuthorizationCode { get; set; }
-
-		/// <summary>
-		/// Gets or sets the access token.
-		/// </summary>
-		/// <value>The access token.</value>
-		[MessagePart(Protocol.access_token, IsRequired = false)]
-		internal string AccessToken { get; set; }
 	}
 }
