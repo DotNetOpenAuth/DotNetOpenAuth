@@ -78,7 +78,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// An opaque value that Clients can use to maintain state associated with this request. 
 		/// </value>
 		/// <remarks>
-		/// REQUIRED. The client identifier as described in Section 3.4  (Client Credentials). 
+		/// This data is proprietary to the client and should be considered an opaque string to the
+		/// authorization server.
 		/// </remarks>
 		[MessagePart(Protocol.state, IsRequired = false)]
 		public string ClientState { get; set; }
