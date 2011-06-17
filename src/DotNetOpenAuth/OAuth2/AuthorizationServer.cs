@@ -208,14 +208,16 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Prepares the response to an access token request.
 		/// </summary>
 		/// <param name="request">The request for an access token.</param>
-		/// <param name="accessTokenLifetime">The access token's lifetime.</param>
 		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
-		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, TimeSpan? accessTokenLifetime = null, bool includeRefreshToken = true) {
+		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
 			Contract.Requires<ArgumentNullException>(request != null);
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
-			using (var resourceServerEncryptionKey = this.AuthorizationServerServices.CreateAccessTokenEncryptionKey(request)) {
+			RSACryptoServiceProvider resourceServerEncryptionKey;
+			TimeSpan accessTokenLifetime;
+			this.AuthorizationServerServices.PrepareAccessToken(request, out resourceServerEncryptionKey, out accessTokenLifetime);
+			try {
 				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerServices.AccessTokenSigningKey, resourceServerEncryptionKey);
 				var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
 
@@ -232,6 +234,9 @@ namespace DotNetOpenAuth.OAuth2 {
 				}
 
 				return response;
+			} finally {
+				IDisposable disposableKey = resourceServerEncryptionKey;
+				disposableKey.Dispose();
 			}
 		}
 

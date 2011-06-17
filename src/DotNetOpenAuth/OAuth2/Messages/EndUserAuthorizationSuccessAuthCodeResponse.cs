@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
 
-		#region ITokenCarryingRequest Members
+		#region IAuthorizationCarryingRequest Members
 
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.

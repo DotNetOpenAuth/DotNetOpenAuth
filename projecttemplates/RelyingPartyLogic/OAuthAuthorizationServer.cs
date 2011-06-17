@@ -59,11 +59,12 @@ namespace RelyingPartyLogic {
 		/// Creates the access token encryption key.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		public RSACryptoServiceProvider CreateAccessTokenEncryptionKey(IAccessTokenRequest request) {
+		public void PrepareAccessToken(IAccessTokenRequest accessTokenRequestMessage, out RSACryptoServiceProvider resourceServerEncryptionKey, out TimeSpan lifetime) {
 			// For this sample, we assume just one resource server.
 			// If this authorization server needs to mint access tokens for more than one resource server,
 			// we'd look at the request message passed to us and decide which public key to return.
-			return OAuthResourceServer.CreateRSA();
+			resourceServerEncryptionKey = OAuthResourceServer.CreateRSA();
+			lifetime = TimeSpan.FromHours(1);
 		}
 
 		/// <summary>
@@ -132,7 +133,7 @@ namespace RelyingPartyLogic {
 			// Default to not auto-approving.
 			return false;
 		}
-		
+
 		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username) {
 			var grantedScopeStrings = from auth in Database.DataContext.ClientAuthorizations
 									  where
@@ -140,7 +141,7 @@ namespace RelyingPartyLogic {
 										auth.CreatedOnUtc <= issuedUtc &&
 										(!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
 										auth.User.AuthenticationTokens.Any(token => token.ClaimedIdentifier == username)
-										select auth.Scope;
+									  select auth.Scope;
 
 			if (!grantedScopeStrings.Any()) {
 				// No granted authorizations prior to the issuance of this token, so it must have been revoked.

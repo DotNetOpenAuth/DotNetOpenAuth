@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using System.Security.Cryptography;
 
 	/// <summary>
 	/// Decodes verification codes, refresh tokens and access tokens on incoming messages.
@@ -66,18 +67,25 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
 
 						// TODO: consider moving this AccessToken construction to its own binding element.
-						response.AuthorizationDescription = new AccessToken {
-							ClientIdentifier = request.ClientIdentifier,
-							UtcCreationDate = DateTime.UtcNow,
-							User = ((EndUserAuthorizationSuccessResponseBase)response).AuthorizingUsername,
-						};
-						response.AuthorizationDescription.Scope.ResetContents(request.Scope);
+						RSACryptoServiceProvider resourceServerKey;
+						TimeSpan lifetime;
+						this.AuthorizationServer.PrepareAccessToken(request, out resourceServerKey, out lifetime);
+						try {
+							response.AuthorizationDescription = new AccessToken {
+								ClientIdentifier = request.ClientIdentifier,
+								UtcCreationDate = DateTime.UtcNow,
+								User = ((EndUserAuthorizationSuccessResponseBase)response).AuthorizingUsername,
+								Lifetime = lifetime,
+							};
+							response.AuthorizationDescription.Scope.ResetContents(request.Scope);
 
-						using (var resourceServerKey = this.AuthorizationServer.CreateAccessTokenEncryptionKey(request)) {
 							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
 							var token = (AccessToken)response.AuthorizationDescription;
 							response.CodeOrToken = tokenFormatter.Serialize(token);
 							break;
+						} finally {
+							IDisposable disposableKey = resourceServerKey;
+							disposableKey.Dispose();
 						}
 					default:
 						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));

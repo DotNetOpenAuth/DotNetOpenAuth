@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
-		#region ITokenCarryingRequest Members
+		#region IAuthorizationCarryingRequest Members
 
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.

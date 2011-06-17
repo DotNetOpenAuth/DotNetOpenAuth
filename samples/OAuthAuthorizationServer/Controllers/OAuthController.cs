@@ -23,18 +23,8 @@
 		public ActionResult Token() {
 			var request = this.authorizationServer.ReadAccessTokenRequest();
 			if (request != null) {
-				// Just for the sake of the sample, we use a short-lived token.  This can be useful to mitigate the security risks
-				// of access tokens that are used over standard HTTP.
-				// But this is just the lifetime of the access token.  The client can still renew it using their refresh token until
-				// the authorization itself expires.
-				TimeSpan accessTokenLifetime = TimeSpan.FromMinutes(2);
-
-				// Also take into account the remaining life of the authorization and artificially shorten the access token's lifetime
-				// to account for that if necessary.
-				// TODO: code here
-
 				// Prepare the refresh and access tokens.
-				var response = this.authorizationServer.PrepareAccessTokenResponse(request, accessTokenLifetime);
+				var response = this.authorizationServer.PrepareAccessTokenResponse(request);
 				return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
 			}
 
