@@ -428,7 +428,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.RelyingParty.Channel.GetRequestFromContext(),
 				callback);
 
-			response.Send();
+			response.Respond();
 		}
 
 		/// <summary>

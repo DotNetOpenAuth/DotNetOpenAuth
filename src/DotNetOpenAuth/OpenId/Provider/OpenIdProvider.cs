@@ -326,6 +326,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
+		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
 		public void SendResponse(IRequest request) {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Contract.Requires<ArgumentNullException>(request != null);
@@ -334,6 +335,27 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
 			this.Channel.Send(requestInternal.Response);
+		}
+
+		/// <summary>
+		/// Sends the response to a received request.
+		/// </summary>
+		/// <param name="request">The incoming OpenID request whose response is to be sent.</param>
+		/// <remarks>
+		/// <para>Requires an HttpContext.Current context.  If one is not available, the caller should use
+		/// <see cref="PrepareResponse"/> instead and manually send the <see cref="OutgoingWebResponse"/> 
+		/// to the client.</para>
+		/// </remarks>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
+		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
+		public void Respond(IRequest request) {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
+			Contract.Requires<ArgumentNullException>(request != null);
+			Contract.Requires<ArgumentException>(request.IsResponseReady);
+
+			this.ApplyBehaviorsToResponse(request);
+			Request requestInternal = (Request)request;
+			this.Channel.Respond(requestInternal.Response);
 		}
 
 		/// <summary>
@@ -375,7 +397,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(localIdentifier != null);
 
-			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartyRealm, claimedIdentifier, localIdentifier, extensions).Send();
+			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartyRealm, claimedIdentifier, localIdentifier, extensions).Respond();
 		}
 
 		/// <summary>

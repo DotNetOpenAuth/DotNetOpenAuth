@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -297,10 +298,26 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
 		public void Send(IProtocolMessage message) {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Contract.Requires<ArgumentNullException>(message != null);
-			this.PrepareResponse(message).Send();
+			this.PrepareResponse(message).Respond(HttpContext.Current, true);
+		}
+
+		/// <summary>
+		/// Sends an indirect message (either a request or response) 
+		/// or direct message response for transmission to a remote party
+		/// and skips most of the remaining ASP.NET request handling pipeline.
+		/// </summary>
+		/// <param name="message">The one-way message to send</param>
+		/// <remarks>
+		/// Requires an HttpContext.Current context.
+		/// </remarks>
+		public void Respond(IProtocolMessage message) {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
+			Contract.Requires<ArgumentNullException>(message != null);
+			this.PrepareResponse(message).Respond();
 		}
 
 		/// <summary>

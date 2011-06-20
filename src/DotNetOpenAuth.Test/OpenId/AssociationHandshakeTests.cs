@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1
 					AssociateUnsuccessfulResponse renegotiateResponse = (AssociateUnsuccessfulResponse)req.ResponseMessageTestHook;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, renegotiateResponse.AssociationType);
-					op.SendResponse(req);
+					op.Respond(req);
 
 					// Receive second attempt request for an HMAC-SHA1 association.
 					req = (AutoResponsiveRequest)op.GetRequest();
@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					// Ensure that the response is a success response.
 					AssociateSuccessfulResponse successResponse = (AssociateSuccessfulResponse)req.ResponseMessageTestHook;
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, successResponse.AssociationType);
-					op.SendResponse(req);
+					op.Respond(req);
 				});
 			coordinator.Run();
 		}
@@ -168,7 +168,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = "HMAC-UNKNOWN";
 					renegotiateResponse.SessionType = "DH-UNKNOWN";
-					op.Channel.Send(renegotiateResponse);
+					op.Channel.Respond(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
@@ -195,7 +195,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.NoEncryption;
-					op.Channel.Send(renegotiateResponse);
+					op.Channel.Respond(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
@@ -220,7 +220,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-					op.Channel.Send(renegotiateResponse);
+					op.Channel.Respond(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
@@ -245,7 +245,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA1;
-					op.Channel.Send(renegotiateResponse);
+					op.Channel.Respond(renegotiateResponse);
 
 					// Receive second-try
 					request = op.Channel.ReadFromRequest<AssociateRequest>();
@@ -254,7 +254,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-					op.Channel.Send(renegotiateResponse);
+					op.Channel.Respond(renegotiateResponse);
 				});
 			coordinator.Run();
 		}
@@ -332,7 +332,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					IRequest req = op.GetRequest();
 					Assert.IsNotNull(req, "Expected incoming request but did not receive it.");
 					Assert.IsTrue(req.IsResponseReady);
-					op.SendResponse(req);
+					op.Respond(req);
 				});
 			coordinator.IncomingMessageFilter = message => {
 				Assert.AreSame(opDescription.Version, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);

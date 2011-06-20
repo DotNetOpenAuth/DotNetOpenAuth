@@ -51,7 +51,7 @@
 					// We DON'T use ProviderEndpoint.SendResponse because
 					// that only sends responses to requests in PendingAuthenticationRequest,
 					// but we don't set that for associate and other non-checkid requests.
-					ProviderEndpoint.Provider.SendResponse(request);
+					ProviderEndpoint.Provider.Respond(request);
 
 					// Make sure that any PendingAuthenticationRequest that MAY be set is cleared.
 					ProviderEndpoint.PendingRequest = null;

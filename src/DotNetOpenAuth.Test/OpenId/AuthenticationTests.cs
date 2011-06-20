@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					request.LocalIdentifier = "http://localid";
 					request.ReturnTo = RPUri;
 					request.Realm = RPUri;
-					rp.Channel.Send(request);
+					rp.Channel.Respond(request);
 					if (positive) {
 						if (tamper) {
 							try {
@@ -211,20 +211,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 					} else {
 						response = new NegativeAssertionResponse(request, op.Channel);
 					}
-					op.Channel.Send(response);
+					op.Channel.Respond(response);
 
 					if (positive && (statelessRP || !sharedAssociation)) {
 						var checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
 						var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 						checkauthResponse.IsValid = checkauthRequest.IsValid;
-						op.Channel.Send(checkauthResponse);
+						op.Channel.Respond(checkauthResponse);
 
 						if (!tamper) {
 							// Respond to the replay attack.
 							checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
 							checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 							checkauthResponse.IsValid = checkauthRequest.IsValid;
-							op.Channel.Send(checkauthResponse);
+							op.Channel.Respond(checkauthResponse);
 						}
 					}
 				});

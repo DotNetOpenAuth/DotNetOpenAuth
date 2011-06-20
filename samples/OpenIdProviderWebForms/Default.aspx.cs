@@ -37,7 +37,7 @@
 			try {
 				// Send user input through identifier parser so we accept more free-form input.
 				string rpSite = Identifier.Parse(relyingPartyRealm);
-				op.PrepareUnsolicitedAssertion(providerEndpoint, rpSite, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Send();
+				op.PrepareUnsolicitedAssertion(providerEndpoint, rpSite, Util.BuildIdentityUrl(), Util.BuildIdentityUrl()).Respond();
 			} catch (ProtocolException ex) {
 				Label errorLabel = (Label)this.loginView.FindControl("errorLabel");
 				errorLabel.Visible = true;

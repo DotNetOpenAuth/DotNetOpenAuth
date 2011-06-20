@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, userName, scopes, callback);
 
-			this.Channel.Send(response);
+			this.Channel.Respond(response);
 		}
 
 		/// <summary>
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null);
 
 			var response = this.PrepareRejectAuthorizationRequest(authorizationRequest, callback);
-			this.Channel.Send(response);
+			this.Channel.Respond(response);
 		}
 
 		/// <summary>

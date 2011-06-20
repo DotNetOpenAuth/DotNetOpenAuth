@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			var authorizationState = new AuthorizationState(scope) {
 				Callback = returnTo,
 			};
-			this.PrepareRequestUserAuthorization(authorizationState, state).Send();
+			this.PrepareRequestUserAuthorization(authorizationState, state).Respond();
 		}
 
 		/// <summary>

@@ -171,7 +171,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				}
 
-				provider.SendResponse(request);
+				provider.Respond(request);
 			}
 		}
 

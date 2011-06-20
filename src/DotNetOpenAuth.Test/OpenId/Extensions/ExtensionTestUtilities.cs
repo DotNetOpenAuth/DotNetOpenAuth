@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 						requestBase.Extensions.Add(extension);
 					}
 
-					rp.Channel.Send(requestBase);
+					rp.Channel.Respond(requestBase);
 					var response = rp.Channel.ReadFromRequest<PositiveAssertionResponse>();
 
 					var receivedResponses = response.Extensions.Cast<IOpenIdMessageExtension>();
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 						response.Extensions.Add(extensionResponse);
 					}
 
-					op.Channel.Send(response);
+					op.Channel.Respond(response);
 				});
 			coordinator.Run();
 		}

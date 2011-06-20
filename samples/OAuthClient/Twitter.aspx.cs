@@ -47,7 +47,7 @@
 						this.AccessToken = accessTokenResponse.AccessToken;
 					} else if (this.AccessToken == null) {
 						// If we don't yet have access, immediately request it.
-						twitter.Channel.Send(twitter.PrepareRequestUserAuthorization());
+						twitter.Channel.Respond(twitter.PrepareRequestUserAuthorization());
 					}
 				}
 			}

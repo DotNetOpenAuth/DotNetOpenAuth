@@ -14,13 +14,13 @@ namespace DotNetOpenAuth.Test.Messaging {
 	[TestFixture]
 	public class ResponseTests : TestBase {
 		[TestCase, ExpectedException(typeof(InvalidOperationException))]
-		public void SendWithoutAspNetContext() {
+		public void RespondWithoutAspNetContext() {
 			HttpContext.Current = null;
-			new OutgoingWebResponse().Send();
+			new OutgoingWebResponse().Respond();
 		}
 
 		[TestCase]
-		public void Send() {
+		public void Respond() {
 			StringWriter writer = new StringWriter();
 			HttpRequest httpRequest = new HttpRequest("file", "http://server", string.Empty);
 			HttpResponse httpResponse = new HttpResponse(writer);
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			response.Status = System.Net.HttpStatusCode.OK;
 			response.Headers["someHeaderName"] = "someHeaderValue";
 			response.Body = "some body";
-			response.Send();
+			response.Respond();
 			string results = writer.ToString();
 			// For some reason the only output in test is the body... the headers require a web host
 			Assert.AreEqual(response.Body, results);
