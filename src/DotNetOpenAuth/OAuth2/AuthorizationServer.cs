@@ -201,6 +201,13 @@ namespace DotNetOpenAuth.OAuth2 {
 				response.Scope.ResetContents(scopes);
 			}
 
+			RSACryptoServiceProvider rsa;
+			TimeSpan lifetime;
+			this.AuthorizationServerServices.PrepareAccessToken(authorizationRequest, out rsa, out lifetime);
+			IDisposable disposableKey = rsa;
+			disposableKey.Dispose();
+			response.Lifetime = lifetime;
+
 			return response;
 		}
 

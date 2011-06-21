@@ -43,6 +43,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			this.CallbackHash = CalculateCallbackHash(callback);
 			this.Scope.ResetContents(scopes);
 			this.User = username;
+			this.UtcCreationDate = DateTime.UtcNow;
 		}
 
 		/// <summary>

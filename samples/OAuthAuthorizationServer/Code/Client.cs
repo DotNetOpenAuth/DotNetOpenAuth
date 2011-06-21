@@ -37,7 +37,19 @@
 		///   <c>true</c> if the callback URL is allowable for this client; otherwise, <c>false</c>.
 		/// </returns>
 		bool IConsumerDescription.IsCallbackAllowed(Uri callback) {
-			return string.IsNullOrEmpty(this.Callback) || callback == new Uri(this.Callback);
+			if (string.IsNullOrEmpty(this.Callback)) {
+				// No callback rules have been set up for this client.
+				return true;
+			}
+
+			// In this sample, it's enough of a callback URL match if the scheme and host match.
+			// In a production app, it is advisable to require a match on the path as well.
+			Uri acceptableCallbackPattern = new Uri(this.Callback);
+			if (String.Equals(acceptableCallbackPattern.GetLeftPart(UriPartial.Authority), callback.GetLeftPart(UriPartial.Authority), StringComparison.Ordinal)) {
+				return true;
+			}
+
+			return false;
 		}
 
 		#endregion

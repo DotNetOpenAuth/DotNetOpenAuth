@@ -360,6 +360,7 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\AuthorizationState.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessRequestBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessToken.cs" />
+    <Compile Include="OAuth2\ChannelElements\AccessTokenBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationDataBag.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerBindingElementBase.cs" />
     <Compile Include="OAuth2\ChannelElements\GrantTypeEncoder.cs" />

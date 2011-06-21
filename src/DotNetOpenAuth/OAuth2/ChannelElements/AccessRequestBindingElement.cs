@@ -66,19 +66,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
 						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
 
-						// TODO: consider moving this AccessToken construction to its own binding element.
 						RSACryptoServiceProvider resourceServerKey;
 						TimeSpan lifetime;
 						this.AuthorizationServer.PrepareAccessToken(request, out resourceServerKey, out lifetime);
 						try {
-							response.AuthorizationDescription = new AccessToken {
-								ClientIdentifier = request.ClientIdentifier,
-								UtcCreationDate = DateTime.UtcNow,
-								User = ((EndUserAuthorizationSuccessResponseBase)response).AuthorizingUsername,
-								Lifetime = lifetime,
-							};
-							response.AuthorizationDescription.Scope.ResetContents(request.Scope);
-
 							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
 							var token = (AccessToken)response.AuthorizationDescription;
 							response.CodeOrToken = tokenFormatter.Serialize(token);

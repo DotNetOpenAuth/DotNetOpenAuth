@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthorizationCodeBindingElement.cs" company="Andrew Arnott">
+// <copyright file="AccessTokenBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,19 +9,18 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using Messages;
-	using Messaging;
-	using Messaging.Bindings;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.Messages;
+	using System.Security.Cryptography;
 
 	/// <summary>
-	/// A binding element for OAuth 2.0 authorization servers that create/verify
-	/// issued authorization codes as part of obtaining access/refresh tokens.
+	/// Serializes access tokens inside an outgoing message.
 	/// </summary>
-	internal class AuthorizationCodeBindingElement : AuthServerBindingElementBase {
+	internal class AccessTokenBindingElement : AuthServerBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthorizationCodeBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenBindingElement"/> class.
 		/// </summary>
-		internal AuthorizationCodeBindingElement() {
+		internal AccessTokenBindingElement() {
 		}
 
 		/// <summary>
@@ -36,13 +35,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		}
 
 		/// <summary>
-		/// Gets the maximum message age from the standard expiration binding element.
-		/// </summary>
-		internal static TimeSpan MaximumMessageAge {
-			get { return StandardExpirationBindingElement.MaximumMessageAge; }
-		}
-
-		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
@@ -50,17 +42,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		/// <remarks>
-		/// Implementations that provide message protection must honor the
-		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
-		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as EndUserAuthorizationSuccessAuthCodeResponse;
+			var response = message as EndUserAuthorizationSuccessAccessTokenResponse;
 			if (response != null) {
 				var directResponse = (IDirectResponseProtocolMessage)response;
-				var request = (EndUserAuthorizationRequest)directResponse.OriginatingRequest;
+				var request = (IAccessTokenRequest)directResponse.OriginatingRequest;
 				IAuthorizationCarryingRequest tokenCarryingResponse = response;
-				tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(request.ClientIdentifier, request.Callback, response.Scope, response.AuthorizingUsername);
+				tokenCarryingResponse.AuthorizationDescription = new AccessToken(request.ClientIdentifier, response.Scope, response.AuthorizingUsername, response.Lifetime);
 
 				return MessageProtections.None;
 			}
@@ -80,20 +68,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
-		/// </exception>
-		/// <remarks>
-		/// Implementations that provide message protection must honor the
-		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
-		/// </remarks>
+		///   </exception>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var request = message as AccessTokenAuthorizationCodeRequest;
-			if (request != null) {
-				IAuthorizationCarryingRequest tokenRequest = request;
-				((AuthorizationCode)tokenRequest.AuthorizationDescription).VerifyCallback(request.Callback);
-
-				return MessageProtections.None;
-			}
-
 			return null;
 		}
 	}

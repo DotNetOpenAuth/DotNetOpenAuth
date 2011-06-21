@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// A short-lived token that accompanies HTTP requests to protected data to authorize the request.
@@ -35,6 +36,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			this.User = authorization.User;
 			this.Scope.ResetContents(authorization.Scope);
 			this.Lifetime = lifetime;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AccessToken"/> class.
+		/// </summary>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="scopes">The scopes.</param>
+		/// <param name="username">The username of the account that authorized this token.</param>
+		/// <param name="lifetime">The lifetime for this access token.</param>
+		internal AccessToken(string clientIdentifier, IEnumerable<string> scopes, string username, TimeSpan? lifetime) {
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
+
+			this.ClientIdentifier = clientIdentifier;
+			this.Scope.ResetContents(scopes);
+			this.User = username;
+			this.Lifetime = lifetime;
+			this.UtcCreationDate = DateTime.UtcNow;
 		}
 
 		/// <summary>

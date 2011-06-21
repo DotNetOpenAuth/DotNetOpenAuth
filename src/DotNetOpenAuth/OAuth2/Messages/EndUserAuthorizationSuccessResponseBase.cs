@@ -42,6 +42,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(request != null);
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
+			this.Scope.ResetContents(request.Scope);
 		}
 
 		/// <summary>
