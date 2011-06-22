@@ -58,6 +58,20 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+	$.support.cors = true; // force cross-site scripting (as of jQuery 1.5)
+	function serviceCall(operation, accessToken, label) {
+		label.text('fetching...');
+		$.ajax({
+			url: "http://localhost:65169" + encodeURI(operation),
+			headers: {
+				"Authorization": "Bearer " + accessToken
+			},
+			cache: false,
+			success: function (data, textStatus, jqXHR) { label.text(data.toString()); },
+			error: function (jqXHR, textStatus, errorThrown) { label.text(textStatus + ": " + errorThrown); }
+		});
+	};
+
 	var fragmentIndex = document.location.href.indexOf('#');
 	if (fragmentIndex > 0) {
 		var fragment = document.location.href.substring(fragmentIndex + 1);
@@ -69,13 +83,19 @@ $(document).ready(function () {
 			authorizationLabel.text('Authorization received! ' + suffix);
 
 			var scopes = args['scope'].split(' ');
-			for (var scope in scopes) {
-				var button = $('input[operation="' + scopes[scope] + '"]')[0];
-				button.disabled = false;
-
-				var checkbox = $('input[value="' + scopes[scope] + '"]')[0];
+			for (var scopeIndex in scopes) {
+				var scope = scopes[scopeIndex];
+				var button = $('input[operation="' + scope + '"]');
+				button[0].disabled = false;
+				button.click((function (value) {
+					return function () {
+						var label = $('span[operation="' + value + '"]');
+						serviceCall(value, args['access_token'], label);
+					};
+				})(scope));
+				var checkbox = $('input[value="' + scope + '"]')[0];
 				checkbox.checked = true;
-			}
+			};
 		}
 	}
 });

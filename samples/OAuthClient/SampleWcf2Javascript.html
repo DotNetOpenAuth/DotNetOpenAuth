@@ -3,7 +3,7 @@
 <head>
 	<title>OAuth 2.0 client (implicit grant)</title>
 
-	<script src="Scripts/jquery-1.4.1-vsdoc.js" type="text/javascript"></script>
+	<script src="Scripts/jquery-1.6.1.js" type="text/javascript"></script>
 	<script src="SampleWcf2Javascript.js" type="text/javascript"></script>
 </head>
 <body>
@@ -23,17 +23,17 @@
 			<table border="0">
 				<tr>
 					<td>
-						<input type="checkbox" name='scope' value='http://tempuri.org/IDataApi/GetName' id="getNameScopeCheckbox" /><label for="getNameScopeCheckbox">GetName</label>
+						<input type="checkbox" name='scope' value='/DataApi.svc/web/name' id="getNameScopeCheckbox" /><label for="getNameScopeCheckbox">GetName</label>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<input type="checkbox" name='scope'  value='http://tempuri.org/IDataApi/GetAge' id="getAgeScopeCheckbox" /><label for="getAgeScopeCheckbox">GetAge</label>
+						<input type="checkbox" name='scope'  value='/DataApi.svc/web/age' id="getAgeScopeCheckbox" /><label for="getAgeScopeCheckbox">GetAge</label>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<input type="checkbox" name='scope' value='http://tempuri.org/IDataApi/GetFavoriteSites' id="getFavoriteSitesScopeCheckbox" /><label for="getFavoriteSitesScopeCheckbox">GetFavoriteSites</label>
+						<input type="checkbox" name='scope' value='/DataApi.svc/web/favoritesites' id="getFavoriteSitesScopeCheckbox" /><label for="getFavoriteSitesScopeCheckbox">GetFavoriteSites</label>
 					</td>
 				</tr>
 			</table>
@@ -41,13 +41,13 @@
 			<span id="authorizationLabel" />
 		</fieldset>
 		<br />
-		<input type="button" value="Get Name" id="getNameButton" operation='http://tempuri.org/IDataApi/GetName' disabled="disabled" />
-		<span id="nameLabel"></span>
+		<input type="button" value="Get Name" id="getNameButton" operation='/DataApi.svc/web/name' disabled="disabled" />
+		<span id="nameLabel" operation='/DataApi.svc/web/name' ></span>
 		<br />
-		<input type="button" value="Get Age" id="getAgeButton" operation='http://tempuri.org/IDataApi/GetAge' disabled="disabled" />
-		<span id="ageLabel"></span>
+		<input type="button" value="Get Age" id="getAgeButton" operation='/DataApi.svc/web/age' disabled="disabled" />
+		<span id="ageLabel" operation='/DataApi.svc/web/age' ></span>
 		<br />
-		<input type="button" value="Get Favorite Sites" id="getFavoriteSitesButton" operation='http://tempuri.org/IDataApi/GetFavoriteSites' disabled="disabled" />
-		<span id="favoriteSitesLabel"></span>
+		<input type="button" value="Get Favorite Sites" id="getFavoriteSitesButton" operation='/DataApi.svc/web/favoritesites' disabled="disabled" />
+		<span id="favoriteSitesLabel" operation='/DataApi.svc/web/favoritesites' ></span>
 </body>
 </html>

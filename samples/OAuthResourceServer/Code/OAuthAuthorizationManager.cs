@@ -50,7 +50,7 @@
 					};
 
 					// Only allow this method call if the access token scope permits it.
-					return principal.IsInRole(operationContext.IncomingMessageHeaders.Action);
+					return principal.IsInRole(operationContext.IncomingMessageHeaders.Action ?? operationContext.IncomingMessageHeaders.To.AbsolutePath);
 				} else {
 					return false;
 				}
