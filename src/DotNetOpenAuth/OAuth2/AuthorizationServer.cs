@@ -185,7 +185,15 @@ namespace DotNetOpenAuth.OAuth2 {
 			EndUserAuthorizationSuccessResponseBase response;
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
-					response = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
+					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
+					response = accessTokenResponse;
+					RSACryptoServiceProvider rsa;
+					TimeSpan lifetime;
+					this.AuthorizationServerServices.PrepareAccessToken(authorizationRequest, out rsa, out lifetime);
+					IDisposable disposableKey = rsa;
+					disposableKey.Dispose();
+					accessTokenResponse.Lifetime = lifetime;
+
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
 					response = new EndUserAuthorizationSuccessAuthCodeResponse(callback, authorizationRequest);
@@ -200,13 +208,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (scopes != null) {
 				response.Scope.ResetContents(scopes);
 			}
-
-			RSACryptoServiceProvider rsa;
-			TimeSpan lifetime;
-			this.AuthorizationServerServices.PrepareAccessToken(authorizationRequest, out rsa, out lifetime);
-			IDisposable disposableKey = rsa;
-			disposableKey.Dispose();
-			response.Lifetime = lifetime;
 
 			return response;
 		}
