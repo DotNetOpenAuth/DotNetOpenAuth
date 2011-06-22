@@ -38,8 +38,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Gets the maximum message age from the standard expiration binding element.
 		/// </summary>
+		/// <value>This interval need not account for clock skew because it is only compared within a single authorization server or farm of servers.</value>
 		internal static TimeSpan MaximumMessageAge {
-			get { return StandardExpirationBindingElement.MaximumMessageAge; }
+			get { return Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetimeNoSkew; }
 		}
 
 		/// <summary>
