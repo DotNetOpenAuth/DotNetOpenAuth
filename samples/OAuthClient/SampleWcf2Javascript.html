@@ -38,15 +38,16 @@
 				</tr>
 			</table>
 			<input type="submit" id="requestAuthorizationButton" value="Request Authorization" />
+			<span id="authorizationLabel" />
 		</fieldset>
 		<br />
-		<input type="submit" value="Get Name" id="getNameButton" disabled="disabled" />
+		<input type="button" value="Get Name" id="getNameButton" operation='http://tempuri.org/IDataApi/GetName' disabled="disabled" />
 		<span id="nameLabel"></span>
 		<br />
-		<input type="submit" value="Get Age" id="getAgeButton" disabled="disabled" />
+		<input type="button" value="Get Age" id="getAgeButton" operation='http://tempuri.org/IDataApi/GetAge' disabled="disabled" />
 		<span id="ageLabel"></span>
 		<br />
-		<input type="submit" value="Get Favorite Sites" id="getFavoriteSitesButton" disabled="disabled" />
+		<input type="button" value="Get Favorite Sites" id="getFavoriteSitesButton" operation='http://tempuri.org/IDataApi/GetFavoriteSites' disabled="disabled" />
 		<span id="favoriteSitesLabel"></span>
 </body>
 </html>
