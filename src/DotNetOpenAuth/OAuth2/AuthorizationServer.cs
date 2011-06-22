@@ -187,13 +187,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				case EndUserAuthorizationResponseType.AccessToken:
 					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
 					response = accessTokenResponse;
-					RSACryptoServiceProvider rsa;
-					TimeSpan lifetime;
-					this.AuthorizationServerServices.PrepareAccessToken(authorizationRequest, out rsa, out lifetime);
-					IDisposable disposableKey = rsa;
-					disposableKey.Dispose();
-					accessTokenResponse.Lifetime = lifetime;
-
+					accessTokenResponse.Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(authorizationRequest);
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
 					response = new EndUserAuthorizationSuccessAuthCodeResponse(callback, authorizationRequest);
@@ -222,10 +216,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(request != null);
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
-			RSACryptoServiceProvider resourceServerEncryptionKey;
-			TimeSpan accessTokenLifetime;
-			this.AuthorizationServerServices.PrepareAccessToken(request, out resourceServerEncryptionKey, out accessTokenLifetime);
-			try {
+			TimeSpan accessTokenLifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request);
+			using (var resourceServerEncryptionKey = this.AuthorizationServerServices.GetResourceServerEncryptionKey(request)) {
 				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerServices.AccessTokenSigningKey, resourceServerEncryptionKey);
 				var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
 
@@ -242,9 +234,6 @@ namespace DotNetOpenAuth.OAuth2 {
 				}
 
 				return response;
-			} finally {
-				IDisposable disposableKey = resourceServerEncryptionKey;
-				disposableKey.Dispose();
 			}
 		}
 

@@ -66,17 +66,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
 						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
 
-						RSACryptoServiceProvider resourceServerKey;
-						TimeSpan lifetime;
-						this.AuthorizationServer.PrepareAccessToken(request, out resourceServerKey, out lifetime);
-						try {
+						using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
 							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
 							var token = (AccessToken)response.AuthorizationDescription;
 							response.CodeOrToken = tokenFormatter.Serialize(token);
 							break;
-						} finally {
-							IDisposable disposableKey = resourceServerKey;
-							disposableKey.Dispose();
 						}
 					default:
 						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));

@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		RSACryptoServiceProvider AccessTokenSigningKey { get; }
 
 		/// <summary>
-		/// Obtains the encryption key and lifetime for an access token being created.
+		/// Obtains the lifetime for a new access token.
 		/// </summary>
 		/// <param name="accessTokenRequestMessage">
 		/// Details regarding the resources that the access token will grant access to, and the identity of the client
@@ -57,20 +57,30 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Based on this information the receiving resource server can be determined and the lifetime of the access
 		/// token can be set based on the sensitivity of the resources.
 		/// </param>
-		/// <param name="resourceServerEncryptionKey">
-		/// Receives the crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
-		/// The caller is responsible to dispose of this value.
-		/// </param>
-		/// <param name="lifetime">
+		/// <returns>
 		/// Receives the lifetime for this access token.  Note that within this lifetime, authorization <i>may</i> not be revokable.  
 		/// Short lifetimes are recommended (i.e. one hour), particularly when the client is not authenticated or
 		/// the resources to which access is being granted are sensitive.
-		/// If <c>null</c>, a preconfigured default lifetime will be used.
+		/// </returns>
+		TimeSpan GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage);
+
+		/// <summary>
+		/// Obtains the encryption key for an access token being created.
+		/// </summary>
+		/// <param name="accessTokenRequestMessage">
+		/// Details regarding the resources that the access token will grant access to, and the identity of the client
+		/// that will receive that access.
+		/// Based on this information the receiving resource server can be determined and the lifetime of the access
+		/// token can be set based on the sensitivity of the resources.
 		/// </param>
+		/// <returns>
+		/// The crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
+		/// The caller is responsible to dispose of this value.
+		/// </returns>
 		/// <remarks>
 		/// The caller is responsible to dispose of the returned value.
 		/// </remarks>
-		void PrepareAccessToken(IAccessTokenRequest accessTokenRequestMessage, out RSACryptoServiceProvider resourceServerEncryptionKey, out TimeSpan lifetime);
+		RSACryptoServiceProvider GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage);
 
 		/// <summary>
 		/// Gets the client with a given identifier.
@@ -153,30 +163,36 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Obtains the encryption key and lifetime for an access token being created.
+		/// Obtains the lifetime for a new access token.
 		/// </summary>
-		/// <param name="accessTokenRequestMessage">
-		/// Details regarding the resources that the access token will grant access to, and the identity of the client
+		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
 		/// that will receive that access.
 		/// Based on this information the receiving resource server can be determined and the lifetime of the access
-		/// token can be set based on the sensitivity of the resources.
-		/// </param>
-		/// <param name="resourceServerEncryptionKey">
-		/// Receives the crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
-		/// The caller is responsible to dispose of this value.
-		/// </param>
-		/// <param name="lifetime">
-		/// Receives the lifetime for this access token.  Note that within this lifetime, authorization <i>may</i> not be revokable.  
+		/// token can be set based on the sensitivity of the resources.</param>
+		/// <returns>
+		/// Receives the lifetime for this access token.  Note that within this lifetime, authorization <i>may</i> not be revokable.
 		/// Short lifetimes are recommended (i.e. one hour), particularly when the client is not authenticated or
 		/// the resources to which access is being granted are sensitive.
-		/// If <c>null</c>, a preconfigured default lifetime will be used.
-		/// </param>
-		/// <remarks>
-		/// The caller is responsible to dispose of the returned value.
-		/// </remarks>
-		void IAuthorizationServer.PrepareAccessToken(IAccessTokenRequest accessTokenRequestMessage, out RSACryptoServiceProvider resourceServerEncryptionKey, out TimeSpan lifetime) {
+		/// </returns>
+		TimeSpan IAuthorizationServer.GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage) {
 			Contract.Requires<ArgumentNullException>(accessTokenRequestMessage != null);
-			Contract.Ensures(Contract.ValueAtReturn<RSACryptoServiceProvider>(out resourceServerEncryptionKey) != null);
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Obtains the encryption key for an access token being created.
+		/// </summary>
+		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
+		/// that will receive that access.
+		/// Based on this information the receiving resource server can be determined and the lifetime of the access
+		/// token can be set based on the sensitivity of the resources.</param>
+		/// <returns>
+		/// The crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
+		/// The caller is responsible to dispose of this value.
+		/// </returns>
+		RSACryptoServiceProvider IAuthorizationServer.GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
+			Contract.Requires<ArgumentNullException>(accessTokenRequestMessage != null);
+			Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
 			throw new NotImplementedException();
 		}
 
