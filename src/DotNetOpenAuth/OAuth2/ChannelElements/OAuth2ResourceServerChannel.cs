@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			// First search the authorization header.
 			string authorizationHeader = request.Headers[HttpRequestHeader.Authorization];
-			if (authorizationHeader.StartsWith(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace, StringComparison.OrdinalIgnoreCase)) {
+			if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace, StringComparison.OrdinalIgnoreCase)) {
 				return authorizationHeader.Substring(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace.Length);
 			}
 
