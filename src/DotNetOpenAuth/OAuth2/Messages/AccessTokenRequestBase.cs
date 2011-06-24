@@ -28,11 +28,33 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		/// <summary>
+		/// Gets the scope of operations the client is allowed to invoke.
+		/// </summary>
+		HashSet<string> IAccessTokenRequest.Scope {
+			get { return this.RequestedScope; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the client requesting the access token has authenticated itself.
+		/// </summary>
+		/// <value>
+		/// Always true, because of our base class.
+		/// </value>
+		bool IAccessTokenRequest.ClientAuthenticated {
+			get { return true; }
+		}
+
+		/// <summary>
 		/// Gets the type of the grant.
 		/// </summary>
 		/// <value>The type of the grant.</value>
 		[MessagePart(Protocol.grant_type, IsRequired = true, Encoder = typeof(GrantTypeEncoder))]
 		internal abstract GrantType GrantType { get; }
+
+		/// <summary>
+		/// Gets the scope of operations the client is allowed to invoke.
+		/// </summary>
+		protected abstract HashSet<string> RequestedScope { get; }
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification
@@ -52,27 +74,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 				DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
 				OAuthStrings.HttpsRequired);
 		}
-
-		/// <summary>
-		/// Gets a value indicating whether the client requesting the access token has authenticated itself.
-		/// </summary>
-		/// <value>
-		/// Always true, because of our base class.
-		/// </value>
-		bool IAccessTokenRequest.ClientAuthenticated {
-			get { return true; }
-		}
-
-		/// <summary>
-		/// Gets the scope of operations the client is allowed to invoke.
-		/// </summary>
-		HashSet<string> IAccessTokenRequest.Scope {
-			get { return this.RequestedScope; }
-		}
-
-		/// <summary>
-		/// Gets the scope of operations the client is allowed to invoke.
-		/// </summary>
-		protected abstract HashSet<string> RequestedScope { get; }
 	}
 }

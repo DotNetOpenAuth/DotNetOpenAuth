@@ -2,8 +2,8 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
 	using System.Security.Cryptography;
+	using System.Text;
 
 	public static class OAuthResourceServer {
 		private static readonly RSAParameters ResourceServerKeyPair = CreateRSAKey();

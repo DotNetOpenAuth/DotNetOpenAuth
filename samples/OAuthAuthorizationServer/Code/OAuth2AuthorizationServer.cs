@@ -54,7 +54,7 @@
 
 			// Also take into account the remaining life of the authorization and artificially shorten the access token's lifetime
 			// to account for that if necessary.
-			// TODO: code here
+			//// TODO: code here
 
 			return lifetime;
 		}
@@ -165,7 +165,7 @@
 										  auth.CreatedOnUtc <= issuedUtc &&
 										  (!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
 										  auth.User.OpenIDClaimedIdentifier == username
-									  select auth.Scope;
+										  select auth.Scope;
 
 			if (!grantedScopeStrings.Any()) {
 				// No granted authorizations prior to the issuance of this token, so it must have been revoked.

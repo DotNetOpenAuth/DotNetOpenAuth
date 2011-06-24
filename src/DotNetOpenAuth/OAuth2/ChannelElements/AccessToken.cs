@@ -6,12 +6,11 @@
 
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
-	using System.Collections.Generic;
 
 	/// <summary>
 	/// A short-lived token that accompanies HTTP requests to protected data to authorize the request.

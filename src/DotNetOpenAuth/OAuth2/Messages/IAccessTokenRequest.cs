@@ -9,9 +9,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
 
+	/// <summary>
+	/// A request from a client that should be responded to directly with an access token.
+	/// </summary>
 	public interface IAccessTokenRequest : IMessage {
 		/// <summary>
 		/// Gets a value indicating whether the client requesting the access token has authenticated itself.

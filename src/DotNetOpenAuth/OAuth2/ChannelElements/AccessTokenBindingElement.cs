@@ -8,10 +8,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
-	using System.Security.Cryptography;
 
 	/// <summary>
 	/// Serializes access tokens inside an outgoing message.
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <exception cref="ProtocolException">
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
-		///   </exception>
+		/// </exception>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			return null;
 		}

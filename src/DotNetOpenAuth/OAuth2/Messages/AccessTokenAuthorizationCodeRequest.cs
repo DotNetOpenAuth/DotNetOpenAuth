@@ -60,13 +60,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
 
 		/// <summary>
-		/// Gets the scope of operations the client is allowed to invoke.
-		/// </summary>
-		protected override HashSet<string> RequestedScope {
-			get { return ((IAuthorizationCarryingRequest)this).AuthorizationDescription.Scope; }
-		}
-
-		/// <summary>
 		/// Gets the type of the grant.
 		/// </summary>
 		/// <value>The type of the grant.</value>
@@ -90,5 +83,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </value>
 		[MessagePart(Protocol.redirect_uri, IsRequired = true)]
 		internal Uri Callback { get; set; }
+
+		/// <summary>
+		/// Gets the scope of operations the client is allowed to invoke.
+		/// </summary>
+		protected override HashSet<string> RequestedScope {
+			get { return ((IAuthorizationCarryingRequest)this).AuthorizationDescription.Scope; }
+		}
 	}
 }
