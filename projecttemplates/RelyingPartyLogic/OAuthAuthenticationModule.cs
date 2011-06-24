@@ -49,7 +49,7 @@ namespace RelyingPartyLogic {
 				return;
 			}
 
-			using (var crypto = OAuthAuthorizationServer.CreateAsymmetricKeyServiceProvider()) {
+			using (var crypto = OAuthResourceServer.CreateRSA()) {
 				var tokenAnalyzer = new SpecialAccessTokenAnalyzer(crypto, crypto);
 				var resourceServer = new ResourceServer(tokenAnalyzer);
 

@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>OAuth 2.0 client (implicit grant)</title>
+
+	<script src="Scripts/jquery-1.6.1.js" type="text/javascript"></script>
+	<script src="SampleWcf2Javascript.js" type="text/javascript"></script>
+</head>
+<body>
+	<h1>
+		DotNetOpenAuth OAuth 2.0 Client ASP.NET WebForms sample</h1>
+	<div>
+		<fieldset title="Authorization">
+			<p>
+				Check off the operations you&#39;d like to authorization this client to make on
+				behalf of your account on the resource server.<br />
+				Note that an authorization request may not actually result in you being prompted
+				to grant authorization if you&#39;ve granted it previously.&nbsp; The authorization
+				server remembers what you&#39;ve already approved.&nbsp; But even if you&#39;ve
+				requested and received authorization for all three scopes above, you can request
+				access tokens for subsets of this set of scopes to limit what you can do below.
+			</p>
+			<table border="0">
+				<tr>
+					<td>
+						<input type="checkbox" name='scope' value='/DataApi.svc/web/name' id="getNameScopeCheckbox" /><label for="getNameScopeCheckbox">GetName</label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="checkbox" name='scope'  value='/DataApi.svc/web/age' id="getAgeScopeCheckbox" /><label for="getAgeScopeCheckbox">GetAge</label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="checkbox" name='scope' value='/DataApi.svc/web/favoritesites' id="getFavoriteSitesScopeCheckbox" /><label for="getFavoriteSitesScopeCheckbox">GetFavoriteSites</label>
+					</td>
+				</tr>
+			</table>
+			<input type="submit" id="requestAuthorizationButton" value="Request Authorization" />
+			<span id="authorizationLabel" />
+		</fieldset>
+		<br />
+		<input type="button" value="Get Name" id="getNameButton" operation='/DataApi.svc/web/name' disabled="disabled" />
+		<span id="nameLabel" operation='/DataApi.svc/web/name' ></span>
+		<br />
+		<input type="button" value="Get Age" id="getAgeButton" operation='/DataApi.svc/web/age' disabled="disabled" />
+		<span id="ageLabel" operation='/DataApi.svc/web/age' ></span>
+		<br />
+		<input type="button" value="Get Favorite Sites" id="getFavoriteSitesButton" operation='/DataApi.svc/web/favoritesites' disabled="disabled" />
+		<span id="favoriteSitesLabel" operation='/DataApi.svc/web/favoritesites' ></span>
+</body>
+</html>

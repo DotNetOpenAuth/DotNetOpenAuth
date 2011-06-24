@@ -21,7 +21,7 @@ namespace RelyingPartyLogic {
 	/// Provides OAuth 2.0 authorization server information to DotNetOpenAuth.
 	/// </summary>
 	public class OAuthAuthorizationServer : IAuthorizationServer {
-		private static readonly RSAParameters AsymmetricKey = CreateRSAKey();
+		private static readonly RSACryptoServiceProvider SigningKey = new RSACryptoServiceProvider();
 
 		private readonly INonceStore nonceStore = new NonceDbStore();
 
@@ -44,8 +44,49 @@ namespace RelyingPartyLogic {
 			get { return this.nonceStore; }
 		}
 
-		public RSACryptoServiceProvider CreateAccessTokenSigningCryptoServiceProvider() {
-			return CreateAsymmetricKeyServiceProvider();
+		/// <summary>
+		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// </summary>
+		/// <value>
+		/// Must not be null, and must contain the private key.
+		/// </value>
+		/// <returns>A crypto service provider instance that contains the private key.</returns>
+		public RSACryptoServiceProvider AccessTokenSigningKey {
+			get { return SigningKey; }
+		}
+
+		/// <summary>
+		/// Obtains the lifetime for a new access token.
+		/// </summary>
+		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
+		/// that will receive that access.
+		/// Based on this information the receiving resource server can be determined and the lifetime of the access
+		/// token can be set based on the sensitivity of the resources.</param>
+		/// <returns>
+		/// Receives the lifetime for this access token.  Note that within this lifetime, authorization <i>may</i> not be revokable.
+		/// Short lifetimes are recommended (i.e. one hour), particularly when the client is not authenticated or
+		/// the resources to which access is being granted are sensitive.
+		/// </returns>
+		public TimeSpan GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage) {
+			return TimeSpan.FromHours(1);
+		}
+
+		/// <summary>
+		/// Obtains the encryption key for an access token being created.
+		/// </summary>
+		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
+		/// that will receive that access.
+		/// Based on this information the receiving resource server can be determined and the lifetime of the access
+		/// token can be set based on the sensitivity of the resources.</param>
+		/// <returns>
+		/// The crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
+		/// The caller is responsible to dispose of this value.
+		/// </returns>
+		public RSACryptoServiceProvider GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
+			// For this sample, we assume just one resource server.
+			// If this authorization server needs to mint access tokens for more than one resource server,
+			// we'd look at the request message passed to us and decide which public key to return.
+			return OAuthResourceServer.CreateRSA();
 		}
 
 		/// <summary>
@@ -115,34 +156,6 @@ namespace RelyingPartyLogic {
 			return false;
 		}
 
-		/// <summary>
-		/// Creates the asymmetric crypto service provider.
-		/// </summary>
-		/// <returns>An RSA crypto service provider.</returns>
-		/// <remarks>
-		/// Since <see cref="RSACryptoServiceProvider"/> are not thread-safe, one must be created for each thread.
-		/// In this sample we just create one for each incoming request.  Be sure to call Dispose on them to release native handles.
-		/// </remarks>
-		internal static RSACryptoServiceProvider CreateAsymmetricKeyServiceProvider() {
-			var serviceProvider = new RSACryptoServiceProvider();
-			serviceProvider.ImportParameters(AsymmetricKey);
-			return serviceProvider;
-		}
-
-		/// <summary>
-		/// Creates the RSA key used by all the crypto service provider instances we create.
-		/// </summary>
-		/// <returns>RSA data that includes the private key.</returns>
-		private static RSAParameters CreateRSAKey() {
-			// As we generate a new random key, we need to set the UseMachineKeyStore flag so that this doesn't
-			// crash on IIS. For more information: 
-			// http://social.msdn.microsoft.com/Forums/en-US/clr/thread/7ea48fd0-8d6b-43ed-b272-1a0249ae490f?prof=required
-			var cspParameters = new CspParameters();
-			cspParameters.Flags = CspProviderFlags.UseArchivableKey | CspProviderFlags.UseMachineKeyStore;
-			var asymmetricKey = new RSACryptoServiceProvider(cspParameters);
-			return asymmetricKey.ExportParameters(true);
-		}
-
 		private bool IsAuthorizationValid(HashSet<string> requestedScopes, string clientIdentifier, DateTime issuedUtc, string username) {
 			var grantedScopeStrings = from auth in Database.DataContext.ClientAuthorizations
 									  where
@@ -150,7 +163,7 @@ namespace RelyingPartyLogic {
 										auth.CreatedOnUtc <= issuedUtc &&
 										(!auth.ExpirationDateUtc.HasValue || auth.ExpirationDateUtc.Value >= DateTime.UtcNow) &&
 										auth.User.AuthenticationTokens.Any(token => token.ClaimedIdentifier == username)
-										select auth.Scope;
+									  select auth.Scope;
 
 			if (!grantedScopeStrings.Any()) {
 				// No granted authorizations prior to the issuance of this token, so it must have been revoked.

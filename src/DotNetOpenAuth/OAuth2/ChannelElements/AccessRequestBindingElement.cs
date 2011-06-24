@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using System.Security.Cryptography;
 
 	/// <summary>
 	/// Decodes verification codes, refresh tokens and access tokens on incoming messages.
@@ -61,6 +62,16 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						var code = (AuthorizationCode)response.AuthorizationDescription;
 						response.CodeOrToken = codeFormatter.Serialize(code);
 						break;
+					case CodeOrTokenType.AccessToken:
+						var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
+						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+
+						using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
+							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
+							var token = (AccessToken)response.AuthorizationDescription;
+							response.CodeOrToken = tokenFormatter.Serialize(token);
+							break;
+						}
 					default:
 						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));
 				}

@@ -63,6 +63,10 @@
     <Content Include="Global.asax" />
     <Content Include="GoogleAddressBook.aspx" />
     <Content Include="images\Sign-in-with-Twitter-darker.png" />
+    <Content Include="SampleWcf2Javascript.html" />
+    <Content Include="SampleWcf2Javascript.js" />
+    <Content Include="Scripts\jquery-1.6.1.js" />
+    <Content Include="Scripts\jquery-1.6.1.min.js" />
     <Content Include="Yammer.aspx" />
     <None Include="Service References\SampleResourceServer\DataApi.disco" />
     <None Include="Service References\SampleResourceServer\configuration91.svcinfo" />

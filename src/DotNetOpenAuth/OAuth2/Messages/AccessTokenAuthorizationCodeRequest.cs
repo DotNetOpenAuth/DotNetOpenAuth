@@ -15,7 +15,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	/// <summary>
-	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token.
+	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token,
+	/// and (at the authorization server's option) a refresh token.
 	/// </summary>
 	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, IAuthorizationCarryingRequest {
 		/// <summary>
@@ -32,8 +33,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		internal AccessTokenAuthorizationCodeRequest(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.TokenEndpoint, authorizationServer.Version)
-		{
+			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 			Contract.Requires<ArgumentNullException>(authorizationServer != null);
 		}
 
@@ -58,6 +58,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
 		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets the scope of operations the client is allowed to invoke.
+		/// </summary>
+		protected override HashSet<string> RequestedScope {
+			get { return ((IAuthorizationCarryingRequest)this).AuthorizationDescription.Scope; }
+		}
 
 		/// <summary>
 		/// Gets the type of the grant.

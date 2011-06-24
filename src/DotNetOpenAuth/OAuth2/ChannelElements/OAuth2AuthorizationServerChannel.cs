@@ -99,6 +99,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			bindingElements.Add(new AuthServerAllFlowsBindingElement());
 			bindingElements.Add(new AuthorizationCodeBindingElement());
+			bindingElements.Add(new AccessTokenBindingElement());
 			bindingElements.Add(new AccessRequestBindingElement());
 
 			return bindingElements.ToArray();

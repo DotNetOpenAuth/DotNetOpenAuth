@@ -29,6 +29,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: base(clientCallback, version) {
 			Contract.Requires<ArgumentNullException>(version != null);
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
+			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
 		/// <summary>
@@ -41,9 +42,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Contract.Requires<ArgumentNullException>(clientCallback != null);
 			Contract.Requires<ArgumentNullException>(request != null);
 			((IMessageWithClientState)this).ClientState = request.ClientState;
+			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
-		#region ITokenCarryingRequest Members
+		#region IAuthorizationCarryingRequest Members
 
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.
@@ -98,5 +100,22 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The access token.</value>
 		[MessagePart(Protocol.access_token, IsRequired = true)]
 		public string AccessToken { get; set; }
+
+		/// <summary>
+		/// Gets the scope of the <see cref="AccessToken"/> if one is given; otherwise the scope of the authorization code.
+		/// </summary>
+		/// <value>The scope.</value>
+		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
+		public new ICollection<string> Scope {
+			get { return base.Scope; }
+			protected set { base.Scope = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the lifetime of the authorization.
+		/// </summary>
+		/// <value>The lifetime.</value>
+		[MessagePart(Protocol.expires_in, IsRequired = false, Encoder = typeof(TimespanSecondsEncoder))]
+		internal TimeSpan? Lifetime { get; set; }
 	}
 }

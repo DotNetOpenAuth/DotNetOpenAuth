@@ -4,17 +4,18 @@
 	using System.Linq;
 	using System.Runtime.Serialization;
 	using System.ServiceModel;
+	using System.ServiceModel.Web;
 	using System.Text;
 
 	[ServiceContract]
 	public interface IDataApi {
-		[OperationContract]
+		[OperationContract, WebGet(UriTemplate = "/age", ResponseFormat = WebMessageFormat.Json)]
 		int? GetAge();
 
-		[OperationContract]
+		[OperationContract, WebGet(UriTemplate = "/name", ResponseFormat = WebMessageFormat.Json)]
 		string GetName();
 
-		[OperationContract]
+		[OperationContract, WebGet(UriTemplate = "/favoritesites", ResponseFormat = WebMessageFormat.Json)]
 		string[] GetFavoriteSites();
 	}
 }

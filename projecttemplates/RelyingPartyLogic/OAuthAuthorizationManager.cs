@@ -32,7 +32,7 @@ namespace RelyingPartyLogic {
 			var httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
 			var requestUri = operationContext.RequestContext.RequestMessage.Properties.Via;
 
-			using (var crypto = OAuthAuthorizationServer.CreateAsymmetricKeyServiceProvider()) {
+			using (var crypto = OAuthResourceServer.CreateRSA()) {
 				var tokenAnalyzer = new SpecialAccessTokenAnalyzer(crypto, crypto);
 				var resourceServer = new ResourceServer(tokenAnalyzer);
 

@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <summary>
 	/// A message sent from the client to the authorization server to exchange a previously obtained grant for an access token.
 	/// </summary>
-	public abstract class AccessTokenRequestBase : AuthenticatedClientRequestBase {
+	public abstract class AccessTokenRequestBase : AuthenticatedClientRequestBase, IAccessTokenRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenRequestBase"/> class.
 		/// </summary>
@@ -52,5 +52,27 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 				DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
 				OAuthStrings.HttpsRequired);
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether the client requesting the access token has authenticated itself.
+		/// </summary>
+		/// <value>
+		/// Always true, because of our base class.
+		/// </value>
+		bool IAccessTokenRequest.ClientAuthenticated {
+			get { return true; }
+		}
+
+		/// <summary>
+		/// Gets the scope of operations the client is allowed to invoke.
+		/// </summary>
+		HashSet<string> IAccessTokenRequest.Scope {
+			get { return this.RequestedScope; }
+		}
+
+		/// <summary>
+		/// Gets the scope of operations the client is allowed to invoke.
+		/// </summary>
+		protected abstract HashSet<string> RequestedScope { get; }
 	}
 }
