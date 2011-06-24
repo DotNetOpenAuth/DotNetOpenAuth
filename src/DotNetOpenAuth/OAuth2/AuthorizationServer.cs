@@ -77,7 +77,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(authorizationRequest != null);
 
 			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, userName, scopes, callback);
-
 			this.Channel.Respond(response);
 		}
 
@@ -123,7 +122,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			var request = this.ReadAccessTokenRequest(httpRequestInfo);
 			if (request != null) {
 				response = this.PrepareAccessTokenResponse(request);
-
 				return true;
 			}
 
@@ -186,8 +184,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
 					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
-					response = accessTokenResponse;
 					accessTokenResponse.Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(authorizationRequest);
+					response = accessTokenResponse;
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
 					response = new EndUserAuthorizationSuccessAuthCodeResponse(callback, authorizationRequest);
@@ -218,8 +216,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
 			TimeSpan accessTokenLifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request);
 			using (var resourceServerEncryptionKey = this.AuthorizationServerServices.GetResourceServerEncryptionKey(request)) {
-				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerServices.AccessTokenSigningKey, resourceServerEncryptionKey);
 				var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
+				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerServices.AccessTokenSigningKey, resourceServerEncryptionKey);
 
 				var response = new AccessTokenSuccessResponse(request) {
 					AccessToken = accessTokenFormatter.Serialize(accessToken),
@@ -228,8 +226,8 @@ namespace DotNetOpenAuth.OAuth2 {
 				response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 
 				if (includeRefreshToken) {
-					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.CryptoKeyStore);
 					var refreshToken = new RefreshToken(tokenRequest.AuthorizationDescription);
+					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.CryptoKeyStore);
 					response.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
 				}
 
