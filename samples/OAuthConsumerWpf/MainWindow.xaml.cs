@@ -31,9 +31,8 @@
 		private InMemoryTokenManager googleTokenManager = new InMemoryTokenManager();
 		private DesktopConsumer google;
 		private string googleAccessToken;
-		private InMemoryTokenManager wcfTokenManager = new InMemoryTokenManager();
-		private DesktopConsumer wcf;
-		private string wcfAccessToken;
+		private UserAgentClient wcf;
+		private IAuthorizationState wcfAccessToken;
 
 		public MainWindow() {
 			this.InitializeComponent();
@@ -58,21 +57,11 @@
 		}
 
 		private void InitializeWcfConsumer() {
-			this.wcfTokenManager.ConsumerKey = "sampleconsumer";
-			this.wcfTokenManager.ConsumerSecret = "samplesecret";
-			MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
-				new Uri("http://localhost:65169/OAuth.ashx"),
-				HttpDeliveryMethods.PostRequest);
-			this.wcf = new DesktopConsumer(
-				new ServiceProviderDescription {
-					RequestTokenEndpoint = oauthEndpoint,
-					UserAuthorizationEndpoint = oauthEndpoint,
-					AccessTokenEndpoint = oauthEndpoint,
-					TamperProtectionElements = new DotNetOpenAuth.Messaging.ITamperProtectionChannelBindingElement[] {
-						new HmacSha1SigningBindingElement(),
-					},
-				},
-				this.wcfTokenManager);
+			var authServer = new AuthorizationServerDescription() {
+				AuthorizationEndpoint = new Uri("http://localhost:50172/OAuth/Authorize"),
+				TokenEndpoint = new Uri("http://localhost:50172/OAuth/Token"),
+			};
+			this.wcf = new UserAgentClient(authServer, "sampleImplicitConsumer");
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {
@@ -116,15 +105,12 @@
 		}
 
 		private void beginWcfAuthorizationButton_Click(object sender, RoutedEventArgs e) {
-			var requestArgs = new Dictionary<string, string>();
-			requestArgs["scope"] = "http://tempuri.org/IDataApi/GetName|http://tempuri.org/IDataApi/GetAge|http://tempuri.org/IDataApi/GetFavoriteSites";
-			Authorize auth = new Authorize(
-				this.wcf,
-				(DesktopConsumer consumer, out string requestToken) => consumer.RequestUserAuthorization(requestArgs, null, out requestToken));
+			this.wcfAccessToken = new AuthorizationState(OAuthUtilities.SplitScopes("http://tempuri.org/IDataApi/GetName http://tempuri.org/IDataApi/GetAge http://tempuri.org/IDataApi/GetFavoriteSites"));
+			this.wcfAccessToken.Callback = new Uri("http://localhost:59721/");
+			var auth = new Authorize2(this.wcf, this.wcfAccessToken);
 			auth.Owner = this;
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
-				this.wcfAccessToken = auth.AccessToken;
 				this.wcfName.Content = CallService(client => client.GetName());
 				this.wcfAge.Content = CallService(client => client.GetAge());
 				this.wcfFavoriteSites.Content = CallService(client => string.Join(", ", client.GetFavoriteSites()));
@@ -133,11 +119,12 @@
 
 		private T CallService<T>(Func<DataApiClient, T> predicate) {
 			DataApiClient client = new DataApiClient();
-			var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest);
 			if (this.wcfAccessToken == null) {
 				throw new InvalidOperationException("No access token!");
 			}
-			WebRequest httpRequest = this.wcf.PrepareAuthorizedRequest(serviceEndpoint, this.wcfAccessToken);
+
+			var httpRequest = (HttpWebRequest)WebRequest.Create(client.Endpoint.Address.Uri);
+			this.wcf.AuthorizeRequest(httpRequest, this.wcfAccessToken);
 
 			HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
 			httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];

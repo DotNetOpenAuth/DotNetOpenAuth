@@ -162,8 +162,8 @@
                 <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="0" TabIndex="201">
                     <ComboBox.Items>
                         <ComboBoxItem>Authorization Code</ComboBoxItem>
-                        <ComboBoxItem>Resource Owner Basic Credentials</ComboBoxItem>
-                        <ComboBoxItem>Access Code (direct)</ComboBoxItem>
+                        <ComboBoxItem>Implicit Grant</ComboBoxItem>
+                        <ComboBoxItem>Resource Owner Password Credentials</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="3" TabIndex="207">Resource URL</Label>
@@ -184,7 +184,7 @@
                 <Label Grid.Row="7" TabIndex="216">OAuth 2.0 version</Label>
                 <ComboBox Grid.Row="7" Grid.Column="1" SelectedIndex="0" x:Name="oauth2Version" TabIndex="217">
                     <ComboBox.Items>
-                        <ComboBoxItem>2.0 DRAFT 9</ComboBoxItem>
+                        <ComboBoxItem>2.0 DRAFT 16</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Button Grid.Row="8" Grid.Column="1" x:Name="oauth2BeginButton" Click="oauth2BeginButton_Click" TabIndex="218">Begin</Button>
