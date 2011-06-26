@@ -137,10 +137,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				var contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
 				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
 					if (request.Form[Protocol.BearerTokenEncodedUrlParameterName] != null) {
-						// We're only interested in the oauth_token parameter -- not the others that can appear in an Authorization header.
-						// Note that we intentionally change the name of the key here
-						// because depending on the method used to obtain the token, the token's key changes
-						// but we need to consolidate to one name so it works with the rest of the system.
 						return request.Form[Protocol.BearerTokenEncodedUrlParameterName];
 					}
 				}

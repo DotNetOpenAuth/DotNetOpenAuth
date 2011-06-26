@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The name of the parameter whose value is an OAuth 2.0 bearer access token, as it is defined
 		/// in a URL-encoded POST entity or URL query string.
 		/// </summary>
-		internal const string BearerTokenEncodedUrlParameterName = "bearer_token";
+		internal const string BearerTokenEncodedUrlParameterName = "access_token";
 
 		/// <summary>
 		/// The "type" string.
