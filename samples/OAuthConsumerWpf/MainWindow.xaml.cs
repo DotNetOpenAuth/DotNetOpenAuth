@@ -61,7 +61,7 @@
 				AuthorizationEndpoint = new Uri("http://localhost:50172/OAuth/Authorize"),
 				TokenEndpoint = new Uri("http://localhost:50172/OAuth/Token"),
 			};
-			this.wcf = new UserAgentClient(authServer, "sampleImplicitConsumer");
+			this.wcf = new UserAgentClient(authServer, "sampleconsumer", "samplesecret");
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {

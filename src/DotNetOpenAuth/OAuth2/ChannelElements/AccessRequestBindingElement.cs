@@ -135,7 +135,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 					// Check that the client secret is correct.
 					var client = this.AuthorizationServer.GetClientOrThrow(accessRequest.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(client.Secret, accessRequest.ClientSecret), Protocol.incorrect_client_credentials);
+					string secret = client.Secret;
+					ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(secret), Protocol.unauthorized_client); // an empty secret is not allowed for client authenticated calls.
+					ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(secret, accessRequest.ClientSecret), Protocol.incorrect_client_credentials);
 
 					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
 					if (scopedAccessRequest != null) {

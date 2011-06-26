@@ -70,6 +70,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal const string incorrect_client_credentials = "incorrect_client_credentials";
 
 		/// <summary>
+		/// The "unauthorized_client" string.
+		/// </summary>
+		internal const string unauthorized_client = "unauthorized_client";
+
+		/// <summary>
 		/// The "authorization_expired" string.
 		/// </summary>
 		internal const string authorization_expired = "authorization_expired";
