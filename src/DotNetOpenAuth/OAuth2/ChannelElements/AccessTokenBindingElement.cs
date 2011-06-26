@@ -43,14 +43,31 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as EndUserAuthorizationSuccessAccessTokenResponse;
-			if (response != null) {
-				var directResponse = (IDirectResponseProtocolMessage)response;
-				var request = (IAccessTokenRequest)directResponse.OriginatingRequest;
-				IAuthorizationCarryingRequest tokenCarryingResponse = response;
-				tokenCarryingResponse.AuthorizationDescription = new AccessToken(request.ClientIdentifier, response.Scope, response.AuthorizingUsername, response.Lifetime);
+			var directResponse = message as IDirectResponseProtocolMessage;
+			IAccessTokenRequest request = directResponse != null ? directResponse.OriginatingRequest as IAccessTokenRequest : null;
+
+			var implicitGrantResponse = message as EndUserAuthorizationSuccessAccessTokenResponse;
+			if (implicitGrantResponse != null) {
+				IAuthorizationCarryingRequest tokenCarryingResponse = implicitGrantResponse;
+				tokenCarryingResponse.AuthorizationDescription = new AccessToken(request.ClientIdentifier, implicitGrantResponse.Scope, implicitGrantResponse.AuthorizingUsername, implicitGrantResponse.Lifetime);
 
 				return MessageProtections.None;
+			}
+
+			var accessTokenResponse = message as AccessTokenSuccessResponse;
+			if (accessTokenResponse != null) {
+				var authCarryingRequest = (IAuthorizationCarryingRequest)request;
+				var accessToken = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
+				using (var resourceServerEncryptionKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
+					var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerEncryptionKey);
+					accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessToken);
+				}
+
+				if (accessTokenResponse.HasRefreshToken) {
+					var refreshToken = new RefreshToken(authCarryingRequest.AuthorizationDescription);
+					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
+					accessTokenResponse.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
+				}
 			}
 
 			return null;

@@ -90,5 +90,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
 		public HashSet<string> Scope { get; private set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether a refresh token is or should be included in the response.
+		/// </summary>
+		internal bool HasRefreshToken { get; set; }
 	}
 }

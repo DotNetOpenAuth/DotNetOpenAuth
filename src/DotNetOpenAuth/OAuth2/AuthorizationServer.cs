@@ -214,25 +214,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(request != null);
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
-			TimeSpan accessTokenLifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request);
-			using (var resourceServerEncryptionKey = this.AuthorizationServerServices.GetResourceServerEncryptionKey(request)) {
-				var accessToken = new AccessToken(tokenRequest.AuthorizationDescription, accessTokenLifetime);
-				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerServices.AccessTokenSigningKey, resourceServerEncryptionKey);
-
-				var response = new AccessTokenSuccessResponse(request) {
-					AccessToken = accessTokenFormatter.Serialize(accessToken),
-					Lifetime = accessToken.Lifetime,
-				};
-				response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
-
-				if (includeRefreshToken) {
-					var refreshToken = new RefreshToken(tokenRequest.AuthorizationDescription);
-					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.CryptoKeyStore);
-					response.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
-				}
-
-				return response;
-			}
+			var response = new AccessTokenSuccessResponse(request) {
+				Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request),
+				HasRefreshToken = includeRefreshToken,
+			};
+			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
+			return response;
 		}
 
 		/// <summary>
