@@ -62,6 +62,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="GoogleAddressBook.aspx" />
+    <Content Include="GoogleApps2Legged.aspx" />
     <Content Include="images\Sign-in-with-Twitter-darker.png" />
     <Content Include="SampleWcf2Javascript.html" />
     <Content Include="SampleWcf2Javascript.js" />
@@ -106,7 +107,13 @@
     </Compile>
     <Compile Include="SampleWcf2.aspx.cs">
       <DependentUpon>SampleWcf2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleApps2Legged.aspx.cs">
+      <DependentUpon>GoogleApps2Legged.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GoogleApps2Legged.aspx.designer.cs">
+      <DependentUpon>GoogleApps2Legged.aspx</DependentUpon>
     </Compile>
     <Compile Include="SampleWcf2.aspx.designer.cs">
       <DependentUpon>SampleWcf2.aspx</DependentUpon>

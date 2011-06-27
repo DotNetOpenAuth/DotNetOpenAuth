@@ -40,10 +40,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the content disposition.
+		/// Gets or sets the content disposition.
 		/// </summary>
 		/// <value>The content disposition.</value>
-		public string ContentDisposition { get; private set; }
+		public string ContentDisposition { get; set; }
 
 		/// <summary>
 		/// Gets the key=value attributes that appear on the same line as the Content-Disposition.

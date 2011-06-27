@@ -33,6 +33,12 @@
 			<span class="command">gacutil.exe /i DotNetOpenAuth.dll</span><br />
 			Be sure to use a gacutil.exe that comes from a .NET 2.0-3.5 directory (not .NET 1.x).
 			</li>
+		<li>If your web server is running 64-bit Windows, you&#39;ll also need ensure that the 
+			application pool is enabled for 32bit applications. Using IIS Manager, select 
+			the appropriate application pool (e.g. &quot;DefaultAppPool&quot; unless you&#39;ve created 
+			some new ones). Click &quot;Advanced Settings&quot;, and ensure that &quot;Enable 32bit 
+			Applications&quot; is set to True. This setting takes effect immediately, so there&#39;s 
+			no need to recycle the application pool.</li>
 	</ol>
 	<p>Another thing to be aware of is that with classic ASP there is no Web.config 
 		file in which to customize DotNetOpenAuth behavior.&nbsp; And the COM interfaces 
