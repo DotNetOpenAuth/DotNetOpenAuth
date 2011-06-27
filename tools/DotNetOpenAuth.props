@@ -4,6 +4,7 @@
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
+		<DisableFastUpToDateCheck>false</DisableFastUpToDateCheck>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
