@@ -747,6 +747,7 @@ http://opensource.org/licenses/ms-pl.html
     <None Include="Configuration\DotNetOpenAuth.xsd" />
     <None Include="Migrated rules for DotNetOpenAuth.ruleset" />
     <None Include="OAuth2\Messages\OAuth 2 Messages.cd" />
+    <None Include="OAuth2\OAuth 2 client facades.cd" />
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
     <None Include="Messaging\Bindings\Bindings.cd" />
