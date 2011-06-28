@@ -115,7 +115,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				var failure = response as EndUserAuthorizationFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 				if (success != null) {
-					UpdateAuthorizationWithResponse(authorizationState, success);
+					this.UpdateAuthorizationWithResponse(authorizationState, success);
 				} else { // failure
 					Logger.OAuth.Info("User refused to grant the requested authorization at the Authorization Server.");
 					authorizationState.Delete();

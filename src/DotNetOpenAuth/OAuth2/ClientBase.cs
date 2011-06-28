@@ -83,19 +83,26 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
 				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, "Access token has expired and cannot be automatically refreshed.");
-				this.RefreshToken(authorization);
+				this.RefreshAuthorization(authorization);
 			}
 
 			AuthorizeRequest(request, authorization.AccessToken);
 		}
 
 		/// <summary>
-		/// Refreshes a short-lived access token using a longer-lived refresh token.
+		/// Refreshes a short-lived access token using a longer-lived refresh token
+		/// with a new access token that has the same scope as the refresh token.
+		/// The refresh token itself may also be refreshed.
 		/// </summary>
 		/// <param name="authorization">The authorization to update.</param>
 		/// <param name="skipIfUsefulLifeExceeds">If given, the access token will <em>not</em> be refreshed if its remaining lifetime exceeds this value.</param>
 		/// <returns>A value indicating whether the access token was actually renewed; <c>true</c> if it was renewed, or <c>false</c> if it still had useful life remaining.</returns>
-		public bool RefreshToken(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null) {
+		/// <remarks>
+		/// This method may modify the value of the <see cref="IAuthorizationState.RefreshToken"/> property on
+		/// the <paramref name="authorization"/> parameter if the authorization server has cycled out your refresh token.
+		/// If the parameter value was updated, this method calls <see cref="IAuthorizationState.SaveChanges"/> on that instance.
+		/// </remarks>
+		public bool RefreshAuthorization(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null) {
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(authorization.RefreshToken));
 
@@ -115,22 +122,37 @@ namespace DotNetOpenAuth.OAuth2 {
 			};
 
 			var response = this.Channel.Request<AccessTokenSuccessResponse>(request);
-			authorization.AccessToken = response.AccessToken;
-			authorization.AccessTokenExpirationUtc = DateTime.UtcNow + response.Lifetime;
-			authorization.AccessTokenIssueDateUtc = DateTime.UtcNow;
-
-			// Just in case the scope has changed...
-			if (response.Scope != null) {
-				authorization.Scope.ResetContents(response.Scope);
-			}
-
-			// The authorization server MAY choose to renew the refresh token itself.
-			if (response.RefreshToken != null) {
-				authorization.RefreshToken = response.RefreshToken;
-			}
-
-			authorization.SaveChanges();
+			UpdateAuthorizationWithResponse(authorization, response);
 			return true;
+		}
+
+		/// <summary>
+		/// Gets an access token that may be used for only a subset of the scope for which a given
+		/// refresh token is authorized.
+		/// </summary>
+		/// <param name="refreshToken">The refresh token.</param>
+		/// <param name="scope">The scope subset desired in the access token.</param>
+		/// <returns>A description of the obtained access token, and possibly a new refresh token.</returns>
+		/// <remarks>
+		/// If the return value includes a new refresh token, the old refresh token should be discarded and
+		/// replaced with the new one.
+		/// </remarks>
+		public IAuthorizationState GetScopedAccessToken(string refreshToken, HashSet<string> scope) {
+			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(refreshToken));
+			Contract.Requires<ArgumentNullException>(scope != null);
+			Contract.Ensures(Contract.Result<IAuthorizationState>() != null);
+
+			var request = new AccessTokenRefreshRequest(this.AuthorizationServer) {
+				ClientIdentifier = this.ClientIdentifier,
+				ClientSecret = this.ClientSecret,
+				RefreshToken = refreshToken,
+			};
+
+			var response = this.Channel.Request<AccessTokenSuccessResponse>(request);
+			var authorization = new AuthorizationState();
+			UpdateAuthorizationWithResponse(authorization, response);
+
+			return authorization;
 		}
 
 		/// <summary>
@@ -143,17 +165,18 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Requires<ArgumentNullException>(accessTokenSuccess != null);
 
 			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
-			authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
 			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
 			authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;
-			if (accessTokenSuccess.Scope != null && accessTokenSuccess.Scope != authorizationState.Scope) {
-				if (authorizationState.Scope != null) {
-					Logger.OAuth.InfoFormat(
-						"Requested scope of \"{0}\" changed to \"{1}\" by authorization server.",
-						authorizationState.Scope,
-						accessTokenSuccess.Scope);
-				}
 
+			// The authorization server MAY choose to renew the refresh token itself.
+			if (accessTokenSuccess.RefreshToken != null) {
+				authorizationState.RefreshToken = accessTokenSuccess.RefreshToken;
+			}
+
+			// An included scope parameter in the response only describes the access token's scope.
+			// Don't update the whole authorization state object with that scope because that represents
+			// the refresh token's original scope.
+			if ((authorizationState.Scope == null || authorizationState.Scope.Count == 0) && accessTokenSuccess.Scope != null) {
 				authorizationState.Scope.ResetContents(accessTokenSuccess.Scope);
 			}
 

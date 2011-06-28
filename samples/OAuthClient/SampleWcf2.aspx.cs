@@ -117,7 +117,7 @@
 
 			// Refresh the access token if it expires and if its lifetime is too short to be of use.
 			if (Authorization.AccessTokenExpirationUtc.HasValue) {
-				if (Client.RefreshToken(Authorization, TimeSpan.FromSeconds(30))) {
+				if (Client.RefreshAuthorization(Authorization, TimeSpan.FromSeconds(30))) {
 					TimeSpan timeLeft = Authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
 					this.authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, " - just renewed for {0} more minutes)", Math.Round(timeLeft.TotalMinutes, 1));
 				}
