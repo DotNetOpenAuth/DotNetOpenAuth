@@ -32,9 +32,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
 		/// </summary>
 		/// <param name="authorizationEndpoint">The authorization endpoint.</param>
-		public UserAgentClient(Uri authorizationEndpoint)
-			: base(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint }) {
+		/// <param name="tokenEndpoint">The token endpoint.</param>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="clientSecret">The client secret.</param>
+		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier = null, string clientSecret = null)
+			: this(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint, TokenEndpoint = tokenEndpoint }, clientIdentifier, clientSecret) {
 			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
+			Contract.Requires<ArgumentNullException>(tokenEndpoint != null);
 		}
 
 		/// <summary>
@@ -42,9 +46,16 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// this client to access protected data at some resource server.
 		/// </summary>
 		/// <param name="scope">The scope of authorized access requested.</param>
-		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
-		public Uri RequestUserAuthorization(IEnumerable<string> scope = null) {
-			var authorization = new AuthorizationState(scope);
+		/// <param name="state">The client state that should be returned with the authorization response.</param>
+		/// <param name="returnTo">The URL that the authorization response should be sent to via a user-agent redirect.</param>
+		/// <returns>
+		/// A fully-qualified URL suitable to initiate the authorization flow.
+		/// </returns>
+		public Uri RequestUserAuthorization(IEnumerable<string> scope = null, string state = null, Uri returnTo = null) {
+			var authorization = new AuthorizationState(scope) {
+				Callback = returnTo,
+			};
+
 			return this.RequestUserAuthorization(authorization);
 		}
 
@@ -53,8 +64,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// this client to access protected data at some resource server.
 		/// </summary>
 		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
-		/// <returns>A fully-qualified URL suitable to initiate the authorization flow.</returns>
-		public Uri RequestUserAuthorization(IAuthorizationState authorization) {
+		/// <param name="state">The client state that should be returned with the authorization response.</param>
+		/// <returns>
+		/// A fully-qualified URL suitable to initiate the authorization flow.
+		/// </returns>
+		public Uri RequestUserAuthorization(IAuthorizationState authorization, string state = null) {
 			Contract.Requires<ArgumentNullException>(authorization != null);
 			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
 
@@ -65,6 +79,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
+				ClientState = state,
 			};
 			request.Scope.ResetContents(authorization.Scope);
 
