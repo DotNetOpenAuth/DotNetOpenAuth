@@ -105,12 +105,13 @@
 		}
 
 		private void beginWcfAuthorizationButton_Click(object sender, RoutedEventArgs e) {
-			this.wcfAccessToken = new AuthorizationState(OAuthUtilities.SplitScopes("http://tempuri.org/IDataApi/GetName http://tempuri.org/IDataApi/GetAge http://tempuri.org/IDataApi/GetFavoriteSites"));
-			this.wcfAccessToken.Callback = new Uri("http://localhost:59721/");
-			var auth = new Authorize2(this.wcf, this.wcfAccessToken);
+			var auth = new Authorize2(this.wcf);
+			auth.Authorization.Scope.AddRange(OAuthUtilities.SplitScopes("http://tempuri.org/IDataApi/GetName http://tempuri.org/IDataApi/GetAge http://tempuri.org/IDataApi/GetFavoriteSites"));
+			auth.Authorization.Callback = new Uri("http://localhost:59721/");
 			auth.Owner = this;
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
+				this.wcfAccessToken = auth.Authorization;
 				this.wcfName.Content = CallService(client => client.GetName());
 				this.wcfAge.Content = CallService(client => client.GetAge());
 				this.wcfFavoriteSites.Content = CallService(client => string.Join(", ", client.GetFavoriteSites()));
@@ -192,20 +193,20 @@
 			try {
 				var client = new OAuth2.UserAgentClient(authServer, this.oauth2ClientIdentifierBox.Text, this.oauth2ClientSecretBox.Text);
 
-				var authorization = new AuthorizationState(OAuthUtilities.SplitScopes(this.oauth2ScopeBox.Text));
-				var authorizePopup = new Authorize2(client, authorization);
+				var authorizePopup = new Authorize2(client);
+				authorizePopup.Authorization.Scope.AddRange(OAuthUtilities.SplitScopes(this.oauth2ScopeBox.Text));
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
 					var requestUri = new UriBuilder(this.oauth2ResourceUrlBox.Text);
 					if (this.oauth2ResourceHttpMethodList.SelectedIndex > 0) {
-						requestUri.AppendQueryArgument("access_token", authorization.AccessToken);
+						requestUri.AppendQueryArgument("access_token", authorizePopup.Authorization.AccessToken);
 					}
 
 					var request = (HttpWebRequest)WebRequest.Create(requestUri.Uri);
 					request.Method = this.oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
 					if (this.oauth2ResourceHttpMethodList.SelectedIndex == 0) {
-						client.AuthorizeRequest(request, authorization);
+						client.AuthorizeRequest(request, authorizePopup.Authorization);
 					}
 
 					using (var resourceResponse = request.GetResponse()) {

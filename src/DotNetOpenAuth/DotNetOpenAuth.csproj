@@ -253,6 +253,7 @@ http://opensource.org/licenses/ms-pl.html
     <Reference Include="System.Web.Routing">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" Condition=" '$(ClrVersion)' == '4' " />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq">
@@ -380,6 +381,12 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCodeBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
+    <Compile Include="OAuth2\ClientAuthorizationView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OAuth2\ClientAuthorizationView.Designer.cs">
+      <DependentUpon>ClientAuthorizationView.cs</DependentUpon>
+    </Compile>
     <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\IAuthorizationServer.cs" />
     <Compile Include="OAuth2\IAuthorizationState.cs" />
@@ -761,6 +768,9 @@ http://opensource.org/licenses/ms-pl.html
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OAuth2\ClientAuthorizationView.resx">
+      <DependentUpon>ClientAuthorizationView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OAuth\OAuthStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
