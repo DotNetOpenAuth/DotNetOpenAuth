@@ -10,11 +10,11 @@
   <PropertyGroup>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</ProjectGuid>
+    <ProjectGuid>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetOpenAuth</RootNamespace>
-    <AssemblyName>DotNetOpenAuth</AssemblyName>
+    <AssemblyName>DotNetOpenAuth.OpenId</AssemblyName>
     <AssemblyName Condition=" '$(NoUIControls)' == 'true' ">DotNetOpenAuth.NoUI</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <StandardCopyright>
@@ -42,7 +42,8 @@ http://opensource.org/licenses/ms-pl.html
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <ApplicationIcon>DotNetOpenAuth.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -276,238 +277,17 @@ http://opensource.org/licenses/ms-pl.html
     <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
-    <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
-    <Compile Include="ComponentModel\ConverterBase.cs" />
-    <Compile Include="ComponentModel\SuggestedStringsConverterContract.cs" />
-    <Compile Include="ComponentModel\IssuersSuggestions.cs" />
     <Compile Include="ComponentModel\IdentifierConverter.cs" />
-    <Compile Include="ComponentModel\SuggestedStringsConverter.cs" />
-    <Compile Include="ComponentModel\UriConverter.cs" />
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
-    <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
-    <Compile Include="Configuration\MessagingElement.cs" />
-    <Compile Include="Configuration\OAuthConsumerElement.cs" />
-    <Compile Include="Configuration\OAuthConsumerSecuritySettingsElement.cs" />
-    <Compile Include="Configuration\OAuthElement.cs" />
-    <Compile Include="Configuration\OAuthServiceProviderElement.cs" />
-    <Compile Include="Configuration\OAuthServiceProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\OpenIdElement.cs" />
     <Compile Include="Configuration\OpenIdProviderElement.cs" />
     <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
-    <Compile Include="Configuration\ReportingElement.cs" />
-    <Compile Include="Configuration\TrustedProviderConfigurationCollection.cs" />
-    <Compile Include="Configuration\TrustedProviderEndpointConfigurationElement.cs" />
-    <Compile Include="Configuration\TypeConfigurationCollection.cs" />
-    <Compile Include="Configuration\TypeConfigurationElement.cs" />
-    <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
-    <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
-    <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
-    <Compile Include="Messaging\Bindings\CryptoKey.cs" />
-    <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
-    <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
-    <Compile Include="IEmbeddedResourceRetrieval.cs" />
-    <Compile Include="InfoCard\ClaimType.cs" />
-    <Compile Include="InfoCard\InfoCardImage.cs" />
-    <Compile Include="InfoCard\InfoCardStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>InfoCardStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="InfoCard\Token\InformationCardException.cs" />
-    <Compile Include="InfoCard\Token\Token.cs" />
-    <Compile Include="InfoCard\Token\TokenUtility.cs" />
-    <Compile Include="InfoCard\Token\TokenDecryptor.cs" />
-    <Compile Include="InfoCard\WellKnownIssuers.cs" />
-    <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
-    <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
-    <Compile Include="Messaging\CachedDirectWebResponse.cs" />
-    <Compile Include="Messaging\ChannelContract.cs" />
-    <Compile Include="Messaging\DataBagFormatterBase.cs" />
-    <Compile Include="Messaging\IHttpIndirectResponse.cs" />
-    <Compile Include="Messaging\IMessageOriginalPayload.cs" />
-    <Compile Include="Messaging\DirectWebRequestOptions.cs" />
-    <Compile Include="Messaging\EnumerableCache.cs" />
-    <Compile Include="Messaging\HostErrorException.cs" />
-    <Compile Include="Messaging\IHttpDirectResponse.cs" />
-    <Compile Include="Messaging\IExtensionMessage.cs" />
-    <Compile Include="Messaging\IHttpDirectResponseContract.cs" />
-    <Compile Include="Messaging\IMessage.cs" />
-    <Compile Include="Messaging\IncomingWebResponse.cs" />
-    <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
-    <Compile Include="Messaging\EmptyDictionary.cs" />
-    <Compile Include="Messaging\EmptyEnumerator.cs" />
-    <Compile Include="Messaging\EmptyList.cs" />
-    <Compile Include="Messaging\ErrorUtilities.cs" />
-    <Compile Include="Messaging\IMessageWithEvents.cs" />
-    <Compile Include="Messaging\IncomingWebResponseContract.cs" />
-    <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
-    <Compile Include="Messaging\InternalErrorException.cs" />
-    <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
-    <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
-    <Compile Include="Messaging\MultipartPostPart.cs" />
-    <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
-    <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
-    <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
-    <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
-    <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
-    <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
     <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
-    <Compile Include="Messaging\StandardMessageFactory.cs" />
-    <Compile Include="OAuth2\AuthorizationState.cs" />
-    <Compile Include="OAuth2\ChannelElements\AccessRequestBindingElement.cs" />
-    <Compile Include="OAuth2\ChannelElements\AccessToken.cs" />
-    <Compile Include="OAuth2\ChannelElements\AccessTokenBindingElement.cs" />
-    <Compile Include="OAuth2\ChannelElements\AuthorizationDataBag.cs" />
-    <Compile Include="OAuth2\ChannelElements\AuthServerBindingElementBase.cs" />
-    <Compile Include="OAuth2\ChannelElements\GrantTypeEncoder.cs" />
-    <Compile Include="OAuth2\ChannelElements\EndUserAuthorizationResponseTypeEncoder.cs" />
-    <Compile Include="Messaging\IDataBagFormatter.cs" />
-    <Compile Include="OAuth2\ChannelElements\OAuth2ChannelBase.cs" />
-    <Compile Include="OAuth2\ChannelElements\OAuth2ClientChannel.cs" />
-    <Compile Include="OAuth2\ChannelElements\ScopeEncoder.cs" />
-    <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
-    <Compile Include="OAuth2\ChannelElements\IAuthorizationDescription.cs" />
-    <Compile Include="OAuth2\ChannelElements\IAuthorizationCarryingRequest.cs" />
-    <Compile Include="OAuth2\ChannelElements\OAuth2ResourceServerChannel.cs" />
-    <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
-    <Compile Include="OAuth2\ChannelElements\RefreshToken.cs" />
-    <Compile Include="Messaging\DataBag.cs" />
-    <Compile Include="Messaging\TimestampEncoder.cs" />
-    <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
-    <Compile Include="OAuth2\ChannelElements\AuthorizationCodeBindingElement.cs" />
-    <Compile Include="OAuth2\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
-    <Compile Include="OAuth2\ClientAuthorizationView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="OAuth2\ClientAuthorizationView.Designer.cs">
-      <DependentUpon>ClientAuthorizationView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />
-    <Compile Include="OAuth2\IAuthorizationServer.cs" />
-    <Compile Include="OAuth2\IAuthorizationState.cs" />
-    <Compile Include="OAuth2\IClientAuthorizationTracker.cs" />
-    <Compile Include="OAuth2\IConsumerDescription.cs" />
-    <Compile Include="OAuth2\Messages\AccessProtectedResourceRequest.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenRequestBase.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenClientCredentialsRequest.cs" />
-    <Compile Include="OAuth2\Messages\AuthenticatedClientRequestBase.cs" />
-    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAccessTokenResponse.cs" />
-    <Compile Include="OAuth2\Messages\EndUserAuthorizationFailedResponse.cs" />
-    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponse.cs" />
-    <Compile Include="OAuth2\Messages\GrantType.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenRefreshRequest.cs" />
-    <Compile Include="OAuth2\Messages\EndUserAuthorizationResponseType.cs" />
-    <Compile Include="OAuth2\Messages\IAccessTokenRequest.cs" />
-    <Compile Include="OAuth2\Messages\IMessageWithClientState.cs" />
-    <Compile Include="OAuth2\Messages\ScopedAccessTokenRequest.cs" />
-    <Compile Include="OAuth2\Messages\UnauthorizedResponse.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenFailedResponse.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenSuccessResponse.cs" />
-    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessResponseBase.cs" />
-    <Compile Include="OAuth2\ResourceServer.cs" />
-    <Compile Include="OAuth2\StandardAccessTokenAnalyzer.cs" />
-    <Compile Include="OAuth2\UserAgentClient.cs" />
-    <Compile Include="OAuth2\AuthorizationServer.cs" />
-    <Compile Include="OAuth2\OAuthUtilities.cs" />
-    <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
-    <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\IServiceProviderAccessToken.cs" />
-    <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
-    <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
-    <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthIdentity.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthPrincipal.cs" />
-    <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
-    <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
-    <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
-    <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseContract.cs" />
-    <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
-    <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
-    <Compile Include="OAuth\ChannelElements\TokenType.cs" />
-    <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
-    <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
-    <Compile Include="OAuth\ConsumerBase.cs" />
-    <Compile Include="OAuth\ConsumerSecuritySettings.cs" />
-    <Compile Include="OAuth\DesktopConsumer.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Messaging\IMessageWithBinaryData.cs" />
-    <Compile Include="OAuth\Messages\ITokenSecretContainingMessage.cs" />
-    <Compile Include="Messaging\ChannelEventArgs.cs" />
-    <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
-    <Compile Include="OAuth\OAuthStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>OAuthStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="OAuth\SecuritySettings.cs" />
-    <Compile Include="OAuth\ServiceProviderDescription.cs" />
-    <Compile Include="OAuth\Messages\ITokenContainingMessage.cs" />
-    <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
-    <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
-    <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
-    <Compile Include="OAuth\ServiceProviderSecuritySettings.cs" />
-    <Compile Include="OAuth\VerificationCodeFormat.cs" />
-    <Compile Include="OAuth\WebConsumer.cs" />
-    <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
-    <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />
-    <Compile Include="OAuth\Messages\MessageBase.cs" />
-    <Compile Include="OAuth\Messages\AuthorizedTokenRequest.cs" />
-    <Compile Include="Messaging\Bindings\INonceStore.cs" />
-    <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
-    <Compile Include="Messaging\MessagePartAttribute.cs" />
-    <Compile Include="Messaging\MessageProtections.cs" />
-    <Compile Include="Messaging\IChannelBindingElement.cs" />
-    <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
-    <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
-    <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
-    <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
-    <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
-    <Compile Include="OAuth\Messages\AccessProtectedResourceRequest.cs" />
-    <Compile Include="OAuth\Messages\AuthorizedTokenResponse.cs" />
-    <Compile Include="OAuth\Messages\UserAuthorizationResponse.cs" />
-    <Compile Include="OAuth\Messages\UserAuthorizationRequest.cs" />
-    <Compile Include="OAuth\Messages\UnauthorizedTokenResponse.cs" />
-    <Compile Include="Messaging\Channel.cs" />
-    <Compile Include="Messaging\HttpRequestInfo.cs" />
-    <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
-    <Compile Include="Messaging\IMessageFactory.cs" />
-    <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
-    <Compile Include="Messaging\MessageSerializer.cs" />
-    <Compile Include="Messaging\MessagingStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MessagingStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Messaging\MessagingUtilities.cs" />
-    <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
-    <Compile Include="Messaging\Reflection\ValueMapping.cs" />
-    <Compile Include="Messaging\Reflection\MessageDescription.cs" />
-    <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
-    <Compile Include="Messaging\Reflection\MessagePart.cs" />
-    <Compile Include="Messaging\UnprotectedMessageException.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthChannel.cs" />
-    <Compile Include="Messaging\OutgoingWebResponse.cs" />
-    <Compile Include="Messaging\IProtocolMessage.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Loggers\ILog.cs" />
-    <Compile Include="Loggers\Log4NetLogger.cs" />
-    <Compile Include="Loggers\NoOpLogger.cs" />
-    <Compile Include="Loggers\TraceLogger.cs" />
-    <Compile Include="Messaging\HttpDeliveryMethods.cs" />
-    <Compile Include="Messaging\MessageTransport.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
-    <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="Mvc\OpenIdHelper.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
     <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
@@ -564,7 +344,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PapeUtilities.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyRequest.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\PolicyResponse.cs" />
-    <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsRequest.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\ClaimsResponse.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Constants.cs" />
@@ -678,38 +457,11 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
-    <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
     <Compile Include="OpenId\UriDiscoveryService.cs" />
     <Compile Include="OpenId\UriIdentifier.cs" />
     <Compile Include="OpenId\XriDiscoveryProxyService.cs" />
     <Compile Include="OpenId\XriIdentifier.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />
-    <Compile Include="OAuth\ChannelElements\RsaSha1SigningBindingElement.cs" />
-    <Compile Include="Messaging\StandardWebRequestHandler.cs" />
-    <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
-    <Compile Include="Reporting.cs" />
-    <Compile Include="OAuth2\ChannelElements\OAuth2AuthorizationServerChannel.cs" />
-    <Compile Include="OAuth2\ClientBase.cs" />
-    <Compile Include="OAuth2\Messages\MessageBase.cs" />
-    <Compile Include="OAuth2\Messages\EndUserAuthorizationRequest.cs" />
-    <Compile Include="OAuth2\Protocol.cs" />
-    <Compile Include="OAuth2\OAuthStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>OAuthStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="OAuth2\AuthorizationServerDescription.cs" />
-    <Compile Include="OAuth2\WebServerClient.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="OAuth\Protocol.cs" />
-    <Compile Include="OAuth\ServiceProvider.cs" />
-    <Compile Include="Strings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="UriUtil.cs" />
+    <Compile Include="XrdsPublisher.cs" />
     <Compile Include="Xrds\XrdsStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -725,138 +477,11 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Xrds\XrdsDocument.cs" />
     <Compile Include="Xrds\XrdsNode.cs" />
     <Compile Include="Yadis\Yadis.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(NoUIControls)' != 'true' ">
-    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
-    <Compile Include="XrdsPublisher.cs" />
-    <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
-    <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
-    <Compile Include="InfoCard\InfoCardSelector.cs" />
-    <Compile Include="InfoCard\ReceivedTokenEventArgs.cs" />
-    <Compile Include="Mvc\OpenIdHelper.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorInfoCardButton.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' " />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Configuration\DotNetOpenAuth.xsd" />
-    <None Include="Migrated rules for DotNetOpenAuth.ruleset" />
-    <None Include="OAuth2\Messages\OAuth 2 Messages.cd" />
-    <None Include="OAuth2\OAuth 2 client facades.cd" />
-    <None Include="OAuth\ClassDiagram.cd" />
-    <None Include="OAuth\Messages\OAuth Messages.cd" />
-    <None Include="Messaging\Bindings\Bindings.cd" />
-    <None Include="Messaging\Exceptions.cd" />
-    <None Include="Messaging\Messaging.cd" />
-    <None Include="OpenId\RelyingParty\Controls.cd" />
-    <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Messaging\MessagingStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OAuth2\ClientAuthorizationView.resx">
-      <DependentUpon>ClientAuthorizationView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OAuth\OAuthStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>OAuthStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OpenId\OpenIdStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>OpenIdStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Xrds\XrdsStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>XrdsStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\openid_login.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\login_failure.png" />
-    <EmbeddedResource Include="OpenId\RelyingParty\login_success %28lock%29.png" />
-    <EmbeddedResource Include="OpenId\RelyingParty\login_success.png" />
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js">
-      <Copyright>$(StandardCopyright)</Copyright>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OpenId\RelyingParty\spinner.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="InfoCard\InfoCardStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>InfoCardStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="InfoCard\infocard_114x80.png" />
-    <EmbeddedResource Include="InfoCard\infocard_14x10.png" />
-    <EmbeddedResource Include="InfoCard\infocard_214x150.png" />
-    <EmbeddedResource Include="InfoCard\infocard_23x16.png" />
-    <EmbeddedResource Include="InfoCard\infocard_300x210.png" />
-    <EmbeddedResource Include="InfoCard\infocard_34x24.png" />
-    <EmbeddedResource Include="InfoCard\infocard_365x256.png" />
-    <EmbeddedResource Include="InfoCard\infocard_41x29.png" />
-    <EmbeddedResource Include="InfoCard\infocard_50x35.png" />
-    <EmbeddedResource Include="InfoCard\infocard_60x42.png" />
-    <EmbeddedResource Include="InfoCard\infocard_71x50.png" />
-    <EmbeddedResource Include="InfoCard\infocard_81x57.png" />
-    <EmbeddedResource Include="InfoCard\infocard_92x64.png" />
-    <EmbeddedResource Include="InfoCard\SupportingScript.js">
-      <Copyright>$(StandardCopyright)</Copyright>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js">
-      <Copyright>$(StandardCopyright)</Copyright>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="InfoCard\InfoCardStrings.sr.resx" />
-    <EmbeddedResource Include="Messaging\MessagingStrings.sr.resx" />
-    <EmbeddedResource Include="OAuth\OAuthStrings.sr.resx" />
-    <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>BehaviorStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.sr.resx" />
-    <EmbeddedResource Include="OpenId\OpenIdStrings.sr.resx" />
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js">
-      <Copyright>$(StandardCopyright)</Copyright>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OAuth2\OAuthStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>OAuthStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Strings.sr.resx" />
     <EmbeddedResource Include="Xrds\XrdsStrings.sr.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.css" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -874,13 +499,12 @@ http://opensource.org/licenses/ms-pl.html
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
-    <Content Include="DotNetOpenAuth.ico" />
   </ItemGroup>
   <ItemGroup>
     <SignDependsOn Include="BuildUnifiedProduct" />
     <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);&#xD;&#xA;                                    $(OutputPath)CodeContracts\$(ProductName).Contracts.dll;&#xD;&#xA;                                   " />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <!-- Don't sign the non-unified version of the assembly. -->
     <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>

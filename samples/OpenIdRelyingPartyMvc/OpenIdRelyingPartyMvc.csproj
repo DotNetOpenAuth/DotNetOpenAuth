@@ -14,6 +14,7 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -122,12 +123,6 @@
     <Content Include="Views\Shared\Site.Master" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Home\xrds.aspx" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
-      <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
-      <Name>DotNetOpenAuth</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

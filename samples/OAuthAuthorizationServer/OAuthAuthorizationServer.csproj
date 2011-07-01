@@ -15,6 +15,7 @@
     <AssemblyName>OAuthAuthorizationServer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -123,12 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
-      <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
-      <Name>DotNetOpenAuth</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\DataClasses.dbml">

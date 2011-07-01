@@ -1,0 +1,465 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{60426312-6AE5-4835-8667-37EDEA670222}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.Messaging</AssemblyName>
+    <AssemblyName Condition=" '$(NoUIControls)' == 'true' ">DotNetOpenAuth.NoUI</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <StandardCopyright>
+Copyright (c) 2009, Andrew Arnott. All rights reserved.
+Code licensed under the Ms-PL License:
+http://opensource.org/licenses/ms-pl.html
+</StandardCopyright>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsPlatformPath>
+    </CodeContractsPlatformPath>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
+    <CodeContractsExtraRewriteOptions />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsPlatformPath>
+    </CodeContractsPlatformPath>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
+    <CodeContractsExtraRewriteOptions />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNoUI|AnyCPU'">
+    <DefineConstants>TRACE;NoUIControls</DefineConstants>
+    <NoUIControls>true</NoUIControls>
+    <Optimize>true</Optimize>
+    <NoWarn>;1607</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsPlatformPath>
+    </CodeContractsPlatformPath>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsExtraRewriteOptions />
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>$(DefineConstants);CONTRACTS_FULL;DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsCustomRewriterAssembly>
+    </CodeContractsCustomRewriterAssembly>
+    <CodeContractsCustomRewriterClass>
+    </CodeContractsCustomRewriterClass>
+    <CodeContractsRuntimeCheckingLevel>Preconditions</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsLibPaths>
+    </CodeContractsLibPaths>
+    <CodeContractsPlatformPath>
+    </CodeContractsPlatformPath>
+    <CodeContractsExtraAnalysisOptions>
+    </CodeContractsExtraAnalysisOptions>
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
+    <CodeContractsExtraRewriteOptions />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.IdentityModel.Selectors">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Extensions.Design">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Mobile" Condition=" '$(ClrVersion)' != '4' " />
+    <Reference Include="System.Web.Routing">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" Condition=" '$(ClrVersion)' == '4' " />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+    <!-- MVC 2 can run on CLR 2 (it doesn't require CLR 4) but since MVC 2 apps tend to use type forwarding,
+         it's a more broadly consumable idea to bind against MVC 1 for the library unless we're building on CLR 4,
+         which will definitely have MVC 2 available. -->
+    <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKey.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
+    <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
+    <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
+    <Compile Include="Messaging\CachedDirectWebResponse.cs" />
+    <Compile Include="Messaging\ChannelContract.cs" />
+    <Compile Include="Messaging\DataBagFormatterBase.cs" />
+    <Compile Include="Messaging\IHttpIndirectResponse.cs" />
+    <Compile Include="Messaging\IMessageOriginalPayload.cs" />
+    <Compile Include="Messaging\DirectWebRequestOptions.cs" />
+    <Compile Include="Messaging\EnumerableCache.cs" />
+    <Compile Include="Messaging\HostErrorException.cs" />
+    <Compile Include="Messaging\IHttpDirectResponse.cs" />
+    <Compile Include="Messaging\IExtensionMessage.cs" />
+    <Compile Include="Messaging\IHttpDirectResponseContract.cs" />
+    <Compile Include="Messaging\IMessage.cs" />
+    <Compile Include="Messaging\IncomingWebResponse.cs" />
+    <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
+    <Compile Include="Messaging\EmptyDictionary.cs" />
+    <Compile Include="Messaging\EmptyEnumerator.cs" />
+    <Compile Include="Messaging\EmptyList.cs" />
+    <Compile Include="Messaging\ErrorUtilities.cs" />
+    <Compile Include="Messaging\IMessageWithEvents.cs" />
+    <Compile Include="Messaging\IncomingWebResponseContract.cs" />
+    <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
+    <Compile Include="Messaging\InternalErrorException.cs" />
+    <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
+    <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
+    <Compile Include="Messaging\MultipartPostPart.cs" />
+    <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
+    <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="Messaging\StandardMessageFactory.cs" />
+    <Compile Include="Messaging\IDataBagFormatter.cs" />
+    <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
+    <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
+    <Compile Include="Messaging\DataBag.cs" />
+    <Compile Include="Messaging\TimestampEncoder.cs" />
+    <Compile Include="Messaging\IMessageWithBinaryData.cs" />
+    <Compile Include="Messaging\ChannelEventArgs.cs" />
+    <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
+    <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
+    <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
+    <Compile Include="Messaging\Bindings\INonceStore.cs" />
+    <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
+    <Compile Include="Messaging\MessagePartAttribute.cs" />
+    <Compile Include="Messaging\MessageProtections.cs" />
+    <Compile Include="Messaging\IChannelBindingElement.cs" />
+    <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
+    <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
+    <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
+    <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
+    <Compile Include="Messaging\Channel.cs" />
+    <Compile Include="Messaging\HttpRequestInfo.cs" />
+    <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
+    <Compile Include="Messaging\IMessageFactory.cs" />
+    <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
+    <Compile Include="Messaging\MessageSerializer.cs" />
+    <Compile Include="Messaging\MessagingStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessagingStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\MessagingUtilities.cs" />
+    <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
+    <Compile Include="Messaging\Reflection\ValueMapping.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescription.cs" />
+    <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
+    <Compile Include="Messaging\Reflection\MessagePart.cs" />
+    <Compile Include="Messaging\UnprotectedMessageException.cs" />
+    <Compile Include="Messaging\OutgoingWebResponse.cs" />
+    <Compile Include="Messaging\IProtocolMessage.cs" />
+    <Compile Include="Messaging\HttpDeliveryMethods.cs" />
+    <Compile Include="Messaging\MessageTransport.cs" />
+    <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
+    <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
+    <Compile Include="Messaging\StandardWebRequestHandler.cs" />
+    <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Messaging\Bindings\Bindings.cd" />
+    <None Include="Messaging\Exceptions.cd" />
+    <None Include="Messaging\Messaging.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
+    <Compile Include="ComponentModel\ConverterBase.cs" />
+    <Compile Include="ComponentModel\SuggestedStringsConverterContract.cs" />
+    <Compile Include="ComponentModel\SuggestedStringsConverter.cs" />
+    <Compile Include="ComponentModel\UriConverter.cs" />
+    <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
+    <Compile Include="Configuration\MessagingElement.cs" />
+    <Compile Include="Configuration\ReportingElement.cs" />
+    <Compile Include="Configuration\TrustedProviderConfigurationCollection.cs" />
+    <Compile Include="Configuration\TrustedProviderEndpointConfigurationElement.cs" />
+    <Compile Include="Configuration\TypeConfigurationCollection.cs" />
+    <Compile Include="Configuration\TypeConfigurationElement.cs" />
+    <Compile Include="Configuration\UntrustedWebRequestElement.cs" />
+    <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
+    <Compile Include="Configuration\HostNameElement.cs" />
+    <Compile Include="IEmbeddedResourceRetrieval.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Loggers\ILog.cs" />
+    <Compile Include="Loggers\Log4NetLogger.cs" />
+    <Compile Include="Loggers\NoOpLogger.cs" />
+    <Compile Include="Loggers\TraceLogger.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporting.cs" />
+    <Compile Include="Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UriUtil.cs" />
+    <Compile Include="Util.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Configuration\DotNetOpenAuth.xsd" />
+    <None Include="Migrated rules for DotNetOpenAuth.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Strings.sr.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messaging\MessagingStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messaging\MessagingStrings.sr.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <SignDependsOn Include="BuildUnifiedProduct" />
+    <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);&#xD;&#xA;                                    $(OutputPath)CodeContracts\$(ProductName).Contracts.dll;&#xD;&#xA;                                   " />
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <!-- Don't sign the non-unified version of the assembly. -->
+    <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
+  </PropertyGroup>
+  <Target Name="BuildUnifiedProduct" DependsOnTargets="Build" Inputs="@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly)">
+    <PropertyGroup>
+      <!-- The ILMerge task doesn't properly quote the path. -->
+      <ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
+    </PropertyGroup>
+    <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
+    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeInputAssemblies)" OutputFile="$(ILMergeOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" ToolPath="$(ProjectRoot)tools\ILMerge" TargetPlatformVersion="$(ClrVersion).0" TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
+  </Target>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>
