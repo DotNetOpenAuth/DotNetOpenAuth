@@ -6,11 +6,17 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the &lt;oauth&gt; element in the host's .config file.
 	/// </summary>
-	internal class OAuthElement : ConfigurationElement {
+	internal class OAuthElement : ConfigurationSection {
+		/// <summary>
+		/// The name of the oauth section.
+		/// </summary>
+		private const string SectionName = "oauth";
+
 		/// <summary>
 		/// The name of the &lt;consumer&gt; sub-element.
 		/// </summary>
@@ -25,6 +31,16 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="OAuthElement"/> class.
 		/// </summary>
 		internal OAuthElement() {
+		}
+
+		/// <summary>
+		/// Gets the configuration section from the .config file.
+		/// </summary>
+		public static OAuthElement Configuration {
+			get {
+				Contract.Ensures(Contract.Result<OAuthElement>() != null);
+				return (OAuthElement)ConfigurationManager.GetSection(SectionName) ?? new OAuthElement();
+			}
 		}
 
 		/// <summary>

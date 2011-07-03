@@ -28,7 +28,7 @@ namespace DotNetOpenAuth {
 	/// The statistical reporting mechanism used so this library's project authors
 	/// know what versions and features are in use.
 	/// </summary>
-	public static class Reporting {
+	public class Reporting {
 		/// <summary>
 		/// A UTF8 encoder that doesn't emit the preamble.  Used for mid-stream writers.
 		/// </summary>
@@ -142,10 +142,14 @@ namespace DotNetOpenAuth {
 			}
 		}
 
+		internal static PersistentHashSet ObservedFeatures {
+			get { return observedFeatures; }
+		}
+
 		/// <summary>
 		/// Gets the configuration to use for reporting.
 		/// </summary>
-		private static ReportingElement Configuration {
+		internal static ReportingElement Configuration {
 			get { return DotNetOpenAuthSection.Configuration.Reporting; }
 		}
 
@@ -482,7 +486,7 @@ namespace DotNetOpenAuth {
 		/// Called by every internal/public method on this class to give
 		/// periodic operations a chance to run.
 		/// </summary>
-		private static void Touch() {
+		protected static void Touch() {
 			// Publish stats if it's time to do so.
 			lock (publishingConsiderationLock) {
 				if (DateTime.Now - lastPublished > Configuration.MinimumReportingInterval) {
@@ -596,7 +600,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// A set of values that persist the set to disk.
 		/// </summary>
-		private class PersistentHashSet : IDisposable {
+		internal class PersistentHashSet : IDisposable {
 			/// <summary>
 			/// The isolated persistent storage.
 			/// </summary>

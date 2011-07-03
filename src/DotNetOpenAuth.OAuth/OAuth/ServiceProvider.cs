@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
 		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
-			: this(serviceDescription, tokenManager, DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.ApplicationStore.CreateInstance(HttpApplicationStore), messageTypeProvider) {
+			: this(serviceDescription, tokenManager, OAuthElement.Configuration.ServiceProvider.ApplicationStore.CreateInstance(HttpApplicationStore), messageTypeProvider) {
 			Contract.Requires<ArgumentNullException>(serviceDescription != null);
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
@@ -99,11 +99,11 @@ namespace DotNetOpenAuth.OAuth {
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			this.ServiceDescription = serviceDescription;
-			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+			this.SecuritySettings = OAuthElement.Configuration.ServiceProvider.SecuritySettings.CreateSecuritySettings();
 			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, this.SecuritySettings, messageTypeProvider);
 			this.TokenGenerator = new StandardTokenGenerator();
 
-			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, nonceStore);
+			OAuthReporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, nonceStore);
 		}
 
 		/// <summary>

@@ -32,11 +32,11 @@ namespace DotNetOpenAuth.OAuth {
 
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+			this.SecuritySettings = OAuthElement.Configuration.Consumer.SecuritySettings.CreateSecuritySettings();
 			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, this.SecuritySettings);
 			this.ServiceProvider = serviceDescription;
 
-			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, null);
+			OAuthReporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, null);
 		}
 
 		/// <summary>

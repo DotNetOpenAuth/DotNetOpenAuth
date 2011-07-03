@@ -154,7 +154,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			Contract.Requires<ArgumentNullException>(message != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(message.HttpMethod));
 			Contract.Requires<ArgumentNullException>(messageDictionary != null);
-			Contract.Requires<ArgumentException>(messageDictionary.Message == message);
+			ErrorUtilities.VerifyArgument(messageDictionary.Message == message, "Message references are not equal.");
 
 			List<string> signatureBaseStringElements = new List<string>(3);
 

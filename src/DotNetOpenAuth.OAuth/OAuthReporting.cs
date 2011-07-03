@@ -1,13 +1,20 @@
-﻿namespace DotNetOpenAuth {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OAuthReporting.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
-	internal static class OAuthReporting {
+	internal class OAuthReporting : Reporting {
 		/// <summary>
 		/// Records the feature and dependency use.
 		/// </summary>
@@ -25,7 +32,7 @@
 				return;
 			}
 
-			if (Enabled && Configuration.IncludeFeatureUsage) {
+			if (Reporting.Enabled && Reporting.Configuration.IncludeFeatureUsage) {
 				StringBuilder builder = new StringBuilder();
 				builder.Append(value.GetType().Name);
 				builder.Append(" ");
@@ -38,8 +45,8 @@
 				builder.Append(service.Version);
 				builder.Append(" ");
 				builder.Append(service.UserAuthorizationEndpoint);
-				observedFeatures.Add(builder.ToString());
-				Touch();
+				Reporting.ObservedFeatures.Add(builder.ToString());
+				Reporting.Touch();
 			}
 		}
 	}
