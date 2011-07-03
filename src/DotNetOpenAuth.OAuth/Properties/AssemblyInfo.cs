@@ -17,16 +17,12 @@ using System.Security;
 using System.Security.Permissions;
 using System.Web.UI;
 
-[assembly: TagPrefix("DotNetOpenAuth", "dnoa")]
 [assembly: TagPrefix("DotNetOpenAuth.OAuth", "oauth")]
-[assembly: TagPrefix("DotNetOpenAuth.OpenId", "openid")]
-[assembly: TagPrefix("DotNetOpenAuth.OpenId.Provider", "op")]
-[assembly: TagPrefix("DotNetOpenAuth.OpenId.RelyingParty", "rp")]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DotNetOpenAuth")]
+[assembly: AssemblyTitle("DotNetOpenAuth OAuth")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
@@ -53,8 +49,6 @@ using System.Web.UI;
 [assembly: AllowPartiallyTrustedCallers]
 
 [assembly: InternalsVisibleTo("DotNetOpenAuth.Test, PublicKey=0024000004800000940000000602000000240000525341310004000001000100AD093C3765257C89A7010E853F2C7C741FF92FA8ACE06D7B8254702CAD5CF99104447F63AB05F8BB6F51CE0D81C8C93D2FCE8C20AAFF7042E721CBA16EAAE98778611DED11C0ABC8900DC5667F99B50A9DADEC24DBD8F2C91E3E8AD300EF64F1B4B9536CEB16FB440AF939F57624A9B486F867807C649AE4830EAB88C6C03998")]
-[assembly: InternalsVisibleTo("DotNetOpenAuth.InfoCard, PublicKey=0024000004800000940000000602000000240000525341310004000001000100AD093C3765257C89A7010E853F2C7C741FF92FA8ACE06D7B8254702CAD5CF99104447F63AB05F8BB6F51CE0D81C8C93D2FCE8C20AAFF7042E721CBA16EAAE98778611DED11C0ABC8900DC5667F99B50A9DADEC24DBD8F2C91E3E8AD300EF64F1B4B9536CEB16FB440AF939F57624A9B486F867807C649AE4830EAB88C6C03998")]
 #else
 [assembly: InternalsVisibleTo("DotNetOpenAuth.Test")]
-[assembly: InternalsVisibleTo("DotNetOpenAuth.InfoCard")]
 #endif
