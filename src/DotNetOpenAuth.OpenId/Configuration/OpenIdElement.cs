@@ -15,7 +15,12 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the &lt;openid&gt; element in the host's .config file.
 	/// </summary>
 	[ContractVerification(true)]
-	internal class OpenIdElement : ConfigurationElement {
+	internal class OpenIdElement : ConfigurationSection {
+		/// <summary>
+		/// The name of the section under which this library's settings must be found.
+		/// </summary>
+		private const string SectionName = "openId";
+
 		/// <summary>
 		/// The name of the &lt;relyingParty&gt; sub-element.
 		/// </summary>
@@ -50,6 +55,16 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="OpenIdElement"/> class.
 		/// </summary>
 		internal OpenIdElement() {
+		}
+
+		/// <summary>
+		/// Gets the configuration section from the .config file.
+		/// </summary>
+		public static OpenIdElement Configuration {
+			get {
+				Contract.Ensures(Contract.Result<OpenIdElement>() != null);
+				return (OpenIdElement)ConfigurationManager.GetSection(SectionName) ?? new OpenIdElement();
+			}
 		}
 
 		/// <summary>

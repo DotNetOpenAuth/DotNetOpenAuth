@@ -102,7 +102,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null && request.ReturnTo != null && request.SignReturnTo) {
-				var cryptoKeyPair = this.cryptoKeyStore.GetCurrentKey(SecretUri.AbsoluteUri, DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+				var cryptoKeyPair = this.cryptoKeyStore.GetCurrentKey(SecretUri.AbsoluteUri, OpenIdElement.Configuration.MaxAuthenticationTime);
 				request.AddReturnToArguments(ReturnToSignatureHandleParameterName, cryptoKeyPair.Key);
 				string signature = Convert.ToBase64String(this.GetReturnToSignature(request.ReturnTo, cryptoKeyPair.Value));
 				request.AddReturnToArguments(ReturnToSignatureParameterName, signature);

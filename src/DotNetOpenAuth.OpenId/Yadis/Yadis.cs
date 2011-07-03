@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Yadis {
 #if DEBUG
 		internal static readonly RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.BypassCache);
 #else
-		internal static readonly RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(DotNetOpenAuthSection.Configuration.OpenId.CacheDiscovery ? HttpRequestCacheLevel.CacheIfAvailable : HttpRequestCacheLevel.BypassCache);
+		internal static readonly RequestCachePolicy IdentifierDiscoveryCachePolicy = new HttpRequestCachePolicy(OpenIdElement.Configuration.CacheDiscovery ? HttpRequestCacheLevel.CacheIfAvailable : HttpRequestCacheLevel.BypassCache);
 #endif
 
 		/// <summary>

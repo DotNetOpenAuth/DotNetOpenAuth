@@ -554,7 +554,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			request.AssociationHandle = association != null ? association.Handle : null;
 			request.SignReturnTo = this.returnToArgsMustBeSigned;
 			request.AddReturnToArguments(this.returnToArgs);
-			if (this.DiscoveryResult.UserSuppliedIdentifier != null && DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.PreserveUserSuppliedIdentifier) {
+			if (this.DiscoveryResult.UserSuppliedIdentifier != null && OpenIdElement.Configuration.RelyingParty.PreserveUserSuppliedIdentifier) {
 				request.AddReturnToArguments(UserSuppliedIdentifierParameterName, this.DiscoveryResult.UserSuppliedIdentifier.OriginalString);
 			}
 			foreach (IOpenIdMessageExtension extension in this.extensions) {

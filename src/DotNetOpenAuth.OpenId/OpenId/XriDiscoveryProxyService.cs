@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier.</param>
 		/// <returns>The URI to HTTP GET from to get the services.</returns>
 		private static Uri GetXrdsUrl(XriIdentifier identifier) {
-			ErrorUtilities.VerifyProtocol(DotNetOpenAuthSection.Configuration.OpenId.XriResolver.Enabled, OpenIdStrings.XriResolutionDisabled);
+			ErrorUtilities.VerifyProtocol(OpenIdElement.Configuration.XriResolver.Enabled, OpenIdStrings.XriResolutionDisabled);
 			string xriResolverProxy = XriResolverProxyTemplate;
 			if (identifier.IsDiscoverySecureEndToEnd) {
 				// Indicate to xri.net that we require SSL to be used for delegated resolution
@@ -102,7 +102,7 @@ namespace DotNetOpenAuth.OpenId {
 					CultureInfo.InvariantCulture,
 					xriResolverProxy,
 					identifier,
-					DotNetOpenAuthSection.Configuration.OpenId.XriResolver.Proxy.Name));
+					OpenIdElement.Configuration.XriResolver.Proxy.Name));
 		}
 	}
 }

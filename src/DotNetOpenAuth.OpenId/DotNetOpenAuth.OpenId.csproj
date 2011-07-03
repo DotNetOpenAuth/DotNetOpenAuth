@@ -290,6 +290,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Mvc\OpenIdHelper.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
+    <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
+    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
     <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationKeyStorage.cs" />
@@ -429,7 +431,16 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
@@ -452,6 +463,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
@@ -478,6 +493,10 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Xrds\XrdsDocument.cs" />
     <Compile Include="Xrds\XrdsNode.cs" />
     <Compile Include="Yadis\Yadis.cs" />
+    <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.resx" />
+    <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.sr.resx" />
+    <EmbeddedResource Include="OpenId\OpenIdStrings.resx" />
+    <EmbeddedResource Include="OpenId\OpenIdStrings.sr.resx" />
     <EmbeddedResource Include="Xrds\XrdsStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>XrdsStrings.Designer.cs</LastGenOutput>
@@ -510,6 +529,23 @@ http://opensource.org/licenses/ms-pl.html
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OpenId\RelyingParty\login_failure.png" />
+    <Content Include="OpenId\RelyingParty\login_success %28lock%29.png" />
+    <Content Include="OpenId\RelyingParty\login_success.png" />
+    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
+    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js" />
+    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
+    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
+    <Content Include="OpenId\RelyingParty\OpenIdSelector.css" />
+    <Content Include="OpenId\RelyingParty\OpenIdSelector.js" />
+    <Content Include="OpenId\RelyingParty\openid_login.png" />
+    <Content Include="OpenId\RelyingParty\spinner.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenId\RelyingParty\Controls.cd" />
+    <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
   </ItemGroup>
   <PropertyGroup>
     <!-- Don't sign the non-unified version of the assembly. -->

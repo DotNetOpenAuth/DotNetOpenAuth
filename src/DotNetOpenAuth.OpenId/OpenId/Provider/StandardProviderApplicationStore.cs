@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="StandardProviderApplicationStore"/> class.
 		/// </summary>
 		public StandardProviderApplicationStore() {
-			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+			this.nonceStore = new NonceMemoryStore(OpenIdElement.Configuration.MaxAuthenticationTime);
 			this.cryptoKeyStore = new MemoryCryptoKeyStore();
 		}
 

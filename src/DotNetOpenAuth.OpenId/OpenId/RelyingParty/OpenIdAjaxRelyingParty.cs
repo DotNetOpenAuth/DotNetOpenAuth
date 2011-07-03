@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				req.SetUntrustedCallbackArgument("index", (reqIndex++).ToString(CultureInfo.InvariantCulture));
 
 				// If the ReturnToUrl was explicitly set, we'll need to reset our first parameter
-				if (DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.PreserveUserSuppliedIdentifier) {
+				if (OpenIdElement.Configuration.RelyingParty.PreserveUserSuppliedIdentifier) {
 					if (string.IsNullOrEmpty(HttpUtility.ParseQueryString(req.ReturnToUrl.Query)[AuthenticationRequest.UserSuppliedIdentifierParameterName])) {
 						req.SetUntrustedCallbackArgument(AuthenticationRequest.UserSuppliedIdentifierParameterName, userSuppliedIdentifier.OriginalString);
 					}

@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.ComponentModel;
-	using DotNetOpenAuth.InfoCard;
+	////using DotNetOpenAuth.InfoCard;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -85,15 +85,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public OpenIdSelector() {
 		}
 
-		/// <summary>
-		/// Occurs when an InfoCard has been submitted and decoded.
-		/// </summary>
-		public event EventHandler<ReceivedTokenEventArgs> ReceivedToken;
+		/////// <summary>
+		/////// Occurs when an InfoCard has been submitted and decoded.
+		/////// </summary>
+		////public event EventHandler<ReceivedTokenEventArgs> ReceivedToken;
 
-		/// <summary>
-		/// Occurs when [token processing error].
-		/// </summary>
-		public event EventHandler<TokenProcessingErrorEventArgs> TokenProcessingError;
+		/////// <summary>
+		/////// Occurs when [token processing error].
+		/////// </summary>
+		////public event EventHandler<TokenProcessingErrorEventArgs> TokenProcessingError;
 
 		/// <summary>
 		/// Gets the text box where applicable.
@@ -270,15 +270,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return;
 			}
 
-			var selectorButton = this.Buttons.OfType<SelectorInfoCardButton>().FirstOrDefault();
-			if (selectorButton != null) {
-				var selector = selectorButton.InfoCardSelector;
-				selector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
-				selector.ImageSize = InfoCardImageSize.Size60x42;
-				selector.ReceivedToken += this.InfoCardSelector_ReceivedToken;
-				selector.TokenProcessingError += this.InfoCardSelector_TokenProcessingError;
-				this.Controls.Add(selector);
-			}
+			////var selectorButton = this.Buttons.OfType<SelectorInfoCardButton>().FirstOrDefault();
+			////if (selectorButton != null) {
+			////    var selector = selectorButton.InfoCardSelector;
+			////    selector.ClaimsRequested.Add(new ClaimType { Name = ClaimTypes.PPID });
+			////    selector.ImageSize = InfoCardImageSize.Size60x42;
+			////    selector.ReceivedToken += this.InfoCardSelector_ReceivedToken;
+			////    selector.TokenProcessingError += this.InfoCardSelector_TokenProcessingError;
+			////    this.Controls.Add(selector);
+			////}
 
 			this.textBox = new OpenIdAjaxTextBox();
 			this.textBox.ID = "openid_identifier";
@@ -391,54 +391,54 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.positiveAssertionField.RenderControl(writer);
 		}
 
-		/// <summary>
-		/// Fires the <see cref="ReceivedToken"/> event.
-		/// </summary>
-		/// <param name="e">The token, if it was decrypted.</param>
-		protected virtual void OnReceivedToken(ReceivedTokenEventArgs e) {
-			Contract.Requires(e != null);
-			ErrorUtilities.VerifyArgumentNotNull(e, "e");
+		/////// <summary>
+		/////// Fires the <see cref="ReceivedToken"/> event.
+		/////// </summary>
+		/////// <param name="e">The token, if it was decrypted.</param>
+		////protected virtual void OnReceivedToken(ReceivedTokenEventArgs e) {
+		////    Contract.Requires(e != null);
+		////    ErrorUtilities.VerifyArgumentNotNull(e, "e");
 
-			var receivedInfoCard = this.ReceivedToken;
-			if (receivedInfoCard != null) {
-				receivedInfoCard(this, e);
-			}
-		}
+		////    var receivedInfoCard = this.ReceivedToken;
+		////    if (receivedInfoCard != null) {
+		////        receivedInfoCard(this, e);
+		////    }
+		////}
 
-		/// <summary>
-		/// Raises the <see cref="E:TokenProcessingError"/> event.
-		/// </summary>
-		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.TokenProcessingErrorEventArgs"/> instance containing the event data.</param>
-		protected virtual void OnTokenProcessingError(TokenProcessingErrorEventArgs e) {
-			Contract.Requires(e != null);
-			ErrorUtilities.VerifyArgumentNotNull(e, "e");
+		/////// <summary>
+		/////// Raises the <see cref="E:TokenProcessingError"/> event.
+		/////// </summary>
+		/////// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.TokenProcessingErrorEventArgs"/> instance containing the event data.</param>
+		////protected virtual void OnTokenProcessingError(TokenProcessingErrorEventArgs e) {
+		////    Contract.Requires(e != null);
+		////    ErrorUtilities.VerifyArgumentNotNull(e, "e");
 
-			var tokenProcessingError = this.TokenProcessingError;
-			if (tokenProcessingError != null) {
-				tokenProcessingError(this, e);
-			}
-		}
+		////    var tokenProcessingError = this.TokenProcessingError;
+		////    if (tokenProcessingError != null) {
+		////        tokenProcessingError(this, e);
+		////    }
+		////}
 
-		/// <summary>
-		/// Handles the ReceivedToken event of the infoCardSelector control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs"/> instance containing the event data.</param>
-		private void InfoCardSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
-			this.Page.Response.SetCookie(new HttpCookie("openid_identifier", "infocard") {
-				Path = this.Page.Request.ApplicationPath,
-			});
-			this.OnReceivedToken(e);
-		}
+		/////// <summary>
+		/////// Handles the ReceivedToken event of the infoCardSelector control.
+		/////// </summary>
+		/////// <param name="sender">The source of the event.</param>
+		/////// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.ReceivedTokenEventArgs"/> instance containing the event data.</param>
+		////private void InfoCardSelector_ReceivedToken(object sender, ReceivedTokenEventArgs e) {
+		////    this.Page.Response.SetCookie(new HttpCookie("openid_identifier", "infocard") {
+		////        Path = this.Page.Request.ApplicationPath,
+		////    });
+		////    this.OnReceivedToken(e);
+		////}
 
-		/// <summary>
-		/// Handles the TokenProcessingError event of the infoCardSelector control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.TokenProcessingErrorEventArgs"/> instance containing the event data.</param>
-		private void InfoCardSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
-			this.OnTokenProcessingError(e);
-		}
+		/////// <summary>
+		/////// Handles the TokenProcessingError event of the infoCardSelector control.
+		/////// </summary>
+		/////// <param name="sender">The source of the event.</param>
+		/////// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.TokenProcessingErrorEventArgs"/> instance containing the event data.</param>
+		////private void InfoCardSelector_TokenProcessingError(object sender, TokenProcessingErrorEventArgs e) {
+		////    this.OnTokenProcessingError(e);
+		////}
 
 		/// <summary>
 		/// Ensures the <see cref="Buttons"/> collection has a valid set of buttons.

@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		public OpenIdProvider()
-			: this(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+			: this(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 		}
@@ -81,9 +81,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Ensures(this.SecuritySettings != null);
 			Contract.Ensures(this.Channel != null);
 
-			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
+			this.SecuritySettings = OpenIdElement.Configuration.Provider.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
-			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.Provider.Behaviors.CreateInstances(false)) {
+			foreach (var behavior in OpenIdElement.Configuration.Provider.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
 			}
 

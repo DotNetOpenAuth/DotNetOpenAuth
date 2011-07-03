@@ -760,7 +760,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// is one.  Then try the configuration file specified one.  Finally, use the default
 			// in-memory one that's built into OpenIdRelyingParty.
 			IOpenIdApplicationStore store = this.Stateless ? null :
-				(this.CustomApplicationStore ?? DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore));
+				(this.CustomApplicationStore ?? OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore));
 			var rp = new OpenIdRelyingParty(store);
 			try {
 				// Only set RequireSsl to true, as we don't want to override 

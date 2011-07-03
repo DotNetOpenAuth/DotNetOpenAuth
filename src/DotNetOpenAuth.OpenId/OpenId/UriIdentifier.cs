@@ -477,8 +477,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The non-compressing equivalent scheme or URL for the given value.</returns>
 		private static string NormalSchemeToSpecialRoundTrippingScheme(string normal) {
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(normal));
-			Contract.Requires<InternalErrorException>(schemeSubstitution);
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
+			ErrorUtilities.VerifyInternal(schemeSubstitution, "Wrong schemeSubstitution value.");
 
 			int delimiterIndex = normal.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
 			string normalScheme = delimiterIndex < 0 ? normal : normal.Substring(0, delimiterIndex);

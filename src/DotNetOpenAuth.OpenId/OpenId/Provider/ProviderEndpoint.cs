@@ -261,7 +261,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>The new instance of OpenIdProvider.</returns>
 		private static OpenIdProvider CreateProvider() {
 			Contract.Ensures(Contract.Result<OpenIdProvider>() != null);
-			return new OpenIdProvider(DotNetOpenAuthSection.Configuration.OpenId.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
+			return new OpenIdProvider(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
 		}
 	}
 }

@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.OpenId {
 		protected static TimeSpan DumbSecretLifetime {
 			get {
 				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
-				return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime;
+				return OpenIdElement.Configuration.MaxAuthenticationTime;
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OpenId {
 		private static TimeSpan MinimumUsefulAssociationLifetime {
 			get {
 				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
-				return DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime;
+				return OpenIdElement.Configuration.MaxAuthenticationTime;
 			}
 		}
 

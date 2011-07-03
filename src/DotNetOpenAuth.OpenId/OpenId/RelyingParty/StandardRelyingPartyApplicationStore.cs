@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="StandardRelyingPartyApplicationStore"/> class.
 		/// </summary>
 		public StandardRelyingPartyApplicationStore() {
-			this.nonceStore = new NonceMemoryStore(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+			this.nonceStore = new NonceMemoryStore(OpenIdElement.Configuration.MaxAuthenticationTime);
 			this.keyStore = new MemoryCryptoKeyStore();
 		}
 

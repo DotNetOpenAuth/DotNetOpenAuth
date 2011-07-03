@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		public OpenIdRelyingParty()
-			: this(DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+			: this(OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(HttpApplicationStore)) {
 		}
 
 		/// <summary>
@@ -116,14 +116,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
 			Contract.Requires<ArgumentException>(cryptoKeyStore == null || nonceStore != null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
-			this.securitySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
+			this.securitySettings = OpenIdElement.Configuration.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
-			foreach (var discoveryService in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.DiscoveryServices.CreateInstances(true)) {
+			foreach (var discoveryService in OpenIdElement.Configuration.RelyingParty.DiscoveryServices.CreateInstances(true)) {
 				this.discoveryServices.Add(discoveryService);
 			}
 
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
-			foreach (var behavior in DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.Behaviors.CreateInstances(false)) {
+			foreach (var behavior in OpenIdElement.Configuration.RelyingParty.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
 			}
 

@@ -792,7 +792,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			IOpenIdApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
+			IOpenIdApplicationStore store = this.Stateless ? null : OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
 			return this.CreateRelyingParty(store);
 		}
 
