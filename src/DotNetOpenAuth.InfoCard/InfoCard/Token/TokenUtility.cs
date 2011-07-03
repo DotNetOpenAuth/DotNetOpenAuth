@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.InfoCard {
 							// The token is invalid if any condition is not valid. 
 							// An audience restriction condition is valid if any audience 
 							// matches the Relying Party.
-							ErrorUtilities.VerifyInfoCard(match, InfoCardStrings.AudienceMismatch);
+							InfoCardErrorUtilities.VerifyInfoCard(match, InfoCardStrings.AudienceMismatch);
 						}
 					}
 				}

@@ -345,6 +345,12 @@ http://opensource.org/licenses/ms-pl.html
     <SignDependsOn Include="BuildUnifiedProduct" />
     <DelaySignedAssemblies Include="$(ILMergeOutputAssembly);&#xD;&#xA;                                    $(OutputPath)CodeContracts\$(ProductName).Contracts.dll;&#xD;&#xA;                                   " />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Messaging</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <!-- Don't sign the non-unified version of the assembly. -->
     <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>

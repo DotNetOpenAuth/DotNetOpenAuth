@@ -101,7 +101,7 @@ namespace DotNetOpenAuth.InfoCard {
 			reader.Read(); // get started
 
 			// if it's not an encryption method, something is dreadfully wrong.
-			ErrorUtilities.VerifyInfoCard(reader.IsStartElement(XmlEncryptionStrings.EncryptionMethod, XmlEncryptionStrings.Namespace), InfoCardStrings.EncryptionAlgorithmNotFound);
+			InfoCardErrorUtilities.VerifyInfoCard(reader.IsStartElement(XmlEncryptionStrings.EncryptionMethod, XmlEncryptionStrings.Namespace), InfoCardStrings.EncryptionAlgorithmNotFound);
 
 			// Looks good, let's grab the alg.
 			isEmptyElement = reader.IsEmptyElement;
