@@ -278,6 +278,7 @@ http://opensource.org/licenses/ms-pl.html
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModel\IssuersSuggestions.cs" />
+    <Compile Include="InfoCardErrorUtilities.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\InfoCardImage.cs" />
     <Compile Include="InfoCard\InfoCardStrings.Designer.cs">

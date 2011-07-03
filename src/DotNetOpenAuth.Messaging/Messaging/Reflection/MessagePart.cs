@@ -16,7 +16,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Reflection;
 	using System.Xml;
 	using DotNetOpenAuth.Configuration;
-	using DotNetOpenAuth.OpenId;
 
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
@@ -74,11 +73,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return bool.Parse(str);
 			};
-			Func<string, Identifier> safeIdentifier = str => {
-				Contract.Assume(str != null);
-				ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
-				return Identifier.Parse(str, true);
-			};
+			////Func<string, Identifier> safeIdentifier = str => {
+			////    Contract.Assume(str != null);
+			////    ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
+			////    return Identifier.Parse(str, true);
+			////};
 			Func<byte[], string> safeFromByteArray = bytes => {
 				Contract.Assume(bytes != null);
 				return Convert.ToBase64String(bytes);
@@ -87,16 +86,16 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return Convert.FromBase64String(str);
 			};
-			Func<string, Realm> safeRealm = str => {
-				Contract.Assume(str != null);
-				return new Realm(str);
-			};
+			////Func<string, Realm> safeRealm = str => {
+			////    Contract.Assume(str != null);
+			////    return new Realm(str);
+			////};
 			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), null, str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<TimeSpan>(ts => ts.ToString(), null, str => TimeSpan.Parse(str));
 			Map<byte[]>(safeFromByteArray, null, safeToByteArray);
-			Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
-			Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
+			////Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
+			////Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
 			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
 			Map<CultureInfo>(c => c.Name, null, str => new CultureInfo(str));
 			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), null, str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());

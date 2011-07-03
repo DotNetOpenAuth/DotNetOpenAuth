@@ -322,7 +322,6 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Messaging\TimestampEncoder.cs" />
     <Compile Include="Messaging\IMessageWithBinaryData.cs" />
     <Compile Include="Messaging\ChannelEventArgs.cs" />
-    <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
     <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
     <Compile Include="Messaging\Bindings\INonceStore.cs" />

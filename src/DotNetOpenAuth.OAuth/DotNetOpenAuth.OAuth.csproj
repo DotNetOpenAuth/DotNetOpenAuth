@@ -282,6 +282,8 @@ http://opensource.org/licenses/ms-pl.html
     <Compile Include="Configuration\OAuthElement.cs" />
     <Compile Include="Configuration\OAuthServiceProviderElement.cs" />
     <Compile Include="Configuration\OAuthServiceProviderSecuritySettingsElement.cs" />
+    <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
+    <Compile Include="OAuthReporting.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />

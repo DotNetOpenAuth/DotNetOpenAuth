@@ -78,36 +78,6 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the configuration for OpenID.
-		/// </summary>
-		[ConfigurationProperty(OpenIdElementName)]
-		internal OpenIdElement OpenId {
-			get {
-				Contract.Ensures(Contract.Result<OpenIdElement>() != null);
-				return (OpenIdElement)this[OpenIdElementName] ?? new OpenIdElement();
-			}
-
-			set {
-				this[OpenIdElementName] = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the configuration for OAuth.
-		/// </summary>
-		[ConfigurationProperty(OAuthElementName)]
-		internal OAuthElement OAuth {
-			get {
-				Contract.Ensures(Contract.Result<OAuthElement>() != null);
-				return (OAuthElement)this[OAuthElementName] ?? new OAuthElement();
-			}
-
-			set {
-				this[OAuthElementName] = value;
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets the configuration for reporting.
 		/// </summary>
 		[ConfigurationProperty(ReportingElementName)]

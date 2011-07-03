@@ -151,26 +151,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Checks a condition and throws an <see cref="InfoCard.InformationCardException"/> 
-		/// if it evaluates to false.
-		/// </summary>
-		/// <param name="condition">The condition to check.</param>
-		/// <param name="errorMessage">The message to include in the exception, if created.</param>
-		/// <param name="args">The formatting arguments.</param>
-		/// <exception cref="InfoCard.InformationCardException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
-		[Pure]
-		internal static void VerifyInfoCard(bool condition, string errorMessage, params object[] args) {
-			Contract.Requires<ArgumentNullException>(args != null);
-			Contract.Ensures(condition);
-			Contract.EnsuresOnThrow<InfoCard.InformationCardException>(!condition);
-			Contract.Assume(errorMessage != null);
-			if (!condition) {
-				errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessage, args);
-				throw new InfoCard.InformationCardException(errorMessage);
-			}
-		}
-
-		/// <summary>
 		/// Throws a <see cref="HostErrorException"/> if some <paramref name="condition"/> evaluates to false.
 		/// </summary>
 		/// <param name="condition">True to do nothing; false to throw the exception.</param>
