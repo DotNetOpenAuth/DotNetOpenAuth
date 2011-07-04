@@ -126,10 +126,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				this.EnsureRequiredProtocolMessagePartsAreNotEmpty(parts);
 			} catch (ProtocolException) {
 				Logger.Messaging.ErrorFormat(
-					"Error while performing basic validation of {0} with these message parts:{1}{2}",
+					"Error while performing basic validation of {0} ({3}) with these message parts:{1}{2}",
 					this.messageType.Name,
 					Environment.NewLine,
-					parts.ToStringDeferred());
+					parts.ToStringDeferred(),
+					this.messageVersion);
 				throw;
 			}
 		}
