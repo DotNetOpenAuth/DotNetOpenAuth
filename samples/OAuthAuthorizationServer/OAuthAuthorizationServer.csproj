@@ -140,6 +140,20 @@
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
+      <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
+      <Name>DotNetOpenAuth.OAuth2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
