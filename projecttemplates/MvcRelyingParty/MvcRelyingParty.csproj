@@ -166,6 +166,26 @@
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.InfoCard\DotNetOpenAuth.InfoCard.csproj">
+      <Project>{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}</Project>
+      <Name>DotNetOpenAuth.InfoCard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
+      <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
+      <Name>DotNetOpenAuth.OAuth2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
+      <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
+      <Name>DotNetOpenAuth.OAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RelyingPartyLogic\RelyingPartyLogic.csproj">
       <Project>{17932639-1F50-48AF-B0A5-E2BF832F82CC}</Project>
       <Name>RelyingPartyLogic</Name>
