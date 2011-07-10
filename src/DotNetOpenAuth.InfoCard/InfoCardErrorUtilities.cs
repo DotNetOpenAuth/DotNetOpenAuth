@@ -7,11 +7,14 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.Linq;
+	using System.Text;
 
+	/// <summary>
+	/// Error reporting methods specific to InfoCard validation.
+	/// </summary>
 	internal static class InfoCardErrorUtilities {
 		/// <summary>
 		/// Checks a condition and throws an <see cref="InfoCard.InformationCardException"/> 

@@ -149,7 +149,7 @@ namespace DotNetOpenAuth.InfoCard {
 						return null;
 					}
 
-					return ComputeCombinedId(rsa, "");
+					return ComputeCombinedId(rsa, string.Empty);
 				}
 			}
 

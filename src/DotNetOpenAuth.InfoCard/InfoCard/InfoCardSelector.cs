@@ -516,7 +516,7 @@ namespace DotNetOpenAuth.InfoCard {
 		protected override void CreateChildControls() {
 			base.CreateChildControls();
 
-			this.Page.ClientScript.RegisterHiddenField(this.HiddenFieldName, "");
+			this.Page.ClientScript.RegisterHiddenField(this.HiddenFieldName, string.Empty);
 
 			this.Controls.Add(this.infoCardSupportedPanel = this.CreateInfoCardSupportedPanel());
 			this.Controls.Add(this.infoCardNotSupportedPanel = this.CreateInfoCardUnsupportedPanel());
