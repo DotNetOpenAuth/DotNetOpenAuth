@@ -19,8 +19,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 	internal class OAuthCoordinator : CoordinatorBase<WebConsumer, ServiceProvider> {
 		private ConsumerDescription consumerDescription;
 		private ServiceProviderDescription serviceDescription;
-		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
-		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.Consumer.SecuritySettings.CreateSecuritySettings();
 
 		/// <summary>Initializes a new instance of the <see cref="OAuthCoordinator"/> class.</summary>
 		/// <param name="consumerDescription">The description of the consumer.</param>

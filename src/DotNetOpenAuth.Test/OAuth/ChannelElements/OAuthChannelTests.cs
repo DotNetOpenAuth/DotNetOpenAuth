@@ -27,8 +27,8 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		private TestWebRequestHandler webRequestHandler;
 		private SigningBindingElementBase signingElement;
 		private INonceStore nonceStore;
-		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
-		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.Consumer.SecuritySettings.CreateSecuritySettings();
 
 		[SetUp]
 		public override void SetUp() {
