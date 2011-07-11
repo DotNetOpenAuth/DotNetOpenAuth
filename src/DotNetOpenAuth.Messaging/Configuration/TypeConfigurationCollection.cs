@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Configuration {
 			Contract.Requires<ArgumentNullException>(elements != null);
 
 			foreach (Type element in elements) {
-				this.BaseAdd(new TypeConfigurationElement<T> { TypeName = element.FullName });
+				this.BaseAdd(new TypeConfigurationElement<T> { TypeName = element.AssemblyQualifiedName });
 			}
 		}
 
