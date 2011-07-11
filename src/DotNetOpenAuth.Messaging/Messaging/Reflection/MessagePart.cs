@@ -73,11 +73,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return bool.Parse(str);
 			};
-			////Func<string, Identifier> safeIdentifier = str => {
-			////    Contract.Assume(str != null);
-			////    ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
-			////    return Identifier.Parse(str, true);
-			////};
+
 			Func<byte[], string> safeFromByteArray = bytes => {
 				Contract.Assume(bytes != null);
 				return Convert.ToBase64String(bytes);
@@ -86,16 +82,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				Contract.Assume(str != null);
 				return Convert.FromBase64String(str);
 			};
-			////Func<string, Realm> safeRealm = str => {
-			////    Contract.Assume(str != null);
-			////    return new Realm(str);
-			////};
 			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), null, str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
 			Map<TimeSpan>(ts => ts.ToString(), null, str => TimeSpan.Parse(str));
 			Map<byte[]>(safeFromByteArray, null, safeToByteArray);
-			////Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
-			////Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
 			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
 			Map<CultureInfo>(c => c.Name, null, str => new CultureInfo(str));
 			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), null, str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
@@ -316,7 +306,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
-		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
+		internal static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
 			Contract.Requires<ArgumentNullException>(toString != null);
 			Contract.Requires<ArgumentNullException>(toValue != null);
 

@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A trust root to validate requests and match return URLs against.
@@ -56,6 +57,17 @@ namespace DotNetOpenAuth.OpenId {
 		/// The Uri of the realm, with the wildcard (if any) removed.
 		/// </summary>
 		private Uri uri;
+
+		/// <summary>
+		/// Initializes the <see cref="Realm"/> class.
+		/// </summary>
+		static Realm() {
+			Func<string, Realm> safeRealm = str => {
+				Contract.Assume(str != null);
+				return new Realm(str);
+			};
+			MessagePart.Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Realm"/> class.

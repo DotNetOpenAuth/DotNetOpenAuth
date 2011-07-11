@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// An Identifier is either a "http" or "https" URI, or an XRI.
@@ -21,6 +22,18 @@ namespace DotNetOpenAuth.OpenId {
 	[Pure]
 	[ContractClass(typeof(IdentifierContract))]
 	public abstract class Identifier {
+		/// <summary>
+		/// Initializes the <see cref="Identifier"/> class.
+		/// </summary>
+		static Identifier() {
+			Func<string, Identifier> safeIdentifier = str => {
+				Contract.Assume(str != null);
+				ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
+				return Identifier.Parse(str, true);
+			};
+			MessagePart.Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Identifier"/> class.
 		/// </summary>
