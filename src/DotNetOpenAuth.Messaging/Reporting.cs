@@ -115,7 +115,7 @@ namespace DotNetOpenAuth {
 		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "We do more than field initialization here.")]
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Reporting MUST NOT cause unhandled exceptions.")]
 		static Reporting() {
-			Enabled = DotNetOpenAuthSection.Configuration.Reporting.Enabled;
+			Enabled = DotNetOpenAuthSection.Reporting.Enabled;
 		}
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace DotNetOpenAuth {
 		/// Gets the configuration to use for reporting.
 		/// </summary>
 		internal static ReportingElement Configuration {
-			get { return DotNetOpenAuthSection.Configuration.Reporting; }
+			get { return DotNetOpenAuthSection.Reporting; }
 		}
 
 		/// <summary>

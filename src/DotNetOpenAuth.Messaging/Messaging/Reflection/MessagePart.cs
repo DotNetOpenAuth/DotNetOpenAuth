@@ -233,7 +233,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			try {
 				if (this.IsConstantValue) {
 					string constantValue = this.GetValue(message);
-					var caseSensitivity = DotNetOpenAuthSection.Configuration.Messaging.Strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+					var caseSensitivity = DotNetOpenAuthSection.Messaging.Strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 					if (!string.Equals(constantValue, value, caseSensitivity)) {
 						throw new ArgumentException(string.Format(
 							CultureInfo.CurrentCulture,

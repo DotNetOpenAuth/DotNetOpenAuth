@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			base.EnsureValidMessage();
 
 			ErrorUtilities.VerifyProtocol(
-				DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
+				DotNetOpenAuthSection.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
 				OAuthStrings.HttpsRequired);
 			ErrorUtilities.VerifyProtocol(this.Callback == null || this.Callback.IsAbsoluteUri, this, OAuthStrings.AbsoluteUriRequired, Protocol.redirect_uri);
 		}

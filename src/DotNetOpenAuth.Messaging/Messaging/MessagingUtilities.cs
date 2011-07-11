@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The default lifetime of a private secret.
 		/// </summary>
-		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
+		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Messaging.PrivateSecretMaximumAge;
 
 		/// <summary>
 		/// A character array containing just the = character.

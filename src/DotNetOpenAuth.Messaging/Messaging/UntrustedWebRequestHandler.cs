@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the configuration for this class that is specified in the host's .config file.
 		/// </summary>
 		private static UntrustedWebRequestElement Configuration {
-			get { return DotNetOpenAuthSection.Configuration.Messaging.UntrustedWebRequest; }
+			get { return DotNetOpenAuthSection.Messaging.UntrustedWebRequest; }
 		}
 
 		#region IDirectWebRequestHandler Members

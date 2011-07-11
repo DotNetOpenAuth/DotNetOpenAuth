@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// The name of the section under which this library's settings must be found.
 		/// </summary>
-		private const string SectionName = "openId";
+		private const string SectionName = DotNetOpenAuthSection.SectionName + "/openid";
 
 		/// <summary>
 		/// The name of the &lt;relyingParty&gt; sub-element.

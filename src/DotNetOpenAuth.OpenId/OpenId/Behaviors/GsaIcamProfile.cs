@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// <summary>
 		/// Backing field for the <see cref="DisableSslRequirement"/> static property.
 		/// </summary>
-		private static bool disableSslRequirement = DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements;
+		private static bool disableSslRequirement = DotNetOpenAuthSection.Messaging.RelaxSslRequirements;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.

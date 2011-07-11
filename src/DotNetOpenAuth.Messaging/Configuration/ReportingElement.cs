@@ -10,11 +10,12 @@ namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
 	using System.Linq;
 	using System.Text;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the &lt;reporting&gt; element in the host's .config file.
 	/// </summary>
-	internal class ReportingElement : ConfigurationElement {
+	internal class ReportingElement : ConfigurationSection {
 		/// <summary>
 		/// The name of the @enabled attribute.
 		/// </summary>
@@ -51,6 +52,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string IncludeCulturesAttributeName = "includeCultures";
 
 		/// <summary>
+		/// The name of the &lt;reporting&gt; sub-element.
+		/// </summary>
+		private const string ReportingElementName = DotNetOpenAuthSection.SectionName + "/reporting";
+
+		/// <summary>
 		/// The default value for the @minimumFlushInterval attribute.
 		/// </summary>
 #if DEBUG
@@ -63,6 +69,16 @@ namespace DotNetOpenAuth.Configuration {
 		/// Initializes a new instance of the <see cref="ReportingElement"/> class.
 		/// </summary>
 		internal ReportingElement() {
+		}
+
+		/// <summary>
+		/// Gets the configuration section from the .config file.
+		/// </summary>
+		public static ReportingElement Configuration {
+			get {
+				Contract.Ensures(Contract.Result<ReportingElement>() != null);
+				return (ReportingElement)ConfigurationManager.GetSection(ReportingElementName) ?? new ReportingElement();
+			}
 		}
 
 		/// <summary>

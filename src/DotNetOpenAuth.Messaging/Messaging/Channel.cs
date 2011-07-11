@@ -134,7 +134,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Backing field for the <see cref="MaximumIndirectMessageUrlLength"/> property.
 		/// </summary>
-		private int maximumIndirectMessageUrlLength = Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumIndirectMessageUrlLength;
+		private int maximumIndirectMessageUrlLength = Configuration.DotNetOpenAuthSection.Messaging.MaximumIndirectMessageUrlLength;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.

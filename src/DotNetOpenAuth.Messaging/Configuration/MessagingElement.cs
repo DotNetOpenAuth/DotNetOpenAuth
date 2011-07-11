@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the &lt;messaging&gt; element in the host's .config file.
 	/// </summary>
 	[ContractVerification(true)]
-	public class MessagingElement : ConfigurationElement {
+	public class MessagingElement : ConfigurationSection {
 		/// <summary>
 		/// The name of the &lt;untrustedWebRequest&gt; sub-element.
 		/// </summary>
@@ -59,6 +59,21 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets the name of the @privateSecretMaximumAge attribute.
 		/// </summary>
 		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
+
+		/// <summary>
+		/// The name of the &lt;messaging&gt; sub-element.
+		/// </summary>
+		private const string MessagingElementName = DotNetOpenAuthSection.SectionName + "/messaging";
+
+		/// <summary>
+		/// Gets the configuration section from the .config file.
+		/// </summary>
+		public static MessagingElement Configuration {
+			get {
+				Contract.Ensures(Contract.Result<MessagingElement>() != null);
+				return (MessagingElement)ConfigurationManager.GetSection(MessagingElementName) ?? new MessagingElement();
+			}
+		}
 
 		/// <summary>
 		/// Gets the actual maximum message lifetime that a program should allow.

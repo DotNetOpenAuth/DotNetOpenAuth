@@ -247,7 +247,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.MinimumRequiredOpenIdVersion = this.MinimumRequiredOpenIdVersion;
 			settings.MinimumHashBitLength = this.MinimumHashBitLength;
 			settings.MaximumHashBitLength = this.MaximumHashBitLength;
-			settings.PrivateSecretMaximumAge = DotNetOpenAuthSection.Configuration.Messaging.PrivateSecretMaximumAge;
+			settings.PrivateSecretMaximumAge = DotNetOpenAuthSection.Messaging.PrivateSecretMaximumAge;
 			settings.RejectUnsolicitedAssertions = this.RejectUnsolicitedAssertions;
 			settings.RejectDelegatingIdentifiers = this.RejectDelegatingIdentifiers;
 			settings.IgnoreUnsignedExtensions = this.IgnoreUnsignedExtensions;

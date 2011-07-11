@@ -64,7 +64,7 @@ namespace RelyingPartyLogic {
 						Context = context,
 						Code = nonce,
 						IssuedUtc = timestampUtc,
-						ExpiresUtc = timestampUtc + DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime,
+						ExpiresUtc = timestampUtc + DotNetOpenAuthSection.Messaging.MaximumMessageLifetime,
 					};
 
 					// The database columns [context] and [code] MUST be using

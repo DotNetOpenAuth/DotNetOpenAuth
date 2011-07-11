@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 	public class SectionTests {
 		[TestCase]
 		public void UntrustedWebRequest() {
-			var uwr = DotNetOpenAuthSection.Configuration.Messaging.UntrustedWebRequest;
+			var uwr = DotNetOpenAuthSection.Messaging.UntrustedWebRequest;
 
 			Assert.AreEqual(TimeSpan.Parse("01:23:45"), uwr.Timeout);
 			Assert.AreEqual(TimeSpan.Parse("01:23:56"), uwr.ReadWriteTimeout);

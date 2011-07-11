@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		protected override void EnsureValidMessage() {
 			base.EnsureValidMessage();
 			ErrorUtilities.VerifyProtocol(
-				DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
+				DotNetOpenAuthSection.Messaging.RelaxSslRequirements || this.Recipient.IsTransportSecure(),
 				OAuthStrings.HttpsRequired);
 		}
 	}

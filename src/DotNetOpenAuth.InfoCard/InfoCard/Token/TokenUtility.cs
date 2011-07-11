@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// Gets the maximum amount the token can be out of sync with time.
 		/// </summary>
 		internal static TimeSpan MaximumClockSkew {
-			get { return DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumClockSkew; }
+			get { return DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Messaging.MaximumClockSkew; }
 		}
 
 		/// <summary>

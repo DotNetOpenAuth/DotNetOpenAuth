@@ -13,16 +13,11 @@ namespace DotNetOpenAuth.Configuration {
 	/// this library's settings.
 	/// </summary>
 	[ContractVerification(true)]
-	public class DotNetOpenAuthSection : ConfigurationSection {
+	public class DotNetOpenAuthSection : ConfigurationSectionGroup {
 		/// <summary>
 		/// The name of the section under which this library's settings must be found.
 		/// </summary>
-		private const string SectionName = "dotNetOpenAuth";
-
-		/// <summary>
-		/// The name of the &lt;messaging&gt; sub-element.
-		/// </summary>
-		private const string MessagingElementName = "messaging";
+		internal const string SectionName = "dotNetOpenAuth";
 
 		/// <summary>
 		/// The name of the &lt;openid&gt; sub-element.
@@ -35,21 +30,9 @@ namespace DotNetOpenAuth.Configuration {
 		private const string OAuthElementName = "oauth";
 
 		/// <summary>
-		/// The name of the &lt;reporting&gt; sub-element.
-		/// </summary>
-		private const string ReportingElementName = "reporting";
-
-		/// <summary>
-		/// The name of the &lt;webResourceUrlProvider&gt; sub-element.
-		/// </summary>
-		private const string WebResourceUrlProviderName = "webResourceUrlProvider";
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
-			Contract.Assume(this.SectionInformation != null);
-			this.SectionInformation.AllowLocation = false;
 		}
 
 		/// <summary>
@@ -62,43 +45,17 @@ namespace DotNetOpenAuth.Configuration {
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the configuration for the messaging framework.
-		/// </summary>
-		[ConfigurationProperty(MessagingElementName)]
-		public MessagingElement Messaging {
-			get {
-				Contract.Ensures(Contract.Result<MessagingElement>() != null);
-				return (MessagingElement)this[MessagingElementName] ?? new MessagingElement();
-			}
-
-			set {
-				this[MessagingElementName] = value;
-			}
+		public static MessagingElement Messaging {
+			get { return MessagingElement.Configuration; }
 		}
 
-		/// <summary>
-		/// Gets or sets the configuration for reporting.
-		/// </summary>
-		[ConfigurationProperty(ReportingElementName)]
-		internal ReportingElement Reporting {
-			get {
-				Contract.Ensures(Contract.Result<ReportingElement>() != null);
-				return (ReportingElement)this[ReportingElementName] ?? new ReportingElement();
-			}
-
-			set {
-				this[ReportingElementName] = value;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the type to use for obtaining URLs that fetch embedded resource streams.
-		/// </summary>
-		[ConfigurationProperty(WebResourceUrlProviderName)]
 		internal TypeConfigurationElement<IEmbeddedResourceRetrieval> EmbeddedResourceRetrievalProvider {
-			get { return (TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ?? new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
-			set { this[WebResourceUrlProviderName] = value; }
+			get { return /*(TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ??*/ new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
+			set { /*this[WebResourceUrlProviderName] = value;*/ }
+		}
+
+		internal static ReportingElement Reporting {
+			get { return ReportingElement.Configuration; }
 		}
 	}
 }

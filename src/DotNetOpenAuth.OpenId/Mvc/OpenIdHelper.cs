@@ -117,7 +117,7 @@ window.openid_trace = {1}; // causes lots of messages";
 						// Positive assertions can last no longer than this library is willing to consider them valid,
 						// and when they come with OP private associations they last no longer than the OP is willing
 						// to consider them valid.  We assume the OP will hold them valid for at least five minutes.
-						double assertionLifetimeInMilliseconds = Math.Min(TimeSpan.FromMinutes(5).TotalMilliseconds, Math.Min(OpenIdElement.Configuration.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds));
+						double assertionLifetimeInMilliseconds = Math.Min(TimeSpan.FromMinutes(5).TotalMilliseconds, Math.Min(OpenIdElement.Configuration.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Messaging.MaximumMessageLifetime.TotalMilliseconds));
 						blockBuilder.WriteLine(
 							"{0} = {1};",
 							OpenIdRelyingPartyAjaxControlBase.MaxPositiveAssertionLifetimeJsName,
