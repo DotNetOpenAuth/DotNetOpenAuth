@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Wraps an existing Identifier and prevents it from performing discovery.

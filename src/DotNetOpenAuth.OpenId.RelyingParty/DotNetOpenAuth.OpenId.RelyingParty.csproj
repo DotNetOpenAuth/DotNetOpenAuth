@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.OpenId.RelyingParty</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ComponentModel\IdentifierConverter.cs" />
+    <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
+    <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
+    <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
+    <Compile Include="OpenId\Behaviors\GsaIcamRelyingPartyProfile.cs" />
+    <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementRelyingParty.cs" />
+    <Compile Include="OpenId\ChannelElements\OpenIdRelyingPartyChannel.cs" />
+    <Compile Include="OpenId\ChannelElements\RelyingPartySecurityOptions.cs" />
+    <Compile Include="OpenId\ChannelElements\RelyingPartySigningBindingElement.cs" />
+    <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
+    <Compile Include="OpenId\Extensions\ExtensionsInteropRelyingPartyHelper.cs" />
+    <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
+    <Compile Include="OpenId\HostMetaDiscoveryService.cs" />
+    <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
+    <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
+    <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
+    <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
+    <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
+    <Compile Include="OpenId\Messages\AssociateRequestRelyingParty.cs" />
+    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseContract.cs" />
+    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseRelyingParty.cs" />
+    <Compile Include="OpenId\Messages\AssociateUnencryptedResponseRelyingParty.cs" />
+    <Compile Include="OpenId\Mvc\OpenIdAjaxOptions.cs" />
+    <Compile Include="OpenId\Mvc\OpenIdHelper.cs" />
+    <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
+    <Compile Include="OpenId\ProviderEndpointDescription.cs" />
+    <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\Associations.cs" />
+    <Compile Include="OpenId\RelyingParty\AssociationManager.cs" />
+    <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
+    <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
+    <Compile Include="OpenId\RelyingParty\DuplicateRequestedHostsComparer.cs" />
+    <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
+    <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
+    <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
+    <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\ISetupRequiredAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
+    <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
+    <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
+    <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
+    <Compile Include="OpenId\UriDiscoveryService.cs" />
+    <Compile Include="OpenId\XriDiscoveryProxyService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OpenId\RelyingParty\login_failure.png" />
+    <Content Include="OpenId\RelyingParty\login_success %28lock%29.png" />
+    <Content Include="OpenId\RelyingParty\login_success.png" />
+    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
+    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js" />
+    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
+    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
+    <Content Include="OpenId\RelyingParty\OpenIdSelector.css" />
+    <Content Include="OpenId\RelyingParty\OpenIdSelector.js" />
+    <Content Include="OpenId\RelyingParty\openid_login.png" />
+    <Content Include="OpenId\RelyingParty\spinner.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenId\RelyingParty\Controls.cd" />
+    <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

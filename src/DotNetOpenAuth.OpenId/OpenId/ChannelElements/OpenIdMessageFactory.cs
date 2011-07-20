@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Distinguishes the various OpenID message types for deserialization purposes.
@@ -120,7 +119,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
 
 					if (associateDiffieHellmanRequest != null) {
-						message = new AssociateDiffieHellmanResponse(protocol.Version, associateDiffieHellmanRequest);
+						////message = new AssociateDiffieHellmanResponse(protocol.Version, associateDiffieHellmanRequest);
 					}
 
 					if (associateUnencryptedRequest != null) {

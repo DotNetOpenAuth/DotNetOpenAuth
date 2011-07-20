@@ -13,7 +13,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Xml;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
 

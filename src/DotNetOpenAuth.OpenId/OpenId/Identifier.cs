@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>

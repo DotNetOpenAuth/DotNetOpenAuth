@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.RelyingParty {
+namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// Indicates the mode the Provider should use while authenticating the end user.
 	/// </summary>

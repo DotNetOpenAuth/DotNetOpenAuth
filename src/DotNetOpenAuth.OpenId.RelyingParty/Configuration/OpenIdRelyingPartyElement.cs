@@ -22,6 +22,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string StoreConfigName = "store";
 
 		/// <summary>
+		/// The name of the &lt;relyingParty&gt; sub-element.
+		/// </summary>
+		private const string RelyingPartyElementName = "relyingParty";
+
+		/// <summary>
 		/// The name of the attribute that specifies whether dnoa.userSuppliedIdentifier is tacked onto the openid.return_to URL.
 		/// </summary>
 		private const string PreserveUserSuppliedIdentifierConfigName = "preserveUserSuppliedIdentifier";

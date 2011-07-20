@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
-	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// The successful unencrypted association response message.
@@ -32,39 +31,5 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		[MessagePart("mac_key", IsRequired = true, AllowEmpty = false)]
 		internal byte[] MacKey { get; set; }
-
-		/// <summary>
-		/// Called to create the Association based on a request previously given by the Relying Party.
-		/// </summary>
-		/// <param name="request">The prior request for an association.</param>
-		/// <param name="associationStore">The Provider's association store.</param>
-		/// <param name="securitySettings">The security settings of the Provider.</param>
-		/// <returns>
-		/// The created association.
-		/// </returns>
-		/// <remarks>
-		///   <para>The caller will update this message's
-		///   <see cref="AssociateSuccessfulResponse.ExpiresIn"/> and
-		///   <see cref="AssociateSuccessfulResponse.AssociationHandle"/>
-		/// properties based on the <see cref="Association"/> returned by this method, but any other
-		/// association type specific properties must be set by this method.</para>
-		///   <para>The response message is updated to include the details of the created association by this method,
-		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
-		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
-			this.MacKey = association.SecretKey;
-			return association;
-		}
-
-		/// <summary>
-		/// Called to create the Association based on a request previously given by the Relying Party.
-		/// </summary>
-		/// <param name="request">The prior request for an association.</param>
-		/// <returns>The created association.</returns>
-		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
-			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, this.AssociationHandle, this.MacKey, TimeSpan.FromSeconds(this.ExpiresIn));
-			return association;
-		}
 	}
 }

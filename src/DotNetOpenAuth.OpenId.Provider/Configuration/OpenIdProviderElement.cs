@@ -16,6 +16,11 @@ namespace DotNetOpenAuth.Configuration {
 	[ContractVerification(true)]
 	internal class OpenIdProviderElement : ConfigurationElement {
 		/// <summary>
+		/// The name of the &lt;provider&gt; sub-element.
+		/// </summary>
+		private const string ProviderElementName = "provider";
+
+		/// <summary>
 		/// The name of the security sub-element.
 		/// </summary>
 		private const string SecuritySettingsConfigName = "security";

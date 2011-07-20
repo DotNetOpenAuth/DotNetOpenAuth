@@ -14,7 +14,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Stores a secret used in signing and verifying messages.

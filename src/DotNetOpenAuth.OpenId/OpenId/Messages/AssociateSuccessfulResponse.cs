@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// The base class that all successful association response messages derive from.
@@ -23,11 +22,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	[DebuggerDisplay("OpenID {Version} associate response {AssociationHandle} {AssociationType} {SessionType}")]
 	[ContractClass(typeof(AssociateSuccessfulResponseContract))]
 	internal abstract class AssociateSuccessfulResponse : DirectResponseBase {
-		/// <summary>
-		/// A flag indicating whether an association has already been created.
-		/// </summary>
-		private bool associationCreated;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateSuccessfulResponse"/> class.
 		/// </summary>
@@ -94,66 +88,5 @@ namespace DotNetOpenAuth.OpenId.Messages {
 					this.SessionType);
 			}
 		}
-
-		/// <summary>
-		/// Called to create the Association based on a request previously given by the Relying Party.
-		/// </summary>
-		/// <param name="request">The prior request for an association.</param>
-		/// <param name="associationStore">The Provider's association store.</param>
-		/// <param name="securitySettings">The security settings for the Provider.  Should be <c>null</c> for Relying Parties.</param>
-		/// <returns>
-		/// The created association.
-		/// </returns>
-		/// <remarks>
-		/// The response message is updated to include the details of the created association by this method.
-		/// This method is called by both the Provider and the Relying Party, but actually performs
-		/// quite different operations in either scenario.
-		/// </remarks>
-		internal Association CreateAssociation(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			ErrorUtilities.VerifyInternal(!this.associationCreated, "The association has already been created.");
-
-			Association association;
-
-			// If this message is outgoing, then we need to initialize some common
-			// properties based on the created association.
-			if (this.Incoming) {
-				association = this.CreateAssociationAtRelyingParty(request);
-			} else {
-				ErrorUtilities.VerifyArgumentNotNull(securitySettings, "securitySettings");
-				association = this.CreateAssociationAtProvider(request, associationStore, securitySettings);
-				this.ExpiresIn = association.SecondsTillExpiration;
-				this.AssociationHandle = association.Handle;
-			}
-
-			this.associationCreated = true;
-
-			return association;
-		}
-
-		/// <summary>
-		/// Called to create the Association based on a request previously given by the Relying Party.
-		/// </summary>
-		/// <param name="request">The prior request for an association.</param>
-		/// <param name="associationStore">The Provider's association store.</param>
-		/// <param name="securitySettings">The security settings of the Provider.</param>
-		/// <returns>
-		/// The created association.
-		/// </returns>
-		/// <remarks>
-		///   <para>The caller will update this message's <see cref="ExpiresIn"/> and <see cref="AssociationHandle"/>
-		/// properties based on the <see cref="Association"/> returned by this method, but any other
-		/// association type specific properties must be set by this method.</para>
-		///   <para>The response message is updated to include the details of the created association by this method,
-		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
-		/// </remarks>
-		protected abstract Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings);
-
-		/// <summary>
-		/// Called to create the Association based on a request previously given by the Relying Party.
-		/// </summary>
-		/// <param name="request">The prior request for an association.</param>
-		/// <returns>The created association.</returns>
-		protected abstract Association CreateAssociationAtRelyingParty(AssociateRequest request);
 	}
 }

@@ -20,41 +20,24 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ComponentModel\IdentifierConverter.cs" />
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
     <Compile Include="Configuration\OpenIdElement.cs" />
-    <Compile Include="Configuration\OpenIdProviderElement.cs" />
-    <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
-    <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
-    <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
-    <Compile Include="Mvc\OpenIdAjaxOptions.cs" />
-    <Compile Include="Mvc\OpenIdHelper.cs" />
     <Compile Include="OpenId\Association.cs" />
-    <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
-    <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
-    <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
-    <Compile Include="OpenId\Provider\ProviderAssociationKeyStorage.cs" />
-    <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
-    <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
-    <Compile Include="OpenId\RelyingParty\Associations.cs" />
+    <Compile Include="OpenId\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BehaviorStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="OpenId\Behaviors\PpidGeneration.cs" />
+    <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
     <Compile Include="OpenId\ChannelElements\OriginalStringUriEncoder.cs" />
-    <Compile Include="OpenId\ChannelElements\RelyingPartySecurityOptions.cs" />
-    <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\KeyValueFormEncoding.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
@@ -95,17 +78,11 @@
     <Compile Include="OpenId\Extensions\SimpleRegistration\DemandLevel.cs" />
     <Compile Include="OpenId\Extensions\SimpleRegistration\Gender.cs" />
     <Compile Include="OpenId\Extensions\UI\UIConstants.cs" />
-    <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
     <Compile Include="OpenId\Extensions\UI\UIModes.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
-    <Compile Include="OpenId\HostMetaDiscoveryService.cs" />
     <Compile Include="OpenId\Identifier.cs" />
     <Compile Include="OpenId\IdentifierContract.cs" />
     <Compile Include="OpenId\Extensions\ExtensionsInteropHelper.cs" />
-    <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
-    <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
-    <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
-    <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
@@ -119,42 +96,12 @@
     <Compile Include="OpenId\Messages\SignedResponseRequest.cs" />
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
-    <Compile Include="OpenId\Provider\AssociationRelyingPartyType.cs" />
-    <Compile Include="OpenId\Provider\PrivatePersonalIdentifierProviderBase.cs" />
-    <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
-    <Compile Include="OpenId\Provider\AnonymousRequestEventArgs.cs" />
-    <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
-    <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
-    <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
-    <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />
-    <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
-    <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
-    <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
-    <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
-    <Compile Include="OpenId\Provider\IErrorReporting.cs" />
-    <Compile Include="OpenId\Provider\IProviderBehavior.cs" />
-    <Compile Include="OpenId\Provider\IRequest.cs" />
-    <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
-    <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
-    <Compile Include="OpenId\Provider\Request.cs" />
-    <Compile Include="OpenId\Provider\RequestContract.cs" />
-    <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
+    <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" />
-    <Compile Include="OpenId\DiffieHellman\DHKeyGeneration.cs" />
-    <Compile Include="OpenId\DiffieHellman\DHParameters.cs" />
-    <Compile Include="OpenId\DiffieHellman\DiffieHellman.cs" />
-    <Compile Include="OpenId\DiffieHellman\DiffieHellmanManaged.cs" />
-    <Compile Include="OpenId\DiffieHellman\mono\BigInteger.cs" />
-    <Compile Include="OpenId\DiffieHellman\mono\ConfidenceFactor.cs" />
-    <Compile Include="OpenId\DiffieHellman\mono\NextPrimeFinder.cs" />
-    <Compile Include="OpenId\DiffieHellman\mono\PrimalityTests.cs" />
-    <Compile Include="OpenId\DiffieHellman\mono\PrimeGeneratorBase.cs" />
-    <Compile Include="OpenId\DiffieHellman\mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="OpenId\HmacShaAssociation.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
-    <Compile Include="OpenId\Provider\OpenIdProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequest.cs" />
@@ -165,59 +112,15 @@
     <Compile Include="OpenId\Messages\DirectErrorResponse.cs" />
     <Compile Include="OpenId\Messages\RequestBase.cs" />
     <Compile Include="OpenId\Messages\DirectResponseBase.cs" />
-    <Compile Include="OpenId\RelyingParty\AssociationManager.cs" />
-    <Compile Include="OpenId\RelyingParty\AssociationPreference.cs" />
-    <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
-    <Compile Include="OpenId\RelyingParty\AuthenticationRequestMode.cs" />
-    <Compile Include="OpenId\RelyingParty\DuplicateRequestedHostsComparer.cs" />
-    <Compile Include="OpenId\RelyingParty\IProviderEndpoint.cs" />
-    <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
-    <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
-    <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
-    <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
-    <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\IAuthenticationRequest.cs" />
-    <Compile Include="OpenId\RelyingParty\IAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\ISetupRequiredAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\OpenIdStrings.Designer.cs">
       <DependentUpon>OpenIdStrings.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="OpenId\Protocol.cs" />
-    <Compile Include="OpenId\ProviderEndpointDescription.cs" />
-    <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
     <Compile Include="OpenId\IOpenIdApplicationStore.cs" />
-    <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
-    <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
-    <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
-    <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
-    <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
-    <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
-    <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
-    <Compile Include="OpenId\UriDiscoveryService.cs" />
     <Compile Include="OpenId\UriIdentifier.cs" />
-    <Compile Include="OpenId\XriDiscoveryProxyService.cs" />
     <Compile Include="OpenId\XriIdentifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XrdsPublisher.cs" />
@@ -247,26 +150,13 @@
     <EmbeddedResource Include="Xrds\XrdsStrings.sr.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="OpenId\RelyingParty\login_failure.png" />
-    <Content Include="OpenId\RelyingParty\login_success %28lock%29.png" />
-    <Content Include="OpenId\RelyingParty\login_success.png" />
-    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
-    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js" />
-    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
-    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
-    <Content Include="OpenId\RelyingParty\OpenIdSelector.css" />
-    <Content Include="OpenId\RelyingParty\OpenIdSelector.js" />
-    <Content Include="OpenId\RelyingParty\openid_login.png" />
-    <Content Include="OpenId\RelyingParty\spinner.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OpenId\RelyingParty\Controls.cd" />
-    <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+      <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
+      <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

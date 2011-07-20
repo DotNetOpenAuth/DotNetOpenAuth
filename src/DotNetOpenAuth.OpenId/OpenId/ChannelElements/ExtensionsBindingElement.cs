@@ -15,30 +15,26 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
-	using DotNetOpenAuth.OpenId.Provider;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// The binding element that serializes/deserializes OpenID extensions to/from
 	/// their carrying OpenID messages.
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
-		/// <summary>
-		/// The security settings that apply to this relying party, if it is a relying party.
-		/// </summary>
-		private readonly RelyingPartySecuritySettings relyingPartySecuritySettings;
+		private readonly bool receiveUnsignedExtensions;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionsBindingElement"/> class.
 		/// </summary>
 		/// <param name="extensionFactory">The extension factory.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings) {
+		/// <param name="receiveUnsignedExtensions">Security setting for relying parties.  Should be true for Providers.</param>
+		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings, bool receiveUnsignedExtensions) {
 			Contract.Requires<ArgumentNullException>(extensionFactory != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.ExtensionFactory = extensionFactory;
-			this.relyingPartySecuritySettings = securitySettings as RelyingPartySecuritySettings;
+			this.receiveUnsignedExtensions = receiveUnsignedExtensions;
 		}
 
 		#region IChannelBindingElement Members
@@ -156,7 +152,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				// Now search again, considering ALL extensions whether they are signed or not,
 				// skipping the signed ones and adding the new ones as unsigned extensions.
-				if (this.relyingPartySecuritySettings == null || !this.relyingPartySecuritySettings.IgnoreUnsignedExtensions) {
+				if (this.receiveUnsignedExtensions) {
 					Func<string, bool> isNotSigned = typeUri => !extendableMessage.Extensions.Cast<IOpenIdMessageExtension>().Any(ext => ext.TypeUri == typeUri);
 					foreach (IOpenIdMessageExtension unsignedExtension in this.GetExtensions(extendableMessage, false, isNotSigned)) {
 						Reporting.RecordFeatureUse(unsignedExtension);

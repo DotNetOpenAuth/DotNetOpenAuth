@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Code Contract for the <see cref="Identifier"/> class.

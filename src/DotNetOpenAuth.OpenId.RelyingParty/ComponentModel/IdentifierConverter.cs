@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.ComponentModel {
 	using System.ComponentModel.Design.Serialization;
 	using System.Reflection;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// A design-time helper to give an OpenID Identifier property an auto-complete functionality
