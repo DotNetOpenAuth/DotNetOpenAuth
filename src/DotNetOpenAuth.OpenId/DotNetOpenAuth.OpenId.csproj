@@ -83,6 +83,9 @@
     <Compile Include="OpenId\Identifier.cs" />
     <Compile Include="OpenId\IdentifierContract.cs" />
     <Compile Include="OpenId\Extensions\ExtensionsInteropHelper.cs" />
+    <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
+    <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
+    <Compile Include="OpenId\IProviderEndpoint.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
@@ -97,6 +100,7 @@
     <Compile Include="OpenId\NoDiscoveryIdentifier.cs" />
     <Compile Include="OpenId\OpenIdUtilities.cs" />
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
+    <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" />

@@ -6,7 +6,7 @@
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
-	internal abstract class AssociateRequestRelyingParty : AssociateRequest {
+	internal static class AssociateRequestRelyingParty {
 		/// <summary>
 		/// Creates an association request message that is appropriate for a given Provider.
 		/// </summary>

@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				cryptoKeyStore = new MemoryCryptoKeyStore();
 			}
 
-			this.channel = new OpenIdChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
+			this.channel = new OpenIdRelyingPartyChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore), this.SecuritySettings);
 
 			Reporting.RecordFeatureAndDependencyUse(this, cryptoKeyStore, nonceStore);
@@ -665,7 +665,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		internal static OpenIdRelyingParty CreateNonVerifying() {
 			OpenIdRelyingParty rp = new OpenIdRelyingParty();
 			try {
-				rp.Channel = OpenIdChannel.CreateNonVerifyingChannel();
+				rp.Channel = OpenIdRelyingPartyChannel.CreateNonVerifyingChannel();
 				return rp;
 			} catch {
 				rp.Dispose();

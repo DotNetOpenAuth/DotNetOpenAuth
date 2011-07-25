@@ -9,7 +9,16 @@
 
 	[ContractClassFor(typeof(AssociateSuccessfulResponseRelyingParty))]
 	internal abstract class AssociateSuccessfulResponseRelyingPartyContract : AssociateSuccessfulResponseRelyingParty {
-		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="AssociateSuccessfulResponseRelyingPartyContract"/> class from being created.
+		/// </summary>
+		/// <param name="version">The version.</param>
+		/// <param name="request">The request.</param>
+		private AssociateSuccessfulResponseRelyingPartyContract(Version version, AssociateRequest request)
+			: base(version, request) {
+		}
+
+		protected internal override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			throw new NotImplementedException();
 		}

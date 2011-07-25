@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Extensions;
 
 	internal class OpenIdProviderChannel : OpenIdChannel {
 		/// <summary>
@@ -35,8 +37,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		private OpenIdChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings) :
-			this(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings)) {
+		private OpenIdProviderChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings)
+			: base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings)) {
 				Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
@@ -57,12 +59,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Contract.Requires<ArgumentNullException>(nonceStore != null);
 
 			SigningBindingElement signingElement;
-			signingElement = new SigningBindingElement(cryptoKeyStore, securitySettings);
+			signingElement = new ProviderSigningBindingElement(cryptoKeyStore, securitySettings);
 
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(8);
-			elements.Add(new ExtensionsBindingElement(extensionFactory, securitySettings));
+			elements.Add(new ExtensionsBindingElement(extensionFactory, securitySettings, true));
 			elements.Add(new StandardReplayProtectionBindingElement(nonceStore, true));
 			elements.Add(new StandardExpirationBindingElement());
 			elements.Add(signingElement);

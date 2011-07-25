@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
-	using DotNetOpenAuth.OpenId.Provider;
 	using Org.Mentalis.Security.Cryptography;
 
 	/// <summary>
@@ -37,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <remarks>
 		/// The resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
+		protected Association CreateAssociationAtRelyingParty(AssociateRequest request) {
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, OpenIdStrings.DiffieHellmanAssociationRequired);
 

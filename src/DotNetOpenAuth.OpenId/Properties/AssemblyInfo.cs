@@ -18,8 +18,6 @@ using System.Security.Permissions;
 using System.Web.UI;
 
 [assembly: TagPrefix("DotNetOpenAuth.OpenId", "openid")]
-[assembly: TagPrefix("DotNetOpenAuth.OpenId.Provider", "op")]
-[assembly: TagPrefix("DotNetOpenAuth.OpenId.RelyingParty", "rp")]
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information

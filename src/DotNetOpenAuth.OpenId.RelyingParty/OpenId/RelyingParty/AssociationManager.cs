@@ -157,7 +157,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			try {
-				var associateRequest = AssociateRequest.Create(this.securitySettings, provider);
+				var associateRequest = AssociateRequestRelyingParty.Create(this.securitySettings, provider);
 
 				const int RenegotiateRetries = 1;
 				return this.CreateNewAssociation(provider, associateRequest, RenegotiateRetries);
@@ -193,10 +193,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			try {
 				var associateResponse = this.channel.Request(associateRequest);
-				var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponse;
+				var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponseRelyingParty;
 				var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
 				if (associateSuccessfulResponse != null) {
-					Association association = associateSuccessfulResponse.CreateAssociation(associateRequest, null, null);
+					Association association = associateSuccessfulResponse.CreateAssociationAtRelyingParty(associateRequest);
 					this.associationStore.StoreAssociation(provider.Uri, association);
 					return association;
 				} else if (associateUnsuccessfulResponse != null) {
@@ -223,7 +223,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						associateUnsuccessfulResponse.AssociationType,
 						associateUnsuccessfulResponse.SessionType);
 
-					associateRequest = AssociateRequest.Create(this.securitySettings, provider, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType);
+					associateRequest = AssociateRequestRelyingParty.Create(this.securitySettings, provider, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType);
 					return this.CreateNewAssociation(provider, associateRequest, retriesRemaining - 1);
 				} else {
 					throw new ProtocolException(MessagingStrings.UnexpectedMessageReceivedOfMany);

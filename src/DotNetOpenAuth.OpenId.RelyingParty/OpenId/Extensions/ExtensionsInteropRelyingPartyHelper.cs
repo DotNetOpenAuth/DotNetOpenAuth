@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	/// A set of methods designed to assist in improving interop across different
 	/// OpenID implementations and their extensions.
 	/// </summary>
-	public static class ExtensionsInteropRelyingPartyHelper : ExtensionsInteropHelper {
+	public static class ExtensionsInteropRelyingPartyHelper {
 		/// <summary>
 		/// Adds an Attribute Exchange (AX) extension to the authentication request
 		/// that asks for the same attributes as the Simple Registration (sreg) extension

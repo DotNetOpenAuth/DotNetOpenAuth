@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 
-	internal static class HmacShaAsssociationProvider : HmacShaAssociation {
+	internal class HmacShaAsssociationProvider : HmacShaAssociation {
 		/// <summary>
 		/// The default lifetime of a shared association when no lifetime is given
 		/// for a specific association type.

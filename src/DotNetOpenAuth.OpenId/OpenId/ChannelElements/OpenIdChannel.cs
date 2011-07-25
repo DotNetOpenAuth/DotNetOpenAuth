@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="messageTypeProvider">A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.</param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
-		private OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
+		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 

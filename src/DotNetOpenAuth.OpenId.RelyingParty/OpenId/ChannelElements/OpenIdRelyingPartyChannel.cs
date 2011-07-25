@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings to apply.</param>
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
 		private OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
-			this(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying)) {
+			base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying)) {
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentException>(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
@@ -76,12 +76,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			SigningBindingElement signingElement;
-			signingElement = nonVerifying ? null : new SigningBindingElement(new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore ?? new MemoryCryptoKeyStore()));
+			signingElement = nonVerifying ? null : new RelyingPartySigningBindingElement(new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore ?? new MemoryCryptoKeyStore()));
 
 			var extensionFactory = OpenIdExtensionFactoryAggregator.LoadFromConfiguration();
 
 			List<IChannelBindingElement> elements = new List<IChannelBindingElement>(8);
-			elements.Add(new ExtensionsBindingElement(extensionFactory, securitySettings));
+			elements.Add(new ExtensionsBindingElementRelyingParty(extensionFactory, securitySettings));
 			elements.Add(new RelyingPartySecurityOptions(securitySettings));
 			elements.Add(new BackwardCompatibilityBindingElement());
 			ReturnToNonceBindingElement requestNonceElement = null;
