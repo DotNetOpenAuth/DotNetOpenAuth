@@ -13,6 +13,15 @@ namespace DotNetOpenAuth.OpenId.Messages {
 
 	internal class AssociateUnencryptedResponseProvider : AssociateUnencryptedResponse {
 		/// <summary>
+		/// Initializes a new instance of the <see cref="AssociateUnencryptedResponseProvider"/> class.
+		/// </summary>
+		/// <param name="version">The version.</param>
+		/// <param name="request">The request.</param>
+		internal AssociateUnencryptedResponseProvider(Version version, AssociateUnencryptedRequest request)
+			: base(version, request) {
+		}
+
+		/// <summary>
 		/// Called to create the Association based on a request previously given by the Relying Party.
 		/// </summary>
 		/// <param name="request">The prior request for an association.</param>
@@ -30,11 +39,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		///   <para>The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
 		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
+		protected Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+			Association association = HmacShaAssociationProvider.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 			this.MacKey = association.SecretKey;
 			return association;
 		}
-
 	}
 }

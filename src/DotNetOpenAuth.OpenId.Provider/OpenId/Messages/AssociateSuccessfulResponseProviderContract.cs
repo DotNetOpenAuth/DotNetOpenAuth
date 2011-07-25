@@ -8,7 +8,16 @@
 
 	[ContractClassFor(typeof(AssociateSuccessfulResponseProvider))]
 	internal abstract class AssociateSuccessfulResponseProviderContract : AssociateSuccessfulResponseProvider {
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		/// <summary>
+		/// Prevents a default instance of the <see cref="AssociateSuccessfulResponseProviderContract"/> class from being created.
+		/// </summary>
+		/// <param name="version">The version.</param>
+		/// <param name="request">The request.</param>
+		private AssociateSuccessfulResponseProviderContract(Version version, AssociateRequest request)
+			: base(version, request) {
+		}
+
+		protected internal override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(associationStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);

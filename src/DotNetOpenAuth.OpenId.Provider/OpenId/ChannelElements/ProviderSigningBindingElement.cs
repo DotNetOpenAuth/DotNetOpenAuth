@@ -14,6 +14,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using System.Web;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	internal class ProviderSigningBindingElement : SigningBindingElement {
 		/// <summary>
@@ -123,7 +125,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// If no assoc_handle was given or it was invalid, the only thing 
 			// left to do is sign a message using a 'dumb' mode association.
 			Protocol protocol = Protocol.Default;
-			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.HMAC_SHA256, AssociationRelyingPartyType.Dumb, this.opAssociations, this.opSecuritySettings);
+			Association association = HmacShaAssociationProvider.Create(protocol, protocol.Args.SignatureAlgorithm.HMAC_SHA256, AssociationRelyingPartyType.Dumb, this.opAssociations, this.opSecuritySettings);
 			return association;
 		}
 

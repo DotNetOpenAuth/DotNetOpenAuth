@@ -23,7 +23,12 @@
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
     <Compile Include="Configuration\OpenIdElement.cs" />
+    <Compile Include="Configuration\OpenIdProviderElement.cs" />
+    <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
+    <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
+    <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
+    <Compile Include="OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
@@ -86,6 +91,17 @@
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
     <Compile Include="OpenId\IProviderEndpoint.cs" />
+    <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
+    <Compile Include="OpenId\Provider\IProviderBehavior.cs" />
+    <Compile Include="OpenId\Provider\IRequest.cs" />
+    <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
+    <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
+    <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationRequest.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
+    <Compile Include="OpenId\RelyingParty\IAuthenticationResponse.cs" />
+    <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
@@ -123,6 +139,9 @@
     </Compile>
     <Compile Include="OpenId\Protocol.cs" />
     <Compile Include="OpenId\IOpenIdApplicationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
+    <Compile Include="OpenId\UriDiscoveryService.cs" />
+    <Compile Include="OpenId\XriDiscoveryProxyService.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
     <Compile Include="OpenId\UriIdentifier.cs" />
     <Compile Include="OpenId\XriIdentifier.cs" />

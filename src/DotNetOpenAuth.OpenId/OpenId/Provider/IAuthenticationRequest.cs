@@ -306,7 +306,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
 		/// </summary>
-		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
+		/// <param name="webRequestHandler">The web request handler to use for the RP discovery request.</param>
 		/// <returns>
 		/// The details of how successful the relying party discovery was.
 		/// </returns>
@@ -314,7 +314,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// 	<para>Return URL verification is only attempted if this method is called.</para>
 		/// 	<para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
-		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(OpenIdProvider provider) {
+		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(IDirectWebRequestHandler webRequestHandler) {
 			throw new NotImplementedException();
 		}
 

@@ -3,7 +3,9 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Diagnostics.Contracts;
 
+	[ContractClass(typeof(AssociateSuccessfulResponseRelyingPartyContract))]
 	internal abstract class AssociateSuccessfulResponseRelyingParty : AssociateSuccessfulResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateSuccessfulResponseRelyingParty"/> class.

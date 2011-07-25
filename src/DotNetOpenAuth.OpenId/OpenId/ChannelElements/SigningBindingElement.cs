@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// <summary>
 	/// Signs and verifies authentication assertions.
 	/// </summary>
+	[ContractClass(typeof(SigningBindingElementContract))]
 	internal abstract class SigningBindingElement : IChannelBindingElement {
 		#region IChannelBindingElement Properties
 
@@ -185,6 +186,23 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <returns>An existing or newly created association.</returns>
 		protected virtual Association GetDumbAssociationForSigning() {
+			throw new NotImplementedException();
+		}
+	}
+
+	[ContractClassFor(typeof(SigningBindingElement))]
+	internal abstract class SigningBindingElementContract : SigningBindingElement {
+		protected override MessageProtections VerifySignatureByUnrecognizedHandle(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
+			throw new NotImplementedException();
+		}
+
+		protected override Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
+			Contract.Requires<ArgumentNullException>(signedMessage != null);
+			throw new NotImplementedException();
+		}
+
+		protected override Association GetSpecificAssociation(ITamperResistantOpenIdMessage signedMessage) {
+			Contract.Requires<ArgumentNullException>(signedMessage != null);
 			throw new NotImplementedException();
 		}
 	}

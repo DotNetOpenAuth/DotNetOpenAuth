@@ -9,6 +9,15 @@
 
 	internal abstract class AssociateRequestProvider : AssociateRequest {
 		/// <summary>
+		/// Initializes a new instance of the <see cref="AssociateRequestProvider"/> class.
+		/// </summary>
+		/// <param name="version">The OpenID version this message must comply with.</param>
+		/// <param name="providerEndpoint">The OpenID Provider endpoint.</param>
+		internal AssociateRequestProvider(Version version, Uri providerEndpoint)
+			: base(version, providerEndpoint) {
+		}
+
+		/// <summary>
 		/// Creates a Provider's response to an incoming association request.
 		/// </summary>
 		/// <param name="associationStore">The association store.</param>
@@ -32,9 +41,9 @@
 				response = this.CreateResponseCore();
 
 				// Create and store the association if this is a successful response.
-				var successResponse = response as AssociateSuccessfulResponse;
+				var successResponse = response as AssociateSuccessfulResponseProvider;
 				if (successResponse != null) {
-					successResponse.CreateAssociation(this, associationStore, securitySettings);
+					successResponse.CreateAssociationAtProvider(this, associationStore, securitySettings);
 				}
 			} else {
 				response = this.CreateUnsuccessfulResponse(securitySettings);
@@ -92,6 +101,5 @@
 
 			return unsuccessfulResponse;
 		}
-
 	}
 }

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DotNetOpenAuth.OpenId.Provider;
+using System.Diagnostics.Contracts;
+using DotNetOpenAuth.OpenId.ChannelElements;
 
 namespace DotNetOpenAuth.OpenId.Messages {
 	class CheckAuthenticationResponseProvider : CheckAuthenticationResponse {

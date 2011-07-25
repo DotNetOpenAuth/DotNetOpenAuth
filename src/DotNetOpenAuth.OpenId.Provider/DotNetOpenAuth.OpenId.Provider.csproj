@@ -20,15 +20,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Configuration\OpenIdProviderElement.cs" />
-    <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\GsaIcamProviderProfile.cs" />
     <Compile Include="OpenId\Behaviors\PpidGeneration.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdProviderChannel.cs" />
     <Compile Include="OpenId\ChannelElements\ProviderSigningBindingElement.cs" />
     <Compile Include="OpenId\Extensions\ExtensionsInteropProviderHelper.cs" />
-    <Compile Include="OpenId\HmacShaAsssociationProvider.cs" />
+    <Compile Include="OpenId\HmacShaAssociationProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponseProvider.cs" />
@@ -51,34 +49,39 @@
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
     <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
-    <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
-    <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
-    <Compile Include="OpenId\Provider\IProviderBehavior.cs" />
-    <Compile Include="OpenId\Provider\IRequest.cs" />
     <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
-    <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
     <Compile Include="OpenId\Provider\RequestContract.cs" />
     <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\OpenIdProvider.cs" />
-    <Compile Include="OpenId\Provider\ProviderSecuritySettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+      <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
+      <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />

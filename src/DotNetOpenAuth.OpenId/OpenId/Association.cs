@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the duration a secret key used for signing dumb client requests will be good for.
 		/// </summary>
-		protected static TimeSpan DumbSecretLifetime {
+		protected internal static TimeSpan DumbSecretLifetime {
 			get {
 				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
 				return OpenIdElement.Configuration.MaxAuthenticationTime;

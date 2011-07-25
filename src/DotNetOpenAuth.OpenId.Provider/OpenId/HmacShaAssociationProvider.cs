@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 
-	internal class HmacShaAsssociationProvider : HmacShaAssociation {
+	internal static class HmacShaAssociationProvider {
 		/// <summary>
 		/// The default lifetime of a shared association when no lifetime is given
 		/// for a specific association type.
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
-			int secretLength = GetSecretLength(protocol, associationType);
+			int secretLength = HmacShaAssociation.GetSecretLength(protocol, associationType);
 
 			// Generate the secret that will be used for signing
 			byte[] secret = MessagingUtilities.GetCryptoRandomData(secretLength);
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OpenId {
 					lifetime = DefaultMaximumLifetime;
 				}
 			} else {
-				lifetime = DumbSecretLifetime;
+				lifetime = HmacShaAssociation.DumbSecretLifetime;
 			}
 
 			string handle = associationStore.Serialize(secret, DateTime.UtcNow + lifetime, associationUse == AssociationRelyingPartyType.Dumb);
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Assert(protocol != null); // All the way up to the method call, the condition holds, yet we get a Requires failure next
 			Contract.Assert(secret != null);
 			Contract.Assert(!String.IsNullOrEmpty(associationType));
-			var result = Create(protocol, associationType, handle, secret, lifetime);
+			var result = HmacShaAssociation.Create(protocol, associationType, handle, secret, lifetime);
 			return result;
 		}
 	}

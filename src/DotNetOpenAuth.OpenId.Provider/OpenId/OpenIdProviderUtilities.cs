@@ -29,19 +29,18 @@ namespace DotNetOpenAuth.OpenId {
 		/// This method is called by both the Provider and the Relying Party, but actually performs
 		/// quite different operations in either scenario.
 		/// </remarks>
-		internal static Association CreateAssociation(AssociateRequest request, AssociateSuccessfulResponse response, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		internal static Association CreateAssociation(AssociateRequest request, AssociateSuccessfulResponseProvider response, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(response != null, "response");
 			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
 				
 			// We need to initialize some common properties based on the created association.
-			var association = CreateAssociationAtProvider(request, associationStore, securitySettings);
+			var association = response.CreateAssociationAtProvider(request, associationStore, securitySettings);
 			response.ExpiresIn = association.SecondsTillExpiration;
 			response.AssociationHandle = association.Handle;
 
 			return association;
 		}
-
 
 		/// <summary>
 		/// Determines whether the association with the specified handle is (still) valid.

@@ -44,8 +44,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		protected override Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
-			Contract.Requires<ArgumentNullException>(signedMessage != null);
-
 			// We're on a Relying Party verifying a signature.
 			IDirectedProtocolMessage directedMessage = (IDirectedProtocolMessage)signedMessage;
 			if (this.rpAssociations != null) {

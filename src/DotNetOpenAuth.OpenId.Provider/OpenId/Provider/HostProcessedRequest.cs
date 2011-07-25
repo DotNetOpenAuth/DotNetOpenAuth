@@ -105,17 +105,19 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>
-		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
-		/// <returns>Result of realm discovery.</returns>
+		/// <param name="requestHandler">The request handler.</param>
+		/// <returns>
+		/// Result of realm discovery.
+		/// </returns>
 		/// <remarks>
 		/// Return URL verification is only attempted if this property is queried.
 		/// The result of the verification is cached per request so calling this
 		/// property getter multiple times in one request is not a performance hit.
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
-		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(OpenIdProvider provider) {
+		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
 			if (!this.realmDiscoveryResult.HasValue) {
-				this.realmDiscoveryResult = this.IsReturnUrlDiscoverableCore(provider);
+				this.realmDiscoveryResult = this.IsReturnUrlDiscoverableCore(requestHandler);
 			}
 
 			return this.realmDiscoveryResult.Value;
@@ -125,10 +127,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>
-		/// <param name="provider">The OpenIdProvider that is performing the RP discovery.</param>
-		/// <returns>Result of realm discovery.</returns>
-		private RelyingPartyDiscoveryResult IsReturnUrlDiscoverableCore(OpenIdProvider provider) {
-			Contract.Requires<ArgumentNullException>(provider != null);
+		/// <param name="requestHandler">The request handler.</param>
+		/// <returns>
+		/// Result of realm discovery.
+		/// </returns>
+		private RelyingPartyDiscoveryResult IsReturnUrlDiscoverableCore(IDirectWebRequestHandler requestHandler) {
+			Contract.Requires<ArgumentNullException>(requestHandler != null);
 
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 
@@ -138,7 +142,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
 
-				var returnToEndpoints = this.Realm.DiscoverReturnToEndpoints(provider.Channel.WebRequestHandler, false);
+				var returnToEndpoints = this.Realm.DiscoverReturnToEndpoints(requestHandler, false);
 				if (returnToEndpoints == null) {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}

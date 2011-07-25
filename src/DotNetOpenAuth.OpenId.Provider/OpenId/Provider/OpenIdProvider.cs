@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			this.AssociationStore = new SwitchingAssociationStore(cryptoKeyStore, this.SecuritySettings);
-			this.Channel = new OpenIdChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
+			this.Channel = new OpenIdProviderChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
 			this.CryptoKeyStore = cryptoKeyStore;
 
 			Reporting.RecordFeatureAndDependencyUse(this, nonceStore);
@@ -281,12 +281,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				if (result == null) {
 					var checkAuthMessage = incomingMessage as CheckAuthenticationRequest;
 					if (checkAuthMessage != null) {
-						result = new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponse(checkAuthMessage, this), this.SecuritySettings);
+						result = new AutoResponsiveRequest(incomingMessage, new CheckAuthenticationResponseProvider(checkAuthMessage, this), this.SecuritySettings);
 					}
 				}
 
 				if (result == null) {
-					var associateMessage = incomingMessage as AssociateRequest;
+					var associateMessage = incomingMessage as AssociateRequestProvider;
 					if (associateMessage != null) {
 						result = new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings), this.SecuritySettings);
 					}

@@ -30,18 +30,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Creates the association at relying party side after the association response has been received.
-		/// </summary>
-		/// <param name="request">The original association request that was already sent and responded to.</param>
-		/// <returns>The newly created association.</returns>
-		/// <remarks>
-		/// The resulting association is <i>not</i> added to the association store and must be done by the caller.
-		/// </remarks>
-		protected override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Creates the association at the provider side after the association request has been received.
 		/// </summary>
 		/// <param name="request">The association request.</param>
@@ -54,14 +42,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		protected override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		protected Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyInternal(diffieHellmanRequest != null, "Expected a DH request type.");
 
 			this.SessionType = this.SessionType ?? request.SessionType;
 
 			// Go ahead and create the association first, complete with its secret that we're about to share.
-			Association association = HmacShaAssociation.Create(this.Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
+			Association association = HmacShaAssociationProvider.Create(this.Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 
 			// We now need to securely communicate the secret to the relying party using Diffie-Hellman.
 			// We do this by performing a DH algorithm on the secret and setting a couple of properties

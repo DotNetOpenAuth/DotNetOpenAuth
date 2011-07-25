@@ -23,6 +23,16 @@ namespace DotNetOpenAuth.Configuration {
 		private const string SectionName = DotNetOpenAuthSection.SectionName + "/openid";
 
 		/// <summary>
+		/// The name of the &lt;relyingParty&gt; sub-element.
+		/// </summary>
+		private const string RelyingPartyElementName = "relyingParty";
+
+		/// <summary>
+		/// The name of the &lt;provider&gt; sub-element.
+		/// </summary>
+		private const string ProviderElementName = "provider";
+
+		/// <summary>
 		/// The name of the &lt;extensions&gt; sub-element.
 		/// </summary>
 		private const string ExtensionFactoriesElementName = "extensionFactories";
@@ -100,6 +110,24 @@ namespace DotNetOpenAuth.Configuration {
 		internal bool CacheDiscovery {
 			get { return (bool)indexer[CacheDiscoveryPropertyName]; }
 			set { indexer[CacheDiscoveryPropertyName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the configuration specific for Relying Parties.
+		/// </summary>
+		[ConfigurationProperty(RelyingPartyElementName)]
+		internal OpenIdRelyingPartyElement RelyingParty {
+			get { return (OpenIdRelyingPartyElement)indexer[RelyingPartyElementName] ?? new OpenIdRelyingPartyElement(); }
+			set { indexer[RelyingPartyElementName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the configuration specific for Providers.
+		/// </summary>
+		[ConfigurationProperty(ProviderElementName)]
+		internal OpenIdProviderElement Provider {
+			get { return (OpenIdProviderElement)indexer[ProviderElementName] ?? new OpenIdProviderElement(); }
+			set { indexer[ProviderElementName] = value; }
 		}
 
 		/// <summary>
