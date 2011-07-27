@@ -39,8 +39,6 @@
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponseContract.cs" />
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponseRelyingParty.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseRelyingParty.cs" />
-    <Compile Include="OpenId\Mvc\OpenIdAjaxOptions.cs" />
-    <Compile Include="OpenId\Mvc\OpenIdHelper.cs" />
     <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\Associations.cs" />
@@ -49,47 +47,18 @@
     <Compile Include="OpenId\RelyingParty\AuthenticationRequest.cs" />
     <Compile Include="OpenId\RelyingParty\DuplicateRequestedHostsComparer.cs" />
     <Compile Include="OpenId\RelyingParty\NegativeAuthenticationResponse.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
-    <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAnonymousResponse.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\FailedAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\ISetupRequiredAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
     <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="OpenId\RelyingParty\login_failure.png" />
-    <Content Include="OpenId\RelyingParty\login_success %28lock%29.png" />
-    <Content Include="OpenId\RelyingParty\login_success.png" />
-    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
-    <Content Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js" />
-    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
-    <Content Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
-    <Content Include="OpenId\RelyingParty\OpenIdSelector.css" />
-    <Content Include="OpenId\RelyingParty\OpenIdSelector.js" />
-    <Content Include="OpenId\RelyingParty\openid_login.png" />
-    <Content Include="OpenId\RelyingParty\spinner.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OpenId\RelyingParty\Controls.cd" />
     <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
   </ItemGroup>
   <ItemGroup>
