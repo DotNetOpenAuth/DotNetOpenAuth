@@ -109,11 +109,6 @@
     <None Include="Messaging\Messaging.cd" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
-    <Compile Include="ComponentModel\ConverterBase.cs" />
-    <Compile Include="ComponentModel\SuggestedStringsConverterContract.cs" />
-    <Compile Include="ComponentModel\SuggestedStringsConverter.cs" />
-    <Compile Include="ComponentModel\UriConverter.cs" />
     <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
     <Compile Include="Configuration\MessagingElement.cs" />
     <Compile Include="Configuration\ReportingElement.cs" />

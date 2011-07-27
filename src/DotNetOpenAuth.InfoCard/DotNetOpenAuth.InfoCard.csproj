@@ -19,6 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ComponentModel\IssuersSuggestions.cs" />
+    <Compile Include="ComponentModel\UriConverter.cs" />
     <Compile Include="InfoCardErrorUtilities.cs" />
     <Compile Include="InfoCard\ClaimType.cs" />
     <Compile Include="InfoCard\InfoCardImage.cs" />
@@ -66,6 +67,10 @@
     <EmbeddedResource Include="InfoCard\InfoCardStrings.sr.resx" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Messaging.UI\DotNetOpenAuth.Messaging.UI.csproj">
+      <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
+      <Name>DotNetOpenAuth.Messaging.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>

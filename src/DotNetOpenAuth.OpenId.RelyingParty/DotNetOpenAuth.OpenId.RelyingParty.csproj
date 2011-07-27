@@ -20,7 +20,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ComponentModel\IdentifierConverter.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\Behaviors\GsaIcamRelyingPartyProfile.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementRelyingParty.cs" />
@@ -79,6 +78,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ComponentModel\" />
     <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
