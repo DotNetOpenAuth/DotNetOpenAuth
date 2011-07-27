@@ -35,8 +35,6 @@
     <Compile Include="OpenId\Messages\CheckAuthenticationResponseProvider.cs" />
     <Compile Include="OpenId\OpenIdProviderUtilities.cs" />
     <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpoint.cs" />
-    <Compile Include="OpenId\Provider\IdentityEndpointNormalizationEventArgs.cs" />
     <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationKeyStorage.cs" />
@@ -51,7 +49,6 @@
     <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
     <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
-    <Compile Include="OpenId\Provider\ProviderEndpoint.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
     <Compile Include="OpenId\Provider\RequestContract.cs" />
     <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
