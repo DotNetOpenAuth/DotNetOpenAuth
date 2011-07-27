@@ -41,8 +41,6 @@
     <Compile Include="OpenId\Provider\AssociationRelyingPartyType.cs" />
     <Compile Include="OpenId\Provider\PrivatePersonalIdentifierProviderBase.cs" />
     <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
-    <Compile Include="OpenId\Provider\AnonymousRequestEventArgs.cs" />
-    <Compile Include="OpenId\Provider\AuthenticationChallengeEventArgs.cs" />
     <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
     <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />

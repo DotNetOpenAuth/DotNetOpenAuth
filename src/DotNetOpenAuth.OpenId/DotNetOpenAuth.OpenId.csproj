@@ -146,7 +146,6 @@
     <Compile Include="OpenId\UriIdentifier.cs" />
     <Compile Include="OpenId\XriIdentifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XrdsPublisher.cs" />
     <Compile Include="Xrds\XrdsStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
