@@ -1,6 +1,7 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
 	using DotNetOpenAuth.ApplicationBlock.CustomExtensions;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 

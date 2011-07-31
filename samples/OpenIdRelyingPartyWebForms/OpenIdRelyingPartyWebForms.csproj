@@ -220,6 +220,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging.UI\DotNetOpenAuth.Messaging.UI.csproj">
+      <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
+      <Name>DotNetOpenAuth.Messaging.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
@@ -227,6 +231,18 @@
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
       <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
       <Name>DotNetOpenAuth.OAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.RelyingParty.UI\DotNetOpenAuth.OpenId.RelyingParty.UI.csproj">
+      <Project>{1ED8D424-F8AB-4050-ACEB-F27F4F909484}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.UI\DotNetOpenAuth.OpenId.UI.csproj">
+      <Project>{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}</Project>
+      <Name>DotNetOpenAuth.OpenId.UI</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>

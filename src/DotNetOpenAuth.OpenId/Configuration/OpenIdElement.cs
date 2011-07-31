@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the &lt;openid&gt; element in the host's .config file.
 	/// </summary>
 	[ContractVerification(true)]
-	internal class OpenIdElement : ConfigurationSectionGroup {
+	internal class OpenIdElement : ConfigurationSection {
 		/// <summary>
 		/// The name of the section under which this library's settings must be found.
 		/// </summary>
@@ -58,8 +58,6 @@ namespace DotNetOpenAuth.Configuration {
 		internal OpenIdElement() {
 		}
 
-		private Dictionary<string, object> indexer;
-
 		/// <summary>
 		/// Gets the configuration section from the .config file.
 		/// </summary>
@@ -83,14 +81,14 @@ namespace DotNetOpenAuth.Configuration {
 		internal TimeSpan MaxAuthenticationTime {
 			get {
 				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
-				TimeSpan result = (TimeSpan)indexer[MaxAuthenticationTimePropertyName];
+				TimeSpan result = (TimeSpan)this[MaxAuthenticationTimePropertyName];
 				Contract.Assume(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
 				return result;
 			}
 
 			set {
 				Contract.Requires<ArgumentOutOfRangeException>(value > TimeSpan.Zero);
-				indexer[MaxAuthenticationTimePropertyName] = value;
+				this[MaxAuthenticationTimePropertyName] = value;
 			}
 		}
 
@@ -108,8 +106,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// </remarks>
 		[ConfigurationProperty(CacheDiscoveryPropertyName, DefaultValue = true)]
 		internal bool CacheDiscovery {
-			get { return (bool)indexer[CacheDiscoveryPropertyName]; }
-			set { indexer[CacheDiscoveryPropertyName] = value; }
+			get { return (bool)this[CacheDiscoveryPropertyName]; }
+			set { this[CacheDiscoveryPropertyName] = value; }
 		}
 
 		/// <summary>
@@ -117,8 +115,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		[ConfigurationProperty(RelyingPartyElementName)]
 		internal OpenIdRelyingPartyElement RelyingParty {
-			get { return (OpenIdRelyingPartyElement)indexer[RelyingPartyElementName] ?? new OpenIdRelyingPartyElement(); }
-			set { indexer[RelyingPartyElementName] = value; }
+			get { return (OpenIdRelyingPartyElement)this[RelyingPartyElementName] ?? new OpenIdRelyingPartyElement(); }
+			set { this[RelyingPartyElementName] = value; }
 		}
 
 		/// <summary>
@@ -126,8 +124,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		[ConfigurationProperty(ProviderElementName)]
 		internal OpenIdProviderElement Provider {
-			get { return (OpenIdProviderElement)indexer[ProviderElementName] ?? new OpenIdProviderElement(); }
-			set { indexer[ProviderElementName] = value; }
+			get { return (OpenIdProviderElement)this[ProviderElementName] ?? new OpenIdProviderElement(); }
+			set { this[ProviderElementName] = value; }
 		}
 
 		/// <summary>
@@ -136,8 +134,8 @@ namespace DotNetOpenAuth.Configuration {
 		[ConfigurationProperty(ExtensionFactoriesElementName, IsDefaultCollection = false)]
 		[ConfigurationCollection(typeof(TypeConfigurationCollection<IOpenIdExtensionFactory>))]
 		internal TypeConfigurationCollection<IOpenIdExtensionFactory> ExtensionFactories {
-			get { return (TypeConfigurationCollection<IOpenIdExtensionFactory>)indexer[ExtensionFactoriesElementName] ?? new TypeConfigurationCollection<IOpenIdExtensionFactory>(); }
-			set { indexer[ExtensionFactoriesElementName] = value; }
+			get { return (TypeConfigurationCollection<IOpenIdExtensionFactory>)this[ExtensionFactoriesElementName] ?? new TypeConfigurationCollection<IOpenIdExtensionFactory>(); }
+			set { this[ExtensionFactoriesElementName] = value; }
 		}
 
 		/// <summary>
@@ -145,8 +143,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		[ConfigurationProperty(XriResolverElementName)]
 		internal XriResolverElement XriResolver {
-			get { return (XriResolverElement)indexer[XriResolverElementName] ?? new XriResolverElement(); }
-			set { indexer[XriResolverElementName] = value; }
+			get { return (XriResolverElement)this[XriResolverElementName] ?? new XriResolverElement(); }
+			set { this[XriResolverElementName] = value; }
 		}
 	}
 }

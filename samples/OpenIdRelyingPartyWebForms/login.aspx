@@ -1,7 +1,7 @@
 <%@ Page Language="C#" AutoEventWireup="True" CodeBehind="login.aspx.cs" Inherits="OpenIdRelyingPartyWebForms.login"
 	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenAuth.OpenId" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>
 <%@ Register Assembly="DotNetOpenAuth.OpenId" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration" TagPrefix="sreg" %>
 <asp:Content runat="server" ContentPlaceHolderID="Main">
 	<h2>Login Page </h2>
