@@ -18,6 +18,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuth\ChannelElements\OAuthConsumerChannel.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
+    <Compile Include="OAuth\ChannelElements\RsaSha1ConsumerSigningBindingElement.cs" />
     <Compile Include="OAuth\ConsumerBase.cs" />
     <Compile Include="OAuth\DesktopConsumer.cs" />
     <Compile Include="OAuth\WebConsumer.cs" />

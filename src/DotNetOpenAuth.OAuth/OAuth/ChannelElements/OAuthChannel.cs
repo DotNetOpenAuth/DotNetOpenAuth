@@ -25,49 +25,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// An OAuth-specific implementation of the <see cref="Channel"/> class.
 	/// </summary>
-	internal class OAuthChannel : Channel {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
-		/// </summary>
-		/// <param name="signingBindingElement">The binding element to use for signing.</param>
-		/// <param name="store">The web application store to use for nonces.</param>
-		/// <param name="tokenManager">The token manager instance to use.</param>
-		/// <param name="securitySettings">The security settings.</param>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings)
-			: this(
-			signingBindingElement,
-			store,
-			tokenManager,
-			securitySettings,
-			new OAuthConsumerMessageFactory()) {
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
-			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
-		/// </summary>
-		/// <param name="signingBindingElement">The binding element to use for signing.</param>
-		/// <param name="store">The web application store to use for nonces.</param>
-		/// <param name="tokenManager">The token manager instance to use.</param>
-		/// <param name="securitySettings">The security settings.</param>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings)
-			: this(
-			signingBindingElement,
-			store,
-			tokenManager,
-			securitySettings,
-			new OAuthServiceProviderMessageFactory(tokenManager)) {
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
-			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
-		}
-
+	internal abstract class OAuthChannel : Channel {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
@@ -79,12 +37,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Except for mock testing, this should always be one of
 		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		internal OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider)
-			: base(messageTypeProvider, InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
+		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
+			: base(messageTypeProvider, bindingElements) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
 			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
+			Contract.Requires<ArgumentNullException>(bindingElements != null, "bindingElements");
 
 			this.TokenManager = tokenManager;
 			signingBindingElement.SignatureCallback = this.SignatureCallback;
@@ -263,7 +222,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
+		protected static List<IChannelBindingElement> InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
 			Contract.Requires(securitySettings != null);
 
 			var bindingElements = new List<IChannelBindingElement> {
@@ -273,13 +232,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				new StandardReplayProtectionBindingElement(store),
 			};
 
-			var spTokenManager = tokenManager as IServiceProviderTokenManager;
-			var serviceProviderSecuritySettings = securitySettings as ServiceProviderSecuritySettings;
-			if (spTokenManager != null && serviceProviderSecuritySettings != null) {
-				bindingElements.Insert(0, new TokenHandlingBindingElement(spTokenManager, serviceProviderSecuritySettings));
-			}
-
-			return bindingElements.ToArray();
+			return bindingElements;
 		}
 
 		/// <summary>
@@ -392,19 +345,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			}
 		}
 
-		/// <summary>
-		/// Gets the consumer secret for a given consumer key.
-		/// </summary>
-		/// <param name="consumerKey">The consumer key.</param>
-		/// <returns>The consumer secret.</returns>
-		private string GetConsumerSecret(string consumerKey) {
-			var consumerTokenManager = this.TokenManager as IConsumerTokenManager;
-			if (consumerTokenManager != null) {
-				ErrorUtilities.VerifyInternal(consumerKey == consumerTokenManager.ConsumerKey, "The token manager consumer key and the consumer key set earlier do not match!");
-				return consumerTokenManager.ConsumerSecret;
-			} else {
-				return ((IServiceProviderTokenManager)this.TokenManager).GetConsumer(consumerKey).Secret;
-			}
-		}
+		protected abstract string GetConsumerSecret(string consumerKey);
 	}
 }
