@@ -26,16 +26,13 @@
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="OAuthReporting.cs" />
     <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseContract.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
-    <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />
     <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
     <Compile Include="OAuth\ConsumerSecuritySettings.cs" />
