@@ -46,9 +46,7 @@
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />
     <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
     <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
-    <Compile Include="OAuth\ConsumerBase.cs" />
     <Compile Include="OAuth\ConsumerSecuritySettings.cs" />
-    <Compile Include="OAuth\DesktopConsumer.cs" />
     <Compile Include="OAuth\Messages\ITokenSecretContainingMessage.cs" />
     <Compile Include="OAuth\OAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -62,7 +60,6 @@
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
     <Compile Include="OAuth\ServiceProviderSecuritySettings.cs" />
     <Compile Include="OAuth\VerificationCodeFormat.cs" />
-    <Compile Include="OAuth\WebConsumer.cs" />
     <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />
     <Compile Include="OAuth\Messages\MessageBase.cs" />
     <Compile Include="OAuth\Messages\AuthorizedTokenRequest.cs" />
@@ -80,7 +77,6 @@
     <Compile Include="OAuth\Messages\UnauthorizedTokenRequest.cs" />
     <Compile Include="OAuth\ChannelElements\RsaSha1SigningBindingElement.cs" />
     <Compile Include="OAuth\Protocol.cs" />
-    <Compile Include="OAuth\ServiceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OAuth\ClassDiagram.cd" />
