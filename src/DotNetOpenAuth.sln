@@ -191,6 +191,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth.Consum
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth.ServiceProvider", "DotNetOpenAuth.OAuth.ServiceProvider\DotNetOpenAuth.OAuth.ServiceProvider.csproj", "{FED1923A-6D70-49B5-A37A-FB744FEC1C86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth2.AuthorizationServer", "DotNetOpenAuth.OAuth2.AuthorizationServer\DotNetOpenAuth.OAuth2.AuthorizationServer.csproj", "{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth2.Client", "DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj", "{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth2.ResourceServer", "DotNetOpenAuth.OAuth2.ResourceServer\DotNetOpenAuth.OAuth2.ResourceServer.csproj", "{A1A3150A-7B0E-4A34-8E35-045296CD3C76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CodeAnalysis|Any CPU = CodeAnalysis|Any CPU
@@ -478,6 +484,30 @@ Global
 		{FED1923A-6D70-49B5-A37A-FB744FEC1C86}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FED1923A-6D70-49B5-A37A-FB744FEC1C86}.ReleaseNoUI|Any CPU.ActiveCfg = Release|Any CPU
 		{FED1923A-6D70-49B5-A37A-FB744FEC1C86}.ReleaseNoUI|Any CPU.Build.0 = Release|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.ReleaseNoUI|Any CPU.ActiveCfg = Release|Any CPU
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}.ReleaseNoUI|Any CPU.Build.0 = Release|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.ReleaseNoUI|Any CPU.ActiveCfg = Release|Any CPU
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}.ReleaseNoUI|Any CPU.Build.0 = Release|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.ReleaseNoUI|Any CPU.ActiveCfg = Release|Any CPU
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76}.ReleaseNoUI|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -526,5 +556,8 @@ Global
 		{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C} = {529B4262-6B5A-4EF9-BD3B-1D29A2597B67}
 		{E040EB58-B4D2-457B-A023-AE6EF3BD34DE} = {529B4262-6B5A-4EF9-BD3B-1D29A2597B67}
 		{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6} = {238B6BA8-AD99-43C9-B8E2-D2BCE6CE04DC}
+		{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6} = {238B6BA8-AD99-43C9-B8E2-D2BCE6CE04DC}
+		{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99} = {238B6BA8-AD99-43C9-B8E2-D2BCE6CE04DC}
+		{A1A3150A-7B0E-4A34-8E35-045296CD3C76} = {238B6BA8-AD99-43C9-B8E2-D2BCE6CE04DC}
 	EndGlobalSection
 EndGlobal

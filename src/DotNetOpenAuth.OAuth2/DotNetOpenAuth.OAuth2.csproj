@@ -36,12 +36,6 @@
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCodeBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
-    <Compile Include="OAuth2\ClientAuthorizationView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="OAuth2\ClientAuthorizationView.Designer.cs">
-      <DependentUpon>ClientAuthorizationView.cs</DependentUpon>
-    </Compile>
     <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\IAuthorizationServer.cs" />
     <Compile Include="OAuth2\IAuthorizationState.cs" />
@@ -66,14 +60,10 @@
     <Compile Include="OAuth2\Messages\AccessTokenFailedResponse.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenSuccessResponse.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessResponseBase.cs" />
-    <Compile Include="OAuth2\ResourceServer.cs" />
     <Compile Include="OAuth2\StandardAccessTokenAnalyzer.cs" />
-    <Compile Include="OAuth2\UserAgentClient.cs" />
-    <Compile Include="OAuth2\AuthorizationServer.cs" />
     <Compile Include="OAuth2\OAuthUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2AuthorizationServerChannel.cs" />
-    <Compile Include="OAuth2\ClientBase.cs" />
     <Compile Include="OAuth2\Messages\MessageBase.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationRequest.cs" />
     <Compile Include="OAuth2\Protocol.cs" />
@@ -83,16 +73,10 @@
       <DependentUpon>OAuthStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\AuthorizationServerDescription.cs" />
-    <Compile Include="OAuth2\WebServerClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OAuth2\Messages\OAuth 2 Messages.cd" />
     <None Include="OAuth2\OAuth 2 client facades.cd" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="OAuth2\ClientAuthorizationView.resx">
-      <DependentUpon>ClientAuthorizationView.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OAuth2\OAuthStrings.resx">
