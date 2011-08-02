@@ -16,10 +16,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.
 	/// </summary>
-	internal class CoordinatingOAuthChannel : OAuthChannel {
-		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
-		private IProtocolMessage incomingMessage;
-		private OutgoingWebResponse incomingRawResponse;
+	internal class CoordinatingOAuthConsumerChannel : OAuthConsumerChannel {
+		internal EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
+		internal IProtocolMessage incomingMessage;
+		internal OutgoingWebResponse incomingRawResponse;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
@@ -27,21 +27,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="signingBindingElement">The signing element for the Consumer to use.  Null for the Service Provider.</param>
 		/// <param name="tokenManager">The token manager to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
-		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IConsumerTokenManager tokenManager, DotNetOpenAuth.OAuth.ConsumerSecuritySettings securitySettings)
-			: base(
-			signingBindingElement,
-			new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge),
-			tokenManager,
-			securitySettings) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Consumers.
-		/// </summary>
-		/// <param name="signingBindingElement">The signing element for the Consumer to use.  Null for the Service Provider.</param>
-		/// <param name="tokenManager">The token manager to use.</param>
-		/// <param name="securitySettings">The security settings.</param>
-		internal CoordinatingOAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, IServiceProviderTokenManager tokenManager, DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings securitySettings)
+		internal CoordinatingOAuthConsumerChannel(ITamperProtectionChannelBindingElement signingBindingElement, IConsumerTokenManager tokenManager, DotNetOpenAuth.OAuth.ConsumerSecuritySettings securitySettings)
 			: base(
 			signingBindingElement,
 			new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge),
@@ -52,7 +38,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <summary>
 		/// Gets or sets the coordinating channel used by the other party.
 		/// </summary>
-		internal CoordinatingOAuthChannel RemoteChannel { get; set; }
+		internal CoordinatingOAuthServiceProviderChannel RemoteChannel { get; set; }
 
 		internal OutgoingWebResponse RequestProtectedResource(AccessProtectedResourceRequest request) {
 			((ITamperResistantOAuthMessage)request).HttpMethod = this.GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
@@ -63,11 +49,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.RemoteChannel.incomingMessage = requestInfo.Message;
 			this.RemoteChannel.incomingMessageSignal.Set();
 			return this.AwaitIncomingRawResponse();
-		}
-
-		internal void SendDirectRawResponse(OutgoingWebResponse response) {
-			this.RemoteChannel.incomingRawResponse = response;
-			this.RemoteChannel.incomingMessageSignal.Set();
 		}
 
 		protected internal override HttpRequestInfo GetRequestFromContext() {
@@ -149,9 +130,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 					recipient = new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods);
 				}
 
-				clonedMessage = this.RemoteChannel.MessageFactory.GetNewRequestMessage(recipient, fields);
+				clonedMessage = this.RemoteChannel.MessageFactoryTestHook.GetNewRequestMessage(recipient, fields);
 			} else if (directResponse != null && directResponse.IsDirectResponse()) {
-				clonedMessage = this.RemoteChannel.MessageFactory.GetNewResponseMessage(directResponse.OriginatingRequest, fields);
+				clonedMessage = this.RemoteChannel.MessageFactoryTestHook.GetNewResponseMessage(directResponse.OriginatingRequest, fields);
 			} else {
 				throw new InvalidOperationException("Totally expected a message to implement one of the two derived interface types.");
 			}

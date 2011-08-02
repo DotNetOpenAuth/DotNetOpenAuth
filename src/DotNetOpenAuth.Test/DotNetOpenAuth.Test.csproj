@@ -210,6 +210,7 @@
     <Compile Include="Mocks\CoordinatingChannel.cs" />
     <Compile Include="Mocks\CoordinatingHttpRequestInfo.cs" />
     <Compile Include="Mocks\CoordinatingOutgoingWebResponse.cs" />
+    <Compile Include="Mocks\CoordinatingOAuthConsumerChannel.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
@@ -315,7 +316,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="OAuth\AppendixScenarios.cs" />
-    <Compile Include="Mocks\CoordinatingOAuthChannel.cs" />
+    <Compile Include="Mocks\CoordinatingOAuthServiceProviderChannel.cs" />
     <Compile Include="OAuth\OAuthCoordinator.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestUtilities.cs" />

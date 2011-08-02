@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var securitySettings = new ProviderSecuritySettings();
 			var cryptoKeyStore = new MemoryCryptoKeyStore();
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
-			Association association = HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
+			Association association = HmacShaAssociationProvider.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);

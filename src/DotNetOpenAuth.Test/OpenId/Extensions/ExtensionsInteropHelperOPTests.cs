@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			base.SetUp();
 
 			var op = this.CreateProvider();
-			var rpRequest = new CheckIdRequest(Protocol.Default.Version, OPUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Setup);
+			var rpRequest = new CheckIdRequest(Protocol.Default.Version, OPUri, DotNetOpenAuth.OpenId.AuthenticationRequestMode.Setup);
 			rpRequest.ReturnTo = RPUri;
 			this.extensions = rpRequest.Extensions;
 			this.request = new AuthenticationRequest(op, rpRequest);
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		[TestCase]
 		public void NoRequestedExtensions() {
-			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.request);
+			var sreg = ExtensionsInteropProviderHelper.UnifyExtensionsAsSreg(this.request);
 			Assert.IsNull(sreg);
 
 			// Make sure we're still able to send an sreg response.
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			// to directly create a response without a request.
 			var sregResponse = new ClaimsResponse();
 			this.request.AddResponseExtension(sregResponse);
-			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
+			ExtensionsInteropProviderHelper.ConvertSregToMatchRequest(this.request);
 			var extensions = this.GetResponseExtensions();
 			Assert.AreSame(sregResponse, extensions.Single());
 		}
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[TestCase]
 		public void NegativeResponse() {
 			this.request.IsAuthenticated = false;
-			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
+			ExtensionsInteropProviderHelper.ConvertSregToMatchRequest(this.request);
 		}
 
 		/// <summary>
@@ -66,14 +66,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 				Nickname = DemandLevel.Request,
 			};
 			this.extensions.Add(sregInjected);
-			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.request);
+			var sreg = ExtensionsInteropProviderHelper.UnifyExtensionsAsSreg(this.request);
 			Assert.AreSame(sregInjected, sreg);
 			Assert.AreEqual(DemandLevel.Request, sreg.Nickname);
 			Assert.AreEqual(DemandLevel.NoRequest, sreg.FullName);
 
 			var sregResponse = sreg.CreateResponse();
 			this.request.AddResponseExtension(sregResponse);
-			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
+			ExtensionsInteropProviderHelper.ConvertSregToMatchRequest(this.request);
 			var extensions = this.GetResponseExtensions();
 			Assert.AreSame(sregResponse, extensions.Single());
 		}
@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var axInjected = new FetchRequest();
 			axInjected.Attributes.AddOptional(WellKnownAttributes.Contact.Email);
 			this.extensions.Add(axInjected);
-			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.request);
+			var sreg = ExtensionsInteropProviderHelper.UnifyExtensionsAsSreg(this.request);
 			Assert.AreSame(sregInjected, sreg);
 			Assert.AreEqual(DemandLevel.Request, sreg.Nickname);
 			Assert.AreEqual(DemandLevel.NoRequest, sreg.Email);
@@ -117,7 +117,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var axResponseInjected = new FetchResponse();
 			axResponseInjected.Attributes.Add(WellKnownAttributes.Contact.Email, "a@b.com");
 			this.request.AddResponseExtension(axResponseInjected);
-			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
+			ExtensionsInteropProviderHelper.ConvertSregToMatchRequest(this.request);
 			var extensions = this.GetResponseExtensions();
 			var sregResponse = extensions.OfType<ClaimsResponse>().Single();
 			Assert.AreEqual("andy", sregResponse.Nickname);
@@ -132,10 +132,10 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 		private void ParameterizedAXTest(AXAttributeFormats format) {
 			var axInjected = new FetchRequest();
-			axInjected.Attributes.AddOptional(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, format));
-			axInjected.Attributes.AddRequired(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.FullName, format));
+			axInjected.Attributes.AddOptional(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, format));
+			axInjected.Attributes.AddRequired(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.FullName, format));
 			this.extensions.Add(axInjected);
-			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.request);
+			var sreg = ExtensionsInteropProviderHelper.UnifyExtensionsAsSreg(this.request);
 			Assert.AreSame(sreg, this.request.GetExtension<ClaimsRequest>());
 			Assert.AreEqual(DemandLevel.Request, sreg.Nickname);
 			Assert.AreEqual(DemandLevel.Require, sreg.FullName);
@@ -144,10 +144,10 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var sregResponse = sreg.CreateResponse();
 			sregResponse.Nickname = "andy";
 			this.request.AddResponseExtension(sregResponse);
-			ExtensionsInteropHelper.ConvertSregToMatchRequest(this.request);
+			ExtensionsInteropProviderHelper.ConvertSregToMatchRequest(this.request);
 			var extensions = this.GetResponseExtensions();
 			var axResponse = extensions.OfType<FetchResponse>().Single();
-			Assert.AreEqual("andy", axResponse.GetAttributeValue(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, format)));
+			Assert.AreEqual("andy", axResponse.GetAttributeValue(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, format)));
 		}
 	}
 }

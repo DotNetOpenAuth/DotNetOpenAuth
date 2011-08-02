@@ -85,11 +85,11 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			securitySettings.MinimumHashBitLength = 160;
 			securitySettings.MaximumHashBitLength = 160;
 			ProviderEndpointDescription provider = new ProviderEndpointDescription(OPUri, protocol.Version);
-			Assert.AreEqual(AssociateRequest.Create(securitySettings, provider).AssociationType, protocol.Args.SignatureAlgorithm.HMAC_SHA1);
+			Assert.AreEqual(AssociateRequestRelyingParty.Create(securitySettings, provider).AssociationType, protocol.Args.SignatureAlgorithm.HMAC_SHA1);
 
 			securitySettings.MinimumHashBitLength = 384;
 			securitySettings.MaximumHashBitLength = 384;
-			Assert.AreEqual(AssociateRequest.Create(securitySettings, provider).AssociationType, protocol.Args.SignatureAlgorithm.HMAC_SHA384);
+			Assert.AreEqual(AssociateRequestRelyingParty.Create(securitySettings, provider).AssociationType, protocol.Args.SignatureAlgorithm.HMAC_SHA384);
 		}
 	}
 }

@@ -35,35 +35,35 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			base.SetUp();
 
 			this.webRequestHandler = new TestWebRequestHandler();
-			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
+			this.signingElement = new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager());
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory());
+			this.channel = new OAuthServiceProviderChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory());
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullSigner() {
-			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
+			new OAuthConsumerChannel(null, this.nonceStore, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
+			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
+			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase]
 		public void CtorSimpleConsumer() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager(), this.consumerSecuritySettings);
+			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager(), this.consumerSecuritySettings);
 		}
 
 		[TestCase]
 		public void CtorSimpleServiceProvider() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager(), this.serviceProviderSecuritySettings);
+			new OAuthServiceProviderChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager(), this.serviceProviderSecuritySettings);
 		}
 
 		[TestCase]

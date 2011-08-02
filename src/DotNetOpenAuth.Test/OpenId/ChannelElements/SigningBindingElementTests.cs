@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			cryptoStore.StoreKey(ProviderAssociationKeyStorage.SharedAssociationBucket, handle, new CryptoKey(associationSecret, DateTime.UtcNow.AddDays(1)));
 
 			var store = new ProviderAssociationKeyStorage(cryptoStore);
-			SigningBindingElement signer = new SigningBindingElement(store, settings);
+			SigningBindingElement signer = new ProviderSigningBindingElement(store, settings);
 			signer.Channel = new TestChannel(this.MessageDescriptions);
 
 			IndirectSignedResponse message = new IndirectSignedResponse(protocol.Version, new Uri("http://rp"));
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestCase]
 		public void SignedResponsesIncludeExtraDataInSignature() {
 			Protocol protocol = Protocol.Default;
-			SigningBindingElement sbe = new SigningBindingElement(new ProviderAssociationHandleEncoder(new MemoryCryptoKeyStore()), new ProviderSecuritySettings());
+			SigningBindingElement sbe = new ProviderSigningBindingElement(new ProviderAssociationHandleEncoder(new MemoryCryptoKeyStore()), new ProviderSecuritySettings());
 			sbe.Channel = new TestChannel(this.MessageDescriptions);
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ReturnTo = RPUri;

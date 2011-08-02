@@ -52,8 +52,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 			serviceTokenManager.AddConsumer(this.consumerDescription);
 
 			// Prepare channels that will pass messages directly back and forth.
-			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, (IConsumerTokenManager)consumerTokenManager, this.consumerSecuritySettings);
-			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(spSigningElement, (IServiceProviderTokenManager)serviceTokenManager, this.serviceProviderSecuritySettings);
+			var consumerChannel = new CoordinatingOAuthConsumerChannel(consumerSigningElement, (IConsumerTokenManager)consumerTokenManager, this.consumerSecuritySettings);
+			var serviceProviderChannel = new CoordinatingOAuthServiceProviderChannel(spSigningElement, (IServiceProviderTokenManager)serviceTokenManager, this.serviceProviderSecuritySettings);
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 

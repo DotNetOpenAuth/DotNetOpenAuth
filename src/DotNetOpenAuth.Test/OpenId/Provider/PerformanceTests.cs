@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		}
 
 		private void ParameterizedCheckIdTest(Protocol protocol, string assocType) {
-			Association assoc = HmacShaAssociation.Create(
+			Association assoc = HmacShaAssociationProvider.Create(
 				protocol,
 				assocType,
 				AssociationRelyingPartyType.Smart,
@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 
 		private HttpRequestInfo CreateAssociateRequest(Uri opEndpoint) {
 			var rp = CreateRelyingParty(true);
-			AssociateRequest associateMessage = AssociateRequest.Create(rp.SecuritySettings, new ProviderEndpointDescription(opEndpoint, Protocol.Default.Version));
+			AssociateRequest associateMessage = AssociateRequestRelyingParty.Create(rp.SecuritySettings, new ProviderEndpointDescription(opEndpoint, Protocol.Default.Version));
 			Channel rpChannel = rp.Channel;
 			MemoryStream ms = new MemoryStream();
 			StreamWriter mswriter = new StreamWriter(ms);
@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			CheckIdRequest checkidMessage = new CheckIdRequest(
 				Protocol.Default.Version,
 				OPUri,
-				DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Setup);
+				DotNetOpenAuth.OpenId.AuthenticationRequestMode.Setup);
 			if (sharedAssociation) {
 				checkidMessage.AssociationHandle = SharedAssociationHandle;
 			}

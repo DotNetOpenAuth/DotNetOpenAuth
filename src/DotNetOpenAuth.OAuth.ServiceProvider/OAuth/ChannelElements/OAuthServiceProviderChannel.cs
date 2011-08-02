@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="tokenManager">The token manager instance to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider)
+		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider = null)
 			: base(
 			signingBindingElement,
 			store,
