@@ -144,7 +144,7 @@ namespace OpenIdProviderMvc.Controllers {
 		/// <returns>A value indicating whether an automatic response is possible.</returns>
 		private bool AutoRespondIfPossible(out ActionResult response) {
 			// If the odds are good we can respond to this one immediately (without prompting the user)...
-			if (ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(OpenIdProvider) == RelyingPartyDiscoveryResult.Success
+			if (ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(OpenIdProvider.Channel.WebRequestHandler) == RelyingPartyDiscoveryResult.Success
 				&& User.Identity.IsAuthenticated
 				&& this.HasUserAuthorizedAutoLogin(ProviderEndpoint.PendingRequest)) {
 				// Is this is an identity authentication request? (as opposed to an anonymous request)...

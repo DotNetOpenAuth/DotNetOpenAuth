@@ -228,6 +228,10 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
+      <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>
+      <Name>DotNetOpenAuth.OAuth.Consumer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
       <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
       <Name>DotNetOpenAuth.OAuth</Name>

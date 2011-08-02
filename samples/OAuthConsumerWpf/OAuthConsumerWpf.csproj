@@ -190,6 +190,18 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
+      <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>
+      <Name>DotNetOpenAuth.OAuth.Consumer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.Client.UI\DotNetOpenAuth.OAuth2.Client.UI.csproj">
+      <Project>{ADC2CC8C-541E-4F86-ACB1-DD504A36FA4B}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj">
+      <Project>{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>

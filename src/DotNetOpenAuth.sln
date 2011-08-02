@@ -74,7 +74,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\samples\InfoCardRelyingParty\", "{6EB90284-BD15-461C-BBF2-131CF55F7C8B}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
-		ProjectReferences = "{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Messaging.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Messaging.UI.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;"
+		ProjectReferences = "{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Messaging.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Messaging.UI.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}|DotNetOpenAuth.InfoCard.UI.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
 		Debug.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"

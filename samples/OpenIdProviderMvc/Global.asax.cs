@@ -46,7 +46,7 @@
 				lock (behaviorInitializationSyncObject) {
 					if (DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
 						DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
-						DotNetOpenAuth.OpenId.Behaviors.GsaIcamProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+						DotNetOpenAuth.OpenId.Behaviors.GsaIcamProviderProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
 					}
 				}
 			}
