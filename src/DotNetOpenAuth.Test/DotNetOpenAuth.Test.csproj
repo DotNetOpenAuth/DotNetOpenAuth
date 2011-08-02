@@ -390,13 +390,45 @@
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html20provWithBadXrds.html" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.InfoCard.UI\DotNetOpenAuth.InfoCard.UI.csproj">
+      <Project>{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}</Project>
+      <Name>DotNetOpenAuth.InfoCard.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.InfoCard\DotNetOpenAuth.InfoCard.csproj">
       <Project>{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}</Project>
       <Name>DotNetOpenAuth.InfoCard</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.Messaging.UI\DotNetOpenAuth.Messaging.UI.csproj">
+      <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
+      <Name>DotNetOpenAuth.Messaging.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
+      <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>
+      <Name>DotNetOpenAuth.OAuth.Consumer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.ServiceProvider\DotNetOpenAuth.OAuth.ServiceProvider.csproj">
+      <Project>{FED1923A-6D70-49B5-A37A-FB744FEC1C86}</Project>
+      <Name>DotNetOpenAuth.OAuth.ServiceProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.AuthorizationServer\DotNetOpenAuth.OAuth2.AuthorizationServer.csproj">
+      <Project>{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}</Project>
+      <Name>DotNetOpenAuth.OAuth2.AuthorizationServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.Client.UI\DotNetOpenAuth.OAuth2.Client.UI.csproj">
+      <Project>{ADC2CC8C-541E-4F86-ACB1-DD504A36FA4B}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj">
+      <Project>{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.ResourceServer\DotNetOpenAuth.OAuth2.ResourceServer.csproj">
+      <Project>{A1A3150A-7B0E-4A34-8E35-045296CD3C76}</Project>
+      <Name>DotNetOpenAuth.OAuth2.ResourceServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
@@ -406,9 +438,37 @@
       <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
       <Name>DotNetOpenAuth.OAuth</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.Provider.UI\DotNetOpenAuth.OpenId.Provider.UI.csproj">
+      <Project>{9D0F8866-2131-4C2A-BC0E-16FEA5B50828}</Project>
+      <Name>DotNetOpenAuth.OpenId.Provider.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.Provider\DotNetOpenAuth.OpenId.Provider.csproj">
+      <Project>{F8284738-3B5D-4733-A511-38C23F4A763F}</Project>
+      <Name>DotNetOpenAuth.OpenId.Provider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty.UI\DotNetOpenAuth.OpenId.RelyingParty.UI.csproj">
+      <Project>{1ED8D424-F8AB-4050-ACEB-F27F4F909484}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.UI\DotNetOpenAuth.OpenId.UI.csproj">
+      <Project>{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}</Project>
+      <Name>DotNetOpenAuth.OpenId.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Math\Mono.Math.csproj">
+      <Project>{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}</Project>
+      <Name>Mono.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+      <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
+      <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
