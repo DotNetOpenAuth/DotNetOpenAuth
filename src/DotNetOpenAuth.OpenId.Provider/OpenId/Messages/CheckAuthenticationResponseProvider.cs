@@ -1,14 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DotNetOpenAuth.OpenId.Provider;
-using System.Diagnostics.Contracts;
-using DotNetOpenAuth.OpenId.ChannelElements;
+﻿//-----------------------------------------------------------------------
+// <copyright file="CheckAuthenticationResponseProvider.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.Messages {
-	class CheckAuthenticationResponseProvider : CheckAuthenticationResponse {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Linq;
+	using System.Text;
+	using DotNetOpenAuth.OpenId.ChannelElements;
+	using DotNetOpenAuth.OpenId.Provider;
 
+	internal class CheckAuthenticationResponseProvider : CheckAuthenticationResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CheckAuthenticationResponse"/> class
 		/// for use by the Provider.

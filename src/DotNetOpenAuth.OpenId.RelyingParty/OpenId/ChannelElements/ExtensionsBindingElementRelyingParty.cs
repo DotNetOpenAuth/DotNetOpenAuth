@@ -1,11 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-using DotNetOpenAuth.OpenId.RelyingParty;
+﻿//-----------------------------------------------------------------------
+// <copyright file="ExtensionsBindingElementRelyingParty.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId.ChannelElements {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
+	using System.Diagnostics.Contracts;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+
 	internal class ExtensionsBindingElementRelyingParty : ExtensionsBindingElement {
 		/// <summary>
 		/// The security settings that apply to this relying party, if it is a relying party.

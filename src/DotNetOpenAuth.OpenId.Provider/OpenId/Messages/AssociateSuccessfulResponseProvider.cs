@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.OpenId.Messages {
+﻿//-----------------------------------------------------------------------
+// <copyright file="AssociateSuccessfulResponseProvider.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;

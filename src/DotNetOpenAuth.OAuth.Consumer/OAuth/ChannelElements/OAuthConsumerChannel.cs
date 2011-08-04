@@ -10,7 +10,7 @@
 
 	internal class OAuthConsumerChannel : OAuthChannel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuthConsumerChannel"/> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>

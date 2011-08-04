@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OpenId {
 	[ContractClass(typeof(IdentifierContract))]
 	public abstract class Identifier {
 		/// <summary>
-		/// Initializes the <see cref="Identifier"/> class.
+		/// Initializes static members of the <see cref="Identifier"/> class.
 		/// </summary>
 		static Identifier() {
 			Func<string, Identifier> safeIdentifier = str => {

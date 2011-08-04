@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.OpenId {
 		private Uri uri;
 
 		/// <summary>
-		/// Initializes the <see cref="Realm"/> class.
+		/// Initializes static members of the <see cref="Realm"/> class.
 		/// </summary>
 		static Realm() {
 			Func<string, Realm> safeRealm = str => {

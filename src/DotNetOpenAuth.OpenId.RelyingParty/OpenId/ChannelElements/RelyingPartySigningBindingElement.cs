@@ -7,13 +7,13 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.OpenId.Messages;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	internal class RelyingPartySigningBindingElement : SigningBindingElement {
 		/// <summary>

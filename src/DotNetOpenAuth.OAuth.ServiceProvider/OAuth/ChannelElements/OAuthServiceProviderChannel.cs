@@ -1,16 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.CodeAnalysis;
-using DotNetOpenAuth.Messaging;
-using DotNetOpenAuth.Messaging.Bindings;
-using System.Diagnostics.Contracts;
+﻿//-----------------------------------------------------------------------
+// <copyright file="OAuthServiceProviderChannel.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.ChannelElements {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
+	using System.Linq;
+	using System.Text;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
+
 	internal class OAuthServiceProviderChannel : OAuthChannel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuthServiceProviderChannel"/> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>

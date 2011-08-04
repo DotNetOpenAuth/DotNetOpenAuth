@@ -17,8 +17,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 	internal class OpenIdProviderChannel : OpenIdChannel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
-		/// for use by a Provider.
+		/// Initializes a new instance of the <see cref="OpenIdProviderChannel"/> class.
 		/// </summary>
 		/// <param name="cryptoKeyStore">The OpenID Provider's association store or handle encoder.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
@@ -30,8 +29,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 		
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class
-		/// for use by a Provider.
+		/// Initializes a new instance of the <see cref="OpenIdProviderChannel"/> class.
 		/// </summary>
 		/// <param name="cryptoKeyStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
@@ -71,6 +69,5 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			return elements.ToArray();
 		}
-
 	}
 }
