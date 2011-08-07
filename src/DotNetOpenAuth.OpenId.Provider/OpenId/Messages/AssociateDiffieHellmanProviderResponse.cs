@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssociateDiffieHellmanResponse.cs" company="Andrew Arnott">
+// <copyright file="AssociateDiffieHellmanProviderResponse.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------

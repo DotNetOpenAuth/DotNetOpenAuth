@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RsaSha1SigningBindingElement.cs" company="Andrew Arnott">
+// <copyright file="RsaSha1ServiceProviderSigningBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -57,6 +57,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			return valid;
 		}
 
+		/// <summary>
+		/// Calculates a signature for a given message.
+		/// </summary>
+		/// <param name="message">The message to sign.</param>
+		/// <returns>
+		/// The signature for the message.
+		/// </returns>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			throw new NotImplementedException();
 		}

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="GsaIcamProfile.cs" company="Andrew Arnott">
+// <copyright file="GsaIcamProviderProfile.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		private static readonly TimeSpan MaximumAssociationLifetime = TimeSpan.FromSeconds(86400);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.
+		/// Initializes a new instance of the <see cref="GsaIcamProviderProfile"/> class.
 		/// </summary>
 		public GsaIcamProviderProfile() {
 			if (DisableSslRequirement) {

@@ -7,18 +7,22 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.Messaging;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// Utility methods for OpenID Providers.
+	/// </summary>
 	internal static class OpenIdProviderUtilities {
 		/// <summary>
 		/// Called to create the Association based on a request previously given by the Relying Party.
 		/// </summary>
 		/// <param name="request">The prior request for an association.</param>
+		/// <param name="response">The response.</param>
 		/// <param name="associationStore">The Provider's association store.</param>
 		/// <param name="securitySettings">The security settings for the Provider.  Should be <c>null</c> for Relying Parties.</param>
 		/// <returns>
@@ -33,7 +37,7 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(response != null, "response");
 			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
-				
+
 			// We need to initialize some common properties based on the created association.
 			var association = response.CreateAssociationAtProvider(request, associationStore, securitySettings);
 			response.ExpiresIn = association.SecondsTillExpiration;

@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 				sreg.TimeZone = fetchResponse.GetAttributeValue(WellKnownAttributes.Preferences.TimeZone, formats);
 				string gender = fetchResponse.GetAttributeValue(WellKnownAttributes.Person.Gender, formats);
 				if (gender != null) {
-					sreg.Gender = (Gender)ExtensionsInteropHelper.genderEncoder.Decode(gender);
+					sreg.Gender = (Gender)ExtensionsInteropHelper.GenderEncoder.Decode(gender);
 				}
 			}
 

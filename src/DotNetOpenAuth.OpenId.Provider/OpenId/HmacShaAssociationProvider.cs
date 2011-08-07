@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="HmacShaAsssociationProvider.cs" company="Andrew Arnott">
+// <copyright file="HmacShaAssociationProvider.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -7,12 +7,15 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// OpenID Provider utility methods for HMAC-SHA* associations.
+	/// </summary>
 	internal static class HmacShaAssociationProvider {
 		/// <summary>
 		/// The default lifetime of a shared association when no lifetime is given

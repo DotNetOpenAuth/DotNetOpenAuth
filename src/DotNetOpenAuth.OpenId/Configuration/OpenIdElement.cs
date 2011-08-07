@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System;
+	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
-	using System.Collections.Generic;
 
 	/// <summary>
 	/// Represents the &lt;openid&gt; element in the host's .config file.

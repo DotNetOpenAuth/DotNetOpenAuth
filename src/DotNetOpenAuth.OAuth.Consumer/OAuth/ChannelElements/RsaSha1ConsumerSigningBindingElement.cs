@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RsaSha1SigningBindingElement.cs" company="Andrew Arnott">
+// <copyright file="RsaSha1ConsumerSigningBindingElement.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// </summary>
 	public class RsaSha1ConsumerSigningBindingElement : RsaSha1SigningBindingElement {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RsaSha1SigningBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="RsaSha1ConsumerSigningBindingElement"/> class.
 		/// </summary>
 		/// <param name="signingCertificate">The certificate used to sign outgoing messages.</param>
 		public RsaSha1ConsumerSigningBindingElement(X509Certificate2 signingCertificate) {
@@ -31,6 +31,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		public X509Certificate2 SigningCertificate { get; set; }
 
+		/// <summary>
+		/// Determines whether the signature on some message is valid.
+		/// </summary>
+		/// <param name="message">The message to check the signature on.</param>
+		/// <returns>
+		///   <c>true</c> if the signature on the message is valid; otherwise, <c>false</c>.
+		/// </returns>
 		protected override bool IsSignatureValid(ITamperResistantOAuthMessage message) {
 			throw new NotImplementedException();
 		}
@@ -54,6 +61,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			return base64Signature;
 		}
 
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
 		protected override ITamperProtectionChannelBindingElement Clone() {
 			return new RsaSha1ConsumerSigningBindingElement(this.SigningCertificate);
 		}

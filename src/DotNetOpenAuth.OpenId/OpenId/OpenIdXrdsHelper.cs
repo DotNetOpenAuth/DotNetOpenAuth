@@ -12,6 +12,9 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Xrds;
 
+	/// <summary>
+	/// Utility methods for working with XRDS documents.
+	/// </summary>
 	internal static class OpenIdXrdsHelper {
 		/// <summary>
 		/// Finds the Relying Party return_to receiving endpoints.

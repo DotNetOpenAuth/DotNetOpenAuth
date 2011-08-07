@@ -16,9 +16,9 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Web;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
-	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A trust root to validate requests and match return URLs against.

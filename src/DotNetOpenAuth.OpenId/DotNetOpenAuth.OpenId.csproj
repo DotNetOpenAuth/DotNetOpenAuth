@@ -39,6 +39,7 @@
     </Compile>
     <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
+    <Compile Include="OpenId\ChannelElements\SigningBindingElementContract.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />

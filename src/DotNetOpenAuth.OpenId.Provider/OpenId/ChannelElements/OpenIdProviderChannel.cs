@@ -7,14 +7,17 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OpenId.Provider;
-	using DotNetOpenAuth.Messaging.Bindings;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// The messaging channel for OpenID Providers.
+	/// </summary>
 	internal class OpenIdProviderChannel : OpenIdChannel {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProviderChannel"/> class.
@@ -27,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProviderChannel"/> class.
 		/// </summary>
@@ -37,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		private OpenIdProviderChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings)
 			: base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings)) {
-				Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
+			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}

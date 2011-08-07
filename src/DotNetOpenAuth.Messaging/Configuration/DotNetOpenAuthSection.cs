@@ -45,17 +45,29 @@ namespace DotNetOpenAuth.Configuration {
 			}
 		}
 
+		/// <summary>
+		/// Gets the messaging configuration element.
+		/// </summary>
 		public static MessagingElement Messaging {
 			get { return MessagingElement.Configuration; }
 		}
 
-		internal TypeConfigurationElement<IEmbeddedResourceRetrieval> EmbeddedResourceRetrievalProvider {
-			get { return /*(TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ??*/ new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
-			set { /*this[WebResourceUrlProviderName] = value;*/ }
-		}
-
+		/// <summary>
+		/// Gets the reporting configuration element.
+		/// </summary>
 		internal static ReportingElement Reporting {
 			get { return ReportingElement.Configuration; }
+		}
+
+		/// <summary>
+		/// Gets or sets the embedded resource retrieval provider.
+		/// </summary>
+		/// <value>
+		/// The embedded resource retrieval provider.
+		/// </value>
+		internal TypeConfigurationElement<IEmbeddedResourceRetrieval> EmbeddedResourceRetrievalProvider {
+			get { return /*TODO: (TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ??*/ new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
+			set { /*this[WebResourceUrlProviderName] = value;*/ }
 		}
 	}
 }

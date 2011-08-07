@@ -14,6 +14,9 @@ namespace DotNetOpenAuth {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
+	/// <summary>
+	/// Utility methods specific to OAuth feature reporting.
+	/// </summary>
 	internal class OAuthReporting : Reporting {
 		/// <summary>
 		/// Records the feature and dependency use.

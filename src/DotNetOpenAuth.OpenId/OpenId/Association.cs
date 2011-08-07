@@ -89,6 +89,16 @@ namespace DotNetOpenAuth.OpenId {
 		internal DateTime Issued { get; set; }
 
 		/// <summary>
+		/// Gets the duration a secret key used for signing dumb client requests will be good for.
+		/// </summary>
+		protected internal static TimeSpan DumbSecretLifetime {
+			get {
+				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
+				return OpenIdElement.Configuration.MaxAuthenticationTime;
+			}
+		}
+
+		/// <summary>
 		/// Gets the number of seconds until this <see cref="Association"/> expires.
 		/// Never negative (counter runs to zero).
 		/// </summary>
@@ -105,16 +115,6 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "It is a buffer.")]
 		[MessagePart("key")]
 		protected internal byte[] SecretKey { get; private set; }
-
-		/// <summary>
-		/// Gets the duration a secret key used for signing dumb client requests will be good for.
-		/// </summary>
-		protected internal static TimeSpan DumbSecretLifetime {
-			get {
-				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
-				return OpenIdElement.Configuration.MaxAuthenticationTime;
-			}
-		}
 
 		/// <summary>
 		/// Gets the lifetime the OpenID provider permits this <see cref="Association"/>.

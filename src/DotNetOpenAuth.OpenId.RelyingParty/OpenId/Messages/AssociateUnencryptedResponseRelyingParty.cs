@@ -10,6 +10,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Linq;
 	using System.Text;
 
+	/// <summary>
+	/// A response to an unencrypted assocation request, as it is received by the relying party.
+	/// </summary>
 	internal class AssociateUnencryptedResponseRelyingParty : AssociateUnencryptedResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedResponseRelyingParty"/> class.

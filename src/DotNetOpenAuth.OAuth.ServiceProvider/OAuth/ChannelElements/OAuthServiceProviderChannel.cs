@@ -14,6 +14,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
+	/// <summary>
+	/// The messaging channel for OAuth 1.0(a) Service Providers.
+	/// </summary>
 	internal class OAuthServiceProviderChannel : OAuthChannel {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthServiceProviderChannel"/> class.
@@ -22,6 +25,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
+		/// <param name="messageTypeProvider">The message type provider.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider = null)
 			: base(

@@ -36,6 +36,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="messageTypeProvider">An injected message type provider instance.
 		/// Except for mock testing, this should always be one of
 		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.</param>
+		/// <param name="bindingElements">The binding elements.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
@@ -82,6 +83,29 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			ProcessOutgoingMessage(request);
 			return this.CreateHttpRequest(request);
+		}
+
+		/// <summary>
+		/// Initializes the binding elements for the OAuth channel.
+		/// </summary>
+		/// <param name="signingBindingElement">The signing binding element.</param>
+		/// <param name="store">The nonce store.</param>
+		/// <param name="tokenManager">The token manager.</param>
+		/// <param name="securitySettings">The security settings.</param>
+		/// <returns>
+		/// An array of binding elements used to initialize the channel.
+		/// </returns>
+		protected static List<IChannelBindingElement> InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
+			Contract.Requires(securitySettings != null);
+
+			var bindingElements = new List<IChannelBindingElement> {
+				new OAuthHttpMethodBindingElement(),
+				signingBindingElement,
+				new StandardExpirationBindingElement(),
+				new StandardReplayProtectionBindingElement(store),
+			};
+
+			return bindingElements;
 		}
 
 		/// <summary>
@@ -213,27 +237,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Initializes the binding elements for the OAuth channel.
+		/// Gets the consumer secret for a given consumer key.
 		/// </summary>
-		/// <param name="signingBindingElement">The signing binding element.</param>
-		/// <param name="store">The nonce store.</param>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="securitySettings">The security settings.</param>
-		/// <returns>
-		/// An array of binding elements used to initialize the channel.
-		/// </returns>
-		protected static List<IChannelBindingElement> InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
-			Contract.Requires(securitySettings != null);
-
-			var bindingElements = new List<IChannelBindingElement> {
-				new OAuthHttpMethodBindingElement(),
-				signingBindingElement,
-				new StandardExpirationBindingElement(),
-				new StandardReplayProtectionBindingElement(store),
-			};
-
-			return bindingElements;
-		}
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <returns>A consumer secret.</returns>
+		protected abstract string GetConsumerSecret(string consumerKey);
 
 		/// <summary>
 		/// Uri-escapes the names and values in a dictionary per OAuth 1.0 section 5.1.
@@ -344,7 +352,5 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				throw new ProtocolException(OAuthStrings.ConsumerOrTokenSecretNotFound, ex);
 			}
 		}
-
-		protected abstract string GetConsumerSecret(string consumerKey);
 	}
 }

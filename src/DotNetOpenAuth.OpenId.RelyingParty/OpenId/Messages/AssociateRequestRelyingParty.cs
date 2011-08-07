@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.OpenId.Messages {
+﻿//-----------------------------------------------------------------------
+// <copyright file="AssociateRequestRelyingParty.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
@@ -6,6 +12,9 @@
 	using System.Text;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
+	/// <summary>
+	/// Utility methods for requesting associations from the relying party.
+	/// </summary>
 	internal static class AssociateRequestRelyingParty {
 		/// <summary>
 		/// Creates an association request message that is appropriate for a given Provider.

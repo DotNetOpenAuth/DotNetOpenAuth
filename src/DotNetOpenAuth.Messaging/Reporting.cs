@@ -142,6 +142,9 @@ namespace DotNetOpenAuth {
 			}
 		}
 
+		/// <summary>
+		/// Gets the observed features.
+		/// </summary>
 		internal static PersistentHashSet ObservedFeatures {
 			get { return observedFeatures; }
 		}
@@ -312,6 +315,20 @@ namespace DotNetOpenAuth {
 		}
 
 		/// <summary>
+		/// Called by every internal/public method on this class to give
+		/// periodic operations a chance to run.
+		/// </summary>
+		protected static void Touch() {
+			// Publish stats if it's time to do so.
+			lock (publishingConsiderationLock) {
+				if (DateTime.Now - lastPublished > Configuration.MinimumReportingInterval) {
+					lastPublished = DateTime.Now;
+					SendStatsAsync();
+				}
+			}
+		}
+
+		/// <summary>
 		/// Initializes Reporting if it has not been initialized yet.
 		/// </summary>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "This method must never throw.")]
@@ -478,20 +495,6 @@ namespace DotNetOpenAuth {
 							Logger.Library.Fatal(message);
 							break;
 					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Called by every internal/public method on this class to give
-		/// periodic operations a chance to run.
-		/// </summary>
-		protected static void Touch() {
-			// Publish stats if it's time to do so.
-			lock (publishingConsiderationLock) {
-				if (DateTime.Now - lastPublished > Configuration.MinimumReportingInterval) {
-					lastPublished = DateTime.Now;
-					SendStatsAsync();
 				}
 			}
 		}

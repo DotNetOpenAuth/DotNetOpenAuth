@@ -212,6 +212,28 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
+		/// Adds a pair of type conversion functions to the static conversion map.
+		/// </summary>
+		/// <typeparam name="T">The custom type to convert to and from strings.</typeparam>
+		/// <param name="toString">The function to convert the custom type to a string.</param>
+		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
+		/// <param name="toValue">The function to convert a string to the custom type.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
+		internal static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
+			Contract.Requires<ArgumentNullException>(toString != null);
+			Contract.Requires<ArgumentNullException>(toValue != null);
+
+			if (toOriginalString == null) {
+				toOriginalString = toString;
+			}
+
+			Func<object, string> safeToString = obj => obj != null ? toString((T)obj) : null;
+			Func<object, string> safeToOriginalString = obj => obj != null ? toOriginalString((T)obj) : null;
+			Func<string, object> safeToT = str => str != null ? toValue(str) : default(T);
+			converters.Add(typeof(T), new ValueMapping(safeToString, safeToOriginalString, safeToT));
+		}
+
+		/// <summary>
 		/// Sets the member of a given message to some given value.
 		/// Used in deserialization.
 		/// </summary>
@@ -296,28 +318,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			} else {
 				return null;
 			}
-		}
-
-		/// <summary>
-		/// Adds a pair of type conversion functions to the static conversion map.
-		/// </summary>
-		/// <typeparam name="T">The custom type to convert to and from strings.</typeparam>
-		/// <param name="toString">The function to convert the custom type to a string.</param>
-		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
-		/// <param name="toValue">The function to convert a string to the custom type.</param>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
-		internal static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
-			Contract.Requires<ArgumentNullException>(toString != null);
-			Contract.Requires<ArgumentNullException>(toValue != null);
-
-			if (toOriginalString == null) {
-				toOriginalString = toString;
-			}
-
-			Func<object, string> safeToString = obj => obj != null ? toString((T)obj) : null;
-			Func<object, string> safeToOriginalString = obj => obj != null ? toOriginalString((T)obj) : null;
-			Func<string, object> safeToT = str => str != null ? toValue(str) : default(T);
-			converters.Add(typeof(T), new ValueMapping(safeToString, safeToOriginalString, safeToT));
 		}
 
 		/// <summary>

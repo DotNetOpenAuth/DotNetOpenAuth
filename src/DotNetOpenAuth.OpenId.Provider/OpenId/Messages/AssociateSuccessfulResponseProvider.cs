@@ -12,6 +12,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Text;
 	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// An outgoing successful association response from the OpenID Provider.
+	/// </summary>
 	[ContractClass(typeof(AssociateSuccessfulResponseProviderContract))]
 	internal abstract class AssociateSuccessfulResponseProvider : AssociateSuccessfulResponse {
 		/// <summary>

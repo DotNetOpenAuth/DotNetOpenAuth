@@ -1,10 +1,19 @@
-﻿namespace DotNetOpenAuth.OpenId.Messages {
+﻿//-----------------------------------------------------------------------
+// <copyright file="AssociateSuccessfulResponseRelyingParty.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using System.Diagnostics.Contracts;
 
+	/// <summary>
+	/// A successful association response as it is received by the relying party.
+	/// </summary>
 	[ContractClass(typeof(AssociateSuccessfulResponseRelyingPartyContract))]
 	internal abstract class AssociateSuccessfulResponseRelyingParty : AssociateSuccessfulResponse {
 		/// <summary>

@@ -983,7 +983,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// Apply the control's association preference to this auth request, but only if
 				// it is less demanding (greater ordinal value) than the existing one.
 				// That way, we protect against retrying an association that was already attempted.
-				var authReq = ((AuthenticationRequest)req);
+				var authReq = (AuthenticationRequest)req;
 				if (authReq.AssociationPreference < this.AssociationPreference) {
 					authReq.AssociationPreference = this.AssociationPreference;
 				}

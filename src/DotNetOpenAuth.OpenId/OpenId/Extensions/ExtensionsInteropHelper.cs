@@ -23,7 +23,14 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <summary>
 		/// The gender decoder to translate AX genders to Sreg.
 		/// </summary>
-		internal static GenderEncoder genderEncoder = new GenderEncoder();
+		private static GenderEncoder genderEncoder = new GenderEncoder();
+
+		/// <summary>
+		/// Gets the gender decoder to translate AX genders to Sreg.
+		/// </summary>
+		internal static GenderEncoder GenderEncoder {
+			get { return genderEncoder; }
+		}
 
 		/// <summary>
 		/// Splits the AX attribute format flags into individual values for processing.

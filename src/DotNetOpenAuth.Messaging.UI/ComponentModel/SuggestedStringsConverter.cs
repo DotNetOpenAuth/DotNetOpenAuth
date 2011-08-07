@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.ComponentModel {
 						 select field.GetValue(null);
 			var properties = from prop in type.GetProperties(BindingFlags.Static | BindingFlags.Public)
 							 select prop.GetValue(null, null);
-			return (fields.Concat(properties)).ToArray();
+			return fields.Concat(properties).ToArray();
 		}
 
 		/// <summary>

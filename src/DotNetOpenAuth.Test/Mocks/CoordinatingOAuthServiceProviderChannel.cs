@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="CoordinatingOAuthChannel.cs" company="Andrew Arnott">
+// <copyright file="CoordinatingOAuthServiceProviderChannel.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,12 +17,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 	/// A special channel used in test simulations to pass messages directly between two parties.
 	/// </summary>
 	internal class CoordinatingOAuthServiceProviderChannel : OAuthServiceProviderChannel {
-		internal EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
-		internal IProtocolMessage incomingMessage;
-		internal OutgoingWebResponse incomingRawResponse;
+		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CoordinatingOAuthChannel"/> class for Service Providers.
+		/// Initializes a new instance of the <see cref="CoordinatingOAuthServiceProviderChannel"/> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The signing element for the Consumer to use.  Null for the Service Provider.</param>
 		/// <param name="tokenManager">The token manager to use.</param>
@@ -36,6 +34,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 			new OAuthServiceProviderMessageFactory(tokenManager)) {
 		}
 
+		internal EventWaitHandle IncomingMessageSignal {
+			get { return this.incomingMessageSignal; }
+		}
+
+		internal IProtocolMessage IncomingMessage { get; set; }
+
+		internal OutgoingWebResponse IncomingRawResponse { get; set; }
+
 		/// <summary>
 		/// Gets or sets the coordinating channel used by the other party.
 		/// </summary>
@@ -47,14 +53,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
 			TestBase.TestLogger.InfoFormat("Sending protected resource request: {0}", requestInfo.Message);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
-			this.RemoteChannel.incomingMessage = requestInfo.Message;
-			this.RemoteChannel.incomingMessageSignal.Set();
+			this.RemoteChannel.IncomingMessage = requestInfo.Message;
+			this.RemoteChannel.IncomingMessageSignal.Set();
 			return this.AwaitIncomingRawResponse();
 		}
 
 		internal void SendDirectRawResponse(OutgoingWebResponse response) {
-			this.RemoteChannel.incomingRawResponse = response;
-			this.RemoteChannel.incomingMessageSignal.Set();
+			this.RemoteChannel.IncomingRawResponse = response;
+			this.RemoteChannel.IncomingMessageSignal.Set();
 		}
 
 		protected internal override HttpRequestInfo GetRequestFromContext() {
@@ -65,15 +71,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 		protected override IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
 			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
-			this.RemoteChannel.incomingMessage = requestInfo.Message;
-			this.RemoteChannel.incomingMessageSignal.Set();
+			this.RemoteChannel.IncomingMessage = requestInfo.Message;
+			this.RemoteChannel.IncomingMessageSignal.Set();
 			// Now wait for a response...
 			return this.AwaitIncomingMessage();
 		}
 
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			this.RemoteChannel.incomingMessage = CloneSerializedParts(response, null);
-			this.RemoteChannel.incomingMessageSignal.Set();
+			this.RemoteChannel.IncomingMessage = CloneSerializedParts(response, null);
+			this.RemoteChannel.IncomingMessageSignal.Set();
 			return new OutgoingWebResponse(); // not used, but returning null is not allowed
 		}
 
@@ -108,16 +114,16 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		private IProtocolMessage AwaitIncomingMessage() {
-			this.incomingMessageSignal.WaitOne();
-			IProtocolMessage response = this.incomingMessage;
-			this.incomingMessage = null;
+			this.IncomingMessageSignal.WaitOne();
+			IProtocolMessage response = this.IncomingMessage;
+			this.IncomingMessage = null;
 			return response;
 		}
 
 		private OutgoingWebResponse AwaitIncomingRawResponse() {
-			this.incomingMessageSignal.WaitOne();
-			OutgoingWebResponse response = this.incomingRawResponse;
-			this.incomingRawResponse = null;
+			this.IncomingMessageSignal.WaitOne();
+			OutgoingWebResponse response = this.IncomingRawResponse;
+			this.IncomingRawResponse = null;
 			return response;
 		}
 

@@ -15,6 +15,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
+	/// <summary>
+	/// The signing binding element for OpenID Relying Parties.
+	/// </summary>
 	internal class RelyingPartySigningBindingElement : SigningBindingElement {
 		/// <summary>
 		/// The association store used by Relying Parties to look up the secrets needed for signing.
@@ -22,13 +25,20 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private readonly IRelyingPartyAssociationStore rpAssociations;
 
 		/// <summary>
-		/// Initializes a new instance of the SigningBindingElement class for use by a Relying Party.
+		/// Initializes a new instance of the <see cref="RelyingPartySigningBindingElement"/> class.
 		/// </summary>
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.  May be null for dumb Relying Parties.</param>
 		internal RelyingPartySigningBindingElement(IRelyingPartyAssociationStore associationStore) {
 			this.rpAssociations = associationStore;
 		}
 
+		/// <summary>
+		/// Gets a specific association referenced in a given message's association handle.
+		/// </summary>
+		/// <param name="signedMessage">The signed message whose association handle should be used to lookup the association to return.</param>
+		/// <returns>
+		/// The referenced association; or <c>null</c> if such an association cannot be found.
+		/// </returns>
 		protected override Association GetSpecificAssociation(ITamperResistantOpenIdMessage signedMessage) {
 			Association association = null;
 
@@ -43,6 +53,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			return association;
 		}
 
+		/// <summary>
+		/// Gets the association to use to sign or verify a message.
+		/// </summary>
+		/// <param name="signedMessage">The message to sign or verify.</param>
+		/// <returns>
+		/// The association to use to sign or verify the message.
+		/// </returns>
 		protected override Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
 			// We're on a Relying Party verifying a signature.
 			IDirectedProtocolMessage directedMessage = (IDirectedProtocolMessage)signedMessage;
@@ -53,6 +70,15 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			}
 		}
 
+		/// <summary>
+		/// Verifies the signature by unrecognized handle.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <param name="signedMessage">The signed message.</param>
+		/// <param name="protectionsApplied">The protections applied.</param>
+		/// <returns>
+		/// The applied protections.
+		/// </returns>
 		protected override MessageProtections VerifySignatureByUnrecognizedHandle(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
 			// We did not recognize the association the provider used to sign the message.
 			// Ask the provider to check the signature then.

@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Text;
 	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// An unencrypted association response as it is sent by the Provider.
+	/// </summary>
 	internal class AssociateUnencryptedResponseProvider : AssociateUnencryptedResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedResponseProvider"/> class.

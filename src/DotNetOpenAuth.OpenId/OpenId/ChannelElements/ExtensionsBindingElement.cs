@@ -21,6 +21,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// their carrying OpenID messages.
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// False if unsigned extensions should be dropped.  Must always be true on Providers, since RPs never sign extensions.
+		/// </summary>
 		private readonly bool receiveUnsignedExtensions;
 
 		/// <summary>

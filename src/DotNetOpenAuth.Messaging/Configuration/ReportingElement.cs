@@ -8,9 +8,9 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the &lt;reporting&gt; element in the host's .config file.

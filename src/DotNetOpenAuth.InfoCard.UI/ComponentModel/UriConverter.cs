@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.ComponentModel {
 								 let value = (string)prop.GetValue(null, null)
 								 where value != null
 								 select new Uri(value);
-				return (fields.Concat(properties)).ToArray();
+				return fields.Concat(properties).ToArray();
 			} else {
 				return new Uri[0];
 			}

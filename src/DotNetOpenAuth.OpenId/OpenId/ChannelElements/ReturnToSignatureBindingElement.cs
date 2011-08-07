@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
-	
+
 	/// <summary>
 	/// This binding element signs a Relying Party's openid.return_to parameter
 	/// so that upon return, it can verify that it hasn't been tampered with.

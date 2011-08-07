@@ -13,10 +13,12 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// The check_auth response message, as it is seen by the OpenID Provider.
+	/// </summary>
 	internal class CheckAuthenticationResponseProvider : CheckAuthenticationResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CheckAuthenticationResponse"/> class
-		/// for use by the Provider.
+		/// Initializes a new instance of the <see cref="CheckAuthenticationResponseProvider"/> class.
 		/// </summary>
 		/// <param name="request">The request that this message is responding to.</param>
 		/// <param name="provider">The OpenID Provider that is preparing to send this response.</param>

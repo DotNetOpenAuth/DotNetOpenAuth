@@ -15,6 +15,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
+	/// <summary>
+	/// The messaging channel for OpenID relying parties.
+	/// </summary>
 	internal class OpenIdRelyingPartyChannel : OpenIdChannel {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyChannel"/> class.

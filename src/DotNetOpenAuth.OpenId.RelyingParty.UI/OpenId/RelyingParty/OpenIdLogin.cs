@@ -622,7 +622,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[Category("Behavior")]
 		[Description("The unique hash string that ends your idselector.com account.")]
 		public string IdSelectorIdentifier {
-			get { return (string)(ViewState[IdSelectorIdentifierViewStateKey]); }
+			get { return (string)ViewState[IdSelectorIdentifierViewStateKey]; }
 			set { ViewState[IdSelectorIdentifierViewStateKey] = value; }
 		}
 

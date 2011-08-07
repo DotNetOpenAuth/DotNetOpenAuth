@@ -7,12 +7,15 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// The openid.mode=associate message as it is received at the OpenID Provider.
+	/// </summary>
 	internal abstract class AssociateRequestProvider : AssociateRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateRequestProvider"/> class.

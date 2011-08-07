@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 					AddAXAttributeValue(axResponse, WellKnownAttributes.Preferences.TimeZone, format, sregResponse.TimeZone);
 					AddAXAttributeValue(axResponse, WellKnownAttributes.Preferences.Language, format, sregResponse.Language);
 					if (sregResponse.Gender.HasValue) {
-						AddAXAttributeValue(axResponse, WellKnownAttributes.Person.Gender, format, ExtensionsInteropHelper.genderEncoder.Encode(sregResponse.Gender));
+						AddAXAttributeValue(axResponse, WellKnownAttributes.Person.Gender, format, ExtensionsInteropHelper.GenderEncoder.Encode(sregResponse.Gender));
 					}
 				}
 			}

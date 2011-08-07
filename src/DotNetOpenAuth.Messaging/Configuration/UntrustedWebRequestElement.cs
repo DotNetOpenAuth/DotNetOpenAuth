@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.Configuration {
 				return (UntrustedWebRequestElement)ConfigurationManager.GetSection(WebResourceUrlProviderName) ?? new UntrustedWebRequestElement();
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the read/write timeout after which an HTTP request will fail.
 		/// </summary>

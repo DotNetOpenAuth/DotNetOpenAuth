@@ -7,16 +7,19 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OpenId.Provider;
-	using System.Diagnostics.Contracts;
-	using DotNetOpenAuth.OpenId.Messages;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
-	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// The signing binding element for OpenID Providers.
+	/// </summary>
 	internal class ProviderSigningBindingElement : SigningBindingElement {
 		/// <summary>
 		/// The association store used by Providers to look up the secrets needed for signing.
@@ -30,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private readonly ProviderSecuritySettings opSecuritySettings;
 
 		/// <summary>
-		/// Initializes a new instance of the SigningBindingElement class for use by a Provider.
+		/// Initializes a new instance of the <see cref="ProviderSigningBindingElement"/> class.
 		/// </summary>
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
@@ -49,6 +52,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			get { return true; }
 		}
 
+		/// <summary>
+		/// Prepares a message for sending based on the rules of this channel binding element.
+		/// </summary>
+		/// <param name="message">The message to prepare for sending.</param>
+		/// <returns>
+		/// The protections (if any) that this binding element applied to the message.
+		/// Null if this binding element did not even apply to this binding element.
+		/// </returns>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var result = base.ProcessOutgoingMessage(message);
 			if (result != null) {
@@ -68,6 +79,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the association to use to sign or verify a message.
+		/// </summary>
+		/// <param name="signedMessage">The message to sign or verify.</param>
+		/// <returns>
+		/// The association to use to sign or verify the message.
+		/// </returns>
 		protected override Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
 			Contract.Requires<ArgumentNullException>(signedMessage != null);
 
@@ -95,6 +113,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			}
 		}
 
+		/// <summary>
+		/// Gets a specific association referenced in a given message's association handle.
+		/// </summary>
+		/// <param name="signedMessage">The signed message whose association handle should be used to lookup the association to return.</param>
+		/// <returns>
+		/// The referenced association; or <c>null</c> if such an association cannot be found.
+		/// </returns>
 		protected override Association GetSpecificAssociation(ITamperResistantOpenIdMessage signedMessage) {
 			Association association = null;
 
@@ -129,6 +154,15 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			return association;
 		}
 
+		/// <summary>
+		/// Verifies the signature by unrecognized handle.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <param name="signedMessage">The signed message.</param>
+		/// <param name="protectionsApplied">The protections applied.</param>
+		/// <returns>
+		/// The applied protections.
+		/// </returns>
 		protected override MessageProtections VerifySignatureByUnrecognizedHandle(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
 			// If we're on the Provider, then the RP sent us a check_auth with a signature
 			// we don't have an association for.  (It may have expired, or it may be a faulty RP).
@@ -192,9 +226,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			MessageDescription description = this.Channel.MessageDescriptions.Get(signedMessage);
 			var signedParts = from part in description.Mapping.Values
-							  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
-								  && part.GetValue(signedMessage) != null
-							  select part.Name;
+			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
+			                      && part.GetValue(signedMessage) != null
+			                  select part.Name;
 			string prefix = Protocol.V20.openid.Prefix;
 			ErrorUtilities.VerifyInternal(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
 
