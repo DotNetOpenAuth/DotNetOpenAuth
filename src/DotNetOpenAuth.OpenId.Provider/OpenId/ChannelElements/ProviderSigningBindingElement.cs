@@ -87,8 +87,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The association to use to sign or verify the message.
 		/// </returns>
 		protected override Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
-			Contract.Requires<ArgumentNullException>(signedMessage != null);
-
 			// We're on a Provider to either sign (smart/dumb) or verify a dumb signature.
 			bool signing = string.IsNullOrEmpty(signedMessage.Signature);
 

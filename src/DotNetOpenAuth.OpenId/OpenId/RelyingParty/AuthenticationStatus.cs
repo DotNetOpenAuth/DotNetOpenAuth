@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// with a message stating that additional user agent interaction is required
 		/// before authentication can be completed.</para>
 		/// <para>Casting the <see cref="IAuthenticationResponse"/> to a 
-		/// <see cref="ISetupRequiredAuthenticationResponse"/> in this case can help
+		/// ISetupRequiredAuthenticationResponse in this case can help
 		/// you retry the authentication using setup (non-immediate) mode.</para>
 		/// </summary>
 		SetupRequired,

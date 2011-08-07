@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
+		private static new IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
 			Contract.Requires(securitySettings != null);
 
 			return OAuthChannel.InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings).ToArray();

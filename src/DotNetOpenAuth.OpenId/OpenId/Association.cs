@@ -159,7 +159,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The newly dehydrated <see cref="Association"/>, which can be returned
 		/// from a custom association store's 
-		/// <see cref="IRelyingPartyAssociationStore.GetAssociation(Uri, SecuritySettings)"/> method.
+		/// IRelyingPartyAssociationStore.GetAssociation method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expiresUtc, byte[] privateData) {
 			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(handle));

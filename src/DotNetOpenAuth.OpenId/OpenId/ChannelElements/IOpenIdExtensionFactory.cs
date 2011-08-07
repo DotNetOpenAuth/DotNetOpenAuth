@@ -14,8 +14,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// </summary>
 	/// <remarks>
 	/// OpenID extension factories must be registered with the library.  This can be
-	/// done by adding a factory to <see cref="OpenIdRelyingParty.ExtensionFactories"/>
-	/// or <see cref="OpenIdProvider.ExtensionFactories"/>, or by adding a snippet
+	/// done by adding a factory to OpenIdRelyingParty.ExtensionFactories 
+	/// or OpenIdProvider.ExtensionFactories, or by adding a snippet
 	/// such as the following to your web.config file:
 	/// <example>
 	///   &lt;dotNetOpenAuth&gt;

@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets or sets the security settings that apply to this request.
 		/// </summary>
-		/// <value>Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.</value>
+		/// <value>Defaults to the OpenIdProvider.SecuritySettings on the OpenIdProvider.</value>
 		ProviderSecuritySettings SecuritySettings { get; set; }
 
 		/// <summary>
@@ -85,9 +85,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets or sets the security settings that apply to this request.
 		/// </summary>
-		/// <value>
-		/// Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.
-		/// </value>
+		/// <value>Defaults to the OpenIdProvider.SecuritySettings on the OpenIdProvider.</value>
 		ProviderSecuritySettings IRequest.SecuritySettings {
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }

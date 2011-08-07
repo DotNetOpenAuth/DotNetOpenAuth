@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The created association.
 		/// </returns>
 		/// <remarks>
-		///   <para>The caller will update this message's <see cref="ExpiresIn"/> and <see cref="AssociationHandle"/>
+		///   <para>The caller will update this message's <see cref="AssociateSuccessfulResponse.ExpiresIn"/> and <see cref="AssociateSuccessfulResponse.AssociationHandle"/>
 		/// properties based on the <see cref="Association"/> returned by this method, but any other
 		/// association type specific properties must be set by this method.</para>
 		///   <para>The response message is updated to include the details of the created association by this method,

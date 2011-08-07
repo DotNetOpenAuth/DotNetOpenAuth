@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="messageTypeProvider">An injected message type provider instance.
 		/// Except for mock testing, this should always be one of
-		/// <see cref="OAuthConsumerMessageFactory"/> or <see cref="OAuthServiceProviderMessageFactory"/>.</param>
+		/// OAuthConsumerMessageFactory or OAuthServiceProviderMessageFactory.</param>
 		/// <param name="bindingElements">The binding elements.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)

@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="cryptoKeyStore">The OpenID Provider's crypto key store.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
+		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either RelyingPartySecuritySettings or ProviderSecuritySettings.</param>
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>

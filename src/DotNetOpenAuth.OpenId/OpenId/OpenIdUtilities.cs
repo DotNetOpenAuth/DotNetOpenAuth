@@ -153,8 +153,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The list of factories that will be used to generate extension instances.</returns>
 		/// <remarks>
 		/// This is an extension method on <see cref="Channel"/> rather than an instance
-		/// method on <see cref="OpenIdChannel"/> because the <see cref="OpenIdRelyingParty"/>
-		/// and <see cref="OpenIdProvider"/> classes don't strong-type to <see cref="OpenIdChannel"/>
+		/// method on <see cref="OpenIdChannel"/> because the OpenIdRelyingParty
+		/// and OpenIdProvider classes don't strong-type to <see cref="OpenIdChannel"/>
 		/// to allow flexibility in the specific type of channel the user (or tests)
 		/// can plug in.
 		/// </remarks>

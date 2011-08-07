@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// to know that its user is over 21 years old, or perhaps a member of some organization.
 		/// OpenID extensions can provide this, without any need for asserting the identity of the user.</para>
 		/// 	<para>Constructing an OpenID request for only extensions can be done by calling
-		/// <see cref="OpenIdRelyingParty.CreateRequest(Identifier)"/> with any valid OpenID identifier
+		/// OpenIdRelyingParty.CreateRequest with any valid OpenID identifier
 		/// (claimed identifier or OP identifier).  But once this property is set to <c>true</c>,
 		/// the claimed identifier value in the request is not included in the transmitted message.</para>
 		/// 	<para>It is anticipated that an RP would only issue these types of requests to OPs that

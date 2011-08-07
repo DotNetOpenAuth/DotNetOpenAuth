@@ -260,7 +260,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets or sets the security settings that apply to this request.
 		/// </summary>
 		/// <value>
-		/// Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.
+		/// Defaults to the OpenIdProvider.SecuritySettings on the OpenIdProvider.
 		/// </value>
 		ProviderSecuritySettings IRequest.SecuritySettings {
 			get {

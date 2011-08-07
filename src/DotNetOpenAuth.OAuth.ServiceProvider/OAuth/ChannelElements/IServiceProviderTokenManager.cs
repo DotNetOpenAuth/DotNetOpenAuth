@@ -226,8 +226,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <see cref="System.Web.HttpContext.User">HttpContext.Current.User</see> may be
 		/// useful in an ASP.NET web application within the implementation of this method.
 		/// Alternatively you may store the access token here without associating with a user account,
-		/// and wait until <see cref="WebConsumer.ProcessUserAuthorization()"/> or
-		/// <see cref="DesktopConsumer.ProcessUserAuthorization(string, string)"/> return the access
+		/// and wait until WebConsumer.ProcessUserAuthorization or
+		/// DesktopConsumer.ProcessUserAuthorization return the access
 		/// token to associate the access token with a user account at that point.
 		/// </para>
 		/// </remarks>

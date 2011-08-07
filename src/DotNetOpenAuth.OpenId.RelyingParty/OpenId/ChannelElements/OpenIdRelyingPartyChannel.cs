@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// 	<para>A value of <c>true</c> allows the relying party to preview incoming
 		/// messages without invalidating nonces or checking signatures.</para>
 		/// 	<para>Setting this to <c>true</c> poses a great security risk and is only
-		/// present to support the <see cref="OpenIdAjaxTextBox"/> which needs to preview
+		/// present to support the OpenIdAjaxTextBox which needs to preview
 		/// messages, and will validate them later.</para>
 		/// </remarks>
 		internal static OpenIdChannel CreateNonVerifyingChannel() {
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="cryptoKeyStore">The crypto key store.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
-		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or <see cref="ProviderSecuritySettings"/>.</param>
+		/// <param name="securitySettings">The security settings to apply.  Must be an instance of either <see cref="RelyingPartySecuritySettings"/> or ProviderSecuritySettings.</param>
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
 		/// <returns>
 		/// An array of binding elements which may be used to construct the channel.

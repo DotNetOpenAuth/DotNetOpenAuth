@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </returns>
 		/// <remarks>
 		/// <para>If an association can be successfully created, the 
-		/// <see cref="AssociateSuccessfulResponse.CreateAssociation"/> method must not be
+		/// AssociateSuccessfulResponse.CreateAssociation method must not be
 		/// called by this method.</para>
 		/// <para>Successful association response messages will derive from <see cref="AssociateSuccessfulResponse"/>.
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
