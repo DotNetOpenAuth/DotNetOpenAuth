@@ -58,16 +58,5 @@ namespace DotNetOpenAuth.Configuration {
 		internal static ReportingElement Reporting {
 			get { return ReportingElement.Configuration; }
 		}
-
-		/// <summary>
-		/// Gets or sets the embedded resource retrieval provider.
-		/// </summary>
-		/// <value>
-		/// The embedded resource retrieval provider.
-		/// </value>
-		internal TypeConfigurationElement<IEmbeddedResourceRetrieval> EmbeddedResourceRetrievalProvider {
-			get { return /*TODO: (TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ??*/ new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
-			set { /*this[WebResourceUrlProviderName] = value;*/ }
-		}
 	}
 }

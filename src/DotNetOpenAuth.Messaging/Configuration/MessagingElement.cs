@@ -17,6 +17,11 @@ namespace DotNetOpenAuth.Configuration {
 	[ContractVerification(true)]
 	public class MessagingElement : ConfigurationSection {
 		/// <summary>
+		/// The name of the &lt;webResourceUrlProvider&gt; sub-element.
+		/// </summary>
+		private const string WebResourceUrlProviderName = "webResourceUrlProvider";
+
+		/// <summary>
 		/// The name of the &lt;untrustedWebRequest&gt; sub-element.
 		/// </summary>
 		private const string UntrustedWebRequestElementName = "untrustedWebRequest";
@@ -187,6 +192,17 @@ namespace DotNetOpenAuth.Configuration {
 		internal int MaximumIndirectMessageUrlLength {
 			get { return (int)this[MaximumIndirectMessageUrlLengthConfigName]; }
 			set { this[MaximumIndirectMessageUrlLengthConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the embedded resource retrieval provider.
+		/// </summary>
+		/// <value>
+		/// The embedded resource retrieval provider.
+		/// </value>
+		internal TypeConfigurationElement<IEmbeddedResourceRetrieval> EmbeddedResourceRetrievalProvider {
+			get { return (TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ?? new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
+			set { this[WebResourceUrlProviderName] = value; }
 		}
 	}
 }

@@ -14,11 +14,6 @@ namespace DotNetOpenAuth.Configuration {
 	/// to user-provided, untrusted servers is controlled.
 	/// </summary>
 	internal class UntrustedWebRequestElement : ConfigurationElement {
-		/// <summary>
-		/// The name of the &lt;webResourceUrlProvider&gt; sub-element.
-		/// </summary>
-		private const string WebResourceUrlProviderName = "webResourceUrlProvider";
-
 		#region Attribute names
 
 		/// <summary>
@@ -62,16 +57,6 @@ namespace DotNetOpenAuth.Configuration {
 		private const string BlacklistHostsRegexConfigName = "blacklistHostsRegex";
 
 		#endregion
-
-		/// <summary>
-		/// Gets the configuration section from the .config file.
-		/// </summary>
-		public static UntrustedWebRequestElement Configuration {
-			get {
-				Contract.Ensures(Contract.Result<UntrustedWebRequestElement>() != null);
-				return (UntrustedWebRequestElement)ConfigurationManager.GetSection(WebResourceUrlProviderName) ?? new UntrustedWebRequestElement();
-			}
-		}
 
 		/// <summary>
 		/// Gets or sets the read/write timeout after which an HTTP request will fail.
