@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
 		internal OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
-			: this(cryptoKeyStore, nonceStore, new OpenIdMessageFactory(), securitySettings, false) {
+			: this(cryptoKeyStore, nonceStore, new OpenIdRelyingPartyMessageFactory(), securitySettings, false) {
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}
 
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		internal static OpenIdChannel CreateNonVerifyingChannel() {
 			Contract.Ensures(Contract.Result<OpenIdChannel>() != null);
 
-			return new OpenIdRelyingPartyChannel(null, null, new OpenIdMessageFactory(), new RelyingPartySecuritySettings(), true);
+			return new OpenIdRelyingPartyChannel(null, null, new OpenIdRelyingPartyMessageFactory(), new RelyingPartySecuritySettings(), true);
 		}
 
 		/// <summary>

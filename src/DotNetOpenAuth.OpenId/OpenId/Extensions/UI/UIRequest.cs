@@ -188,34 +188,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 			}
 		}
 
-		/////// <summary>
-		/////// Gets the URL of the RP icon for the OP to display.
-		/////// </summary>
-		/////// <param name="realm">The realm of the RP where the authentication request originated.</param>
-		/////// <param name="provider">The Provider instance used to obtain the authentication request.</param>
-		/////// <returns>
-		/////// A sequence of the RP's icons it has available for the Provider to display, in decreasing preferred order.
-		/////// </returns>
-		/////// <value>The icon URL.</value>
-		/////// <remarks>
-		/////// This property is automatically set for the OP with the result of RP discovery.
-		/////// RPs should set this value by including an entry such as this in their XRDS document.
-		/////// <example>
-		/////// &lt;Service xmlns="xri://$xrd*($v*2.0)"&gt;
-		/////// &lt;Type&gt;http://specs.openid.net/extensions/ui/icon&lt;/Type&gt;
-		/////// &lt;URI&gt;http://consumer.example.com/images/image.jpg&lt;/URI&gt;
-		/////// &lt;/Service&gt;
-		/////// </example>
-		/////// </remarks>
-		////public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, OpenIdProvider provider) {
-		////    Contract.Requires(realm != null);
-		////    Contract.Requires(provider != null);
-		////    ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-		////    ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
-
-		////    return GetRelyingPartyIconUrls(realm, provider.Channel.WebRequestHandler);
-		////}
-
 		#region IMessage methods
 
 		/// <summary>

@@ -24,6 +24,7 @@
     <Compile Include="OpenId\Behaviors\GsaIcamRelyingPartyProfile.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementRelyingParty.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdRelyingPartyChannel.cs" />
+    <Compile Include="OpenId\ChannelElements\OpenIdRelyingPartyMessageFactory.cs" />
     <Compile Include="OpenId\ChannelElements\RelyingPartySecurityOptions.cs" />
     <Compile Include="OpenId\ChannelElements\RelyingPartySigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />

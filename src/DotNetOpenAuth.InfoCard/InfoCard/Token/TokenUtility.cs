@@ -60,8 +60,8 @@ namespace DotNetOpenAuth.InfoCard {
 				throw new InformationCardException("Unable to read security token");
 			}
 
-			////if (null != token.SecurityKeys && token.SecurityKeys.Count > 0)
-			////    throw new InformationCardException("Token Security Keys Exist");
+			if (null != token.SecurityKeys && token.SecurityKeys.Count > 0)
+				throw new InformationCardException("Token Security Keys Exist");
 
 			if (audience == null) {
 				Logger.InfoCard.Warn("SAML token Audience checking will be skipped.");
