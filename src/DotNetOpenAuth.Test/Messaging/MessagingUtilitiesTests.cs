@@ -217,6 +217,18 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessagingUtilities.GetHttpDeliveryMethod("UNRECOGNIZED");
 		}
 
+		[TestCase]
+		public void EncryptDecrypt() {
+			const string PlainText = "Hi folks!";
+			byte[] key = MessagingUtilities.GetCryptoRandomData(128 / 8);
+			var cipher = MessagingUtilities.Encrypt(PlainText, key);
+
+			Console.WriteLine("Encrypted \"{0}\" ({1} length) to {2} encrypted bytes.", PlainText, PlainText.Length, cipher.Length);
+
+			string roundTripped = MessagingUtilities.Decrypt(cipher, key);
+			Assert.AreEqual(PlainText, roundTripped);
+		}
+
 		/// <summary>
 		/// Verifies that the time-independent string equality check works accurately.
 		/// </summary>

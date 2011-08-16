@@ -15,13 +15,21 @@
 			</ToolProjects>
 		</ItemGroup>
 
-		<MSBuild Projects="@(ToolProjects)" Targets="%(ToolProjects.Targets)" BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="OfflineProvider"/>
+		<MSBuild Projects="@(ToolProjects)" Targets="%(ToolProjects.Targets);BuiltProjectOutputGroupDependencies" BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="ToolProjectsOutputs"/>
 		</MSBuild>
 
 		<ItemGroup>
-			<!-- Remove the un-unified assembly. -->
-			<OfflineProvider Remove="$(OutputPath)$(SignedSubPath)$(ProductName).dll" />
+			<!-- Exclude the un-unified assemblies. -->
+			<OfflineProvider Include="@(ToolProjectsOutputs)" 
+											 Condition=" '%(ToolProjectsOutputs.CopyLocal)' != 'false' "
+											 Exclude="
+											 $(OutputPath)$(ProductName).dll;
+											 $(OutputPath)$(SignedSubPath)$(ProductName).dll;
+											 $(ProjectRoot)lib\Microsoft.Contracts.dll;
+											 $(OutputPath)System.Web.Mvc.dll;
+											 " />
+			
 			<!-- add the PDBs -->
 			<OfflineProvider Include="@(OfflineProvider->'%(SymbolPath)')" />
 			<OfflineProviderTargets Include="
@@ -39,20 +47,21 @@
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="Layout" Returns="@(RedistributableFiles)">
-		<PropertyGroup>
-			<ToolsZip>$(ToolsDirectoryNoSlash).zip</ToolsZip>
-		</PropertyGroup>
 		<ItemGroup>
-			<RedistributableFiles Include="$(ToolsZip)">
+			<ToolsZip Include="$(ToolsDirectoryNoSlash).zip" />
+			<ToolsZip Include="$(ToolsDirectoryNoSlash).7z" />
+			<RedistributableFiles Include="@(ToolsZip)">
 				<Package>DotNetOpenAuth-Tools</Package>
 				<Platform>.NET $(TargetFrameworkVersion)</Platform>
 			</RedistributableFiles>
 		</ItemGroup>
 
-		<Zip ZipFileName="$(ToolsZip)"
-				 Files="@(AllToolTargets)"
-				 WorkingDirectory="$(ToolsDirectory)"
-				 ZipLevel="$(ZipLevel)" />
+		<Delete Files="@(ToolsZip)" />
+		<AddFilesTo7Zip
+			ZipFileName="%(ToolsZip.Identity)"
+			Files="@(AllToolTargets)"
+			WorkingDirectory="$(ToolsDirectory)"
+			ToolPath="$(Zip7ToolPath)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>

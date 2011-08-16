@@ -48,13 +48,18 @@ the tests contained in the nunit.tests.dll use the following command:</p>
 	<pre class="programtext">        nunit-console nunit.tests.nunit</pre>
 
 <h4>Specifying an Assembly and a Test to be Run</h4>
-<p>You may specify a test to be run by proviig the full name of the test along
+<p>You may specify a test to be run by providing the full name of the test along
 with the containing assembly. For example to run NUnit.Tests.AssertionTests
 in the nunit.tests assembly use the following command:
 <pre class="programtext">        nunit-console /run:NUnit.Tests.AssertionTests nunit.tests.dll</pre>
 
 <p>The name of the test to be run may be that of a test case, test fixture or
-a namespace. Unlike the <b>/fixture</b> option, this option affects the running
+a namespace. 
+
+<p>You can specify multiple tests by separating names with commas (without spaces). For example:
+<pre class="programtext">        nunit-console /run:NUnit.Tests.AssertionTests,NUnit.Tests.ConstraintTests nunit.tests.dll</pre>
+
+<p>Unlike the <b>/fixture</b> option, this option affects the running
 rather than the loading of the tests. Consequently it supports much broader use,
 including situations involving SetUpFixtures, which are not run if the class
 in question is not loaded. You should use <b>/run</b> in lieu of <b>/fixture</b>
@@ -249,6 +254,9 @@ for selected tests by use of <b>TimeoutAttribute</b>.
 may run for any amount of time.
 
 <h4>Other Options</h4>
+<p>The <b>/trace</b> option allows you to control the amount of information that NUnit
+	writes to its internal trace log. Valid values are Off, Error, Warning,Info
+	and Debug. The default is Off.
 <p>The <b>/noshadow</b> option disables shadow copying of the assembly in order to 
 	provide improved performance.</p>
 <p>The <b>/nothread</b> option suppresses use of a separate thread for running the 
@@ -266,7 +274,7 @@ may run for any amount of time.
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -298,7 +306,7 @@ may run for any amount of time.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

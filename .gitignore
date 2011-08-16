@@ -10,6 +10,7 @@ StyleCop.Cache
 *~
 PrecompiledWeb
 *.suo
+*.log
 *.cache
 *.user
 *.tmp
@@ -20,3 +21,5 @@ PrecompiledWeb
 *.Publish.xml
 *.dbproj.schemaview
 _ReSharper*
+*.vs10x
+*.docstates

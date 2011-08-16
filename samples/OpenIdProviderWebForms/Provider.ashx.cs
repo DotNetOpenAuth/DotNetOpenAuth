@@ -28,8 +28,7 @@
 					// redirects and user prompts can appear and eventually some page can decide
 					// to respond to the OpenID authentication request either affirmatively or
 					// negatively.
-					ProviderEndpoint.PendingAnonymousRequest = request as IAnonymousRequest;
-					ProviderEndpoint.PendingAuthenticationRequest = request as IAuthenticationRequest;
+					ProviderEndpoint.PendingRequest = request as IHostProcessedRequest;
 
 					// We delegate that approval process to our utility method that we share
 					// with our other Provider sample page server.aspx.
@@ -52,7 +51,7 @@
 					// We DON'T use ProviderEndpoint.SendResponse because
 					// that only sends responses to requests in PendingAuthenticationRequest,
 					// but we don't set that for associate and other non-checkid requests.
-					ProviderEndpoint.Provider.SendResponse(request);
+					ProviderEndpoint.Provider.Respond(request);
 
 					// Make sure that any PendingAuthenticationRequest that MAY be set is cleared.
 					ProviderEndpoint.PendingRequest = null;

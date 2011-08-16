@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
 	using System.Linq;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -23,10 +24,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public void SignaturesMatchKnownGood() {
 			Protocol protocol = Protocol.V20;
 			var settings = new ProviderSecuritySettings();
-			var store = new AssociationMemoryStore<AssociationRelyingPartyType>();
+			var cryptoStore = new MemoryCryptoKeyStore();
 			byte[] associationSecret = Convert.FromBase64String("rsSwv1zPWfjPRQU80hciu8FPDC+GONAMJQ/AvSo1a2M=");
-			Association association = HmacShaAssociation.Create("mock", associationSecret, TimeSpan.FromDays(1));
-			store.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+			string handle = "mock";
+			cryptoStore.StoreKey(ProviderAssociationKeyStorage.SharedAssociationBucket, handle, new CryptoKey(associationSecret, DateTime.UtcNow.AddDays(1)));
+
+			var store = new ProviderAssociationKeyStorage(cryptoStore);
 			SigningBindingElement signer = new SigningBindingElement(store, settings);
 			signer.Channel = new TestChannel(this.MessageDescriptions);
 
@@ -34,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			ITamperResistantOpenIdMessage signedMessage = message;
 			message.ProviderEndpoint = new Uri("http://provider");
 			signedMessage.UtcCreationDate = DateTime.Parse("1/1/2009");
-			signedMessage.AssociationHandle = association.Handle;
+			signedMessage.AssociationHandle = handle;
 			Assert.IsNotNull(signer.ProcessOutgoingMessage(message));
 			Assert.AreEqual("o9+uN7qTaUS9v0otbHTuNAtbkpBm14+es9QnNo6IHD4=", signedMessage.Signature);
 		}
@@ -45,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[TestCase]
 		public void SignedResponsesIncludeExtraDataInSignature() {
 			Protocol protocol = Protocol.Default;
-			SigningBindingElement sbe = new SigningBindingElement(new AssociationMemoryStore<AssociationRelyingPartyType>(), new ProviderSecuritySettings());
+			SigningBindingElement sbe = new SigningBindingElement(new ProviderAssociationHandleEncoder(new MemoryCryptoKeyStore()), new ProviderSecuritySettings());
 			sbe.Channel = new TestChannel(this.MessageDescriptions);
 			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ReturnTo = RPUri;

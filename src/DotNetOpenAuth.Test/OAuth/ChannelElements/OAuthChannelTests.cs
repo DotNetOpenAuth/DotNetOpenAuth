@@ -27,6 +27,8 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		private TestWebRequestHandler webRequestHandler;
 		private SigningBindingElementBase signingElement;
 		private INonceStore nonceStore;
+		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
 
 		[SetUp]
 		public override void SetUp() {
@@ -35,33 +37,33 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
+			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory());
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullSigner() {
-			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), new TestMessageFactory());
+			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), new TestMessageFactory());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, new TestMessageFactory());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase]
 		public void CtorSimpleConsumer() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager(), this.consumerSecuritySettings);
 		}
 
 		[TestCase]
 		public void CtorSimpleServiceProvider() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager());
+			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager(), this.serviceProviderSecuritySettings);
 		}
 
 		[TestCase]
@@ -125,7 +127,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			OutgoingWebResponse response = this.channel.PrepareResponse(message);
 			Assert.AreSame(message, response.OriginalMessage);
 			Assert.AreEqual(HttpStatusCode.OK, response.Status);
-			Assert.AreEqual(0, response.Headers.Count);
+			Assert.AreEqual(2, response.Headers.Count);
 
 			NameValueCollection body = HttpUtility.ParseQueryString(response.Body);
 			Assert.AreEqual("15", body["age"]);

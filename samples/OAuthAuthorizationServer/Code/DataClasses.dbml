@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="Database" EntityNamespace="OAuthAuthorizationServer.Code" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True;User Instance=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DatabaseConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.[User]" Member="Users">
+    <Type Name="User">
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="OpenIDClaimedIdentifier" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="OpenIDFriendlyIdentifier" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Association Name="User_ClientAuthorization" Member="ClientAuthorizations" Storage="_OAuthTokens" ThisKey="UserId" OtherKey="UserId" Type="ClientAuthorization" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Client" Member="Clients">
+    <Type Name="Client">
+      <Column Name="ClientId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ClientIdentifier" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="ClientSecret" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Callback" Type="System.String" CanBeNull="true" />
+      <Column Name="Name" Type="System.String" CanBeNull="false" />
+      <Association Name="Client_ClientAuthorization" Member="ClientAuthorizations" Storage="_OAuthTokens" ThisKey="ClientId" OtherKey="ClientId" Type="ClientAuthorization" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ClientAuthorization" Member="ClientAuthorizations">
+    <Type Name="ClientAuthorization">
+      <Column Name="AuthorizationId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="CreatedOnUtc" Storage="_IssueDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="ClientId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int" CanBeNull="false" />
+      <Column Name="Scope" Type="System.String" DbType="nvarchar(MAX)" CanBeNull="false" />
+      <Column Name="ExpirationDateUtc" Type="System.DateTime" DbType="DateTime NULL" CanBeNull="true" />
+      <Association Name="Client_ClientAuthorization" Member="Client" ThisKey="ClientId" OtherKey="ClientId" Type="Client" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="User_ClientAuthorization" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Nonce" Member="Nonces">
+    <Type Name="Nonce">
+      <Column Name="Context" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Code" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Timestamp" Type="System.DateTime" IsPrimaryKey="true" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="" Member="SymmetricCryptoKeys">
+    <Type Name="SymmetricCryptoKey">
+      <Column Name="Bucket" Type="System.String" IsPrimaryKey="true" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="Handle" Type="System.String" IsPrimaryKey="true" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="ExpiresUtc" Type="System.DateTime" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="Secret" Type="System.Byte[]" CanBeNull="false" UpdateCheck="Never" />
+    </Type>
+  </Table>
+</Database>

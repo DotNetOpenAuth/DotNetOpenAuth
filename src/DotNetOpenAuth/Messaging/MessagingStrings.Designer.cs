@@ -133,6 +133,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to instantiate the message part encoder/decoder type {0}..
+        /// </summary>
+        internal static string EncoderInstantiationFailed {
+            get {
+                return ResourceManager.GetString("EncoderInstantiationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error while deserializing message {0}..
         /// </summary>
         internal static string ErrorDeserializingMessage {
@@ -183,6 +192,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string ExpiredMessage {
             get {
                 return ResourceManager.GetString("ExpiredMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to add extra parameter &apos;{0}&apos; with value &apos;{1}&apos;..
+        /// </summary>
+        internal static string ExtraParameterAddFailure {
+            get {
+                return ResourceManager.GetString("ExtraParameterAddFailure", resourceCulture);
             }
         }
         
@@ -358,6 +376,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following message parts had constant value requirements that were unsatisfied: {0}.
+        /// </summary>
+        internal static string RequiredMessagePartConstantIncorrect {
+            get {
+                return ResourceManager.GetString("RequiredMessagePartConstantIncorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following required non-empty parameters were empty in the {0} message: {1}.
         /// </summary>
         internal static string RequiredNonEmptyParameterWasEmpty {
@@ -426,6 +453,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string SigningNotSupported {
             get {
                 return ResourceManager.GetString("SigningNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This message factory does not support message type(s): {0}.
+        /// </summary>
+        internal static string StandardMessageFactoryUnsupportedMessageType {
+            get {
+                return ResourceManager.GetString("StandardMessageFactoryUnsupportedMessageType", resourceCulture);
             }
         }
         
@@ -588,6 +624,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string UnsafeWebRequestDetected {
             get {
                 return ResourceManager.GetString("UnsafeWebRequestDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This blob is not a recognized encryption format..
+        /// </summary>
+        internal static string UnsupportedEncryptionAlgorithm {
+            get {
+                return ResourceManager.GetString("UnsupportedEncryptionAlgorithm", resourceCulture);
             }
         }
         

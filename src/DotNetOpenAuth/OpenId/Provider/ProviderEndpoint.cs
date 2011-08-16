@@ -180,7 +180,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public static void SendResponse() {
 			var pendingRequest = PendingRequest;
 			PendingRequest = null;
-			Provider.SendResponse(pendingRequest);
+			Provider.Respond(pendingRequest);
 		}
 
 		/// <summary>
@@ -222,8 +222,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 						}
 					}
 					if (request.IsResponseReady) {
-						Provider.SendResponse(request);
-						Page.Response.End();
+						Provider.Respond(request);
 						PendingAuthenticationRequest = null;
 					}
 				}

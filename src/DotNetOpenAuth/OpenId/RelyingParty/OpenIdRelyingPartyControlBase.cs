@@ -76,6 +76,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// A common base class for OpenID Relying Party controls.
 	/// </summary>
 	[DefaultProperty("Identifier"), ValidationProperty("Identifier")]
+	[ParseChildren(true), PersistChildren(false)]
 	public abstract class OpenIdRelyingPartyControlBase : Control, IPostBackEventHandler, IDisposable {
 		/// <summary>
 		/// The manifest resource name of the javascript file to include on the hosting page.
@@ -545,7 +546,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Enables a server control to perform final clean up before it is released from memory.
 		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Unavoidable because base class does not expose a protected virtual Dispose(bool) method."), SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Base class doesn't implement virtual Dispose(bool), so we must call its Dispose() method.")]
 		public sealed override void Dispose() {
 			this.Dispose(true);
 			base.Dispose();
@@ -791,7 +792,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			IRelyingPartyApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
+			IOpenIdApplicationStore store = this.Stateless ? null : DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
 			return this.CreateRelyingParty(store);
 		}
 
@@ -800,7 +801,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="store">The store to pass to the relying party constructor.</param>
 		/// <returns>The instantiated relying party.</returns>
-		protected virtual OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store) {
+		protected virtual OpenIdRelyingParty CreateRelyingParty(IOpenIdApplicationStore store) {
 			return new OpenIdRelyingParty(store);
 		}
 
@@ -808,6 +809,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Configures the relying party.
 		/// </summary>
 		/// <param name="relyingParty">The relying party.</param>
+		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "relyingParty", Justification = "This makes it possible for overrides to see the value before it is set on a field.")]
 		protected virtual void ConfigureRelyingParty(OpenIdRelyingParty relyingParty) {
 			Contract.Requires<ArgumentNullException>(relyingParty != null);
 

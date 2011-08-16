@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOpenAuth.OAuth2.ClientBase">
+    <Position X="0.5" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAwAEAAAAAAAgAAAIEAAAwAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\ClientBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.WebServerClient">
+    <Position X="4.5" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAAEAAAAAAABAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>OAuth2\WebServerClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.UserAgentClient">
+    <Position X="4.5" Y="3" Width="3.5" />
+    <InheritanceLine Type="DotNetOpenAuth.OAuth2.ClientBase" FixedFromPoint="true">
+      <Path>
+        <Point X="4" Y="3.166" />
+        <Point X="4.5" Y="3.166" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\UserAgentClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

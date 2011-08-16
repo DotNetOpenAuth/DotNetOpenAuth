@@ -74,6 +74,7 @@
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsExtraRewriteOptions />
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -111,6 +112,7 @@
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsExtraRewriteOptions />
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -150,10 +152,10 @@
     <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsExtraRewriteOptions />
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
     <Reference Include="Moq" />
     <Reference Include="NUnit.Framework" />
     <Reference Include="System" />
@@ -171,6 +173,7 @@
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
@@ -202,6 +205,7 @@
     <Compile Include="Messaging\Bindings\StandardExpirationBindingElementTests.cs" />
     <Compile Include="Messaging\Reflection\MessagePartTests.cs" />
     <Compile Include="Messaging\Reflection\ValueMappingTests.cs" />
+    <Compile Include="Messaging\StandardMessageFactoryTests.cs" />
     <Compile Include="Mocks\AssociateUnencryptedRequestNoSslCheck.cs" />
     <Compile Include="Mocks\CoordinatingChannel.cs" />
     <Compile Include="Mocks\CoordinatingHttpRequestInfo.cs" />
@@ -227,6 +231,9 @@
     <Compile Include="Mocks\TestChannel.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Mocks\TestMessageFactory.cs" />
+    <Compile Include="OAuth2\MessageFactoryTests.cs" />
+    <Compile Include="OAuth2\OAuth2ChannelTests.cs" />
+    <Compile Include="OAuth2\OAuth2TestBase.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElementTests.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthChannelTests.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElementTest.cs" />
@@ -236,7 +243,7 @@
     <Compile Include="OAuth\ProtocolTests.cs" />
     <Compile Include="OAuth\ServiceProviderDescriptionTests.cs" />
     <Compile Include="OAuth\ServiceProviderTests.cs" />
-    <Compile Include="OpenId\AssociationsTests.cs" />
+    <Compile Include="OpenId\RelyingParty\AssociationsTests.cs" />
     <Compile Include="OpenId\AssociationTests.cs" />
     <Compile Include="OpenId\AuthenticationTests.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementTests.cs" />
@@ -302,6 +309,9 @@
     <Compile Include="OpenId\RelyingParty\IdentifierDiscoveryResultTests.cs" />
     <Compile Include="OpenId\UriIdentifierTests.cs" />
     <Compile Include="OpenId\XriIdentifierTests.cs" />
+    <Compile Include="Performance\CodeTimers.cs" />
+    <Compile Include="Performance\HighPerformance.cs" />
+    <Compile Include="Performance\PerformanceTestUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="OAuth\AppendixScenarios.cs" />
@@ -354,6 +364,7 @@
     <EmbeddedResource Include="OpenId\Discovery\xrdsdiscovery\xrds20dual.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="OAuth2\ChannelElements\" />
     <Folder Include="OpenId\UI\" />
   </ItemGroup>
   <ItemGroup>

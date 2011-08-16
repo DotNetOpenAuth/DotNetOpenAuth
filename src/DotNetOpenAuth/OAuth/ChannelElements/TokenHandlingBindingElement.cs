@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -25,13 +26,22 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		private IServiceProviderTokenManager tokenManager;
 
 		/// <summary>
+		/// The security settings for this service provider.
+		/// </summary>
+		private ServiceProviderSecuritySettings securitySettings;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="TokenHandlingBindingElement"/> class.
 		/// </summary>
 		/// <param name="tokenManager">The token manager.</param>
-		internal TokenHandlingBindingElement(IServiceProviderTokenManager tokenManager) {
+		/// <param name="securitySettings">The security settings.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contract"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
+		internal TokenHandlingBindingElement(IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Contract.Requires<ArgumentNullException>(securitySettings != null);
 
 			this.tokenManager = tokenManager;
+			this.securitySettings = securitySettings;
 		}
 
 		#region IChannelBindingElement Members
@@ -173,7 +183,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			try {
 				IServiceProviderRequestToken token = this.tokenManager.GetRequestToken(message.Token);
-				TimeSpan ttl = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.MaximumRequestTokenTimeToLive;
+				TimeSpan ttl = this.securitySettings.MaximumRequestTokenTimeToLive;
 				if (DateTime.Now >= token.CreatedOn.ToLocalTimeSafe() + ttl) {
 					Logger.OAuth.ErrorFormat(
 						"OAuth request token {0} rejected because it was originally issued at {1}, expired at {2}, and it is now {3}.",

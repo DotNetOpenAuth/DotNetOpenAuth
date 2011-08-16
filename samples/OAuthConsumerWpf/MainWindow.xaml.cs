@@ -3,31 +3,26 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Diagnostics;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Security.Cryptography.X509Certificates;
 	using System.ServiceModel;
 	using System.ServiceModel.Channels;
-	using System.Text;
-	using System.Threading;
 	using System.Windows;
 	using System.Windows.Controls;
-	using System.Windows.Data;
-	using System.Windows.Documents;
-	using System.Windows.Input;
-	using System.Windows.Media;
-	using System.Windows.Media.Imaging;
-	using System.Windows.Navigation;
-	using System.Windows.Shapes;
-	using System.Xml;
 	using System.Xml.Linq;
-	using System.Xml.XPath;
-	using DotNetOpenAuth;
+
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Samples.OAuthConsumerWpf.WcfSampleService;
+
+	using OAuth2;
+
+	using OAuth2 = DotNetOpenAuth.OAuth2;
+	using ProtocolVersion = DotNetOpenAuth.OAuth.ProtocolVersion;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
@@ -36,9 +31,8 @@
 		private InMemoryTokenManager googleTokenManager = new InMemoryTokenManager();
 		private DesktopConsumer google;
 		private string googleAccessToken;
-		private InMemoryTokenManager wcfTokenManager = new InMemoryTokenManager();
-		private DesktopConsumer wcf;
-		private string wcfAccessToken;
+		private UserAgentClient wcf;
+		private IAuthorizationState wcfAccessToken;
 
 		public MainWindow() {
 			this.InitializeComponent();
@@ -63,21 +57,11 @@
 		}
 
 		private void InitializeWcfConsumer() {
-			this.wcfTokenManager.ConsumerKey = "sampleconsumer";
-			this.wcfTokenManager.ConsumerSecret = "samplesecret";
-			MessageReceivingEndpoint oauthEndpoint = new MessageReceivingEndpoint(
-				new Uri("http://localhost:65169/OAuth.ashx"),
-				HttpDeliveryMethods.PostRequest);
-			this.wcf = new DesktopConsumer(
-				new ServiceProviderDescription {
-					RequestTokenEndpoint = oauthEndpoint,
-					UserAuthorizationEndpoint = oauthEndpoint,
-					AccessTokenEndpoint = oauthEndpoint,
-					TamperProtectionElements = new DotNetOpenAuth.Messaging.ITamperProtectionChannelBindingElement[] {
-						new HmacSha1SigningBindingElement(),
-					},
-				},
-				this.wcfTokenManager);
+			var authServer = new AuthorizationServerDescription() {
+				AuthorizationEndpoint = new Uri("http://localhost:50172/OAuth/Authorize"),
+				TokenEndpoint = new Uri("http://localhost:50172/OAuth/Token"),
+			};
+			this.wcf = new UserAgentClient(authServer, "sampleconsumer", "samplesecret");
 		}
 
 		private void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {
@@ -86,7 +70,7 @@
 				return;
 			}
 
-			Authorize auth = new Authorize(
+			var auth = new Authorize(
 				this.google,
 				(DesktopConsumer consumer, out string requestToken) =>
 				GoogleConsumer.RequestAuthorization(
@@ -121,15 +105,13 @@
 		}
 
 		private void beginWcfAuthorizationButton_Click(object sender, RoutedEventArgs e) {
-			var requestArgs = new Dictionary<string, string>();
-			requestArgs["scope"] = "http://tempuri.org/IDataApi/GetName|http://tempuri.org/IDataApi/GetAge|http://tempuri.org/IDataApi/GetFavoriteSites";
-			Authorize auth = new Authorize(
-				this.wcf,
-				(DesktopConsumer consumer, out string requestToken) => consumer.RequestUserAuthorization(requestArgs, null, out requestToken));
+			var auth = new Authorize2(this.wcf);
+			auth.Authorization.Scope.AddRange(OAuthUtilities.SplitScopes("http://tempuri.org/IDataApi/GetName http://tempuri.org/IDataApi/GetAge http://tempuri.org/IDataApi/GetFavoriteSites"));
+			auth.Authorization.Callback = new Uri("http://localhost:59721/");
 			auth.Owner = this;
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
-				this.wcfAccessToken = auth.AccessToken;
+				this.wcfAccessToken = auth.Authorization;
 				this.wcfName.Content = CallService(client => client.GetName());
 				this.wcfAge.Content = CallService(client => client.GetAge());
 				this.wcfFavoriteSites.Content = CallService(client => string.Join(", ", client.GetFavoriteSites()));
@@ -138,11 +120,12 @@
 
 		private T CallService<T>(Func<DataApiClient, T> predicate) {
 			DataApiClient client = new DataApiClient();
-			var serviceEndpoint = new MessageReceivingEndpoint(client.Endpoint.Address.Uri, HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest);
 			if (this.wcfAccessToken == null) {
 				throw new InvalidOperationException("No access token!");
 			}
-			WebRequest httpRequest = this.wcf.PrepareAuthorizedRequest(serviceEndpoint, this.wcfAccessToken);
+
+			var httpRequest = (HttpWebRequest)WebRequest.Create(client.Endpoint.Address.Uri);
+			this.wcf.AuthorizeRequest(httpRequest, this.wcfAccessToken);
 
 			HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
 			httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers[HttpRequestHeader.Authorization];
@@ -196,6 +179,54 @@
 				}
 			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);
+			}
+		}
+
+		private void oauth2BeginButton_Click(object sender, RoutedEventArgs e) {
+			var authServer = new DotNetOpenAuth.OAuth2.AuthorizationServerDescription {
+				AuthorizationEndpoint = new Uri(this.oauth2AuthorizationUrlBox.Text),
+			};
+			if (this.oauth2TokenEndpointBox.Text.Length > 0) {
+				authServer.TokenEndpoint = new Uri(this.oauth2TokenEndpointBox.Text);
+			}
+
+			try {
+				var client = new OAuth2.UserAgentClient(authServer, this.oauth2ClientIdentifierBox.Text, this.oauth2ClientSecretBox.Text);
+
+				var authorizePopup = new Authorize2(client);
+				authorizePopup.Authorization.Scope.AddRange(OAuthUtilities.SplitScopes(this.oauth2ScopeBox.Text));
+				authorizePopup.Owner = this;
+				bool? result = authorizePopup.ShowDialog();
+				if (result.HasValue && result.Value) {
+					var requestUri = new UriBuilder(this.oauth2ResourceUrlBox.Text);
+					if (this.oauth2ResourceHttpMethodList.SelectedIndex > 0) {
+						requestUri.AppendQueryArgument("access_token", authorizePopup.Authorization.AccessToken);
+					}
+
+					var request = (HttpWebRequest)WebRequest.Create(requestUri.Uri);
+					request.Method = this.oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
+					if (this.oauth2ResourceHttpMethodList.SelectedIndex == 0) {
+						client.AuthorizeRequest(request, authorizePopup.Authorization);
+					}
+
+					using (var resourceResponse = request.GetResponse()) {
+						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
+							this.oauth2ResultsBox.Text = responseStream.ReadToEnd();
+						}
+					}
+				} else {
+					return;
+				}
+			} catch (Messaging.ProtocolException ex) {
+				MessageBox.Show(this, ex.Message);
+			} catch (WebException ex) {
+				string responseText = string.Empty;
+				if (ex.Response != null) {
+					using (var responseReader = new StreamReader(ex.Response.GetResponseStream())) {
+						responseText = responseReader.ReadToEnd();
+					}
+				}
+				MessageBox.Show(this, ex.Message + "  " + responseText);
 			}
 		}
 	}

@@ -301,7 +301,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="store">The store to pass to the relying party constructor.</param>
 		/// <returns>The instantiated relying party.</returns>
-		protected override OpenIdRelyingParty CreateRelyingParty(IRelyingPartyApplicationStore store) {
+		protected override OpenIdRelyingParty CreateRelyingParty(IOpenIdApplicationStore store) {
 			return new OpenIdAjaxRelyingParty(store);
 		}
 
@@ -428,7 +428,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.RelyingParty.Channel.GetRequestFromContext(),
 				callback);
 
-			response.Send();
+			response.Respond();
 		}
 
 		/// <summary>

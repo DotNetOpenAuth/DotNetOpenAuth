@@ -99,9 +99,9 @@ namespace DotNetOpenAuth.OAuth {
 
 			var signingElement = serviceDescription.CreateTamperProtectionElement();
 			this.ServiceDescription = serviceDescription;
-			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, messageTypeProvider);
-			this.TokenGenerator = new StandardTokenGenerator();
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+			this.OAuthChannel = new OAuthChannel(signingElement, nonceStore, tokenManager, this.SecuritySettings, messageTypeProvider);
+			this.TokenGenerator = new StandardTokenGenerator();
 
 			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, nonceStore);
 		}
@@ -341,7 +341,7 @@ namespace DotNetOpenAuth.OAuth {
 			Contract.Requires<ArgumentException>((consumerKey == null) == (scope == null));
 			Contract.Requires<InvalidOperationException>(this.TokenManager is ICombinedOpenIdProviderTokenManager);
 			var openidTokenManager = (ICombinedOpenIdProviderTokenManager)this.TokenManager;
-			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), "The consumer key and the realm did not match according to the token manager.");
+			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), OAuthStrings.OpenIdOAuthRealmConsumerKeyDoNotMatch);
 
 			this.AttachAuthorizationResponse(openIdAuthenticationRequest, scope);
 		}

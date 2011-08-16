@@ -32,9 +32,33 @@ namespace DotNetOpenAuth.Configuration {
 		private const string MaximumClockSkewConfigName = "clockSkew";
 
 		/// <summary>
+		/// The name of the attribute that indicates whether to disable SSL requirements across the library.
+		/// </summary>
+		private const string RelaxSslRequirementsConfigName = "relaxSslRequirements";
+
+		/// <summary>
 		/// The name of the attribute that controls whether messaging rules are strictly followed.
 		/// </summary>
 		private const string StrictConfigName = "strict";
+
+		/// <summary>
+		/// The default value for the <see cref="MaximumIndirectMessageUrlLength"/> property.
+		/// </summary>
+		/// <value>
+		/// 2KB, recommended by OpenID group
+		/// </value>
+		private const int DefaultMaximumIndirectMessageUrlLength = 2 * 1024;
+
+		/// <summary>
+		/// The name of the attribute that controls the maximum length of a URL before it is converted
+		/// to a POST payload.
+		/// </summary>
+		private const string MaximumIndirectMessageUrlLengthConfigName = "maximumIndirectMessageUrlLength";
+
+		/// <summary>
+		/// Gets the name of the @privateSecretMaximumAge attribute.
+		/// </summary>
+		private const string PrivateSecretMaximumAgeConfigName = "privateSecretMaximumAge";
 
 		/// <summary>
 		/// Gets the actual maximum message lifetime that a program should allow.
@@ -43,6 +67,17 @@ namespace DotNetOpenAuth.Configuration {
 		/// <see cref="MaximumClockSkew"/> property values.</value>
 		public TimeSpan MaximumMessageLifetime {
 			get { return this.MaximumMessageLifetimeNoSkew + this.MaximumClockSkew; }
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum lifetime of a private symmetric secret,
+		/// that may be used for signing or encryption.
+		/// </summary>
+		/// <value>The default value is 28 days (twice the age of the longest association).</value>
+		[ConfigurationProperty(PrivateSecretMaximumAgeConfigName, DefaultValue = "28.00:00:00")]
+		public TimeSpan PrivateSecretMaximumAge {
+			get { return (TimeSpan)this[PrivateSecretMaximumAgeConfigName]; }
+			set { this[PrivateSecretMaximumAgeConfigName] = value; }
 		}
 
 		/// <summary>
@@ -88,6 +123,16 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether SSL requirements within the library are disabled/relaxed.
+		/// Use for TESTING ONLY.
+		/// </summary>
+		[ConfigurationProperty(RelaxSslRequirementsConfigName, DefaultValue = false)]
+		internal bool RelaxSslRequirements {
+			get { return (bool)this[RelaxSslRequirementsConfigName]; }
+			set { this[RelaxSslRequirementsConfigName] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether messaging rules are strictly
 		/// adhered to.
 		/// </summary>
@@ -113,6 +158,20 @@ namespace DotNetOpenAuth.Configuration {
 		internal UntrustedWebRequestElement UntrustedWebRequest {
 			get { return (UntrustedWebRequestElement)this[UntrustedWebRequestElementName] ?? new UntrustedWebRequestElement(); }
 			set { this[UntrustedWebRequestElementName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum allowable size for a 301 Redirect response before we send
+		/// a 200 OK response with a scripted form POST with the parameters instead
+		/// in order to ensure successfully sending a large payload to another server
+		/// that might have a maximum allowable size restriction on its GET request.
+		/// </summary>
+		/// <value>The default value is 2048.</value>
+		[ConfigurationProperty(MaximumIndirectMessageUrlLengthConfigName, DefaultValue = DefaultMaximumIndirectMessageUrlLength)]
+		[IntegerValidator(MinValue = 500, MaxValue = 4096)]
+		internal int MaximumIndirectMessageUrlLength {
+			get { return (int)this[MaximumIndirectMessageUrlLengthConfigName]; }
+			set { this[MaximumIndirectMessageUrlLengthConfigName] = value; }
 		}
 	}
 }

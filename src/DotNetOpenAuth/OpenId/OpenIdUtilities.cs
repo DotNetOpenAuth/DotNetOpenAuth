@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
@@ -28,6 +29,19 @@ namespace DotNetOpenAuth.OpenId {
 		/// The prefix to designate this library's proprietary parameters added to the protocol.
 		/// </summary>
 		internal const string CustomParameterPrefix = "dnoa.";
+
+		/// <summary>
+		/// Creates a random association handle.
+		/// </summary>
+		/// <returns>The association handle.</returns>
+		public static string GenerateRandomAssociationHandle() {
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+
+			// Generate the handle.  It must be unique, and preferably unpredictable,
+			// so we use a time element and a random data element to generate it.
+			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
+			return string.Format(CultureInfo.InvariantCulture, "{{{0}}}{{{1}}}", DateTime.UtcNow.Ticks, uniq);
+		}
 
 		/// <summary>
 		/// Gets the OpenID protocol instance for the version in a message.
@@ -155,6 +169,27 @@ namespace DotNetOpenAuth.OpenId {
 			var aggregator = factory as OpenIdExtensionFactoryAggregator;
 			ErrorUtilities.VerifyOperation(aggregator != null, OpenIdStrings.UnsupportedChannelConfiguration);
 			return aggregator.Factories;
+		}
+
+		/// <summary>
+		/// Determines whether the association with the specified handle is (still) valid.
+		/// </summary>
+		/// <param name="associationStore">The association store.</param>
+		/// <param name="containingMessage">The OpenID message that referenced this association handle.</param>
+		/// <param name="isPrivateAssociation">A value indicating whether a private association is expected.</param>
+		/// <param name="handle">The association handle.</param>
+		/// <returns>
+		///   <c>true</c> if the specified containing message is valid; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsValid(this IProviderAssociationStore associationStore, IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
+			Contract.Requires<ArgumentNullException>(associationStore != null);
+			Contract.Requires<ArgumentNullException>(containingMessage != null);
+			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			try {
+				return associationStore.Deserialize(containingMessage, isPrivateAssociation, handle) != null;
+			} catch (ProtocolException) {
+				return false;
+			}
 		}
 	}
 }

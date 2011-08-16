@@ -8,7 +8,7 @@
 	Edit
 </asp:Content>
 <asp:Content ContentPlaceHolderID="Head" runat="server">
-	<%= Html.OpenIdSelectorStyles(this.Page) %>
+	<%= Html.OpenIdSelectorStyles() %>
 </asp:Content>
 <asp:Content ContentPlaceHolderID="ScriptsArea" runat="server">
 	<script type="text/javascript" src='<%= Url.Content("~/Scripts/MicrosoftAjax.js") %>'></script>
@@ -20,7 +20,7 @@
 	var additionalOptions = new OpenIdAjaxOptions {
 		FormIndex = 1,
 	}; %>
-	<%= Html.OpenIdSelectorScripts(this.Page, selector, additionalOptions)%>
+	<%= Html.OpenIdSelectorScripts(selector, additionalOptions)%>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 	<h2>

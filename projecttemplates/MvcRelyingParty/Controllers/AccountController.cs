@@ -48,59 +48,58 @@
 			return PartialView("EditFields", GetAccountInfoModel());
 		}
 
-		[Authorize]
+		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
 		public ActionResult Authorize() {
-			if (OAuthServiceProvider.PendingAuthorizationRequest == null) {
-				return RedirectToAction("Edit");
+			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+			if (pendingRequest == null) {
+				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
+			}
+
+			var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == pendingRequest.ClientIdentifier);
+
+			// Consider auto-approving if safe to do so.
+			if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServerServices).CanBeAutoApproved(pendingRequest)) {
+				var approval = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, HttpContext.User.Identity.Name);
+				return OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponse(approval).AsActionResult();
 			}
 
 			var model = new AccountAuthorizeModel {
-				ConsumerApp = OAuthServiceProvider.PendingAuthorizationConsumer.Name,
-				IsUnsafeRequest = OAuthServiceProvider.PendingAuthorizationRequest.IsUnsafeRequest,
+				ClientApp = requestingClient.Name,
+				Scope = pendingRequest.Scope,
+				AuthorizationRequest = pendingRequest,
 			};
 
 			return View(model);
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
-		public ActionResult Authorize(bool isApproved) {
-			if (isApproved) {
-				var consumer = OAuthServiceProvider.PendingAuthorizationConsumer;
-				var tokenManager = OAuthServiceProvider.ServiceProvider.TokenManager;
-				var pendingRequest = OAuthServiceProvider.PendingAuthorizationRequest;
-				ITokenContainingMessage requestTokenMessage = pendingRequest;
-				var requestToken = tokenManager.GetRequestToken(requestTokenMessage.Token);
-
-				var response = OAuthServiceProvider.AuthorizePendingRequestTokenAsWebResponse();
-				if (response != null) {
-					// The consumer provided a callback URL that can take care of everything else.
-					return response.AsActionResult();
-				}
-
-				var model = new AccountAuthorizeModel {
-					ConsumerApp = consumer.Name,
-				};
-
-				if (!pendingRequest.IsUnsafeRequest) {
-					model.VerificationCode = ServiceProvider.CreateVerificationCode(consumer.VerificationCodeFormat, consumer.VerificationCodeLength);
-					requestToken.VerificationCode = model.VerificationCode;
-					tokenManager.UpdateToken(requestToken);
-				}
-
-				return View("AuthorizeApproved", model);
-			} else {
-				OAuthServiceProvider.PendingAuthorizationRequest = null;
-				return View("AuthorizeDenied");
+		public ActionResult AuthorizeResponse(bool isApproved) {
+			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+			if (pendingRequest == null) {
+				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}
+			var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == pendingRequest.ClientIdentifier);
+
+			IDirectedProtocolMessage response;
+			if (isApproved) {
+				Database.LoggedInUser.ClientAuthorizations.Add(
+					new ClientAuthorization() {
+						Client = requestingClient,
+						Scope = string.Join(" ", pendingRequest.Scope.ToArray()),
+						User = Database.LoggedInUser,
+						CreatedOnUtc = DateTime.UtcNow.CutToSecond(),
+					});
+				response = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, HttpContext.User.Identity.Name);
+			} else {
+				response = OAuthServiceProvider.AuthorizationServer.PrepareRejectAuthorizationRequest(pendingRequest);
+			}
+
+			return OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponse(response).AsActionResult();
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Delete)] // ValidateAntiForgeryToken would be GREAT here, but it's not a FORM POST operation so that doesn't work.
-		public ActionResult RevokeToken(string token) {
-			if (String.IsNullOrEmpty(token)) {
-				throw new ArgumentNullException("token");
-			}
-
-			var tokenEntity = Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>().Where(t => t.User.UserId == Database.LoggedInUser.UserId && t.Token == token).FirstOrDefault();
+		public ActionResult RevokeAuthorization(int authorizationId) {
+			var tokenEntity = Database.DataContext.ClientAuthorizations.Where(auth => auth.User.UserId == Database.LoggedInUser.UserId && auth.AuthorizationId == authorizationId).FirstOrDefault();
 			if (tokenEntity == null) {
 				throw new ArgumentOutOfRangeException("id", "The logged in user does not have a token with this name to revoke.");
 			}
@@ -112,9 +111,9 @@
 		}
 
 		private static AccountInfoModel GetAccountInfoModel() {
-			var authorizedApps = from token in Database.DataContext.IssuedTokens.OfType<IssuedAccessToken>()
-								 where token.User.UserId == Database.LoggedInUser.UserId
-								 select new AccountInfoModel.AuthorizedApp { AppName = token.Consumer.Name, Token = token.Token };
+			var authorizedApps = from auth in Database.DataContext.ClientAuthorizations
+								 where auth.User.UserId == Database.LoggedInUser.UserId
+								 select new AccountInfoModel.AuthorizedApp { AppName = auth.Client.Name, AuthorizationId = auth.AuthorizationId, Scope = auth.Scope };
 			Database.LoggedInUser.AuthenticationTokens.Load();
 			var model = new AccountInfoModel {
 				FirstName = Database.LoggedInUser.FirstName,

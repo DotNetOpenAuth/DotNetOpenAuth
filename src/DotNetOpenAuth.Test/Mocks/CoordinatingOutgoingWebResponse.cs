@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
+	using System.ComponentModel;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
@@ -28,7 +29,12 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.OriginalMessage = message;
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
 		public override void Send() {
+			this.Respond();
+		}
+
+		public override void Respond() {
 			this.receivingChannel.PostMessage(this.OriginalMessage);
 		}
 	}

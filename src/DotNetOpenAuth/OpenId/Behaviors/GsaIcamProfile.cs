@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
@@ -34,6 +35,11 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		private static readonly TimeSpan MaximumAssociationLifetime = TimeSpan.FromSeconds(86400);
 
 		/// <summary>
+		/// Backing field for the <see cref="DisableSslRequirement"/> static property.
+		/// </summary>
+		private static bool disableSslRequirement = DotNetOpenAuthSection.Configuration.Messaging.RelaxSslRequirements;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.
 		/// </summary>
 		public GsaIcamProfile() {
@@ -57,7 +63,10 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// <summary>
 		/// Gets or sets a value indicating whether to ignore the SSL requirement (for testing purposes only).
 		/// </summary>
-		public static bool DisableSslRequirement { get; set; }
+		public static bool DisableSslRequirement { // not an auto-property because it has a default value, and FxCop doesn't want us using static constructors.
+			get { return disableSslRequirement; }
+			set { disableSslRequirement = value; }
+		}
 
 		#region IRelyingPartyBehavior Members
 

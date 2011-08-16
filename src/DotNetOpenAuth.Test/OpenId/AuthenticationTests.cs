@@ -138,8 +138,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private void ParameterizedAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool immediate, bool tamper) {
 			Contract.Requires<ArgumentException>(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
 			Contract.Requires<ArgumentException>(positive || !tamper, "Cannot tamper with a negative response.");
-			ProviderSecuritySettings securitySettings = new ProviderSecuritySettings();
-			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, securitySettings) : null;
+			var securitySettings = new ProviderSecuritySettings();
+			var cryptoKeyStore = new MemoryCryptoKeyStore();
+			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
+			Association association = sharedAssociation ? HmacShaAssociation.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings) : null;
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					var request = new CheckIdRequest(protocol.Version, OPUri, immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup);
@@ -153,7 +155,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					request.LocalIdentifier = "http://localid";
 					request.ReturnTo = RPUri;
 					request.Realm = RPUri;
-					rp.Channel.Send(request);
+					rp.Channel.Respond(request);
 					if (positive) {
 						if (tamper) {
 							try {
@@ -197,7 +199,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 				},
 				op => {
 					if (association != null) {
-						op.AssociationStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
+						var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
+						op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
 					}
 
 					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
@@ -208,20 +211,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 					} else {
 						response = new NegativeAssertionResponse(request, op.Channel);
 					}
-					op.Channel.Send(response);
+					op.Channel.Respond(response);
 
 					if (positive && (statelessRP || !sharedAssociation)) {
 						var checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
 						var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 						checkauthResponse.IsValid = checkauthRequest.IsValid;
-						op.Channel.Send(checkauthResponse);
+						op.Channel.Respond(checkauthResponse);
 
 						if (!tamper) {
 							// Respond to the replay attack.
 							checkauthRequest = op.Channel.ReadFromRequest<CheckAuthenticationRequest>();
 							checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 							checkauthResponse.IsValid = checkauthRequest.IsValid;
-							op.Channel.Send(checkauthResponse);
+							op.Channel.Respond(checkauthResponse);
 						}
 					}
 				});

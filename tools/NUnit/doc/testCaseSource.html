@@ -60,56 +60,16 @@ to provide test cases. It has the following characteristics:
 
 <h3>Constructing Test Cases</h3>
 
-<p>In constructing tests, NUnit uses each item test case returned by
+<p>In constructing tests, NUnit uses each item returned by
 the enumerator as follows:
 <ol>
-<li><p>If it is an <b>object[]</b>, it is used directly to provide
-the arguments for the method, as in this example, which returns
-arguments from a named static field.
 
-<div class="code">
-<pre>[Test, TestCaseSource("DivideCases")]
-public void DivideTest(int n, int d, int q)
-{
-    Assert.AreEqual( q, n / d );
-}
+<li><p>If it is an object implementing <b>NUnit.Framework.ITestCaseData</b>, 
+its properties are used to provide the test case. In NUnit 2.5, this is
+done using reflection to allow compatibility with earlier versions that
+did not implement <b>ITestCaseData</b>.
 
-static object[] DivideCases =
-{
-    new object[] { 12, 3, 4 },
-    new object[] { 12, 2, 6 },
-    new object[] { 12, 4, 3 } 
-};
-</pre></div>
-
-<li><p>If it is an array of some other type, NUnit can use it provided
-that the arguments to the method are all of that type. For example,
-the above code could be modified to make the three nested arrays 
-of type int[].
-
-<li><p>If it is a single value type - like numerics or DateTime - it
-is used directly as the sole argument to the method. The method must,
-of course take a single argument of the same type for this to work.
-This eliminates a bit of syntax on the part of the programmer, as in
-this example:
-
-<div class="code"><pre>
-static int[] EvenNumbers = new int[] { 2, 4, 6, 8 };
-
-[Test, TestCaseSource("EvenNumbers")]
-public void TestMethod(int num)
-{
-    Assert.IsTrue( num % 2 == 0 );
-}
-</pre></div>
-
-<p><b>Note:</b> Any user-defined struct intended to hold the arguments
-will be passed directly to the test method, since a struct is a value type.
-If you intend your user type to be used as described in the following item,
-you must define it as a class.
-
-<li><p>If it is any other type of object, it is examined using reflection
-and any public fields or properties with the following names are used:
+<p>The following public fields or properties are used:
   <p><dl>
   <dt><b>Arguments</b>
   <dd>An <b>object[]</b> representing the arguments to the method
@@ -138,12 +98,59 @@ and any public fields or properties with the following names are used:
       string, then the test is ignored.
   </dl>
 
+<p>
+<li><p>If the test has a single argument and the returned value matches the type of
+that argument it is used directly.
+
+<li><p>If it is an <b>object[]</b>, its members are used to provide
+the arguments for the method, as in this example, which returns
+arguments from a named static field.
+
+<div class="code">
+<pre>[Test, TestCaseSource("DivideCases")]
+public void DivideTest(int n, int d, int q)
+{
+    Assert.AreEqual( q, n / d );
+}
+
+static object[] DivideCases =
+{
+    new object[] { 12, 3, 4 },
+    new object[] { 12, 2, 6 },
+    new object[] { 12, 4, 3 } 
+};
+</pre></div>
+
+<li><p>If it is an array of some other type, NUnit can use it provided
+that the arguments to the method are all of that type. For example,
+the above code could be modified to make the three nested arrays 
+of type int[].
+
+<li><p>If anything else is returned, it is used directly as the sole 
+argument to the method. This allows NUnit to give an error message
+in cases where the method requires a different number arguments or
+an argument of a different type.
+This can also eliminate a bit of extra typing by the programmer, 
+as in this example:
+
+<div class="code"><pre>
+static int[] EvenNumbers = new int[] { 2, 4, 6, 8 };
+
+[Test, TestCaseSource("EvenNumbers")]
+public void TestMethod(int num)
+{
+    Assert.IsTrue( num % 2 == 0 );
+}
+</pre></div>
+
+</ol>
+
 <h3>TestCaseData Class</h3>
 
-<p>Although any object with the required fields or properties may be used,
-   NUnit provides the <b>TestCaseData</b> class for this purpose. The following 
-   example returns <b>TestCaseData</b> instances from a data source in
-   a separately defined class.
+<p>Although any object implementing <b>ITestCaseData</b> may be used to
+   provide extended test case information, NUnit provides the <b>TestCaseData</b> 
+   class for this purpose. The following    example returns <b>TestCaseData</b> 
+   instances from a data source in a separately defined class.
 
 <div class="code">
 <pre>[TestFixture]
@@ -254,7 +261,7 @@ themselves.
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -310,7 +317,7 @@ themselves.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

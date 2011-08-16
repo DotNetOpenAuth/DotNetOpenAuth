@@ -1,0 +1,2240 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0055)http://openid4.us/specs/ab/openid-connect-core-1_0.html -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><HTML 
+lang="en"><HEAD><TITLE>Draft: OpenID Connect Core 1.0 - draft 04</TITLE>
+<META content="text/html; charset=utf-8" http-equiv="Content-Type">
+<META name="description" content="OpenID Connect Core 1.0 - draft 04">
+<META name="GENERATOR" content="MSHTML 9.00.8112.16421">
+<STYLE type="text/css"><!--
+        body {
+                font-family: verdana, charcoal, helvetica, arial, sans-serif;
+                font-size: small; color: #000; background-color: #FFF;
+                margin: 2em;
+        }
+        h1, h2, h3, h4, h5, h6 {
+                font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+                font-weight: bold; font-style: normal;
+        }
+        h1 { color: #900; background-color: transparent; text-align: right; }
+        h3 { color: #333; background-color: transparent; }
+
+        td.RFCbug {
+                font-size: x-small; text-decoration: none;
+                width: 30px; height: 30px; padding-top: 2px;
+                text-align: justify; vertical-align: middle;
+                background-color: #000;
+        }
+        td.RFCbug span.RFC {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: bold; color: #666;
+        }
+        td.RFCbug span.hotText {
+                font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: normal; text-align: center; color: #FFF;
+        }
+
+        table.TOCbug { width: 30px; height: 15px; }
+        td.TOCbug {
+                text-align: center; width: 30px; height: 15px;
+                color: #FFF; background-color: #900;
+        }
+        td.TOCbug a {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+                font-weight: bold; font-size: x-small; text-decoration: none;
+                color: #FFF; background-color: transparent;
+        }
+
+        td.header {
+                font-family: arial, helvetica, sans-serif; font-size: x-small;
+                vertical-align: top; width: 33%;
+                color: #FFF; background-color: #666;
+        }
+        td.author { font-weight: bold; font-size: x-small; margin-left: 4em; }
+        td.author-text { font-size: x-small; }
+
+        /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+        a.info {
+                /* This is the key. */
+                position: relative;
+                z-index: 24;
+                text-decoration: none;
+        }
+        a.info:hover {
+                z-index: 25;
+                color: #FFF; background-color: #900;
+        }
+        a.info span { display: none; }
+        a.info:hover span.info {
+                /* The span will display just on :hover state. */
+                display: block;
+                position: absolute;
+                font-size: smaller;
+                top: 2em; left: -5em; width: 15em;
+                padding: 2px; border: 1px solid #333;
+                color: #900; background-color: #EEE;
+                text-align: left;
+        }
+
+        a { font-weight: bold; }
+        a:link    { color: #900; background-color: transparent; }
+        a:visited { color: #633; background-color: transparent; }
+        a:active  { color: #633; background-color: transparent; }
+
+        p { margin-left: 2em; margin-right: 2em; }
+        p.copyright { font-size: x-small; }
+        p.toc { font-size: small; font-weight: bold; margin-left: 3em; }
+        table.toc { margin: 0 0 0 3em; padding: 0; border: 0; vertical-align: text-top; }
+        td.toc { font-size: small; font-weight: bold; vertical-align: text-top; }
+
+        ol.text { margin-left: 2em; margin-right: 2em; }
+        ul.text { margin-left: 2em; margin-right: 2em; }
+        li      { margin-left: 3em; }
+
+        /* RFC-2629 <spanx>s and <artwork>s. */
+        em     { font-style: italic; }
+        strong { font-weight: bold; }
+        dfn    { font-weight: bold; font-style: normal; }
+        cite   { font-weight: normal; font-style: normal; }
+        tt     { color: #036; }
+        tt, pre, pre dfn, pre em, pre cite, pre span {
+                font-family: "Courier New", Courier, monospace; font-size: small;
+        }
+        pre {
+                text-align: left; padding: 4px;
+                color: #000; background-color: #CCC;
+        }
+        pre dfn  { color: #900; }
+        pre em   { color: #66F; background-color: #FFC; font-weight: normal; }
+        pre .key { color: #33C; font-weight: bold; }
+        pre .id  { color: #900; }
+        pre .str { color: #000; background-color: #CFF; }
+        pre .val { color: #066; }
+        pre .rep { color: #909; }
+        pre .oth { color: #000; background-color: #FCF; }
+        pre .err { background-color: #FCC; }
+
+        /* RFC-2629 <texttable>s. */
+        table.all, table.full, table.headers, table.none {
+                font-size: small; text-align: center; border-width: 2px;
+                vertical-align: top; border-collapse: collapse;
+        }
+        table.all, table.full { border-style: solid; border-color: black; }
+        table.headers, table.none { border-style: none; }
+        th {
+                font-weight: bold; border-color: black;
+                border-width: 2px 2px 3px 2px;
+        }
+        table.all th, table.full th { border-style: solid; }
+        table.headers th { border-style: none none solid none; }
+        table.none th { border-style: none; }
+        table.all td {
+                border-style: solid; border-color: #333;
+                border-width: 1px 2px;
+        }
+        table.full td, table.headers td, table.none td { border-style: none; }
+
+        hr { height: 1px; }
+        hr.insert {
+                width: 80%; border-style: none; border-width: 0;
+                color: #CCC; background-color: #CCC;
+        }
+--></STYLE>
+</HEAD>
+<BODY>
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<TABLE border="0" cellSpacing="0" summary="layout" cellPadding="0" 
+  width="66%"><TBODY>
+  <TR>
+    <TD>
+      <TABLE border="0" cellSpacing="1" summary="layout" cellPadding="2" width="100%">
+        <TBODY>
+        <TR>
+          <TD class="header">Draft</TD>
+          <TD class="header">N. Sakimura, Ed.</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">NRI</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">D. Recordon</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">Facebook</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">J. Bradeley</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">Protiviti Government Services</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">B. de Madeiros</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">Google</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">M. Jones</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">Microsoft</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">E. Jay, Ed.</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">MGI1</TD></TR>
+        <TR>
+          <TD class="header">&nbsp;</TD>
+          <TD class="header">May 1, 2011</TD></TR>
+</TBODY></TABLE></TD></TR></TBODY></TABLE>
+<H1><BR>OpenID Connect Core 1.0 - draft 04</H1>
+<H3>Abstract</H3>
+<P>OpenID Connect is an identity framework that provides authentication,      
+authorization, and attribute transmition capability. It allows third      party 
+attested claims from distributed sources. The specification suite      consists 
+of Building Blocks (Core, JSON Web Token, JSON Web Signatures,      JSON WEB 
+Encryption, JSON Web Keys, Simple Web Discovery), Protocol      Bindings (e.g, 
+Artifact Binding, Web App Binding, User Agent Binding)      and Extensions. This 
+specification is the "Core" of the suite that      defines the messages used and 
+abstract flow which will be further      constrained or extended in the 
+companion specifications in the      suite.</P><A name="toc"></A><BR>
+<HR>
+
+<H3>Table of Contents</H3>
+<P class="toc"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#rnc">1.</A>&nbsp;
+ Requirements Notation and Conventions<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#terminology">2.</A>&nbsp;
+ Terminology<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor1">3.</A>&nbsp;
+ Overview<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor2">4.</A>&nbsp;
+ Messages<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor3">4.1.</A>&nbsp;
+ Authorization Endpoint<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor7">4.2.</A>&nbsp;
+ Token Endpoint<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor11">4.3.</A>&nbsp;
+ UserInfo Endpoint<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor15">4.4.</A>&nbsp;
+ Session Management Endpoints<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#serializations">5.</A>&nbsp;
+ serializations<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#qss">5.1.</A>&nbsp;
+ Query String serialization<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#js">5.2.</A>&nbsp;
+ JSON Serialization<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor19">5.3.</A>&nbsp;
+ Conversions of OpenID 2.0 encodings<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#sigs">6.</A>&nbsp;
+ Signatures<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#encryption">7.</A>&nbsp;
+ Encryption<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor23">8.</A>&nbsp;
+ Requests and Responses<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor24">9.</A>&nbsp;
+ Verification<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor25">9.1.</A>&nbsp;
+ Authorization Request Verification<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor26">9.2.</A>&nbsp;
+ Authorization Response Verification<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor27">9.3.</A>&nbsp;
+ UserInfo Request Verification<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor28">9.4.</A>&nbsp;
+ UserInfo Response Verification<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#extensions">10.</A>&nbsp;
+ Extensions<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#security_considerations">11.</A>&nbsp;
+ Security Considerations<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#assertion_manufacture">11.1.</A>&nbsp;
+ Assertion manufacture/modification<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#assertion_disclosure">11.2.</A>&nbsp;
+ Assertion disclosure<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#assertion_repudiation">11.3.</A>&nbsp;
+ Assertion repudiation<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#assertion_redirect">11.4.</A>&nbsp;
+ Assertion redirect<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#assertion_reuse">11.5.</A>&nbsp;
+ Assertion reuse<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#artifact_manufacture">11.6.</A>&nbsp;
+ Secondary authenticator manufacture<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#artifact_capture">11.7.</A>&nbsp;
+ Secondary authenticator capture<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#assertion_substitution">11.8.</A>&nbsp;
+ Assertion substitution<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#auth_req_disclosure">11.9.</A>&nbsp;
+ Authentication Request Disclosure<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor29">11.10.</A>&nbsp;
+ Timing Attack<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#authn_proc_threats">11.11.</A>&nbsp;
+ Authentication Process Threats<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#iana">12.</A>&nbsp;
+ IANA Considerations<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#oauth_params">12.1.</A>&nbsp;
+ OAuth Parameters Registry<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor30">13.</A>&nbsp;
+ Open Issues and Things To Be Done (TBD)<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor31">Appendix&nbsp;A.</A>&nbsp;
+ Acknowledgements<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#anchor32">Appendix&nbsp;B.</A>&nbsp;
+ Document History<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#rfc.references1">14.</A>&nbsp;
+ Normative References<BR><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#rfc.authors">§</A>&nbsp;
+ Authors' Addresses<BR></P><BR clear="all"><A name="rnc"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.1"></A>
+<H3>1.&nbsp; Requirements Notation and Conventions</H3>
+<P>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",      
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this      
+document are to be interpreted as described in <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#RFC2119">[RFC2119]<SPAN> 
+(</SPAN><SPAN class="info">Bradner, S., “Key words for use in RFCs to Indicate 
+Requirement Levels,” March&nbsp;1997.</SPAN><SPAN>)</SPAN></A>      .</P>
+<P>Throughout this document, values are quoted to indicate that they are      to 
+be taken literally. When using these values in protocol messages, the      
+quotes MUST NOT be used as part of the value.</P><A name="terminology"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.2"></A>
+<H3>2.&nbsp; Terminology</H3>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>Protected Resource</DT>
+    <DD>An access-restricted resource which          can be obtained using an 
+    OAuth-authenticated request.</DD>
+    <DT>Resource Server</DT>
+    <DD>A server capable of accepting and          responding to protected 
+    resource requests.</DD>
+    <DT>Client</DT>
+    <DD>An application obtaining authorization and          making protected 
+    resource requests on behalf of the resource owner          and with its 
+    authorization.</DD>
+    <DT>Resource Owner</DT>
+    <DD>An entity capable of granting access to          a protected resource. 
+    When the resource owner is a person, it is          referred to as an 
+    End-user.</DD>
+    <DT>End-user</DT>
+    <DD>A human resource owner.</DD>
+    <DT>Authentication</DT>
+    <DD>An act of verifying End-User's identity          through the 
+    verification of the credential.</DD>
+    <DT>Access Token</DT>
+    <DD>A string representing an access          authorization issued to the 
+    client. The string is usually opaque to          the client. Tokens 
+    represent specific scopes and durations of          access, granted by the 
+    resource owner, and enforced by the resource          server and 
+    authorization servers.</DD>
+    <DT>Refresh Token</DT>
+    <DD>A token used by the client to obtain a          new access token without 
+    having to involve the resource owner.</DD>
+    <DT>Authorization Code</DT>
+    <DD>A short-lived token representing          the authorization provided by 
+    the end-user. The authorization code          is used to obtain an access 
+    token and a refresh token.</DD>
+    <DT>Authorization Grant</DT>
+    <DD>A general term used to describe          the intermediate credentials 
+    (such as an end-user password or          authorization code) representing 
+    the resource owner authorization.          Access grants are used by the 
+    client to obtain an access token. By          exchanging access grants of 
+    different types for an access token, the          resource server is only 
+    required to support a single authentication          scheme.</DD>
+    <DT>Authorization Server</DT>
+    <DD>A server capable of          authenticating the resource owner and 
+    issuing tokens after obtaining          authorization from the authenticated 
+    Resource Owner. The          authorization server may be the same server as 
+    Resource Server or a          separate entity. A single authorization server 
+    may issue tokens for          multiple resource servers.</DD>
+    <DT>OpenID Provider (OP)</DT>
+    <DD>Authorization Servers that are          able to support OpenID Connect 
+    Messages.</DD>
+    <DT>Relying Party (RP)</DT>
+    <DD>Client and Resource Servers.</DD>
+    <DT>Authorization Endpoint</DT>
+    <DD>The Authorization Server's          endpoint capable of authenticating 
+    the End-User and obtaining          authorization.</DD>
+    <DT>Client Identifier</DT>
+    <DD>An unique identifier that the client          to identify itself to the 
+    OP.</DD>
+    <DT>Client Secret</DT>
+    <DD>A shared secret established between the          OP and client.</DD>
+    <DT>Token Endpoint</DT>
+    <DD>The Authorization Server's HTTP          endpoint capable of issuing 
+    tokens.</DD>
+    <DT>OP Endpoints</DT>
+    <DD>End-User Authentication, Authorization,          and Token Endpoint.
+    </DD>
+    <DT>RP Endpoints</DT>
+    <DD>The endpoint to which the OP responses          are returned through 
+    redirect.</DD>
+    <DT>UserInfo Endpoint</DT>
+    <DD>A protected resource that when          presented with a token by the 
+    client returns authorized information          about the current user.</DD>
+    <DT>Claims</DT>
+    <DD>A statement that something is true or          factual.</DD>
+    <DT>Assertion</DT>
+    <DD>A set of Claims about the End-User which is          attested by the OP 
+    and Resource Servers.</DD>
+    <DT>Compact Serialization</DT>
+    <DD>Compact Serialization defined in          <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwt">JSON 
+    Web Token<SPAN> (</SPAN><SPAN class="info">Jones, M., Belfanz, D., Bradeley, 
+    J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web Token,” 
+    January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwt].</DD>
+    <DT>Base64url</DT>
+    <DD>Base 64 Encoding <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#RFC3548">[RFC3548]<SPAN> 
+    (</SPAN><SPAN class="info">Josefsson, S., “The Base16, Base32, and Base64 
+    Data Encodings,” July&nbsp;2003.</SPAN><SPAN>)</SPAN></A>          with URL 
+    and Filename Safe Alphabet without padding.</DD></DL></BLOCKQUOTE>
+<P></P><A name="anchor1"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.3"></A>
+<H3>3.&nbsp; Overview</H3>
+<P>OpenID Connect protocol in abstract follows the following steps.</P>
+<P></P>
+<OL class="text">
+  <LI>The Client sends a request to the Server's End-User Authorization          
+  Endpoint.</LI>
+  <LI>The Server authenticates the user and obtains appropriate          
+  authorization.</LI>
+  <LI>The Server responds with access_token and a few other          variables.
+  </LI>
+  <LI>The Client sends a request with the access_token to the Userinfo          
+  Endpoint.</LI>
+  <LI>Userinfo Endpoint returns the additional user information          
+  supported by the Server.</LI></OL>
+<P>Each message may be signed and encrypted. When the message is      encrypted, 
+it MUST be signed first then encrypted. This specification      only defines the 
+abstract messsage flow and message formats. The actual      use MUST base on one 
+of the companion protocol bindings specifications      such as <A class="info" 
+href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.AB">OpenID 
+Connect Artifact Binding      1.0<SPAN> (</SPAN><SPAN class="info">Sakimura, N., 
+Ed., Bradley, J., de Madeiros, B., Ito, R., and M. Jones, “OpenID Connect 
+Artifact Binding 1.0,” January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [OpenID.AB] 
+or <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.AC">OpenID 
+Connect Authorization Code      Binding 1.0<SPAN> (</SPAN><SPAN 
+class="info">Mortimore, C., Ed., Sakimura, N., Bradley, J., de Madeiros, B., 
+Ito, R., and M. Jones, “OpenID Connect Authorization Code Binding 1.0,” 
+January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [OpenID.AC].</P><A 
+name="anchor2"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4"></A>
+<H3>4.&nbsp; Messages</H3>
+<P></P>
+<P>In OpenID Connect protocols in abstract, the process proceeds by the      
+Client interacting with Endpoints. There are number of Endpoints      involved. 
+</P>
+<P></P>
+<OL class="text">
+  <LI>Authorization Endpoint: The Client sends a request to the Server          
+  at the Authorization endpoint. The Server then authenticate the          
+  End-User to find out if he is eligible to make the authorization.          
+  Then, upon the authorization action of the End-User, the Server          
+  returns an Authorization Response that includes Authorization Code,          
+  <TT>code</TT>. For some Clients, Implicit Grant          may be used to obtain 
+  <TT>access_token</TT>          without using <TT>code</TT>. In this case, 
+  <TT>response_type</TT> MUST be set to <TT>token</TT>.</LI>
+  <LI>Token Endpoint: The Client sends the Access Token Request to the          
+  Token Endpoint to obtain Access Token Response which includes 
+  <TT>access_token</TT>. </LI>
+  <LI>UserInfo Endpoint: The <TT>access_token</TT>          MAY be used as a 
+  query parameter to obtain user          information/assertion/claims about the 
+  user by sending a request to          the userinfo endpoint.</LI>
+  <LI>Session Management Endpoints: The <TT>openid</TT> token MAY be sent to 
+  these endpoints to          manage the session. </LI></OL>
+<P>Both Request and Response may either be serialized into <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#qss">Query 
+String serialization<SPAN> (</SPAN><SPAN class="info">Query String 
+serialization</SPAN><SPAN>)</SPAN></A> or <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#RFC4627">JSON<SPAN> 
+(</SPAN><SPAN class="info">Crockford, D., “The application/json Media Type for 
+JavaScript Object Notation (JSON),” July&nbsp;2006.</SPAN><SPAN>)</SPAN></A> 
+[RFC4627]. </P>
+<P></P><A name="anchor3"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1"></A>
+<H3>4.1.&nbsp; Authorization Endpoint</H3>
+<P>Autorization Code Request / Response interacts with Authorization        
+Endpoint.</P><A name="auth_req"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.1"></A>
+<H3>4.1.1.&nbsp; Authorization Request</H3>
+<P>Following is the list of variables to be sent as the top level          keys:
+</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>response_type</DT>
+    <DD>REQUIRED. The parameter value MUST              be set to <TT>code</TT> 
+    for requesting an              Authorization Code, <TT>token</TT> for        
+          requesting an Access Token. The Authorization Server MAY decline       
+           to provide one or more of these response types.</DD>
+    <DT>client_id </DT>
+    <DD>REQUIRED. The client identifier              recognized by the 
+    Authorization Server.</DD>
+    <DT>redirect_uri</DT>
+    <DD>REQUIRED unless a redirection URI has              been established 
+    between the client and authorization server via              other means. An 
+    absolute URI to which the authorization server              will redirect 
+    the user-agent to when the End-User authorization              step is 
+    completed. The authorization server SHOULD require the              client 
+    to pre-register their redirection URI.</DD>
+    <DT>scope</DT>
+    <DD>OPTIONAL. The scope of the access request              expressed as a 
+    list of space-delimited strings. The value of the              scope 
+    parameter is defined by the authorization server. If the              value 
+    contains multiple space-delimited strings, their order              does not 
+    matter, and each string adds an additional access range              to the 
+    requested scope. It MUST include <TT>openid</TT> as one of the string. 
+    [[ToDo: Maybe              we do not need it, as openid param is required.]]
+    </DD>
+    <DT>state</DT>
+    <DD>OPTIONAL. An opaque value used by the client              to maintain 
+    state between the request and callback. The              authorization 
+    server includes this value when redirecting the              user-agent back 
+    to the client.</DD>
+    <DT>openid</DT>
+    <DD>REQUIRED. A JSON object that holds OpenID              request 
+    variables.</DD>
+    <DT>type</DT>
+    <DD>REQUIRED. A type identifier that identifies              the message 
+    type. A URI <TT>http://openid.net/specs/cc/1.0#env</TT> .</DD></DL></BLOCKQUOTE>
+<P></P>
+<P>Following is the list of <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+Authentication 2.0<SPAN> (</SPAN><SPAN class="info">specs@openid.net, “OpenID 
+Authentication 2.0,” 2007.</SPAN><SPAN>)</SPAN></A> [OpenID.authentication‑2.0]  
+        variables are to be sent under the key <TT>"openid"</TT>: when OpenID 
+2.0 identifier          compatibility is sought.</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>type</DT>
+    <DD>REQUIRED. A type identifier that identifies              the message 
+    type. Set to <TT>"http://openid.net/specs/cc/1.0/#req"</TT>.</DD>
+    <DT>immediate</DT>
+    <DD>OPTIONAL. indicates if the authorization              server should 
+    display the authorization user interface. <TT>"True"</TT> if it should not 
+    display the user              interface or <TT>"False"</TT> to display.      
+            Default is <TT>"False"</TT>.</DD>
+    <DT>claimed_id</DT>
+    <DD>OPTIONAL. The claimed_id as in <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+    2.0<SPAN> (</SPAN><SPAN class="info">specs@openid.net, “OpenID 
+    Authentication 2.0,” 2007.</SPAN><SPAN>)</SPAN></A> 
+    [OpenID.authentication‑2.0]</DD>
+    <DT>identity</DT>
+    <DD>OPTIONAL. The local identifier as in              <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+    Authentication              2.0<SPAN> (</SPAN><SPAN 
+    class="info">specs@openid.net, “OpenID Authentication 2.0,” 
+    2007.</SPAN><SPAN>)</SPAN></A> [OpenID.authentication‑2.0].</DD>
+    <DT>realm</DT>
+    <DD>REQUIRED if PPID were used in previous              authentications. URL 
+    pattern the OP SHOULD ask the end user to              trust. See Section 
+    9.2 of <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+    Authentication              2.0<SPAN> (</SPAN><SPAN 
+    class="info">specs@openid.net, “OpenID Authentication 2.0,” 
+    2007.</SPAN><SPAN>)</SPAN></A> [OpenID.authentication‑2.0].</DD>
+    <DT>server_id</DT>
+    <DD>OPTIONAL. The intended recipient of this              request.</DD>
+    <DT>pubkey</DT>
+    <DD>OPTIONAL. The base64url encoded DER format              X.509 
+    certificate of the RP.</DD>
+    <DT>atype</DT>
+    <DD>OPTIONAL. Type of assertion to be returned              at the end. 
+    Values are one of the following: 
+    <UL class="text">
+      <LI>openid2json : (Default) OpenID Artifact Binding's default              
+          assertion format, which is JSON.</LI>
+      <LI>openid2jsonp : openid2json wrapped in "openidjsonp();" so              
+          that it will be a JSONP format.</LI>
+      <LI>openid2json+sig: openid2json assertion signed.</LI>
+      <LI>openid2json+sig+enc: openid2json assertion signed and                  
+      encrypted.</LI>
+      <LI>saml2: SAML ver.2 assertion.</LI>
+      <LI>wss : WS-Security assertion.</LI></UL></DD></DL></BLOCKQUOTE>
+<P></P>
+<P>These variables are sent from the client to the end-user          
+authorization endpoint according to the protocol bindings of this          
+specification. There are two serialization of the above variables:          
+Query Parameters serialization and JSON serialization.</P>
+<P>Following is a non-normative example when they are sent            in the 
+query parameters serialization.</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>GET /authorize?scope=openid&amp;response_type=code
+&amp;openid.type=http%3A%2F%2Fopenid.net%2Fspecs%2Fcc%2F1.0%2F%23req
+&amp;client_id=s6BhdRkqt3&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1
+Host: server.example.com</PRE></DIV>
+<P></P>
+<P>Following is a non-normative example when they are sent            as a JSON 
+object serialization.</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>{
+  "type": "http://openid.net/specs/cc/1.0#env,
+  "openid": {
+    "type": "http://openid.net/specs/cc/1.0#req",
+    "server_id": "http://example.com/op/",
+    "immediate": "true",
+    "claimed_id":"http://specs.openid.net/auth/2.0/identifier_select",
+    "identity": "http://specs.openid.net/auth/2.0/identifier_select",
+    "ns.pape": "http://specs.openid.net/extensions/pape/1.0",
+    "pape.auth_level.ns.nist": "http://csrc.nist.gov/publications/nistpubs/800-63/SP800-63V1_0_2.pdf",
+    "pape.preferred_auth_level_types": "nist"
+  },
+  "redirect_uri": "https://example.com/rp/endpoint_url",
+  "response_type":"code",
+  "client_id": "http://example.com/rp/",
+  "scope": "openid",
+  "state": "af0ifjsldkj"
+}</PRE></DIV>
+<P></P><A name="anchor4"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.2"></A>
+<H3>4.1.2.&nbsp; Authorization Response</H3>
+<P>If the End-User grants the access request, the Authorization          Server 
+issues an Authorization Code or an Access Token and delivers          them to 
+the Client. Following are the list of the parameter included          in the 
+Response message when the <TT>response_type</TT> in the request was 
+<TT>code</TT>. Note that if the <TT>response_type</TT> in the request was 
+<TT>token</TT>, the <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#access_token_response">Access 
+Token Response<SPAN> (</SPAN><SPAN class="info">Access Token 
+Response</SPAN><SPAN>)</SPAN></A> defined          later MUST be returned 
+instead.</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>code</DT>
+    <DD>REQUIRED. The authorization code generated by              the 
+    authorization server. The authorization code SHOULD expire              
+    shortly after it is issued to minimize the risk of leaks. The              
+    client MUST NOT reuse the authorization code. If an              
+    authorization code is used more than once, the authorization              
+    server MAY revoke all tokens previously issued based on that              
+    authorization code. The authorization code is bound to the              
+    client identifier and redirection URI.</DD>
+    <DT>state</DT>
+    <DD>REQUIRED if the state parameter was present              in the client 
+    authorization request. Set to the exact value              received from the 
+    client.</DD></DL></BLOCKQUOTE>
+<P></P>
+<P>For example, the Authorization Server redirects the End-User's          
+user-agent by sending the following HTTP response:</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>HTTP/1.1 302 Found
+Location: https://client.example.com/cb?code=i1WsRn1uB1</PRE></DIV>
+<P></P>
+<P>Clients SHOULD ignore unrecognized response parameters. The sizes          of 
+tokens and other values received from the authorization server,          are 
+left undefined by this specification. Clients should avoid          making 
+assumptions about value sizes. Servers should document the          expected 
+size of any value they issue.</P><A name="anchor5"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.3"></A>
+<H3>4.1.3.&nbsp; Authorization Error Response</H3>
+<P>If the end-user denies the access request or if the request fails          
+for reasons other than a missing or invalid redirection URI, the          
+authorization server informs the client by adding the following          
+parameters to the redirection URI query component using the 
+<TT>application/x-www-form-urlencoded</TT> format as          defined by <A 
+class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#html401">W3C.REC&amp;nbhy;html401&amp;nbhy;19991224<SPAN> 
+(</SPAN><SPAN class="info">Ragget, D., “HTML 4.01 Specification,” 
+December&nbsp;1999.</SPAN><SPAN>)</SPAN></A> [html401]:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>error</DT>
+    <DD>REQUIRED. A single error code as described              below.</DD>
+    <DT>error_description</DT>
+    <DD>OPTIONAL. A human-readable text              providing additional 
+    information, used to assist in the              understanding and resolution 
+    of the error occurred.</DD>
+    <DT>error_uri</DT>
+    <DD>OPTIONAL. A URI identifying a              human-readable web page with 
+    information about the error, used              to provide the end-user with 
+    additional information about the              error.</DD>
+    <DT>state</DT>
+    <DD>REQUIRED if the state parameter was present              in the client 
+    authorization request. Set to the exact value              received from the 
+    client.</DD></DL></BLOCKQUOTE>
+<P></P><A name="anchor6"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.1.3.1"></A>
+<H3>4.1.3.1.&nbsp; Error Codes</H3>
+<P>The Authorization Server includes one of the following error            codes 
+with the error response:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>invalid_request </DT>
+    <DD>The request is missing a                required parameter, includes an 
+    unsupported parameter or                parameter value, repeats a 
+    parameter, includes multiple                credentials, utilizes more than 
+    one mechanism for                authenticating the client, or is otherwise 
+    malformed.</DD>
+    <DT>invalid_client</DT>
+    <DD>The client identifier provided is                invalid, the client 
+    failed to authenticate, the client did not                include its 
+    credentials, provided multiple client credentials,                or used 
+    unsupported credentials type.</DD>
+    <DT>unauthorized_client </DT>
+    <DD>The authenticated client is                not authorized to use the 
+    access grant type provided.</DD>
+    <DT>invalid_grant</DT>
+    <DD>The provided access grant is                invalid, expired, or revoked 
+    (e.g. invalid assertion, expired                authorization token, bad 
+    end-user password credentials, or                mismatching authorization 
+    code and redirection URI).</DD>
+    <DT>unsupported_grant_type</DT>
+    <DD>The access grant included                - its type or another attribute 
+    - is not supported by the                authorization server.</DD>
+    <DT>invalid_scope</DT>
+    <DD>The requested scope is invalid,                unknown, malformed, or 
+    exceeds the previously granted                scope.</DD>
+    <DT>invalid_request_response_type</DT>
+    <DD>The requested                response type is unsupported or is missing.
+    </DD>
+    <DT>invalid_request_type</DT>
+    <DD>The request type is                unsupported.</DD>
+    <DT>invalid_request_openid_type</DT>
+    <DD>The openid type in                the the request is not supported.</DD>
+    <DT>invalid_request_redirect_uri</DT>
+    <DD>The redirect_uri in                the request is missing or malformed.
+    </DD>
+    <DT>invalid_request_signature</DT>
+    <DD>The request has an                invalid signature.</DD>
+    <DT>invalid_request_realm</DT>
+    <DD>The openid request realm                is missing or malformed.</DD>
+    <DT>invalid_request_atype</DT>
+    <DD>The request contains an                unsupported response assertion 
+    type.</DD>
+    <DT>invalid_request_recipient</DT>
+    <DD>The recipient of the                request is invalid or does not 
+    match.</DD></DL></BLOCKQUOTE>
+<P></P>
+<P>The error codes can be extended by the string prefixed by            
+<TT>x_</TT>. If custome error code are used,            <TT>error_uri</TT> MUST 
+be provided.</P>
+<P></P><A name="anchor7"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.2"></A>
+<H3>4.2.&nbsp; Token Endpoint</H3>
+<P>Access Token Request / Response interacts with an OpenID Token        
+Endpoint. Upon the successful request, the OpenID returns two tokens,        
+Access Token and OpenID Token.</P><A name="access_token_request"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.2.1"></A>
+<H3>4.2.1.&nbsp; Access Token Request</H3>
+<P>The client obtains an access token by authenticating with the          
+authorization server and presenting its access grant (in the form of          an 
+authorization code, resource owner credentials, an assertion, or          a 
+refresh token).</P>
+<P>To make the Access Token Request, the Client sends the following          
+parameters to the Token Endpoint:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>grant_type</DT>
+    <DD>REQUIRED. The access grant type              included in the request. 
+    Value MUST be one of <TT>authorization_code</TT>, <TT>refresh_token</TT>, or 
+    an absolute URI              identifying an assertion format supported by 
+    the authorization              server.</DD>
+    <DT>client_id</DT>
+    <DD>REQUIRED. The client identifier.</DD>
+    <DT>client_secret</DT>
+    <DD>REQUIRED. Client Secret. If the              secret_type is 
+    <TT>"shared"</TT>, send the              pre-shared secret. If the 
+    secret_type is <TT>"jwt"</TT>, send the compact serealization of             
+     the <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwt">JWT<SPAN> 
+    (</SPAN><SPAN class="info">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+    Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web Token,” 
+    January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwt] Signature over the 'code'.
+    </DD>
+    <DT>secret_type</DT>
+    <DD>OPTIONAL. Type of the <TT>client_secret</TT>. <TT>"shared"</TT> or 
+    <TT>"jwt"</TT>. Defaults to <TT>"shared"</TT>.</DD></DL></BLOCKQUOTE>
+<P>In addition, the client MUST include the appropriate          parameters 
+specified in the bindings used.</P><A name="access_token_response"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.2.2"></A>
+<H3>4.2.2.&nbsp; Access Token Response</H3>
+<P>After receiving and verifying a valid and authorized access token          
+request from the client, the Authorization Server returns a Positive          
+Assertion that includes an Access Token.</P>
+<P>The token response contains the following parameters which are          
+serialized into a JSON structure by adding each parameter at the          
+highest structure level. Parameter names and string values are          included 
+as JSON strings. Numerical values are included as JSON          numbers.</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>access_token</DT>
+    <DD>REQUIRED if the response type is              <TT>token</TT> or 
+    <TT>code_and_token</TT>, otherwise MUST NOT be              included. The 
+    Access Token issued by the Authorization              Server.</DD>
+    <DT>token_type</DT>
+    <DD>REQUIRED. The type of the token issued.              Value is case 
+    insensitive.</DD>
+    <DT>refresh_token</DT>
+    <DD>OPTIONAL. The Refresh Token used to              obtain new Access 
+    Tokens using the same End-User authorization.              The authorization 
+    server SHOULD NOT issue a Refresh Token when              the access grant 
+    type is set to none.</DD>
+    <DT>expires_in</DT>
+    <DD>OPTIONAL. The duration in seconds of              the access token 
+    lifetime if an access token is included. For              example, the value 
+    3600 denotes that the access token will              expire in one hour from 
+    the time the response was generated by              the authorization 
+    server.</DD>
+    <DT>scope</DT>
+    <DD>OPTIONAL. The scope of the access token as a              list of 
+    space-delimited strings. The value of the scope              parameter is 
+    defined by the authorization server. If the value              contains 
+    multiple space-delimited strings, their order does not              matter, 
+    and each string adds an additional access range to the              
+    requested scope. The authorization server SHOULD include the              
+    parameter if the requested scope is different from the one              
+    requested by the client.</DD>
+    <DT>openid</DT>
+    <DD>REQUIRED if it was requested in the              request. An OpenID 
+    Token. It is a <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jws">JWS<SPAN> 
+    (</SPAN><SPAN class="info">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+    Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web Signatures,” 
+    March&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jws]              signed claim 
+    described below.</DD></DL></BLOCKQUOTE>
+<P></P>
+<P></P>
+<P>It MAY include any other extension parameters.</P>
+<P></P>
+<P>Following is a non-normative example.</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>{
+    "access_token": "SlAV32hkKG",
+    "token_type": "jwt",
+    "refresh_token": "8xLOxBtZp8",
+    "user_id": "http://op.example.com/alice#1234",
+    "domain": "op.example.com",
+    "expires_in": 3600,
+    "openid":"jwtheader.jwtpayload.jwtcrypto"
+}</PRE></DIV>
+<P></P>
+<P>Clients SHOULD ignore unrecognized response parameters. The sizes          of 
+tokens and other values received from the authorization server,          are 
+left undefined by this specification. Clients should avoid          making 
+assumptions about value sizes. Servers should document the          expected 
+size of any value they issue.</P><A name="anchor8"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.2.2.1"></A>
+<H3>4.2.2.1.&nbsp; OpenID Token</H3>
+<P>The OpenID Token is a JWS signed claim that attests the            following:
+</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>server_id</DT>
+    <DD>REQUIRED. The unique identifier of the                authorization 
+    server such that when paired with the user_id                creates a 
+    globally unique and never reassigned identifier.</DD>
+    <DT>user_id</DT>
+    <DD>REQUIRED. A locally unique and never                reassigned 
+    identifier for the user, which is intended to be                consumed by 
+    the Client. e.g. "24400320" or                
+    "AItOawmwtWwcT0k51BayewNvutrJUqsvl6qs7A4". It MUST NOT exceed                
+    255 ASCII characters in length.</DD>
+    <DT>client_id</DT>
+    <DD>REQUIRED. The client identifier                recognized by the 
+    authorization server.</DD>
+    <DT>aud</DT>
+    <DD>REQUIRED. The <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwt">JWT<SPAN> 
+    (</SPAN><SPAN class="info">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+    Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web Token,” 
+    January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwt]aud (audience) claim.</DD>
+    <DT>exp</DT>
+    <DD>REQUIRED. The <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwt">JWT<SPAN> 
+    (</SPAN><SPAN class="info">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+    Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web Token,” 
+    January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwt]                exp 
+    (expiration time) claim.</DD>
+    <DT>pape</DT>
+    <DD>OPTIONAL. (TBD) If we want this token to be                short, we 
+    probably want to define a shorter equivalent of                PAPE. </DD>
+</DL></BLOCKQUOTE>
+<P></P>
+<P></P><A name="anchor9"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.2.3"></A>
+<H3>4.2.3.&nbsp; Token Error Response</H3>
+<P>If the assertion request is invalid or unauthorized, the          
+authorization server constructs the response by adding the following          
+parameter to the entity body of the HTTP response using the          
+"application/json" media type:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>error</DT>
+    <DD>REQUIRED. A single error code as described              below.</DD>
+    <DT>error_description</DT>
+    <DD>OPTIONAL. A human-readable text              providing additional 
+    information, used to assist in the              understanding and resolution 
+    of the error occurred.</DD>
+    <DT>error_uri</DT>
+    <DD>OPTIONAL. A URI identifying a              human-readable web page with 
+    information about the error, used              to provide the end-user with 
+    additional information about the              error.</DD></DL></BLOCKQUOTE>
+<P></P>
+<P></P><A name="anchor10"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.2.3.1"></A>
+<H3>4.2.3.1.&nbsp; Error Codes</H3>
+<P>The Authorization Server includes one of the following error            codes 
+with the error response:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>invalid_request </DT>
+    <DD>The request is missing a                required parameter, includes an 
+    unsupported parameter or                parameter value, repeats a 
+    parameter, includes multiple                credentials, utilizes more than 
+    one mechanism for                authenticating the client, or is otherwise 
+    malformed.</DD>
+    <DT>invalid_client</DT>
+    <DD>The client identifier provided is                invalid, the client 
+    failed to authenticate, the client did not                include its 
+    credentials, provided multiple client credentials,                or used 
+    unsupported credentials type.</DD>
+    <DT>unauthorized_client </DT>
+    <DD>The authenticated client is                not authorized to use the 
+    access grant type provided.</DD>
+    <DT>invalid_grant</DT>
+    <DD>The provided access grant is                invalid, expired, or revoked 
+    (e.g. invalid assertion, expired                authorization token, bad 
+    end-user password credentials, or                mismatching authorization 
+    code and redirection URI).</DD>
+    <DT>unsupported_grant_type</DT>
+    <DD>The access grant included                - its type or another attribute 
+    - is not supported by the                authorization server.</DD>
+    <DT>invalid_scope</DT>
+    <DD>The requested scope is invalid,                unknown, malformed, or 
+    exceeds the previously granted                scope.</DD>
+    <DT>invalid_client_secret</DT>
+    <DD>The client secret does not                matched pre-shared secret 
+    code, is of a different type, or has                an invalid signature.
+    </DD>
+    <DT>invalid_secret_type</DT>
+    <DD>The specified secret type is                unsupported.</DD>
+    <DT>invalid_request_signature</DT>
+    <DD>The request has an                invalid signature.</DD>
+    <DT>invalid_request_code</DT>
+    <DD>The authorization code is                missing, malformed, or invalid.
+    </DD>
+    <DT>invalid_request_openid_type</DT>
+    <DD>The openid type in                the the request is not supported.</DD>
+  </DL></BLOCKQUOTE>
+<P>The error codes can be extended by the string prefixed by            
+<TT>x_</TT>. If custome error code are used,            <TT>error_uri</TT> MUST 
+be provided.</P><A name="anchor11"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.3"></A>
+<H3>4.3.&nbsp; UserInfo Endpoint</H3>
+<P>UserInfo Request/Response interacts with UserInfo Endpoint.</P><A name="anchor12"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.3.1"></A>
+<H3>4.3.1.&nbsp; UserInfo Request</H3>
+<P>Client MAY send request with following parameters to the UserInfo          
+Endpoint to obtain further information about the user.</P>
+<P>[[TBD: How to ask the attributes the Client is requesting?]]</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>access_token</DT>
+    <DD>REQUIRED. The access_token obtained              above.</DD>
+    <DT>user_id</DT>
+    <DD>REQUIRED. A locally unique and never              reassigned identifier 
+    for the user. e.g. "24400320" or              
+    "AItOawmwtWwcT0k51BayewNvutrJUqsvl6qs7A4". It MUST NOT exceed              
+    255 ASCII characters in length. It could be a pairwise private              
+    identifier of the enduser between the Client and the Server.</DD>
+    <DT>client_id</DT>
+    <DD>REQUIRED. The client identifier              recognized by the 
+    authorization server.</DD></DL></BLOCKQUOTE>
+<P></P><A name="anchor13"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.3.2"></A>
+<H3>4.3.2.&nbsp; UserInfo Response</H3>
+<P>The response is a JSON object which contains some (or all) of the          
+following reserved keys:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>user_id</DT>
+    <DD>REQUIRED. A locally unique and never              reassigned identifier 
+    for the user. e.g. "24400320" or              
+    "AItOawmwtWwcT0k51BayewNvutrJUqsvl6qs7A4". It MUST NOT exceed              
+    255 ASCII characters in length. It MUST NOT be reassigned to              
+    another user. </DD>
+    <DT>server_id</DT>
+    <DD>REQUIRED. The unique identifier of the              authorization server 
+    such that when paired with the user_id              creates a globally 
+    unique and never reassigned identifier.</DD>
+    <DT>client_id</DT>
+    <DD>REQUIRED. The client identifier              recognized by the 
+    authorization server.</DD>
+    <DT>asserted_user</DT>
+    <DD>REQUIRED. One of "true" if the              access was issued for this 
+    user or "false" if it is for a              different user.</DD>
+    <DT>profile_urls</DT>
+    <DD>OPTIONAL. An array of URLs that              belong to the user across 
+    any number of domains.</DD>
+    <DT>display_name</DT>
+    <DD>OPTIONAL. The display name of the              user. e.g., "David 
+    Recordon".</DD>
+    <DT>given_name</DT>
+    <DD>OPTIONAL. The first name of the user.              e.g., "David".</DD>
+    <DT>family_name</DT>
+    <DD>OPTIONAL. The family name of the user.              e.g., "Recordon".
+    </DD>
+    <DT>email</DT>
+    <DD>OPTIONAL. The verified email address of the              user. e.g., 
+    "recordond@gmail.com".</DD>
+    <DT>language</DT>
+    <DD>OPTIONAL. End User's preferred language              as specified by 
+    ISO639.</DD>
+    <DT>picture</DT>
+    <DD>OPTIONAL. The URL of End User's Picture.              e.g., 
+    "http://graph.facebook.com/davidrecordon/picture".</DD>
+    <DT>openid</DT>
+    <DD>REQUIRED if OpenID variables were specified              in the 
+    Authorization Request. It is a JSON Object. </DD></DL></BLOCKQUOTE>
+<P></P>
+<P>If the OP desires to provide the identifier transition service          from 
+OpenID 2.0, it SHOULD provide the following parameters in          addition 
+under the key <TT>openid</TT>. The key          <TT>openid</TT> includes the 
+following          parameters. </P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>claimed_id</DT>
+    <DD>OPTIONAL. The OpenID 2.0 verified              identifier of this user, 
+    if the user has OpenID 2.0 account.</DD>
+    <DT>identity</DT>
+    <DD>OPTIONAL. The OpenID 2.0 Local ID that              this user was 
+    verified against, if the user has OpenID 2.0              account.</DD>
+    <DT>op_endpoint</DT>
+    <DD>OPTIONAL. The OP Endpoint URL.</DD></DL></BLOCKQUOTE>
+<P>Upon receipt of these parameters, the Client MUST migrate          the user 
+to the new <TT>user_id</TT>. </P>
+<P>If the Authorization Server supports authorization for          distributed 
+resources from different entities, it needs to provide          different Access 
+Tokens to each resource endpoints. To do this, it          returns a JSON object 
+<TT>access_tokens</TT>.</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>access_tokens</DT>
+    <DD>OPTIONAL. An array of JSON objects              that has "endpoint", 
+    "access_token", "user_id" and "expires_in"              as its subkey.</DD>
+  </DL></BLOCKQUOTE>
+<P>The key <TT>"access_tokens" </TT>holds          an array of JSON object 
+composed of the following parameters.</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>endpoint</DT>
+    <DD>REQUIRED. Resource Endpoint URL to which              the token is used 
+    to access.</DD>
+    <DT>access_token</DT>
+    <DD>REQUIRED. Access token used to access              the resource. 
+    [Alternatively: An array of JSON objects that has              "user_id", 
+    "expires_in" and other variables that the resource              requires, 
+    which is encoded into Encrypted JWT.]</DD>
+    <DT>token_type</DT>
+    <DD>OPTIONAL. "plain", "jwt", or a fully              qualified type URI of 
+    the token's type. Defaults to "plain".</DD>
+    <DT>expires_in</DT>
+    <DD>OPTIONAL. The duration in seconds of              the access token 
+    lifetime if an access token is included. For              example, the value 
+    3600 denotes that the access token will              expire in one hour from 
+    the time the response was generated by              the authorization 
+    server. If token type is "jwt", then it MUST              NOT be specified.
+    </DD></DL></BLOCKQUOTE>
+<P></P>
+<P></P><A name="anchor14"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.3.3"></A>
+<H3>4.3.3.&nbsp; UserInfo Error Response</H3>
+<P>(TBD)</P>
+<P>The Authorization Server includes one of the following error          codes 
+with the error response:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>invalid_request </DT>
+    <DD>The request is missing a required              parameter, includes an 
+    unsupported parameter or parameter value,              repeats a parameter, 
+    includes multiple credentials, utilizes              more than one mechanism 
+    for authenticating the client, or is              otherwise malformed.</DD>
+    <DT>invalid_client</DT>
+    <DD>The client identifier provided is              invalid, the client 
+    failed to authenticate, the client did not              include its 
+    credentials, provided multiple client credentials,              or used 
+    unsupported credentials type.</DD>
+    <DT>unauthorized_client </DT>
+    <DD>The authenticated client is              not authorized to use the 
+    access grant type provided.</DD>
+    <DT>invalid_grant</DT>
+    <DD>The provided access grant is              invalid, expired, or revoked 
+    (e.g. invalid assertion, expired              authorization token, bad 
+    end-user password credentials, or              mismatching authorization 
+    code and redirection URI).</DD>
+    <DT>unsupported_grant_type</DT>
+    <DD>The access grant included -              its type or another attribute - 
+    is not supported by the              authorization server.</DD>
+    <DT>invalid_scope</DT>
+    <DD>The requested scope is invalid,              unknown, malformed, or 
+    exceeds the previously granted scope.</DD>
+    <DT>invalid_access_token</DT>
+    <DD>The access token is not valid              for the requested resource, 
+    malformed, is in an incorrect              format, outside the valid scope, 
+    or expired.</DD>
+    <DT>invalid_refresh_token</DT>
+    <DD>The refresh token is not              valid, malformed, is in an 
+    incorrect format, outside the valid              scope, or expired.</DD>
+    <DT>invalid_request_signature</DT>
+    <DD>The request has an              invalid signature.</DD>
+    <DT>invalid_request_type</DT>
+    <DD>The request type is              unsupported.</DD>
+    <DT>invalid_request_atype</DT>
+    <DD>The request contains an              unsupported response assertion 
+    type.</DD>
+    <DT>invalid_request_recipient</DT>
+    <DD>The recipient of the              request is invalid or does not match.
+    </DD></DL></BLOCKQUOTE>
+<P></P><A name="anchor15"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.4"></A>
+<H3>4.4.&nbsp; Session Management Endpoints</H3>
+<P>To manage a session, the client sends a request to the session        
+management endpoints at the authorization server. The session        management 
+endpoints at the authorization server are:</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>Session Refresh</DT>
+    <DD>Refreshes an expired ID Token</DD>
+    <DT>Check Session</DT>
+    <DD>Get a plain text JSON structure from a            ID Token</DD>
+    <DT>End Session</DT>
+    <DD>Ends a session</DD></DL></BLOCKQUOTE>
+<P></P>
+<P></P>
+<P>The sequences for session management are as follows:</P><A 
+name="anchor16"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.4.1"></A>
+<H3>4.4.1.&nbsp; Session Refresh</H3>
+<P>To refresh a ID Token session that has expired, the client sends          a 
+request to the Refresh Session endpoint with an ID Token. A new ID          
+Token is returned in JWS signed format.</P>
+<P>Request Parameters:</P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>openid</DT>
+    <DD>REQUIRED. A previously issued ID Token from              a session 
+    request</DD>
+    <DT>state</DT>
+    <DD>REQUIRED. An opaque value used by the Client              to maintain 
+    state between the request and callback. If provided,              the 
+    Authorization Server MUST include this value when              redirecting 
+    the user-agent back to the Client. Clients are              strongly advised 
+    to use this variable to relate the request and              response.</DD>
+    <DT>redirect_uri</DT>
+    <DD>REQUIRED. An absolute URI to which              the authorization server 
+    will redirect the user-agent to with              the new ID Token.</DD>
+</DL></BLOCKQUOTE>
+<P>Response:</P>
+<P>The response is a new ID Token. In a typical HTTP binding, an          HTTP 
+302 redirect to the specified redirect_uri in the request with          a new ID 
+Token.</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>openid</DT>
+    <DD>A new ID Token</DD></DL></BLOCKQUOTE>
+<P></P>
+<P></P>
+<P>The following is a non-normative session refresh request:</P>
+<P></P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>Request:
+
+GET /op/refresh_token?openid=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC5leGFtcGxlLmNvbSJ9.eyJpc3N1ZXIiOiJodHRwOlwvXC9zZXJ2ZXIuZXhhbXBsZS5jb20iLCJjbGllbnRfaWQiOiJjbGllbnQuZXhhbXBsZS5jb20iLCJhdWRpZW5jZSI6ImNsaWVudC5leGFtcGxlLmNvbSIsImlkIjoidXNlcl8yMzQyMzQiLCJleHAiOjEzMDM4NTI3MzJ9.Vdj-sU3xxwHRd9rF6gjBTw3YMm1BqmT43fGDCpa96jo
+&amp;state=bar&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fidtoken_cb
+Host: server.example.com
+
+Response:
+
+HTTP/1.1 302 OK
+Location: http://client.example.com/idtoken_cb?openid=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC5leGFtcGxlLmNvbSJ9.eyJpc3N1ZXIiOiJodHRwOlwvXC9zZXJ2ZXIuZXhhbXBsZS5jb20iLCJjbGllbnRfaWQiOiJjbGllbnQuZXhhbXBsZS5jb20iLCJhdWRpZW5jZSI6ImNsaWVudC5leGFtcGxlLmNvbSIsImlkIjoidXNlcl8yMzQyMzQiLCJleHAiOjEzMDM4NTI4ODB9.aJwagC6501Da-zK-X8Az9B-Y625aSEfxVuBpFEDjOxQ&amp;state=bar&amp;expires_in=3600
+</PRE></DIV>
+<P></P><A name="anchor17"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.4.2"></A>
+<H3>4.4.2.&nbsp; Check Session</H3>
+<P>For clients that are not capable of dealing with JWS signed ID          
+Tokens, they can send the ID Token to the Check Session endpoint. It          
+will validate the ID Token and return a plain text JSON structure of          
+the ID Token.</P>
+<P>Request Parameters:</P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>openid</DT>
+    <DD>REQUIRED. A previously issued ID Token from              a session 
+    request</DD></DL></BLOCKQUOTE>
+<P>Response:</P>
+<P>The response body is a plain text JSON structure of the base64url          
+decoded payload of the signed ID Token. In a typical HTTP binding,          the 
+response is a HTTP 200 response code with the content-type          header set 
+to "application/json". </P>
+<P>The following is a non-normative example of a check session          request:
+</P>
+<P></P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>Request:
+POST /op/check_openid?openid=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC5leGFtcGxlLmNvbSJ9.eyJpc3N1ZXIiOiJodHRwOlwvXC9zZXJ2ZXIuZXhhbXBsZS5jb20iLCJjbGllbnRfaWQiOiJjbGllbnQuZXhhbXBsZS5jb20iLCJhdWRpZW5jZSI6ImNsaWVudC5leGFtcGxlLmNvbSIsImlkIjoidXNlcl8yMzQyMzQiLCJleHAiOjEzMDM4NTI4ODB9.aJwagC6501Da-zK-X8Az9B-Y625aSEfxVuBpFEDjOxQ
+
+Response:
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "iss":"http://server.example.com",
+  "client_id","http://client.example.com",
+  "audience", "http://client.example.com",
+  "user_id":"user_328723",
+  "exp":1303852880
+}
+
+
+</PRE></DIV>
+<P></P><A name="anchor18"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.4.4.3"></A>
+<H3>4.4.3.&nbsp; End Session</H3>
+<P>To end the session, the client sends a ID Token to the End          Session 
+endpoint. Upon receiving the request, the authorization          server performs 
+the logout flow for the user and then redirects the          user-agent to the 
+specified redirect_uri.</P>
+<P>Request Parameters:</P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>openid</DT>
+    <DD>REQUIRED. A previously issued ID Token from              a session 
+    request</DD>
+    <DT>state</DT>
+    <DD>REQUIRED. An opaque value used by the Client              to maintain 
+    state between the request and callback. If provided,              the 
+    Authorization Server MUST include this value when              redirecting 
+    the user-agent back to the Client. Clients are              strongly advised 
+    to use this variable to relate the request and              response.</DD>
+    <DT>redirect_uri</DT>
+    <DD>REQUIRED. An absolute URI to which              the authorization server 
+    will redirect the user-agent to with              the new ID Token.</DD>
+</DL></BLOCKQUOTE>
+<P>Response:</P>
+<P>The response is dependant on the particular binding. In HTTP          
+binding, the response is a HTTP 302 redirect response to the          
+redirect_uri specified in the request.</P>
+<P>The following is a non-normative session refresh request:</P>
+<P></P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>Request:
+
+GET /op/end_session?openid=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC5leGFtcGxlLmNvbSJ9.eyJpc3N1ZXIiOiJodHRwOlwvXC9zZXJ2ZXIuZXhhbXBsZS5jb20iLCJjbGllbnRfaWQiOiJjbGllbnQuZXhhbXBsZS5jb20iLCJhdWRpZW5jZSI6ImNsaWVudC5leGFtcGxlLmNvbSIsImlkIjoidXNlcl8yMzQyMzQiLCJleHAiOjEzMDM4NTI4ODB9.aJwagC6501Da-zK-X8Az9B-Y625aSEfxVuBpFEDjOxQ&amp;state=bar&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fendtoken_cb
+Host: server.example.com
+
+...
+   Authorizion server performs logout flow
+...
+
+Response:
+
+HTTP/1.1 302 OK
+Location: http://client.example.com/endtoken_cb?state=bar
+</PRE></DIV>
+<P></P><A name="serializations"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5"></A>
+<H3>5.&nbsp; serializations</H3>
+<P>Each message can be serialized either in query parameter      serialization 
+or JSON serialization unless it was explicitly stated in      the previous 
+sections.</P><A name="qss"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.1"></A>
+<H3>5.1.&nbsp; Query String serialization</H3>
+<P>In order to serialize the parameters into Query String        Serialization, 
+the client constructs the string by adding the        following parameters to 
+the end-user authorization endpoint URI query        component using the 
+<TT>application/x-www-form-urlencoded</TT> format as        defined by <A class="info" 
+href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#html401">HTML 4.01 
+Specification<SPAN> (</SPAN><SPAN class="info">Ragget, D., “HTML 4.01 
+Specification,” December&nbsp;1999.</SPAN><SPAN>)</SPAN></A> [html401]:</P>
+<P>Following is a non-normative example of such          Serialization.</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>GET /authorize?scope=openid&amp;response_type=code&amp;openid.type=http%3A%2F%2Fopenid.net%2Fspecs%2Fcc%2F1.0%2F%23req&amp;
+client_id=s6BhdRkqt3&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HT
+TP/1.1
+Host: server.example.com</PRE></DIV>
+<A name="js"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.2"></A>
+<H3>5.2.&nbsp; JSON Serialization</H3>
+<P>The parameters are serialized into a JSON structure by adding each        
+parameter at the highest structure level. Parameter names and string        
+values are included as JSON strings. Numerical values are included as        
+JSON numbers. Each parameter may have JSON Structure as its value.</P>
+<P>Following is a non-normative example of such          Serialization.</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>{
+  "access_token":"SlAV32hkKG",
+  "expires_in":3600,
+  "refresh_token":"8xLOxBtZp8",
+  "openid": {
+    "type": "http://openid.net/specs/ab/1.0#id_res",
+    "mode": "id_res",
+    "op_endpoint": "https://op.example.com/op_endpoint",
+    "client_id": "http://rp.example.com/",
+    "server_id": "http://op.example.com/",
+    "claimed_id": "https://example.com/alice#1234",
+    "identity": "alice",
+    "issued_at": 1274889460
+  }
+}</PRE></DIV>
+<A name="anchor19"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.3"></A>
+<H3>5.3.&nbsp; Conversions of OpenID 2.0 encodings</H3>
+<P>The two encoding form used in <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">[OpenID.authentication‑2.0]<SPAN> 
+(</SPAN><SPAN class="info">specs@openid.net, “OpenID Authentication 2.0,” 
+2007.</SPAN><SPAN>)</SPAN></A>, "HTTP encoding" and "key-value        form 
+encoding" can be converted to the OpenID Connect JSON form as        follows:
+</P><A name="anchor20"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.3.1"></A>
+<H3>5.3.1.&nbsp; key-value form encoding Conversion</H3>
+<P>Section 4.1.1 of <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">[OpenID.authentication‑2.0]<SPAN> 
+(</SPAN><SPAN class="info">specs@openid.net, “OpenID Authentication 2.0,” 
+2007.</SPAN><SPAN>)</SPAN></A>          defines key-value form encoding. Each 
+line begins with a key,          followed by a colon, and the value associated 
+with the key. The line          is terminated by a single newline (UCS codepoint 
+10, "\n"). A key or          value MUST NOT contain a newline and a key also 
+MUST NOT contain a          colon.</P>
+<P>This encoding can be trivially converted to JSON objects by          making 
+the key the JSON key and the value the JSON value. The          resulting JSON 
+object is stored as the value of the top-level key          "openid".</P>
+<P>For example, the key-value form encoding</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>mode:error
+error:This is an example message
+</PRE></DIV>
+<P>is converted to a OpenID JSON Encoding as</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>{
+    "openid": {
+        "mode": "error",
+        "error": "This is an example message"
+    }
+}</PRE></DIV>
+<A name="anchor21"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.3.2"></A>
+<H3>5.3.2.&nbsp; HTTP encoding Conversion</H3>
+<P>In <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">[OpenID.authentication‑2.0]<SPAN> 
+(</SPAN><SPAN class="info">specs@openid.net, “OpenID Authentication 2.0,” 
+2007.</SPAN><SPAN>)</SPAN></A>, OpenID query          parameters are prefixed by 
+"openid." : e.g., openid.sreg.fname and          openid.pape.level. They can be 
+translated into a JSON object by          listing all the query parameters under 
+the key "openid". Subkeys are          constructed by removing "openid." prefix 
+from each parameters. For          values, strings are converted to JSON String 
+and num</P>
+<P>For example, a query string          
+openid.sreg.fname=Nat&amp;openid.pape.level=1 are converted to JSON          as 
+follows:</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>{
+  "openid":{
+     "sreg.fname":"Nat",
+     "pape.level":1
+  }
+}</PRE></DIV>
+<P></P><A name="anchor22"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.5.3.3"></A>
+<H3>5.3.3.&nbsp; Additional Constraint</H3>
+<P>To simplify the implementations, the following practice is          strongly 
+RECOMMENDED.</P>
+<P></P>
+<UL class="text">
+  <LI>For the support of the <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#PAPE1.0">[PAPE1.0]<SPAN> 
+  (</SPAN><SPAN class="info">Recordon, D., Jones, M., Bufu, J., Ed., Daughty, 
+  J., and N. Sakimura, “OpenID Provider Authentication Property Extension 1.0,” 
+  December&nbsp;2008.</SPAN><SPAN>)</SPAN></A>, use "pape"              as the 
+  prefix.</LI>
+  <LI>For the support of the <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#AX1.0">[AX1.0]<SPAN> 
+  (</SPAN><SPAN class="info">Hardt, D., Bufu, J., and J. Hoyt, “OpenID Attribute 
+  Exchange 1.0,” December&nbsp;2007.</SPAN><SPAN>)</SPAN></A>, use "ax" as       
+         the prefix.</LI>
+  <LI>For the support of the SREG1.1, use "sreg" as the prefix.</LI></UL>
+<P></P><A name="sigs"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.6"></A>
+<H3>6.&nbsp; Signatures</H3>
+<P>Depending on the transport through wich the messages are transported,      
+the integrity of the message may not be guaranteed, nor the originator      of 
+the message is not authenticated. To mitigate these risks, OpenID      Connect 
+supports <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jws">JSON 
+Web Signatures(JWS)<SPAN> (</SPAN><SPAN class="info">Jones, M., Belfanz, D., 
+Bradeley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web 
+Signatures,” March&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jws].</P>
+<P>Following is the parameters for JWT.</P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>typ</DT>
+    <DD>OPTIONAL. One of <TT>"JWT"</TT>, <TT>"openid2json+sig"</TT>.</DD>
+    <DT>alg</DT>
+    <DD>REQUIRED. One of the algorithm specified in Table          4 of <A 
+    class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwt">JWT<SPAN> 
+    (</SPAN><SPAN class="info">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+    Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web Token,” 
+    January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwt]</DD></DL></BLOCKQUOTE>
+<P>Compact Serialization SHOULD BE used when passing it through      query 
+parameters, while JSON serialization SHOULD BE used when returning      it in 
+HTTP Body.</P>
+<P>Following is a non-normative example of such signature in        Compact 
+serialization, where HS256 algorithm was used (with line        breaks for 
+display purposes only):</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9
+.
+eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ
+.
+dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk</PRE></DIV>
+<P></P>
+<P>Following is a non-normative example of such signature in        JSON 
+serialization, where ES256 algorithm was used.</P>
+<DIV style="width: 0px; margin-right: auto; margin-left: 3em; display: table;"><PRE>{
+    "header": [
+        "eyJhbGciOiJFUzI1NiJ9"
+    ],
+    "payload": "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ",
+    "signature": [
+        "DtEhU3ljbEg8L38VWAfUAqOyKAM6-Xx-F4GawxaepmXFCgfTjDxw5djxLa8ISlSApmWQxfKTUJqPP3-Kg6NU1Q"
+    ]
+}</PRE></DIV>
+<P></P><A name="encryption"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.7"></A>
+<H3>7.&nbsp; Encryption</H3>
+<P>To achieve message confidentiality and audience restriction, OpenID      
+Connect uses <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwe">JSON 
+Web Encryption (JWE)<SPAN> (</SPAN><SPAN class="info">Jones, M., Belfanz, D., 
+Bradeley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web 
+Encryption,” March&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwe].</P><A name="anchor23"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.8"></A>
+<H3>8.&nbsp; Requests and Responses</H3>
+<P>Requests and Responses can either be plain, signed or encrypted.      
+Signature should be applied to the entire request or response. Signed      
+request and responses in the query are sent in the parameter "signed"      
+together with other parameters. If the request and responses are in the      
+JSON Serialization, the JWS signed version MUST use the JSON      serialization.
+</P>
+<P>If the request and responses are to be encrypted with <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwe">JSON 
+Web Encryption (JWE)<SPAN> (</SPAN><SPAN class="info">Jones, M., Belfanz, D., 
+Bradeley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web 
+Encryption,” March&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwe], non-encrypted 
+payload      MUST NOT be sent. The parameter name for the encrypted payload MUST 
+be      'jwe'.</P><A name="anchor24"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.9"></A>
+<H3>9.&nbsp; Verification</H3>
+<P></P><A name="anchor25"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.9.1"></A>
+<H3>9.1.&nbsp; Authorization Request Verification</H3>
+<P>If the request was signed, the Server MUST verify the signature as        in 
+JWT.</P><A name="anchor26"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.9.2"></A>
+<H3>9.2.&nbsp; Authorization Response Verification</H3>
+<P>To verify the validity of the Authorization Response, the client        MUST 
+to the following:</P>
+<P></P>
+<OL class="text">
+  <LI>If the response was signed, the Client SHOULD verify the            
+  signature as in JWT as the first step.</LI>
+  <LI>Check that OP that it connected was really the intended OP            
+  through TLS/SSL server certificate check if the endpoint is            TLS/SSL 
+  endpoint.</LI>
+  <LI>Check if "type" is            "http://openid.net/specs/cc/1.0/#id_res".
+  </LI>
+  <LI>Verify that the "domain" matches the domain including            
+  sub-domain of the server's token endpoint URI.</LI>
+  <LI>Check if the current time is after "issued_at" and before            
+  "issued_at" + "expires_in".</LI>
+  <LI>If the claimed_id field is present, the client MUST verify that            
+  the user info endpoint is authoritative to issue assertions about            
+  it. This is done by performing OpenID 2.0 discovery on the URL and            
+  finding a &lt;xrd:Service&gt; element with the following            
+  information:
+  <UL class="text">
+    <LI>&lt;xrd:Type&gt; - whose text content is                
+    "http://openid.net/specs/cc/1.0/".</LI>
+    <LI>&lt;xrd:URI&gt; - whose text content is the URL of this                
+    user info endpoint.</LI></UL></LI>
+  <LI>If this tag is not found via OpenID 2.0 discovery or if the URI            
+  does not match, the client MUST ignore the presence of the <TT>claimed_id</TT> 
+  parameter.</LI></OL>
+<P>Note: An authorization server MUST only issue assertions        about user 
+identifiers on its domain. The authorization server is        responsible for 
+managing its own local namespace and enforcing that        each user_id is 
+locally unique and never reassigned.</P>
+<P>If the client does not verify the signature, it MUST make a User        Info 
+API request.</P><A name="anchor27"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.9.3"></A>
+<H3>9.3.&nbsp; UserInfo Request Verification</H3>
+<P>If the request was signed, the Server MUST verify the signature as        in 
+<A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#jwt">JWT<SPAN> 
+(</SPAN><SPAN class="info">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+Panzer, J., Sakimura, N., and P. Tarjan, “JSON Web Token,” 
+January&nbsp;2011.</SPAN><SPAN>)</SPAN></A> [jwt].</P><A 
+name="anchor28"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.9.4"></A>
+<H3>9.4.&nbsp; UserInfo Response Verification</H3>
+<P>To verify the validity of the UserInfo Response, the client MUST to        
+the following:</P>
+<P></P>
+<OL class="text">
+  <LI>If the response was signed, the Client SHOULD verify the            
+  signature as in JWT as the first step.</LI>
+  <LI>Check that OP that it connected was really the intended OP            
+  through TLS/SSL server certificate check if the endpoint is            TLS/SSL 
+  endpoint.</LI>
+  <LI>Check if the current time is after "issued_at" and before            
+  "issued_at" + "expires_in".</LI></OL>
+<P></P>
+<P></P><A name="extensions"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.10"></A>
+<H3>10.&nbsp; Extensions</H3>
+<P>OpenID Connect supports the extensions that are as defined in Section      12 
+of <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">[OpenID.authentication‑2.0]<SPAN> 
+(</SPAN><SPAN class="info">specs@openid.net, “OpenID Authentication 2.0,” 
+2007.</SPAN><SPAN>)</SPAN></A> . This specification      adds following list to 
+the disallowed aliases.</P>
+<P>request_uri, refresh_uri, op_endpoint, user_id, redirect_uri,      client_id, 
+server_id, client_meta_uri, server_meta_uri, client_secret,      immediate, 
+pubkey, certs_uri, state, code, atype, proofkey, enc_data,      enc_key, enc_iv, 
+enc_type, enc_ref, access_token, access_token_secret,      issued_at, 
+expires_in, refresh_token.</P>
+<P></P><A name="security_considerations"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11"></A>
+<H3>11.&nbsp; Security Considerations</H3>
+<P>Followings are the list of attack vectors and remedies that were      
+considered for this specification.</P>
+<P>For details of the attack vector, see <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#SP800-63">[SP800‑63]<SPAN> 
+(</SPAN><SPAN class="info">National Institute of Standards and             
+Technology, “NIST SP800-63rev.1: Electronic Authentication           Guideline,” 
+.</SPAN><SPAN>)</SPAN></A>.</P><A name="assertion_manufacture"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.1"></A>
+<H3>11.1.&nbsp; Assertion manufacture/modification</H3>
+<P>To mitigate this attack, there are two ways to mitigate it.</P>
+<P></P>
+<OL class="text">
+  <LI>The assertion may be digitally signed by the OP. The Relying            
+  Party SHOULD check the digital signature to verify that it was            
+  issued by a legitimate OP.</LI>
+  <LI>The assertion may be sent over a protected channel such as            
+  TLS/SSL. In order to protect the integrity of assertions from            
+  malicious attack, the OP MUST be authenticated. In this            
+  specification, the assertion is always sent over TLS/SSL protected            
+  channel.</LI></OL>
+<P></P><A name="assertion_disclosure"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.2"></A>
+<H3>11.2.&nbsp; Assertion disclosure</H3>
+<P>The Assertion disclosure can be mitigated in the following two        ways.
+</P>
+<P></P>
+<OL class="text">
+  <LI>Assertion is sent over TLS/SSL protected channel, where RP is            
+  authenticated by "client_id" and "client_secret".</LI>
+  <LI>Signed Assertion is encrypted by the RP's public key.</LI></OL>
+<P></P><A name="assertion_repudiation"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.3"></A>
+<H3>11.3.&nbsp; Assertion repudiation</H3>
+<P>To mitigate this threat, the assertion may be digitally signed by        the 
+OP using a key that supports non-repudiation. The RP SHOULD check        the 
+digital signature to verify that it was issued by a legitimate        OP.</P><A 
+name="assertion_redirect"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.4"></A>
+<H3>11.4.&nbsp; Assertion redirect</H3>
+<P>To mitigate this threat, the assertion includes the identity of the        RP 
+for whom it was generated as "client_id". The RP verifies that        incoming 
+assertions include its identity as the recipient of the        assertion.</P><A 
+name="assertion_reuse"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.5"></A>
+<H3>11.5.&nbsp; Assertion reuse</H3>
+<P>The assertion includes a timestamp and a short lifetime of        validity. 
+The Relying Party checks the timestamp and lifetime values        to ensure that 
+the assertion is currently valid.</P><A name="artifact_manufacture"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.6"></A>
+<H3>11.6.&nbsp; Secondary authenticator manufacture</H3>
+<P>Due to the large entropy requirement of the Artifact ("code") and        
+short life nature of its validity, the success probability of this        attack 
+is extremely low.</P><A name="artifact_capture"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.7"></A>
+<H3>11.7.&nbsp; Secondary authenticator capture</H3>
+<P>Secondary authenticator (="code") is transmitted only through        HTTPS, 
+thus it is protected between the OP and the User-Agent, and        User-Agent 
+and the RP.</P>
+<P>Only the place it can be captured is the User-Agent where the TLS        
+session is terminated, and is possible if the User-Agent is infested        by 
+malwares. However, it renders no usefulness as long as the profile        in use 
+either RP authentication or assertion encryption.</P><A name="assertion_substitution"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.8"></A>
+<H3>11.8.&nbsp; Assertion substitution</H3>
+<P>Responses to assertion requests is bound to the corresponding        requests 
+by message order in HTTP, as both assertions and requests are        protected 
+by TLS that can detect and disallow malicious reordering of        packets.</P>
+<A name="auth_req_disclosure"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.9"></A>
+<H3>11.9.&nbsp; Authentication Request Disclosure</H3>
+<P>If the authentication request is POSTed directly through a        protected 
+channel, it is not possible to disclose the authentication        request.</P>
+<P>If the Request File is encrypted by the OP's public key, the        
+authentication request will not be disclosed unless OP's private key        gets 
+compromised or the encryption algorithm becomes vulnerable.</P><A name="anchor29"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.10"></A>
+<H3>11.10.&nbsp; Timing Attack</H3>
+<P>Timing attack can be used to reduce the effctive key length of the        
+signature if the time required to return the response in case of        
+signature error and correct signature exists. Care should be taken in        the 
+implementation to avoid this attack.</P><A name="authn_proc_threats"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.11.11"></A>
+<H3>11.11.&nbsp; Authentication Process Threats</H3>
+<P>In the category of Authentication Process Threats, following        threats 
+exists.</P>
+<P></P>
+<UL class="text">
+  <LI>Online guessing</LI>
+  <LI>Phishing</LI>
+  <LI>Pharming</LI>
+  <LI>Eavesdropping</LI>
+  <LI>Replay</LI>
+  <LI>Session hijack</LI>
+  <LI>Man-in-the-middle</LI></UL>
+<P>Authentication process per se as described in NIST        SP800-63-rev1 is 
+out of scope for this protocol, but care SHOULD be        taken to achieve 
+appropriate protection.</P><A name="iana"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.12"></A>
+<H3>12.&nbsp; IANA Considerations</H3><A name="oauth_params"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.12.1"></A>
+<H3>12.1.&nbsp; OAuth Parameters Registry</H3>
+<P>The following is the parameter registration request for the "scope"        
+parameter as defined in this specification:</P>
+<P>Parameter name: openid</P>
+<P>Parameter usage location: The End-User Authorization Endpoint        request, 
+the End-User Authorization Endpoint response, the Token        Endpoint request, 
+the Token Endpoint response, and the <TT>WWW-Authenticate</TT> header field.</P>
+<P>Change controller: IETF</P>
+<P>Specification document(s): [[ this document ]]</P>
+<P>Related information: None</P><A name="anchor30"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.13"></A>
+<H3>13.&nbsp; Open Issues and Things To Be Done (TBD)</H3>
+<P>[[To be removed from the final specification.]]</P>
+<P>Following items remains to be done in this draft.</P>
+<P></P>
+<OL class="text">
+  <LI>Check that all the "protocols" has been abstracted and "messages"          
+  are protocol independent.</LI>
+  <LI>IANA registration issue while OAuth registry is not up yet.</LI>
+  <LI>Clean Up and add references.</LI>
+  <LI>Update JWT/JWS/JWE related things with the most current version          
+  of them.</LI>
+  <LI>Finish the security consideration section.</LI>
+  <LI>Properly capitalize the Defined Words.</LI>
+  <LI>Better to split the Authentication and Authorization server?          
+  (Model-wise, yes, but it gets complicated. Current model is          
+  implicitly assuming that the Authentication and Authorization server          
+  are operated by the same entity and the protocol between them are          
+  proprietary.)</LI></OL>
+<P></P><A name="anchor31"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.A"></A>
+<H3>Appendix A.&nbsp; Acknowledgements</H3>
+<P>As a successor version of <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+Authentication 2.0<SPAN> (</SPAN><SPAN class="info">specs@openid.net, “OpenID 
+Authentication 2.0,” 2007.</SPAN><SPAN>)</SPAN></A> [OpenID.authentication‑2.0], 
+     this specification heavily relies on <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+Authentication 2.0<SPAN> (</SPAN><SPAN class="info">specs@openid.net, “OpenID 
+Authentication 2.0,” 2007.</SPAN><SPAN>)</SPAN></A> [OpenID.authentication‑2.0]. 
+     Please refer to Appendix C of <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+Authentication 2.0<SPAN> (</SPAN><SPAN class="info">specs@openid.net, “OpenID 
+Authentication 2.0,” 2007.</SPAN><SPAN>)</SPAN></A> [OpenID.authentication‑2.0] 
+for      the full list of the contributors for <A class="info" href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#OpenID.authentication-2.0">OpenID 
+Authentication 2.0<SPAN> (</SPAN><SPAN class="info">specs@openid.net, “OpenID 
+Authentication 2.0,” 2007.</SPAN><SPAN>)</SPAN></A> [OpenID.authentication‑2.0].
+</P>
+<P>This specification is largely compliant with OAuth 2.0 draft 15. As      the 
+draft is not yet referenceable, relevant text has been incorporated      into 
+this draft. Please refer to the OAuth 2.0 specification for the      list of 
+contributors.</P>
+<P>In addition, the OpenID Community would like to thank the following      
+people for the work they've done in the drafting and editing of this      
+specification.</P>
+<P></P>
+<P></P>
+<BLOCKQUOTE class="text">
+  <P>Anthony Nadalin (tonynad@microsoft.com), Microsoft.</P>
+  <P>Breno de Medeiros (breno@gmail.com), Google.</P>
+  <P>Chuck Mortimore (cmortimore@salesforce.com), Salesforce.com.</P>
+  <P>David Recordon (dr@fb.com)&lt;author&gt;, Facebook.</P>
+  <P>George Fletcher (george.fletcher@corp.aol.com), AOL.</P>
+  <P>Hideki Nara (hideki.nara@gmail.com), Takt Communications.</P>
+  <P>John Bradley (jbradely@mac.com) &lt;author&gt;, Protiviti          
+  Government Service.</P>
+  <P>Mike Jones (Michael.Jones@microsoft.com), Microsoft.</P>
+  <P>Nat Sakimura (n-sakimura@nri.co.jp) &lt;author/editor&gt;, Nomura          
+  Research Institute, Ltd.</P>
+  <P>Paul Tarjan (pt@fb.com), Facebook.</P>
+  <P>Ryo Itou (ritou@yahoo-corp.jp), Yahoo! Japan.</P></BLOCKQUOTE>
+<P></P><A name="anchor32"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<A name="rfc.section.B"></A>
+<H3>Appendix B.&nbsp; Document History</H3>
+<P></P>
+<BLOCKQUOTE class="text">
+  <DL>
+    <DT>-01</DT>
+    <DD>First Draft that incorporates the core of both          openidonnect.com 
+    proposal and OpenID Artifact Binding RC3 and          abstracted.</DD>
+    <DT>-02</DT>
+    <DD>Catch up to OAuth 2.0 d15. Replaced JSS and JSE to          JWS and JWE. 
+    Section grouping and reorganizations. Added more          contributors.</DD>
+    <DT>-03</DT>
+    <DD>Combined with Session Management. Moved "openid"          back to Token 
+    Endpoint. Renaming the sections according to the          Endpoint names. 
+    Rewrote intro to the Messages section to be more          approacheable. 
+    </DD>
+    <DT>-04</DT>
+    <DD>To keep the ID Token small so that it fits cookie          more easily, 
+    moved OPTIONAL parameters to UserInfo endpoint          response. </DD>
+</DL></BLOCKQUOTE>
+<P></P><A name="rfc.references1"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<H3>14.&nbsp;Normative References</H3>
+<TABLE border="0" width="99%">
+  <TBODY>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="AX1.0">[AX1.0]</A></TD>
+    <TD class="author-text">Hardt, D., Bufu, J., and J. Hoyt, “<A href="http://openid.net/specs/openid-provider-authentication-policy-extension-1_0.html">OpenID 
+      Attribute Exchange 1.0</A>,” December&nbsp;2007.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A 
+    name="FIPS180-2">[FIPS180-2]</A></TD>
+    <TD class="author-text">U.S. Department of Commerce and National Institute 
+      of Standards and            Technology, “<A href="http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf">Secure 
+      Hash Signature Standard</A>,” FIPS&nbsp;180-2.
+      <P>Defines Secure Hash Algorithm 256 (SHA256)</P></TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A 
+    name="OpenID.AB">[OpenID.AB]</A></TD>
+    <TD class="author-text">Sakimura, N., Ed., Bradley, J., de Madeiros, B., 
+      Ito, R., and M. Jones, “<A href="http://openid.net/specs/ab/1.0/">OpenID 
+      Connect Artifact Binding 1.0</A>,” January&nbsp;2011.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A 
+    name="OpenID.AC">[OpenID.AC]</A></TD>
+    <TD class="author-text">Mortimore, C., Ed., Sakimura, N., Bradley, J., de 
+      Madeiros, B., Ito, R., and M. Jones, “<A href="http://openid.net/specs/ab/1.0/">OpenID 
+      Connect Authorization Code Binding 1.0</A>,” January&nbsp;2011.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A 
+      name="OpenID.authentication-2.0">[OpenID.authentication-2.0]</A></TD>
+    <TD class="author-text">specs@openid.net, “OpenID Authentication 2.0,” 
+      2007 (<A 
+      href="http://www.openid.net/specs/openid-authentication-2_0.txt">TXT</A>, 
+      <A 
+      href="http://www.openid.net/specs/openid-authentication-2_0.html">HTML</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="PAPE1.0">[PAPE1.0]</A></TD>
+    <TD class="author-text">Recordon, D., Jones, M., Bufu, J., Ed., Daughty, 
+      J., and N. Sakimura, “<A href="http://openid.net/specs/openid-provider-authentication-policy-extension-1_0.html">OpenID 
+      Provider Authentication Property Extension 1.0</A>,” 
+  December&nbsp;2008.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC1421">[RFC1421]</A></TD>
+    <TD class="author-text"><A href="mailto:104-8456@mcimail.com">Linn, 
+      J.</A>, “<A href="http://tools.ietf.org/html/rfc1421">Privacy Enhancement 
+      for Internet Electronic Mail: Part I: Message Encryption and 
+      Authentication Procedures</A>,” RFC&nbsp;1421, February&nbsp;1993 (<A 
+      href="http://www.rfc-editor.org/rfc/rfc1421.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC1422">[RFC1422]</A></TD>
+    <TD class="author-text"><A href="mailto:kent@BBN.COM">Kent, S.</A>, “<A 
+      href="http://tools.ietf.org/html/rfc1422">Privacy Enhancement for Internet 
+      Electronic Mail: Part II: Certificate-Based Key Management</A>,” 
+      RFC&nbsp;1422, February&nbsp;1993 (<A href="http://www.rfc-editor.org/rfc/rfc1422.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC1423">[RFC1423]</A></TD>
+    <TD class="author-text"><A href="mailto:balenson@tis.com">Balenson, 
+      D.</A>, “<A href="http://tools.ietf.org/html/rfc1423">Privacy Enhancement 
+      for Internet Electronic Mail: Part III: Algorithms, Modes, and 
+      Identifiers</A>,” RFC&nbsp;1423, February&nbsp;1993 (<A href="http://www.rfc-editor.org/rfc/rfc1423.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC1424">[RFC1424]</A></TD>
+    <TD class="author-text"><A href="mailto:burt@rsa.com">Kaliski, B.</A>, “<A 
+      href="http://tools.ietf.org/html/rfc1424">Privacy Enhancement for Internet 
+      Electronic Mail: Part IV: Key Certification and Related Services</A>,” 
+      RFC&nbsp;1424, February&nbsp;1993 (<A href="http://www.rfc-editor.org/rfc/rfc1424.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC1750">[RFC1750]</A></TD>
+    <TD class="author-text"><A href="mailto:dee@lkg.dec.com">Eastlake, D.</A>, 
+      <A href="mailto:crocker@cybercash.com">Crocker, S.</A>, and <A href="mailto:jis@mit.edu">J. 
+      Schiller</A>, “<A href="http://tools.ietf.org/html/rfc1750">Randomness 
+      Recommendations for Security</A>,” RFC&nbsp;1750, December&nbsp;1994 (<A 
+      href="http://www.rfc-editor.org/rfc/rfc1750.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC2119">[RFC2119]</A></TD>
+    <TD class="author-text"><A href="mailto:sob@harvard.edu">Bradner, S.</A>, 
+      “<A href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to 
+      Indicate Requirement Levels</A>,” BCP&nbsp;14, RFC&nbsp;2119, 
+      March&nbsp;1997 (<A 
+      href="http://www.rfc-editor.org/rfc/rfc2119.txt">TXT</A>, <A href="http://xml.resource.org/public/rfc/html/rfc2119.html">HTML</A>, 
+      <A 
+  href="http://xml.resource.org/public/rfc/xml/rfc2119.xml">XML</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC2616">[RFC2616]</A></TD>
+    <TD class="author-text"><A href="mailto:fielding@ics.uci.edu">Fielding, 
+      R.</A>, <A href="mailto:jg@w3.org">Gettys, J.</A>, <A href="mailto:mogul@wrl.dec.com">Mogul, 
+      J.</A>, <A href="mailto:frystyk@w3.org">Frystyk, H.</A>, <A href="mailto:masinter@parc.xerox.com">Masinter, 
+      L.</A>, <A href="mailto:paulle@microsoft.com">Leach, P.</A>, and <A href="mailto:timbl@w3.org">T. 
+      Berners-Lee</A>, “<A href="http://tools.ietf.org/html/rfc2616">Hypertext 
+      Transfer Protocol -- HTTP/1.1</A>,” RFC&nbsp;2616, June&nbsp;1999 (<A 
+      href="http://www.rfc-editor.org/rfc/rfc2616.txt">TXT</A>, <A href="http://www.rfc-editor.org/rfc/rfc2616.ps">PS</A>, 
+      <A href="http://www.rfc-editor.org/rfc/rfc2616.pdf">PDF</A>, <A href="http://xml.resource.org/public/rfc/html/rfc2616.html">HTML</A>, 
+      <A 
+  href="http://xml.resource.org/public/rfc/xml/rfc2616.xml">XML</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC2617">[RFC2617]</A></TD>
+    <TD class="author-text"><A href="mailto:john@math.nwu.edu">Franks, J.</A>, 
+      <A href="mailto:pbaker@verisign.com">Hallam-Baker, P.</A>, <A href="mailto:jeff@AbiSource.com">Hostetler, 
+      J.</A>, <A href="mailto:lawrence@agranat.com">Lawrence, S.</A>, <A href="mailto:paulle@microsoft.com">Leach, 
+      P.</A>, Luotonen, A., and <A href="mailto:stewart@OpenMarket.com">L. 
+      Stewart</A>, “<A href="http://tools.ietf.org/html/rfc2617">HTTP 
+      Authentication: Basic and Digest Access Authentication</A>,” 
+      RFC&nbsp;2617, June&nbsp;1999 (<A href="http://www.rfc-editor.org/rfc/rfc2617.txt">TXT</A>, 
+      <A href="http://xml.resource.org/public/rfc/html/rfc2617.html">HTML</A>, 
+      <A 
+  href="http://xml.resource.org/public/rfc/xml/rfc2617.xml">XML</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC3339">[RFC3339]</A></TD>
+    <TD class="author-text"><A href="mailto:GK@ACM.ORG">Klyne, G., Ed.</A> and 
+      <A href="mailto:chris.newman@sun.com">C. Newman</A>, “<A href="http://tools.ietf.org/html/rfc3339">Date 
+      and Time on the Internet: Timestamps</A>,” RFC&nbsp;3339, July&nbsp;2002 
+      (<A href="http://www.rfc-editor.org/rfc/rfc3339.txt">TXT</A>, <A href="http://xml.resource.org/public/rfc/html/rfc3339.html">HTML</A>, 
+      <A 
+  href="http://xml.resource.org/public/rfc/xml/rfc3339.xml">XML</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC3548">[RFC3548]</A></TD>
+    <TD class="author-text">Josefsson, S., “<A href="http://tools.ietf.org/html/rfc3548">The 
+      Base16, Base32, and Base64 Data Encodings</A>,” RFC&nbsp;3548, 
+      July&nbsp;2003 (<A 
+      href="http://www.rfc-editor.org/rfc/rfc3548.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC3629">[RFC3629]</A></TD>
+    <TD class="author-text">Yergeau, F., “<A href="http://tools.ietf.org/html/rfc3629">UTF-8, 
+      a transformation format of ISO 10646</A>,” STD&nbsp;63, RFC&nbsp;3629, 
+      November&nbsp;2003 (<A 
+      href="http://www.rfc-editor.org/rfc/rfc3629.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC3986">[RFC3986]</A></TD>
+    <TD class="author-text"><A href="mailto:timbl@w3.org">Berners-Lee, T.</A>, 
+      <A href="mailto:fielding@gbiv.com">Fielding, R.</A>, and <A href="mailto:LMM@acm.org">L. 
+      Masinter</A>, “<A href="http://tools.ietf.org/html/rfc3986">Uniform 
+      Resource Identifier (URI): Generic Syntax</A>,” STD&nbsp;66, 
+      RFC&nbsp;3986, January&nbsp;2005 (<A href="http://www.rfc-editor.org/rfc/rfc3986.txt">TXT</A>, 
+      <A href="http://xml.resource.org/public/rfc/html/rfc3986.html">HTML</A>, 
+      <A 
+  href="http://xml.resource.org/public/rfc/xml/rfc3986.xml">XML</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC4627">[RFC4627]</A></TD>
+    <TD class="author-text">Crockford, D., “<A href="http://tools.ietf.org/html/rfc4627">The 
+      application/json Media Type for JavaScript Object Notation (JSON)</A>,” 
+      RFC&nbsp;4627, July&nbsp;2006 (<A href="http://www.rfc-editor.org/rfc/rfc4627.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="RFC5246">[RFC5246]</A></TD>
+    <TD class="author-text">Dierks, T. and E. Rescorla, “<A href="http://tools.ietf.org/html/rfc5246">The 
+      Transport Layer Security (TLS) Protocol Version 1.2</A>,” RFC&nbsp;5246, 
+      August&nbsp;2008 (<A 
+      href="http://www.rfc-editor.org/rfc/rfc5246.txt">TXT</A>).</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="SP800-63">[SP800-63]</A></TD>
+    <TD class="author-text">National Institute of Standards and            
+      Technology, “<A href="http://csrc.nist.gov/publications/drafts/800-63-rev1/SP800-63-Rev1_Dec2008.pdf">NIST 
+      SP800-63rev.1: Electronic Authentication          Guideline</A>,” 
+      NIST&nbsp;SP800-63.
+      <P>Defines LoA</P></TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="SREG1.0">[SREG1.0]</A></TD>
+    <TD class="author-text">Hoyt, J., Hoyt, J., and D. Recordon, “<A href="http://openid.net/specs/openid-provider-authentication-policy-extension-1_0.html">OpenID 
+      Simple Registration Extension 1.0</A>,” December&nbsp;2007.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="html401">[html401]</A></TD>
+    <TD class="author-text">Ragget, D., “<A href="http://www.w3.org/TR/html401/">HTML 
+      4.01 Specification</A>,” December&nbsp;1999.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="jwe">[jwe]</A></TD>
+    <TD class="author-text">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+      Panzer, J., Sakimura, N., and P. Tarjan, “<A href="http://self-issued.info/docs/draft-jones-json-web-signature-01.html">JSON 
+      Web Encryption</A>,” March&nbsp;2011.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="jws">[jws]</A></TD>
+    <TD class="author-text">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+      Panzer, J., Sakimura, N., and P. Tarjan, “<A href="http://self-issued.info/docs/draft-jones-json-web-signature-01.html">JSON 
+      Web Signatures</A>,” March&nbsp;2011.</TD></TR>
+  <TR>
+    <TD class="author-text" vAlign="top"><A name="jwt">[jwt]</A></TD>
+    <TD class="author-text">Jones, M., Belfanz, D., Bradeley, J., Goland, Y., 
+      Panzer, J., Sakimura, N., and P. Tarjan, “<A href="http://jsonenc.info/sig/1.0/">JSON 
+      Web Token</A>,” January&nbsp;2011.</TD></TR></TBODY></TABLE><A name="rfc.authors"></A><BR>
+<HR>
+
+<TABLE class="TOCbug" cellSpacing="2" summary="layout" cellPadding="0" align="right">
+  <TBODY>
+  <TR>
+    <TD class="TOCbug"><A href="http://openid4.us/specs/ab/openid-connect-core-1_0.html#toc">&nbsp;TOC&nbsp;</A></TD></TR></TBODY></TABLE>
+<H3>Authors' Addresses</H3>
+<TABLE border="0" cellSpacing="0" cellPadding="0" width="99%">
+  <TBODY>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Nat Sakimura (editor)</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Nomura Research Institute,      Ltd.</TD></TR>
+  <TR>
+    <TD class="author" align="right">Email:&nbsp;</TD>
+    <TD class="author-text"><A 
+      href="mailto:n-sakimura@nri.co.jp">n-sakimura@nri.co.jp</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">David Recordon</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Facebook Inc.</TD></TR>
+  <TR>
+    <TD class="author" align="right">Email:&nbsp;</TD>
+    <TD class="author-text"><A href="mailto:dr@fb.com">dr@fb.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">John Bradley</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Protiviti      Government Services</TD></TR>
+  <TR>
+    <TD class="author" align="right">Email:&nbsp;</TD>
+    <TD class="author-text"><A 
+      href="mailto:jbradley@mac.com">jbradley@mac.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Breno de Madeiros</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Google Inc.</TD></TR>
+  <TR>
+    <TD class="author" align="right">Email:&nbsp;</TD>
+    <TD class="author-text"><A 
+      href="mailto:breno@google.com">breno@google.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Mike Jones</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Microsoft Corporation</TD></TR>
+  <TR>
+    <TD class="author" align="right">Email:&nbsp;</TD>
+    <TD class="author-text"><A 
+      href="mailto:Michael.Jones@microsoft.com">Michael.Jones@microsoft.com</A></TD></TR>
+  <TR cellpadding="3">
+    <TD>&nbsp;</TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">Edmund Jay (editor)</TD></TR>
+  <TR>
+    <TD class="author-text">&nbsp;</TD>
+    <TD class="author-text">MGI1</TD></TR>
+  <TR>
+    <TD class="author" align="right">Email:&nbsp;</TD>
+    <TD class="author-text"><A 
+  href="mailto:ejay@mgi1.com">ejay@mgi1.com</A></TD></TR>
+</TBODY></TABLE></BODY></HTML>

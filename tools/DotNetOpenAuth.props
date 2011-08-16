@@ -4,6 +4,7 @@
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
+		<DisableFastUpToDateCheck>false</DisableFastUpToDateCheck>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
@@ -11,6 +12,9 @@
 		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
 		<ZipLevel>6</ZipLevel>
+		<Zip7ToolPath>$(ToolsDir)7-Zip.x86\</Zip7ToolPath>
+		<NuGetToolPath>$(ToolsDir)NuGet\</NuGetToolPath>
+		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
 
@@ -33,8 +37,9 @@
 
 	<ItemGroup>
 		<SignDependsOn Include="Build" />
-		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll;
-		                                 $(ProjectRoot)lib\Microsoft.Contracts.dll; "/>
+		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll" />
+		<ILMergeInputAssemblies Condition=" '$(ClrVersion)' == '2' "
+		                        Include="$(ProjectRoot)lib\Microsoft.Contracts.dll" />
 	</ItemGroup>
 
 	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />

@@ -7,6 +7,9 @@
 namespace DotNetOpenAuth.Test.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
+	using System.Runtime.Serialization.Json;
+	using System.Text;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using NUnit.Framework;
@@ -52,10 +55,38 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsFalse(actual.ContainsKey("EmptyMember"));
 		}
 
+		/// <summary>
+		/// Verifies JSON serialization
+		/// </summary>
+		[TestCase]
+		public void SerializeDeserializeJson() {
+			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
+			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
+
+			var ms = new MemoryStream();
+			var writer = JsonReaderWriterFactory.CreateJsonWriter(ms, Encoding.UTF8);
+			MessageSerializer.Serialize(this.MessageDescriptions.GetAccessor(message), writer);
+			writer.Flush();
+
+			string actual = Encoding.UTF8.GetString(ms.ToArray());
+			string expected = @"{""age"":15,""Name"":""Andrew"",""Location"":""http:\/\/localtest\/path"",""Timestamp"":""2008-09-19T08:00:00Z""}";
+			Assert.AreEqual(expected, actual);
+
+			ms.Position = 0;
+			var deserialized = new Mocks.TestDirectedMessage();
+			var reader = JsonReaderWriterFactory.CreateJsonReader(ms, XmlDictionaryReaderQuotas.Max);
+			MessageSerializer.Deserialize(this.MessageDescriptions.GetAccessor(deserialized), reader);
+			Assert.AreEqual(message.Age, deserialized.Age);
+			Assert.AreEqual(message.EmptyMember, deserialized.EmptyMember);
+			Assert.AreEqual(message.Location, deserialized.Location);
+			Assert.AreEqual(message.Name, deserialized.Name);
+			Assert.AreEqual(message.Timestamp, deserialized.Timestamp);
+		}
+
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void DeserializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
-			serializer.Deserialize(null, null);
+			MessageSerializer.Deserialize(null, null);
 		}
 
 		[TestCase]

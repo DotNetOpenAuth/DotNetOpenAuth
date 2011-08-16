@@ -93,12 +93,14 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			};
 			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
 			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), null, str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
+			Map<TimeSpan>(ts => ts.ToString(), null, str => TimeSpan.Parse(str));
 			Map<byte[]>(safeFromByteArray, null, safeToByteArray);
 			Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
 			Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
 			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
 			Map<CultureInfo>(c => c.Name, null, str => new CultureInfo(str));
 			Map<CultureInfo[]>(cs => string.Join(",", cs.Select(c => c.Name).ToArray()), null, str => str.Split(',').Select(s => new CultureInfo(s)).ToArray());
+			Map<Type>(t => t.FullName, null, str => Type.GetType(str));
 		}
 
 		/// <summary>
@@ -112,7 +114,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// The attribute discovered on <paramref name="member"/> that describes the
 		/// serialization requirements of the message part.
 		/// </param>
-		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts requires it.")]
+		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Unavoidable"), SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts requires it.")]
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {
 			Contract.Requires<ArgumentNullException>(member != null);
 			Contract.Requires<ArgumentException>(member is FieldInfo || member is PropertyInfo);
@@ -163,6 +165,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				(this.field.Attributes & FieldAttributes.InitOnly) == FieldAttributes.InitOnly ||
 				(this.field.Attributes & constAttributes) == constAttributes)) {
 				this.IsConstantValue = true;
+				this.IsConstantValueAvailableStatically = this.field.IsStatic;
 			} else if (this.property != null && !this.property.CanWrite) {
 				this.IsConstantValue = true;
 			}
@@ -198,6 +201,28 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		internal bool IsConstantValue { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this part is defined as a constant field and can be read without a message instance.
+		/// </summary>
+		internal bool IsConstantValueAvailableStatically { get; set; }
+
+		/// <summary>
+		/// Gets the static constant value for this message part without a message instance.
+		/// </summary>
+		internal string StaticConstantValue {
+			get {
+				Contract.Requires<InvalidOperationException>(this.IsConstantValueAvailableStatically);
+				return this.ToString(this.field.GetValue(null), false);
+			}
+		}
+
+		/// <summary>
+		/// Gets the type of the declared member.
+		/// </summary>
+		internal Type MemberDeclaredType {
+			get { return this.memberDeclaredType; }
+		}
+
+		/// <summary>
 		/// Sets the member of a given message to some given value.
 		/// Used in deserialization.
 		/// </summary>
@@ -220,11 +245,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 							value));
 					}
 				} else {
-					if (this.property != null) {
-						this.property.SetValue(message, this.ToValue(value), null);
-					} else {
-						this.field.SetValue(message, this.ToValue(value));
-					}
+					this.SetValueAsObject(message, this.ToValue(value));
 				}
 			} catch (Exception ex) {
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.MessagePartReadFailure, message.GetType(), this.Name, value);
@@ -295,9 +316,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toString">The function to convert the custom type to a string.</param>
 		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
 		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
-			Contract.Requires<ArgumentNullException>(toString != null, "toString");
-			Contract.Requires<ArgumentNullException>(toValue != null, "toValue");
+			Contract.Requires<ArgumentNullException>(toString != null);
+			Contract.Requires<ArgumentNullException>(toValue != null);
 
 			if (toOriginalString == null) {
 				toOriginalString = toString;
@@ -337,10 +359,40 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 
 			IMessagePartEncoder encoder;
 			if (!encoders.TryGetValue(messagePartEncoder, out encoder)) {
-				encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
+				try {
+					encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
+				} catch (MissingMethodException ex) {
+					throw ErrorUtilities.Wrap(ex, MessagingStrings.EncoderInstantiationFailed, messagePartEncoder.FullName);
+				}
 			}
 
 			return encoder;
+		}
+
+		/// <summary>
+		/// Gets the value of the message part, without converting it to/from a string.
+		/// </summary>
+		/// <param name="message">The message instance to read from.</param>
+		/// <returns>The value of the member.</returns>
+		private object GetValueAsObject(IMessage message) {
+			if (this.property != null) {
+				return this.property.GetValue(message, null);
+			} else {
+				return this.field.GetValue(message);
+			}
+		}
+
+		/// <summary>
+		/// Sets the value of a message part directly with a given value.
+		/// </summary>
+		/// <param name="message">The message instance to read from.</param>
+		/// <param name="value">The value to set on the this part.</param>
+		private void SetValueAsObject(IMessage message, object value) {
+			if (this.property != null) {
+				this.property.SetValue(message, value, null);
+			} else {
+				this.field.SetValue(message, value);
+			}
 		}
 
 		/// <summary>
@@ -364,19 +416,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </returns>
 		private string ToString(object value, bool originalString) {
 			return originalString ? this.converter.ValueToOriginalString(value) : this.converter.ValueToString(value);
-		}
-
-		/// <summary>
-		/// Gets the value of the message part, without converting it to/from a string.
-		/// </summary>
-		/// <param name="message">The message instance to read from.</param>
-		/// <returns>The value of the member.</returns>
-		private object GetValueAsObject(IMessage message) {
-			if (this.property != null) {
-				return this.property.GetValue(message, null);
-			} else {
-				return this.field.GetValue(message);
-			}
 		}
 
 		/// <summary>

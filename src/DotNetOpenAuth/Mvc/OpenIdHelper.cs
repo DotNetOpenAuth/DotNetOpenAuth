@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Mvc {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
@@ -35,10 +36,11 @@ namespace DotNetOpenAuth.Mvc {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			StringWriter result = new StringWriter();
-			result.WriteStylesheetLink(OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName);
-			result.WriteStylesheetLink(OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedStylesheetResourceName);
-			return result.ToString();
+			using (var result = new StringWriter(CultureInfo.CurrentCulture)) {
+				result.WriteStylesheetLink(OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName);
+				result.WriteStylesheetLink(OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedStylesheetResourceName);
+				return result.ToString();
+			}
 		}
 
 		/// <summary>
@@ -59,43 +61,45 @@ namespace DotNetOpenAuth.Mvc {
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		public static string OpenIdSelectorScripts(this HtmlHelper html, OpenIdSelector selectorOptions, OpenIdAjaxOptions additionalOptions) {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
+			bool selectorOptionsOwned = false;
 			if (selectorOptions == null) {
+				selectorOptionsOwned = true;
 				selectorOptions = new OpenId.RelyingParty.OpenIdSelector();
 			}
+			try {
+				if (additionalOptions == null) {
+					additionalOptions = new OpenIdAjaxOptions();
+				}
 
-			if (additionalOptions == null) {
-				additionalOptions = new OpenIdAjaxOptions();
-			}
-
-			StringWriter result = new StringWriter();
-
-			if (additionalOptions.ShowDiagnosticIFrame || additionalOptions.ShowDiagnosticTrace) {
-				string scriptFormat = @"window.openid_visible_iframe = {0}; // causes the hidden iframe to show up
+				using (StringWriter result = new StringWriter(CultureInfo.CurrentCulture)) {
+					if (additionalOptions.ShowDiagnosticIFrame || additionalOptions.ShowDiagnosticTrace) {
+						string scriptFormat = @"window.openid_visible_iframe = {0}; // causes the hidden iframe to show up
 window.openid_trace = {1}; // causes lots of messages";
-				result.WriteScriptBlock(string.Format(
-					CultureInfo.InvariantCulture,
-					scriptFormat,
-					additionalOptions.ShowDiagnosticIFrame ? "true" : "false",
-					additionalOptions.ShowDiagnosticTrace ? "true" : "false"));
-			}
-			var scriptResources = new[] {
+						result.WriteScriptBlock(string.Format(
+							CultureInfo.InvariantCulture,
+							scriptFormat,
+							additionalOptions.ShowDiagnosticIFrame ? "true" : "false",
+							additionalOptions.ShowDiagnosticTrace ? "true" : "false"));
+					}
+					var scriptResources = new[] {
 					OpenIdRelyingPartyControlBase.EmbeddedJavascriptResource,
 					OpenIdRelyingPartyAjaxControlBase.EmbeddedAjaxJavascriptResource,
 					OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedScriptResourceName,
 				};
-			result.WriteScriptTags(scriptResources);
+					result.WriteScriptTags(scriptResources);
 
-			if (selectorOptions.DownloadYahooUILibrary) {
-				result.WriteScriptTags(new[] { "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js" });
-			}
+					if (selectorOptions.DownloadYahooUILibrary) {
+						result.WriteScriptTagsUrls(new[] { "https://ajax.googleapis.com/ajax/libs/yui/2.8.0r4/build/yuiloader/yuiloader-min.js" });
+					}
 
-			var blockBuilder = new StringWriter();
-			if (selectorOptions.DownloadYahooUILibrary) {
-				blockBuilder.WriteLine(@"	try {
+					using (var blockBuilder = new StringWriter(CultureInfo.CurrentCulture)) {
+						if (selectorOptions.DownloadYahooUILibrary) {
+							blockBuilder.WriteLine(@"	try {
 		if (YAHOO) {
 			var loader = new YAHOO.util.YUILoader({
 				require: ['button', 'menu'],
@@ -106,25 +110,25 @@ window.openid_trace = {1}; // causes lots of messages";
 			loader.insert();
 		}
 	} catch (e) { }");
-			}
+						}
 
-			blockBuilder.WriteLine("window.aspnetapppath = '{0}';", VirtualPathUtility.AppendTrailingSlash(HttpContext.Current.Request.ApplicationPath));
+						blockBuilder.WriteLine("window.aspnetapppath = '{0}';", VirtualPathUtility.AppendTrailingSlash(HttpContext.Current.Request.ApplicationPath));
 
-			// Positive assertions can last no longer than this library is willing to consider them valid,
-			// and when they come with OP private associations they last no longer than the OP is willing
-			// to consider them valid.  We assume the OP will hold them valid for at least five minutes.
-			double assertionLifetimeInMilliseconds = Math.Min(TimeSpan.FromMinutes(5).TotalMilliseconds, Math.Min(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds));
-			blockBuilder.WriteLine(
-				"{0} = {1};",
-				OpenIdRelyingPartyAjaxControlBase.MaxPositiveAssertionLifetimeJsName,
-				assertionLifetimeInMilliseconds.ToString(CultureInfo.InvariantCulture));
+						// Positive assertions can last no longer than this library is willing to consider them valid,
+						// and when they come with OP private associations they last no longer than the OP is willing
+						// to consider them valid.  We assume the OP will hold them valid for at least five minutes.
+						double assertionLifetimeInMilliseconds = Math.Min(TimeSpan.FromMinutes(5).TotalMilliseconds, Math.Min(DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime.TotalMilliseconds, DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime.TotalMilliseconds));
+						blockBuilder.WriteLine(
+							"{0} = {1};",
+							OpenIdRelyingPartyAjaxControlBase.MaxPositiveAssertionLifetimeJsName,
+							assertionLifetimeInMilliseconds.ToString(CultureInfo.InvariantCulture));
 
-			if (additionalOptions.PreloadedDiscoveryResults != null) {
-				blockBuilder.WriteLine(additionalOptions.PreloadedDiscoveryResults);
-			}
+						if (additionalOptions.PreloadedDiscoveryResults != null) {
+							blockBuilder.WriteLine(additionalOptions.PreloadedDiscoveryResults);
+						}
 
-			string discoverUrl = VirtualPathUtility.AppendTrailingSlash(HttpContext.Current.Request.ApplicationPath) + html.RouteCollection["OpenIdDiscover"].GetVirtualPath(html.ViewContext.RequestContext, new RouteValueDictionary(new { identifier = "xxx" })).VirtualPath;
-			string blockFormat = @"	{0} = function (argument, resultFunction, errorCallback) {{
+						string discoverUrl = VirtualPathUtility.AppendTrailingSlash(HttpContext.Current.Request.ApplicationPath) + html.RouteCollection["OpenIdDiscover"].GetVirtualPath(html.ViewContext.RequestContext, new RouteValueDictionary(new { identifier = "xxx" })).VirtualPath;
+						string blockFormat = @"	{0} = function (argument, resultFunction, errorCallback) {{
 		jQuery.ajax({{
 			async: true,
 			dataType: 'text',
@@ -133,22 +137,22 @@ window.openid_trace = {1}; // causes lots of messages";
 			url: '{1}'.replace('xxx', encodeURIComponent(argument))
 		}});
 	}};";
-			blockBuilder.WriteLine(blockFormat, OpenIdRelyingPartyAjaxControlBase.CallbackJSFunctionAsync, discoverUrl);
+						blockBuilder.WriteLine(blockFormat, OpenIdRelyingPartyAjaxControlBase.CallbackJSFunctionAsync, discoverUrl);
 
-			blockFormat = @"	window.postLoginAssertion = function (positiveAssertion) {{
+						blockFormat = @"	window.postLoginAssertion = function (positiveAssertion) {{
 		$('#{0}')[0].setAttribute('value', positiveAssertion);
 		if ($('#{1}')[0] && !$('#{1}')[0].value) {{ // popups have no ReturnUrl predefined, but full page LogOn does.
 			$('#{1}')[0].setAttribute('value', window.parent.location.href);
 		}}
 		document.forms[{2}].submit();
 	}};";
-			blockBuilder.WriteLine(
-				blockFormat,
-				additionalOptions.AssertionHiddenFieldId,
-				additionalOptions.ReturnUrlHiddenFieldId,
-				additionalOptions.FormKey);
+						blockBuilder.WriteLine(
+							blockFormat,
+							additionalOptions.AssertionHiddenFieldId,
+							additionalOptions.ReturnUrlHiddenFieldId,
+							additionalOptions.FormKey);
 
-			blockFormat = @"	$(function () {{
+						blockFormat = @"	$(function () {{
 		var box = document.getElementsByName('openid_identifier')[0];
 		initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5},
 			null, // js function to invoke on receiving a positive assertion
@@ -156,32 +160,41 @@ window.openid_trace = {1}; // causes lots of messages";
 			false, // auto postback
 			null); // PostBackEventReference (unused in MVC)
 	}});";
-			blockBuilder.WriteLine(
-				blockFormat,
-				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdTextBox.EmbeddedLogoResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)),
-				selectorOptions.Throttle,
-				selectorOptions.Timeout.TotalMilliseconds,
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnText),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnToolTip),
-				selectorOptions.TextBox.ShowLogOnPostBackButton ? "true" : "false",
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnPostBackToolTip),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.RetryText),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.RetryToolTip),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.BusyToolTip),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.IdentifierRequiredMessage),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnInProgressMessage),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticationSucceededToolTip),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticatedAsToolTip),
-				MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticationFailedToolTip));
+						blockBuilder.WriteLine(
+							blockFormat,
+							MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenIdTextBox.EmbeddedLogoResourceName)),
+							MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedSpinnerResourceName)),
+							MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName)),
+							MessagingUtilities.GetSafeJavascriptValue(Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginFailureResourceName)),
+							selectorOptions.Throttle,
+							selectorOptions.Timeout.TotalMilliseconds,
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnText),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnToolTip),
+							selectorOptions.TextBox.ShowLogOnPostBackButton ? "true" : "false",
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnPostBackToolTip),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.RetryText),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.RetryToolTip),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.BusyToolTip),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.IdentifierRequiredMessage),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.LogOnInProgressMessage),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticationSucceededToolTip),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticatedAsToolTip),
+							MessagingUtilities.GetSafeJavascriptValue(selectorOptions.TextBox.AuthenticationFailedToolTip));
 
-			result.WriteScriptBlock(blockBuilder.ToString());
-			result.WriteScriptTags(OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName);
+						result.WriteScriptBlock(blockBuilder.ToString());
+						result.WriteScriptTags(OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName);
 
-			Reporting.RecordFeatureUse("MVC " + typeof(OpenIdSelector).Name);
-			return result.ToString();
+						Reporting.RecordFeatureUse("MVC " + typeof(OpenIdSelector).Name);
+						return result.ToString();
+					}
+				}
+			} catch {
+				if (selectorOptionsOwned) {
+					selectorOptions.Dispose();
+				}
+
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -227,40 +240,42 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		public static string OpenIdSelector(this HtmlHelper html, params SelectorButton[] buttons) {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Requires<ArgumentNullException>(buttons != null);
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			var writer = new StringWriter();
-			var h = new HtmlTextWriter(writer);
+			using (var writer = new StringWriter(CultureInfo.CurrentCulture)) {
+				using (var h = new HtmlTextWriter(writer)) {
+					h.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIdProviders");
+					h.RenderBeginTag(HtmlTextWriterTag.Ul);
 
-			h.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIdProviders");
-			h.RenderBeginTag(HtmlTextWriterTag.Ul);
+					foreach (SelectorButton button in buttons) {
+						var op = button as SelectorProviderButton;
+						if (op != null) {
+							h.Write(OpenIdSelectorOPButton(html, op.OPIdentifier, op.Image));
+							continue;
+						}
 
-			foreach (SelectorButton button in buttons) {
-				var op = button as SelectorProviderButton;
-				if (op != null) {
-					h.Write(OpenIdSelectorOPButton(html, op.OPIdentifier, op.Image));
-					continue;
+						var openid = button as SelectorOpenIdButton;
+						if (openid != null) {
+							h.Write(OpenIdSelectorOpenIdButton(html, openid.Image));
+							continue;
+						}
+
+						ErrorUtilities.VerifySupported(false, "The {0} button is not yet supported for MVC.", button.GetType().Name);
+					}
+
+					h.RenderEndTag(); // ul
+
+					if (buttons.OfType<SelectorOpenIdButton>().Any()) {
+						h.Write(OpenIdAjaxTextBox(html));
+					}
 				}
 
-				var openid = button as SelectorOpenIdButton;
-				if (openid != null) {
-					h.Write(OpenIdSelectorOpenIdButton(html, openid.Image));
-					continue;
-				}
-
-				ErrorUtilities.VerifySupported(false, "The {0} button is not yet supported for MVC.", button.GetType().Name);
+				return writer.ToString();
 			}
-
-			h.RenderEndTag(); // ul
-
-			if (buttons.OfType<SelectorOpenIdButton>().Any()) {
-				h.Write(OpenIdAjaxTextBox(html));
-			}
-
-			return writer.ToString();
 		}
 
 		/// <summary>
@@ -271,6 +286,7 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
+		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "html", Justification = "Breaking change, and it's an extension method so it's useful.")]
 		public static string OpenIdAjaxTextBox(this HtmlHelper html) {
 			return @"<div style='display: none' id='OpenIDForm'>
 		<span class='OpenIdAjaxTextBox' style='display: inline-block; position: relative; font-size: 16px'>
@@ -289,48 +305,50 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		private static string OpenIdSelectorButton(this HtmlHelper html, string id, string cssClass, string imageUrl) {
 			Contract.Requires<ArgumentNullException>(html != null);
 			Contract.Requires<ArgumentNullException>(id != null);
 			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			var writer = new StringWriter();
-			var h = new HtmlTextWriter(writer);
+			using (var writer = new StringWriter(CultureInfo.CurrentCulture)) {
+				using (var h = new HtmlTextWriter(writer)) {
+					h.AddAttribute(HtmlTextWriterAttribute.Id, id);
+					if (!string.IsNullOrEmpty(cssClass)) {
+						h.AddAttribute(HtmlTextWriterAttribute.Class, cssClass);
+					}
+					h.RenderBeginTag(HtmlTextWriterTag.Li);
 
-			h.AddAttribute(HtmlTextWriterAttribute.Id, id);
-			if (!string.IsNullOrEmpty(cssClass)) {
-				h.AddAttribute(HtmlTextWriterAttribute.Class, cssClass);
+					h.AddAttribute(HtmlTextWriterAttribute.Href, "#");
+					h.RenderBeginTag(HtmlTextWriterTag.A);
+
+					h.RenderBeginTag(HtmlTextWriterTag.Div);
+					h.RenderBeginTag(HtmlTextWriterTag.Div);
+
+					h.AddAttribute(HtmlTextWriterAttribute.Src, imageUrl);
+					h.RenderBeginTag(HtmlTextWriterTag.Img);
+					h.RenderEndTag();
+
+					h.AddAttribute(HtmlTextWriterAttribute.Src, Util.GetWebResourceUrl(typeof(OpenIdSelector), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
+					h.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
+					h.AddAttribute(HtmlTextWriterAttribute.Title, "Authenticated as {0}");
+					h.RenderBeginTag(HtmlTextWriterTag.Img);
+					h.RenderEndTag();
+
+					h.RenderEndTag(); // div
+
+					h.AddAttribute(HtmlTextWriterAttribute.Class, "ui-widget-overlay");
+					h.RenderBeginTag(HtmlTextWriterTag.Div);
+					h.RenderEndTag(); // div
+
+					h.RenderEndTag(); // div
+					h.RenderEndTag(); // a
+					h.RenderEndTag(); // li
+				}
+
+				return writer.ToString();
 			}
-			h.RenderBeginTag(HtmlTextWriterTag.Li);
-
-			h.AddAttribute(HtmlTextWriterAttribute.Href, "#");
-			h.RenderBeginTag(HtmlTextWriterTag.A);
-
-			h.RenderBeginTag(HtmlTextWriterTag.Div);
-			h.RenderBeginTag(HtmlTextWriterTag.Div);
-
-			h.AddAttribute(HtmlTextWriterAttribute.Src, imageUrl);
-			h.RenderBeginTag(HtmlTextWriterTag.Img);
-			h.RenderEndTag();
-
-			h.AddAttribute(HtmlTextWriterAttribute.Src, Util.GetWebResourceUrl(typeof(OpenIdSelector), OpenId.RelyingParty.OpenIdAjaxTextBox.EmbeddedLoginSuccessResourceName));
-			h.AddAttribute(HtmlTextWriterAttribute.Class, "loginSuccess");
-			h.AddAttribute(HtmlTextWriterAttribute.Title, "Authenticated as {0}");
-			h.RenderBeginTag(HtmlTextWriterTag.Img);
-			h.RenderEndTag();
-
-			h.RenderEndTag(); // div
-
-			h.AddAttribute(HtmlTextWriterAttribute.Class, "ui-widget-overlay");
-			h.RenderBeginTag(HtmlTextWriterTag.Div);
-			h.RenderEndTag(); // div
-
-			h.RenderEndTag(); // div
-			h.RenderEndTag(); // a
-			h.RenderEndTag(); // li
-
-			return writer.ToString();
 		}
 
 		/// <summary>

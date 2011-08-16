@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.MessageBase" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAMACQAQAAAgAkAAAAIAAYACgAAIAAAIACAACAAAIA=</HashCode>
+      <FileName>OAuth2\Messages\MessageBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenAuthorizationCodeRequest" Collapsed="true">
+    <Position X="8.5" Y="6.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>ACAAEAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAgAAAATAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenClientCredentialsRequest" Collapsed="true">
+    <Position X="8.5" Y="8.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenClientCredentialsRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenFailedResponse" Collapsed="true">
+    <Position X="3.25" Y="8.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAQAAAABAAAQAAAAAAAEQAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenFailedResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenRefreshRequest" Collapsed="true">
+    <Position X="8.5" Y="9.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAQAAAAAAAAAAAAAAQAAAAAAAAAAAgAAAABAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenRefreshRequest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenRequestBase" Collapsed="true">
+    <Position X="5.75" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQABAAAAAAAAAAAAQAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenRequestBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenResourceOwnerPasswordCredentialsRequest" Collapsed="true">
+    <Position X="8.5" Y="10.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAACAQAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenSuccessResponse" Collapsed="true">
+    <Position X="3.25" Y="7.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAACAAAAAAAAQAEAAAAAAQAEAAAAAAAgA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenSuccessResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AuthenticatedClientRequestBase" Collapsed="true">
+    <Position X="3.25" Y="5.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\AuthenticatedClientRequestBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationFailedResponse" Collapsed="true">
+    <Position X="3.25" Y="4.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAQAAAAAAAAgAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\EndUserAuthorizationFailedResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationRequest" Collapsed="true">
+    <Position X="3.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQABAACAAAAAAAACAAAQAAAQAAAAAAAAAQAA=</HashCode>
+      <FileName>OAuth2\Messages\EndUserAuthorizationRequest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessAccessTokenResponse" Collapsed="true">
+    <Position X="6.25" Y="3.75" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAACEAAAAAAAAAAgAAAABgA=</HashCode>
+      <FileName>OAuth2\Messages\EndUserAuthorizationSuccessAccessTokenResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessAuthCodeResponse" Collapsed="true">
+    <Position X="6.25" Y="2.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAEAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAgAAAABAA=</HashCode>
+      <FileName>OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationSuccessResponseBase" Collapsed="true">
+    <Position X="3.25" Y="1.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAACAAAAAAAAgAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\EndUserAuthorizationSuccessResponseBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessProtectedResourceRequest" Collapsed="true">
+    <Position X="3.25" Y="9.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAgAAAABgA=</HashCode>
+      <FileName>OAuth2\Messages\AccessProtectedResourceRequest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.UnauthorizedResponse" Collapsed="true">
+    <Position X="3.25" Y="10.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AUABAAAAAAAAACAAAAAAAAQIAAAAAAAQAAAAAAAAABA=</HashCode>
+      <FileName>OAuth2\Messages\UnauthorizedResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.ScopedAccessTokenRequest" Collapsed="true">
+    <Position X="6.75" Y="7.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>OAuth2\Messages\ScopedAccessTokenRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="DotNetOpenAuth.OAuth2.Messages.IMessageWithClientState">
+    <Position X="11.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\IMessageWithClientState.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DotNetOpenAuth.OAuth2.ChannelElements.IAuthorizationCarryingRequest">
+    <Position X="11.75" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAEAAAAA=</HashCode>
+      <FileName>OAuth2\ChannelElements\IAuthorizationCarryingRequest.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="DotNetOpenAuth.OAuth2.Messages.EndUserAuthorizationResponseType">
+    <Position X="8" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\EndUserAuthorizationResponseType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DotNetOpenAuth.OAuth2.Messages.GrantType">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAQAAAAAQAAgAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\GrantType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

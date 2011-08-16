@@ -71,6 +71,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// Adds an X.509 certificate with a private key that may be used to decrypt the incoming token.
 		/// </summary>
 		/// <param name="certificate">The certificate.</param>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		public void AddDecryptingToken(X509Certificate2 certificate) {
 			Contract.Requires<ArgumentNullException>(certificate != null);
 			Contract.Requires<ArgumentException>(certificate.HasPrivateKey);

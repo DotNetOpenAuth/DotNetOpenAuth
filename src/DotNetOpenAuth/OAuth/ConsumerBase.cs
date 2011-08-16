@@ -32,9 +32,9 @@ namespace DotNetOpenAuth.OAuth {
 
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager);
-			this.ServiceProvider = serviceDescription;
 			this.SecuritySettings = DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+			this.OAuthChannel = new OAuthChannel(signingElement, store, tokenManager, this.SecuritySettings);
+			this.ServiceProvider = serviceDescription;
 
 			Reporting.RecordFeatureAndDependencyUse(this, serviceDescription, tokenManager, null);
 		}
@@ -74,6 +74,33 @@ namespace DotNetOpenAuth.OAuth {
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
 		internal OAuthChannel OAuthChannel { get; set; }
+
+		/// <summary>
+		/// Obtains an access token for a new account at the Service Provider via 2-legged OAuth.
+		/// </summary>
+		/// <param name="requestParameters">Any applicable parameters to include in the query string of the token request.</param>
+		/// <returns>The access token.</returns>
+		/// <remarks>
+		/// The token secret is stored in the <see cref="TokenManager"/>.
+		/// </remarks>
+		public string RequestNewClientAccount(IDictionary<string, string> requestParameters = null) {
+			// Obtain an unauthorized request token.  Assume the OAuth version given in the service description.
+			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint, this.ServiceProvider.Version) {
+				ConsumerKey = this.ConsumerKey,
+			};
+			var tokenAccessor = this.Channel.MessageDescriptions.GetAccessor(token);
+			tokenAccessor.AddExtraParameters(requestParameters);
+			var requestTokenResponse = this.Channel.Request<UnauthorizedTokenResponse>(token);
+			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
+
+			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {
+				RequestToken = requestTokenResponse.RequestToken,
+				ConsumerKey = this.ConsumerKey,
+			};
+			var grantAccess = this.Channel.Request<AuthorizedTokenResponse>(requestAccess);
+			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestTokenResponse.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
+			return grantAccess.AccessToken;
+		}
 
 		/// <summary>
 		/// Creates a web request prepared with OAuth authorization 

@@ -99,27 +99,30 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// If ordering of the key=value pairs is important, a deterministic enumerator must
 		/// be used.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		public static byte[] GetBytes(IEnumerable<KeyValuePair<string, string>> keysAndValues) {
 			Contract.Requires<ArgumentNullException>(keysAndValues != null);
 
-			MemoryStream ms = new MemoryStream();
-			using (StreamWriter sw = new StreamWriter(ms, textEncoding)) {
-				sw.NewLine = NewLineCharacters;
-				foreach (var pair in keysAndValues) {
-					if (pair.Key.IndexOfAny(IllegalKeyCharacters) >= 0) {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, pair.Key));
-					}
-					if (pair.Value.IndexOfAny(IllegalValueCharacters) >= 0) {
-						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, pair.Value));
-					}
+			using (MemoryStream ms = new MemoryStream()) {
+				using (StreamWriter sw = new StreamWriter(ms, textEncoding)) {
+					sw.NewLine = NewLineCharacters;
+					foreach (var pair in keysAndValues) {
+						if (pair.Key.IndexOfAny(IllegalKeyCharacters) >= 0) {
+							throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, pair.Key));
+						}
+						if (pair.Value.IndexOfAny(IllegalValueCharacters) >= 0) {
+							throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.InvalidCharacterInKeyValueFormInput, pair.Value));
+						}
 
-					sw.Write(pair.Key);
-					sw.Write(':');
-					sw.Write(pair.Value);
-					sw.WriteLine();
+						sw.Write(pair.Key);
+						sw.Write(':');
+						sw.Write(pair.Value);
+						sw.WriteLine();
+					}
 				}
+
+				return ms.ToArray();
 			}
-			return ms.ToArray();
 		}
 
 		/// <summary>

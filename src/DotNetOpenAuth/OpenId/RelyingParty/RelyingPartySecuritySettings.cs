@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 
@@ -28,6 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.PrivateSecretMaximumAge = TimeSpan.FromDays(7);
 			this.ProtectDownlevelReplayAttacks = ProtectDownlevelReplayAttacksDefault;
 			this.AllowApproximateIdentifierDiscovery = true;
+			this.TrustedProviderEndpoints = new HashSet<Uri>();
 		}
 
 		/// <summary>
@@ -141,6 +144,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	The default value is <c>true</c>.
 		/// </value>
 		public bool AllowApproximateIdentifierDiscovery { get; set; }
+
+		/// <summary>
+		/// Gets the set of trusted OpenID Provider Endpoint URIs.
+		/// </summary>
+		public HashSet<Uri> TrustedProviderEndpoints { get; private set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether any login attempt coming from an OpenID Provider Endpoint that is not on this
+		/// whitelist of trusted OP Endpoints will be rejected.  If the trusted providers list is empty and this value
+		/// is true, all assertions are rejected.
+		/// </summary>
+		/// <value>Default is <c>false</c>.</value>
+		public bool RejectAssertionsFromUntrustedProviders { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether special measures are taken to

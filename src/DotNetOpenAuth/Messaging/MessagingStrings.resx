@@ -303,7 +303,22 @@
   <data name="SessionRequired" xml:space="preserve">
     <value>An HttpContext.Current.Session object is required.</value>
   </data>
+  <data name="StandardMessageFactoryUnsupportedMessageType" xml:space="preserve">
+    <value>This message factory does not support message type(s): {0}</value>
+  </data>
+  <data name="RequiredMessagePartConstantIncorrect" xml:space="preserve">
+    <value>The following message parts had constant value requirements that were unsatisfied: {0}</value>
+  </data>
+  <data name="EncoderInstantiationFailed" xml:space="preserve">
+    <value>Unable to instantiate the message part encoder/decoder type {0}.</value>
+  </data>
   <data name="MessageTimestampInFuture" xml:space="preserve">
     <value>This message has a timestamp of {0}, which is beyond the allowable clock skew for in the future.</value>
+  </data>
+  <data name="UnsupportedEncryptionAlgorithm" xml:space="preserve">
+    <value>This blob is not a recognized encryption format.</value>
+  </data>
+  <data name="ExtraParameterAddFailure" xml:space="preserve">
+    <value>Failed to add extra parameter '{0}' with value '{1}'.</value>
   </data>
 </root>

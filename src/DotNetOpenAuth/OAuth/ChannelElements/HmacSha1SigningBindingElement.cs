@@ -32,10 +32,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </remarks>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			string key = GetConsumerAndTokenSecretString(message);
-			HashAlgorithm hasher = new HMACSHA1(Encoding.ASCII.GetBytes(key));
-			string baseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
-			byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString));
-			return Convert.ToBase64String(digest);
+			using (HashAlgorithm hasher = new HMACSHA1(Encoding.ASCII.GetBytes(key))) {
+				string baseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
+				byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString));
+				return Convert.ToBase64String(digest);
+			}
 		}
 
 		/// <summary>

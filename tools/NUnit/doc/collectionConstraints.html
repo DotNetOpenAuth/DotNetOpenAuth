@@ -166,6 +166,13 @@ Has.Member( object )
 Contains.Item( object )
 </pre></div>
 
+<h4>Modifiers</h4>
+<div class="code"><pre>
+...Using(IComparer comparer)
+...Using<T>(IComparer&lt;T&gt; comparer)
+...Using<T>(Comparison&lt;T&gt; comparer)
+</pre></div>
+
 <h4>Examples of Use</h4>
 <div class="code"><pre>
 int[] iarray = new int[] { 1, 2, 3 };
@@ -283,7 +290,7 @@ same modifier is used more than once, the result is undefined.
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -302,6 +309,7 @@ same modifier is used more than once, the result is undefined.
 <li><a href="compoundConstraints.html">Compound&nbsp;Constraints</a></li>
 <li><a href="delayedConstraint.html">Delayed&nbsp;Constraint</a></li>
 <li><a href="listMapper.html">List&nbsp;Mapper</a></li>
+<li><a href="reusableConstraint.html">Reusable&nbsp;Constraint</a></li>
 </ul>
 <li><a href="attributes.html">Attributes</a></li>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
@@ -317,7 +325,7 @@ same modifier is used more than once, the result is undefined.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

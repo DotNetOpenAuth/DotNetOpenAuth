@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Xrds {
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
 	using System.Xml;
@@ -51,6 +52,7 @@ namespace DotNetOpenAuth.Xrds {
 		/// Initializes a new instance of the <see cref="XrdsDocument"/> class.
 		/// </summary>
 		/// <param name="xml">The text that is the XRDS document.</param>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Fixing would decrease readability, and not likely avoid any finalizer on a StringReader anyway.")]
 		public XrdsDocument(string xml)
 			: this(new XPathDocument(new StringReader(xml)).CreateNavigator()) { }
 

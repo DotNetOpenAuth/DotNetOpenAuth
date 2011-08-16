@@ -68,6 +68,7 @@ namespace DotNetOpenAuth.Configuration {
 		internal ServiceProviderSecuritySettings CreateSecuritySettings() {
 			return new ServiceProviderSecuritySettings {
 				MinimumRequiredOAuthVersion = this.MinimumRequiredOAuthVersion,
+				MaximumRequestTokenTimeToLive = this.MaximumRequestTokenTimeToLive,
 			};
 		}
 	}

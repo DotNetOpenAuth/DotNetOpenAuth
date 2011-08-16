@@ -182,7 +182,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			};
 			Uri callback = Util.GetCallbackUrlFromContext();
 			var request = consumer.PrepareRequestUserAuthorization(callback, extraParameters, null);
-			consumer.Channel.Send(request);
+			consumer.Channel.Respond(request);
 		}
 
 		/// <summary>
@@ -222,6 +222,11 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				{ "max-results", maxResults.ToString(CultureInfo.InvariantCulture) },
 			};
 			var request = consumer.PrepareAuthorizedRequest(GetContactsEndpoint, accessToken, extraData);
+
+			// Enable gzip compression.  Google only compresses the response for recognized user agent headers. - Mike Lim
+			request.AutomaticDecompression = DecompressionMethods.GZip;
+			request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.151 Safari/534.16";
+
 			var response = consumer.Channel.WebRequestHandler.GetResponse(request);
 			string body = response.GetResponseReader().ReadToEnd();
 			XDocument result = XDocument.Parse(body);

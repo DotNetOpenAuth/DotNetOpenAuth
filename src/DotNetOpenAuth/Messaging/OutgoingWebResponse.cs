@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
@@ -125,6 +126,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// Requires a current HttpContext.
 		/// </remarks>
+		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
 		public virtual void Send() {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
@@ -138,27 +140,36 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="context">The context of the HTTP request whose response should be set.
 		/// Typically this is <see cref="HttpContext.Current"/>.</param>
 		/// <exception cref="ThreadAbortException">Typically thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
 		public virtual void Send(HttpContext context) {
+			this.Respond(context, true);
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent
+		/// and signals ASP.NET to short-circuit the page execution pipeline
+		/// now that the response has been completed.
+		/// </summary>
+		/// <remarks>
+		/// Requires a current HttpContext.
+		/// </remarks>
+		public virtual void Respond() {
+			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+
+			this.Respond(HttpContext.Current);
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent
+		/// and signals ASP.NET to short-circuit the page execution pipeline
+		/// now that the response has been completed.
+		/// </summary>
+		/// <param name="context">The context of the HTTP request whose response should be set.
+		/// Typically this is <see cref="HttpContext.Current"/>.</param>
+		public virtual void Respond(HttpContext context) {
 			Contract.Requires<ArgumentNullException>(context != null);
 
-			context.Response.Clear();
-			context.Response.StatusCode = (int)this.Status;
-			MessagingUtilities.ApplyHeadersToResponse(this.Headers, context.Response);
-			if (this.ResponseStream != null) {
-				try {
-					this.ResponseStream.CopyTo(context.Response.OutputStream);
-				} catch (HttpException ex) {
-					if (ex.ErrorCode == -2147467259 && context.Response.Output != null) {
-						// Test scenarios can generate this, since the stream is being spoofed:
-						// System.Web.HttpException: OutputStream is not available when a custom TextWriter is used.
-						context.Response.Output.Write(this.Body);
-					} else {
-						throw;
-					}
-				}
-			}
-
-			context.Response.End();
+			this.Respond(context, false);
 		}
 
 		/// <summary>
@@ -231,6 +242,49 @@ namespace DotNetOpenAuth.Messaging {
 			writer.Write(body);
 			writer.Flush();
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent
+		/// and signals ASP.NET to short-circuit the page execution pipeline
+		/// now that the response has been completed.
+		/// </summary>
+		/// <param name="context">The context of the HTTP request whose response should be set.
+		/// Typically this is <see cref="HttpContext.Current"/>.</param>
+		/// <param name="endRequest">If set to <c>false</c>, this method calls
+		/// <see cref="HttpApplication.CompleteRequest"/> rather than <see cref="HttpResponse.End"/>
+		/// to avoid a <see cref="ThreadAbortException"/>.</param>
+		protected internal virtual void Respond(HttpContext context, bool endRequest) {
+			Contract.Requires<ArgumentNullException>(context != null);
+
+			context.Response.Clear();
+			context.Response.StatusCode = (int)this.Status;
+			MessagingUtilities.ApplyHeadersToResponse(this.Headers, context.Response);
+			if (this.ResponseStream != null) {
+				try {
+					this.ResponseStream.CopyTo(context.Response.OutputStream);
+				} catch (HttpException ex) {
+					if (ex.ErrorCode == -2147467259 && context.Response.Output != null) {
+						// Test scenarios can generate this, since the stream is being spoofed:
+						// System.Web.HttpException: OutputStream is not available when a custom TextWriter is used.
+						context.Response.Output.Write(this.Body);
+					} else {
+						throw;
+					}
+				}
+			}
+
+			if (endRequest) {
+				// This approach throws an exception in order that
+				// no more code is executed in the calling page.
+				// Microsoft no longer recommends this approach.
+				context.Response.End();
+			} else if (context.ApplicationInstance != null) {
+				// This approach doesn't throw an exception, but
+				// still tells ASP.NET to short-circuit most of the
+				// request handling pipeline to speed things up.
+				context.ApplicationInstance.CompleteRequest();
+			}
 		}
 	}
 }

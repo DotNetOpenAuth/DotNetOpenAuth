@@ -13,7 +13,7 @@ public class OpenIdProviderEndpoint : IHttpHandler {
 				authRequest.IsAuthenticated = true;
 			}
 
-			provider.SendResponse(request);
+			provider.Respond(request);
 		}
 	}
 

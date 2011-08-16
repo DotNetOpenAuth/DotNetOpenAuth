@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var coordinator = new OpenIdCoordinator(
 				rp => {
 					var request = new SignedResponseRequest(protocol.Version, OPUri, mode);
-					rp.Channel.Send(request);
+					rp.Channel.Respond(request);
 				},
 				op => {
 					var request = op.Channel.ReadFromRequest<SignedResponseRequest>();
@@ -38,18 +38,18 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var request = rp.CreateRequest(GetMockIdentifier(protocol.ProtocolVersion), RPRealmUri, RPUri);
 
 					request.IsExtensionOnly = true;
-					rp.Channel.Send(request.RedirectingResponse.OriginalMessage);
+					rp.Channel.Respond(request.RedirectingResponse.OriginalMessage);
 					IAuthenticationResponse response = rp.GetResponse();
 					Assert.AreEqual(AuthenticationStatus.ExtensionsOnly, response.Status);
 				},
 				op => {
 					var assocRequest = op.GetRequest();
-					op.SendResponse(assocRequest);
+					op.Respond(assocRequest);
 
 					var request = (IAnonymousRequest)op.GetRequest();
 					request.IsApproved = true;
 					Assert.IsNotInstanceOf<CheckIdRequest>(request);
-					op.SendResponse(request);
+					op.Respond(request);
 				});
 			coordinator.Run();
 		}

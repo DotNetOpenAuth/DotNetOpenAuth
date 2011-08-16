@@ -1,10 +1,19 @@
-﻿namespace OpenIdRelyingPartyWebForms.Code {
+﻿//-----------------------------------------------------------------------
+// <copyright file="CustomStore.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace OpenIdRelyingPartyWebForms.Code {
 	using System;
+	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
-	using System.Security.Cryptography;
+	using System.Linq;
+	using DotNetOpenAuth;
+	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// This custom store serializes all elements to demonstrate peristent and/or shared storage.
@@ -16,7 +25,7 @@
 	/// But we "persist" all associations and nonces into a DataTable to demonstrate
 	/// that using a database is possible.
 	/// </remarks>
-	public class CustomStore : IRelyingPartyApplicationStore {
+	public class CustomStore : IOpenIdApplicationStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region INonceStore Members
@@ -29,7 +38,7 @@
 		/// The context SHOULD be treated as case-sensitive.
 		/// The value will never be <c>null</c> but may be the empty string.</param>
 		/// <param name="nonce">A series of random characters.</param>
-		/// <param name="timestamp">The timestamp that together with the nonce string make it unique.
+		/// <param name="timestampUtc">The timestamp that together with the nonce string make it unique.
 		/// The timestamp may also be used by the data store to clear out old nonces.</param>
 		/// <returns>
 		/// True if the nonce+timestamp (combination) was not previously in the database.
@@ -42,7 +51,7 @@
 		/// is retrieved or set using the
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
 		/// </remarks>
-		public bool StoreNonce(string context, string nonce, DateTime timestamp) {
+		public bool StoreNonce(string context, string nonce, DateTime timestampUtc) {
 			// IMPORTANT: If actually persisting to a database that can be reached from
 			// different servers/instances of this class at once, it is vitally important
 			// to protect against race condition attacks by one or more of these:
@@ -54,76 +63,73 @@
 			// at you in the result of a race condition somewhere in your web site UI code
 			// and display some message to have the user try to log in again, and possibly
 			// warn them about a replay attack.
-			timestamp = timestamp.ToLocalTime();
 			lock (this) {
-				if (dataSet.Nonce.FindByIssuedCodeContext(timestamp, nonce, context) != null) {
+				if (dataSet.Nonce.FindByIssuedUtcCodeContext(timestampUtc, nonce, context) != null) {
 					return false;
 				}
 
-				TimeSpan maxMessageAge = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
-				dataSet.Nonce.AddNonceRow(context, nonce, timestamp, timestamp + maxMessageAge);
+				TimeSpan maxMessageAge = DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
+				dataSet.Nonce.AddNonceRow(context, nonce, timestampUtc, timestampUtc + maxMessageAge);
 				return true;
 			}
 		}
 
 		public void ClearExpiredNonces() {
-			this.removeExpiredRows(dataSet.Nonce, dataSet.Nonce.ExpiresColumn.ColumnName);
+			this.removeExpiredRows(dataSet.Nonce, dataSet.Nonce.ExpiresUtcColumn.ColumnName);
 		}
 
 		#endregion
 
-		#region IAssociationStore<Uri> Members
+		#region ICryptoKeyStore Members
 
-		public void StoreAssociation(Uri distinguishingFactor, Association assoc) {
-			var assocRow = dataSet.Association.NewAssociationRow();
-			assocRow.DistinguishingFactor = distinguishingFactor.AbsoluteUri;
-			assocRow.Handle = assoc.Handle;
-			assocRow.Expires = assoc.Expires.ToLocalTime();
-			assocRow.PrivateData = assoc.SerializePrivateData();
-			dataSet.Association.AddAssociationRow(assocRow);
+		public CryptoKey GetKey(string bucket, string handle) {
+			var assocRow = dataSet.CryptoKey.FindByBucketHandle(bucket, handle);
+			return new CryptoKey(assocRow.Secret, assocRow.ExpiresUtc);
 		}
 
-		public Association GetAssociation(Uri distinguishingFactor, SecuritySettings securitySettings) {
-			// TODO: properly consider the securitySettings when picking an association to return.
+		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
 			// properly escape the URL to prevent injection attacks.
-			string value = distinguishingFactor.AbsoluteUri.Replace("'", "''");
+			string value = bucket.Replace("'", "''");
 			string filter = string.Format(
 				CultureInfo.InvariantCulture,
 				"{0} = '{1}'",
-				dataSet.Association.DistinguishingFactorColumn.ColumnName,
+				dataSet.CryptoKey.BucketColumn.ColumnName,
 				value);
-			string sort = dataSet.Association.ExpiresColumn.ColumnName + " DESC";
-			DataView view = new DataView(dataSet.Association, filter, sort, DataViewRowState.CurrentRows);
+			string sort = dataSet.CryptoKey.ExpiresUtcColumn.ColumnName + " DESC";
+			DataView view = new DataView(dataSet.CryptoKey, filter, sort, DataViewRowState.CurrentRows);
 			if (view.Count == 0) {
-				return null;
+				yield break;
 			}
-			var row = (CustomStoreDataSet.AssociationRow)view[0].Row;
-			return Association.Deserialize(row.Handle, row.Expires.ToUniversalTime(), row.PrivateData);
+
+			foreach (CustomStoreDataSet.CryptoKeyRow row in view.Cast<DataRowView>().Select(rv => rv.Row)) {
+				yield return new KeyValuePair<string, CryptoKey>(row.Handle, new CryptoKey(row.Secret, row.ExpiresUtc));
+			}
 		}
 
-		public Association GetAssociation(Uri distinguishingFactor, string handle) {
-			var assocRow = dataSet.Association.FindByDistinguishingFactorHandle(distinguishingFactor.AbsoluteUri, handle);
-			return Association.Deserialize(assocRow.Handle, assocRow.Expires, assocRow.PrivateData);
+		public void StoreKey(string bucket, string handle, CryptoKey key) {
+			var cryptoKeyRow = dataSet.CryptoKey.NewCryptoKeyRow();
+			cryptoKeyRow.Bucket = bucket;
+			cryptoKeyRow.Handle = handle;
+			cryptoKeyRow.ExpiresUtc = key.ExpiresUtc;
+			cryptoKeyRow.Secret = key.Key;
+			dataSet.CryptoKey.AddCryptoKeyRow(cryptoKeyRow);
 		}
 
-		public bool RemoveAssociation(Uri distinguishingFactor, string handle) {
-			var row = dataSet.Association.FindByDistinguishingFactorHandle(distinguishingFactor.AbsoluteUri, handle);
+		public void RemoveKey(string bucket, string handle) {
+			var row = dataSet.CryptoKey.FindByBucketHandle(bucket, handle);
 			if (row != null) {
-				dataSet.Association.RemoveAssociationRow(row);
-				return true;
-			} else {
-				return false;
+				dataSet.CryptoKey.RemoveCryptoKeyRow(row);
 			}
-		}
-
-		public void ClearExpiredAssociations() {
-			this.removeExpiredRows(dataSet.Association, dataSet.Association.ExpiresColumn.ColumnName);
 		}
 
 		#endregion
 
+		internal void ClearExpiredSecrets() {
+			this.removeExpiredRows(dataSet.CryptoKey, dataSet.CryptoKey.ExpiresUtcColumn.ColumnName);
+		}
+
 		private void removeExpiredRows(DataTable table, string expiredColumnName) {
-			string filter = string.Format(CultureInfo.InvariantCulture, "{0} < #{1}#", expiredColumnName, DateTime.Now);
+			string filter = string.Format(CultureInfo.InvariantCulture, "{0} < #{1}#", expiredColumnName, DateTime.UtcNow);
 			DataView view = new DataView(table, filter, null, DataViewRowState.CurrentRows);
 			for (int i = view.Count - 1; i >= 0; i--) {
 				view.Delete(i);

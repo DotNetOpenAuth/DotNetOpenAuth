@@ -17,7 +17,7 @@
 		public void ProcessRequest(HttpContext context) {
 			var request = OAuthHybrid.ServiceProvider.ReadAccessTokenRequest();
 			var response = OAuthHybrid.ServiceProvider.PrepareAccessTokenMessage(request);
-			OAuthHybrid.ServiceProvider.Channel.Send(response);
+			OAuthHybrid.ServiceProvider.Channel.Respond(response);
 		}
 	}
 }

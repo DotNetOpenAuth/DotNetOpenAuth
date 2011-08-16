@@ -17,9 +17,11 @@
 		public IList<AuthenticationToken> AuthenticationTokens { get; set; }
 
 		public class AuthorizedApp {
-			public string Token { get; set; }
+			public int AuthorizationId { get; set; }
 
 			public string AppName { get; set; }
+
+			public string Scope { get; set; }
 		}
 	}
 }

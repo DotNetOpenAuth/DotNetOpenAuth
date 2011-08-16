@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OAuth {
 		internal static readonly List<Protocol> AllVersions = new List<Protocol>() { V10a, V10 };
 
 		/// <summary>
-		/// The default (or most recent) supported version of the OpenID protocol.
+		/// The default (or most recent) supported version of the OAuth protocol.
 		/// </summary>
 		internal static readonly Protocol Default = AllVersions[0];
 
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Gets the version used to represent OAuth 1.0a.
+		/// Gets the OAuth version this instance represents.
 		/// </summary>
 		internal Version Version { get; private set; }
 

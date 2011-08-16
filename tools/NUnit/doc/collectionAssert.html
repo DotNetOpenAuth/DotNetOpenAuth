@@ -28,9 +28,10 @@
 <p>The CollectionAssert class provides a number of methods that are useful 
 when examining collections and their contents or for comparing two collections.</p>
 
-<p>The <b>AreEqual</b> overloads succeed if the two collections contain the same objects,
-in the same order. <b>AreEquivalent</b> tests whether the collections contain the same
-objects, without regard to order.</p>
+<p>The <b>AreEqual</b> overloads succeed if the corresponding elements of the two 
+collections are equal. <b>AreEquivalent</b> tests whether the collection contents
+are equal, but without regard to order. In both cases, elements are compared using 
+NUnit's default equality comparison.</p>
 
 <p>Beginning with NUnit 2.4.6, these methods may be used on any object that
 implements IEnumerable. Prior to 2.4.6, only true collections were supported.
@@ -135,7 +136,7 @@ CollectionAssert.IsOrdered( IEnumerable collection, IComparer comparer,
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -167,7 +168,7 @@ CollectionAssert.IsOrdered( IEnumerable collection, IComparer comparer,
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

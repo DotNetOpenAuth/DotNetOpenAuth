@@ -237,6 +237,29 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="value">The object whose type is the feature to set as used.</param>
 		/// <param name="dependency1">Some dependency used by <paramref name="value"/>.</param>
+		internal static void RecordFeatureAndDependencyUse(object value, object dependency1) {
+			Contract.Requires(value != null);
+
+			// In release builds, just quietly return.
+			if (value == null) {
+				return;
+			}
+
+			if (Enabled && Configuration.IncludeFeatureUsage) {
+				StringBuilder builder = new StringBuilder();
+				builder.Append(value.GetType().Name);
+				builder.Append(" ");
+				builder.Append(dependency1 != null ? dependency1.GetType().Name : "(null)");
+				observedFeatures.Add(builder.ToString());
+				Touch();
+			}
+		}
+
+		/// <summary>
+		/// Records the use of a feature by object type.
+		/// </summary>
+		/// <param name="value">The object whose type is the feature to set as used.</param>
+		/// <param name="dependency1">Some dependency used by <paramref name="value"/>.</param>
 		/// <param name="dependency2">Some dependency used by <paramref name="value"/>.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, object dependency1, object dependency2) {
 			Contract.Requires(value != null);

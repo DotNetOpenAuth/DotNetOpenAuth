@@ -154,8 +154,8 @@
     <Compile Include="Members\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="OAuth.ashx.cs">
-      <DependentUpon>OAuth.ashx</DependentUpon>
+    <Compile Include="OAuthTokenEndpoint.ashx.cs">
+      <DependentUpon>OAuthTokenEndpoint.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.aspx.cs">
@@ -236,7 +236,7 @@
   <ItemGroup>
     <Content Include="images\verisign.gif" />
     <Content Include="Members\OAuthAuthorize.aspx" />
-    <Content Include="OAuth.ashx" />
+    <Content Include="OAuthTokenEndpoint.ashx" />
     <Content Include="PrivacyPolicy.aspx" />
   </ItemGroup>
   <ItemGroup>

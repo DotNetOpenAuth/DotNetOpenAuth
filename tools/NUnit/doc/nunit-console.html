@@ -42,23 +42,6 @@
 	result of the test run. Click <a href="files/TestResult.xml">here</a> 
 	to see the XML produced for this test run.</p>
 	
-<h3>NUnit-Console Return Codes</h3>
-
-<p>Beginning with version 2.4.3, the nunit-console program returns negative
-   values for any program errors. A zero return code indicates that there 
-   were no errors and that all tests passed. A positive return code represents
-   the number of test errors or failures.
-   
-<table class="constraints">
-<tr><th>0</th><td>OK</td><td>Run completed with all tests passing</td></tr>
-<tr><th>&gt; 0</th><td>FAILURE_COUNT</td><td>Run completed with one or more test failures</td></tr>
-<tr><th>-1</th><td>INVALID_ARG</td><td>An invalid argument was passed to nunit-console</td></tr>
-<tr><th>-2</th><td>FILE_NOT_FOUND</td><td>A file specified in the command line was not found</td></tr>
-<tr><th>-3</th><td>FIXTURE_NOT_FOUND</td><td>A fixture specified in the command line was not found</td></tr>
-</table>
-
-<h3>X86 Version</h3>
-
 <p>The .NET 2.0 version of the nunit-console program is built using /platform:anycpu,
 which causes it to be jit-compiled to 32-bit code on a 32-bit system and 64-bit code 
 on a 64 bit system. This causes an exception when NUnit is used to test a 32-bit
@@ -71,7 +54,7 @@ program, which is built using /platform:x86, when testing 32-bit code on a
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.5</a></li>
+<li><a href="index.html">NUnit 2.5.9</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="assertions.html">Assertions</a></li>
@@ -103,7 +86,7 @@ program, which is built using /platform:x86, when testing 32-bit code on a
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2009 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 
