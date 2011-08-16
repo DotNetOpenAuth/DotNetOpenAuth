@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Configuration {
 		public static ReportingElement Configuration {
 			get {
 				Contract.Ensures(Contract.Result<ReportingElement>() != null);
-				return (ReportingElement)ConfigurationManager.GetSection(ReportingElementName) ?? new ReportingElement();
+				return (ReportingElement)DotNetOpenAuthSection.Configuration.Sections[ReportingElementName] ?? new ReportingElement();
 			}
 		}
 

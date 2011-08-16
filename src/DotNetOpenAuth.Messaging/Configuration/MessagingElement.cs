@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// The name of the &lt;messaging&gt; sub-element.
 		/// </summary>
-		private const string MessagingElementName = DotNetOpenAuthSection.SectionName + "/messaging";
+		private const string MessagingElementName = "messaging";
 
 		/// <summary>
 		/// Gets the configuration section from the .config file.
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Configuration {
 		public static MessagingElement Configuration {
 			get {
 				Contract.Ensures(Contract.Result<MessagingElement>() != null);
-				return (MessagingElement)ConfigurationManager.GetSection(MessagingElementName) ?? new MessagingElement();
+				return (MessagingElement)DotNetOpenAuthSection.Configuration.Sections[MessagingElementName] ?? new MessagingElement();
 			}
 		}
 
@@ -200,6 +200,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <value>
 		/// The embedded resource retrieval provider.
 		/// </value>
+		[ConfigurationProperty(WebResourceUrlProviderName)]
 		internal TypeConfigurationElement<IEmbeddedResourceRetrieval> EmbeddedResourceRetrievalProvider {
 			get { return (TypeConfigurationElement<IEmbeddedResourceRetrieval>)this[WebResourceUrlProviderName] ?? new TypeConfigurationElement<IEmbeddedResourceRetrieval>(); }
 			set { this[WebResourceUrlProviderName] = value; }

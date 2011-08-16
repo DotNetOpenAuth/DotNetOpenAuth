@@ -41,7 +41,8 @@ namespace DotNetOpenAuth.Configuration {
 		public static DotNetOpenAuthSection Configuration {
 			get {
 				Contract.Ensures(Contract.Result<DotNetOpenAuthSection>() != null);
-				return (DotNetOpenAuthSection)ConfigurationManager.GetSection(SectionName) ?? new DotNetOpenAuthSection();
+				var configuration = ConfigurationManager.OpenExeConfiguration(null);
+				return (DotNetOpenAuthSection)configuration.GetSectionGroup(SectionName);
 			}
 		}
 
