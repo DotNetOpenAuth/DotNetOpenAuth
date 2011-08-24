@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdMessageFactory.cs" company="Andrew Arnott">
+// <copyright file="OpenIdProviderMessageFactory.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -7,18 +7,15 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
 	/// <summary>
-	/// Distinguishes the various OpenID message types for deserialization purposes.
+	/// OpenID Provider message factory.
 	/// </summary>
-	internal class OpenIdMessageFactory : IMessageFactory {
-		#region IMessageFactory Members
-
+	internal class OpenIdProviderMessageFactory : IMessageFactory {
 		/// <summary>
 		/// Analyzes an incoming request message payload to discover what kind of
 		/// message is embedded in it and returns the type, or null if no match is found.
@@ -44,9 +41,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (fields.TryGetValue(protocol.openid.mode, out mode)) {
 				if (string.Equals(mode, protocol.Args.Mode.associate)) {
 					if (fields.ContainsKey(protocol.openid.dh_consumer_public)) {
-						message = new AssociateDiffieHellmanRequest(protocol.Version, recipient.Location);
+						message = new AssociateDiffieHellmanProviderRequest(protocol.Version, recipient.Location);
 					} else {
-						message = new AssociateUnencryptedRequest(protocol.Version, recipient.Location);
+						message = new AssociateUnencryptedProviderRequest(protocol.Version, recipient.Location);
 					}
 				} else if (string.Equals(mode, protocol.Args.Mode.checkid_setup) ||
 					string.Equals(mode, protocol.Args.Mode.checkid_immediate)) {
@@ -57,20 +54,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						ErrorUtilities.VerifyProtocol(!fields.ContainsKey(protocol.openid.claimed_id), OpenIdStrings.IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent);
 						message = new SignedResponseRequest(protocol.Version, recipient.Location, authMode);
 					}
-				} else if (string.Equals(mode, protocol.Args.Mode.cancel) ||
-					(string.Equals(mode, protocol.Args.Mode.setup_needed) && (protocol.Version.Major >= 2 || fields.ContainsKey(protocol.openid.user_setup_url)))) {
-					message = new NegativeAssertionResponse(protocol.Version, recipient.Location, mode);
-				} else if (string.Equals(mode, protocol.Args.Mode.id_res)) {
-					if (fields.ContainsKey(protocol.openid.identity)) {
-						message = new PositiveAssertionResponse(protocol.Version, recipient.Location);
-					} else {
-						ErrorUtilities.VerifyProtocol(!fields.ContainsKey(protocol.openid.claimed_id), OpenIdStrings.IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent);
-						message = new IndirectSignedResponse(protocol.Version, recipient.Location);
-					}
-				} else if (string.Equals(mode, protocol.Args.Mode.check_authentication)) {
-					message = new CheckAuthenticationRequest(protocol.Version, recipient.Location);
-				} else if (string.Equals(mode, protocol.Args.Mode.error)) {
-					message = new IndirectErrorResponse(protocol.Version, recipient.Location);
 				} else {
 					ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessagePartValue, protocol.openid.mode, mode);
 				}
@@ -93,10 +76,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A newly instantiated <see cref="IProtocolMessage"/>-derived object that this message can
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
-		public virtual IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
-			return null;
+		public IDirectResponseProtocolMessage GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
+			// OpenID Providers make no outbound requests, and thus receive no direct response messages.
+			throw new NotImplementedException();
 		}
-
-		#endregion
 	}
 }

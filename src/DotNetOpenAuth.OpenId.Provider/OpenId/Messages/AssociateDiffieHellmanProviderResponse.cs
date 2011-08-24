@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// Association response messages are described in OpenID 2.0 section 8.2.  This type covers section 8.2.3.
 	/// </remarks>
-	internal class AssociateDiffieHellmanProviderResponse : AssociateDiffieHellmanResponse {
+	internal class AssociateDiffieHellmanProviderResponse : AssociateDiffieHellmanResponse, IAssociateSuccessfulResponseProvider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateDiffieHellmanProviderResponse"/> class.
 		/// </summary>
@@ -27,6 +27,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="originatingRequest">The originating request.</param>
 		internal AssociateDiffieHellmanProviderResponse(Version responseVersion, AssociateDiffieHellmanRequest originatingRequest)
 			: base(responseVersion, originatingRequest) {
+		}
+
+		long IAssociateSuccessfulResponseProvider.ExpiresIn {
+			get { return this.ExpiresIn; }
+			set { this.ExpiresIn = value; }
+		}
+
+		string IAssociateSuccessfulResponseProvider.AssociationHandle {
+			get { return this.AssociationHandle; }
+			set { this.AssociationHandle = value; }
 		}
 
 		/// <summary>
@@ -42,7 +52,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		protected Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		public Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyInternal(diffieHellmanRequest != null, "Expected a DH request type.");
 

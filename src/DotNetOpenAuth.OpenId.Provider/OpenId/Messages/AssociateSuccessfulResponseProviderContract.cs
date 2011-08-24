@@ -15,17 +15,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// Code contract for the <see cref="AssociateSuccessfulResponseProvider"/> class.
 	/// </summary>
-	[ContractClassFor(typeof(AssociateSuccessfulResponseProvider))]
-	internal abstract class AssociateSuccessfulResponseProviderContract : AssociateSuccessfulResponseProvider {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AssociateSuccessfulResponseProviderContract"/> class.
-		/// </summary>
-		/// <param name="version">The version.</param>
-		/// <param name="request">The request.</param>
-		private AssociateSuccessfulResponseProviderContract(Version version, AssociateRequest request)
-			: base(version, request) {
-		}
-
+	[ContractClassFor(typeof(IAssociateSuccessfulResponseProvider))]
+	internal abstract class IAssociateSuccessfulResponseProviderContract : IAssociateSuccessfulResponseProvider {
 		/// <summary>
 		/// Called to create the Association based on a request previously given by the Relying Party.
 		/// </summary>
@@ -35,10 +26,40 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <returns>
 		/// The created association.
 		/// </returns>
-		protected internal override Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		Association IAssociateSuccessfulResponseProvider.CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Contract.Requires<ArgumentNullException>(request != null);
 			Contract.Requires<ArgumentNullException>(associationStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			throw new NotImplementedException();
+		}
+
+		long IAssociateSuccessfulResponseProvider.ExpiresIn {
+			get { throw new NotImplementedException();  }
+			set { throw new NotImplementedException(); }
+		}
+
+		string IAssociateSuccessfulResponseProvider.AssociationHandle {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+
+		Messaging.MessageProtections Messaging.IProtocolMessage.RequiredProtection {
+			get { throw new NotImplementedException(); }
+		}
+
+		Messaging.MessageTransport Messaging.IProtocolMessage.Transport {
+			get { throw new NotImplementedException(); }
+		}
+
+		Version Messaging.IMessage.Version {
+			get { throw new NotImplementedException(); }
+		}
+
+		IDictionary<string, string> Messaging.IMessage.ExtraData {
+			get { throw new NotImplementedException(); }
+		}
+
+		void Messaging.IMessage.EnsureValidMessage() {
 			throw new NotImplementedException();
 		}
 	}

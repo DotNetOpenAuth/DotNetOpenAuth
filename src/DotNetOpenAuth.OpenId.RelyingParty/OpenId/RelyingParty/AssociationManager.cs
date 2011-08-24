@@ -193,7 +193,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			try {
 				var associateResponse = this.channel.Request(associateRequest);
-				var associateSuccessfulResponse = associateResponse as AssociateSuccessfulResponseRelyingParty;
+				var associateSuccessfulResponse = associateResponse as IAssociateSuccessfulResponseRelyingParty;
 				var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
 				if (associateSuccessfulResponse != null) {
 					Association association = associateSuccessfulResponse.CreateAssociationAtRelyingParty(associateRequest);

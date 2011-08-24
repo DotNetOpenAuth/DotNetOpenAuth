@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal OpenIdProviderChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
-			: this(cryptoKeyStore, nonceStore, new OpenIdMessageFactory(), securitySettings) {
+			: this(cryptoKeyStore, nonceStore, new OpenIdProviderMessageFactory(), securitySettings) {
 			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
 			Contract.Requires<ArgumentNullException>(securitySettings != null);
 		}

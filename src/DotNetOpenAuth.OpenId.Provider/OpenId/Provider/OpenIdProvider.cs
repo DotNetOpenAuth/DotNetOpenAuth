@@ -286,9 +286,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				}
 
 				if (result == null) {
-					var associateMessage = incomingMessage as AssociateRequestProvider;
+					var associateMessage = incomingMessage as IAssociateRequestProvider;
 					if (associateMessage != null) {
-						result = new AutoResponsiveRequest(incomingMessage, associateMessage.CreateResponse(this.AssociationStore, this.SecuritySettings), this.SecuritySettings);
+						result = new AutoResponsiveRequest(incomingMessage, AssociateRequestProviderTools.CreateResponse(associateMessage, this.AssociationStore, this.SecuritySettings), this.SecuritySettings);
 					}
 				}
 

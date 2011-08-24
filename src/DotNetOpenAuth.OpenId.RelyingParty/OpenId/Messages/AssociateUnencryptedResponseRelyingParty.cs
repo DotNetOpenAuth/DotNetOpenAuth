@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// A response to an unencrypted assocation request, as it is received by the relying party.
 	/// </summary>
-	internal class AssociateUnencryptedResponseRelyingParty : AssociateUnencryptedResponse {
+	internal class AssociateUnencryptedResponseRelyingParty : AssociateUnencryptedResponse, IAssociateSuccessfulResponseRelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedResponseRelyingParty"/> class.
 		/// </summary>
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="request">The prior request for an association.</param>
 		/// <returns>The created association.</returns>
-		protected Association CreateAssociationAtRelyingParty(AssociateRequest request) {
+		public Association CreateAssociationAtRelyingParty(AssociateRequest request) {
 			Association association = HmacShaAssociation.Create(Protocol, this.AssociationType, this.AssociationHandle, this.MacKey, TimeSpan.FromSeconds(this.ExpiresIn));
 			return association;
 		}

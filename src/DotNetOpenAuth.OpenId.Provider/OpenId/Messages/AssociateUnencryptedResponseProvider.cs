@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// An unencrypted association response as it is sent by the Provider.
 	/// </summary>
-	internal class AssociateUnencryptedResponseProvider : AssociateUnencryptedResponse {
+	internal class AssociateUnencryptedResponseProvider : AssociateUnencryptedResponse, IAssociateSuccessfulResponseProvider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedResponseProvider"/> class.
 		/// </summary>
@@ -22,6 +22,16 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">The request.</param>
 		internal AssociateUnencryptedResponseProvider(Version version, AssociateUnencryptedRequest request)
 			: base(version, request) {
+		}
+
+		long IAssociateSuccessfulResponseProvider.ExpiresIn {
+			get { return this.ExpiresIn; }
+			set { this.ExpiresIn = value; }
+		}
+
+		string IAssociateSuccessfulResponseProvider.AssociationHandle {
+			get { return this.AssociationHandle; }
+			set { this.AssociationHandle = value; }
 		}
 
 		/// <summary>
@@ -42,7 +52,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		///   <para>The response message is updated to include the details of the created association by this method,
 		/// but the resulting association is <i>not</i> added to the association store and must be done by the caller.</para>
 		/// </remarks>
-		protected Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
+		public Association CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
 			Association association = HmacShaAssociationProvider.Create(Protocol, this.AssociationType, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 			this.MacKey = association.SecretKey;
 			return association;

@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <remarks>
 	/// Association response messages are described in OpenID 2.0 section 8.2.  This type covers section 8.2.3.
 	/// </remarks>
-	internal class AssociateDiffieHellmanRelyingPartyResponse : AssociateDiffieHellmanResponse {
+	internal class AssociateDiffieHellmanRelyingPartyResponse : AssociateDiffieHellmanResponse, IAssociateSuccessfulResponseRelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateDiffieHellmanRelyingPartyResponse"/> class.
 		/// </summary>
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <remarks>
 		/// The resulting association is <i>not</i> added to the association store and must be done by the caller.
 		/// </remarks>
-		protected Association CreateAssociationAtRelyingParty(AssociateRequest request) {
+		public Association CreateAssociationAtRelyingParty(AssociateRequest request) {
 			var diffieHellmanRequest = request as AssociateDiffieHellmanRequest;
 			ErrorUtilities.VerifyArgument(diffieHellmanRequest != null, OpenIdStrings.DiffieHellmanAssociationRequired);
 

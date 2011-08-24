@@ -16,17 +16,8 @@ namespace DotNetOpenAuth {
 	/// <summary>
 	/// Code contract for the <see cref="AssociateSuccessfulResponseRelyingParty"/> class.
 	/// </summary>
-	[ContractClassFor(typeof(AssociateSuccessfulResponseRelyingParty))]
-	internal abstract class AssociateSuccessfulResponseRelyingPartyContract : AssociateSuccessfulResponseRelyingParty {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AssociateSuccessfulResponseRelyingPartyContract"/> class.
-		/// </summary>
-		/// <param name="version">The version.</param>
-		/// <param name="request">The request.</param>
-		private AssociateSuccessfulResponseRelyingPartyContract(Version version, AssociateRequest request)
-			: base(version, request) {
-		}
-
+	[ContractClassFor(typeof(IAssociateSuccessfulResponseRelyingParty))]
+	internal abstract class IAssociateSuccessfulResponseRelyingPartyContract : IAssociateSuccessfulResponseRelyingParty {
 		/// <summary>
 		/// Called to create the Association based on a request previously given by the Relying Party.
 		/// </summary>
@@ -34,8 +25,28 @@ namespace DotNetOpenAuth {
 		/// <returns>
 		/// The created association.
 		/// </returns>
-		protected internal override Association CreateAssociationAtRelyingParty(AssociateRequest request) {
+		Association IAssociateSuccessfulResponseRelyingParty.CreateAssociationAtRelyingParty(AssociateRequest request) {
 			Contract.Requires<ArgumentNullException>(request != null);
+			throw new NotImplementedException();
+		}
+
+		Messaging.MessageProtections Messaging.IProtocolMessage.RequiredProtection {
+			get { throw new NotImplementedException(); }
+		}
+
+		Messaging.MessageTransport Messaging.IProtocolMessage.Transport {
+			get { throw new NotImplementedException(); }
+		}
+
+		Version Messaging.IMessage.Version {
+			get { throw new NotImplementedException(); }
+		}
+
+		IDictionary<string, string> Messaging.IMessage.ExtraData {
+			get { throw new NotImplementedException(); }
+		}
+
+		void Messaging.IMessage.EnsureValidMessage() {
 			throw new NotImplementedException();
 		}
 	}
