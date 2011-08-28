@@ -28,7 +28,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The appropriate association response message.
 		/// </returns>
 		public IProtocolMessage CreateResponseCore() {
-			return new AssociateDiffieHellmanProviderResponse(this.Version, this);
+			var response = new AssociateDiffieHellmanProviderResponse(this.Version, this);
+			response.AssociationType = this.AssociationType;
+			return response;
 		}
 	}
 }
