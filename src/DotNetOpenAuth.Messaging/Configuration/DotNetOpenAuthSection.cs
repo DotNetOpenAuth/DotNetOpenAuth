@@ -51,25 +51,6 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets the configuration section from the .config file.
-		/// </summary>
-		public static DotNetOpenAuthSection Configuration {
-			get {
-				Contract.Ensures(Contract.Result<DotNetOpenAuthSection>() != null);
-				Configuration configuration;
-				if (HttpContext.Current != null) {
-					configuration = HttpContext.Current.Request.ApplicationPath != null
-						? WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath)
-						: ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-				} else {
-					configuration = ConfigurationManager.OpenExeConfiguration(null);
-				}
-
-				return (DotNetOpenAuthSection)configuration.GetSectionGroup(SectionName) ?? new DotNetOpenAuthSection(true);
-			}
-		}
-
-		/// <summary>
 		/// Gets the messaging configuration element.
 		/// </summary>
 		public static MessagingElement Messaging {
@@ -86,8 +67,14 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// Gets a named section in this section group, or <c>null</c> if no such section is defined.
 		/// </summary>
-		internal ConfigurationSection GetNamedSection(string name) {
-			return this.synthesizedInstance ? null : this.Sections[name];
+		internal static ConfigurationSection GetNamedSection(string name) {
+			string fullyQualifiedSectionName = SectionName + "/" + name;
+			if (HttpContext.Current != null) {
+				return (ConfigurationSection)WebConfigurationManager.GetSection(fullyQualifiedSectionName);
+			} else {
+				var configuration = ConfigurationManager.OpenExeConfiguration(null);
+				return configuration != null ? configuration.GetSection(fullyQualifiedSectionName) : null;
+			}
 		}
 	}
 }
