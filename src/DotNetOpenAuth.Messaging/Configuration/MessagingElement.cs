@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Configuration {
 		public static MessagingElement Configuration {
 			get {
 				Contract.Ensures(Contract.Result<MessagingElement>() != null);
-				return (MessagingElement)DotNetOpenAuthSection.Configuration.Sections[MessagingElementName] ?? new MessagingElement();
+				return (MessagingElement)DotNetOpenAuthSection.Configuration.GetNamedSection(MessagingElementName) ?? new MessagingElement();
 			}
 		}
 
