@@ -36,8 +36,32 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProductProjectNames Include="
+									   DotNetOpenAuth.Messaging;
+										 DotNetOpenAuth.Messaging.UI;
+										 Mono.Math;
+										 Org.Mentalis.Security.Cryptography;
+										 DotNetOpenAuth.OpenId;
+										 DotNetOpenAuth.OpenId.UI;
+										 DotNetOpenAuth.OpenId.Provider;
+										 DotNetOpenAuth.OpenId.Provider.UI;
+										 DotNetOpenAuth.OpenId.RelyingParty;
+										 DotNetOpenAuth.OpenId.RelyingParty.UI;
+										 DotNetOpenAuth.OAuth2;
+										 DotNetOpenAuth.OAuth2.AuthorizationServer;
+										 DotNetOpenAuth.OAuth2.Client;
+										 DotNetOpenAuth.OAuth2.Client.UI;
+										 DotNetOpenAuth.OAuth2.ResourceServer;
+										 DotNetOpenAuth.OAuth;
+										 DotNetOpenAuth.OAuth.Consumer;
+										 DotNetOpenAuth.OAuth.ServiceProvider;
+										 DotNetOpenAuth.InfoCard;
+										 DotNetOpenAuth.InfoCard.UI;
+										 DotNetOpenAuth.OpenIdInfoCard.UI;
+										 " />
+		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
+
 		<SignDependsOn Include="Build" />
-		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll" />
 		<ILMergeInputAssemblies Condition=" '$(ClrVersion)' == '2' "
 		                        Include="$(ProjectRoot)lib\Microsoft.Contracts.dll" />
 	</ItemGroup>
