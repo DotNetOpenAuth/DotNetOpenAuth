@@ -54,7 +54,7 @@ namespace RelyingPartyLogic {
 		/// be processed within before being discarded as an expired message.
 		/// This maximum message age can be looked up via the
 		/// <see cref="DotNetOpenAuth.Configuration.MessagingElement.MaximumMessageLifetime"/>
-		/// property, accessible via the <see cref="DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration"/>
+		/// property, accessible via the <see cref="DotNetOpenAuth.Configuration.MessagingElement.Configuration"/>
 		/// property.
 		/// </remarks>
 		public bool StoreNonce(string context, string nonce, DateTime timestampUtc) {
