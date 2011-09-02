@@ -18,8 +18,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 	/// </summary>
 	internal class CoordinatingOAuthConsumerChannel : OAuthConsumerChannel {
 		private EventWaitHandle incomingMessageSignal = new AutoResetEvent(false);
-		private IProtocolMessage incomingMessage;
-		private OutgoingWebResponse incomingRawResponse;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOAuthConsumerChannel"/> class.
@@ -111,15 +109,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		private IProtocolMessage AwaitIncomingMessage() {
 			this.incomingMessageSignal.WaitOne();
-			IProtocolMessage response = this.incomingMessage;
-			this.incomingMessage = null;
+			IProtocolMessage response = this.IncomingMessage;
+			this.IncomingMessage = null;
 			return response;
 		}
 
 		private OutgoingWebResponse AwaitIncomingRawResponse() {
 			this.incomingMessageSignal.WaitOne();
-			OutgoingWebResponse response = this.incomingRawResponse;
-			this.incomingRawResponse = null;
+			OutgoingWebResponse response = this.IncomingRawResponse;
+			this.IncomingRawResponse = null;
 			return response;
 		}
 
