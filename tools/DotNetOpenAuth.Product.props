@@ -71,8 +71,8 @@ http://opensource.org/licenses/ms-pl.html
 	</PropertyGroup>
 
 	<ItemGroup>
-		<DelaySignedAssemblies Include="$(ILMergeOutputAssembly);" />
-		<DelaySignedAssemblies Include="$(OutputPath)CodeContracts\$(AssemblyName).Contracts.dll" />
+		<DelaySignedAssemblies Include="$(OutputPath)CodeContracts\$(AssemblyName).Contracts.dll"
+		                       Condition=" '$(AddContractsAssemblyForDelaySigning)' != 'false' "/>
 	</ItemGroup>
 
 	<ItemGroup>

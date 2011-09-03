@@ -2,30 +2,63 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="BuildUnifiedProduct">
 	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 
+	<PropertyGroup>
+		<SuppressBuildTarget>true</SuppressBuildTarget>
+		<AddContractsAssemblyForDelaySigning>false</AddContractsAssemblyForDelaySigning>
+	</PropertyGroup>
+
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
 
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
+	<PropertyGroup>
+		<TargetPath>$(ILMergeOutputAssembly)</TargetPath>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="@(ProductProjects)">
 			<PrimaryProductOutput>true</PrimaryProductOutput>
 		</ProjectReference>
+		<SignDependsOn Include="BuildUnifiedProduct" />
+		<DelaySignedAssemblies Include="$(ILMergeOutputContractAssembly)" />
 	</ItemGroup>
 
 	<Target Name="BuildILMergeInputs" DependsOnTargets="ResolveReferences">
-		<ItemGroup>
-			<ILMergeInputAssemblies Include="@(ReferencePath)"
-															Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
-		</ItemGroup>
-	</Target>
-
-	<Target Name="BuildUnifiedProduct" DependsOnTargets="BuildILMergeInputs" Inputs="@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly)">
 		<PropertyGroup>
 			<!-- The ILMerge task doesn't properly quote the path. -->
 			<ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
 		</PropertyGroup>
+
+		<ItemGroup>
+			<ILMergeInputAssemblies Include="@(ReferencePath)"
+															Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
+			<ILMergeInputContractAssemblies Include="@(ILMergeInputAssemblies->'%(RootDir)%(Directory)CodeContracts\%(FileName).Contracts%(Extension)')"
+																			Condition=" '%(FileName)' != 'Microsoft.Contracts' "/>
+		</ItemGroup>
+	</Target>
+
+	<Target Name="BuildUnifiedContractAssembly"	 DependsOnTargets="BuildILMergeInputs"
+					Inputs="@(ILMergeInputContractAssemblies)" Outputs="$(ILMergeOutputContractAssembly)">
+
+		<MakeDir Directories="$(ILMergeOutputContractAssemblyDirectory)" />
+
+		<ILMerge
+			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
+			InputAssemblies="@(ILMergeInputContractAssemblies)"
+			OutputFile="$(ILMergeOutputContractAssembly)"
+			SearchDirectories="$(OutputPath)"
+			KeyFile="$(PublicKeyFile)"
+			DelaySign="true"
+			ToolPath="$(ProjectRoot)tools\ILMerge"
+			TargetPlatformVersion="$(ClrVersion).0"
+			TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
+	</Target>
+
+	<Target Name="BuildUnifiedProductAssembly" DependsOnTargets="BuildILMergeInputs"
+					Inputs="@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly)">
 		<MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
+
 		<ILMerge
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(ILMergeInputAssemblies)"
@@ -36,6 +69,8 @@
 			TargetPlatformVersion="$(ClrVersion).0"
 			TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
 	</Target>
+
+	<Target Name="BuildUnifiedProduct" DependsOnTargets="BuildUnifiedProductAssembly;BuildUnifiedContractAssembly" />
 
 	<Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

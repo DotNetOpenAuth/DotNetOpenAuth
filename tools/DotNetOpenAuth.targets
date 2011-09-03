@@ -111,7 +111,8 @@
 	<Target Name="ResignDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
 		<ItemGroup>
 			<DelaySignedProjects Include="
-													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.csproj;
+													 @(ProductProjects);
+													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.proj;
 													 $(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj;
 													 $(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj;
 													 " />
