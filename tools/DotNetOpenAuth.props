@@ -64,6 +64,9 @@
 										 " />
 		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
 
+		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />
+		<AssemblyReferencesToReplaceWith Include="@(ProjectReferencesToRemove->'..\..\Bin\$(ProductName).dll')" />
+
 		<SignDependsOn Include="Build" Condition=" '$(SuppressBuildTarget)' != 'true' " />
 		<ILMergeInputAssemblies Condition=" '$(ClrVersion)' == '2' "
 		                        Include="$(ProjectRoot)lib\Microsoft.Contracts.dll" />

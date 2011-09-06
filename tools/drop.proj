@@ -137,7 +137,7 @@
 		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\"
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
-		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
+		  ProjectReferences="@(ProjectReferencesToRemove)" References="@(AssemblyReferencesToReplaceWith)" />
 		<DowngradeProjects
 			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
