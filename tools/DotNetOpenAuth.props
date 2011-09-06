@@ -28,6 +28,7 @@
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
+		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
 		<ILMergeOutputContractAssemblyDirectory>$(ILMergeOutputAssemblyDirectory)CodeContracts\</ILMergeOutputContractAssemblyDirectory>
 		<ILMergeOutputContractAssembly>$(ILMergeOutputContractAssemblyDirectory)$(ProductName).Contracts.dll</ILMergeOutputContractAssembly>
 

@@ -292,12 +292,9 @@ namespace DotNetOpenAuth.BuildTasks {
 			if (match == null) {
 				match = new PathSegment(segments[segmentIndex], this);
 				this.Children.Add(match);
-				if (segments.Length == segmentIndex + 1) {
-					return match;
-				}
 			}
 
-			return match.Add(segments, segmentIndex + 1);
+			return segments.Length == segmentIndex + 1 ? match : match.Add(segments, segmentIndex + 1);
 		}
 
 		private PathSegment FindByOriginalPath(string[] segments, int segmentIndex) {

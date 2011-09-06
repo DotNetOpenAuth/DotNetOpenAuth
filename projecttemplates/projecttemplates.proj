@@ -35,7 +35,7 @@
 	</Target>
 
 	<Target Name="LayoutProjects">
-		<MSBuild Projects="..\src\$(ProductName)\$(ProductName).csproj" Targets="Sign" BuildInParallel="$(BuildInParallel)">
+		<MSBuild Projects="..\src\$(ProductName)\$(ProductName).proj" Targets="Sign" BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="SignedProductAssemblies" />
 		</MSBuild>
 		<ItemGroup>

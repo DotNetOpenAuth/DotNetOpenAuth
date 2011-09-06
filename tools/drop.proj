@@ -47,10 +47,10 @@
 			<DropBinSourceFiles Include="
 																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).dll;
 																$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb;
-																$(OutputPath)$(ProductName).xml;
+																$(ILMergeOutputAssemblyDirectory)$(ProductName).xml;
 																$(OutputPath)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
-																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
+																$(ProjectRoot)src\$(ProductName).Messaging\Configuration\$(ProductName).xsd;
 													" />
 			<DropSatelliteSourceFiles Include="$(OutputPath)**\$(SignedSubPath)$(ProductName).resources.dll" />
 			<DropSatelliteSourceFiles>
