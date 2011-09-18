@@ -8,6 +8,7 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 
@@ -20,7 +21,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="condition">The expression that must evaluate to true to avoid an internal error exception.</param>
 		/// <param name="message">The message to include with the exception.</param>
-		[DebuggerStepThrough]
+		[Pure, DebuggerStepThrough]
 		internal static void True(bool condition, string message = null) {
 			if (!condition) {
 				Fail(message);
@@ -33,7 +34,7 @@ namespace DotNetOpenAuth {
 		/// <param name="condition">The expression that must evaluate to true to avoid an internal error exception.</param>
 		/// <param name="unformattedMessage">The unformatted message.</param>
 		/// <param name="args">Formatting arguments.</param>
-		[DebuggerStepThrough]
+		[Pure, DebuggerStepThrough]
 		internal static void True(bool condition, string unformattedMessage, params object[] args) {
 			if (!condition) {
 				Fail(String.Format(unformattedMessage, args));
@@ -44,6 +45,7 @@ namespace DotNetOpenAuth {
 		/// Throws an internal error exception.
 		/// </summary>
 		/// <param name="message">The message.</param>
+		[Pure, DebuggerStepThrough]
 		internal static void Fail(string message = null) {
 			if (message != null) {
 				throw new InternalErrorException(message);

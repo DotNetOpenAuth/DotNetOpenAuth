@@ -24,7 +24,7 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type of the parameter</typeparam>
 		/// <param name="value">The value.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void NotNull<T>(T value, string parameterName) where T : class {
 			if (value == null) {
 				throw new ArgumentNullException(parameterName);
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void NotNullOrEmpty(string value, string parameterName) {
 			NotNull(value, parameterName);
 			True(value.Length > 0, parameterName, Strings.EmptyStringNotAllowed);
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type of elements in the sequence.</typeparam>
 		/// <param name="sequence">The sequence.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void NullOrWithNoNullElements<T>(IEnumerable<T> sequence, string parameterName) where T : class {
 			if (sequence != null) {
 				if (sequence.Any(e => e == null)) {
@@ -66,7 +66,7 @@ namespace DotNetOpenAuth {
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="ArgumentOutOfRangeException"/>.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="message">The message to include with the exception.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void InRange(bool condition, string parameterName, string message = null) {
 			if (!condition) {
 				throw new ArgumentOutOfRangeException(parameterName, message);
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth {
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="ArgumentException"/>.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="message">The message to include with the exception.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void True(bool condition, string parameterName, string message = null) {
 			if (!condition) {
 				throw new ArgumentException(message ?? Strings.InvalidArgument, parameterName);
@@ -97,7 +97,7 @@ namespace DotNetOpenAuth {
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="unformattedMessage">The unformatted message.</param>
 		/// <param name="args">Formatting arguments.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void True(bool condition, string parameterName, string unformattedMessage, params object[] args) {
 			if (!condition) {
 				throw new ArgumentException(String.Format(unformattedMessage, args), parameterName);
@@ -110,7 +110,7 @@ namespace DotNetOpenAuth {
 		/// Validates some expression describing the acceptable condition for an argument evaluates to true.
 		/// </summary>
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="InvalidOperationException"/>.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void ValidState(bool condition) {
 			if (!condition) {
 				throw new InvalidOperationException();
@@ -124,7 +124,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="InvalidOperationException"/>.</param>
 		/// <param name="message">The message to include with the exception.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void ValidState(bool condition, string message) {
 			if (!condition) {
 				throw new InvalidOperationException(message);
@@ -139,7 +139,7 @@ namespace DotNetOpenAuth {
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="InvalidOperationException"/>.</param>
 		/// <param name="unformattedMessage">The unformatted message.</param>
 		/// <param name="args">Formatting arguments.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void ValidState(bool condition, string unformattedMessage, params object[] args) {
 			if (!condition) {
 				throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
@@ -154,7 +154,7 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type that the argument must be or derive from.</typeparam>
 		/// <param name="type">The type given in the argument.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
-		[ContractArgumentValidator, DebuggerStepThrough]
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
 		internal static void NotNullSubtype<T>(Type type, string parameterName) {
 			NotNull(type, parameterName);
 			True(typeof(T).IsAssignableFrom(type), parameterName, MessagingStrings.UnexpectedType, typeof(T).FullName, type.FullName);
@@ -167,7 +167,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="NotSupportedException"/>.</param>
 		/// <param name="message">The message.</param>
-		[DebuggerStepThrough]
+		[Pure, DebuggerStepThrough]
 		internal static void Support(bool condition, string message) {
 			if (!condition) {
 				throw new NotSupportedException(message);
@@ -179,7 +179,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="message">The message.</param>
-		[DebuggerStepThrough]
+		[Pure, DebuggerStepThrough]
 		internal static void Fail(string parameterName, string message) {
 			throw new ArgumentException(message, parameterName);
 		}
