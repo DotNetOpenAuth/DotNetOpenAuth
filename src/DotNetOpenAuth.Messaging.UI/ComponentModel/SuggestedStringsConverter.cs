@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// <param name="type">The type to reflect over.</param>
 		/// <returns>A collection of values.</returns>
 		internal static ICollection GetStandardValuesForCacheShared(Type type) {
-			Contract.Requires<ArgumentNullException>(type != null);
+			Requires.NotNull(type, "type");
 			Contract.Ensures(Contract.Result<ICollection>() != null);
 
 			var fields = from field in type.GetFields(BindingFlags.Static | BindingFlags.Public)
