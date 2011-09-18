@@ -30,7 +30,7 @@ namespace DotNetOpenAuth {
 		/// </returns>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(prefix));
+			Requires.NotNullOrEmpty(prefix, "prefix");
 			if (uri == null) {
 				return false;
 			}
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth {
 		/// 	<c>true</c> if the URI represents an encrypted request; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsTransportSecure(this Uri uri) {
-			Contract.Requires<ArgumentNullException>(uri != null);
+			Requires.NotNull(uri, "uri");
 			return string.Equals(uri.Scheme, "https", StringComparison.OrdinalIgnoreCase);
 		}
 
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth {
 		/// <param name="builder">The UriBuilder to render as a string.</param>
 		/// <returns>The string version of the Uri.</returns>
 		internal static string ToStringWithImpliedPorts(this UriBuilder builder) {
-			Contract.Requires<ArgumentNullException>(builder != null);
+			Requires.NotNull(builder, "builder");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			// We only check for implied ports on HTTP and HTTPS schemes since those

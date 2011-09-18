@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response to send to the user agent.</param>
 		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
 		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			return new OutgoingWebResponseActionResult(response);
 		}
 
@@ -152,7 +152,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "The Uri merging requires use of a string value.")]
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call should not be a property.")]
 		public static Uri GetRequestUrlFromContext() {
-			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			HttpContext context = HttpContext.Current;
 
 			return HttpRequestInfo.GetPublicFacingUrl(context.Request, context.Request.ServerVariables);
@@ -165,8 +165,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="prefix">The prefix for parameters to remove.  A period is NOT automatically appended.</param>
 		/// <returns>Either a new Uri with the parameters removed if there were any to remove, or the same Uri instance if no parameters needed to be removed.</returns>
 		public static Uri StripQueryArgumentsWithPrefix(this Uri uri, string prefix) {
-			Contract.Requires<ArgumentNullException>(uri != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(prefix));
+			Requires.NotNull(uri, "uri");
+			Requires.NotNullOrEmpty(prefix, "prefix");
 
 			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
 			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -190,9 +190,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="parts">The parts to include in the POST entity.</param>
 		/// <returns>The HTTP response.</returns>
 		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			Contract.Requires<ArgumentNullException>(parts != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(requestHandler, "requestHandler");
+			Requires.NotNull(parts, "parts");
 
 			PostMultipartNoGetResponse(request, requestHandler, parts);
 			return requestHandler.GetResponse(request);
@@ -272,8 +272,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="collection">The collection to add to.</param>
 		/// <param name="values">The values to add to the collection.</param>
 		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> values) {
-			Contract.Requires<ArgumentNullException>(collection != null);
-			Contract.Requires<ArgumentNullException>(values != null);
+			Requires.NotNull(collection, "collection");
+			Requires.NotNull(values, "values");
 
 			foreach (var value in values) {
 				collection.Add(value);
@@ -298,7 +298,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="collection">The collection to modify.</param>
 		/// <param name="values">The new values to fill the collection.</param>
 		internal static void ResetContents<T>(this ICollection<T> collection, IEnumerable<T> values) {
-			Contract.Requires<ArgumentNullException>(collection != null);
+			Requires.NotNull(collection, "collection");
 
 			collection.Clear();
 			if (values != null) {
@@ -313,8 +313,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDescription">The message description whose parts should be removed from the URL.</param>
 		/// <returns>A cleaned URL.</returns>
 		internal static Uri StripMessagePartsFromQueryString(this Uri uri, MessageDescription messageDescription) {
-			Contract.Requires<ArgumentNullException>(uri != null);
-			Contract.Requires<ArgumentNullException>(messageDescription != null);
+			Requires.NotNull(uri, "uri");
+			Requires.NotNull(messageDescription, "messageDescription");
 
 			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
 			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => messageDescription.Mapping.ContainsKey(key)).ToList();
@@ -337,9 +337,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestHandler">The request handler.</param>
 		/// <param name="parts">The parts to include in the POST entity.</param>
 		internal static void PostMultipartNoGetResponse(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			Contract.Requires<ArgumentNullException>(parts != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(requestHandler, "requestHandler");
+			Requires.NotNull(parts, "parts");
 
 			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
 			parts = parts.CacheGeneratedResults();
@@ -390,8 +390,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The fields to include.</param>
 		/// <returns>A value prepared for an HTTP header.</returns>
 		internal static string AssembleAuthorizationHeader(string scheme, IEnumerable<KeyValuePair<string, string>> fields) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(scheme));
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNullOrEmpty(scheme, "scheme");
+			Requires.NotNull(fields, "fields");
 
 			var authorization = new StringBuilder();
 			authorization.Append(scheme);
@@ -415,7 +415,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="authorizationHeader">The authorization header.  May be null or empty.</param>
 		/// <returns>A sequence of key=value pairs discovered in the header.  Never null, but may be empty.</returns>
 		internal static IEnumerable<KeyValuePair<string, string>> ParseAuthorizationHeader(string scheme, string authorizationHeader) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(scheme));
+			Requires.NotNullOrEmpty(scheme, "scheme");
 			Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, string>>>() != null);
 
 			string prefix = scheme + " ";
@@ -446,8 +446,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="payload">The encrypted/signed blob.</param>
 		/// <returns>The combined encoded value.</returns>
 		internal static string CombineKeyHandleAndPayload(string handle, string payload) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(payload));
+			Requires.NotNullOrEmpty(handle, "handle");
+			Requires.NotNullOrEmpty(payload, "payload");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
 			return handle + "!" + payload;
@@ -462,9 +462,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="handle">The crypto key handle.</param>
 		/// <param name="dataBlob">The encrypted/signed data.</param>
 		internal static void ExtractKeyHandleAndPayload(IProtocolMessage containingMessage, string messagePart, string keyHandleAndBlob, out string handle, out string dataBlob) {
-			Contract.Requires<ArgumentNullException>(containingMessage != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(messagePart));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(keyHandleAndBlob));
+			Requires.NotNull(containingMessage, "containingMessage");
+			Requires.NotNullOrEmpty(messagePart, "messagePart");
+			Requires.NotNullOrEmpty(keyHandleAndBlob, "keyHandleAndBlob");
 
 			int privateHandleIndex = keyHandleAndBlob.IndexOf('!');
 			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, messagePart, keyHandleAndBlob);
@@ -513,8 +513,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="allowableCharacters">The allowable characters.</param>
 		/// <returns>A random string.</returns>
 		internal static string GetRandomString(int length, string allowableCharacters) {
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
-			Contract.Requires<ArgumentException>(allowableCharacters != null && allowableCharacters.Length >= 2);
+			Requires.InRange(length >= 0, "length");
+			Requires.True(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters");
 
 			char[] randomString = new char[length];
 			for (int i = 0; i < length; i++) {
@@ -532,8 +532,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
 		internal static string ComputeHash(this HashAlgorithm algorithm, string value, Encoding encoding = null) {
-			Contract.Requires<ArgumentNullException>(algorithm != null);
-			Contract.Requires<ArgumentNullException>(value != null);
+			Requires.NotNull(algorithm, "algorithm");
+			Requires.NotNull(value, "value");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			encoding = encoding ?? Encoding.UTF8;
@@ -551,8 +551,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
 		internal static string ComputeHash(this HashAlgorithm algorithm, IDictionary<string, string> data, Encoding encoding = null) {
-			Contract.Requires<ArgumentNullException>(algorithm != null);
-			Contract.Requires<ArgumentNullException>(data != null);
+			Requires.NotNull(algorithm, "algorithm");
+			Requires.NotNull(data, "data");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			// Assemble the dictionary to sign, taking care to remove the signature itself
@@ -572,8 +572,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="encoding">The encoding to use when converting the string to a byte array.</param>
 		/// <returns>A base64 encoded string.</returns>
 		internal static string ComputeHash(this HashAlgorithm algorithm, IEnumerable<KeyValuePair<string, string>> sortedData, Encoding encoding = null) {
-			Contract.Requires<ArgumentNullException>(algorithm != null);
-			Contract.Requires<ArgumentNullException>(sortedData != null);
+			Requires.NotNull(algorithm, "algorithm");
+			Requires.NotNull(sortedData, "sortedData");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return ComputeHash(algorithm, CreateQueryString(sortedData), encoding);
@@ -665,8 +665,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to encrypt.</param>
 		/// <returns>The encrypted data.</returns>
 		internal static byte[] EncryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
-			Contract.Requires<ArgumentNullException>(crypto != null);
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			Requires.NotNull(crypto, "crypto");
+			Requires.NotNull(buffer, "buffer");
 
 			using (var symmetricCrypto = new RijndaelManaged()) {
 				symmetricCrypto.Mode = CipherMode.CBC;
@@ -700,8 +700,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The decrypted data.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] DecryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
-			Contract.Requires<ArgumentNullException>(crypto != null);
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			Requires.NotNull(crypto, "crypto");
+			Requires.NotNull(buffer, "buffer");
 
 			using (var encryptedStream = new MemoryStream(buffer)) {
 				var encryptedStreamReader = new BinaryReader(encryptedStream);
@@ -747,9 +747,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// A key-value pair whose key is the secret's handle and whose value is the cryptographic key.
 		/// </returns>
 		internal static KeyValuePair<string, CryptoKey> GetCurrentKey(this ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan minimumRemainingLife, int keySize = 256) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
-			Contract.Requires<ArgumentException>(keySize % 8 == 0);
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
+			Requires.NotNullOrEmpty(bucket, "bucket");
+			Requires.True(keySize % 8 == 0, "keySize");
 
 			var cryptoKeyPair = cryptoKeyStore.GetKeys(bucket).FirstOrDefault(pair => pair.Value.Key.Length == keySize / 8);
 			if (cryptoKeyPair.Value == null || cryptoKeyPair.Value.ExpiresUtc < DateTime.UtcNow + minimumRemainingLife) {
@@ -782,7 +782,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The compressed data.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] Compress(byte[] buffer) {
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var ms = new MemoryStream()) {
@@ -800,7 +800,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to decompress.</param>
 		/// <returns>The decompressed data.</returns>
 		internal static byte[] Decompress(byte[] buffer) {
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var compressedDataStream = new MemoryStream(buffer)) {
@@ -837,7 +837,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="base64WebSafe">The base64-encoded string.  May be web-safe encoded.</param>
 		/// <returns>A data buffer.</returns>
 		internal static byte[] FromBase64WebSafeString(string base64WebSafe) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(base64WebSafe));
+			Requires.NotNullOrEmpty(base64WebSafe, "base64WebSafe");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			// Restore the padding characters and original URL-unsafe characters.
@@ -907,8 +907,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">The headers to add.</param>
 		/// <param name="response">The <see cref="HttpResponse"/> instance to set the appropriate values to.</param>
 		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpResponse response) {
-			Contract.Requires<ArgumentNullException>(headers != null);
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(headers, "headers");
+			Requires.NotNull(response, "response");
 
 			foreach (string headerName in headers) {
 				switch (headerName) {
@@ -932,8 +932,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="headers">The headers to add.</param>
 		/// <param name="response">The <see cref="HttpListenerResponse"/> instance to set the appropriate values to.</param>
 		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpListenerResponse response) {
-			Contract.Requires<ArgumentNullException>(headers != null);
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(headers, "headers");
+			Requires.NotNull(response, "response");
 
 			foreach (string headerName in headers) {
 				switch (headerName) {
@@ -961,10 +961,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
 		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
-			Contract.Requires<ArgumentNullException>(copyFrom != null);
-			Contract.Requires<ArgumentNullException>(copyTo != null);
-			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
-			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
+			Requires.NotNull(copyFrom, "copyFrom");
+			Requires.NotNull(copyTo, "copyTo");
+			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.True(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
 			return CopyUpTo(copyFrom, copyTo, int.MaxValue);
 		}
 #endif
@@ -981,10 +981,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// The positions are NOT reset after copying is complete.
 		/// </remarks>
 		internal static int CopyUpTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
-			Contract.Requires<ArgumentNullException>(copyFrom != null);
-			Contract.Requires<ArgumentNullException>(copyTo != null);
-			Contract.Requires<ArgumentException>(copyFrom.CanRead, MessagingStrings.StreamUnreadable);
-			Contract.Requires<ArgumentException>(copyTo.CanWrite, MessagingStrings.StreamUnwritable);
+			Requires.NotNull(copyFrom, "copyFrom");
+			Requires.NotNull(copyTo, "copyTo");
+			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.True(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
 
 			byte[] buffer = new byte[1024];
 			int readBytes;
@@ -1005,8 +1005,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="copyFrom">The stream to copy bytes from.</param>
 		/// <returns>A seekable stream with the same contents as the original.</returns>
 		internal static Stream CreateSnapshot(this Stream copyFrom) {
-			Contract.Requires<ArgumentNullException>(copyFrom != null);
-			Contract.Requires<ArgumentException>(copyFrom.CanRead);
+			Requires.NotNull(copyFrom, "copyFrom");
+			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
 
 			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
 			try {
@@ -1025,8 +1025,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to clone.</param>
 		/// <returns>The newly created instance.</returns>
 		internal static HttpWebRequest Clone(this HttpWebRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentException>(request.RequestUri != null);
+			Requires.NotNull(request, "request");
+			Requires.True(request.RequestUri != null, "request");
 			return Clone(request, request.RequestUri);
 		}
 
@@ -1037,8 +1037,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="newRequestUri">The new recipient of the request.</param>
 		/// <returns>The newly created instance.</returns>
 		internal static HttpWebRequest Clone(this HttpWebRequest request, Uri newRequestUri) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(newRequestUri != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(newRequestUri, "newRequestUri");
 
 			var newRequest = (HttpWebRequest)WebRequest.Create(newRequestUri);
 
@@ -1104,8 +1104,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="second">The second array in the comparison. May not be null.</param>
 		/// <returns>True if the arrays equal; false otherwise.</returns>
 		internal static bool AreEquivalent<T>(T[] first, T[] second) {
-			Contract.Requires<ArgumentNullException>(first != null);
-			Contract.Requires<ArgumentNullException>(second != null);
+			Requires.NotNull(first, "first");
+			Requires.NotNull(second, "second");
 			if (first.Length != second.Length) {
 				return false;
 			}
@@ -1129,8 +1129,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// or other secret.
 		/// </remarks>
 		internal static bool AreEquivalentConstantTime(byte[] first, byte[] second) {
-			Contract.Requires<ArgumentNullException>(first != null);
-			Contract.Requires<ArgumentNullException>(second != null);
+			Requires.NotNull(first, "first");
+			Requires.NotNull(second, "second");
 			if (first.Length != second.Length) {
 				return false;
 			}
@@ -1219,8 +1219,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="second">The second dictionary in the comparison. May not be null.</param>
 		/// <returns>True if the arrays equal; false otherwise.</returns>
 		internal static bool AreEquivalent<TKey, TValue>(IDictionary<TKey, TValue> first, IDictionary<TKey, TValue> second) {
-			Contract.Requires<ArgumentNullException>(first != null);
-			Contract.Requires<ArgumentNullException>(second != null);
+			Requires.NotNull(first, "first");
+			Requires.NotNull(second, "second");
 			return AreEquivalent(first.ToArray(), second.ToArray());
 		}
 
@@ -1232,7 +1232,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="args">The dictionary of key/values to read from.</param>
 		/// <returns>The formulated querystring style string.</returns>
 		internal static string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args) {
-			Contract.Requires<ArgumentNullException>(args != null);
+			Requires.NotNull(args, "args");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (args.Count() == 0) {
@@ -1268,7 +1268,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// in the query string, the existing ones are <i>not</i> replaced.
 		/// </remarks>
 		internal static void AppendQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			Contract.Requires<ArgumentNullException>(builder != null);
+			Requires.NotNull(builder, "builder");
 
 			if (args != null && args.Count() > 0) {
 				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
@@ -1297,7 +1297,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// in the fragment, the existing ones are <i>not</i> replaced.
 		/// </remarks>
 		internal static void AppendFragmentArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			Contract.Requires<ArgumentNullException>(builder != null);
+			Requires.NotNull(builder, "builder");
 
 			if (args != null && args.Count() > 0) {
 				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
@@ -1321,7 +1321,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// If null, <paramref name="builder"/> is not changed.
 		/// </param>
 		internal static void AppendAndReplaceQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			Contract.Requires<ArgumentNullException>(builder != null);
+			Requires.NotNull(builder, "builder");
 
 			if (args != null && args.Count() > 0) {
 				NameValueCollection aggregatedArgs = HttpUtility.ParseQueryString(builder.Query);
@@ -1394,7 +1394,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message to copy the extra data into.</param>
 		/// <param name="extraParameters">The extra data to copy into the message.  May be null to do nothing.</param>
 		internal static void AddExtraParameters(this MessageDictionary messageDictionary, IDictionary<string, string> extraParameters) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Requires.NotNull(messageDictionary, "messageDictionary");
 
 			if (extraParameters != null) {
 				foreach (var pair in extraParameters) {
@@ -1415,7 +1415,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="sequence">The sequence.</param>
 		/// <returns>A dictionary.</returns>
 		internal static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> sequence) {
-			Contract.Requires<ArgumentNullException>(sequence != null);
+			Requires.NotNull(sequence, "sequence");
 			return sequence.ToDictionary(pair => pair.Key, pair => pair.Value);
 		}
 
@@ -1480,9 +1480,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="comparer">A comparison function to compare keys.</param>
 		/// <returns>An System.Linq.IOrderedEnumerable&lt;TElement&gt; whose elements are sorted according to a key.</returns>
 		internal static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Comparison<TKey> comparer) {
-			Contract.Requires<ArgumentNullException>(source != null);
-			Contract.Requires<ArgumentNullException>(comparer != null);
-			Contract.Requires<ArgumentNullException>(keySelector != null);
+			Requires.NotNull(source, "source");
+			Requires.NotNull(comparer, "comparer");
+			Requires.NotNull(keySelector, "keySelector");
 			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSource>>() != null);
 			return System.Linq.Enumerable.OrderBy<TSource, TKey>(source, keySelector, new ComparisonHelper<TKey>(comparer));
 		}
@@ -1500,7 +1500,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// if their <see cref="IDirectedProtocolMessage.Recipient"/> property is non-null.
 		/// </remarks>
 		internal static bool IsRequest(this IDirectedProtocolMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			return message.Recipient != null;
 		}
 
@@ -1518,7 +1518,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="IDirectResponseProtocolMessage.OriginatingRequest"/> property is non-null.
 		/// </remarks>
 		internal static bool IsDirectResponse(this IDirectResponseProtocolMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			return message.OriginatingRequest != null;
 		}
 
@@ -1528,8 +1528,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="writer">The binary writer.</param>
 		/// <param name="buffer">The buffer.</param>
 		internal static void WriteBuffer(this BinaryWriter writer, byte[] buffer) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(buffer != null);
+			Requires.NotNull(writer, "writer");
+			Requires.NotNull(buffer, "buffer");
 			writer.Write(buffer.Length);
 			writer.Write(buffer, 0, buffer.Length);
 		}
@@ -1540,7 +1540,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="reader">The binary reader positioned at the buffer length.</param>
 		/// <returns>The read buffer.</returns>
 		internal static byte[] ReadBuffer(this BinaryReader reader) {
-			Contract.Requires<ArgumentNullException>(reader != null);
+			Requires.NotNull(reader, "reader");
 			int length = reader.ReadInt32();
 			byte[] buffer = new byte[length];
 			ErrorUtilities.VerifyProtocol(reader.Read(buffer, 0, length) == length, "Unexpected buffer length.");
@@ -1606,7 +1606,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// host actually having this configuration element present.
 		/// </remarks>
 		internal static string EscapeUriDataStringRfc3986(string value) {
-			Contract.Requires<ArgumentNullException>(value != null);
+			Requires.NotNull(value, "value");
 
 			// Start with RFC 2396 escaping by calling the .NET method to do the work.
 			// This MAY sometimes exhibit RFC 3986 behavior (according to the documentation).
@@ -1686,7 +1686,7 @@ namespace DotNetOpenAuth.Messaging {
 			/// </summary>
 			/// <param name="comparison">The comparison method to use.</param>
 			internal ComparisonHelper(Comparison<T> comparison) {
-				Contract.Requires<ArgumentNullException>(comparison != null);
+				Requires.NotNull(comparison, "comparison");
 
 				this.comparison = comparison;
 			}

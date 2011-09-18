@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFile)</MSBuildAllProjects>
-		<CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
 	</PropertyGroup>
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
@@ -23,7 +22,6 @@ http://opensource.org/licenses/ms-pl.html
 		<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
 		<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
 
-		<CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
 		<CodeContractsCustomRewriterAssembly />
 		<CodeContractsCustomRewriterClass />
 		<CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
@@ -43,8 +41,19 @@ http://opensource.org/licenses/ms-pl.html
 		<CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
 		<CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
 		<CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-		<CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
 		<CodeContractsExtraRewriteOptions />
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(CodeContractsRewritingDisabled)' == 'true' ">
+		<CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+		<CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+		<CodeContractsReferenceAssembly Condition=" '$(Configuration)' == 'Release' ">Build</CodeContractsReferenceAssembly>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(CodeContractsRewritingDisabled)' != 'true' ">
+		<CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+		<CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+		<CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -42,8 +42,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="getOriginalValues">A value indicating whether this message dictionary will retrieve original values instead of normalized ones.</param>
 		[Pure]
 		internal MessageDictionary(IMessage message, MessageDescription description, bool getOriginalValues) {
-			Contract.Requires<ArgumentNullException>(message != null);
-			Contract.Requires<ArgumentNullException>(description != null);
+			Requires.NotNull(message, "message");
+			Requires.NotNull(description, "description");
 
 			this.message = message;
 			this.description = description;
@@ -389,7 +389,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="fields">The data to load into the message.</param>
 		public void Deserialize(IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(fields, "fields");
 			this.Serializer.Deserialize(fields, this);
 		}
 

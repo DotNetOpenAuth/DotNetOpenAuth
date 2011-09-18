@@ -105,9 +105,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Unavoidable"), SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts requires it.")]
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {
-			Contract.Requires<ArgumentNullException>(member != null);
-			Contract.Requires<ArgumentException>(member is FieldInfo || member is PropertyInfo);
-			Contract.Requires<ArgumentNullException>(attribute != null);
+			Requires.NotNull(member, "member");
+			Requires.True(member is FieldInfo || member is PropertyInfo, "member");
+			Requires.NotNull(attribute, "attribute");
 
 			this.field = member as FieldInfo;
 			this.property = member as PropertyInfo;
@@ -199,7 +199,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		internal string StaticConstantValue {
 			get {
-				Contract.Requires<InvalidOperationException>(this.IsConstantValueAvailableStatically);
+				Requires.ValidState(this.IsConstantValueAvailableStatically);
 				return this.ToString(this.field.GetValue(null), false);
 			}
 		}
@@ -220,8 +220,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
 		internal static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
-			Contract.Requires<ArgumentNullException>(toString != null);
-			Contract.Requires<ArgumentNullException>(toValue != null);
+			Requires.NotNull(toString, "toString");
+			Requires.NotNull(toValue, "toValue");
 
 			if (toOriginalString == null) {
 				toOriginalString = toString;
@@ -240,7 +240,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="message">The message instance containing the member whose value should be set.</param>
 		/// <param name="value">The string representation of the value to set.</param>
 		internal void SetValue(IMessage message, string value) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 
 			try {
 				if (this.IsConstantValue) {
@@ -343,7 +343,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messagePartEncoder">The message part encoder type.</param>
 		/// <returns>An instance of the desired encoder.</returns>
 		private static IMessagePartEncoder GetEncoder(Type messagePartEncoder) {
-			Contract.Requires<ArgumentNullException>(messagePartEncoder != null);
+			Requires.NotNull(messagePartEncoder, "messagePartEncoder");
 			Contract.Ensures(Contract.Result<IMessagePartEncoder>() != null);
 
 			IMessagePartEncoder encoder;

@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		internal OutgoingWebResponseActionResult(OutgoingWebResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			this.response = response;
 		}
 

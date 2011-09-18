@@ -66,8 +66,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
 		IDirectedProtocolMessage IMessageFactory.GetNewRequestMessage(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(recipient != null);
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(recipient, "recipient");
+			Requires.NotNull(fields, "fields");
 
 			throw new NotImplementedException();
 		}
@@ -83,8 +83,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// deserialize to.  Null if the request isn't recognized as a valid protocol message.
 		/// </returns>
 		IDirectResponseProtocolMessage IMessageFactory.GetNewResponseMessage(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(fields, "fields");
 			throw new NotImplementedException();
 		}
 

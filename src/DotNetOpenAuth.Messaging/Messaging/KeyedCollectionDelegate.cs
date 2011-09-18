@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="getKeyForItemDelegate">The delegate that gets the key for a given item.</param>
 		internal KeyedCollectionDelegate(Func<TItem, TKey> getKeyForItemDelegate) {
-			Contract.Requires<ArgumentNullException>(getKeyForItemDelegate != null);
+			Requires.NotNull(getKeyForItemDelegate, "getKeyForItemDelegate");
 
 			this.getKeyForItemDelegate = getKeyForItemDelegate;
 		}

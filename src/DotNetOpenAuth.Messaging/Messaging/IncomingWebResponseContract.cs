@@ -45,8 +45,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// be the self same instance.
 		/// </remarks>
 		internal override CachedDirectWebResponse GetSnapshot(int maximumBytesToCache) {
-			Contract.Requires<ArgumentOutOfRangeException>(maximumBytesToCache >= 0);
-			Contract.Requires<InvalidOperationException>(this.RequestUri != null);
+			Requires.InRange(maximumBytesToCache >= 0, "maximumBytesToCache");
+			Requires.ValidState(this.RequestUri != null);
 			Contract.Ensures(Contract.Result<CachedDirectWebResponse>() != null);
 			throw new NotImplementedException();
 		}

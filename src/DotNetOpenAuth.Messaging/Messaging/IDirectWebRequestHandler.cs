@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.</para>
 		/// </remarks>
 		Stream IDirectWebRequestHandler.GetRequestStream(HttpWebRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			throw new System.NotImplementedException();
 		}
 
@@ -164,8 +164,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// a single exception type for hosts to catch.</para>
 		/// </remarks>
 		Stream IDirectWebRequestHandler.GetRequestStream(HttpWebRequest request, DirectWebRequestOptions options) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<NotSupportedException>(((IDirectWebRequestHandler)this).CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported);
+			Requires.NotNull(request, "request");
+			Requires.Support(((IDirectWebRequestHandler)this).CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported);
 			////ErrorUtilities.VerifySupported(((IDirectWebRequestHandler)this).CanSupport(options), string.Format(MessagingStrings.DirectWebRequestOptionsNotSupported, options, this.GetType().Name));
 			throw new System.NotImplementedException();
 		}
@@ -186,7 +186,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// value, if set, should be Closed before throwing.
 		/// </remarks>
 		IncomingWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
 			Contract.Ensures(Contract.Result<IncomingWebResponse>().ResponseStream != null);
 			throw new System.NotImplementedException();
@@ -209,10 +209,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// value, if set, should be Closed before throwing.
 		/// </remarks>
 		IncomingWebResponse IDirectWebRequestHandler.GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<NotSupportedException>(((IDirectWebRequestHandler)this).CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported);
+			Requires.NotNull(request, "request");
 			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
 			Contract.Ensures(Contract.Result<IncomingWebResponse>().ResponseStream != null);
+			Requires.Support(((IDirectWebRequestHandler)this).CanSupport(options), MessagingStrings.DirectWebRequestOptionsNotSupported);
 
 			////ErrorUtilities.VerifySupported(((IDirectWebRequestHandler)this).CanSupport(options), string.Format(MessagingStrings.DirectWebRequestOptionsNotSupported, options, this.GetType().Name));
 			throw new System.NotImplementedException();

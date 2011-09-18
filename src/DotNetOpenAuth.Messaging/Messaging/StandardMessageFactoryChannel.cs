@@ -34,8 +34,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="bindingElements">The binding elements to apply to the channel.</param>
 		protected StandardMessageFactoryChannel(ICollection<Type> messageTypes, ICollection<Version> versions, params IChannelBindingElement[] bindingElements)
 			: base(new StandardMessageFactory(), bindingElements) {
-			Contract.Requires<ArgumentNullException>(messageTypes != null);
-			Contract.Requires<ArgumentNullException>(versions != null);
+			Requires.NotNull(messageTypes, "messageTypes");
+			Requires.NotNull(versions, "versions");
 
 			this.messageTypes = messageTypes;
 			this.versions = versions;
@@ -93,8 +93,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated/retrieved message descriptions.</returns>
 		private static IEnumerable<MessageDescription> GetMessageDescriptions(ICollection<Type> messageTypes, ICollection<Version> versions, MessageDescriptionCollection descriptionsCache)
 		{
-			Contract.Requires<ArgumentNullException>(messageTypes != null);
-			Contract.Requires<ArgumentNullException>(descriptionsCache != null);
+			Requires.NotNull(messageTypes, "messageTypes");
+			Requires.NotNull(descriptionsCache, "descriptionsCache");
 			Contract.Ensures(Contract.Result<IEnumerable<MessageDescription>>() != null);
 
 			// Get all the MessageDescription objects through the standard cache,

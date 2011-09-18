@@ -33,8 +33,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="key">The cryptographic key.</param>
 		/// <param name="expiresUtc">The expires UTC.</param>
 		public CryptoKey(byte[] key, DateTime expiresUtc) {
-			Contract.Requires<ArgumentNullException>(key != null);
-			Contract.Requires<ArgumentException>(expiresUtc.Kind == DateTimeKind.Utc);
+			Requires.NotNull(key, "key");
+			Requires.True(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc");
 			this.key = key;
 			this.expiresUtc = expiresUtc;
 		}

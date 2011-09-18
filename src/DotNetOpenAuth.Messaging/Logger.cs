@@ -142,7 +142,7 @@ namespace DotNetOpenAuth {
 		/// <param name="name">A name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
 		internal static ILog Create(string name) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(name));
+			Requires.NotNullOrEmpty(name, "name");
 			return InitializeFacade(name);
 		}
 
@@ -153,7 +153,7 @@ namespace DotNetOpenAuth {
 		/// <param name="name">A name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
 		internal static ILog CreateWithBanner(string name) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(name));
+			Requires.NotNullOrEmpty(name, "name");
 			ILog log = Create(name);
 			log.Info(Util.LibraryVersion);
 			return log;
@@ -165,7 +165,7 @@ namespace DotNetOpenAuth {
 		/// <param name="type">A type whose full name that will be included in the log file.</param>
 		/// <returns>The <see cref="ILog"/> instance created with the given type name.</returns>
 		internal static ILog Create(Type type) {
-			Contract.Requires<ArgumentNullException>(type != null);
+			Requires.NotNull(type, "type");
 
 			return Create(type.FullName);
 		}

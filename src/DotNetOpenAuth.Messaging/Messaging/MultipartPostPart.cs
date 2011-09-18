@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="contentDisposition">The content disposition of the part.</param>
 		public MultipartPostPart(string contentDisposition) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(contentDisposition));
+			Requires.NotNullOrEmpty(contentDisposition, "contentDisposition");
 
 			this.ContentDisposition = contentDisposition;
 			this.ContentAttributes = new Dictionary<string, string>();
@@ -99,8 +99,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="value">The value.</param>
 		/// <returns>The constructed part.</returns>
 		public static MultipartPostPart CreateFormPart(string name, string value) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
-			Contract.Requires<ArgumentException>(value != null);
+			Requires.NotNullOrEmpty(name, "name");
+			Requires.NotNull(value, "value");
 
 			var part = new MultipartPostPart("form-data");
 			try {
@@ -121,9 +121,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="contentType">Type of the content in HTTP Content-Type format.</param>
 		/// <returns>The constructed part.</returns>
 		public static MultipartPostPart CreateFormFilePart(string name, string filePath, string contentType) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(filePath));
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(contentType));
+			Requires.NotNullOrEmpty(name, "name");
+			Requires.NotNullOrEmpty(filePath, "filePath");
+			Requires.NotNullOrEmpty(contentType, "contentType");
 
 			string fileName = Path.GetFileName(filePath);
 			var fileStream = File.OpenRead(filePath);
@@ -144,10 +144,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="content">The content of the file.</param>
 		/// <returns>The constructed part.</returns>
 		public static MultipartPostPart CreateFormFilePart(string name, string fileName, string contentType, Stream content) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(fileName));
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(contentType));
-			Contract.Requires<ArgumentException>(content != null);
+			Requires.NotNullOrEmpty(name, "name");
+			Requires.NotNullOrEmpty(fileName, "fileName");
+			Requires.NotNullOrEmpty(contentType, "contentType");
+			Requires.NotNull(content, "content");
 
 			var part = new MultipartPostPart("file");
 			try {

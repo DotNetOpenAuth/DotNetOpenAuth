@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="chainedWebRequestHandler">The chained web request handler.</param>
 		public UntrustedWebRequestHandler(IDirectWebRequestHandler chainedWebRequestHandler) {
-			Contract.Requires<ArgumentNullException>(chainedWebRequestHandler != null);
+			Requires.NotNull(chainedWebRequestHandler, "chainedWebRequestHandler");
 
 			this.chainedWebRequestHandler = chainedWebRequestHandler;
 			if (Debugger.IsAttached) {
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 2048);
+				Requires.InRange(value >= 2048, "value");
 				this.maximumBytesToRead = value;
 			}
 		}
@@ -127,7 +127,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
+				Requires.InRange(value >= 0, "value");
 				this.maximumRedirections = value;
 			}
 		}
@@ -314,7 +314,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<c>true</c> if this is a loopback IP address; <c>false</c> otherwise.
 		/// </returns>
 		private static bool IsIPv6Loopback(IPAddress ip) {
-			Contract.Requires<ArgumentNullException>(ip != null);
+			Requires.NotNull(ip, "ip");
 			byte[] addressBytes = ip.GetAddressBytes();
 			for (int i = 0; i < addressBytes.Length - 1; i++) {
 				if (addressBytes[i] != 0) {
@@ -337,9 +337,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<c>true</c> if the specified host falls within at least one of the given lists; otherwise, <c>false</c>.
 		/// </returns>
 		private static bool IsHostInList(string host, ICollection<string> stringList, ICollection<Regex> regexList) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(host));
-			Contract.Requires<ArgumentNullException>(stringList != null);
-			Contract.Requires<ArgumentNullException>(regexList != null);
+			Requires.NotNullOrEmpty(host, "host");
+			Requires.NotNull(stringList, "stringList");
+			Requires.NotNull(regexList, "regexList");
 			foreach (string testHost in stringList) {
 				if (string.Equals(host, testHost, StringComparison.OrdinalIgnoreCase)) {
 					return true;
@@ -395,7 +395,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// 	<c>true</c> if [is URI allowable] [the specified URI]; otherwise, <c>false</c>.
 		/// </returns>
 		private bool IsUriAllowable(Uri uri) {
-			Contract.Requires<ArgumentNullException>(uri != null);
+			Requires.NotNull(uri, "uri");
 			if (!this.allowableSchemes.Contains(uri.Scheme)) {
 				Logger.Http.WarnFormat("Rejecting URL {0} because it uses a disallowed scheme.", uri);
 				return false;
@@ -455,7 +455,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to prepare.</param>
 		/// <param name="preparingPost"><c>true</c> if this is a POST request whose headers have not yet been sent out; <c>false</c> otherwise.</param>
 		private void PrepareRequest(HttpWebRequest request, bool preparingPost) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			// Be careful to not try to change the HTTP headers that have already gone out.
 			if (preparingPost || request.Method == "GET") {

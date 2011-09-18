@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// to avoid double-caching.</para>
 		/// </remarks>
 		public static IEnumerable<T> CacheGeneratedResults<T>(this IEnumerable<T> sequence) {
-			Contract.Requires<ArgumentNullException>(sequence != null);
+			Requires.NotNull(sequence, "sequence");
 
 			// Don't create a cache for types that don't need it.
 			if (sequence is IList<T> ||
@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.Messaging {
 			/// </summary>
 			/// <param name="generator">The generator.</param>
 			internal EnumerableCache(IEnumerable<T> generator) {
-				Contract.Requires<ArgumentNullException>(generator != null);
+				Requires.NotNull(generator, "generator");
 
 				this.generator = generator;
 			}
@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.Messaging {
 				/// </summary>
 				/// <param name="parent">The parent cached enumerable whose GetEnumerator method is calling this constructor.</param>
 				internal EnumeratorCache(EnumerableCache<T> parent) {
-					Contract.Requires<ArgumentNullException>(parent != null);
+					Requires.NotNull(parent, "parent");
 
 					this.parent = parent;
 				}

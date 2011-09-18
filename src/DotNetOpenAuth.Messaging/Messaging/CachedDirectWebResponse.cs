@@ -38,8 +38,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="maximumBytesToRead">The maximum bytes to read.</param>
 		internal CachedDirectWebResponse(Uri requestUri, HttpWebResponse response, int maximumBytesToRead)
 			: base(requestUri, response) {
-			Contract.Requires<ArgumentNullException>(requestUri != null);
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(requestUri, "requestUri");
+			Requires.NotNull(response, "response");
 			this.responseStream = CacheNetworkStreamAndClose(response, maximumBytesToRead);
 
 			// BUGBUG: if the response was exactly maximumBytesToRead, we'll incorrectly believe it was truncated.
@@ -58,8 +58,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="responseStream">The response stream.</param>
 		internal CachedDirectWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding, MemoryStream responseStream)
 			: base(requestUri, responseUri, headers, statusCode, contentType, contentEncoding) {
-			Contract.Requires<ArgumentNullException>(requestUri != null);
-			Contract.Requires<ArgumentNullException>(responseStream != null);
+			Requires.NotNull(requestUri, "requestUri");
+			Requires.NotNull(responseStream, "responseStream");
 			this.responseStream = responseStream;
 		}
 
@@ -159,7 +159,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The seekable Stream instance that contains a copy of what was returned in the HTTP response.</returns>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		private static MemoryStream CacheNetworkStreamAndClose(HttpWebResponse response, int maximumBytesToRead) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			Contract.Ensures(Contract.Result<MemoryStream>() != null);
 
 			// Now read and cache the network stream

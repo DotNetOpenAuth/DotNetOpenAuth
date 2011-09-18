@@ -109,8 +109,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected DataBagFormatterBase(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket) || cryptoKeyStore == null);
-			Contract.Requires<ArgumentException>(cryptoKeyStore != null || (!signed && !encrypted));
+			Requires.True(!String.IsNullOrEmpty(bucket) || cryptoKeyStore == null, null);
+			Requires.True(cryptoKeyStore != null || (!signed && !encrypted), null);
 
 			this.cryptoKeyStore = cryptoKeyStore;
 			this.cryptoKeyBucket = bucket;
@@ -128,8 +128,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		private DataBagFormatterBase(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
-			Contract.Requires<ArgumentException>(signed || decodeOnceOnly == null);
-			Contract.Requires<ArgumentException>(maximumAge.HasValue || decodeOnceOnly == null);
+			Requires.True(signed || decodeOnceOnly == null, null);
+			Requires.True(maximumAge.HasValue || decodeOnceOnly == null, null);
 
 			this.signed = signed;
 			this.maximumAge = maximumAge;
@@ -272,8 +272,8 @@ namespace DotNetOpenAuth.Messaging {
 		///   <c>true</c> if the signature is valid; otherwise, <c>false</c>.
 		/// </returns>
 		private bool IsSignatureValid(byte[] signedData, byte[] signature, string symmetricSecretHandle) {
-			Contract.Requires<ArgumentNullException>(signedData != null);
-			Contract.Requires<ArgumentNullException>(signature != null);
+			Requires.NotNull(signedData, "signedData");
+			Requires.NotNull(signature, "signature");
 
 			if (this.asymmetricSigning != null) {
 				using (var hasher = new SHA1CryptoServiceProvider()) {
@@ -293,8 +293,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// The calculated signature.
 		/// </returns>
 		private byte[] CalculateSignature(byte[] bytesToSign, string symmetricSecretHandle) {
-			Contract.Requires<ArgumentNullException>(bytesToSign != null);
-			Contract.Requires<InvalidOperationException>(this.asymmetricSigning != null || this.cryptoKeyStore != null);
+			Requires.NotNull(bytesToSign, "bytesToSign");
+			Requires.ValidState(this.asymmetricSigning != null || this.cryptoKeyStore != null);
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (this.asymmetricSigning != null) {
@@ -319,7 +319,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The encrypted value.
 		/// </returns>
 		private byte[] Encrypt(byte[] value, out string symmetricSecretHandle) {
-			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || this.cryptoKeyStore != null);
+			Requires.ValidState(this.asymmetricEncrypting != null || this.cryptoKeyStore != null);
 
 			if (this.asymmetricEncrypting != null) {
 				symmetricSecretHandle = null;
@@ -340,7 +340,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The decrypted value.
 		/// </returns>
 		private byte[] Decrypt(byte[] value, string symmetricSecretHandle) {
-			Contract.Requires<InvalidOperationException>(this.asymmetricEncrypting != null || symmetricSecretHandle != null);
+			Requires.ValidState(this.asymmetricEncrypting != null || symmetricSecretHandle != null);
 
 			if (this.asymmetricEncrypting != null) {
 				return this.asymmetricEncrypting.DecryptWithRandomSymmetricKey(value);

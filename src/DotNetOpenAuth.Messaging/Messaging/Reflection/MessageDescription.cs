@@ -30,9 +30,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageType">Type of the message.</param>
 		/// <param name="messageVersion">The message version.</param>
 		internal MessageDescription(Type messageType, Version messageVersion) {
-			Contract.Requires<ArgumentNullException>(messageType != null);
-			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
-			Contract.Requires<ArgumentNullException>(messageVersion != null);
+			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			Requires.NotNull(messageVersion, "messageVersion");
 
 			this.MessageType = messageType;
 			this.MessageVersion = messageVersion;
@@ -80,7 +79,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>The dictionary accessor to the message</returns>
 		[Pure]
 		internal MessageDictionary GetDictionary(IMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
 			return this.GetDictionary(message, false);
 		}
@@ -93,7 +92,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>The dictionary accessor to the message</returns>
 		[Pure]
 		internal MessageDictionary GetDictionary(IMessage message, bool getOriginalValues) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
 			return new MessageDictionary(message, this, getOriginalValues);
 		}
@@ -123,11 +122,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="parts">The key/value pairs of the serialized message.</param>
 		/// <returns>A value indicating whether the provided data fits the message's basic requirements.</returns>
 		internal bool CheckMessagePartsPassBasicValidation(IDictionary<string, string> parts) {
-			Contract.Requires<ArgumentNullException>(parts != null);
+			Requires.NotNull(parts, "parts");
 
 			return this.CheckRequiredMessagePartsArePresent(parts.Keys, false) &&
-			       this.CheckRequiredProtocolMessagePartsAreNotEmpty(parts, false) &&
-			       this.CheckMessagePartsConstantValues(parts, false);
+				   this.CheckRequiredProtocolMessagePartsAreNotEmpty(parts, false) &&
+				   this.CheckMessagePartsConstantValues(parts, false);
 		}
 
 		/// <summary>
@@ -142,7 +141,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// if <paramref name="throwOnFailure"/> is <c>true</c>.
 		/// </exception>
 		private bool CheckRequiredMessagePartsArePresent(IEnumerable<string> keys, bool throwOnFailure) {
-			Contract.Requires<ArgumentNullException>(keys != null);
+			Requires.NotNull(keys, "keys");
 
 			var missingKeys = (from part in this.Mapping.Values
 							   where part.IsRequired && !keys.Contains(part.Name)
@@ -176,7 +175,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// if <paramref name="throwOnFailure"/> is <c>true</c>.
 		/// </exception>
 		private bool CheckRequiredProtocolMessagePartsAreNotEmpty(IDictionary<string, string> partValues, bool throwOnFailure) {
-			Contract.Requires<ArgumentNullException>(partValues != null);
+			Requires.NotNull(partValues, "partValues");
 
 			string value;
 			var emptyValuedKeys = (from part in this.Mapping.Values
@@ -206,15 +205,14 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="partValues">The part values.</param>
 		/// <param name="throwOnFailure">if set to <c>true</c>, this method will throw on failure.</param>
 		/// <returns>A value indicating whether all the requirements are met.</returns>
-		private bool CheckMessagePartsConstantValues(IDictionary<string, string> partValues, bool throwOnFailure)
-		{
-			Contract.Requires<ArgumentNullException>(partValues != null);
+		private bool CheckMessagePartsConstantValues(IDictionary<string, string> partValues, bool throwOnFailure) {
+			Requires.NotNull(partValues, "partValues");
 
 			var badConstantValues = (from part in this.Mapping.Values
-			                         where part.IsConstantValueAvailableStatically
-			                         where partValues.ContainsKey(part.Name)
-			                         where !string.Equals(partValues[part.Name], part.StaticConstantValue, StringComparison.Ordinal)
-			                         select part.Name).ToArray();
+									 where part.IsConstantValueAvailableStatically
+									 where partValues.ContainsKey(part.Name)
+									 where !string.Equals(partValues[part.Name], part.StaticConstantValue, StringComparison.Ordinal)
+									 select part.Name).ToArray();
 			if (badConstantValues.Length > 0) {
 				if (throwOnFailure) {
 					ErrorUtilities.ThrowProtocol(

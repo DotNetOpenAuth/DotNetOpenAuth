@@ -40,9 +40,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="dataStore">The data store.</param>
 		/// <param name="asymmetricCrypto">The asymmetric protection to apply to symmetric keys.  Must include the private key.</param>
 		public AsymmetricCryptoKeyStoreWrapper(ICryptoKeyStore dataStore, RSACryptoServiceProvider asymmetricCrypto) {
-			Contract.Requires<ArgumentNullException>(dataStore != null);
-			Contract.Requires<ArgumentNullException>(asymmetricCrypto != null);
-			Contract.Requires<ArgumentException>(!asymmetricCrypto.PublicOnly);
+			Requires.NotNull(dataStore, "dataStore");
+			Requires.NotNull(asymmetricCrypto, "asymmetricCrypto");
+			Requires.True(!asymmetricCrypto.PublicOnly, "asymmetricCrypto");
 			this.dataStore = dataStore;
 			this.asymmetricCrypto = asymmetricCrypto;
 		}

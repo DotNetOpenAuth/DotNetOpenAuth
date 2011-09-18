@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message behind the fired event..</param>
 		internal ChannelEventArgs(IProtocolMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 
 			this.Message = message;
 		}

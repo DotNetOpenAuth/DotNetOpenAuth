@@ -554,7 +554,7 @@ namespace DotNetOpenAuth {
 		/// If an existing identifier is not found, a new one is created, persisted, and returned.
 		/// </remarks>
 		private static Guid GetOrCreateOriginIdentity() {
-			Contract.Requires<InvalidOperationException>(file != null);
+			Requires.ValidState(file != null);
 			Contract.Ensures(Contract.Result<Guid>() != Guid.Empty);
 
 			Guid identityGuid = Guid.Empty;
@@ -584,7 +584,7 @@ namespace DotNetOpenAuth {
 		/// <param name="fileName">The filename to sanitize.</param>
 		/// <returns>The filename, with any and all invalid filename characters replaced with the hyphen (-) character.</returns>
 		private static string SanitizeFileName(string fileName) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(fileName));
+			Requires.NotNullOrEmpty(fileName, "fileName");
 			char[] invalidCharacters = Path.GetInvalidFileNameChars();
 			if (fileName.IndexOfAny(invalidCharacters) < 0) {
 				return fileName; // nothing invalid about this filename.
@@ -651,8 +651,8 @@ namespace DotNetOpenAuth {
 			/// <param name="fileName">Name of the file.</param>
 			/// <param name="maximumElements">The maximum number of elements to track.</param>
 			internal PersistentHashSet(IsolatedStorageFile storage, string fileName, int maximumElements) {
-				Contract.Requires<ArgumentNullException>(storage != null);
-				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(fileName));
+				Requires.NotNull(storage, "storage");
+				Requires.NotNullOrEmpty(fileName, "fileName");
 				this.FileName = fileName;
 				this.maximumElements = maximumElements;
 
@@ -796,8 +796,8 @@ namespace DotNetOpenAuth {
 			/// <param name="storage">The storage location.</param>
 			/// <param name="fileName">Name of the file.</param>
 			internal PersistentCounter(IsolatedStorageFile storage, string fileName) {
-				Contract.Requires<ArgumentNullException>(storage != null);
-				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(fileName));
+				Requires.NotNull(storage, "storage");
+				Requires.NotNullOrEmpty(fileName, "fileName");
 				this.FileName = fileName;
 
 				// Load the file into memory.

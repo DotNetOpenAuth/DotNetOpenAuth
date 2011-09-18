@@ -64,9 +64,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		[Pure]
 		internal MessageDescription Get(Type messageType, Version messageVersion) {
-			Contract.Requires<ArgumentNullException>(messageType != null);
-			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
-			Contract.Requires<ArgumentNullException>(messageVersion != null);
+			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			Requires.NotNull(messageVersion, "messageVersion");
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
 
 			MessageTypeAndVersion key = new MessageTypeAndVersion(messageType, messageVersion);
@@ -94,7 +93,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </returns>
 		[Pure]
 		internal MessageDescription Get(IMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
 			return this.Get(message.GetType(), message.Version);
 		}
@@ -106,7 +105,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>The dictionary.</returns>
 		[Pure]
 		internal MessageDictionary GetAccessor(IMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			return this.GetAccessor(message, false);
 		}
 
@@ -118,7 +117,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>The dictionary.</returns>
 		[Pure]
 		internal MessageDictionary GetAccessor(IMessage message, bool getOriginalValues) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			return this.Get(message).GetDictionary(message, getOriginalValues);
 		}
 
@@ -143,8 +142,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			/// <param name="messageType">Type of the message.</param>
 			/// <param name="messageVersion">The message version.</param>
 			internal MessageTypeAndVersion(Type messageType, Version messageVersion) {
-				Contract.Requires<ArgumentNullException>(messageType != null);
-				Contract.Requires<ArgumentNullException>(messageVersion != null);
+				Requires.NotNull(messageType, "messageType");
+				Requires.NotNull(messageVersion, "messageVersion");
 
 				this.type = messageType;
 				this.version = messageVersion;

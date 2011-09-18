@@ -113,8 +113,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
-			Contract.Requires<InvalidOperationException>(((IChannelBindingElement)this).Channel != null);
+			Requires.NotNull(message, "message");
+			Requires.ValidState(((IChannelBindingElement)this).Channel != null);
 			throw new NotImplementedException();
 		}
 
@@ -136,8 +136,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
-			Contract.Requires<InvalidOperationException>(((IChannelBindingElement)this).Channel != null);
+			Requires.NotNull(message, "message");
+			Requires.ValidState(((IChannelBindingElement)this).Channel != null);
 			throw new NotImplementedException();
 		}
 

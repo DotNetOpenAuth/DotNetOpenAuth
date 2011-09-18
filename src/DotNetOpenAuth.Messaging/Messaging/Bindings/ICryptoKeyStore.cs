@@ -72,8 +72,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// The cryptographic key, or <c>null</c> if no matching key was found.
 		/// </returns>
 		CryptoKey ICryptoKeyStore.GetKey(string bucket, string handle) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			Requires.NotNullOrEmpty(bucket, "bucket");
+			Requires.NotNullOrEmpty(handle, "handle");
 			throw new NotImplementedException();
 		}
 
@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// A sequence of handles and keys, ordered by descending <see cref="CryptoKey.ExpiresUtc"/>.
 		/// </returns>
 		IEnumerable<KeyValuePair<string, CryptoKey>> ICryptoKeyStore.GetKeys(string bucket) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
+			Requires.NotNullOrEmpty(bucket, "bucket");
 			Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, CryptoKey>>>() != null);
 			throw new NotImplementedException();
 		}
@@ -98,9 +98,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="key">The key to store.</param>
 		/// <exception cref="CryptoKeyCollisionException">Thrown in the event of a conflict with an existing key in the same bucket and with the same handle.</exception>
 		void ICryptoKeyStore.StoreKey(string bucket, string handle, CryptoKey key) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
-			Contract.Requires<ArgumentNullException>(key != null);
+			Requires.NotNullOrEmpty(bucket, "bucket");
+			Requires.NotNullOrEmpty(handle, "handle");
+			Requires.NotNull(key, "key");
 			throw new NotImplementedException();
 		}
 
@@ -110,8 +110,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="bucket">The bucket name.  Case sensitive.</param>
 		/// <param name="handle">The key handle.  Case sensitive.</param>
 		void ICryptoKeyStore.RemoveKey(string bucket, string handle) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			Requires.NotNullOrEmpty(bucket, "bucket");
+			Requires.NotNullOrEmpty(handle, "handle");
 			throw new NotImplementedException();
 		}
 	}

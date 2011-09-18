@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// The <paramref name="value"/> in string form, ready for message transport.
 		/// </returns>
 		string IMessagePartEncoder.Encode(object value) {
-			Contract.Requires<ArgumentNullException>(value != null);
+			Requires.NotNull(value, "value");
 			throw new NotImplementedException();
 		}
 
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </returns>
 		/// <exception cref="FormatException">Thrown when the string value given cannot be decoded into the required object type.</exception>
 		object IMessagePartEncoder.Decode(string value) {
-			Contract.Requires<ArgumentNullException>(value != null);
+			Requires.NotNull(value, "value");
 			throw new NotImplementedException();
 		}
 

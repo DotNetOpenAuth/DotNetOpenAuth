@@ -129,4 +129,10 @@
   <data name="EmbeddedResourceUrlProviderRequired" xml:space="preserve">
     <value>The current IHttpHandler is not one of types: {0}.  An embedded resource URL provider must be set in your .config file.</value>
   </data>
+  <data name="EmptyStringNotAllowed" xml:space="preserve">
+    <value>The empty string is not allowed.</value>
+  </data>
+  <data name="InvalidArgument" xml:space="preserve">
+    <value>The argument has an unexpected value.</value>
+  </data>
 </root>

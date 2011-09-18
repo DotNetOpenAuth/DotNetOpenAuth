@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected internal UriStyleMessageFormatter(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(cryptoKeyStore, bucket, signed, encrypted, compressed, minimumAge, maximumAge, decodeOnceOnly) {
-			Contract.Requires<ArgumentException>((cryptoKeyStore != null && !String.IsNullOrEmpty(bucket)) || (!signed && !encrypted));
+			Requires.True((cryptoKeyStore != null && !String.IsNullOrEmpty(bucket)) || (!signed && !encrypted), null);
 		}
 
 		/// <summary>

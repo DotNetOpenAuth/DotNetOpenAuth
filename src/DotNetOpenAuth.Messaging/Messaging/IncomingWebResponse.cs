@@ -39,8 +39,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestUri">The original request URI.</param>
 		/// <param name="response">The response to initialize from.  The network stream is used by this class directly.</param>
 		protected IncomingWebResponse(Uri requestUri, HttpWebResponse response) {
-			Contract.Requires<ArgumentNullException>(requestUri != null);
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(requestUri, "requestUri");
+			Requires.NotNull(response, "response");
 
 			this.RequestUri = requestUri;
 			if (!string.IsNullOrEmpty(response.ContentType)) {
@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="contentType">Type of the content.</param>
 		/// <param name="contentEncoding">The content encoding.</param>
 		protected IncomingWebResponse(Uri requestUri, Uri responseUri, WebHeaderCollection headers, HttpStatusCode statusCode, string contentType, string contentEncoding) {
-			Contract.Requires<ArgumentNullException>(requestUri != null);
+			Requires.NotNull(requestUri, "requestUri");
 
 			this.RequestUri = requestUri;
 			this.Status = statusCode;

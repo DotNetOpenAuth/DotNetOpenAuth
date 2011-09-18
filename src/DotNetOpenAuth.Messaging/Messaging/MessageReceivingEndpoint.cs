@@ -22,9 +22,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="method">The HTTP method(s) allowed.</param>
 		public MessageReceivingEndpoint(string locationUri, HttpDeliveryMethods method)
 			: this(new Uri(locationUri), method) {
-			Contract.Requires<ArgumentNullException>(locationUri != null);
-			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None);
-			Contract.Requires<ArgumentOutOfRangeException>((method & HttpDeliveryMethods.HttpVerbMask) != 0, MessagingStrings.GetOrPostFlagsRequired);
+			Requires.NotNull(locationUri, "locationUri");
+			Requires.InRange(method != HttpDeliveryMethods.None, "method");
+			Requires.InRange((method & HttpDeliveryMethods.HttpVerbMask) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
 		}
 
 		/// <summary>
@@ -33,9 +33,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="location">The URL of this endpoint.</param>
 		/// <param name="method">The HTTP method(s) allowed.</param>
 		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
-			Contract.Requires<ArgumentNullException>(location != null);
-			Contract.Requires<ArgumentOutOfRangeException>(method != HttpDeliveryMethods.None);
-			Contract.Requires<ArgumentOutOfRangeException>((method & HttpDeliveryMethods.HttpVerbMask) != 0, MessagingStrings.GetOrPostFlagsRequired);
+			Requires.NotNull(location, "location");
+			Requires.InRange(method != HttpDeliveryMethods.None, "method");
+			Requires.InRange((method & HttpDeliveryMethods.HttpVerbMask) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
 
 			this.Location = location;
 			this.AllowedMethods = method;

@@ -36,8 +36,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
 		/// <param name="toValue">The mapping function that converts a string to some custom value.</param>
 		internal ValueMapping(Func<object, string> toString, Func<object, string> toOriginalString, Func<string, object> toValue) {
-			Contract.Requires<ArgumentNullException>(toString != null);
-			Contract.Requires<ArgumentNullException>(toValue != null);
+			Requires.NotNull(toString, "toString");
+			Requires.NotNull(toValue, "toValue");
 
 			this.ValueToString = toString;
 			this.ValueToOriginalString = toOriginalString ?? toString;
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="encoder">The encoder.</param>
 		internal ValueMapping(IMessagePartEncoder encoder) {
-			Contract.Requires<ArgumentNullException>(encoder != null);
+			Requires.NotNull(encoder, "encoder");
 			var nullEncoder = encoder as IMessagePartNullEncoder;
 			string nullString = nullEncoder != null ? nullEncoder.EncodedNullValue : null;
 

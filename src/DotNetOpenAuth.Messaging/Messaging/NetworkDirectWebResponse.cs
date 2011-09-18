@@ -42,8 +42,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response.</param>
 		internal NetworkDirectWebResponse(Uri requestUri, HttpWebResponse response)
 			: base(requestUri, response) {
-			Contract.Requires<ArgumentNullException>(requestUri != null);
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(requestUri, "requestUri");
+			Requires.NotNull(response, "response");
 			this.httpWebResponse = response;
 			this.responseStream = response.GetResponseStream();
 		}

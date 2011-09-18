@@ -41,8 +41,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageTypes">The message types that this factory may instantiate.</param>
 		public virtual void AddMessageTypes(IEnumerable<MessageDescription> messageTypes) {
-			Contract.Requires<ArgumentNullException>(messageTypes != null);
-			Contract.Requires<ArgumentException>(messageTypes.All(msg => msg != null));
+			Requires.NotNull(messageTypes, "messageTypes");
+			Requires.True(messageTypes.All(msg => msg != null), "messageTypes");
 
 			var unsupportedMessageTypes = new List<MessageDescription>(0);
 			foreach (MessageDescription messageDescription in messageTypes) {
@@ -139,8 +139,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">May be thrown if the incoming data is ambiguous.</exception>
 		protected virtual MessageDescription GetMessageDescription(MessageReceivingEndpoint recipient, IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(recipient != null);
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(recipient, "recipient");
+			Requires.NotNull(fields, "fields");
 
 			var matches = this.requestMessageTypes.Keys
 				.Where(message => message.CheckMessagePartsPassBasicValidation(fields))
@@ -172,8 +172,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">May be thrown if the incoming data is ambiguous.</exception>
 		protected virtual MessageDescription GetMessageDescription(IDirectedProtocolMessage request, IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(fields, "fields");
 
 			var matches = (from responseMessageType in this.responseMessageTypes
 			               let message = responseMessageType.Key
@@ -206,8 +206,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="recipient">The recipient.</param>
 		/// <returns>The instantiated message.  Never null.</returns>
 		protected virtual IDirectedProtocolMessage InstantiateAsRequest(MessageDescription messageDescription, MessageReceivingEndpoint recipient) {
-			Contract.Requires<ArgumentNullException>(messageDescription != null);
-			Contract.Requires<ArgumentNullException>(recipient != null);
+			Requires.NotNull(messageDescription, "messageDescription");
+			Requires.NotNull(recipient, "recipient");
 			Contract.Ensures(Contract.Result<IDirectedProtocolMessage>() != null);
 
 			ConstructorInfo ctor = this.requestMessageTypes[messageDescription];
@@ -221,8 +221,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request that resulted in this response.</param>
 		/// <returns>The instantiated message.  Never null.</returns>
 		protected virtual IDirectResponseProtocolMessage InstantiateAsResponse(MessageDescription messageDescription, IDirectedProtocolMessage request) {
-			Contract.Requires<ArgumentNullException>(messageDescription != null);
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(messageDescription, "messageDescription");
+			Requires.NotNull(request, "request");
 			Contract.Ensures(Contract.Result<IDirectResponseProtocolMessage>() != null);
 
 			Type requestType = request.GetType();
@@ -247,9 +247,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="derivedType">The concrete class that implements the <paramref name="assignableType"/>.</param>
 		/// <returns>The distance between the two types.  0 if the types are equivalent, 1 if the type immediately derives from or implements the base type, or progressively higher integers.</returns>
 		private static int GetDerivationDistance(Type assignableType, Type derivedType) {
-			Contract.Requires<ArgumentNullException>(assignableType != null);
-			Contract.Requires<ArgumentNullException>(derivedType != null);
-			Contract.Requires<ArgumentException>(assignableType.IsAssignableFrom(derivedType));
+			Requires.NotNull(assignableType, "assignableType");
+			Requires.NotNull(derivedType, "derivedType");
+			Requires.True(assignableType.IsAssignableFrom(derivedType), "assignableType");
 
 			// If this is the two types are equivalent...
 			if (derivedType.IsAssignableFrom(assignableType))
@@ -275,8 +275,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="comparison">The string comparison method to use.</param>
 		/// <returns>A non-negative integer no greater than the count of elements in the smallest collection.</returns>
 		private static int CountInCommon(ICollection<string> collection1, ICollection<string> collection2, StringComparison comparison = StringComparison.Ordinal) {
-			Contract.Requires<ArgumentNullException>(collection1 != null);
-			Contract.Requires<ArgumentNullException>(collection2 != null);
+			Requires.NotNull(collection1, "collection1");
+			Requires.NotNull(collection2, "collection2");
 			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= Math.Min(collection1.Count, collection2.Count));
 
 			return collection1.Count(value1 => collection2.Any(value2 => string.Equals(value1, value2, comparison)));
@@ -289,8 +289,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestType">Type of the request message.</param>
 		/// <returns>A sequence of matching constructors.</returns>
 		private IEnumerable<ConstructorInfo> FindMatchingResponseConstructors(MessageDescription messageDescription, Type requestType) {
-			Contract.Requires<ArgumentNullException>(messageDescription != null);
-			Contract.Requires<ArgumentNullException>(requestType != null);
+			Requires.NotNull(messageDescription, "messageDescription");
+			Requires.NotNull(requestType, "requestType");
 
 			return this.responseMessageTypes[messageDescription].Where(pair => pair.Key.IsAssignableFrom(requestType)).Select(pair => pair.Value);
 		}

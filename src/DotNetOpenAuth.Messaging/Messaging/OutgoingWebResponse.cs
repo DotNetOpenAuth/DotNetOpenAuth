@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The <see cref="HttpWebResponse"/> to clone.</param>
 		/// <param name="maximumBytesToRead">The maximum bytes to read from the response stream.</param>
 		protected internal OutgoingWebResponse(HttpWebResponse response, int maximumBytesToRead) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 
 			this.Status = response.StatusCode;
 			this.Headers = response.Headers;
@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
 		public virtual void Send() {
-			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 			this.Send(HttpContext.Current);
 		}
@@ -154,7 +154,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires a current HttpContext.
 		/// </remarks>
 		public virtual void Respond() {
-			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 			this.Respond(HttpContext.Current);
 		}
@@ -167,7 +167,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="context">The context of the HTTP request whose response should be set.
 		/// Typically this is <see cref="HttpContext.Current"/>.</param>
 		public virtual void Respond(HttpContext context) {
-			Contract.Requires<ArgumentNullException>(context != null);
+			Requires.NotNull(context, "context");
 
 			this.Respond(context, false);
 		}
@@ -177,7 +177,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The response to set to this message.</param>
 		public virtual void Send(HttpListenerResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 
 			response.StatusCode = (int)this.Status;
 			MessagingUtilities.ApplyHeadersToResponse(this.Headers, response);
@@ -203,7 +203,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// rather than cause a redirect.
 		/// </remarks>
 		internal Uri GetDirectUriRequest(Channel channel) {
-			Contract.Requires<ArgumentNullException>(channel != null);
+			Requires.NotNull(channel, "channel");
 
 			var message = this.OriginalMessage as IDirectedProtocolMessage;
 			if (message == null) {
@@ -255,7 +255,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <see cref="HttpApplication.CompleteRequest"/> rather than <see cref="HttpResponse.End"/>
 		/// to avoid a <see cref="ThreadAbortException"/>.</param>
 		protected internal virtual void Respond(HttpContext context, bool endRequest) {
-			Contract.Requires<ArgumentNullException>(context != null);
+			Requires.NotNull(context, "context");
 
 			context.Response.Clear();
 			context.Response.StatusCode = (int)this.Status;

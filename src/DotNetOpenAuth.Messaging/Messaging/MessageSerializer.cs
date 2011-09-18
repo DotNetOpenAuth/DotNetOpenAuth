@@ -33,8 +33,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// that will be serialized and deserialized using this class.</param>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		private MessageSerializer(Type messageType) {
-			Contract.Requires<ArgumentNullException>(messageType != null);
-			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
+			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
 			Contract.Ensures(this.messageType != null);
 			this.messageType = messageType;
 		}
@@ -46,8 +45,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A message serializer for the given message type.</returns>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static MessageSerializer Get(Type messageType) {
-			Contract.Requires<ArgumentNullException>(messageType != null);
-			Contract.Requires<ArgumentException>(typeof(IMessage).IsAssignableFrom(messageType));
+			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
 
 			return new MessageSerializer(messageType);
 		}
@@ -58,8 +56,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message dictionary to fill with the JSON-deserialized data.</param>
 		/// <param name="reader">The JSON reader.</param>
 		internal static void DeserializeJsonAsFlatDictionary(IDictionary<string, string> messageDictionary, XmlDictionaryReader reader) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
-			Contract.Requires<ArgumentNullException>(reader != null);
+			Requires.NotNull(messageDictionary, "messageDictionary");
+			Requires.NotNull(reader, "reader");
 
 			reader.Read(); // one extra one to skip the root node.
 			while (reader.Read()) {
@@ -86,8 +84,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		[Pure]
 		internal static void Serialize(MessageDictionary messageDictionary, XmlDictionaryWriter writer) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
-			Contract.Requires<ArgumentNullException>(writer != null);
+			Requires.NotNull(messageDictionary, "messageDictionary");
+			Requires.NotNull(writer, "writer");
 
 			writer.WriteStartElement("root");
 			writer.WriteAttributeString("type", "object");
@@ -132,8 +130,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// to create the <see cref="XmlDictionaryReader"/> instance capable of reading JSON.
 		/// </remarks>
 		internal static void Deserialize(MessageDictionary messageDictionary, XmlDictionaryReader reader) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
-			Contract.Requires<ArgumentNullException>(reader != null);
+			Requires.NotNull(messageDictionary, "messageDictionary");
+			Requires.NotNull(reader, "reader");
 
 			DeserializeJsonAsFlatDictionary(messageDictionary, reader);
 
@@ -150,7 +148,7 @@ namespace DotNetOpenAuth.Messaging {
 		[Pure]
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Parallel design with Deserialize method.")]
 		internal IDictionary<string, string> Serialize(MessageDictionary messageDictionary) {
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Requires.NotNull(messageDictionary, "messageDictionary");
 			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 
 			// Rather than hand back the whole message dictionary (which 
@@ -181,8 +179,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message to deserialize into.</param>
 		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
 		internal void Deserialize(IDictionary<string, string> fields, MessageDictionary messageDictionary) {
-			Contract.Requires<ArgumentNullException>(fields != null);
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Requires.NotNull(fields, "fields");
+			Requires.NotNull(messageDictionary, "messageDictionary");
 
 			var messageDescription = messageDictionary.Description;
 
