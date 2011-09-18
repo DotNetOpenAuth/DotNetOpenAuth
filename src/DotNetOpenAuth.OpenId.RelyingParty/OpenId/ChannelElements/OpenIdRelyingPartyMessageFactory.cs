@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.OpenId.ChannelElements {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OpenIdRelyingPartyMessageFactory.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -6,6 +12,9 @@
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// Message factory for OpenID Relying Parties.
+	/// </summary>
 	internal class OpenIdRelyingPartyMessageFactory : IMessageFactory {
 		/// <summary>
 		/// Analyzes an incoming request message payload to discover what kind of

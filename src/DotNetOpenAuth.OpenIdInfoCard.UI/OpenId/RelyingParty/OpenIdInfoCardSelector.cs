@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdSelector.cs" company="Andrew Arnott">
+// <copyright file="OpenIdInfoCardSelector.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -22,15 +22,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.ComponentModel;
+	using DotNetOpenAuth.InfoCard;
 	////using DotNetOpenAuth.InfoCard;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.InfoCard;
 
 	/// <summary>
 	/// An ASP.NET control that provides a user-friendly way of logging into a web site using OpenID.
 	/// </summary>
 	[ToolboxData("<{0}:OpenIdSelector runat=\"server\"></{0}:OpenIdSelector>")]
 	public class OpenIdInfoCardSelector : OpenIdSelector {
+		/// <summary>
+		/// The InfoCard selector button.
+		/// </summary>
 		private SelectorInfoCardButton selectorButton;
 
 		/// <summary>

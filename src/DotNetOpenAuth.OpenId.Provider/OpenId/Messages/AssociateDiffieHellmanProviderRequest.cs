@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// An OpenID direct request from Relying Party to Provider to initiate an association that uses Diffie-Hellman encryption.
+	/// </summary>
 	internal class AssociateDiffieHellmanProviderRequest : AssociateDiffieHellmanRequest, IAssociateRequestProvider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateDiffieHellmanProviderRequest"/> class.

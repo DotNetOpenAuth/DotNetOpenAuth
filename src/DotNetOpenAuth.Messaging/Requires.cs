@@ -48,6 +48,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Validates that an array is not null or empty.
 		/// </summary>
+		/// <typeparam name="T">The type of the elements in the sequence.</typeparam>
 		/// <param name="value">The value.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
 		[Pure, ContractArgumentValidator, DebuggerStepThrough]

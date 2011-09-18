@@ -12,6 +12,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 
+	/// <summary>
+	/// Represents an association request received by the OpenID Provider that is sent using HTTPS and 
+	/// otherwise communicates the shared secret in plain text.
+	/// </summary>
 	internal class AssociateUnencryptedProviderRequest : AssociateUnencryptedRequest, IAssociateRequestProvider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociateUnencryptedProviderRequest"/> class.

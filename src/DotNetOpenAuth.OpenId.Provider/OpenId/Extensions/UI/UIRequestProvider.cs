@@ -13,8 +13,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
-	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.Xrds;
 
 	/// <summary>
 	/// OpenID User Interface extension 1.0 request message.

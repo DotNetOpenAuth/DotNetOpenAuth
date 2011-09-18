@@ -13,10 +13,14 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 
+	/// <summary>
+	/// OpenID Provider tools for receiving association requests.
+	/// </summary>
 	internal static class AssociateRequestProviderTools {
 		/// <summary>
 		/// Creates a Provider's response to an incoming association request.
 		/// </summary>
+		/// <param name="requestMessage">The request message.</param>
 		/// <param name="associationStore">The association store.</param>
 		/// <param name="securitySettings">The security settings on the Provider.</param>
 		/// <returns>
@@ -57,8 +61,11 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// association type is not supported by this Provider, and offers
 		/// an alternative association type, if possible.
 		/// </summary>
+		/// <param name="requestMessage">The request message.</param>
 		/// <param name="securitySettings">The security settings that apply to this Provider.</param>
-		/// <returns>The response to send to the Relying Party.</returns>
+		/// <returns>
+		/// The response to send to the Relying Party.
+		/// </returns>
 		private static AssociateUnsuccessfulResponse CreateUnsuccessfulResponse(IAssociateRequestProvider requestMessage, ProviderSecuritySettings securitySettings) {
 			Requires.NotNull(requestMessage, "requestMessage");
 			Requires.NotNull(securitySettings, "securitySettings");

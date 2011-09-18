@@ -18,8 +18,20 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </summary>
 	[ContractClass(typeof(IAssociateSuccessfulResponseProviderContract))]
 	internal interface IAssociateSuccessfulResponseProvider : IProtocolMessage {
+		/// <summary>
+		/// Gets or sets the expires in.
+		/// </summary>
+		/// <value>
+		/// The expires in.
+		/// </value>
 		long ExpiresIn { get; set; }
 
+		/// <summary>
+		/// Gets or sets the association handle.
+		/// </summary>
+		/// <value>
+		/// The association handle.
+		/// </value>
 		string AssociationHandle { get; set; }
 
 		/// <summary>

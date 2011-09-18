@@ -10,7 +10,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// The openid.mode=associate message as it is received at the OpenID Provider.
 	/// </summary>
-	internal interface IAssociateRequestProvider : IDirectedProtocolMessage{
+	internal interface IAssociateRequestProvider : IDirectedProtocolMessage {
 		/// <summary>
 		/// Creates a Provider's response to an incoming association request.
 		/// </summary>

@@ -29,11 +29,23 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			: base(responseVersion, originatingRequest) {
 		}
 
+		/// <summary>
+		/// Gets or sets the lifetime, in seconds, of this association. The Relying Party MUST NOT use the association after this time has passed.
+		/// </summary>
+		/// <value>
+		/// An integer, represented in base 10 ASCII.
+		/// </value>
 		long IAssociateSuccessfulResponseProvider.ExpiresIn {
 			get { return this.ExpiresIn; }
 			set { this.ExpiresIn = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the association handle is used as a key to refer to this association in subsequent messages.
+		/// </summary>
+		/// <value>
+		/// A string 255 characters or less in length. It MUST consist only of ASCII characters in the range 33-126 inclusive (printable non-whitespace characters).
+		/// </value>
 		string IAssociateSuccessfulResponseProvider.AssociationHandle {
 			get { return this.AssociationHandle; }
 			set { this.AssociationHandle = value; }
