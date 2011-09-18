@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="query">The parameters in the OpenID message.</param>
 		/// <returns>The newly created instance of <see cref="ExtensionArgumentsManager"/>.</returns>
 		public static ExtensionArgumentsManager CreateIncomingExtensions(IDictionary<string, string> query) {
-			Contract.Requires<ArgumentNullException>(query != null);
+			Requires.NotNull(query, "query");
 			var mgr = new ExtensionArgumentsManager();
 			mgr.protocol = Protocol.Detect(query);
 			mgr.isReadMode = true;
@@ -134,9 +134,9 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="extensionTypeUri">The extension type URI.</param>
 		/// <param name="arguments">The arguments for this extension to add to the message.</param>
 		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
-			Contract.Requires<InvalidOperationException>(!this.ReadMode);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(extensionTypeUri));
-			Contract.Requires<ArgumentNullException>(arguments != null);
+			Requires.ValidState(!this.ReadMode);
+			Requires.NotNullOrEmpty(extensionTypeUri, "extensionTypeUri");
+			Requires.NotNull(arguments, "arguments");
 			if (arguments.Count == 0) {
 				return;
 			}
@@ -162,7 +162,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </param>
 		/// <returns>A dictionary of key=value pairs to add to the message to carry the extension.</returns>
 		internal IDictionary<string, string> GetArgumentsToSend(bool includeOpenIdPrefix) {
-			Contract.Requires<InvalidOperationException>(!this.ReadMode);
+			Requires.ValidState(!this.ReadMode);
 			Dictionary<string, string> args = new Dictionary<string, string>();
 			foreach (var typeUriAndExtension in this.extensions) {
 				string typeUri = typeUriAndExtension.Key;
@@ -195,8 +195,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// The fields included in the given extension, or null if the extension is not present.
 		/// </returns>
 		internal IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(extensionTypeUri));
-			Contract.Requires<InvalidOperationException>(this.ReadMode);
+			Requires.NotNullOrEmpty(extensionTypeUri, "extensionTypeUri");
+			Requires.ValidState(this.ReadMode);
 
 			IDictionary<string, string> extensionArgs;
 			this.extensions.TryGetValue(extensionTypeUri, out extensionArgs);

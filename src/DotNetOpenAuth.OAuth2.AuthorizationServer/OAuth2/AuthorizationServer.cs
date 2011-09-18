@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		public AuthorizationServer(IAuthorizationServer authorizationServer) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null);
+			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.OAuthChannel = new OAuth2AuthorizationServerChannel(authorizationServer);
 		}
 
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="scopes">The scope of access the client should be granted.  If <c>null</c>, all scopes in the original request will be granted.</param>
 		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
 		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string userName, IEnumerable<string> scopes = null, Uri callback = null) {
-			Contract.Requires<ArgumentNullException>(authorizationRequest != null);
+			Requires.NotNull(authorizationRequest, "authorizationRequest");
 
 			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, userName, scopes, callback);
 			this.Channel.Respond(response);
@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationRequest">The authorization request to disapprove.</param>
 		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
 		public void RejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
-			Contract.Requires<ArgumentNullException>(authorizationRequest != null);
+			Requires.NotNull(authorizationRequest, "authorizationRequest");
 
 			var response = this.PrepareRejectAuthorizationRequest(authorizationRequest, callback);
 			this.Channel.Respond(response);
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
 		/// </remarks>
 		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response) {
-			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
+			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<IDirectResponseProtocolMessage>(out response) != null));
 
 			var request = this.ReadAccessTokenRequest(httpRequestInfo);
@@ -158,7 +158,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
 		/// <returns>The authorization response message to send to the Client.</returns>
 		public EndUserAuthorizationFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
-			Contract.Requires<ArgumentNullException>(authorizationRequest != null);
+			Requires.NotNull(authorizationRequest, "authorizationRequest");
 			Contract.Ensures(Contract.Result<EndUserAuthorizationFailedResponse>() != null);
 
 			if (callback == null) {
@@ -178,8 +178,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
 		/// <returns>The authorization response message to send to the Client.</returns>
 		public EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string userName, IEnumerable<string> scopes = null, Uri callback = null) {
-			Contract.Requires<ArgumentNullException>(authorizationRequest != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(userName));
+			Requires.NotNull(authorizationRequest, "authorizationRequest");
+			Requires.NotNullOrEmpty(userName, "userName");
 			Contract.Ensures(Contract.Result<EndUserAuthorizationSuccessResponseBase>() != null);
 
 			if (callback == null) {
@@ -218,7 +218,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
 		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
 			var response = new AccessTokenSuccessResponse(request) {
@@ -236,7 +236,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The URL to redirect to.  Never <c>null</c>.</returns>
 		/// <exception cref="ProtocolException">Thrown if no callback URL could be determined.</exception>
 		protected Uri GetCallback(EndUserAuthorizationRequest authorizationRequest) {
-			Contract.Requires<ArgumentNullException>(authorizationRequest != null);
+			Requires.NotNull(authorizationRequest, "authorizationRequest");
 			Contract.Ensures(Contract.Result<Uri>() != null);
 
 			var client = this.AuthorizationServerServices.GetClientOrThrow(authorizationRequest.ClientIdentifier);

@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="copyFrom">The authentication response to copy from.</param>
 		internal PositiveAuthenticationResponseSnapshot(IAuthenticationResponse copyFrom) {
-			Contract.Requires<ArgumentNullException>(copyFrom != null);
+			Requires.NotNull(copyFrom, "copyFrom");
 
 			this.ClaimedIdentifier = copyFrom.ClaimedIdentifier;
 			this.FriendlyIdentifierForDisplay = copyFrom.FriendlyIdentifierForDisplay;

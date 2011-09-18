@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="keyStore">The key store.</param>
 		internal CryptoKeyStoreAsRelyingPartyAssociationStore(ICryptoKeyStore keyStore) {
-			Contract.Requires<ArgumentNullException>(keyStore != null);
+			Requires.NotNull(keyStore, "keyStore");
 			Contract.Ensures(this.keyStore == keyStore);
 			this.keyStore = keyStore;
 		}

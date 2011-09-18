@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="baseIdentifier">The base URI on which to append the anonymous part.</param>
 		protected PrivatePersonalIdentifierProviderBase(Uri baseIdentifier) {
-			Contract.Requires<ArgumentNullException>(baseIdentifier != null);
+			Requires.NotNull(baseIdentifier, "baseIdentifier");
 
 			this.Hasher = HashAlgorithm.Create(HashAlgorithmName);
 			this.Encoder = Encoding.UTF8;
@@ -102,7 +102,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+				Requires.InRange(value > 0, "value");
 				this.newSaltLength = value;
 			}
 		}
@@ -157,8 +157,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>
 		/// 	<c>true</c> if the given identifier is the valid, unique identifier for some uesr (and NOT a PPID); otherwise, <c>false</c>.
 		/// </returns>
-		public virtual bool IsUserLocalIdentifier(Identifier identifier)
-		{
+		public virtual bool IsUserLocalIdentifier(Identifier identifier) {
 			return !identifier.ToString().StartsWith(this.BaseIdentifier.AbsoluteUri, StringComparison.Ordinal);
 		}
 
@@ -181,7 +180,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>The full PPID Identifier.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "NOT equivalent overload.  The recommended one breaks on relative URIs.")]
 		protected virtual Uri AppendIdentifiers(string uriHash) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uriHash));
+			Requires.NotNullOrEmpty(uriHash, "uriHash");
 
 			if (string.IsNullOrEmpty(this.BaseIdentifier.Query)) {
 				// The uriHash will appear on the path itself.

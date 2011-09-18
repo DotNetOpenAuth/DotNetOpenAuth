@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="reader">The encrypted token XML reader.</param>
 		/// <returns>A byte array of the contents of the encrypted token</returns>
 		internal byte[] DecryptToken(XmlReader reader) {
-			Contract.Requires<ArgumentNullException>(reader != null);
+			Requires.NotNull(reader, "reader");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] securityTokenData;

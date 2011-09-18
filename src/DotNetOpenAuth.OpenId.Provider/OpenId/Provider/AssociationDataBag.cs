@@ -86,8 +86,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// A formatter for serialization.
 		/// </returns>
 		internal static IDataBagFormatter<AssociationDataBag> CreateFormatter(ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan? minimumAge = null) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(bucket));
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
+			Requires.NotNullOrEmpty(bucket, "bucket");
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AssociationDataBag>>() != null);
 			return new BinaryDataBagFormatter<AssociationDataBag>(cryptoKeyStore, bucket, signed: true, encrypted: true, minimumAge: minimumAge);
 		}

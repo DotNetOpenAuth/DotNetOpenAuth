@@ -49,8 +49,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="servicePriority">The service priority.</param>
 		/// <param name="uriPriority">The URI priority.</param>
 		private IdentifierDiscoveryResult(ProviderEndpointDescription providerEndpoint, Identifier claimedIdentifier, Identifier userSuppliedIdentifier, Identifier providerLocalIdentifier, int? servicePriority, int? uriPriority) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
+			Requires.NotNull(claimedIdentifier, "claimedIdentifier");
 			this.ProviderEndpoint = providerEndpoint.Uri;
 			this.Capabilities = new ReadOnlyCollection<string>(providerEndpoint.Capabilities);
 			this.Version = providerEndpoint.Version;
@@ -366,7 +366,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the extension is supported by this endpoint; otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsExtensionSupported(IOpenIdMessageExtension extension) {
-			Contract.Requires<ArgumentNullException>(extension != null);
+			Requires.NotNull(extension, "extension");
 
 			// Consider the primary case.
 			if (this.IsTypeUriPresent(extension.TypeUri)) {
@@ -392,7 +392,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uriPriority">The URI priority.</param>
 		/// <returns>The created <see cref="IdentifierDiscoveryResult"/> instance</returns>
 		internal static IdentifierDiscoveryResult CreateForProviderIdentifier(Identifier providerIdentifier, ProviderEndpointDescription providerEndpoint, int? servicePriority, int? uriPriority) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
 
 			Protocol protocol = Protocol.Lookup(providerEndpoint.Version);
 
@@ -440,7 +440,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the type URI is present on the specified provider endpoint; otherwise, <c>false</c>.
 		/// </returns>
 		internal bool IsTypeUriPresent(string typeUri) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
+			Requires.NotNullOrEmpty(typeUri, "typeUri");
 			return this.Capabilities.Contains(typeUri);
 		}
 

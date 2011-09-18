@@ -35,10 +35,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			securitySettings,
 			messageFactory ?? new OAuthConsumerMessageFactory(),
 			InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
-			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
+			Requires.NotNull(tokenManager, "tokenManager");
+			Requires.NotNull(securitySettings, "securitySettings");
+			Requires.NotNull(signingBindingElement, "signingBindingElement");
+			Requires.True(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 		}
 
 		/// <summary>

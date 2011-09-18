@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="outgoingMessageFilter">The outgoing message filter.  May be null.</param>
 		internal CoordinatingChannel(Channel wrappedChannel, Action<IProtocolMessage> incomingMessageFilter, Action<IProtocolMessage> outgoingMessageFilter)
 			: base(GetMessageFactory(wrappedChannel), wrappedChannel.BindingElements.ToArray()) {
-			Contract.Requires<ArgumentNullException>(wrappedChannel != null);
+			Requires.NotNull(wrappedChannel, "wrappedChannel");
 
 			this.wrappedChannel = wrappedChannel;
 			this.incomingMessageFilter = incomingMessageFilter;
@@ -219,7 +219,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// channel since their message factory is not used.
 		/// </remarks>
 		protected virtual T CloneSerializedParts<T>(T message) where T : class, IProtocolMessage {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 
 			IProtocolMessage clonedMessage;
 			var messageAccessor = this.MessageDescriptions.GetAccessor(message);
@@ -250,7 +250,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		private static IMessageFactory GetMessageFactory(Channel channel) {
-			Contract.Requires<ArgumentNullException>(channel != null);
+			Requires.NotNull(channel, "channel");
 
 			return channel.MessageFactoryTestHook;
 		}

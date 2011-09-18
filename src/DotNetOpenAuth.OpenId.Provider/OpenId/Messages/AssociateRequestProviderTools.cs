@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 
@@ -29,9 +29,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Failed association response messages will derive from <see cref="AssociateUnsuccessfulResponse"/>.</para>
 		/// </remarks>
 		internal static IProtocolMessage CreateResponse(IAssociateRequestProvider requestMessage, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(requestMessage != null, "requestMessage");
-			Contract.Requires<ArgumentNullException>(associationStore != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(requestMessage, "requestMessage");
+			Requires.NotNull(associationStore, "associationStore");
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			AssociateRequest request = (AssociateRequest)requestMessage;
 			IProtocolMessage response;
@@ -60,8 +60,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="securitySettings">The security settings that apply to this Provider.</param>
 		/// <returns>The response to send to the Relying Party.</returns>
 		private static AssociateUnsuccessfulResponse CreateUnsuccessfulResponse(IAssociateRequestProvider requestMessage, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(requestMessage != null, "requestMessage");
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(requestMessage, "requestMessage");
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			var unsuccessfulResponse = new AssociateUnsuccessfulResponse(requestMessage.Version, (AssociateRequest)requestMessage);
 

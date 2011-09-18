@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings to apply.</param>
 		internal OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
 			: this(cryptoKeyStore, nonceStore, new OpenIdRelyingPartyMessageFactory(), securitySettings, false) {
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(securitySettings, "securitySettings");
 		}
 
 		/// <summary>
@@ -40,9 +40,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
 		private OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
 			base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying)) {
-			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			Contract.Requires<ArgumentException>(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
+			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
+			Requires.NotNull(securitySettings, "securitySettings");
+			Requires.True(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
 		}
 
 		/// <summary>
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
 		private static IChannelBindingElement[] InitializeBindingElements(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings, bool nonVerifying) {
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			SigningBindingElement signingElement;
 			signingElement = nonVerifying ? null : new RelyingPartySigningBindingElement(new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore ?? new MemoryCryptoKeyStore()));

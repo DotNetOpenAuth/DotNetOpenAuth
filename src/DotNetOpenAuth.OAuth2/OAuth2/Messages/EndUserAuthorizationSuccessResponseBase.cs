@@ -26,8 +26,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="version">The protocol version.</param>
 		internal EndUserAuthorizationSuccessResponseBase(Uri clientCallback, Version version)
 			: base(version, MessageTransport.Indirect, clientCallback) {
-			Contract.Requires<ArgumentNullException>(version != null);
-			Contract.Requires<ArgumentNullException>(clientCallback != null);
+			Requires.NotNull(version, "version");
+			Requires.NotNull(clientCallback, "clientCallback");
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 		}
 
@@ -38,8 +38,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The authorization request from the user agent on behalf of the client.</param>
 		internal EndUserAuthorizationSuccessResponseBase(Uri clientCallback, EndUserAuthorizationRequest request)
 			: base(request, clientCallback) {
-			Contract.Requires<ArgumentNullException>(clientCallback != null);
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(clientCallback, "clientCallback");
+			Requires.NotNull(request, "request");
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 			this.Scope.ResetContents(request.Scope);

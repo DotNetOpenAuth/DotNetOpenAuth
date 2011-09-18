@@ -18,8 +18,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="tokenXml">The token XML.</param>
 		/// <param name="exception">The exception.</param>
 		internal TokenProcessingErrorEventArgs(string tokenXml, Exception exception) {
-			Contract.Requires<ArgumentNullException>(tokenXml != null);
-			Contract.Requires<ArgumentNullException>(exception != null);
+			Requires.NotNull(tokenXml, "tokenXml");
+			Requires.NotNull(exception, "exception");
 			this.TokenXml = tokenXml;
 			this.Exception = exception;
 		}

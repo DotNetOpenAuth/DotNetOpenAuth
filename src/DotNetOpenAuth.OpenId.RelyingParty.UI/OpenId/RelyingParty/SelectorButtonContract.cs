@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="writer">The writer.</param>
 		protected internal override void RenderLeadingAttributes(HtmlTextWriter writer) {
-			Contract.Requires<ArgumentNullException>(writer != null);
+			Requires.NotNull(writer, "writer");
 		}
 
 		/// <summary>
@@ -39,8 +39,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="writer">The writer.</param>
 		/// <param name="selector">The containing selector control.</param>
 		protected internal override void RenderButtonContent(HtmlTextWriter writer, OpenIdSelector selector) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(selector != null);
+			Requires.NotNull(writer, "writer");
+			Requires.NotNull(selector, "selector");
 		}
 	}
 }

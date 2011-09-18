@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="imageUrl">The image to display on the button.</param>
 		public SelectorOpenIdButton(string imageUrl)
 			: this() {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
 
 			this.Image = imageUrl;
 		}

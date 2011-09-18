@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// the resources to which access is being granted are sensitive.
 		/// </returns>
 		TimeSpan IAuthorizationServer.GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage) {
-			Contract.Requires<ArgumentNullException>(accessTokenRequestMessage != null);
+			Requires.NotNull(accessTokenRequestMessage, "accessTokenRequestMessage");
 			throw new NotImplementedException();
 		}
 
@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The caller is responsible to dispose of this value.
 		/// </returns>
 		RSACryptoServiceProvider IAuthorizationServer.GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
-			Contract.Requires<ArgumentNullException>(accessTokenRequestMessage != null);
+			Requires.NotNull(accessTokenRequestMessage, "accessTokenRequestMessage");
 			Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
 			throw new NotImplementedException();
 		}
@@ -203,7 +203,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
 		IConsumerDescription IAuthorizationServer.GetClient(string clientIdentifier) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
+			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
 			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
 			throw new NotImplementedException();
 		}
@@ -231,7 +231,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// account or piece of hardware in which the tokens were stored. </para>
 		/// </remarks>
 		bool IAuthorizationServer.IsAuthorizationValid(IAuthorizationDescription authorization) {
-			Contract.Requires<ArgumentNullException>(authorization != null);
+			Requires.NotNull(authorization, "authorization");
 			throw new NotImplementedException();
 		}
 	}

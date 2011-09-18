@@ -46,6 +46,18 @@ namespace DotNetOpenAuth {
 		}
 
 		/// <summary>
+		/// Validates that an array is not null or empty.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="parameterName">Name of the parameter.</param>
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
+		internal static void NotNullOrEmpty<T>(IEnumerable<T> value, string parameterName) {
+			NotNull(value, parameterName);
+			True(value.Any(), parameterName, Strings.InvalidArgument);
+			Contract.EndContractBlock();
+		}
+
+		/// <summary>
 		/// Validates that an argument is either null or is a sequence with no null elements.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the sequence.</typeparam>
@@ -82,7 +94,7 @@ namespace DotNetOpenAuth {
 		/// <param name="parameterName">Name of the parameter.</param>
 		/// <param name="message">The message to include with the exception.</param>
 		[Pure, ContractArgumentValidator, DebuggerStepThrough]
-		internal static void True(bool condition, string parameterName, string message = null) {
+		internal static void True(bool condition, string parameterName = null, string message = null) {
 			if (!condition) {
 				throw new ArgumentException(message ?? Strings.InvalidArgument, parameterName);
 			}
@@ -158,6 +170,20 @@ namespace DotNetOpenAuth {
 		internal static void NotNullSubtype<T>(Type type, string parameterName) {
 			NotNull(type, parameterName);
 			True(typeof(T).IsAssignableFrom(type), parameterName, MessagingStrings.UnexpectedType, typeof(T).FullName, type.FullName);
+
+			Contract.EndContractBlock();
+		}
+
+		/// <summary>
+		/// Validates some expression describing the acceptable condition for an argument evaluates to true.
+		/// </summary>
+		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="FormatException"/>.</param>
+		/// <param name="message">The message.</param>
+		[Pure, ContractArgumentValidator, DebuggerStepThrough]
+		internal static void Format(bool condition, string message) {
+			if (!condition) {
+				throw new FormatException(message);
+			}
 
 			Contract.EndContractBlock();
 		}

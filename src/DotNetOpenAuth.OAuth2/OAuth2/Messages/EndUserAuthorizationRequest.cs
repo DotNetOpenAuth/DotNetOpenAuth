@@ -27,8 +27,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="version">The protocol version.</param>
 		internal EndUserAuthorizationRequest(Uri authorizationEndpoint, Version version)
 			: base(version, MessageTransport.Indirect, authorizationEndpoint) {
-			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
-			Contract.Requires<ArgumentNullException>(version != null);
+			Requires.NotNull(authorizationEndpoint, "authorizationEndpoint");
+			Requires.NotNull(version, "version");
 			this.HttpMethods = HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest;
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
 			this.ResponseType = EndUserAuthorizationResponseType.AuthorizationCode;
@@ -40,9 +40,9 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="authorizationServer">The authorization server.</param>
 		internal EndUserAuthorizationRequest(AuthorizationServerDescription authorizationServer)
 			: this(authorizationServer.AuthorizationEndpoint, authorizationServer.Version) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null);
-			Contract.Requires<ArgumentException>(authorizationServer.Version != null);
-			Contract.Requires<ArgumentException>(authorizationServer.AuthorizationEndpoint != null);
+			Requires.NotNull(authorizationServer, "authorizationServer");
+			Requires.True(authorizationServer.Version != null, "authorizationServer");
+			Requires.True(authorizationServer.AuthorizationEndpoint != null, "authorizationServer");
 		}
 
 		/// <summary>

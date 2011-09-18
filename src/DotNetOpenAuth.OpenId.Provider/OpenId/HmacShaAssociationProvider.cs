@@ -39,10 +39,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// The new association is NOT automatically put into an association store.  This must be done by the caller.
 		/// </remarks>
 		internal static HmacShaAssociation Create(Protocol protocol, string associationType, AssociationRelyingPartyType associationUse, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(protocol != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
-			Contract.Requires<ArgumentNullException>(associationStore != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(protocol, "protocol");
+			Requires.NotNullOrEmpty(associationType, "associationType");
+			Requires.NotNull(associationStore, "associationStore");
+			Requires.NotNull(securitySettings, "securitySettings");
 			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
 			int secretLength = HmacShaAssociation.GetSecretLength(protocol, associationType);

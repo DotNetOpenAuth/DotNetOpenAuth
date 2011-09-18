@@ -193,7 +193,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		///   <para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
 		RelyingPartyDiscoveryResult IHostProcessedRequest.IsReturnUrlDiscoverable(IDirectWebRequestHandler webRequestHandler) {
-			Contract.Requires<ArgumentNullException>(webRequestHandler != null);
+			Requires.NotNull(webRequestHandler, "webRequestHandler");
 			throw new System.NotImplementedException();
 		}
 

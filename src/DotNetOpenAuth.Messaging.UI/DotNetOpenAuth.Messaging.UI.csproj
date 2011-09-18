@@ -13,7 +13,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetOpenAuth</RootNamespace>
     <AssemblyName>DotNetOpenAuth.Messaging.UI</AssemblyName>
-    <CodeContractsRewritingDisabled>true</CodeContractsRewritingDisabled>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

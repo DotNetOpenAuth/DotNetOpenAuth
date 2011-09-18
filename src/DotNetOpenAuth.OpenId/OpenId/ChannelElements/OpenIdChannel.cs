@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
 		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
-			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
+			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 
 			// Customize the binding element order, since we play some tricks for higher
 			// security and backward compatibility with older OpenID versions.

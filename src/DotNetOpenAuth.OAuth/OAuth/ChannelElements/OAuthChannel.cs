@@ -40,10 +40,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			Contract.Requires<ArgumentNullException>(signingBindingElement != null);
-			Contract.Requires<ArgumentException>(signingBindingElement.SignatureCallback == null, OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
+			Requires.NotNull(tokenManager, "tokenManager");
+			Requires.NotNull(securitySettings, "securitySettings");
+			Requires.NotNull(signingBindingElement, "signingBindingElement");
+			Requires.True(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 			Contract.Requires<ArgumentNullException>(bindingElements != null, "bindingElements");
 
 			this.TokenManager = tokenManager;
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="request">The message to attach.</param>
 		/// <returns>The initialized web request.</returns>
 		internal HttpWebRequest InitializeRequest(IDirectedProtocolMessage request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			ProcessOutgoingMessage(request);
 			return this.CreateHttpRequest(request);
@@ -249,8 +249,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="source">The dictionary with names and values to encode.</param>
 		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
 		private static void UriEscapeParameters(IEnumerable<KeyValuePair<string, string>> source, IDictionary<string, string> destination) {
-			Contract.Requires<ArgumentNullException>(source != null);
-			Contract.Requires<ArgumentNullException>(destination != null);
+			Requires.NotNull(source, "source");
+			Requires.NotNull(destination, "destination");
 
 			foreach (var pair in source) {
 				var key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
@@ -265,7 +265,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="message">The message.</param>
 		/// <returns>"POST", "GET" or some other similar http verb.</returns>
 		private static string GetHttpMethod(IDirectedProtocolMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {

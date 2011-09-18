@@ -36,8 +36,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="scopes">The authorized scopes.</param>
 		/// <param name="username">The name on the account that authorized access.</param>
 		internal AuthorizationCode(string clientIdentifier, Uri callback, IEnumerable<string> scopes, string username) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
-			Contract.Requires<ArgumentNullException>(callback != null);
+			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
+			Requires.NotNull(callback, "callback");
 
 			this.ClientIdentifier = clientIdentifier;
 			this.CallbackHash = CalculateCallbackHash(callback);
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="authorizationServer">The authorization server that will be serializing/deserializing this authorization code.  Must not be null.</param>
 		/// <returns>A DataBag formatter.</returns>
 		internal static IDataBagFormatter<AuthorizationCode> CreateFormatter(IAuthorizationServer authorizationServer) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null);
+			Requires.NotNull(authorizationServer, "authorizationServer");
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);
 
 			return new UriStyleMessageFormatter<AuthorizationCode>(

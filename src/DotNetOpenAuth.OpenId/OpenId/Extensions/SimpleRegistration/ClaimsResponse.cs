@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// </param>
 		internal ClaimsResponse(string typeUriToUse)
 			: base(new Version(1, 0), typeUriToUse, Constants.AdditionalTypeUris) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUriToUse));
+			Requires.NotNullOrEmpty(typeUriToUse, "typeUriToUse");
 		}
 
 		/// <summary>

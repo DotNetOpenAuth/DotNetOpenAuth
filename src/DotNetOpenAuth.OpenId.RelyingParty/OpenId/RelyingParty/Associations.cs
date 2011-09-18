@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="association">The association to add to the collection.</param>
 		public void Set(Association association) {
-			Contract.Requires<ArgumentNullException>(association != null);
+			Requires.NotNull(association, "association");
 			Contract.Ensures(this.Get(association.Handle) == association);
 			lock (this.associations) {
 				this.associations.Remove(association.Handle); // just in case one already exists.
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The desired association, or null if none with the given handle could be found.</returns>
 		[Pure]
 		public Association Get(string handle) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(handle));
+			Requires.NotNullOrEmpty(handle, "handle");
 
 			lock (this.associations) {
 				if (this.associations.Contains(handle)) {
@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="handle">The handle to the required association.</param>
 		/// <returns>Whether an <see cref="Association"/> with the given handle was in the collection for removal.</returns>
 		public bool Remove(string handle) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(handle));
+			Requires.NotNullOrEmpty(handle, "handle");
 			lock (this.associations) {
 				return this.associations.Remove(handle);
 			}

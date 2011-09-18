@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </code>
 		/// </remarks>
 		public OutgoingWebResponse AsAjaxDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires<ArgumentNullException>(requests != null);
+			Requires.NotNull(requests, "requests");
 
 			var serializer = new JavaScriptSerializer();
 			return new OutgoingWebResponse {
@@ -160,7 +160,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The JSON result to return to the user agent.
 		/// </returns>
 		public string AsAjaxPreloadedDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires<ArgumentNullException>(requests != null);
+			Requires.NotNull(requests, "requests");
 
 			var serializer = new JavaScriptSerializer();
 			string json = serializer.Serialize(this.AsJsonPreloadedDiscoveryResult(requests));
@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="requests">The discovery results from just <i>one</i> identifier to serialize as a JSON response.</param>
 		/// <returns>A JSON object, not yet serialized.</returns>
 		internal object AsJsonDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires<ArgumentNullException>(requests != null);
+			Requires.NotNull(requests, "requests");
 
 			requests = requests.CacheGeneratedResults();
 
@@ -205,7 +205,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A JSON object, not yet serialized to a string.
 		/// </returns>
 		private object AsJsonPreloadedDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires<ArgumentNullException>(requests != null);
+			Requires.NotNull(requests, "requests");
 
 			// We prepare a JSON object with this interface:
 			// Array discoveryWrappers;
@@ -233,7 +233,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <c>false</c> to create a checkid_setup request.</param>
 		/// <returns>The absolute URL that carries the entire OpenID message.</returns>
 		private Uri GetRedirectUrl(IAuthenticationRequest request, bool immediate) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			request.Mode = immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
 			return request.RedirectingResponse.GetDirectUriRequest(this.Channel);

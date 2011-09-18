@@ -56,8 +56,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
 		IEnumerable<IdentifierDiscoveryResult> IIdentifierDiscoveryService.Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(requestHandler, "requestHandler");
 			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 			throw new NotImplementedException();
 		}

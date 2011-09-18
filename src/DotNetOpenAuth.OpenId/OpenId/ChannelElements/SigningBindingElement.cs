@@ -120,9 +120,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="association">The association to use to sign the message.</param>
 		/// <returns>The calculated signature of the method.</returns>
 		protected string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
-			Contract.Requires<ArgumentNullException>(signedMessage != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(signedMessage.SignedParameterOrder));
-			Contract.Requires<ArgumentNullException>(association != null);
+			Requires.NotNull(signedMessage, "signedMessage");
+			Requires.True(!String.IsNullOrEmpty(signedMessage.SignedParameterOrder), "signedMessage");
+			Requires.NotNull(association, "association");
 
 			// Prepare the parts to sign, taking care to replace an openid.mode value
 			// of check_authentication with its original id_res so the signature matches.

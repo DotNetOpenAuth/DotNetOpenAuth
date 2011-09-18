@@ -359,7 +359,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
+				Requires.NotNullOrEmpty(value, "value");
 
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Realm object based on it.
@@ -522,7 +522,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		public void LogOn(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			if (this.IsPopupAppropriate(request)) {
 				this.ScriptPopupWindow(request);
@@ -562,7 +562,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		protected internal virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
+			Requires.NotNull(identifier, "identifier");
 
 			// If this control is actually a member of another OpenID RP control,
 			// delegate creation of requests to the parent control.
@@ -604,7 +604,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		protected IEnumerable<IAuthenticationRequest> CreateRequests() {
-			Contract.Requires<InvalidOperationException>(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
+			Requires.ValidState(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			return this.CreateRequests(this.Identifier);
 		}
 
@@ -714,8 +714,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
-			Contract.Requires<ArgumentException>(response.Status == AuthenticationStatus.Authenticated);
+			Requires.NotNull(response, "response");
+			Requires.True(response.Status == AuthenticationStatus.Authenticated, "response");
 
 			var loggedIn = this.LoggedIn;
 			OpenIdEventArgs args = new OpenIdEventArgs(response);
@@ -747,7 +747,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Returns whether the login should proceed.  False if some event handler canceled the request.
 		/// </returns>
 		protected virtual bool OnLoggingIn(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			EventHandler<OpenIdEventArgs> loggingIn = this.LoggingIn;
 
@@ -764,8 +764,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnCanceled(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
-			Contract.Requires<ArgumentException>(response.Status == AuthenticationStatus.Canceled);
+			Requires.NotNull(response, "response");
+			Requires.True(response.Status == AuthenticationStatus.Canceled, "response");
 
 			var canceled = this.Canceled;
 			if (canceled != null) {
@@ -778,8 +778,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnFailed(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
-			Contract.Requires<ArgumentException>(response.Status == AuthenticationStatus.Failed);
+			Requires.NotNull(response, "response");
+			Requires.True(response.Status == AuthenticationStatus.Failed, "response");
 
 			var failed = this.Failed;
 			if (failed != null) {
@@ -811,7 +811,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="relyingParty">The relying party.</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "relyingParty", Justification = "This makes it possible for overrides to see the value before it is set on a field.")]
 		protected virtual void ConfigureRelyingParty(OpenIdRelyingParty relyingParty) {
-			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Requires.NotNull(relyingParty, "relyingParty");
 
 			// Only set RequireSsl to true, as we don't want to override 
 			// a .config setting of true with false.
@@ -828,7 +828,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<c>true</c> if a popup should be used; <c>false</c> otherwise.
 		/// </returns>
 		protected virtual bool IsPopupAppropriate(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			switch (this.Popup) {
 				case PopupBehavior.Never:
@@ -850,8 +850,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="request">The outgoing authentication request.</param>
 		/// <param name="windowStatus">The text to try to display in the status bar on mouse hover.</param>
 		protected void RenderOpenIdMessageTransmissionAsAnchorAttributes(HtmlTextWriter writer, IAuthenticationRequest request, string windowStatus) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(writer, "writer");
+			Requires.NotNull(request, "request");
 
 			// We render a standard HREF attribute for non-javascript browsers.
 			writer.AddAttribute(HtmlTextWriterAttribute.Href, request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri);
@@ -1004,7 +1004,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="request">The authentication request to send.</param>
 		/// <returns>The javascript that should execute.</returns>
 		private string CreateGetOrPostAHrefValue(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			Uri directUri = request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel);
 			return "window.dnoa_internal.GetOrPost(" + MessagingUtilities.GetSafeJavascriptValue(directUri.AbsoluteUri) + ");";
@@ -1015,8 +1015,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		private void ScriptPopupWindow(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<InvalidOperationException>(this.RelyingParty != null);
+			Requires.NotNull(request, "request");
+			Requires.ValidState(this.RelyingParty != null);
 
 			StringBuilder startupScript = new StringBuilder();
 

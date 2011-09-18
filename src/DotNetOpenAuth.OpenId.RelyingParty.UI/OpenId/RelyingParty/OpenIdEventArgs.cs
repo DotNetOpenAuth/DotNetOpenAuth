@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The outgoing authentication request.</param>
 		internal OpenIdEventArgs(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			this.Request = request;
 			this.ClaimedIdentifier = request.ClaimedIdentifier;
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The incoming authentication response.</param>
 		internal OpenIdEventArgs(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 
 			this.Response = response;
 			this.ClaimedIdentifier = response.ClaimedIdentifier;

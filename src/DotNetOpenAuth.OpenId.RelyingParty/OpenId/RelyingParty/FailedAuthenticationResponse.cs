@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="exception">The exception that resulted in the failed authentication.</param>
 		internal FailedAuthenticationResponse(Exception exception) {
-			Contract.Requires<ArgumentNullException>(exception != null);
+			Requires.NotNull(exception, "exception");
 
 			this.Exception = exception;
 

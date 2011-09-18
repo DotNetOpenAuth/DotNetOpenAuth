@@ -27,8 +27,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// and the provider OpenID version.
 		/// </returns>
 		internal static AssociateRequest Create(SecuritySettings securityRequirements, IProviderEndpoint provider) {
-			Contract.Requires<ArgumentNullException>(securityRequirements != null);
-			Contract.Requires<ArgumentNullException>(provider != null);
+			Requires.NotNull(securityRequirements, "securityRequirements");
+			Requires.NotNull(provider, "provider");
 
 			// Apply our knowledge of the endpoint's transport, OpenID version, and
 			// security requirements to decide the best association.
@@ -57,10 +57,10 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// and the provider OpenID version.
 		/// </returns>
 		internal static AssociateRequest Create(SecuritySettings securityRequirements, IProviderEndpoint provider, string associationType, string sessionType) {
-			Contract.Requires<ArgumentNullException>(securityRequirements != null);
-			Contract.Requires<ArgumentNullException>(provider != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(associationType));
-			Contract.Requires<ArgumentNullException>(sessionType != null);
+			Requires.NotNull(securityRequirements, "securityRequirements");
+			Requires.NotNull(provider, "provider");
+			Requires.NotNullOrEmpty(associationType, "associationType");
+			Requires.NotNull(sessionType, "sessionType");
 
 			bool unencryptedAllowed = provider.Uri.IsTransportSecure();
 			if (unencryptedAllowed) {

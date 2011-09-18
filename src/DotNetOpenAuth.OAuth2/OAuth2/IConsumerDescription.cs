@@ -91,8 +91,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		///   <c>true</c> if the callback is allowed; otherwise, <c>false</c>.
 		/// </returns>
 		bool IConsumerDescription.IsCallbackAllowed(Uri callback) {
-			Contract.Requires<ArgumentNullException>(callback != null);
-			Contract.Requires<ArgumentException>(callback.IsAbsoluteUri);
+			Requires.NotNull(callback, "callback");
+			Requires.True(callback.IsAbsoluteUri, "callback");
 			throw new NotImplementedException();
 		}
 

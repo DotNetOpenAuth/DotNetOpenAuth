@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 		public static void SpreadSregToAX(this RelyingParty.IAuthenticationRequest request, AXAttributeFormats attributeFormats) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			var req = (RelyingParty.AuthenticationRequest)request;
 			var sreg = req.AppliedExtensions.OfType<ClaimsRequest>().SingleOrDefault();
@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// Never <c>null</c>.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 		public static ClaimsResponse UnifyExtensionsAsSreg(this RelyingParty.IAuthenticationResponse response, bool allowUnsigned) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 
 			var resp = (RelyingParty.IAuthenticationResponse)response;
 			var sreg = allowUnsigned ? resp.GetUntrustedExtension<ClaimsResponse>() : resp.GetExtension<ClaimsResponse>();
@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="attributeFormat">The attribute formats the RP will try if this discovery fails.</param>
 		/// <returns>The AX format(s) to use based on the Provider's advertised AX support.</returns>
 		private static bool TryDetectOPAttributeFormat(RelyingParty.IAuthenticationRequest request, out AXAttributeFormats attributeFormat) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			attributeFormat = ExtensionsInteropHelper.DetectAXFormat(request.DiscoveryResult.Capabilities);
 			return attributeFormat != AXAttributeFormats.None;
 		}

@@ -241,7 +241,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
 		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(propertyName));
+			Requires.NotNullOrEmpty(propertyName, "propertyName");
 			this.RelyingParty.RegisterClientScriptExtension<T>(propertyName);
 		}
 

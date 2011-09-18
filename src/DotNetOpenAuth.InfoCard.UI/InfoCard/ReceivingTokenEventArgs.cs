@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="tokenXml">The raw token XML, prior to any decryption.</param>
 		internal ReceivingTokenEventArgs(string tokenXml) {
-			Contract.Requires<ArgumentNullException>(tokenXml != null);
+			Requires.NotNull(tokenXml, "tokenXml");
 
 			this.TokenXml = tokenXml;
 			this.IsEncrypted = Token.IsEncrypted(this.TokenXml);
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="securityToken">The security token.</param>
 		public void AddDecryptingToken(SecurityToken securityToken) {
-			Contract.Requires<ArgumentNullException>(securityToken != null);
+			Requires.NotNull(securityToken, "securityToken");
 			this.DecryptingTokens.Add(securityToken);
 		}
 
@@ -73,8 +73,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="certificate">The certificate.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		public void AddDecryptingToken(X509Certificate2 certificate) {
-			Contract.Requires<ArgumentNullException>(certificate != null);
-			Contract.Requires<ArgumentException>(certificate.HasPrivateKey);
+			Requires.NotNull(certificate, "certificate");
+			Requires.True(certificate.HasPrivateKey, "certificate");
 			var cert = new X509SecurityToken(certificate);
 			try {
 				this.AddDecryptingToken(cert);

@@ -30,10 +30,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// in preferred use order.
 		/// </param>
 		internal SigningBindingElementChain(ITamperProtectionChannelBindingElement[] signers) {
-			Contract.Requires<ArgumentNullException>(signers != null);
-			Contract.Requires<ArgumentException>(signers.Length > 0);
-			Contract.Requires<ArgumentException>(!signers.Contains(null), MessagingStrings.SequenceContainsNullElement);
-			Contract.Requires<ArgumentException>(signers.Select(s => s.Protection).Distinct().Count() == 1, OAuthStrings.SigningElementsMustShareSameProtection);
+			Requires.NotNullOrEmpty(signers, "signers");
+			Requires.NullOrWithNoNullElements(signers, "signers");
+			Requires.True(signers.Select(s => s.Protection).Distinct().Count() == 1, "signers", OAuthStrings.SigningElementsMustShareSameProtection);
 
 			this.signers = signers;
 		}

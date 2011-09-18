@@ -136,8 +136,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private void ParameterizedAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool immediate, bool tamper) {
-			Contract.Requires<ArgumentException>(!statelessRP || !sharedAssociation, "The RP cannot be stateless while sharing an association with the OP.");
-			Contract.Requires<ArgumentException>(positive || !tamper, "Cannot tamper with a negative response.");
+			Requires.True(!statelessRP || !sharedAssociation, null, "The RP cannot be stateless while sharing an association with the OP.");
+			Requires.True(positive || !tamper, null, "Cannot tamper with a negative response.");
 			var securitySettings = new ProviderSecuritySettings();
 			var cryptoKeyStore = new MemoryCryptoKeyStore();
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);

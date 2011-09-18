@@ -683,7 +683,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The authentication request to add the extensions to.</param>
 		private void AddProfileArgs(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			var sreg = new ClaimsRequest() {
 				Nickname = this.RequestNickname,

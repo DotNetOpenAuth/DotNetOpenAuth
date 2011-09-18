@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="realmUrl">The realm URL to use in the new instance.</param>
 		[SuppressMessage("Microsoft.Design", "CA1057:StringUriOverloadsCallSystemUriOverloads", Justification = "Not all realms are valid URLs (because of wildcards).")]
 		public Realm(string realmUrl) {
-			Contract.Requires<ArgumentNullException>(realmUrl != null); // not non-zero check so we throw UriFormatException later
+			Requires.NotNull(realmUrl, "realmUrl"); // not non-zero check so we throw UriFormatException later
 			this.DomainWildcard = Regex.IsMatch(realmUrl, WildcardDetectionPattern);
 			this.uri = new Uri(Regex.Replace(realmUrl, WildcardDetectionPattern, m => m.Groups[1].Value));
 			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="realmUrl">The realm URL of the Relying Party.</param>
 		public Realm(Uri realmUrl) {
-			Contract.Requires<ArgumentNullException>(realmUrl != null);
+			Requires.NotNull(realmUrl, "realmUrl");
 			this.uri = realmUrl;
 			if (!this.uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) &&
 				!this.uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		public static Realm AutoDetect {
 			get {
-				Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<Realm>() != null);
 
 				HttpRequestInfo requestInfo = new HttpRequestInfo(HttpContext.Current.Request);
@@ -489,7 +489,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// when we should be throwing an <see cref="ArgumentNullException"/>.
 		/// </remarks>
 		private static string SafeUriBuilderToString(UriBuilder realmUriBuilder) {
-			Contract.Requires<ArgumentNullException>(realmUriBuilder != null);
+			Requires.NotNull(realmUriBuilder, "realmUriBuilder");
 
 			// Note: we MUST use ToString.  Uri property throws if wildcard is present.
 			// Note that Uri.ToString() should generally be avoided, but UriBuilder.ToString()

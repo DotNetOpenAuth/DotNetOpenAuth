@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The negative assertion response received by the Relying Party.</param>
 		internal NegativeAuthenticationResponse(NegativeAssertionResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			this.response = response;
 
 			Reporting.RecordEventOccurrence(this, string.Empty);

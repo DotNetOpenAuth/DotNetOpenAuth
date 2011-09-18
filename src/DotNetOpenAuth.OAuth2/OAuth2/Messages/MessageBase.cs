@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <param name="version">The version.</param>
 		protected MessageBase(Version version) {
-			Contract.Requires<ArgumentNullException>(version != null);
+			Requires.NotNull(version, "version");
 			this.messageTransport = MessageTransport.Direct;
 			this.version = version;
 			this.HttpMethods = HttpDeliveryMethods.GetRequest;
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The originating request.</param>
 		/// <param name="recipient">The recipient of the directed message.  Null if not applicable.</param>
 		protected MessageBase(IDirectedProtocolMessage request, Uri recipient = null) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			this.originatingRequest = request;
 			this.messageTransport = request.Transport;
 			this.version = request.Version;
@@ -70,8 +70,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="messageTransport">The message transport.</param>
 		/// <param name="recipient">The recipient.</param>
 		protected MessageBase(Version version, MessageTransport messageTransport, Uri recipient) {
-			Contract.Requires<ArgumentNullException>(version != null);
-			Contract.Requires<ArgumentNullException>(recipient != null);
+			Requires.NotNull(version, "version");
+			Requires.NotNull(recipient, "recipient");
 
 			this.version = version;
 			this.messageTransport = messageTransport;

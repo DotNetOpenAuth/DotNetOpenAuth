@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// or a fabricated one based on the Attribute Exchange extension if found,
 		/// or <c>null</c> if no attribute extension request is found.</returns>
 		internal static ClaimsRequest UnifyExtensionsAsSreg(this Provider.IHostProcessedRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			var req = (Provider.HostProcessedRequest)request;
 			var sreg = req.GetExtension<ClaimsRequest>();
@@ -145,8 +145,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeUri">The type URI of the attribute in axschema.org format.</param>
 		/// <returns>The demand level for the attribute.</returns>
 		private static DemandLevel GetDemandLevelFor(FetchRequest ax, string typeUri) {
-			Contract.Requires<ArgumentNullException>(ax != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
+			Requires.NotNull(ax, "ax");
+			Requires.NotNullOrEmpty(typeUri, "typeUri");
 
 			foreach (AXAttributeFormats format in ExtensionsInteropHelper.ForEachFormat(AXAttributeFormats.All)) {
 				string typeUriInFormat = ExtensionsInteropHelper.TransformAXFormat(typeUri, format);

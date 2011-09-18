@@ -13,7 +13,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Org.Mentalis.Security.Cryptography</RootNamespace>
     <AssemblyName>Org.Mentalis.Security.Cryptography</AssemblyName>
-    <CodeContractsRewritingDisabled>true</CodeContractsRewritingDisabled>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

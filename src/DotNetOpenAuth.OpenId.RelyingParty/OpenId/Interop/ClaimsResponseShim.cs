@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <param name="response">The Simple Registration response to wrap.</param>
 		internal ClaimsResponseShim(ClaimsResponse response)
 		{
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 
 			this.response = response;
 		}

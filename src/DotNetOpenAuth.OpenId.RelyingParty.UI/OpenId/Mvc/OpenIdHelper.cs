@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Mvc {
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
 		/// <returns>HTML that should be sent directly to the browser.</returns>
 		public static string OpenIdSelectorStyles(this HtmlHelper html) {
-			Contract.Requires<ArgumentNullException>(html != null);
+			Requires.NotNull(html, "html");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			using (var result = new StringWriter(CultureInfo.CurrentCulture)) {
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Mvc {
 		/// </returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		public static string OpenIdSelectorScripts(this HtmlHelper html, OpenIdSelector selectorOptions, OpenIdAjaxOptions additionalOptions) {
-			Contract.Requires<ArgumentNullException>(html != null);
+			Requires.NotNull(html, "html");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			bool selectorOptionsOwned = false;
@@ -207,9 +207,9 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
 		public static string OpenIdSelectorOPButton(this HtmlHelper html, Identifier providerIdentifier, string imageUrl) {
-			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(providerIdentifier != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Requires.NotNull(html, "html");
+			Requires.NotNull(providerIdentifier, "providerIdentifier");
+			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return OpenIdSelectorButton(html, providerIdentifier, "OPButton", imageUrl);
@@ -225,8 +225,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
 		public static string OpenIdSelectorOpenIdButton(this HtmlHelper html, string imageUrl) {
-			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Requires.NotNull(html, "html");
+			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return OpenIdSelectorButton(html, "OpenIDButton", "OpenIDButton", imageUrl);
@@ -242,8 +242,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// </returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		public static string OpenIdSelector(this HtmlHelper html, params SelectorButton[] buttons) {
-			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(buttons != null);
+			Requires.NotNull(html, "html");
+			Requires.NotNull(buttons, "buttons");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			using (var writer = new StringWriter(CultureInfo.CurrentCulture)) {
@@ -307,9 +307,9 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// </returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		private static string OpenIdSelectorButton(this HtmlHelper html, string id, string cssClass, string imageUrl) {
-			Contract.Requires<ArgumentNullException>(html != null);
-			Contract.Requires<ArgumentNullException>(id != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Requires.NotNull(html, "html");
+			Requires.NotNull(id, "id");
+			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			using (var writer = new StringWriter(CultureInfo.CurrentCulture)) {
@@ -357,8 +357,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="scriptUrls">The locations of the scripts to import.</param>
 		private static void WriteScriptTagsUrls(this TextWriter writer, IEnumerable<string> scriptUrls) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(scriptUrls != null);
+			Requires.NotNull(writer, "writer");
+			Requires.NotNull(scriptUrls, "scriptUrls");
 
 			foreach (string script in scriptUrls) {
 				writer.WriteLine("<script type='text/javascript' src='{0}'></script>", script);
@@ -371,8 +371,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="resourceName">Name of the resource.</param>
 		private static void WriteScriptTags(this TextWriter writer, string resourceName) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(resourceName));
+			Requires.NotNull(writer, "writer");
+			Requires.NotNullOrEmpty(resourceName, "resourceName");
 
 			WriteScriptTags(writer, new[] { resourceName });
 		}
@@ -383,8 +383,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="resourceNames">The resource names.</param>
 		private static void WriteScriptTags(this TextWriter writer, IEnumerable<string> resourceNames) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentNullException>(resourceNames != null);
+			Requires.NotNull(writer, "writer");
+			Requires.NotNull(resourceNames, "resourceNames");
 
 			writer.WriteScriptTagsUrls(resourceNames.Select(r => Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyControlBase), r)));
 		}
@@ -395,8 +395,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="script">The script to inline on the page.</param>
 		private static void WriteScriptBlock(this TextWriter writer, string script) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(script));
+			Requires.NotNull(writer, "writer");
+			Requires.NotNullOrEmpty(script, "script");
 
 			writer.WriteLine("<script type='text/javascript' language='javascript'><!--");
 			writer.WriteLine("//<![CDATA[");
@@ -410,8 +410,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="resourceName">Name of the resource containing the CSS content.</param>
 		private static void WriteStylesheetLink(this TextWriter writer, string resourceName) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(resourceName));
+			Requires.NotNull(writer, "writer");
+			Requires.NotNullOrEmpty(resourceName, "resourceName");
 
 			WriteStylesheetLinkUrl(writer, Util.GetWebResourceUrl(typeof(OpenIdRelyingPartyAjaxControlBase), resourceName));
 		}
@@ -422,8 +422,8 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <param name="writer">The writer to emit the tags to.</param>
 		/// <param name="stylesheet">The stylesheet to link in.</param>
 		private static void WriteStylesheetLinkUrl(this TextWriter writer, string stylesheet) {
-			Contract.Requires<ArgumentNullException>(writer != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(stylesheet));
+			Requires.NotNull(writer, "writer");
+			Requires.NotNullOrEmpty(stylesheet, "stylesheet");
 
 			writer.WriteLine("<link rel='stylesheet' type='text/css' href='{0}' />", stylesheet);
 		}

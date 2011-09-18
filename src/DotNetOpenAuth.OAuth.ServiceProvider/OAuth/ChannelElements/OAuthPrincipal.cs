@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="token">The access token.</param>
 		internal OAuthPrincipal(IServiceProviderAccessToken token)
 			: this(token.Username, token.Roles) {
-			Contract.Requires<ArgumentNullException>(token != null);
+			Requires.NotNull(token, "token");
 
 			this.AccessToken = token.Token;
 		}

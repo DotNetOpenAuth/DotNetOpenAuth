@@ -69,10 +69,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="returnToUrl">The base return_to URL that the Provider should return the user to to complete authentication.  This should not include callback parameters as these should be added using the <see cref="AddCallbackArguments(string, string)"/> method.</param>
 		/// <param name="relyingParty">The relying party that created this instance.</param>
 		private AuthenticationRequest(IdentifierDiscoveryResult discoveryResult, Realm realm, Uri returnToUrl, OpenIdRelyingParty relyingParty) {
-			Contract.Requires<ArgumentNullException>(discoveryResult != null);
-			Contract.Requires<ArgumentNullException>(realm != null);
-			Contract.Requires<ArgumentNullException>(returnToUrl != null);
-			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Requires.NotNull(discoveryResult, "discoveryResult");
+			Requires.NotNull(realm, "realm");
+			Requires.NotNull(returnToUrl, "returnToUrl");
+			Requires.NotNull(relyingParty, "relyingParty");
 
 			this.DiscoveryResult = discoveryResult;
 			this.RelyingParty = relyingParty;
@@ -319,9 +319,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Never null, but may be empty.
 		/// </returns>
 		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
-			Contract.Requires<ArgumentNullException>(userSuppliedIdentifier != null);
-			Contract.Requires<ArgumentNullException>(relyingParty != null);
-			Contract.Requires<ArgumentNullException>(realm != null);
+			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
+			Requires.NotNull(relyingParty, "relyingParty");
+			Requires.NotNull(realm, "realm");
 			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
 			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
@@ -496,8 +496,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="relyingParty">The relying party.</param>
 		/// <returns>A filtered and sorted list of endpoints; may be empty if the input was empty or the filter removed all endpoints.</returns>
 		private static List<IdentifierDiscoveryResult> FilterAndSortEndpoints(IEnumerable<IdentifierDiscoveryResult> endpoints, OpenIdRelyingParty relyingParty) {
-			Contract.Requires<ArgumentNullException>(endpoints != null);
-			Contract.Requires<ArgumentNullException>(relyingParty != null);
+			Requires.NotNull(endpoints, "endpoints");
+			Requires.NotNull(relyingParty, "relyingParty");
 
 			bool anyFilteredOut = false;
 			var filteredEndpoints = new List<IdentifierDiscoveryResult>();

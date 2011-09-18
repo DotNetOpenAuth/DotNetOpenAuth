@@ -34,9 +34,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// <param name="windowName">The name to assign to the popup window.</param>
 		/// <returns>A string starting with 'window.open' and forming just that one method call.</returns>
 		internal static string GetWindowPopupScript(OpenIdRelyingParty relyingParty, IAuthenticationRequest request, string windowName) {
-			Contract.Requires<ArgumentNullException>(relyingParty != null);
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(windowName));
+			Requires.NotNull(relyingParty, "relyingParty");
+			Requires.NotNull(request, "request");
+			Requires.NotNullOrEmpty(windowName, "windowName");
 
 			Uri popupUrl = request.RedirectingResponse.GetDirectUriRequest(relyingParty.Channel);
 

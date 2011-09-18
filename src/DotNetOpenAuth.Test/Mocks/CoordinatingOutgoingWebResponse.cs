@@ -22,8 +22,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="message">The direct response message to send to the remote channel.  This message will be cloned.</param>
 		/// <param name="receivingChannel">The receiving channel.</param>
 		internal CoordinatingOutgoingWebResponse(IProtocolMessage message, CoordinatingChannel receivingChannel) {
-			Contract.Requires<ArgumentNullException>(message != null);
-			Contract.Requires<ArgumentNullException>(receivingChannel != null);
+			Requires.NotNull(message, "message");
+			Requires.NotNull(receivingChannel, "receivingChannel");
 
 			this.receivingChannel = receivingChannel;
 			this.OriginalMessage = message;

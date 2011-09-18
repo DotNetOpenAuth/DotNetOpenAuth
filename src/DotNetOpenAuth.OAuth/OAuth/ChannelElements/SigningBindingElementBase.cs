@@ -151,9 +151,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
 		internal static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, MessageDictionary messageDictionary) {
-			Contract.Requires<ArgumentNullException>(message != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(message.HttpMethod));
-			Contract.Requires<ArgumentNullException>(messageDictionary != null);
+			Requires.NotNull(message, "message");
+			Requires.NotNullOrEmpty(message.HttpMethod, "message.HttpMethod");
+			Requires.NotNull(messageDictionary, "messageDictionary");
 			ErrorUtilities.VerifyArgument(messageDictionary.Message == message, "Message references are not equal.");
 
 			List<string> signatureBaseStringElements = new List<string>(3);
@@ -279,7 +279,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// 	<c>true</c> if the signature on the message is valid; otherwise, <c>false</c>.
 		/// </returns>
 		protected virtual bool IsSignatureValid(ITamperResistantOAuthMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 
 			string signature = this.GetSignature(message);
 			return MessagingUtilities.EqualsConstantTime(message.Signature, signature);

@@ -44,13 +44,13 @@ http://opensource.org/licenses/ms-pl.html
 		<CodeContractsExtraRewriteOptions />
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(CodeContractsRewritingDisabled)' == 'true' ">
+	<PropertyGroup Condition=" '$(CodeContractsRewritingEnabled)' != 'true' ">
 		<CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
 		<CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
 		<CodeContractsReferenceAssembly Condition=" '$(Configuration)' == 'Release' ">Build</CodeContractsReferenceAssembly>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(CodeContractsRewritingDisabled)' != 'true' ">
+	<PropertyGroup Condition=" '$(CodeContractsRewritingEnabled)' == 'true' ">
 		<CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
 		<CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
 		<CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>

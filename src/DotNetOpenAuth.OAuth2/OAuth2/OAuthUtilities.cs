@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="scopes">The scopes to serialize.</param>
 		/// <returns>A space-delimited list.</returns>
 		public static string JoinScopes(HashSet<string> scopes) {
-			Contract.Requires<ArgumentNullException>(scopes != null);
+			Requires.NotNull(scopes, "scopes");
 			return string.Join(" ", scopes.ToArray());
 		}
 
@@ -91,8 +91,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The request to authorize.</param>
 		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
 		internal static void AuthorizeWithBearerToken(this HttpWebRequest request, string accessToken) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
+			Requires.NotNull(request, "request");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), "The access token contains characters that must not appear in the HTTP Authorization header.");
 
 			request.Headers[HttpRequestHeader.Authorization] = string.Format(
@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client information.  Never null.</returns>
 		internal static IConsumerDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
+			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
 			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
 
 			try {

@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentNullException>(value != null);
+				Requires.NotNull(value, "value");
 				if (this.infoCardSelector != null) {
 					Logger.Library.WarnFormat("{0}.InfoCardSelector property is being set multiple times.", GetType().Name);
 				}

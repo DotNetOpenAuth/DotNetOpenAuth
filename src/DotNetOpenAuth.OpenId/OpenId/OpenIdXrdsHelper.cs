@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// or for Provider's to perform RP discovery/verification as part of authentication.
 		/// </remarks>
 		internal static IEnumerable<RelyingPartyEndpointDescription> FindRelyingPartyReceivingEndpoints(this XrdsDocument xrds) {
-			Contract.Requires<ArgumentNullException>(xrds != null);
+			Requires.NotNull(xrds, "xrds");
 			Contract.Ensures(Contract.Result<IEnumerable<RelyingPartyEndpointDescription>>() != null);
 
 			return from service in xrds.FindReturnToServices()
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument to search.</param>
 		/// <returns>A sequence of the icon URLs in preferred order.</returns>
 		internal static IEnumerable<Uri> FindRelyingPartyIcons(this XrdsDocument xrds) {
-			Contract.Requires<ArgumentNullException>(xrds != null);
+			Requires.NotNull(xrds, "xrds");
 			Contract.Ensures(Contract.Result<IEnumerable<Uri>>() != null);
 
 			return from xrd in xrds.XrdElements
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XrdsDocument instance to use in this process.</param>
 		/// <returns>A sequence of service elements.</returns>
 		private static IEnumerable<ServiceElement> FindReturnToServices(this XrdsDocument xrds) {
-			Contract.Requires<ArgumentNullException>(xrds != null);
+			Requires.NotNull(xrds, "xrds");
 			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
 
 			return from xrd in xrds.XrdElements

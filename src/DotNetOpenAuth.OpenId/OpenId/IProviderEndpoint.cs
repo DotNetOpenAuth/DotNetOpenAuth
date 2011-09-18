@@ -134,8 +134,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// the extension in the request and see if a response comes back for that extension.
 		/// </remarks>
 		bool IProviderEndpoint.IsExtensionSupported(Type extensionType) {
-			Contract.Requires<ArgumentNullException>(extensionType != null);
-			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
+			Requires.NotNullSubtype<IOpenIdMessageExtension>(extensionType, "extensionType");
 			throw new NotImplementedException();
 		}
 

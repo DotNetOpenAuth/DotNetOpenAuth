@@ -35,11 +35,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="totalLifeLength">How long the association will be useful.</param>
 		/// <param name="issued">The UTC time of when this association was originally issued by the Provider.</param>
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(handle));
-			Contract.Requires<ArgumentNullException>(secret != null);
-			Contract.Requires<ArgumentOutOfRangeException>(totalLifeLength > TimeSpan.Zero);
-			Contract.Requires<ArgumentException>(issued.Kind == DateTimeKind.Utc);
-			Contract.Requires<ArgumentOutOfRangeException>(issued <= DateTime.UtcNow);
+			Requires.NotNullOrEmpty(handle, "handle");
+			Requires.NotNull(secret, "secret");
+			Requires.InRange(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
+			Requires.True(issued.Kind == DateTimeKind.Utc, "issued");
+			Requires.InRange(issued <= DateTime.UtcNow, "issued");
 			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
 
 			this.Handle = handle;
@@ -162,8 +162,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// IRelyingPartyAssociationStore.GetAssociation method.
 		/// </returns>
 		public static Association Deserialize(string handle, DateTime expiresUtc, byte[] privateData) {
-			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(handle));
-			Contract.Requires<ArgumentNullException>(privateData != null);
+			Requires.NotNullOrEmpty(handle, "handle");
+			Requires.NotNull(privateData, "privateData");
 			Contract.Ensures(Contract.Result<Association>() != null);
 
 			expiresUtc = expiresUtc.ToUniversalTimeSafe();
@@ -278,7 +278,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="data">The data to sign.  This data will not be changed (the signature is the return value).</param>
 		/// <returns>The calculated signature of the data.</returns>
 		protected internal byte[] Sign(byte[] data) {
-			Contract.Requires<ArgumentNullException>(data != null);
+			Requires.NotNull(data, "data");
 			using (HashAlgorithm hasher = this.CreateHasher()) {
 				return hasher.ComputeHash(data);
 			}

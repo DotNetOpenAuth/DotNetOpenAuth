@@ -32,8 +32,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="imageUrl">The image to display on the button.</param>
 		public SelectorProviderButton(Identifier providerIdentifier, string imageUrl)
 			: this() {
-			Contract.Requires<ArgumentNullException>(providerIdentifier != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(imageUrl));
+			Requires.NotNull(providerIdentifier, "providerIdentifier");
+			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
 
 			this.OPIdentifier = providerIdentifier;
 			this.Image = imageUrl;

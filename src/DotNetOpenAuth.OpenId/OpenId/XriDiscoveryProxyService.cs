@@ -72,8 +72,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requestHandler">The request handler.</param>
 		/// <returns>The XRDS document.</returns>
 		private static XrdsDocument DownloadXrds(XriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(requestHandler, "requestHandler");
 			Contract.Ensures(Contract.Result<XrdsDocument>() != null);
 			XrdsDocument doc;
 			using (var xrdsResponse = Yadis.Request(requestHandler, GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd)) {

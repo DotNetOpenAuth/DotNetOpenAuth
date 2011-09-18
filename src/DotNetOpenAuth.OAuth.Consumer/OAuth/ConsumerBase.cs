@@ -27,8 +27,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		protected ConsumerBase(ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager) {
-			Contract.Requires<ArgumentNullException>(serviceDescription != null);
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Requires.NotNull(serviceDescription, "serviceDescription");
+			Requires.NotNull(tokenManager, "tokenManager");
 
 			ITamperProtectionChannelBindingElement signingElement = serviceDescription.CreateTamperProtectionElement();
 			INonceStore store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
-			Contract.Requires<ArgumentNullException>(endpoint != null);
+			Requires.NotNull(endpoint, "endpoint");
 			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(accessToken));
 
 			return this.PrepareAuthorizedRequest(endpoint, accessToken, EmptyDictionary<string, string>.Instance);
@@ -125,9 +125,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="extraData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, string> extraData) {
-			Contract.Requires<ArgumentNullException>(endpoint != null);
+			Requires.NotNull(endpoint, "endpoint");
 			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(accessToken));
-			Contract.Requires<ArgumentNullException>(extraData != null);
+			Requires.NotNull(extraData, "extraData");
 
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
 			foreach (var pair in extraData) {
@@ -146,9 +146,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="binaryData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken, IEnumerable<MultipartPostPart> binaryData) {
-			Contract.Requires<ArgumentNullException>(endpoint != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
-			Contract.Requires<ArgumentNullException>(binaryData != null);
+			Requires.NotNull(endpoint, "endpoint");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+			Requires.NotNull(binaryData, "binaryData");
 
 			AccessProtectedResourceRequest message = this.CreateAuthorizingMessage(endpoint, accessToken);
 			foreach (MultipartPostPart part in binaryData) {
@@ -176,7 +176,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Type of parameter forces the method to apply only to specific scenario.")]
 		public HttpWebRequest PrepareAuthorizedRequest(AccessProtectedResourceRequest message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			return this.OAuthChannel.InitializeRequest(message);
 		}
 
@@ -214,7 +214,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		protected internal AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
-			Contract.Requires<ArgumentNullException>(endpoint != null);
+			Requires.NotNull(endpoint, "endpoint");
 			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(accessToken));
 
 			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint, this.ServiceProvider.Version) {
@@ -276,7 +276,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// The access token assigned by the Service Provider.
 		/// </returns>
 		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken, string verifier) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(requestToken));
+			Requires.NotNullOrEmpty(requestToken, "requestToken");
 			Contract.Ensures(Contract.Result<AuthorizedTokenResponse>() != null);
 
 			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {

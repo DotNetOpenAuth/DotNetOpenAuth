@@ -27,8 +27,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="version">The protocol version.</param>
 		internal EndUserAuthorizationSuccessAccessTokenResponse(Uri clientCallback, Version version)
 			: base(clientCallback, version) {
-			Contract.Requires<ArgumentNullException>(version != null);
-			Contract.Requires<ArgumentNullException>(clientCallback != null);
+			Requires.NotNull(version, "version");
+			Requires.NotNull(clientCallback, "clientCallback");
 			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
@@ -39,8 +39,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The authorization request from the user agent on behalf of the client.</param>
 		internal EndUserAuthorizationSuccessAccessTokenResponse(Uri clientCallback, EndUserAuthorizationRequest request)
 			: base(clientCallback, request) {
-			Contract.Requires<ArgumentNullException>(clientCallback != null);
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(clientCallback, "clientCallback");
+			Requires.NotNull(request, "request");
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}

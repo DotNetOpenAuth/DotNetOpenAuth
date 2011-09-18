@@ -98,8 +98,8 @@ namespace DotNetOpenAuth.Yadis {
 		/// <param name="attribute">The attribute.</param>
 		/// <returns>A filtered sequence of attributes.</returns>
 		internal static IEnumerable<T> WithAttribute<T>(this IEnumerable<T> sequence, string attribute) where T : HtmlControl {
-			Contract.Requires<ArgumentNullException>(sequence != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(attribute));
+			Requires.NotNull(sequence, "sequence");
+			Requires.NotNullOrEmpty(attribute, "attribute");
 			return sequence.Where(tag => tag.Attributes[attribute] != null);
 		}
 

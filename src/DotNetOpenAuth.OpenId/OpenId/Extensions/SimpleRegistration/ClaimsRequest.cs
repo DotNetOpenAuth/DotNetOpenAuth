@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <param name="typeUri">The type URI this extension was recognized by in the OpenID message.</param>
 		internal ClaimsRequest(string typeUri)
 			: this() {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
+			Requires.NotNullOrEmpty(typeUri, "typeUri");
 
 			this.typeUriDeserializedFrom = typeUri;
 		}

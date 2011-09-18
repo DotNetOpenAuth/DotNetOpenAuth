@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		/// <param name="typeUri">The unique TypeURI for that describes the attribute being sought.</param>
 		public AttributeRequest(string typeUri) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
+			Requires.NotNullOrEmpty(typeUri, "typeUri");
 			this.TypeUri = typeUri;
 		}
 
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+				Requires.InRange(value > 0, "value");
 				this.count = value;
 			}
 		}
@@ -99,8 +99,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// the <see cref="FetchResponse"/> object.
 		/// </returns>
 		public AttributeValues Respond(params string[] values) {
-			Contract.Requires<ArgumentNullException>(values != null);
-			Contract.Requires<ArgumentException>(values.Length <= this.Count);
+			Requires.NotNull(values, "values");
+			Requires.True(values.Length <= this.Count, "values");
 			return new AttributeValues(this.TypeUri, values);
 		}
 

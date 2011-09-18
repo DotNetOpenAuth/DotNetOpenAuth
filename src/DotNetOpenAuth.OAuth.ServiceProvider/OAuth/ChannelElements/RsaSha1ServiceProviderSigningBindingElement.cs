@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="tokenManager">The token manager.</param>
 		public RsaSha1ServiceProviderSigningBindingElement(IServiceProviderTokenManager tokenManager) {
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
+			Requires.NotNull(tokenManager, "tokenManager");
 
 			this.tokenManager = tokenManager;
 		}

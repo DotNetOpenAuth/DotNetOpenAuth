@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		}
 
 		internal static void RegisterExtension(Channel channel, StandardOpenIdExtensionFactory.CreateDelegate extensionFactory) {
-			Contract.Requires<ArgumentNullException>(channel != null);
+			Requires.NotNull(channel, "channel");
 
 			var factory = (OpenIdExtensionFactoryAggregator)channel.BindingElements.OfType<ExtensionsBindingElement>().Single().ExtensionFactory;
 			factory.Factories.OfType<StandardOpenIdExtensionFactory>().Single().RegisterExtension(extensionFactory);

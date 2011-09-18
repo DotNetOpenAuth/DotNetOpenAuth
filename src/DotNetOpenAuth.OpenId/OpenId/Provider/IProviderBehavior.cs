@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// incompatible with each other.
 		/// </remarks>
 		void IProviderBehavior.ApplySecuritySettings(ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(securitySettings, "securitySettings");
 			throw new System.NotImplementedException();
 		}
 
@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
 		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			throw new System.NotImplementedException();
 		}
 
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		bool IProviderBehavior.OnOutgoingResponse(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			throw new System.NotImplementedException();
 		}
 

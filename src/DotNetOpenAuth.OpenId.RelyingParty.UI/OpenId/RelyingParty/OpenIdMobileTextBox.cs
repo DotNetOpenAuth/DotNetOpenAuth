@@ -583,8 +583,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IAuthenticationRequest CreateRequest() {
-			Contract.Requires<InvalidOperationException>(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
-			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
+			Requires.ValidState(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
+			Requires.ValidState(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the
@@ -669,7 +669,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Authenticated, "Firing OnLoggedIn event without an authenticated response.");
 
 			var loggedIn = this.LoggedIn;
@@ -688,7 +688,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnFailed(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Failed, "Firing Failed event for the wrong response type.");
 
 			var failed = this.Failed;
@@ -702,7 +702,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnCanceled(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.Canceled, "Firing Canceled event for the wrong response type.");
 
 			var canceled = this.Canceled;
@@ -716,7 +716,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The response.</param>
 		protected virtual void OnSetupRequired(IAuthenticationResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			ErrorUtilities.VerifyInternal(response.Status == AuthenticationStatus.SetupRequired, "Firing SetupRequired event for the wrong response type.");
 
 			// Why are we firing Failed when we're OnSetupRequired?  Backward compatibility.
@@ -734,7 +734,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The authentication request to add the extensions to.</param>
 		private void AddProfileArgs(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			request.AddExtension(new ClaimsRequest() {
 				Nickname = this.RequestNickname,

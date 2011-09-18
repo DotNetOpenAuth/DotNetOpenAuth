@@ -73,26 +73,26 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		void IAuthenticationRequest.AddCallbackArguments(IDictionary<string, string> arguments) {
-			Contract.Requires<ArgumentNullException>(arguments != null);
-			Contract.Requires<ArgumentException>(arguments.Keys.All(k => !String.IsNullOrEmpty(k)));
-			Contract.Requires<ArgumentException>(arguments.Values.All(v => v != null));
+			Requires.NotNull(arguments, "arguments");
+			Requires.True(arguments.Keys.All(k => !String.IsNullOrEmpty(k)), "arguments");
+			Requires.True(arguments.Values.All(v => v != null), "arguments");
 			throw new NotImplementedException();
 		}
 
 		void IAuthenticationRequest.AddCallbackArguments(string key, string value) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(key));
-			Contract.Requires<ArgumentNullException>(value != null);
+			Requires.NotNullOrEmpty(key, "key");
+			Requires.NotNull(value, "value");
 			throw new NotImplementedException();
 		}
 
 		void IAuthenticationRequest.SetCallbackArgument(string key, string value) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(key));
-			Contract.Requires<ArgumentNullException>(value != null);
+			Requires.NotNullOrEmpty(key, "key");
+			Requires.NotNull(value, "value");
 			throw new NotImplementedException();
 		}
 
 		void IAuthenticationRequest.AddExtension(IOpenIdMessageExtension extension) {
-			Contract.Requires<ArgumentNullException>(extension != null);
+			Requires.NotNull(extension, "extension");
 			throw new NotImplementedException();
 		}
 
@@ -101,8 +101,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		void IAuthenticationRequest.SetUntrustedCallbackArgument(string key, string value) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(key));
-			Contract.Requires<ArgumentNullException>(value != null);
+			Requires.NotNullOrEmpty(key, "key");
+			Requires.NotNull(value, "value");
 			throw new NotImplementedException();
 		}
 

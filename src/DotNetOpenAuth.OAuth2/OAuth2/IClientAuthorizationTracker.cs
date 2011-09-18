@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The authorization state; may be <c>null</c> if no authorization state matches.
 		/// </returns>
 		IAuthorizationState IClientAuthorizationTracker.GetAuthorizationState(Uri callbackUrl, string clientState) {
-			Contract.Requires<ArgumentNullException>(callbackUrl != null);
+			Requires.NotNull(callbackUrl, "callbackUrl");
 			throw new NotImplementedException();
 		}
 

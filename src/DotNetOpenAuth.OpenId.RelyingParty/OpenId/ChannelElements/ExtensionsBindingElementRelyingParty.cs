@@ -29,8 +29,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		internal ExtensionsBindingElementRelyingParty(IOpenIdExtensionFactory extensionFactory, RelyingPartySecuritySettings securitySettings)
 			: base(extensionFactory, securitySettings, !securitySettings.IgnoreUnsignedExtensions) {
-			Contract.Requires<ArgumentNullException>(extensionFactory != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(extensionFactory, "extensionFactory");
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			this.relyingPartySecuritySettings = securitySettings;
 		}

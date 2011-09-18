@@ -430,7 +430,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
+				Requires.NotNullOrEmpty(value, "value");
 				this.ViewState[NameViewStateKey] = value ?? string.Empty;
 			}
 		}
@@ -478,7 +478,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
+				Requires.NotNullOrEmpty(value, "value");
 				this.ViewState[LogOnTextViewStateKey] = value ?? string.Empty;
 			}
 		}
@@ -514,7 +514,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(value));
+				Requires.NotNullOrEmpty(value, "value");
 				this.ViewState[RetryTextViewStateKey] = value ?? string.Empty;
 			}
 		}

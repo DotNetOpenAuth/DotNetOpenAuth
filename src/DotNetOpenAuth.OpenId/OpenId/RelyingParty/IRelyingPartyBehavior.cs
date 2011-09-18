@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// incompatible with each other.
 		/// </remarks>
 		void IRelyingPartyBehavior.ApplySecuritySettings(RelyingPartySecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(securitySettings, "securitySettings");
 		}
 
 		/// <summary>
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// without malfunctioning.
 		/// </remarks>
 		void IRelyingPartyBehavior.OnOutgoingAuthenticationRequest(IAuthenticationRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="assertion">The positive assertion.</param>
 		void IRelyingPartyBehavior.OnIncomingPositiveAssertion(IAuthenticationResponse assertion) {
-			Contract.Requires<ArgumentNullException>(assertion != null);
+			Requires.NotNull(assertion, "assertion");
 		}
 
 		#endregion

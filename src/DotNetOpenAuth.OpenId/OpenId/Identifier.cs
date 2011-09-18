@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
 		[DebuggerStepThrough]
 		public static implicit operator Identifier(string identifier) {
-			Contract.Requires<ArgumentException>(identifier == null || identifier.Length > 0);
+			Requires.True(identifier == null || identifier.Length > 0, "identifier");
 			Contract.Ensures((identifier == null) == (Contract.Result<Identifier>() == null));
 
 			if (identifier == null) {
@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>An <see cref="Identifier"/> instance for the given value.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
+			Requires.NotNullOrEmpty(identifier, "identifier");
 			Contract.Ensures(Contract.Result<Identifier>() != null);
 
 			return Parse(identifier, false);
@@ -168,7 +168,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier, bool serializeExactValue) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(identifier));
+			Requires.NotNullOrEmpty(identifier, "identifier");
 			Contract.Ensures(Contract.Result<Identifier>() != null);
 
 			Identifier id;
@@ -214,7 +214,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static bool IsValid(string identifier) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(identifier));
+			Requires.NotNullOrEmpty(identifier, "identifier");
 			return XriIdentifier.IsValidXri(identifier) || UriIdentifier.IsValidUri(identifier);
 		}
 
@@ -275,7 +275,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier.</param>
 		/// <returns>Either <see cref="XriIdentifier"/> or <see cref="UriIdentifier"/>.</returns>
 		internal static Identifier Reparse(Identifier identifier) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
+			Requires.NotNull(identifier, "identifier");
 			Contract.Ensures(Contract.Result<Identifier>() != null);
 
 			return Parse(identifier, identifier.IsDeserializedInstance);

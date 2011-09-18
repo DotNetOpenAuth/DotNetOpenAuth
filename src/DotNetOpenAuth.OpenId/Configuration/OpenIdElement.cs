@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Configuration {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value > TimeSpan.Zero);
+				Requires.InRange(value > TimeSpan.Zero, "value");
 				this[MaxAuthenticationTimePropertyName] = value;
 			}
 		}

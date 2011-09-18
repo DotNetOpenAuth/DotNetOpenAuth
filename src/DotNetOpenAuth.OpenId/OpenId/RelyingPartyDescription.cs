@@ -28,8 +28,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// The Type URIs of supported services advertised on a relying party's XRDS document.
 		/// </param>
 		internal RelyingPartyEndpointDescription(Uri returnTo, string[] supportedServiceTypeUris) {
-			Contract.Requires<ArgumentNullException>(returnTo != null);
-			Contract.Requires<ArgumentNullException>(supportedServiceTypeUris != null);
+			Requires.NotNull(returnTo, "returnTo");
+			Requires.NotNull(supportedServiceTypeUris, "supportedServiceTypeUris");
 
 			this.ReturnToEndpoint = returnTo;
 			this.Protocol = GetProtocolFromServices(supportedServiceTypeUris);

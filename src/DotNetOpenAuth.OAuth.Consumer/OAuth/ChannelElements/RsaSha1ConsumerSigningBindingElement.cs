@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="signingCertificate">The certificate used to sign outgoing messages.</param>
 		public RsaSha1ConsumerSigningBindingElement(X509Certificate2 signingCertificate) {
-			Contract.Requires<ArgumentNullException>(signingCertificate != null);
+			Requires.NotNull(signingCertificate, "signingCertificate");
 
 			this.SigningCertificate = signingCertificate;
 		}

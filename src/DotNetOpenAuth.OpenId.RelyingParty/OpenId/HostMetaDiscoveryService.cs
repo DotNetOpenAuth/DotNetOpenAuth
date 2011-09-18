@@ -158,7 +158,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xrds">The XRDs to search.</param>
 		/// <returns>A sequence of services.</returns>
 		private static IEnumerable<ServiceElement> GetDescribedByServices(IEnumerable<XrdElement> xrds) {
-			Contract.Requires<ArgumentNullException>(xrds != null);
+			Requires.NotNull(xrds, "xrds");
 			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
 
 			var describedBy = from xrd in xrds
@@ -175,9 +175,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requestHandler">The request handler.</param>
 		/// <returns>The discovered services.</returns>
 		private static IEnumerable<IdentifierDiscoveryResult> GetExternalServices(IEnumerable<XrdElement> xrds, UriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
-			Contract.Requires<ArgumentNullException>(xrds != null);
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Requires.NotNull(xrds, "xrds");
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(requestHandler, "requestHandler");
 			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 
 			var results = new List<IdentifierDiscoveryResult>();
@@ -214,9 +214,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <exception cref="ProtocolException">Thrown if the XRDS document has an invalid or a missing signature.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "XmlDSig", Justification = "xml")]
 		private static void ValidateXmlDSig(XrdsDocument document, UriIdentifier identifier, IncomingWebResponse response, string signingHost) {
-			Contract.Requires<ArgumentNullException>(document != null);
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(document, "document");
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(response, "response");
 
 			var signatureNode = document.Node.SelectSingleNode("/xrds:XRDS/ds:Signature", document.XmlNamespaceResolver);
 			ErrorUtilities.VerifyProtocol(signatureNode != null, OpenIdStrings.MissingElement, "Signature");
@@ -299,9 +299,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document could not be obtained.</exception>
 		private static IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, Uri xrdsLocation) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
-			Contract.Requires<ArgumentNullException>(xrdsLocation != null);
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(requestHandler, "requestHandler");
+			Requires.NotNull(xrdsLocation, "xrdsLocation");
 			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
 
 			var request = (HttpWebRequest)WebRequest.Create(xrdsLocation);
@@ -325,8 +325,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A HTTP response carrying an XRDS document, or <c>null</c> if one could not be obtained.</returns>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document could not be obtained.</exception>
 		private IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(requestHandler, "requestHandler");
 			Uri xrdsLocation = this.GetXrdsLocation(identifier, requestHandler, out signingHost);
 			if (xrdsLocation == null) {
 				return null;
@@ -345,8 +345,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
 		/// <returns>An absolute URI, or <c>null</c> if one could not be determined.</returns>
 		private Uri GetXrdsLocation(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(requestHandler, "requestHandler");
 			using (var hostMetaResponse = this.GetHostMeta(identifier, requestHandler, out signingHost)) {
 				if (hostMetaResponse == null) {
 					return null;
@@ -377,8 +377,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// The host-meta response, or <c>null</c> if no host-meta document could be obtained.
 		/// </returns>
 		private IncomingWebResponse GetHostMeta(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Requires.NotNull(identifier, "identifier");
+			Requires.NotNull(requestHandler, "requestHandler");
 			foreach (var hostMetaProxy in this.GetHostMetaLocations(identifier)) {
 				var hostMetaLocation = hostMetaProxy.GetProxy(identifier);
 				var request = (HttpWebRequest)WebRequest.Create(hostMetaLocation);
@@ -413,7 +413,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier.</param>
 		/// <returns>A sequence of URIs that MAY provide the host-meta for a given identifier.</returns>
 		private IEnumerable<HostMetaProxy> GetHostMetaLocations(UriIdentifier identifier) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
+			Requires.NotNull(identifier, "identifier");
 
 			// First try the proxies, as they are considered more "secure" than the local
 			// host-meta for a domain since the domain may be defaced.
@@ -440,8 +440,8 @@ namespace DotNetOpenAuth.OpenId {
 			/// <param name="proxyFormat">The proxy formatting string.</param>
 			/// <param name="signingHostFormat">The signing host formatting string.</param>
 			public HostMetaProxy(string proxyFormat, string signingHostFormat) {
-				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(proxyFormat));
-				Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(signingHostFormat));
+				Requires.NotNullOrEmpty(proxyFormat, "proxyFormat");
+				Requires.NotNullOrEmpty(signingHostFormat, "signingHostFormat");
 				this.ProxyFormat = proxyFormat;
 				this.SigningHostFormat = signingHostFormat;
 			}
@@ -469,7 +469,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// <param name="identifier">The identifier being discovered.</param>
 			/// <returns>The an absolute URI.</returns>
 			public virtual Uri GetProxy(UriIdentifier identifier) {
-				Contract.Requires<ArgumentNullException>(identifier != null);
+				Requires.NotNull(identifier, "identifier");
 				return new Uri(string.Format(CultureInfo.InvariantCulture, this.ProxyFormat, Uri.EscapeDataString(identifier.Uri.Host)));
 			}
 
@@ -479,7 +479,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// <param name="identifier">The identifier being discovered.</param>
 			/// <returns>A host name.</returns>
 			public virtual string GetSigningHost(UriIdentifier identifier) {
-				Contract.Requires<ArgumentNullException>(identifier != null);
+				Requires.NotNull(identifier, "identifier");
 				return string.Format(CultureInfo.InvariantCulture, this.SigningHostFormat, identifier.Uri.Host, this.GetProxy(identifier).Host);
 			}
 

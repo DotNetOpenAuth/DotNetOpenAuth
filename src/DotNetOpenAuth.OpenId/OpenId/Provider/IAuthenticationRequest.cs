@@ -176,8 +176,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			set {
 				IAuthenticationRequest req = this;
-				Contract.Requires<InvalidOperationException>(!req.IsDelegatedIdentifier, OpenIdStrings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
-				Contract.Requires<InvalidOperationException>(!req.IsDirectedIdentity || !(req.LocalIdentifier != null && req.LocalIdentifier != value), OpenIdStrings.IdentifierSelectRequiresMatchingIdentifiers);
+				Requires.ValidState(!req.IsDelegatedIdentifier, OpenIdStrings.ClaimedIdentifierCannotBeSetOnDelegatedAuthentication);
+				Requires.ValidState(!req.IsDirectedIdentity || !(req.LocalIdentifier != null && req.LocalIdentifier != value), OpenIdStrings.IdentifierSelectRequiresMatchingIdentifiers);
 			}
 		}
 
@@ -293,8 +293,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// request before the <see cref="IAuthenticationRequest.ClaimedIdentifier"/> property is set.
 		/// </exception>
 		void IAuthenticationRequest.SetClaimedIdentifierFragment(string fragment) {
-			Contract.Requires<InvalidOperationException>(!(((IAuthenticationRequest)this).IsDirectedIdentity && ((IAuthenticationRequest)this).ClaimedIdentifier == null), OpenIdStrings.ClaimedIdentifierMustBeSetFirst);
-			Contract.Requires<InvalidOperationException>(!(((IAuthenticationRequest)this).ClaimedIdentifier is XriIdentifier), OpenIdStrings.FragmentNotAllowedOnXRIs);
+			Requires.ValidState(!(((IAuthenticationRequest)this).IsDirectedIdentity && ((IAuthenticationRequest)this).ClaimedIdentifier == null), OpenIdStrings.ClaimedIdentifierMustBeSetFirst);
+			Requires.ValidState(!(((IAuthenticationRequest)this).ClaimedIdentifier is XriIdentifier), OpenIdStrings.FragmentNotAllowedOnXRIs);
 
 			throw new NotImplementedException();
 		}

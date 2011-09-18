@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="collection">The attribute request collection.</param>
 		/// <param name="typeUri">The type URI of the required attribute.</param>
 		public static void AddRequired(this ICollection<AttributeRequest> collection, string typeUri) {
-			Contract.Requires<ArgumentNullException>(collection != null);
+			Requires.NotNull(collection, "collection");
 			collection.Add(new AttributeRequest(typeUri, true));
 		}
 
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="collection">The attribute request collection.</param>
 		/// <param name="typeUri">The type URI of the requested attribute.</param>
 		public static void AddOptional(this ICollection<AttributeRequest> collection, string typeUri) {
-			Contract.Requires<ArgumentNullException>(collection != null);
+			Requires.NotNull(collection, "collection");
 			collection.Add(new AttributeRequest(typeUri, false));
 		}
 
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="typeUri">The type URI of the attribute.</param>
 		/// <param name="values">The attribute values.</param>
 		public static void Add(this ICollection<AttributeValues> collection, string typeUri, params string[] values) {
-			Contract.Requires<ArgumentNullException>(collection != null);
+			Requires.NotNull(collection, "collection");
 			collection.Add(new AttributeValues(typeUri, values));
 		}
 
@@ -53,8 +53,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="fields">The dictionary to fill with serialized attributes.</param>
 		/// <param name="attributes">The attributes.</param>
 		internal static void SerializeAttributes(IDictionary<string, string> fields, IEnumerable<AttributeValues> attributes) {
-			Contract.Requires<ArgumentNullException>(fields != null);
-			Contract.Requires<ArgumentNullException>(attributes != null);
+			Requires.NotNull(fields, "fields");
+			Requires.NotNull(attributes, "attributes");
 
 			AliasManager aliasManager = new AliasManager();
 			foreach (var att in attributes) {
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="fields">The data included in the extension message.</param>
 		/// <returns>The alias manager that provides lookup between aliases and type URIs.</returns>
 		private static AliasManager ParseAliases(IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(fields, "fields");
 
 			AliasManager aliasManager = new AliasManager();
 			const string TypePrefix = "type.";

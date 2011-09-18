@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="accessTokenAnalyzer">The access token analyzer.</param>
 		public ResourceServer(IAccessTokenAnalyzer accessTokenAnalyzer) {
-			Contract.Requires<ArgumentNullException>(accessTokenAnalyzer != null);
+			Requires.NotNull(accessTokenAnalyzer, "accessTokenAnalyzer");
 
 			this.AccessTokenAnalyzer = accessTokenAnalyzer;
 			this.Channel = new OAuth2ResourceServerChannel();
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
 		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string userName, out HashSet<string> scope) {
-			Contract.Requires<ArgumentNullException>(httpRequestInfo != null);
+			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 
 			AccessProtectedResourceRequest request = null;
 			try {
@@ -127,8 +127,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
 		public virtual OutgoingWebResponse VerifyAccess(HttpRequestMessageProperty request, Uri requestUri, out IPrincipal principal) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(requestUri != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(requestUri, "requestUri");
 
 			return this.VerifyAccess(new HttpRequestInfo(request, requestUri), out principal);
 		}

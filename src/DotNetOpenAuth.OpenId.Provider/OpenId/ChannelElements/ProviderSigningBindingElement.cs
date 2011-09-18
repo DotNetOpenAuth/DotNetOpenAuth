@@ -38,8 +38,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="associationStore">The association store used to look up the secrets needed for signing.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		internal ProviderSigningBindingElement(IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(associationStore != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(associationStore, "associationStore");
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			this.opAssociations = associationStore;
 			this.opSecuritySettings = securitySettings;
@@ -177,7 +177,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// 	<c>true</c> if the relying party is vulnerable; otherwise, <c>false</c>.
 		/// </returns>
 		private static bool IsRelyingPartyVulnerableToReplays(SignedResponseRequest request, IndirectSignedResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 
 			// OpenID 2.0 includes replay protection as part of the protocol.
 			if (response.Version.Major >= 2) {
@@ -217,8 +217,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// the inclusion and order of message parts that will be signed.
 		/// </returns>
 		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
-			Contract.Requires<InvalidOperationException>(this.Channel != null);
-			Contract.Requires<ArgumentNullException>(signedMessage != null);
+			Requires.ValidState(this.Channel != null);
+			Requires.NotNull(signedMessage, "signedMessage");
 
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 

@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		private T CloneSerializedParts<T>(T message, HttpRequestInfo requestInfo) where T : class, IProtocolMessage {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 
 			IProtocolMessage clonedMessage;
 			var messageAccessor = this.MessageDescriptions.GetAccessor(message);

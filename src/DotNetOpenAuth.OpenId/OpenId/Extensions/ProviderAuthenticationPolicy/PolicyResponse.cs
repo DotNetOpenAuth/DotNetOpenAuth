@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 			}
 
 			set {
-				Contract.Requires<ArgumentException>(!value.HasValue || value.Value.Kind != DateTimeKind.Unspecified, OpenIdStrings.UnspecifiedDateTimeKindNotAllowed);
+				Requires.True(!value.HasValue || value.Value.Kind != DateTimeKind.Unspecified, "value", OpenIdStrings.UnspecifiedDateTimeKindNotAllowed);
 
 				// Make sure that whatever is set here, it becomes UTC time.
 				if (value.HasValue) {

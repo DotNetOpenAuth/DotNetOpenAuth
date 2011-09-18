@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The association to use to sign or verify the message.
 		/// </returns>
 		protected override Association GetAssociation(ITamperResistantOpenIdMessage signedMessage) {
-			Contract.Requires<ArgumentNullException>(signedMessage != null);
+			Requires.NotNull(signedMessage, "signedMessage");
 			throw new NotImplementedException();
 		}
 
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The referenced association; or <c>null</c> if such an association cannot be found.
 		/// </returns>
 		protected override Association GetSpecificAssociation(ITamperResistantOpenIdMessage signedMessage) {
-			Contract.Requires<ArgumentNullException>(signedMessage != null);
+			Requires.NotNull(signedMessage, "signedMessage");
 			throw new NotImplementedException();
 		}
 	}

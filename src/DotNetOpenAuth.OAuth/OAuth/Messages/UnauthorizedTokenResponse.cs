@@ -27,8 +27,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// </remarks>
 		protected internal UnauthorizedTokenResponse(UnauthorizedTokenRequest requestMessage, string requestToken, string tokenSecret)
 			: this(requestMessage, requestMessage.Version) {
-			Contract.Requires<ArgumentNullException>(requestToken != null);
-			Contract.Requires<ArgumentNullException>(tokenSecret != null);
+			Requires.NotNull(requestToken, "requestToken");
+			Requires.NotNull(tokenSecret, "tokenSecret");
 
 			this.RequestToken = requestToken;
 			this.TokenSecret = tokenSecret;

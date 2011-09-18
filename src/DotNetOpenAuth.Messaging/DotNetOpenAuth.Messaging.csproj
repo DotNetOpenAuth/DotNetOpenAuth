@@ -11,7 +11,6 @@
     <ProjectGuid>{60426312-6AE5-4835-8667-37EDEA670222}</ProjectGuid>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>DotNetOpenAuth.Messaging</AssemblyName>
-    <CodeContractsRewritingDisabled>true</CodeContractsRewritingDisabled>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

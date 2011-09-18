@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="cryptoKeyStore">The crypto key store.</param>
 		public ProviderAssociationHandleEncoder(ICryptoKeyStore cryptoKeyStore) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 			this.cryptoKeyStore = cryptoKeyStore;
 		}
 

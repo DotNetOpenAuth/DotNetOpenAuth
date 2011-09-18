@@ -37,8 +37,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contract"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		internal TokenHandlingBindingElement(IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(tokenManager != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(tokenManager, "tokenManager");
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			this.tokenManager = tokenManager;
 			this.securitySettings = securitySettings;
@@ -153,7 +153,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The incoming message carrying the access token.</param>
 		private void VerifyThrowTokenNotExpired(AccessProtectedResourceRequest message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 
 			try {
 				IServiceProviderAccessToken token = this.tokenManager.GetAccessToken(message.AccessToken);

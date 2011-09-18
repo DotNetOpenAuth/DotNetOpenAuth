@@ -367,7 +367,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<para>Note that these values are NOT protected against tampering in transit.</para>
 		/// </remarks>
 		string IAuthenticationResponse.GetCallbackArgument(string key) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(key));
+			Requires.NotNullOrEmpty(key, "key");
 			throw new NotImplementedException();
 		}
 
@@ -432,8 +432,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		IOpenIdMessageExtension IAuthenticationResponse.GetExtension(Type extensionType) {
-			Contract.Requires<ArgumentNullException>(extensionType != null);
-			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
+			Requires.NotNullSubtype<IOpenIdMessageExtension>(extensionType, "extensionType");
 			////ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), string.Format(CultureInfo.CurrentCulture, OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName));
 			throw new NotImplementedException();
 		}
@@ -485,8 +484,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		IOpenIdMessageExtension IAuthenticationResponse.GetUntrustedExtension(Type extensionType) {
-			Contract.Requires<ArgumentNullException>(extensionType != null);
-			Contract.Requires<ArgumentException>(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType));
+			Requires.NotNullSubtype<IOpenIdMessageExtension>(extensionType, "extensionType");
 			////ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), string.Format(CultureInfo.CurrentCulture, OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName));
 			throw new NotImplementedException();
 		}
@@ -506,7 +504,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to make a security-sensitive decision.
 		/// </remarks>
 		string IAuthenticationResponse.GetUntrustedCallbackArgument(string key) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(key));
+			Requires.NotNullOrEmpty(key, "key");
 			throw new NotImplementedException();
 		}
 

@@ -65,8 +65,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// The association handle that represents this association.
 		/// </returns>
 		string IProviderAssociationStore.Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
-			Contract.Requires<ArgumentNullException>(secret != null);
-			Contract.Requires<ArgumentException>(expiresUtc.Kind == DateTimeKind.Utc);
+			Requires.NotNull(secret, "secret");
+			Requires.True(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			throw new NotImplementedException();
 		}
@@ -82,8 +82,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
 		Association IProviderAssociationStore.Deserialize(IProtocolMessage containingMessage, bool privateAssociation, string handle) {
-			Contract.Requires<ArgumentNullException>(containingMessage != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			Requires.NotNull(containingMessage, "containingMessage");
+			Requires.NotNullOrEmpty(handle, "handle");
 			throw new NotImplementedException();
 		}
 	}

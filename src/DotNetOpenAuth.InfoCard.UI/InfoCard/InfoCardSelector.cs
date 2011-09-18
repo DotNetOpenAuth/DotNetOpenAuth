@@ -454,7 +454,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The event arguments sent to the event handlers.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "decryptor", Justification = "By design")]
 		protected virtual ReceivingTokenEventArgs OnReceivingToken(string tokenXml) {
-			Contract.Requires<ArgumentNullException>(tokenXml != null);
+			Requires.NotNull(tokenXml, "tokenXml");
 
 			var args = new ReceivingTokenEventArgs(tokenXml);
 			var receivingToken = this.ReceivingToken;
@@ -470,7 +470,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="token">The token, if it was decrypted.</param>
 		protected virtual void OnReceivedToken(Token token) {
-			Contract.Requires<ArgumentNullException>(token != null);
+			Requires.NotNull(token, "token");
 
 			var receivedInfoCard = this.ReceivedToken;
 			if (receivedInfoCard != null) {
@@ -484,8 +484,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="unprocessedToken">The unprocessed token.</param>
 		/// <param name="ex">The exception generated while processing the token.</param>
 		protected virtual void OnTokenProcessingError(string unprocessedToken, Exception ex) {
-			Contract.Requires<ArgumentNullException>(unprocessedToken != null);
-			Contract.Requires<ArgumentNullException>(ex != null);
+			Requires.NotNull(unprocessedToken, "unprocessedToken");
+			Requires.NotNull(ex, "ex");
 
 			var tokenProcessingError = this.TokenProcessingError;
 			if (tokenProcessingError != null) {
@@ -724,7 +724,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="optional">A space-delimited list of claim type URIs for claims that may optionally be included in a submitted Information Card.</param>
 		[Pure]
 		private void GetRequestedClaims(out string required, out string optional) {
-			Contract.Requires<InvalidOperationException>(this.ClaimsRequested != null);
+			Requires.ValidState(this.ClaimsRequested != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out required) != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out optional) != null);
 
@@ -750,7 +750,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// or to downgrade gracefully if the user agent lacks an Information Card selector.
 		/// </summary>
 		private void RenderSupportingScript() {
-			Contract.Requires<InvalidOperationException>(this.infoCardSupportedPanel != null);
+			Requires.ValidState(this.infoCardSupportedPanel != null);
 
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(InfoCardSelector), ScriptResourceName);
 

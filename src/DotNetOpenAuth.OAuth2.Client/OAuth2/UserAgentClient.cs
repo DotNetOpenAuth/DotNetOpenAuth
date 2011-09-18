@@ -37,8 +37,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientSecret">The client secret.</param>
 		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier = null, string clientSecret = null)
 			: this(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint, TokenEndpoint = tokenEndpoint }, clientIdentifier, clientSecret) {
-			Contract.Requires<ArgumentNullException>(authorizationEndpoint != null);
-			Contract.Requires<ArgumentNullException>(tokenEndpoint != null);
+			Requires.NotNull(authorizationEndpoint, "authorizationEndpoint");
+			Requires.NotNull(tokenEndpoint, "tokenEndpoint");
 		}
 
 		/// <summary>
@@ -69,8 +69,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
 		public Uri RequestUserAuthorization(IAuthorizationState authorization, string state = null) {
-			Contract.Requires<ArgumentNullException>(authorization != null);
-			Contract.Requires<InvalidOperationException>(!string.IsNullOrEmpty(this.ClientIdentifier));
+			Requires.NotNull(authorization, "authorization");
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
 			if (authorization.Callback == null) {
 				authorization.Callback = new Uri("http://localhost/");
@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationState">The authorization.</param>
 		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
 		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorizationState = null) {
-			Contract.Requires<ArgumentNullException>(actualRedirectUrl != null);
+			Requires.NotNull(actualRedirectUrl, "actualRedirectUrl");
 
 			if (authorizationState == null) {
 				authorizationState = new AuthorizationState();

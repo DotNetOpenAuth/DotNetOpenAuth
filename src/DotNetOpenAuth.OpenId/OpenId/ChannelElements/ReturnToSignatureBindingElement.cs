@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="cryptoKeyStore">The crypto key store.</param>
 		internal ReturnToSignatureBindingElement(ICryptoKeyStore cryptoKeyStore) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 
 			this.cryptoKeyStore = cryptoKeyStore;
 		}
@@ -173,7 +173,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// or other minor changes do not invalidate the signature.
 		/// </remarks>
 		private byte[] GetReturnToSignature(Uri returnTo, CryptoKey cryptoKey = null) {
-			Contract.Requires<ArgumentNullException>(returnTo != null);
+			Requires.NotNull(returnTo, "returnTo");
 
 			// Assemble the dictionary to sign, taking care to remove the signature itself
 			// in order to accurately reproduce the original signature (which of course didn't include

@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="extension">The extension to add to the response message.</param>
 		void IRequest.AddResponseExtension(IOpenIdMessageExtension extension) {
-			Contract.Requires<ArgumentNullException>(extension != null);
+			Requires.NotNull(extension, "extension");
 			throw new NotImplementedException();
 		}
 
@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// An instance of the extension initialized with values passed in with the request.
 		/// </returns>
 		IOpenIdMessageExtension IRequest.GetExtension(Type extensionType) {
-			Contract.Requires<ArgumentNullException>(extensionType != null);
+			Requires.NotNull(extensionType, "extensionType");
 			throw new NotImplementedException();
 		}
 

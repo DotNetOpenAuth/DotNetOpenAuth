@@ -26,7 +26,7 @@ namespace DotNetOpenAuth {
 		/// <exception cref="InfoCard.InformationCardException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		[Pure]
 		internal static void VerifyInfoCard(bool condition, string errorMessage, params object[] args) {
-			Contract.Requires<ArgumentNullException>(args != null);
+			Requires.NotNull(args, "args");
 			Contract.Ensures(condition);
 			Contract.EnsuresOnThrow<InfoCard.InformationCardException>(!condition);
 			Contract.Assume(errorMessage != null);

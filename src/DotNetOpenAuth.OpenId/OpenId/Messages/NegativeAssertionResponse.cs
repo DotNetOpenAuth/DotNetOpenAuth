@@ -114,8 +114,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="channel">The channel to use to simulate construction of the message.</param>
 		/// <returns>The value to use for the user_setup_url parameter.</returns>
 		private static Uri ConstructUserSetupUrl(CheckIdRequest immediateRequest, Channel channel) {
-			Contract.Requires<ArgumentNullException>(immediateRequest != null);
-			Contract.Requires<ArgumentNullException>(channel != null);
+			Requires.NotNull(immediateRequest, "immediateRequest");
+			Requires.NotNull(channel, "channel");
 			ErrorUtilities.VerifyInternal(immediateRequest.Immediate, "Only immediate requests should be sent here.");
 
 			var setupRequest = new CheckIdRequest(immediateRequest.Version, immediateRequest.Recipient, AuthenticationRequestMode.Setup);
@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">The request that we're responding to.</param>
 		/// <returns>The value of the openid.mode parameter to use.</returns>
 		private static string GetMode(SignedResponseRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			Protocol protocol = Protocol.Lookup(request.Version);
 			return request.Immediate ? protocol.Args.Mode.setup_needed : protocol.Args.Mode.cancel;

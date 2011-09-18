@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		/// <exception cref="ArgumentException">Thrown if the secret cannot be found for the given token.</exception>
 		string ITokenManager.GetTokenSecret(string token) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
+			Requires.NotNullOrEmpty(token, "token");
 			Contract.Ensures(Contract.Result<string>() != null);
 			throw new NotImplementedException();
 		}
@@ -116,8 +116,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// method.
 		/// </remarks>
 		void ITokenManager.StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(response, "response");
 			throw new NotImplementedException();
 		}
 
@@ -145,10 +145,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </para>
 		/// </remarks>
 		void ITokenManager.ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(consumerKey));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(requestToken));
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
-			Contract.Requires<ArgumentNullException>(accessTokenSecret != null);
+			Requires.NotNullOrEmpty(consumerKey, "consumerKey");
+			Requires.NotNullOrEmpty(requestToken, "requestToken");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+			Requires.NotNull(accessTokenSecret, "accessTokenSecret");
 			throw new NotImplementedException();
 		}
 
@@ -160,7 +160,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Request or Access token, or invalid if the token is not recognized.
 		/// </returns>
 		TokenType ITokenManager.GetTokenType(string token) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
+			Requires.NotNullOrEmpty(token, "token");
 			throw new NotImplementedException();
 		}
 

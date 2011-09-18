@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// <param name="typeUri">The TypeURI that uniquely identifies the attribute.</param>
 		/// <param name="values">The values for the attribute.</param>
 		public AttributeValues(string typeUri, params string[] values) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
+			Requires.NotNullOrEmpty(typeUri, "typeUri");
 
 			this.TypeUri = typeUri;
 			this.Values = (IList<string>)values ?? EmptyList<string>.Instance;
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </summary>
 		/// <param name="typeUri">The TypeURI of the attribute whose values are being provided.</param>
 		internal AttributeValues(string typeUri) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(typeUri));
+			Requires.NotNullOrEmpty(typeUri, "typeUri");
 
 			this.TypeUri = typeUri;
 			this.Values = new List<string>(1);

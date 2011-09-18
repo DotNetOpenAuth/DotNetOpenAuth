@@ -27,9 +27,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The created association.
 		/// </returns>
 		Association IAssociateSuccessfulResponseProvider.CreateAssociationAtProvider(AssociateRequest request, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(associationStore != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(request, "request");
+			Requires.NotNull(associationStore, "associationStore");
+			Requires.NotNull(securitySettings, "securitySettings");
 			throw new NotImplementedException();
 		}
 

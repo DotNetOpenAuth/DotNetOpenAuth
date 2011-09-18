@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The incoming request message.</param>
 		protected HostProcessedRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(request, provider.SecuritySettings) {
-			Contract.Requires<ArgumentNullException>(provider != null);
+			Requires.NotNull(provider, "provider");
 
 			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
 			Reporting.RecordEventOccurrence(this, request.Realm);
@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Result of realm discovery.
 		/// </returns>
 		private RelyingPartyDiscoveryResult IsReturnUrlDiscoverableCore(IDirectWebRequestHandler requestHandler) {
-			Contract.Requires<ArgumentNullException>(requestHandler != null);
+			Requires.NotNull(requestHandler, "requestHandler");
 
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 

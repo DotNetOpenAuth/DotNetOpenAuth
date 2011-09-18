@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="targetFormat">The target format.  Only one flag should be set.</param>
 		/// <returns>The AX attribute type URI in the target format.</returns>
 		internal static string TransformAXFormat(string axSchemaOrgFormatTypeUri, AXAttributeFormats targetFormat) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(axSchemaOrgFormatTypeUri));
+			Requires.NotNullOrEmpty(axSchemaOrgFormatTypeUri, "axSchemaOrgFormatTypeUri");
 
 			switch (targetFormat) {
 				case AXAttributeFormats.AXSchemaOrg:
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="typeURIs">The type URIs to scan for recognized formats.</param>
 		/// <returns>The first AX type URI format recognized in the list.</returns>
 		internal static AXAttributeFormats DetectAXFormat(IEnumerable<string> typeURIs) {
-			Contract.Requires<ArgumentNullException>(typeURIs != null);
+			Requires.NotNull(typeURIs, "typeURIs");
 
 			if (typeURIs.Any(uri => uri.StartsWith("http://axschema.org/", StringComparison.Ordinal))) {
 				return AXAttributeFormats.AXSchemaOrg;
@@ -103,8 +103,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="axSchemaOrgFormatAttribute">The attribute in axschema.org format.</param>
 		/// <param name="demandLevel">The demand level.</param>
 		internal static void FetchAttribute(FetchRequest ax, AXAttributeFormats format, string axSchemaOrgFormatAttribute, DemandLevel demandLevel) {
-			Contract.Requires<ArgumentNullException>(ax != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(axSchemaOrgFormatAttribute));
+			Requires.NotNull(ax, "ax");
+			Requires.NotNullOrEmpty(axSchemaOrgFormatAttribute, "axSchemaOrgFormatAttribute");
 
 			string typeUri = TransformAXFormat(axSchemaOrgFormatAttribute, format);
 			if (!ax.Attributes.Contains(typeUri)) {

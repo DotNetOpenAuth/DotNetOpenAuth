@@ -101,7 +101,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		public static byte[] GetBytes(IEnumerable<KeyValuePair<string, string>> keysAndValues) {
-			Contract.Requires<ArgumentNullException>(keysAndValues != null);
+			Requires.NotNull(keysAndValues, "keysAndValues");
 
 			using (MemoryStream ms = new MemoryStream()) {
 				using (StreamWriter sw = new StreamWriter(ms, textEncoding)) {

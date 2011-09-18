@@ -29,8 +29,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// <param name="serviceProviderAction">The code path of the Service Provider.</param>
 		internal OAuthCoordinator(ConsumerDescription consumerDescription, ServiceProviderDescription serviceDescription, Action<WebConsumer> consumerAction, Action<ServiceProvider> serviceProviderAction)
 			: base(consumerAction, serviceProviderAction) {
-			Contract.Requires<ArgumentNullException>(consumerDescription != null);
-			Contract.Requires<ArgumentNullException>(serviceDescription != null);
+			Requires.NotNull(consumerDescription, "consumerDescription");
+			Requires.NotNull(serviceDescription, "serviceDescription");
 
 			this.consumerDescription = consumerDescription;
 			this.serviceDescription = serviceDescription;

@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="request">The incoming authentication request message.</param>
 		internal AuthenticationRequest(OpenIdProvider provider, CheckIdRequest request)
 			: base(provider, request) {
-			Contract.Requires<ArgumentNullException>(provider != null);
+			Requires.NotNull(provider, "provider");
 
 			this.positiveResponse = new PositiveAssertionResponse(request);
 
@@ -216,7 +216,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="identifier">The value to set to the <see cref="ClaimedIdentifier"/> and <see cref="LocalIdentifier"/> properties.</param>
 		internal void ResetClaimedAndLocalIdentifiers(Identifier identifier) {
-			Contract.Requires<ArgumentNullException>(identifier != null);
+			Requires.NotNull(identifier, "identifier");
 
 			this.positiveResponse.ClaimedIdentifier = identifier;
 			this.positiveResponse.LocalIdentifier = identifier;

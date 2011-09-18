@@ -65,8 +65,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <param name="originatingRequest">The request that asked for this direct response.</param>
 		/// <param name="version">The OAuth version.</param>
 		protected MessageBase(MessageProtections protectionRequired, IDirectedProtocolMessage originatingRequest, Version version) {
-			Contract.Requires<ArgumentNullException>(originatingRequest != null);
-			Contract.Requires<ArgumentNullException>(version != null);
+			Requires.NotNull(originatingRequest, "originatingRequest");
+			Requires.NotNull(version, "version");
 
 			this.protectionRequired = protectionRequired;
 			this.transport = MessageTransport.Direct;
@@ -82,8 +82,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <param name="recipient">The URI that a directed message will be delivered to.</param>
 		/// <param name="version">The OAuth version.</param>
 		protected MessageBase(MessageProtections protectionRequired, MessageTransport transport, MessageReceivingEndpoint recipient, Version version) {
-			Contract.Requires<ArgumentNullException>(recipient != null);
-			Contract.Requires<ArgumentNullException>(version != null);
+			Requires.NotNull(recipient, "recipient");
+			Requires.NotNull(version, "version");
 
 			this.protectionRequired = protectionRequired;
 			this.transport = transport;
@@ -242,7 +242,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// The string representation of this object.
 		/// </returns>
 		internal virtual string ToString(Channel channel) {
-			Contract.Requires<ArgumentNullException>(channel != null);
+			Requires.NotNull(channel, "channel");
 
 			StringBuilder builder = new StringBuilder();
 			builder.AppendFormat(CultureInfo.InvariantCulture, "{0} message", GetType().Name);

@@ -26,7 +26,7 @@ namespace DotNetOpenAuth {
 		/// The created association.
 		/// </returns>
 		Association IAssociateSuccessfulResponseRelyingParty.CreateAssociationAtRelyingParty(AssociateRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			throw new NotImplementedException();
 		}
 

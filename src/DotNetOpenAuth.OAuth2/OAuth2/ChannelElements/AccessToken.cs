@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="authorization">The authorization to be described by the access token.</param>
 		/// <param name="lifetime">The lifetime of the access token.</param>
 		internal AccessToken(IAuthorizationDescription authorization, TimeSpan? lifetime) {
-			Contract.Requires<ArgumentNullException>(authorization != null);
+			Requires.NotNull(authorization, "authorization");
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
 			this.UtcCreationDate = authorization.UtcIssued;
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="username">The username of the account that authorized this token.</param>
 		/// <param name="lifetime">The lifetime for this access token.</param>
 		internal AccessToken(string clientIdentifier, IEnumerable<string> scopes, string username, TimeSpan? lifetime) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(clientIdentifier));
+			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
 
 			this.ClientIdentifier = clientIdentifier;
 			this.Scope.ResetContents(scopes);

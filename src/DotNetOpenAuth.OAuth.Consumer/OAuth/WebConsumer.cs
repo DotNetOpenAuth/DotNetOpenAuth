@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>
 		/// <param name="scope">The scope of access that is requested of the service provider.</param>
 		public void AttachAuthorizationRequest(IAuthenticationRequest openIdAuthenticationRequest, string scope) {
-			Contract.Requires<ArgumentNullException>(openIdAuthenticationRequest != null);
+			Requires.NotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
 
 			var authorizationRequest = new AuthorizationRequest {
 				Consumer = this.ConsumerKey,
@@ -101,8 +101,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager"/>.
 		/// </remarks>
 		public AuthorizedTokenResponse ProcessUserAuthorization(IAuthenticationResponse openIdAuthenticationResponse) {
-			Contract.Requires<ArgumentNullException>(openIdAuthenticationResponse != null);
-			Contract.Requires<InvalidOperationException>(this.TokenManager is IOpenIdOAuthTokenManager);
+			Requires.NotNull(openIdAuthenticationResponse, "openIdAuthenticationResponse");
+			Requires.ValidState(this.TokenManager is IOpenIdOAuthTokenManager);
 			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 
@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
 		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestInfo request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			UserAuthorizationResponse authorizationMessage;
 			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {

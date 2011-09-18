@@ -102,7 +102,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </returns>
 		/// <exception cref="KeyNotFoundException">Thrown if the consumer key cannot be found.</exception>
 		IConsumerDescription IServiceProviderTokenManager.GetConsumer(string consumerKey) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(consumerKey));
+			Requires.NotNullOrEmpty(consumerKey, "consumerKey");
 			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
 			throw new NotImplementedException();
 		}
@@ -118,7 +118,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// been authorized, has expired or does not exist.
 		/// </returns>
 		bool IServiceProviderTokenManager.IsRequestTokenAuthorized(string requestToken) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(requestToken));
+			Requires.NotNullOrEmpty(requestToken, "requestToken");
 			throw new NotImplementedException();
 		}
 
@@ -135,7 +135,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// log and throw the appropriate error.
 		/// </remarks>
 		IServiceProviderRequestToken IServiceProviderTokenManager.GetRequestToken(string token) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
+			Requires.NotNullOrEmpty(token, "token");
 			Contract.Ensures(Contract.Result<IServiceProviderRequestToken>() != null);
 			throw new NotImplementedException();
 		}
@@ -153,7 +153,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// log and throw the appropriate error.
 		/// </remarks>
 		IServiceProviderAccessToken IServiceProviderTokenManager.GetAccessToken(string token) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(token));
+			Requires.NotNullOrEmpty(token, "token");
 			Contract.Ensures(Contract.Result<IServiceProviderAccessToken>() != null);
 			throw new NotImplementedException();
 		}
@@ -171,7 +171,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// will automatically be saved without any extra handling).
 		/// </remarks>
 		void IServiceProviderTokenManager.UpdateToken(IServiceProviderRequestToken token) {
-			Contract.Requires<ArgumentNullException>(token != null);
+			Requires.NotNull(token, "token");
 			throw new NotImplementedException();
 		}
 

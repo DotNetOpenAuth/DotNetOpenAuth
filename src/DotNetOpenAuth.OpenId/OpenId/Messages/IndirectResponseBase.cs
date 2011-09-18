@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="mode">The value of the openid.mode parameter.</param>
 		protected IndirectResponseBase(SignedResponseRequest request, string mode)
 			: base(GetVersion(request), GetReturnTo(request), mode, MessageTransport.Indirect) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			this.OriginatingRequest = request;
 		}
@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
 		internal static Version GetVersion(IProtocolMessage message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			return message.Version;
 		}
 
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
 		private static Uri GetReturnTo(SignedResponseRequest message) {
-			Contract.Requires<ArgumentNullException>(message != null);
+			Requires.NotNull(message, "message");
 			ErrorUtilities.VerifyProtocol(message.ReturnTo != null, OpenIdStrings.ReturnToRequiredForResponse);
 			return message.ReturnTo;
 		}

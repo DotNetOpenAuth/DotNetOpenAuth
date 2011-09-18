@@ -248,7 +248,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		}
 
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(fields, "fields");
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append("OAuth ");

@@ -49,8 +49,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="mode">The value for the openid.mode parameter.</param>
 		/// <param name="transport">A value indicating whether the message will be transmitted directly or indirectly.</param>
 		protected RequestBase(Version version, Uri providerEndpoint, string mode, MessageTransport transport) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(mode));
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
+			Requires.NotNullOrEmpty(mode, "mode");
 
 			this.Recipient = providerEndpoint;
 			this.Mode = mode;
@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// instead of a <see cref="NullReferenceException"/>.
 		/// </remarks>
 		protected static string GetProtocolConstant(Version protocolVersion, Func<Protocol, string> mode) {
-			Contract.Requires<ArgumentNullException>(protocolVersion != null);
+			Requires.NotNull(protocolVersion, "protocolVersion");
 			return mode(Protocol.Lookup(protocolVersion));
 		}
 	}

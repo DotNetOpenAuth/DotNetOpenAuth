@@ -24,8 +24,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="version">The protocol version.</param>
 		internal EndUserAuthorizationFailedResponse(Uri clientCallback, Version version)
 			: base(version, MessageTransport.Indirect, clientCallback) {
-			Contract.Requires<ArgumentNullException>(version != null);
-			Contract.Requires<ArgumentNullException>(clientCallback != null);
+			Requires.NotNull(version, "version");
+			Requires.NotNull(clientCallback, "clientCallback");
 		}
 
 		/// <summary>
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The authorization request from the user agent on behalf of the client.</param>
 		internal EndUserAuthorizationFailedResponse(Uri clientCallback, EndUserAuthorizationRequest request)
 			: base(((IProtocolMessage)request).Version, MessageTransport.Indirect, clientCallback) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
 

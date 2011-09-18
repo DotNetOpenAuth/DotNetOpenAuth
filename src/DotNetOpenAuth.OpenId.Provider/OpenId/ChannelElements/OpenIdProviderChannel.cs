@@ -27,8 +27,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		internal OpenIdProviderChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings)
 			: this(cryptoKeyStore, nonceStore, new OpenIdProviderMessageFactory(), securitySettings) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
+			Requires.NotNull(securitySettings, "securitySettings");
 		}
 
 		/// <summary>
@@ -40,9 +40,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		private OpenIdProviderChannel(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, ProviderSecuritySettings securitySettings)
 			: base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings)) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
-			Contract.Requires<ArgumentNullException>(messageTypeProvider != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
+			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
+			Requires.NotNull(securitySettings, "securitySettings");
 		}
 
 		/// <summary>
@@ -55,9 +55,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// An array of binding elements which may be used to construct the channel.
 		/// </returns>
 		private static IChannelBindingElement[] InitializeBindingElements(IProviderAssociationStore cryptoKeyStore, INonceStore nonceStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
-			Contract.Requires<ArgumentNullException>(nonceStore != null);
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
+			Requires.NotNull(securitySettings, "securitySettings");
+			Requires.NotNull(nonceStore, "nonceStore");
 
 			SigningBindingElement signingElement;
 			signingElement = new ProviderSigningBindingElement(cryptoKeyStore, securitySettings);

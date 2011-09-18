@@ -10,8 +10,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
-using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// An outgoing successful association response from the OpenID Provider.

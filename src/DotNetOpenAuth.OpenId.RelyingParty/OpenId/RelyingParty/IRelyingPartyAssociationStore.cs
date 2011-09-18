@@ -88,8 +88,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// TODO: what should implementations do on association handle conflict?
 		/// </remarks>
 		void IRelyingPartyAssociationStore.StoreAssociation(Uri providerEndpoint, Association association) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires<ArgumentNullException>(association != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
+			Requires.NotNull(association, "association");
 			throw new NotImplementedException();
 		}
 
@@ -111,8 +111,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// ignored and a new association created.
 		/// </remarks>
 		Association IRelyingPartyAssociationStore.GetAssociation(Uri providerEndpoint, SecuritySettings securityRequirements) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires<ArgumentNullException>(securityRequirements != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
+			Requires.NotNull(securityRequirements, "securityRequirements");
 			throw new NotImplementedException();
 		}
 
@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The requested association, or null if no unexpired <see cref="Association"/>s exist for the given key and handle.
 		/// </returns>
 		Association IRelyingPartyAssociationStore.GetAssociation(Uri providerEndpoint, string handle) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
 			Contract.Requires(!String.IsNullOrEmpty(handle));
 			throw new NotImplementedException();
 		}
@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// before this call.
 		/// </remarks>
 		bool IRelyingPartyAssociationStore.RemoveAssociation(Uri providerEndpoint, string handle) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
 			Contract.Requires(!String.IsNullOrEmpty(handle));
 			throw new NotImplementedException();
 		}

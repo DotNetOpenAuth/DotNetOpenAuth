@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="uri">The value this identifier will represent.</param>
 		internal UriIdentifier(string uri)
 			: this(uri, false) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
+			Requires.NotNullOrEmpty(uri, "uri");
 		}
 
 		/// <summary>
@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(string uri, bool requireSslDiscovery)
 			: base(uri, requireSslDiscovery) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
+			Requires.NotNullOrEmpty(uri, "uri");
 			Uri canonicalUri;
 			bool schemePrepended;
 			if (!TryCanonicalize(uri, out canonicalUri, requireSslDiscovery, out schemePrepended)) {
@@ -137,7 +137,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requireSslDiscovery">if set to <c>true</c> [require SSL discovery].</param>
 		internal UriIdentifier(Uri uri, bool requireSslDiscovery)
 			: base(uri != null ? uri.OriginalString : null, requireSslDiscovery) {
-			Contract.Requires<ArgumentNullException>(uri != null);
+			Requires.NotNull(uri, "uri");
 
 			string uriAsString = uri.OriginalString;
 			if (schemeSubstitution) {
@@ -422,7 +422,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// require network access are also done, such as lower-casing the hostname in the URI.
 		/// </remarks>
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(uri));
+			Requires.NotNullOrEmpty(uri, "uri");
 
 			canonicalUri = null;
 			try {
@@ -454,7 +454,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "The user will see the result of this operation and they want to see it in lower case.")]
 		private static bool TryCanonicalize(string uri, out Uri canonicalUri) {
-			Contract.Requires<ArgumentNullException>(uri != null);
+			Requires.NotNull(uri, "uri");
 
 			if (schemeSubstitution) {
 				UriBuilder uriBuilder = new UriBuilder(uri);
@@ -475,7 +475,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="normal">The ordinary URL or scheme name.</param>
 		/// <returns>The non-compressing equivalent scheme or URL for the given value.</returns>
 		private static string NormalSchemeToSpecialRoundTrippingScheme(string normal) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(normal));
+			Requires.NotNullOrEmpty(normal, "normal");
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 			ErrorUtilities.VerifyInternal(schemeSubstitution, "Wrong schemeSubstitution value.");
 
@@ -503,7 +503,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="schemePrepended">if set to <c>true</c>, the scheme was prepended during normalization.</param>
 		/// <returns>The somewhat normalized URL.</returns>
 		private static string DoSimpleCanonicalize(string uri, bool forceHttpsDefaultScheme, out bool schemePrepended) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(uri));
+			Requires.NotNullOrEmpty(uri, "uri");
 
 			schemePrepended = false;
 			uri = uri.Trim();
@@ -546,7 +546,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// </summary>
 			/// <param name="value">The value.</param>
 			internal SimpleUri(string value) {
-				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(value));
+				Requires.NotNullOrEmpty(value, "value");
 
 				bool schemePrepended;
 				value = DoSimpleCanonicalize(value, false, out schemePrepended);
@@ -664,7 +664,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// <param name="path">The path to normalize.</param>
 			/// <returns>The given path, with exactly those characters escaped which should be.</returns>
 			private static string NormalizePathEscaping(string path) {
-				Contract.Requires<ArgumentNullException>(path != null);
+				Requires.NotNull(path, "path");
 
 				string[] segments = path.Split('/');
 				for (int i = 0; i < segments.Length; i++) {
@@ -695,7 +695,7 @@ namespace DotNetOpenAuth.OpenId {
 			/// <param name="standardScheme">The standard scheme that this parser will be subverting.</param>
 			public NonPathCompressingUriParser(string standardScheme)
 				: base(GenericUriParserOptions.DontCompressPath | GenericUriParserOptions.IriParsing | GenericUriParserOptions.Idn) {
-				Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(standardScheme));
+				Requires.NotNullOrEmpty(standardScheme, "standardScheme");
 				this.standardScheme = standardScheme;
 			}
 

@@ -33,8 +33,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="receiveUnsignedExtensions">Security setting for relying parties.  Should be true for Providers.</param>
 		internal ExtensionsBindingElement(IOpenIdExtensionFactory extensionFactory, SecuritySettings securitySettings, bool receiveUnsignedExtensions) {
-			Contract.Requires<ArgumentNullException>(extensionFactory != null);
-			Contract.Requires<ArgumentNullException>(securitySettings != null);
+			Requires.NotNull(extensionFactory, "extensionFactory");
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			this.ExtensionFactory = extensionFactory;
 			this.receiveUnsignedExtensions = receiveUnsignedExtensions;
@@ -238,7 +238,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A dictionary of message parts, including only signed parts when appropriate.
 		/// </returns>
 		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message, bool ignoreUnsigned) {
-			Contract.Requires<InvalidOperationException>(this.Channel != null);
+			Requires.ValidState(this.Channel != null);
 
 			IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
 			if (signedResponse != null && ignoreUnsigned) {

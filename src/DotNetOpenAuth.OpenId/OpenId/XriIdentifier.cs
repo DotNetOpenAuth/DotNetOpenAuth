@@ -44,8 +44,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="xri">The string value of the XRI.</param>
 		internal XriIdentifier(string xri)
 			: this(xri, false) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(xri));
-			Contract.Requires<FormatException>(IsValidXri(xri), OpenIdStrings.InvalidXri);
+			Requires.NotNullOrEmpty(xri, "xri");
+			Requires.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
 		}
 
 		/// <summary>
@@ -58,8 +58,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// </param>
 		internal XriIdentifier(string xri, bool requireSsl)
 			: base(xri, requireSsl) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(xri));
-			Contract.Requires<FormatException>(IsValidXri(xri), OpenIdStrings.InvalidXri);
+			Requires.NotNullOrEmpty(xri, "xri");
+			Requires.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
 			Contract.Assume(xri != null); // Proven by IsValidXri
 			this.OriginalXri = xri;
 			this.canonicalXri = CanonicalizeXri(xri);
@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// 	<c>true</c> if the given string constitutes a valid XRI; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsValidXri(string xri) {
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(xri));
+			Requires.NotNullOrEmpty(xri, "xri");
 			xri = xri.Trim();
 
 			// TODO: better validation code here
@@ -182,7 +182,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The canonicalized form of the XRI.</returns>
 		/// <remarks>The canonical form, per the OpenID spec, is no scheme and no whitespace on either end.</remarks>
 		private static string CanonicalizeXri(string xri) {
-			Contract.Requires<ArgumentNullException>(xri != null);
+			Requires.NotNull(xri, "xri");
 			Contract.Ensures(Contract.Result<string>() != null);
 			xri = xri.Trim();
 			if (xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase)) {

@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
 		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null) {
-			Contract.Requires<ArgumentNullException>(authorizationServer != null);
+			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
 			this.Channel = new OAuth2ClientChannel();
 			this.ClientIdentifier = clientIdentifier;
@@ -63,8 +63,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The request for protected resources from the service provider.</param>
 		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
 		public static void AuthorizeRequest(HttpWebRequest request, string accessToken) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(accessToken));
+			Requires.NotNull(request, "request");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
 
 			OAuthUtilities.AuthorizeWithBearerToken(request, accessToken);
 		}
@@ -76,9 +76,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The request for protected resources from the service provider.</param>
 		/// <param name="authorization">The authorization for this request previously obtained via OAuth.</param>
 		public void AuthorizeRequest(HttpWebRequest request, IAuthorizationState authorization) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(authorization != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(authorization.AccessToken));
+			Requires.NotNull(request, "request");
+			Requires.NotNull(authorization, "authorization");
+			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization");
 			Contract.Requires<ProtocolException>(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null);
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
@@ -103,8 +103,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// If the parameter value was updated, this method calls <see cref="IAuthorizationState.SaveChanges"/> on that instance.
 		/// </remarks>
 		public bool RefreshAuthorization(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null) {
-			Contract.Requires<ArgumentNullException>(authorization != null);
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(authorization.RefreshToken));
+			Requires.NotNull(authorization, "authorization");
+			Requires.True(!string.IsNullOrEmpty(authorization.RefreshToken), "authorization");
 
 			if (skipIfUsefulLifeExceeds.HasValue && authorization.AccessTokenExpirationUtc.HasValue) {
 				TimeSpan usefulLifeRemaining = authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
@@ -138,8 +138,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// replaced with the new one.
 		/// </remarks>
 		public IAuthorizationState GetScopedAccessToken(string refreshToken, HashSet<string> scope) {
-			Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(refreshToken));
-			Contract.Requires<ArgumentNullException>(scope != null);
+			Requires.NotNullOrEmpty(refreshToken, "refreshToken");
+			Requires.NotNull(scope, "scope");
 			Contract.Ensures(Contract.Result<IAuthorizationState>() != null);
 
 			var request = new AccessTokenRefreshRequest(this.AuthorizationServer) {
@@ -161,8 +161,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationState">The authorization state maintained by the client.</param>
 		/// <param name="accessTokenSuccess">The access token containing response message.</param>
 		internal static void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, AccessTokenSuccessResponse accessTokenSuccess) {
-			Contract.Requires<ArgumentNullException>(authorizationState != null);
-			Contract.Requires<ArgumentNullException>(accessTokenSuccess != null);
+			Requires.NotNull(authorizationState, "authorizationState");
+			Requires.NotNull(accessTokenSuccess, "accessTokenSuccess");
 
 			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
 			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
@@ -189,8 +189,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationState">The authorization state maintained by the client.</param>
 		/// <param name="accessTokenSuccess">The access token containing response message.</param>
 		internal static void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess) {
-			Contract.Requires<ArgumentNullException>(authorizationState != null);
-			Contract.Requires<ArgumentNullException>(accessTokenSuccess != null);
+			Requires.NotNull(authorizationState, "authorizationState");
+			Requires.NotNull(accessTokenSuccess, "accessTokenSuccess");
 
 			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
 			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
@@ -215,8 +215,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationState">The authorization state to update.</param>
 		/// <param name="authorizationSuccess">The authorization success message obtained from the authorization server.</param>
 		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAuthCodeResponse authorizationSuccess) {
-			Contract.Requires<ArgumentNullException>(authorizationState != null);
-			Contract.Requires<ArgumentNullException>(authorizationSuccess != null);
+			Requires.NotNull(authorizationState, "authorizationState");
+			Requires.NotNull(authorizationSuccess, "authorizationSuccess");
 
 			var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
@@ -242,9 +242,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorization">The authorization to measure.</param>
 		/// <returns>A fractional number no greater than 1.  Could be negative if the access token has already expired.</returns>
 		private static double ProportionalLifeRemaining(IAuthorizationState authorization) {
-			Contract.Requires<ArgumentNullException>(authorization != null);
-			Contract.Requires<ArgumentException>(authorization.AccessTokenIssueDateUtc.HasValue);
-			Contract.Requires<ArgumentException>(authorization.AccessTokenExpirationUtc.HasValue);
+			Requires.NotNull(authorization, "authorization");
+			Requires.True(authorization.AccessTokenIssueDateUtc.HasValue, "authorization");
+			Requires.True(authorization.AccessTokenExpirationUtc.HasValue, "authorization");
 
 			// Calculate what % of the total life this access token has left.
 			TimeSpan totalLifetime = authorization.AccessTokenExpirationUtc.Value - authorization.AccessTokenIssueDateUtc.Value;

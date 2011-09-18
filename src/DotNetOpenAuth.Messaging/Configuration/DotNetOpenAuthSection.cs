@@ -33,21 +33,9 @@ namespace DotNetOpenAuth.Configuration {
 		private const string OAuthElementName = "oauth";
 
 		/// <summary>
-		/// A value indicating whether this instance came from a real Configuration instance.
-		/// </summary>
-		private bool synthesizedInstance;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
 		/// </summary>
 		internal DotNetOpenAuthSection() {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DotNetOpenAuthSection"/> class.
-		/// </summary>
-		private DotNetOpenAuthSection(bool synthesized) {
-			this.synthesizedInstance = synthesized;
 		}
 
 		/// <summary>
@@ -67,6 +55,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// Gets a named section in this section group, or <c>null</c> if no such section is defined.
 		/// </summary>
+		/// <param name="name">The name of the section to obtain.</param>
+		/// <returns>The desired section, or null if it could not be obtained.</returns>
 		internal static ConfigurationSection GetNamedSection(string name) {
 			string fullyQualifiedSectionName = SectionName + "/" + name;
 			if (HttpContext.Current != null) {

@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="request">The incoming OpenID request.</param>
 		internal AnonymousRequestEventArgs(IAnonymousRequest request) {
-			Contract.Requires<ArgumentNullException>(request != null);
+			Requires.NotNull(request, "request");
 
 			this.Request = request;
 		}

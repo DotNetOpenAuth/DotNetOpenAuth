@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </summary>
 		/// <param name="authorization">The authorization this refresh token should describe.</param>
 		internal RefreshToken(IAuthorizationDescription authorization) {
-			Contract.Requires<ArgumentNullException>(authorization != null);
+			Requires.NotNull(authorization, "authorization");
 
 			this.ClientIdentifier = authorization.ClientIdentifier;
 			this.UtcCreationDate = authorization.UtcIssued;
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// A DataBag formatter.  Never null.
 		/// </returns>
 		internal static IDataBagFormatter<RefreshToken> CreateFormatter(ICryptoKeyStore cryptoKeyStore) {
-			Contract.Requires<ArgumentNullException>(cryptoKeyStore != null);
+			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 			Contract.Ensures(Contract.Result<IDataBagFormatter<RefreshToken>>() != null);
 
 			return new UriStyleMessageFormatter<RefreshToken>(cryptoKeyStore, RefreshTokenKeyBucket, signed: true, encrypted: true);

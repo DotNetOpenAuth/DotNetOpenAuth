@@ -162,7 +162,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="authzContext">The Authorization Context</param>
 		/// <returns>A unique ID for this user at this web site.</returns>
 		internal static string GetUniqueName(AuthorizationContext authzContext) {
-			Contract.Requires<ArgumentNullException>(authzContext != null);
+			Requires.NotNull(authzContext, "authzContext");
 
 			Claim uniqueIssuerClaim = null;
 			Claim uniqueUserClaim = null;
@@ -218,7 +218,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="ppid">The personal private identifier.</param>
 		/// <returns>A string containing the XXX-XXXX-XXX cosmetic value.</returns>
 		internal static string CalculateSiteSpecificID(string ppid) {
-			Contract.Requires<ArgumentNullException>(ppid != null);
+			Requires.NotNull(ppid, "ppid");
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			int callSignChars = 10;
@@ -248,7 +248,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="cs">the claimset which contains the claim</param>
 		/// <returns>a RSA claim</returns>
 		private static Claim GetUniqueRsaClaim(ClaimSet cs) {
-			Contract.Requires<ArgumentNullException>(cs != null);
+			Requires.NotNull(cs, "cs");
 
 			Claim rsa = null;
 
@@ -270,8 +270,8 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="claimValue">the claim value to hash with.</param>
 		/// <returns>A base64 representation of the combined ID.</returns>
 		private static string ComputeCombinedId(RSA issuerKey, string claimValue) {
-			Contract.Requires<ArgumentNullException>(issuerKey != null);
-			Contract.Requires<ArgumentNullException>(claimValue != null);
+			Requires.NotNull(issuerKey, "issuerKey");
+			Requires.NotNull(claimValue, "claimValue");
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			int nameLength = Encoding.UTF8.GetByteCount(claimValue);

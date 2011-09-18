@@ -9,8 +9,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
 
 	internal class AssociateUnencryptedProviderRequest : AssociateUnencryptedRequest, IAssociateRequestProvider {
 		/// <summary>

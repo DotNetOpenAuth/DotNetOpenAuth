@@ -29,8 +29,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="providerEndpoint">The OpenID Provider endpoint URL.</param>
 		/// <param name="openIdVersion">The OpenID version supported by this particular endpoint.</param>
 		internal ProviderEndpointDescription(Uri providerEndpoint, Version openIdVersion) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires<ArgumentNullException>(openIdVersion != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
+			Requires.NotNull(openIdVersion, "openIdVersion");
 
 			this.Uri = providerEndpoint;
 			this.Version = openIdVersion;
@@ -43,8 +43,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="providerEndpoint">The URI the provider listens on for OpenID requests.</param>
 		/// <param name="serviceTypeURIs">The set of services offered by this endpoint.</param>
 		internal ProviderEndpointDescription(Uri providerEndpoint, IEnumerable<string> serviceTypeURIs) {
-			Contract.Requires<ArgumentNullException>(providerEndpoint != null);
-			Contract.Requires<ArgumentNullException>(serviceTypeURIs != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
+			Requires.NotNull(serviceTypeURIs, "serviceTypeURIs");
 
 			this.Uri = providerEndpoint;
 			this.Capabilities = new ReadOnlyCollection<string>(serviceTypeURIs.ToList());

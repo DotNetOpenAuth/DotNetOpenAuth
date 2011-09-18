@@ -54,8 +54,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// A value indicating whether this access token is valid.
 		/// </returns>
 		bool IAccessTokenAnalyzer.TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope) {
-			Contract.Requires<ArgumentNullException>(message != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(accessToken));
+			Requires.NotNull(message, "message");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<string>(out user) != null));
 
 			throw new NotImplementedException();

@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="version">The OAuth version to get.</param>
 		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
 		internal static Protocol Lookup(Version version) {
-			Contract.Requires<ArgumentNullException>(version != null);
+			Requires.NotNull(version, "version");
 			Contract.Requires<ArgumentOutOfRangeException>(AllVersions.Any(p => p.Version == version));
 			return AllVersions.First(p => p.Version == version);
 		}

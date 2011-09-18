@@ -34,9 +34,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// quite different operations in either scenario.
 		/// </remarks>
 		internal static Association CreateAssociation(AssociateRequest request, IAssociateSuccessfulResponseProvider response, IProviderAssociationStore associationStore, ProviderSecuritySettings securitySettings) {
-			Contract.Requires<ArgumentNullException>(request != null);
-			Contract.Requires<ArgumentNullException>(response != null, "response");
-			Contract.Requires<ArgumentNullException>(securitySettings != null, "securitySettings");
+			Requires.NotNull(request, "request");
+			Requires.NotNull(response, "response");
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			// We need to initialize some common properties based on the created association.
 			var association = response.CreateAssociationAtProvider(request, associationStore, securitySettings);
@@ -57,9 +57,9 @@ namespace DotNetOpenAuth.OpenId {
 		///   <c>true</c> if the specified containing message is valid; otherwise, <c>false</c>.
 		/// </returns>
 		internal static bool IsValid(this IProviderAssociationStore associationStore, IProtocolMessage containingMessage, bool isPrivateAssociation, string handle) {
-			Contract.Requires<ArgumentNullException>(associationStore != null);
-			Contract.Requires<ArgumentNullException>(containingMessage != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(handle));
+			Requires.NotNull(associationStore, "associationStore");
+			Requires.NotNull(containingMessage, "containingMessage");
+			Requires.NotNullOrEmpty(handle, "handle");
 			try {
 				return associationStore.Deserialize(containingMessage, isPrivateAssociation, handle) != null;
 			} catch (ProtocolException) {

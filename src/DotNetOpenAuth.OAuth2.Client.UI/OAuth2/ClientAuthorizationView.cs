@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// </summary>
 			/// <param name="authorization">The authorization.</param>
 			public ClientAuthorizationCompleteEventArgs(IAuthorizationState authorization) {
-				Contract.Requires<ArgumentNullException>(authorization != null);
+				Requires.NotNull(authorization, "authorization");
 				this.Authorization = authorization;
 			}
 
