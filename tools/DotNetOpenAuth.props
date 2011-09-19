@@ -17,6 +17,7 @@
 		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
+		<BuildCodeContractsReferenceAssemblies>false</BuildCodeContractsReferenceAssemblies>
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>

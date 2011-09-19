@@ -21,7 +21,8 @@
 			<PrimaryProductOutput>true</PrimaryProductOutput>
 		</ProjectReference>
 		<SignDependsOn Include="BuildUnifiedProduct" />
-		<DelaySignedAssemblies Include="$(ILMergeOutputContractAssembly)" />
+		<DelaySignedAssemblies Include="$(ILMergeOutputContractAssembly)" 
+		                       Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' "/>
 	</ItemGroup>
 
 	<Target Name="BuildILMergeInputs" DependsOnTargets="ResolveReferences">
@@ -39,6 +40,7 @@
 	</Target>
 
 	<Target Name="BuildUnifiedContractAssembly"	 DependsOnTargets="BuildILMergeInputs"
+					Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' "
 					Inputs="@(ILMergeInputContractAssemblies)" Outputs="$(ILMergeOutputContractAssembly)">
 
 		<MakeDir Directories="$(ILMergeOutputContractAssemblyDirectory)" />

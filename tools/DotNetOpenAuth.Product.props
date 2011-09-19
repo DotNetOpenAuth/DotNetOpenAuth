@@ -42,18 +42,19 @@ http://opensource.org/licenses/ms-pl.html
 		<CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
 		<CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
 		<CodeContractsExtraRewriteOptions />
+
+		<CodeContractsReferenceAssembly Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' ">Build</CodeContractsReferenceAssembly>
+		<CodeContractsReferenceAssembly Condition=" '$(BuildCodeContractsReferenceAssemblies)' != 'true' ">DoNotBuild</CodeContractsReferenceAssembly>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(CodeContractsRewritingEnabled)' != 'true' ">
 		<CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
 		<CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-		<CodeContractsReferenceAssembly Condition=" '$(Configuration)' == 'Release' ">Build</CodeContractsReferenceAssembly>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(CodeContractsRewritingEnabled)' == 'true' ">
 		<CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
 		<CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-		<CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -81,7 +82,7 @@ http://opensource.org/licenses/ms-pl.html
 
 	<ItemGroup>
 		<DelaySignedAssemblies Include="$(OutputPath)CodeContracts\$(AssemblyName).Contracts.dll"
-		                       Condition=" '$(AddContractsAssemblyForDelaySigning)' != 'false' "/>
+		                       Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' and '$(AddContractsAssemblyForDelaySigning)' != 'false' "/>
 	</ItemGroup>
 
 	<ItemGroup>
