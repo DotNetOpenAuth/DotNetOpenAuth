@@ -21,7 +21,7 @@
 			<PrimaryProductOutput>true</PrimaryProductOutput>
 		</ProjectReference>
 		<SignDependsOn Include="BuildUnifiedProduct" />
-		<DelaySignedAssemblies Include="$(ILMergeOutputContractAssembly)" 
+		<DelaySignedAssemblies Include="$(ILMergeOutputContractAssembly)"
 		                       Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' "/>
 	</ItemGroup>
 
@@ -32,9 +32,9 @@
 		</PropertyGroup>
 
 		<ItemGroup>
-			<ILMergeInputAssemblies Include="@(ReferencePath)"
-															Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
-			<ILMergeInputContractAssemblies Include="@(ILMergeInputAssemblies->'%(RootDir)%(Directory)CodeContracts\%(FileName).Contracts%(Extension)')"
+			<ILMergeProductInputAssemblies Include="@(ReferencePath)"
+			                               Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
+			<ILMergeInputContractAssemblies Include="@(ILMergeProductInputAssemblies->'%(RootDir)%(Directory)CodeContracts\%(FileName).Contracts%(Extension)')"
 																			Condition=" '%(FileName)' != 'Microsoft.Contracts' "/>
 		</ItemGroup>
 	</Target>
@@ -58,12 +58,11 @@
 	</Target>
 
 	<Target Name="BuildUnifiedProductAssembly" DependsOnTargets="BuildILMergeInputs"
-					Inputs="@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly);$(ILMergeOutputXmlDocs)">
+					Inputs="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly);$(ILMergeOutputXmlDocs)">
 		<MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
-
 		<ILMerge
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-			InputAssemblies="@(ILMergeInputAssemblies)"
+			InputAssemblies="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)"
 			OutputFile="$(ILMergeOutputAssembly)"
 			KeyFile="$(PublicKeyFile)"
 			DelaySign="true"
