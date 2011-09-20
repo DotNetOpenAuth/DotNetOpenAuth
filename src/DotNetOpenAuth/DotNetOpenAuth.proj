@@ -45,6 +45,7 @@
 
 		<MakeDir Directories="$(ILMergeOutputContractAssemblyDirectory)" />
 
+		<Message Text="Merging $(ILMergeOutputContractAssembly)" Importance="high" />
 		<ILMerge
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(ILMergeInputContractAssemblies)"
@@ -60,6 +61,7 @@
 	<Target Name="BuildUnifiedProductAssembly" DependsOnTargets="BuildILMergeInputs"
 					Inputs="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly);$(ILMergeOutputXmlDocs)">
 		<MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
+		<Message Text="Merging $(ILMergeOutputAssembly)" Importance="high" />
 		<ILMerge
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)"

@@ -74,11 +74,8 @@
 															$(ProjectRoot)**\Debug\**;
 															$(ProjectRoot)**\StyleCop.Cache;
 															$(ProjectRoot)Samples\_ReSharper.*\**;
-															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
-															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
-															$(ProjectRoot)Samples\**\log4net.???;
-															$(ProjectRoot)Samples\**\PresentationCore.dll;
-															$(ProjectRoot)Samples\**\System.Printing.dll;
+															$(ProjectRoot)Samples\**\bin\**;
+															$(ProjectRoot)Samples\**\obj\**;
 															$(ProjectRoot)Samples\**\*.refresh_;
 															$(ProjectRoot)Samples\*.proj;
 															" />
