@@ -2,9 +2,9 @@
 	Inherits="OpenIdRelyingPartyWebForms.DetectGoogleSession" ValidateRequest="false"
 	MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
+<%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration"
+<%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration"
 	TagPrefix="sreg" %>
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
 	<asp:Label Text="We've detected that you're logged into Google!" runat="server" Visible="false"

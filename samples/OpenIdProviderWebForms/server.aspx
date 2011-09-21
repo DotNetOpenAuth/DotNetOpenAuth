@@ -1,6 +1,6 @@
 <%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdProviderWebForms.server" CodeBehind="server.aspx.cs" ValidateRequest="false" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Provider" TagPrefix="openid" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.Provider.UI" Namespace="DotNetOpenAuth.OpenId.Provider" TagPrefix="openid" %>
 <html>
 <head>
 	<title>This is an OpenID server</title>

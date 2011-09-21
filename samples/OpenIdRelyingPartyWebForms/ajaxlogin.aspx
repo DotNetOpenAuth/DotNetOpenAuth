@@ -1,7 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ajaxlogin.aspx.cs" Inherits="OpenIdRelyingPartyWebForms.ajaxlogin"
 	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="openid" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="openid" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
 <script>
 //	window.openid_visible_iframe = true; // causes the hidden iframe to show up
