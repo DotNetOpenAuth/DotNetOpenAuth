@@ -186,7 +186,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// length of the final string.</param>
 		/// <returns>The verification code.</returns>
 		public static string CreateVerificationCode(VerificationCodeFormat format, int length) {
-			Contract.Requires<ArgumentOutOfRangeException>(length >= 0);
+			Requires.InRange(length >= 0, "length");
 
 			switch (format) {
 				case VerificationCodeFormat.IncludedInCallback:
@@ -328,7 +328,7 @@ namespace DotNetOpenAuth.OAuth {
 			return authzRequest;
 		}
 
-				/// <summary>
+		/// <summary>
 		/// Attaches the authorization response to an OpenID authentication response.
 		/// </summary>
 		/// <param name="openIdAuthenticationRequest">The OpenID authentication request.</param>

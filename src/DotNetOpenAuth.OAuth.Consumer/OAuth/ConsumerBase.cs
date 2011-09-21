@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>The initialized WebRequest object.</returns>
 		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
 			Requires.NotNull(endpoint, "endpoint");
-			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(accessToken));
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
 
 			return this.PrepareAuthorizedRequest(endpoint, accessToken, EmptyDictionary<string, string>.Instance);
 		}
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>The initialized WebRequest object.</returns>
 		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, string> extraData) {
 			Requires.NotNull(endpoint, "endpoint");
-			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(accessToken));
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			Requires.NotNull(extraData, "extraData");
 
 			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
@@ -215,7 +215,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>The initialized WebRequest object.</returns>
 		protected internal AccessProtectedResourceRequest CreateAuthorizingMessage(MessageReceivingEndpoint endpoint, string accessToken) {
 			Requires.NotNull(endpoint, "endpoint");
-			Contract.Requires<ArgumentNullException>(!String.IsNullOrEmpty(accessToken));
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
 
 			AccessProtectedResourceRequest message = new AccessProtectedResourceRequest(endpoint, this.ServiceProvider.Version) {
 				AccessToken = accessToken,

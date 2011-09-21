@@ -124,7 +124,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="request">The request.</param>
 		/// <returns>The bearer access token, if one exists.  Otherwise <c>null</c>.</returns>
 		private static string SearchForBearerAccessTokenInRequest(HttpRequestInfo request) {
-			Contract.Requires<ArgumentNullException>(request != null, "request");
+			Requires.NotNull(request, "request");
 
 			// First search the authorization header.
 			string authorizationHeader = request.Headers[HttpRequestHeader.Authorization];

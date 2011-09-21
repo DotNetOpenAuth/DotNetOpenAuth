@@ -382,7 +382,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value >= 0);
+				Requires.InRange(value >= 0, "value");
 				this.ViewState[ColumnsViewStateKey] = value;
 			}
 		}
@@ -446,7 +446,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value.TotalMilliseconds > 0);
+				Requires.InRange(value.TotalMilliseconds > 0, "value");
 				this.ViewState[TimeoutViewStateKey] = value;
 			}
 		}
@@ -462,7 +462,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+				Requires.InRange(value > 0, "value");
 				this.ViewState[ThrottleViewStateKey] = value;
 			}
 		}

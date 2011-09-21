@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			Requires.NotNull(securitySettings, "securitySettings");
 			Requires.NotNull(signingBindingElement, "signingBindingElement");
 			Requires.True(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
-			Contract.Requires<ArgumentNullException>(bindingElements != null, "bindingElements");
+			Requires.NotNull(bindingElements, "bindingElements");
 
 			this.TokenManager = tokenManager;
 			signingBindingElement.SignatureCallback = this.SignatureCallback;

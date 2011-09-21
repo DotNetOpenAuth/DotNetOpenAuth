@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
 		internal static Protocol Lookup(Version version) {
 			Requires.NotNull(version, "version");
-			Contract.Requires<ArgumentOutOfRangeException>(AllVersions.Any(p => p.Version == version));
+			Requires.InRange(AllVersions.Any(p => p.Version == version), "version");
 			return AllVersions.First(p => p.Version == version);
 		}
 	}
