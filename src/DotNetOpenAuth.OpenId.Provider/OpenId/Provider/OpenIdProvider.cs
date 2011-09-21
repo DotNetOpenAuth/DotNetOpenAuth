@@ -35,6 +35,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.Provider.OpenIdProvider.ApplicationStore";
 
 		/// <summary>
+		/// A type initializer that ensures that another type initializer runs in order to guarantee that
+		/// types are serializable.
+		/// </summary>
+		private static Identifier DummyIdentifierToInvokeStaticCtor = "http://localhost/";
+
+		/// <summary>
+		/// A type initializer that ensures that another type initializer runs in order to guarantee that
+		/// types are serializable.
+		/// </summary>
+		private static Realm DummyRealmToInvokeStaticCtor = "http://localhost/";
+
+		/// <summary>
 		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
 		private readonly ObservableCollection<IProviderBehavior> behaviors = new ObservableCollection<IProviderBehavior>();
