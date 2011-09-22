@@ -70,6 +70,15 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			get { return new ReadOnlyCollection<string> (roles.ToList()); }
 		}
 
+		/// <summary>
+		/// Creates a new instance of GenericPrincipal based on this OAuthPrincipal.
+		/// </summary>
+		/// <returns>A new instance of GenericPrincipal with a GenericIdentity, having the same username and roles as this OAuthPrincipal and OAuthIdentity</returns>
+		public GenericPrincipal CreateGenericPrincipal()
+		{
+			return new GenericPrincipal( new GenericIdentity(this.Identity.Name), roles.ToArray());
+		}
+
 		#region IPrincipal Members
 
 		/// <summary>
