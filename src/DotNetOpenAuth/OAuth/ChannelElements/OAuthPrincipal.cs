@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Linq;
 	using System.Runtime.InteropServices;
 	using System.Security.Principal;
+	using System.Collections.ObjectModel;
 
 	/// <summary>
 	/// Represents an OAuth consumer that is impersonating a known user on the system.
@@ -60,6 +61,23 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <value>A non-empty string.</value>
 		public string AccessToken { get; private set; }
+
+		/// <summary>
+		/// Gets the roles that this principal has as a ReadOnlyCollection.
+		/// </summary>
+		public ReadOnlyCollection<string> Roles
+		{
+			get { return new ReadOnlyCollection<string> (roles.ToList()); }
+		}
+
+		/// <summary>
+		/// Creates a new instance of GenericPrincipal based on this OAuthPrincipal.
+		/// </summary>
+		/// <returns>A new instance of GenericPrincipal with a GenericIdentity, having the same username and roles as this OAuthPrincipal and OAuthIdentity</returns>
+		public GenericPrincipal CreateGenericPrincipal()
+		{
+			return new GenericPrincipal( new GenericIdentity(this.Identity.Name), roles.ToArray());
+		}
 
 		#region IPrincipal Members
 
