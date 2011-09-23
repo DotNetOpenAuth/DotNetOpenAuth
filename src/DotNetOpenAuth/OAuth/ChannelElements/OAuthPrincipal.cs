@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Runtime.InteropServices;
 	using System.Security.Principal;
-	using System.Collections.ObjectModel;
 
 	/// <summary>
 	/// Represents an OAuth consumer that is impersonating a known user on the system.
@@ -67,16 +67,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		public ReadOnlyCollection<string> Roles
 		{
-			get { return new ReadOnlyCollection<string> (roles.ToList()); }
-		}
-
-		/// <summary>
-		/// Creates a new instance of GenericPrincipal based on this OAuthPrincipal.
-		/// </summary>
-		/// <returns>A new instance of GenericPrincipal with a GenericIdentity, having the same username and roles as this OAuthPrincipal and OAuthIdentity</returns>
-		public GenericPrincipal CreateGenericPrincipal()
-		{
-			return new GenericPrincipal( new GenericIdentity(this.Identity.Name), roles.ToArray());
+			get { return new ReadOnlyCollection<string>(this.roles.ToList()); }
 		}
 
 		#region IPrincipal Members
@@ -105,5 +96,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Creates a new instance of GenericPrincipal based on this OAuthPrincipal.
+		/// </summary>
+		/// <returns>A new instance of GenericPrincipal with a GenericIdentity, having the same username and roles as this OAuthPrincipal and OAuthIdentity</returns>
+		public GenericPrincipal CreateGenericPrincipal()
+		{
+			return new GenericPrincipal(new GenericIdentity(this.Identity.Name), this.roles.ToArray());
+		}
 	}
 }
