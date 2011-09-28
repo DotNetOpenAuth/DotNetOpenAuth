@@ -300,7 +300,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// This method requires an ASP.NET HttpContext.
 		/// </remarks>
 		public void RedirectToProvider() {
-			this.RedirectingResponse.Respond();
+			this.RedirectingResponse.Send();
 		}
 
 		#endregion

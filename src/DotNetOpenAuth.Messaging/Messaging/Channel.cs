@@ -298,7 +298,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
-		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void Send(IProtocolMessage message) {
 			Requires.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Requires.NotNull(message, "message");
@@ -309,10 +309,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// Sends an indirect message (either a request or response) 
 		/// or direct message response for transmission to a remote party
 		/// and skips most of the remaining ASP.NET request handling pipeline.
+		/// Not safe to call from ASP.NET web forms.
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
+		/// This call is not safe to make from an ASP.NET web form (.aspx file or code-behind) because
+		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
+		/// Use the <see cref="Send"/> method instead for web forms.
 		/// </remarks>
 		public void Respond(IProtocolMessage message) {
 			Requires.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);

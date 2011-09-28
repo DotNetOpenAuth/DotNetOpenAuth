@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
@@ -61,6 +62,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <value>A non-empty string.</value>
 		public string AccessToken { get; private set; }
 
+		/// <summary>
+		/// Gets the roles that this principal has as a ReadOnlyCollection.
+		/// </summary>
+		public ReadOnlyCollection<string> Roles
+		{
+			get { return new ReadOnlyCollection<string>(this.roles.ToList()); }
+		}
+
 		#region IPrincipal Members
 
 		/// <summary>
@@ -87,5 +96,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Creates a new instance of GenericPrincipal based on this OAuthPrincipal.
+		/// </summary>
+		/// <returns>A new instance of GenericPrincipal with a GenericIdentity, having the same username and roles as this OAuthPrincipal and OAuthIdentity</returns>
+		public GenericPrincipal CreateGenericPrincipal()
+		{
+			return new GenericPrincipal(new GenericIdentity(this.Identity.Name), this.roles.ToArray());
+		}
 	}
 }
