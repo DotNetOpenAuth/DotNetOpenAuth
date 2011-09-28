@@ -326,7 +326,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
-		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendResponse(IRequest request) {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Contract.Requires<ArgumentNullException>(request != null);
@@ -397,7 +397,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Contract.Requires<ArgumentNullException>(claimedIdentifier != null);
 			Contract.Requires<ArgumentNullException>(localIdentifier != null);
 
-			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartyRealm, claimedIdentifier, localIdentifier, extensions).Respond();
+			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartyRealm, claimedIdentifier, localIdentifier, extensions).Send();
 		}
 
 		/// <summary>

@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// Requires a current HttpContext.
 		/// </remarks>
-		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public virtual void Send() {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="context">The context of the HTTP request whose response should be set.
 		/// Typically this is <see cref="HttpContext.Current"/>.</param>
 		/// <exception cref="ThreadAbortException">Typically thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
-		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public virtual void Send(HttpContext context) {
 			this.Respond(context, true);
 		}
@@ -149,9 +149,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// Automatically sends the appropriate response to the user agent
 		/// and signals ASP.NET to short-circuit the page execution pipeline
 		/// now that the response has been completed.
+		/// Not safe to call from ASP.NET web forms.
 		/// </summary>
 		/// <remarks>
 		/// Requires a current HttpContext.
+		/// This call is not safe to make from an ASP.NET web form (.aspx file or code-behind) because
+		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
+		/// Use the <see cref="Send"/> method instead for web forms.
 		/// </remarks>
 		public virtual void Respond() {
 			Contract.Requires<InvalidOperationException>(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
@@ -163,9 +167,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// Automatically sends the appropriate response to the user agent
 		/// and signals ASP.NET to short-circuit the page execution pipeline
 		/// now that the response has been completed.
+		/// Not safe to call from ASP.NET web forms.
 		/// </summary>
 		/// <param name="context">The context of the HTTP request whose response should be set.
 		/// Typically this is <see cref="HttpContext.Current"/>.</param>
+		/// <remarks>
+		/// This call is not safe to make from an ASP.NET web form (.aspx file or code-behind) because
+		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
+		/// Use the <see cref="Send"/> method instead for web forms.
+		/// </remarks>
 		public virtual void Respond(HttpContext context) {
 			Contract.Requires<ArgumentNullException>(context != null);
 

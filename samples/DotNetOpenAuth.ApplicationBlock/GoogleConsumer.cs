@@ -182,7 +182,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			};
 			Uri callback = Util.GetCallbackUrlFromContext();
 			var request = consumer.PrepareRequestUserAuthorization(callback, extraParameters, null);
-			consumer.Channel.Respond(request);
+			consumer.Channel.Send(request);
 		}
 
 		/// <summary>
