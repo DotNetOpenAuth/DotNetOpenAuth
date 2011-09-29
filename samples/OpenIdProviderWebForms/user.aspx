@@ -1,6 +1,6 @@
 <%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdProviderWebForms.user" CodeBehind="user.aspx.cs" MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenAuth.OpenId.Provider" Namespace="DotNetOpenAuth.OpenId.Provider" TagPrefix="openid" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.Provider.UI" Namespace="DotNetOpenAuth.OpenId.Provider" TagPrefix="openid" %>
 <asp:Content ID="Content2" runat="server" ContentPlaceHolderID="head">
 	<openid:IdentityEndpoint ID="IdentityEndpoint20" runat="server" ProviderEndpointUrl="~/Server.aspx"
 		XrdsUrl="~/user_xrds.aspx" ProviderVersion="V20" 
