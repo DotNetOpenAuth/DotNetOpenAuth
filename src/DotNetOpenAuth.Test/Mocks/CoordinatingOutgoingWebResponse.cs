@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.OriginalMessage = message;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override void Send() {
 			this.Respond();
 		}

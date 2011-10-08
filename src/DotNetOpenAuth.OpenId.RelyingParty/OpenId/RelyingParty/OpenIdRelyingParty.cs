@@ -49,18 +49,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.RelyingParty.OpenIdRelyingParty.HttpApplicationStore";
 
 		/// <summary>
-		/// A type initializer that ensures that another type initializer runs in order to guarantee that
-		/// types are serializable.
-		/// </summary>
-		private static Identifier DummyIdentifierToInvokeStaticCtor = "http://localhost/";
-
-		/// <summary>
-		/// A type initializer that ensures that another type initializer runs in order to guarantee that
-		/// types are serializable.
-		/// </summary>
-		private static Realm DummyRealmToInvokeStaticCtor = "http://localhost/";
-
-		/// <summary>
 		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
 		private readonly ObservableCollection<IRelyingPartyBehavior> behaviors = new ObservableCollection<IRelyingPartyBehavior>();
@@ -69,6 +57,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Backing field for the <see cref="DiscoveryServices"/> property.
 		/// </summary>
 		private readonly IList<IIdentifierDiscoveryService> discoveryServices = new List<IIdentifierDiscoveryService>(2);
+
+		/// <summary>
+		/// A type initializer that ensures that another type initializer runs in order to guarantee that
+		/// types are serializable.
+		/// </summary>
+		private static Identifier dummyIdentifierToInvokeStaticCtor = "http://localhost/";
+
+		/// <summary>
+		/// A type initializer that ensures that another type initializer runs in order to guarantee that
+		/// types are serializable.
+		/// </summary>
+		private static Realm dummyRealmToInvokeStaticCtor = "http://localhost/";
 
 		/// <summary>
 		/// Backing field for the <see cref="NonVerifyingRelyingParty"/> property.

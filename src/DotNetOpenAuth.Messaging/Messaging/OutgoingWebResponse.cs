@@ -155,7 +155,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires a current HttpContext.
 		/// This call is not safe to make from an ASP.NET web form (.aspx file or code-behind) because
 		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
-		/// Use the <see cref="Send"/> method instead for web forms.
+		/// Use the <see cref="Send()"/> method instead for web forms.
 		/// </remarks>
 		public virtual void Respond() {
 			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This call is not safe to make from an ASP.NET web form (.aspx file or code-behind) because
 		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
-		/// Use the <see cref="Send"/> method instead for web forms.
+		/// Use the <see cref="Send()"/> method instead for web forms.
 		/// </remarks>
 		public virtual void Respond(HttpContext context) {
 			Requires.NotNull(context, "context");
