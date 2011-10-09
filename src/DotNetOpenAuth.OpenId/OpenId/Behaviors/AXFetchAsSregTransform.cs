@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// to the originally requested extension and format.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
-	public class AXFetchAsSregTransform {
+	public abstract class AXFetchAsSregTransform {
 		/// <summary>
 		/// Initializes static members of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>
@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>
-		public AXFetchAsSregTransform() {
+		protected AXFetchAsSregTransform() {
 		}
 
 		/// <summary>

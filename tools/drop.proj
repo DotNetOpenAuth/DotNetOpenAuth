@@ -146,6 +146,11 @@
 			Pattern='xmlns\:(.+)assembly=DotNetOpenAuth([^;"]+)'
 			Replacement='xmlns:$1assembly=DotNetOpenAuth'
 			Condition=" '%(Extension)' == '.xaml' " />
+		<RegexFileReplace
+			Files="@(DropSamplesFiles)"
+			Pattern='type=&quot;DotNetOpenAuth([^,]+), DotNetOpenAuth([^&quot;]+)&quot;'
+			Replacement='type=&quot;DotNetOpenAuth$1, DotNetOpenAuth&quot;'
+			Condition=" '%(Extension)' == '.config' " />
 		<DowngradeProjects
 			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"

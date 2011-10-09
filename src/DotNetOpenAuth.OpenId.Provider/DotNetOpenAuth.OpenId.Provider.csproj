@@ -20,7 +20,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
+    <Compile Include="OpenId\Behaviors\AXFetchAsSregProviderTransform.cs" />
     <Compile Include="OpenId\Behaviors\GsaIcamProviderProfile.cs" />
     <Compile Include="OpenId\Behaviors\PpidGeneration.cs" />
     <Compile Include="OpenId\ChannelElements\AssociateUnencryptedProviderRequest.cs" />
