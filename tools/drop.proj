@@ -79,6 +79,7 @@
 															$(ProjectRoot)Samples\**\*.refresh_;
 															$(ProjectRoot)Samples\*.proj;
 															" />
+			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**\Bin\*.refresh"  />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
 			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)Samples\**\*.refresh_" />
 			<DropSpecsSourceFiles Include="$(ProjectRoot)Doc\specs\*.htm*" />
@@ -135,6 +136,16 @@
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReferences="@(ProjectReferencesToRemove)" References="@(AssemblyReferencesToReplaceWith)" />
+		<RegexFileReplace
+			Files="@(DropSamplesFiles)"
+			Pattern='&lt;%@ Register Assembly="DotNetOpenAuth[^"]+"'
+			Replacement='&lt;%@ Register Assembly="DotNetOpenAuth"'
+			Condition=" '%(Extension)' == '.aspx' " />
+		<RegexFileReplace
+			Files="@(DropSamplesFiles)"
+			Pattern='xmlns\:(.+)assembly=DotNetOpenAuth([^;"]+)'
+			Replacement='xmlns:$1assembly=DotNetOpenAuth'
+			Condition=" '%(Extension)' == '.xaml' " />
 		<DowngradeProjects
 			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"

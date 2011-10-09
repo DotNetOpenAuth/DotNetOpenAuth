@@ -30,4 +30,5 @@
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="PrepareOhlohRelease" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="AddFilesTo7Zip" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="NuGetPack" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="RegexFileReplace" />
 </Project>
