@@ -89,9 +89,6 @@ http://opensource.org/licenses/ms-pl.html
 		<Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
 			<SpecificVersion>False</SpecificVersion>
 		</Reference>
-		<Reference Include="PresentationFramework">
-			<RequiredTargetFramework>3.0</RequiredTargetFramework>
-		</Reference>
 		<Reference Include="System" />
 		<Reference Include="System.Security" />
 		<Reference Include="System.configuration" />
@@ -133,9 +130,6 @@ http://opensource.org/licenses/ms-pl.html
 		<Reference Include="System.Xml.Linq">
 			<RequiredTargetFramework>3.5</RequiredTargetFramework>
 		</Reference>
-		<Reference Include="WindowsBase">
-			<RequiredTargetFramework>3.0</RequiredTargetFramework>
-		</Reference>
 		<Reference Include="System.ComponentModel.DataAnnotations">
 			<RequiredTargetFramework>3.5</RequiredTargetFramework>
 		</Reference>
@@ -151,5 +145,13 @@ http://opensource.org/licenses/ms-pl.html
 		     which will definitely have MVC 2 available. -->
 		<Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
 		<Reference Include="System.Web.Mobile" />
+		<Reference Include="PresentationFramework">
+			<!-- For XamlReader, but we use System.Xaml.dll in .NET 4.0 -->
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference Include="WindowsBase">
+			<!-- ObservableCollection<T>, moved to System.dll in .NET 4.0 -->
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
 	</ItemGroup>
 </Project>
