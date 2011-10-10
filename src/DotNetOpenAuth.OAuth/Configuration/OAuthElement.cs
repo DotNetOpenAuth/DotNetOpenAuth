@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// The name of the oauth section.
 		/// </summary>
-		private const string SectionName = "oauth";
+		private const string SectionName = DotNetOpenAuthSection.SectionName + "/oauth";
 
 		/// <summary>
 		/// The name of the &lt;consumer&gt; sub-element.
