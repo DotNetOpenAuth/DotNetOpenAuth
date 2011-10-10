@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// The name of the &lt;messaging&gt; sub-element.
 		/// </summary>
-		private const string MessagingElementName = "messaging";
+		private const string MessagingElementName = DotNetOpenAuthSection.SectionName + "/messaging";
 
 		/// <summary>
 		/// Gets the configuration section from the .config file.
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Configuration {
 		public static MessagingElement Configuration {
 			get {
 				Contract.Ensures(Contract.Result<MessagingElement>() != null);
-				return (MessagingElement)DotNetOpenAuthSection.GetNamedSection(MessagingElementName) ?? new MessagingElement();
+				return (MessagingElement)ConfigurationManager.GetSection(MessagingElementName) ?? new MessagingElement();
 			}
 		}
 
