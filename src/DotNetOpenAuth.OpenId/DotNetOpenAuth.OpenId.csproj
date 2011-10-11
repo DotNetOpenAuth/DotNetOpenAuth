@@ -119,11 +119,11 @@
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Realm.cs" />
     <Compile Include="OpenId\RelyingPartyDescription.cs" />
-    <Compile Include="OpenId\DiffieHellmanUtilities.cs" />
+    <Compile Include="OpenId\DiffieHellmanUtilities.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\HmacShaAssociation.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
-    <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\AssociateRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponse.cs" />
@@ -176,7 +176,7 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj" Condition=" '$(ExcludeDiffieHellman)' != 'true' " >
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>

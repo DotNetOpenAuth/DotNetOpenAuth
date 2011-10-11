@@ -31,9 +31,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// The appropriate association response message.
 		/// </returns>
 		public IProtocolMessage CreateResponseCore() {
+#if !ExcludeDiffieHellman
 			var response = new AssociateDiffieHellmanProviderResponse(this.Version, this);
 			response.AssociationType = this.AssociationType;
 			return response;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 	}
 }
