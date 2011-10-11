@@ -30,7 +30,7 @@
     <Compile Include="OpenId\Extensions\ExtensionsInteropProviderHelper.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequestProvider.cs" />
     <Compile Include="OpenId\HmacShaAssociationProvider.cs" />
-    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderRequest.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\IAssociateRequestProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestProviderTools.cs" />

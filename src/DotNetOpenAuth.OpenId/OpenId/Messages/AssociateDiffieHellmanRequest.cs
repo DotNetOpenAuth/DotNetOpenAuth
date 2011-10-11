@@ -12,7 +12,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+#if !ExcludeDiffieHellman
 	using Org.Mentalis.Security.Cryptography;
+#endif
 
 	/// <summary>
 	/// An OpenID direct request from Relying Party to Provider to initiate an association that uses Diffie-Hellman encryption.
@@ -76,6 +78,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		[MessagePart("openid.dh_consumer_public", IsRequired = true, AllowEmpty = false)]
 		internal byte[] DiffieHellmanConsumerPublic { get; set; }
 
+#if !ExcludeDiffieHellman
 		/// <summary>
 		/// Gets the Diffie-Hellman algorithm.
 		/// </summary>
@@ -83,11 +86,13 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This property is initialized with a call to <see cref="InitializeRequest"/>.
 		/// </remarks>
 		internal DiffieHellman Algorithm { get; private set; }
+#endif
 
 		/// <summary>
 		/// Called by the Relying Party to initialize the Diffie-Hellman algorithm and consumer public key properties.
 		/// </summary>
 		internal void InitializeRequest() {
+#if !ExcludeDiffieHellman
 			if (this.DiffieHellmanModulus == null || this.DiffieHellmanGen == null) {
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, OpenIdStrings.DiffieHellmanRequiredPropertiesNotSet, string.Join(", ", new string[] { "DiffieHellmanModulus", "DiffieHellmanGen" })));
 			}
@@ -95,6 +100,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			this.Algorithm = new DiffieHellmanManaged(this.DiffieHellmanModulus ?? DefaultMod, this.DiffieHellmanGen ?? DefaultGen, DefaultX);
 			byte[] consumerPublicKeyExchange = this.Algorithm.CreateKeyExchange();
 			this.DiffieHellmanConsumerPublic = DiffieHellmanUtilities.EnsurePositive(consumerPublicKeyExchange);
+#else
+			throw new NotSupportedException();
+#endif
 		}
 	}
 }

@@ -41,9 +41,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			if (fields.TryGetValue(protocol.openid.mode, out mode)) {
 				if (string.Equals(mode, protocol.Args.Mode.associate)) {
 					if (fields.ContainsKey(protocol.openid.dh_consumer_public)) {
-#if !ExcludeDiffieHellman
 						message = new AssociateDiffieHellmanProviderRequest(protocol.Version, recipient.Location);
-#endif
 					} else {
 						message = new AssociateUnencryptedProviderRequest(protocol.Version, recipient.Location);
 					}

@@ -122,7 +122,7 @@
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\HmacShaAssociation.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
-    <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\AssociateRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponse.cs" />
