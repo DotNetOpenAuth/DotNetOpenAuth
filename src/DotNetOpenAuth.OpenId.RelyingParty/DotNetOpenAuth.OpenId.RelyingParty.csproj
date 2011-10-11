@@ -34,7 +34,7 @@
     <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
     <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
     <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
-    <Compile Include="OpenId\Messages\AssociateDiffieHellmanRelyingPartyResponse.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanRelyingPartyResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\AssociateRequestRelyingParty.cs" />
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponseRelyingPartyContract.cs" />
     <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingParty.cs" />
@@ -70,7 +70,7 @@
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj" Condition=" '$(ExcludeDiffieHellman)' != 'true' ">
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>

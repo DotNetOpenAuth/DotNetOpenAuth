@@ -30,8 +30,8 @@
     <Compile Include="OpenId\Extensions\ExtensionsInteropProviderHelper.cs" />
     <Compile Include="OpenId\Extensions\UI\UIRequestProvider.cs" />
     <Compile Include="OpenId\HmacShaAssociationProvider.cs" />
-    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderRequest.cs" />
-    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderResponse.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderRequest.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\IAssociateRequestProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestProviderTools.cs" />
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponseProvider.cs" />
@@ -71,7 +71,7 @@
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj" Condition=" '$(ExcludeDiffieHellman)' != 'true' ">
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>
