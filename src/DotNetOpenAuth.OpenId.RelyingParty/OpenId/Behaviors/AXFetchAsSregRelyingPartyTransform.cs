@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 		void IRelyingPartyBehavior.OnOutgoingAuthenticationRequest(RelyingParty.IAuthenticationRequest request) {
 			// Don't create AX extensions for OpenID 1.x messages, since AX requires OpenID 2.0.
 			if (request.Provider.Version.Major >= 2) {
-				request.SpreadSregToAX(AXFormats);
+				request.SpreadSregToAX(this.AXFormats);
 			}
 		}
 

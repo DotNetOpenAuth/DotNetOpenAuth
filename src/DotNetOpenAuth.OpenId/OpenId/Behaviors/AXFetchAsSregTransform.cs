@@ -23,21 +23,15 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 	public abstract class AXFetchAsSregTransform {
 		/// <summary>
-		/// Initializes static members of the <see cref="AXFetchAsSregTransform"/> class.
-		/// </summary>
-		static AXFetchAsSregTransform() {
-			AXFormats = AXAttributeFormats.Common;
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>
 		protected AXFetchAsSregTransform() {
+			this.AXFormats = AXAttributeFormats.Common;
 		}
 
 		/// <summary>
 		/// Gets or sets the AX attribute type URI formats this transform is willing to work with.
 		/// </summary>
-		public static AXAttributeFormats AXFormats { get; set; }
+		public AXAttributeFormats AXFormats { get; set; }
 	}
 }
