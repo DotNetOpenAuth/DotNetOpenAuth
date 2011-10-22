@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Behaviors {
+namespace DotNetOpenAuth.OpenId.RelyingParty.Behaviors {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.OpenId.Behaviors;
 
 	/// <summary>
 	/// Implements the Identity, Credential, &amp; Access Management (ICAM) OpenID 2.0 Profile
@@ -27,11 +28,11 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// </remarks>
 	[Serializable]
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Icam", Justification = "Acronym")]
-	public sealed class GsaIcamRelyingPartyProfile : GsaIcamProfile, IRelyingPartyBehavior {
+	public sealed class GsaIcamProfile : GsaIcamProfileBase, IRelyingPartyBehavior {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GsaIcamRelyingPartyProfile"/> class.
+		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.
 		/// </summary>
-		public GsaIcamRelyingPartyProfile() {
+		public GsaIcamProfile() {
 			if (DisableSslRequirement) {
 				Logger.OpenId.Warn("GSA level 1 behavior has its RequireSsl requirement disabled.");
 			}

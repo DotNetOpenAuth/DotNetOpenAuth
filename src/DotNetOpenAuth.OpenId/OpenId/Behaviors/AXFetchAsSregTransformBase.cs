@@ -21,11 +21,11 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// to the originally requested extension and format.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
-	public abstract class AXFetchAsSregTransform {
+	public abstract class AXFetchAsSregTransformBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AXFetchAsSregTransform"/> class.
+		/// Initializes a new instance of the <see cref="AXFetchAsSregTransformBase"/> class.
 		/// </summary>
-		protected AXFetchAsSregTransform() {
+		protected AXFetchAsSregTransformBase() {
 			this.AXFormats = AXAttributeFormats.Common;
 		}
 

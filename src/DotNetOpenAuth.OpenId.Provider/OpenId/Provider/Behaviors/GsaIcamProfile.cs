@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Behaviors {
+namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// </remarks>
 	[Serializable]
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Icam", Justification = "Acronym")]
-	public sealed class GsaIcamProviderProfile : GsaIcamProfile, IProviderBehavior {
+	public sealed class GsaIcamProviderProfile : GsaIcamProfileBase, IProviderBehavior {
 		/// <summary>
 		/// The maximum time a shared association can live.
 		/// </summary>

@@ -31,13 +31,13 @@
     <Compile Include="OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AuthenticationRequestMode.cs" />
-    <Compile Include="OpenId\Behaviors\AXFetchAsSregTransform.cs" />
+    <Compile Include="OpenId\Behaviors\AXFetchAsSregTransformBase.cs" />
     <Compile Include="OpenId\Behaviors\BehaviorStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BehaviorStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="OpenId\Behaviors\GsaIcamProfile.cs" />
+    <Compile Include="OpenId\Behaviors\GsaIcamProfileBase.cs" />
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\SigningBindingElementContract.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
@@ -176,7 +176,7 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj" Condition=" '$(ExcludeDiffieHellman)' != 'true' " >
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj" Condition=" '$(ExcludeDiffieHellman)' != 'true' ">
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>

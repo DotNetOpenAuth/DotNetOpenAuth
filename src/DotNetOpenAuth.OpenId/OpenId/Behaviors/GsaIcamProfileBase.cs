@@ -26,16 +26,16 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// </remarks>
 	[Serializable]
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Icam", Justification = "Acronym")]
-	public abstract class GsaIcamProfile {
+	public abstract class GsaIcamProfileBase {
 		/// <summary>
 		/// Backing field for the <see cref="DisableSslRequirement"/> static property.
 		/// </summary>
 		private static bool disableSslRequirement = DotNetOpenAuthSection.Messaging.RelaxSslRequirements;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.
+		/// Initializes a new instance of the <see cref="GsaIcamProfileBase"/> class.
 		/// </summary>
-		public GsaIcamProfile() {
+		public GsaIcamProfileBase() {
 			if (DisableSslRequirement) {
 				Logger.OpenId.Warn("GSA level 1 behavior has its RequireSsl requirement disabled.");
 			}

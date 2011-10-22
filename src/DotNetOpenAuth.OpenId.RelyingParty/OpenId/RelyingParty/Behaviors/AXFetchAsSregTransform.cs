@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Behaviors {
+namespace DotNetOpenAuth.OpenId.RelyingParty.Behaviors {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
@@ -22,11 +22,11 @@ namespace DotNetOpenAuth.OpenId.Behaviors {
 	/// to the originally requested extension and format.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
-	public sealed class AXFetchAsSregRelyingPartyTransform : AXFetchAsSregTransform, IRelyingPartyBehavior {
+	public sealed class AXFetchAsSregTransform : AXFetchAsSregTransform, IRelyingPartyBehavior {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AXFetchAsSregRelyingPartyTransform"/> class.
+		/// Initializes a new instance of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>
-		public AXFetchAsSregRelyingPartyTransform() {
+		public AXFetchAsSregTransform() {
 		}
 
 		#region IRelyingPartyBehavior Members
