@@ -436,7 +436,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="async">if set to <c>true</c> causes the AJAX callback to be a little more asynchronous.  Note that <c>false</c> does not mean the call is absolutely synchronous.</param>
 		/// <returns>The string defining a javascript anonymous function that initiates a callback.</returns>
-		private string GetJsCallbackConvenienceFunction(bool async) {
+		private string GetJsCallbackConvenienceFunction(bool @async) {
 			string argumentParameterName = "argument";
 			string callbackResultParameterName = "resultFunction";
 			string callbackErrorCallbackParameterName = "errorCallback";
@@ -446,7 +446,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				callbackResultParameterName,
 				argumentParameterName,
 				callbackErrorCallbackParameterName,
-				async);
+				@async);
 			return string.Format(
 				CultureInfo.InvariantCulture,
 				"function({1}, {2}, {3}) {{{0}\treturn {4};{0}}};",
