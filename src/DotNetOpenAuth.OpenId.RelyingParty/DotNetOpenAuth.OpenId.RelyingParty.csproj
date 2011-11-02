@@ -28,8 +28,7 @@
     <Compile Include="OpenId\ChannelElements\RelyingPartySecurityOptions.cs" />
     <Compile Include="OpenId\ChannelElements\RelyingPartySigningBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
-    <Compile Include="OpenId\Extensions\ExtensionsInteropRelyingPartyHelper.cs" />
-    <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
+    <Compile Include="OpenId\RelyingParty\Extensions\ExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\HostMetaDiscoveryService.cs" />
     <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
     <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
@@ -40,6 +39,7 @@
     <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingParty.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
+    <Compile Include="OpenId\RelyingParty\Extensions\UIUtilities.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyAssociationStore.cs" />
     <Compile Include="OpenId\RelyingParty\Associations.cs" />
     <Compile Include="OpenId\RelyingParty\AssociationManager.cs" />

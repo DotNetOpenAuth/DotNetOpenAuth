@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Extensions.UI {
+namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions.UI {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
@@ -14,17 +14,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// <summary>
 	/// Constants used in implementing support for the UI extension.
 	/// </summary>
-	public static class UIUtilities {
-		/// <summary>
-		/// The required width of the popup window the relying party creates for the provider.
-		/// </summary>
-		public const int PopupWidth = 500; // UI extension calls for 450px, but Yahoo needs 500px
-
-		/// <summary>
-		/// The required height of the popup window the relying party creates for the provider.
-		/// </summary>
-		public const int PopupHeight = 500;
-
+	internal static class UIUtilities {
 		/// <summary>
 		/// Gets the <c>window.open</c> javascript snippet to use to open a popup window
 		/// compliant with the UI extension.
