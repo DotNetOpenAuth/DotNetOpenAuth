@@ -11,6 +11,7 @@ namespace OpenIdProviderMvc.Controllers {
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.OpenId.Provider.Behaviors;
 	using OpenIdProviderMvc.Code;
 
 	public class OpenIdController : Controller {

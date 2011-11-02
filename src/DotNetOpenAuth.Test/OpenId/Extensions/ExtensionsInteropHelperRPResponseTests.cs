@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.OpenId.RelyingParty.Extensions;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -34,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		[TestCase]
 		public void UnifyExtensionsAsSregNoExtensions() {
-			var sreg = ExtensionsInteropRelyingPartyHelper.UnifyExtensionsAsSreg(this.response, true);
+			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.IsNotNull(sreg);
 			Assert.IsNull(sreg.Nickname);
 		}
@@ -51,7 +52,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			axInjected.Attributes.Add(WellKnownAttributes.Name.Alias, "nate");
 			this.extensions.Add(sregInjected);
 			this.extensions.Add(axInjected);
-			var sreg = ExtensionsInteropRelyingPartyHelper.UnifyExtensionsAsSreg(this.response, true);
+			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.AreSame(sregInjected, sreg);
 			Assert.AreEqual("andy", sreg.Nickname);
 		}
@@ -64,7 +65,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var axInjected = new FetchResponse();
 			axInjected.Attributes.Add(WellKnownAttributes.Name.Alias, "nate");
 			this.extensions.Add(axInjected);
-			var sreg = ExtensionsInteropRelyingPartyHelper.UnifyExtensionsAsSreg(this.response, true);
+			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.AreEqual("nate", sreg.Nickname);
 		}
 
@@ -76,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var axInjected = new FetchResponse();
 			axInjected.Attributes.Add(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet), "nate");
 			this.extensions.Add(axInjected);
-			var sreg = ExtensionsInteropRelyingPartyHelper.UnifyExtensionsAsSreg(this.response, true);
+			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.AreEqual("nate", sreg.Nickname);
 		}
 	}

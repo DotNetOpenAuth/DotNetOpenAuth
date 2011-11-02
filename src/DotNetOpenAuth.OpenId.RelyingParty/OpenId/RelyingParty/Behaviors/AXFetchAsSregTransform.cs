@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AXFetchAsSregRelyingPartyTransform.cs" company="Andrew Arnott">
+// <copyright file="AXFetchAsSregTransform.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,10 +11,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Behaviors {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.OpenId.RelyingParty.Extensions;
 
 	/// <summary>
 	/// An Attribute Exchange and Simple Registration filter to make all incoming attribute 
@@ -22,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Behaviors {
 	/// to the originally requested extension and format.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
-	public sealed class AXFetchAsSregTransform : AXFetchAsSregTransform, IRelyingPartyBehavior {
+	public sealed class AXFetchAsSregTransform : AXFetchAsSregTransformBase, IRelyingPartyBehavior {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AXFetchAsSregTransform.cs" company="Andrew Arnott">
+// <copyright file="AXFetchAsSregTransformBase.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------

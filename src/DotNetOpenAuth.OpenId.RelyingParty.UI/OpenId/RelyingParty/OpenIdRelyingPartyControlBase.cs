@@ -1027,7 +1027,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendLine("window.dnoa_internal.popupWindow = function() {");
 			startupScript.AppendFormat(
 				@"\tvar openidPopup = {0}",
-				UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
+				OpenId.RelyingParty.Extensions.UI.UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
 			startupScript.AppendLine("};");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "loginPopup", startupScript.ToString(), true);

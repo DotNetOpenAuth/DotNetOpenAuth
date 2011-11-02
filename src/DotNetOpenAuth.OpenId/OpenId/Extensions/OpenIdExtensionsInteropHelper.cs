@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ExtensionsInteropHelper.cs" company="Andrew Arnott">
+// <copyright file="OpenIdExtensionsInteropHelper.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	/// A set of methods designed to assist in improving interop across different
 	/// OpenID implementations and their extensions.
 	/// </summary>
-	internal static class ExtensionsInteropHelper {
+	internal static class OpenIdExtensionsInteropHelper {
 		/// <summary>
 		/// The gender decoder to translate AX genders to Sreg.
 		/// </summary>

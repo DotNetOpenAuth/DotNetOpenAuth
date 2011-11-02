@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="GsaIcamRelyingPartyProfile.cs" company="Andrew Arnott">
+// <copyright file="GsaIcamProfile.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,11 +11,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Behaviors {
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.OpenId.Behaviors;
 
 	/// <summary>
 	/// Implements the Identity, Credential, &amp; Access Management (ICAM) OpenID 2.0 Profile

@@ -42,11 +42,11 @@
 		}
 
 		private static void InitializeBehaviors() {
-			if (DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
+			if (DotNetOpenAuth.OpenId.Provider.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
 				lock (behaviorInitializationSyncObject) {
-					if (DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
-						DotNetOpenAuth.OpenId.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
-						DotNetOpenAuth.OpenId.Behaviors.GsaIcamProviderProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+					if (DotNetOpenAuth.OpenId.Provider.Behaviors.PpidGeneration.PpidIdentifierProvider == null) {
+						DotNetOpenAuth.OpenId.Provider.Behaviors.PpidGeneration.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
+						DotNetOpenAuth.OpenId.Provider.Behaviors.GsaIcamProfile.PpidIdentifierProvider = new Code.AnonymousIdentifierProvider();
 					}
 				}
 			}

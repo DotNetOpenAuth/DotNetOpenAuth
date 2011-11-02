@@ -35,8 +35,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions.UI {
 				"(window.showModalDialog ? window.showModalDialog({0}, {1}, 'status:0;resizable:1;scroll:1;center:1;dialogWidth:{2}px; dialogHeight:{3}') : window.open({0}, {1}, 'status=0,toolbar=0,location=1,resizable=1,scrollbars=1,left=' + ((screen.width - {2}) / 2) + ',top=' + ((screen.height - {3}) / 2) + ',width={2},height={3}'));",
 				MessagingUtilities.GetSafeJavascriptValue(popupUrl.AbsoluteUri),
 				MessagingUtilities.GetSafeJavascriptValue(windowName),
-				PopupWidth,
-				PopupHeight);
+				OpenId.Extensions.UI.UIUtilities.PopupWidth,
+				OpenId.Extensions.UI.UIUtilities.PopupHeight);
 		}
 	}
 }

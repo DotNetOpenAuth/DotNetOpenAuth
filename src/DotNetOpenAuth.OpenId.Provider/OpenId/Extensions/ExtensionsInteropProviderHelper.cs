@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="targetFormat">The target format.  Only one flag should be set.</param>
 		/// <returns>The AX attribute type URI in the target format.</returns>
 		internal static string TransformAXFormatTestHook(string axSchemaOrgFormatTypeUri, AXAttributeFormats targetFormat) {
-			return ExtensionsInteropHelper.TransformAXFormat(axSchemaOrgFormatTypeUri, targetFormat);
+			return OpenIdExtensionsInteropHelper.TransformAXFormat(axSchemaOrgFormatTypeUri, targetFormat);
 		}
 
 		/// <summary>
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 					// Remove the sreg response since the RP didn't ask for it.
 					response.Extensions.Remove(sregResponse);
 
-					AXAttributeFormats format = ExtensionsInteropHelper.DetectAXFormat(axRequest.Attributes.Select(att => att.TypeUri));
+					AXAttributeFormats format = OpenIdExtensionsInteropHelper.DetectAXFormat(axRequest.Attributes.Select(att => att.TypeUri));
 					if (format == AXAttributeFormats.None) {
 						// No recognized AX attributes were requested.
 						return;
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 					AddAXAttributeValue(axResponse, WellKnownAttributes.Preferences.TimeZone, format, sregResponse.TimeZone);
 					AddAXAttributeValue(axResponse, WellKnownAttributes.Preferences.Language, format, sregResponse.Language);
 					if (sregResponse.Gender.HasValue) {
-						AddAXAttributeValue(axResponse, WellKnownAttributes.Person.Gender, format, ExtensionsInteropHelper.GenderEncoder.Encode(sregResponse.Gender));
+						AddAXAttributeValue(axResponse, WellKnownAttributes.Person.Gender, format, OpenIdExtensionsInteropHelper.GenderEncoder.Encode(sregResponse.Gender));
 					}
 				}
 			}
@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="value">The value of the attribute.</param>
 		private static void AddAXAttributeValue(FetchResponse ax, string typeUri, AXAttributeFormats format, string value) {
 			if (!string.IsNullOrEmpty(value)) {
-				string targetTypeUri = ExtensionsInteropHelper.TransformAXFormat(typeUri, format);
+				string targetTypeUri = OpenIdExtensionsInteropHelper.TransformAXFormat(typeUri, format);
 				if (!ax.Attributes.Contains(targetTypeUri)) {
 					ax.Attributes.Add(targetTypeUri, value);
 				}
@@ -148,8 +148,8 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			Requires.NotNull(ax, "ax");
 			Requires.NotNullOrEmpty(typeUri, "typeUri");
 
-			foreach (AXAttributeFormats format in ExtensionsInteropHelper.ForEachFormat(AXAttributeFormats.All)) {
-				string typeUriInFormat = ExtensionsInteropHelper.TransformAXFormat(typeUri, format);
+			foreach (AXAttributeFormats format in OpenIdExtensionsInteropHelper.ForEachFormat(AXAttributeFormats.All)) {
+				string typeUriInFormat = OpenIdExtensionsInteropHelper.TransformAXFormat(typeUri, format);
 				if (ax.Attributes.Contains(typeUriInFormat)) {
 					return ax.Attributes[typeUriInFormat].IsRequired ? DemandLevel.Require : DemandLevel.Request;
 				}

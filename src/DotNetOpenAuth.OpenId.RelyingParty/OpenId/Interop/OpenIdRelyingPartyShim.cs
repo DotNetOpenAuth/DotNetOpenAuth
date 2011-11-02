@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// </summary>
 		static OpenIdRelyingPartyShim() {
 			relyingParty = new OpenIdRelyingParty(null);
-			relyingParty.Behaviors.Add(new Behaviors.AXFetchAsSregRelyingPartyTransform());
+			relyingParty.Behaviors.Add(new RelyingParty.Behaviors.AXFetchAsSregTransform());
 		}
 
 		/// <summary>

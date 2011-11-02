@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.OpenId.RelyingParty.Extensions;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -44,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		[TestCase]
 		public void SpreadSregToAXNoExtensions() {
-			ExtensionsInteropRelyingPartyHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg);
+			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg);
 			Assert.AreEqual(0, this.authReq.AppliedExtensions.Count());
 		}
 
@@ -54,7 +55,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[TestCase]
 		public void SpreadSregToAXBasic() {
 			this.authReq.AddExtension(this.sreg);
-			ExtensionsInteropRelyingPartyHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg);
+			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg);
 			var ax = this.authReq.AppliedExtensions.OfType<FetchRequest>().Single();
 			Assert.IsFalse(ax.Attributes[WellKnownAttributes.Name.Alias].IsRequired);
 			Assert.IsFalse(ax.Attributes[WellKnownAttributes.Name.FullName].IsRequired);
@@ -73,7 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[TestCase]
 		public void SpreadSregToAxMultipleSchemas() {
 			this.authReq.AddExtension(this.sreg);
-			ExtensionsInteropRelyingPartyHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg | AXAttributeFormats.SchemaOpenIdNet);
+			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg | AXAttributeFormats.SchemaOpenIdNet);
 			var ax = this.authReq.AppliedExtensions.OfType<FetchRequest>().Single();
 			Assert.IsTrue(ax.Attributes.Contains(WellKnownAttributes.Name.Alias));
 			Assert.IsTrue(ax.Attributes.Contains(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet)));
@@ -87,7 +88,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		public void SpreadSregToAxNoOpIfOPSupportsSreg() {
 			this.authReq.AddExtension(this.sreg);
 			this.InjectAdvertisedTypeUri(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns);
-			ExtensionsInteropRelyingPartyHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.All);
+			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.All);
 			Assert.IsFalse(this.authReq.AppliedExtensions.OfType<FetchRequest>().Any());
 		}
 
@@ -98,7 +99,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		public void SpreadSregToAxTargetedAtOPFormat() {
 			this.authReq.AddExtension(this.sreg);
 			this.InjectAdvertisedTypeUri(WellKnownAttributes.Name.FullName);
-			ExtensionsInteropRelyingPartyHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.OpenIdNetSchema);
+			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.OpenIdNetSchema);
 			var ax = this.authReq.AppliedExtensions.OfType<FetchRequest>().Single();
 			Assert.IsFalse(ax.Attributes.Contains(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Contact.Email, AXAttributeFormats.OpenIdNetSchema)));
 			Assert.IsTrue(ax.Attributes.Contains(WellKnownAttributes.Contact.Email));

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AXFetchAsSregProviderTransform.cs" company="Andrew Arnott">
+// <copyright file="AXFetchAsSregTransform.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -25,9 +26,9 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sreg", Justification = "Abbreviation")]
 	public sealed class AXFetchAsSregTransform : AXFetchAsSregTransformBase, IProviderBehavior {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AXFetchAsSregProviderTransform"/> class.
+		/// Initializes a new instance of the <see cref="AXFetchAsSregTransform"/> class.
 		/// </summary>
-		public AXFetchAsSregProviderTransform() {
+		public AXFetchAsSregTransform() {
 		}
 
 		#region IProviderBehavior Members

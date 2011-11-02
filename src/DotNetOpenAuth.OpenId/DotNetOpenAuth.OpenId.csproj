@@ -88,7 +88,7 @@
     <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
     <Compile Include="OpenId\Identifier.cs" />
     <Compile Include="OpenId\IdentifierContract.cs" />
-    <Compile Include="OpenId\Extensions\ExtensionsInteropHelper.cs" />
+    <Compile Include="OpenId\Extensions\OpenIdExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
     <Compile Include="OpenId\IProviderEndpoint.cs" />

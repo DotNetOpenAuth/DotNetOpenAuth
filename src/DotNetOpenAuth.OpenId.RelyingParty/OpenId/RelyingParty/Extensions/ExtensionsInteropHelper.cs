@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ExtensionsInteropRelyingPartyHelper.cs" company="Andrew Arnott">
+// <copyright file="ExtensionsInteropHelper.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -67,16 +68,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions {
 				Logger.OpenId.Debug("Could not determine whether OP supported Sreg or AX.  Using both extensions.");
 			}
 
-			foreach (AXAttributeFormats format in ExtensionsInteropHelper.ForEachFormat(attributeFormats)) {
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.BirthDate.WholeBirthDate, sreg.BirthDate);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Contact.HomeAddress.Country, sreg.Country);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Contact.Email, sreg.Email);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Name.FullName, sreg.FullName);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Person.Gender, sreg.Gender);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Preferences.Language, sreg.Language);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Name.Alias, sreg.Nickname);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Contact.HomeAddress.PostalCode, sreg.PostalCode);
-				ExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Preferences.TimeZone, sreg.TimeZone);
+			foreach (AXAttributeFormats format in OpenIdExtensionsInteropHelper.ForEachFormat(attributeFormats)) {
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.BirthDate.WholeBirthDate, sreg.BirthDate);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Contact.HomeAddress.Country, sreg.Country);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Contact.Email, sreg.Email);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Name.FullName, sreg.FullName);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Person.Gender, sreg.Gender);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Preferences.Language, sreg.Language);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Name.Alias, sreg.Nickname);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Contact.HomeAddress.PostalCode, sreg.PostalCode);
+				OpenIdExtensionsInteropHelper.FetchAttribute(ax, format, WellKnownAttributes.Preferences.TimeZone, sreg.TimeZone);
 			}
 		}
 
@@ -116,7 +117,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions {
 				sreg.TimeZone = fetchResponse.GetAttributeValue(WellKnownAttributes.Preferences.TimeZone, formats);
 				string gender = fetchResponse.GetAttributeValue(WellKnownAttributes.Person.Gender, formats);
 				if (gender != null) {
-					sreg.Gender = (Gender)ExtensionsInteropHelper.GenderEncoder.Decode(gender);
+					sreg.Gender = (Gender)OpenIdExtensionsInteropHelper.GenderEncoder.Decode(gender);
 				}
 			}
 
@@ -133,7 +134,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions {
 		/// The first value of the attribute, if available.
 		/// </returns>
 		internal static string GetAttributeValue(this FetchResponse fetchResponse, string typeUri, AXAttributeFormats formats) {
-			return ExtensionsInteropHelper.ForEachFormat(formats).Select(format => fetchResponse.GetAttributeValue(ExtensionsInteropHelper.TransformAXFormat(typeUri, format))).FirstOrDefault(s => s != null);
+			return OpenIdExtensionsInteropHelper.ForEachFormat(formats).Select(format => fetchResponse.GetAttributeValue(OpenIdExtensionsInteropHelper.TransformAXFormat(typeUri, format))).FirstOrDefault(s => s != null);
 		}
 
 		/// <summary>
@@ -144,7 +145,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions {
 		/// <returns>The AX format(s) to use based on the Provider's advertised AX support.</returns>
 		private static bool TryDetectOPAttributeFormat(RelyingParty.IAuthenticationRequest request, out AXAttributeFormats attributeFormat) {
 			Requires.NotNull(request, "request");
-			attributeFormat = ExtensionsInteropHelper.DetectAXFormat(request.DiscoveryResult.Capabilities);
+			attributeFormat = OpenIdExtensionsInteropHelper.DetectAXFormat(request.DiscoveryResult.Capabilities);
 			return attributeFormat != AXAttributeFormats.None;
 		}
 	}

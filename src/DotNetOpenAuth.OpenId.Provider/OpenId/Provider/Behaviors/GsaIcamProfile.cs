@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="GsaIcamProviderProfile.cs" company="Andrew Arnott">
+// <copyright file="GsaIcamProfile.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -28,16 +29,16 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	/// </remarks>
 	[Serializable]
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Icam", Justification = "Acronym")]
-	public sealed class GsaIcamProviderProfile : GsaIcamProfileBase, IProviderBehavior {
+	public sealed class GsaIcamProfile : GsaIcamProfileBase, IProviderBehavior {
 		/// <summary>
 		/// The maximum time a shared association can live.
 		/// </summary>
 		private static readonly TimeSpan MaximumAssociationLifetime = TimeSpan.FromSeconds(86400);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GsaIcamProviderProfile"/> class.
+		/// Initializes a new instance of the <see cref="GsaIcamProfile"/> class.
 		/// </summary>
-		public GsaIcamProviderProfile() {
+		public GsaIcamProfile() {
 			if (DisableSslRequirement) {
 				Logger.OpenId.Warn("GSA level 1 behavior has its RequireSsl requirement disabled.");
 			}
