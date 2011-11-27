@@ -789,10 +789,6 @@ http://opensource.org/licenses/ms-pl.html
     <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
   </PropertyGroup>
   <Target Name="BuildUnifiedProduct" DependsOnTargets="Build" Inputs="@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly)">
-    <PropertyGroup>
-      <!-- The ILMerge task doesn't properly quote the path. -->
-      <ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
-    </PropertyGroup>
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
     <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
              InputAssemblies="@(ILMergeInputAssemblies)"

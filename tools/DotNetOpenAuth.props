@@ -28,6 +28,8 @@
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
+		<!-- The ILMerge task doesn't properly quote the path. -->
+		<ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
 
 		<!-- Always use our own toolset's copy of Code Contracts for reliably reproducible builds. 
 		     Suppress the installed code contracts from importing itself. -->
