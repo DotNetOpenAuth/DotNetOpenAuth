@@ -209,10 +209,18 @@ http://opensource.org/licenses/ms-pl.html
     <CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
     <CodeContractsExtraRewriteOptions />
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\..\lib\net-v4.0\log4net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ClrVersion)' != '4' ">
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+  </ItemGroup>  
+  <ItemGroup>    
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -265,7 +273,7 @@ http://opensource.org/licenses/ms-pl.html
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(ClrVersion)' == '4' ">
-    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup Condition=" '$(ClrVersion)' != '4' ">
     <!-- MVC 2 can run on CLR 2 (it doesn't require CLR 4) but since MVC 2 apps tend to use type forwarding,
