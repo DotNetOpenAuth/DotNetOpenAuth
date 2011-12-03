@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Security;
 	using System.Security.Permissions;
 
 	/// <summary>

@@ -17,7 +17,16 @@
 		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
-
+		
+		<MvcVersion Condition=" '$(MvcVersion)' == '' And '$(ClrVersion)' == '4' ">2.0.0.0</MvcVersion>
+		<!-- MVC 2 can run on CLR 2 (it doesn't require CLR 4) but since MVC 2 apps tend to use type forwarding,
+         it's a more broadly consumable idea to bind against MVC 1 for the library unless we're building on CLR 4,
+         which will definitely have MVC 2 available. -->
+		<MvcVersion Condition=" '$(MvcVersion)' == '' And '$(ClrVersion)' == '2' ">1.0.0.0</MvcVersion>
+		
+		<Log4NetPath Condition=" '$(Log4NetPath)' == '' And '$(ClrVersion)' == '4' ">..\..\lib\net-v4.0\log4net.dll</Log4NetPath>
+		<Log4NetPath Condition=" '$(Log4NetPath)' == '' And '$(ClrVersion)' == '2' ">..\..\lib\log4net.dll</Log4NetPath>
+		
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
 		<AssemblyOriginatorKeyFile Condition="'$(AssemblyOriginatorKeyFile)' == ''">$(PublicKeyFile)</AssemblyOriginatorKeyFile>
