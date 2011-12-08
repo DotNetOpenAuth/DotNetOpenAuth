@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DNOA.Core</id>
+    <version>1.0</version>
+    <title>DotNetOpenAuth Core</title>
+    <authors>Outercure Foundation</authors>
+    <owners>Luan Nguyen</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains core assemblies of DotNetOpenOAuth library.</description>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Configuration" targetFramework=".NETFramework4.0" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="..\..\bin\v4.0\Release\DotNetOpenAuth.Messaging.dll" target="lib\net40\DotNetOpenAuth.Messaging.dll" />
+    <file src="..\..\bin\v4.0\Release\DotNetOpenAuth.OAuth.dll" target="lib\net40\DotNetOpenAuth.OAuth.dll" />
+    <file src="..\..\bin\v4.0\Release\DotNetOpenAuth.OpenId.dll" target="lib\net40\DotNetOpenAuth.OpenId.dll" />
+  </files>
+</package>
