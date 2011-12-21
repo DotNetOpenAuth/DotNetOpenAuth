@@ -202,11 +202,51 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Combinations", "Combination
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OpenIdInfoCard.UI", "DotNetOpenAuth.OpenIdInfoCard.UI\DotNetOpenAuth.OpenIdInfoCard.UI.csproj", "{3A8347E8-59A5-4092-8842-95C75D7D2F36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Web", "DotNetOpenAuth.Web\DotNetOpenAuth.Web.csproj", "{51835086-9611-4C53-819B-F2D5C9320873}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\samples\InfoCardRelyingParty", "{8BEDB899-2632-4ADF-AB9A-012088FB2460}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
+		ProjectReferences = "{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Messaging.dll;{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}|DotNetOpenAuth.InfoCard.UI.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Messaging.UI.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
+		Debug.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
+		Release.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "59719"
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.WebPages", "DotNetOpenAuth.WebPages\DotNetOpenAuth.WebPages.csproj", "{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "DotNetOpenAuth.TestWeb", "{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
+		ProjectReferences = "{A288FCC8-6FCF-46DA-A45E-5F9281556361}|DotNetOpenAuth.OAuth.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Messaging.dll;{3896A32A-E876-4C23-B9B8-78E17D134CD3}|DotNetOpenAuth.OpenId.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;{F8284738-3B5D-4733-A511-38C23F4A763F}|DotNetOpenAuth.OpenId.Provider.dll;{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}|DotNetOpenAuth.OpenId.RelyingParty.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
+		Debug.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
+		Release.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "5073"
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Web.Test", "DotNetOpenAuth.Web.Test\DotNetOpenAuth.Web.Test.csproj", "{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.AspNet", "DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj", "{51835086-9611-4C53-819B-F2D5C9320873}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Web.Test", "DotNetOpenAuth.AspNet.Test\DotNetOpenAuth.Web.Test.csproj", "{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -521,24 +561,32 @@ Global
 		{3A8347E8-59A5-4092-8842-95C75D7D2F36}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A8347E8-59A5-4092-8842-95C75D7D2F36}.ReleaseNoUI|Any CPU.ActiveCfg = Release|Any CPU
 		{3A8347E8-59A5-4092-8842-95C75D7D2F36}.ReleaseNoUI|Any CPU.Build.0 = Release|Any CPU
-		{51835086-9611-4C53-819B-F2D5C9320873}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
-		{51835086-9611-4C53-819B-F2D5C9320873}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.CodeAnalysis|Any CPU.Build.0 = Debug|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.ReleaseNoUI|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460}.ReleaseNoUI|Any CPU.Build.0 = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.CodeAnalysis|Any CPU.Build.0 = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.ReleaseNoUI|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E32A4F0-C275-46E0-8604-FB522D7ABE4F}.ReleaseNoUI|Any CPU.Build.0 = Debug|Any CPU
+		{51835086-9611-4C53-819B-F2D5C9320873}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
+		{51835086-9611-4C53-819B-F2D5C9320873}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
 		{51835086-9611-4C53-819B-F2D5C9320873}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51835086-9611-4C53-819B-F2D5C9320873}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51835086-9611-4C53-819B-F2D5C9320873}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51835086-9611-4C53-819B-F2D5C9320873}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51835086-9611-4C53-819B-F2D5C9320873}.ReleaseNoUI|Any CPU.ActiveCfg = Release|Any CPU
 		{51835086-9611-4C53-819B-F2D5C9320873}.ReleaseNoUI|Any CPU.Build.0 = Release|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.ReleaseNoUI|Any CPU.ActiveCfg = Release|Any CPU
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8}.ReleaseNoUI|Any CPU.Build.0 = Release|Any CPU
-		{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
-		{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
+		{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
+		{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}.CodeAnalysis|Any CPU.Build.0 = Debug|Any CPU
 		{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -567,6 +615,7 @@ Global
 		{9529606E-AF76-4387-BFB7-3D10A5B399AA} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{E135F455-0669-49F8-9207-07FCA8C8FC79} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{C78E8235-1D46-43EB-A912-80B522C4E9AE} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
+		{8BEDB899-2632-4ADF-AB9A-012088FB2460} = {8A5CEDB9-7F8A-4BE2-A1B9-97130F453277}
 		{5C65603B-235F-47E6-B536-06385C60DE7F} = {E9ED920D-1F83-48C0-9A4B-09CCE505FE6D}
 		{A78F8FC6-7B03-4230-BE41-761E400D6810} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
 		{17932639-1F50-48AF-B0A5-E2BF832F82CC} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
@@ -580,7 +629,6 @@ Global
 		{60426312-6AE5-4835-8667-37EDEA670222} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
 		{57A7DD35-666C-4FA3-9A1B-38961E50CA27} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
 		{51835086-9611-4C53-819B-F2D5C9320873} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
-		{AE031B0C-710B-4D5B-BDF5-F21DFC9092D8} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
 		{F8284738-3B5D-4733-A511-38C23F4A763F} = {C7EF1823-3AA7-477E-8476-28929F5C05D2}
 		{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B} = {C7EF1823-3AA7-477E-8476-28929F5C05D2}
 		{F4CD3C04-6037-4946-B7A5-34BFC96A75D2} = {C7EF1823-3AA7-477E-8476-28929F5C05D2}

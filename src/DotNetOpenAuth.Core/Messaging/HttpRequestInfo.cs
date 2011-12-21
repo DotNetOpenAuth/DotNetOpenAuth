@@ -245,7 +245,8 @@ namespace DotNetOpenAuth.Messaging {
 						if (this.InputStream.CanSeek) {
 							this.InputStream.Seek(originalPosition, SeekOrigin.Begin);
 						}
-					} else {
+					}
+					else {
 						this.form = new NameValueCollection();
 					}
 				}
@@ -280,7 +281,8 @@ namespace DotNetOpenAuth.Messaging {
 					if (!this.IsUrlRewritten) {
 						// No rewriting has taken place.
 						this.queryStringBeforeRewriting = this.QueryString;
-					} else {
+					}
+					else {
 						// Rewriting detected!  Recover the original request URI.
 						ErrorUtilities.VerifyInternal(this.UrlBeforeRewriting != null, "UrlBeforeRewriting is null, so the query string cannot be determined.");
 						this.queryStringBeforeRewriting = HttpUtility.ParseQueryString(this.UrlBeforeRewriting.Query);
@@ -317,6 +319,24 @@ namespace DotNetOpenAuth.Messaging {
 		/// is a read-only kind of <see cref="NameValueCollection"/>.
 		/// </remarks>
 		internal static Uri GetPublicFacingUrl(HttpRequest request, NameValueCollection serverVariables) {
+			return GetPublicFacingUrl(new HttpRequestWrapper(request), serverVariables);
+		}
+
+		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="serverVariables">The server variables to consider part of the request.</param>
+		/// <returns>
+		/// The URI that the outside world used to create this request.
+		/// </returns>
+		/// <remarks>
+		/// Although the <paramref name="serverVariables"/> value can be obtained from
+		/// <see cref="HttpRequest.ServerVariables"/>, it's useful to be able to pass them
+		/// in so we can simulate injected values from our unit tests since the actual property
+		/// is a read-only kind of <see cref="NameValueCollection"/>.
+		/// </remarks>
+		internal static Uri GetPublicFacingUrl(HttpRequestBase request, NameValueCollection serverVariables) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(serverVariables, "serverVariables");
 
@@ -336,7 +356,8 @@ namespace DotNetOpenAuth.Messaging {
 				publicRequestUri.Host = hostAndPort.Host;
 				publicRequestUri.Port = hostAndPort.Port; // CC missing Uri.Port contract that's on UriBuilder.Port
 				return publicRequestUri.Uri;
-			} else {
+			}
+			else {
 				// Failover to the method that works for non-web farm enviroments.
 				// We use Request.Url for the full path to the server, and modify it
 				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
@@ -358,7 +379,8 @@ namespace DotNetOpenAuth.Messaging {
 			NameValueCollection query;
 			if (this.HttpMethod == "GET") {
 				query = this.QueryStringBeforeRewriting;
-			} else {
+			}
+			else {
 				query = this.Form;
 			}
 			return query;
@@ -396,7 +418,8 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (string key in pairs) {
 				try {
 					headers.Add(key, pairs[key]);
-				} catch (ArgumentException ex) {
+				}
+				catch (ArgumentException ex) {
 					Logger.Messaging.WarnFormat(
 						"{0} thrown when trying to add web header \"{1}: {2}\".  {3}",
 						ex.GetType().Name,

@@ -59,5 +59,6 @@ using System.Web.UI;
 [assembly: InternalsVisibleTo("DotNetOpenAuth.OAuth.Consumer")]
 [assembly: InternalsVisibleTo("DotNetOpenAuth.OAuth.ServiceProvider")]
 [assembly: InternalsVisibleTo("DotNetOpenAuth.OAuth2")]
+[assembly: InternalsVisibleTo("DotNetOpenAuth.Web.Test")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 #endif
