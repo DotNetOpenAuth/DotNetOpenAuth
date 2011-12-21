@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DNOA.AspNet</id>
+    <version>1.0</version>
+    <title />
+    <authors>Outercurve Foundation</authors>
+    <owners>Luan Nguyen</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Allows adding OAuth and OpenID authentication to ASP.NET web projects using DotNetOpenAuth implementation.</description>
+    <dependencies>
+      <dependency id="DNOA.OpenId.RelyingParty" version="1.0" />
+      <dependency id="DNOA.OAuth.Consumer" version="1.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\bin\v4.0\Release\DotNetOpenAuth.AspNet.dll" target="lib\net40\DotNetOpenAuth.AspNet.dll" />
+  </files>
+</package>
