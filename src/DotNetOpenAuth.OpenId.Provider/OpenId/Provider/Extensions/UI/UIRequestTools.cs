@@ -1,10 +1,10 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UIRequestProvider.cs" company="Andrew Arnott">
+// <copyright file="UIRequestTools.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Extensions.UI {
+namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
@@ -29,12 +29,13 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 	/// whether to use a standard full window redirect or a popup) via the
 	/// <see cref="IdentifierDiscoveryResult.IsExtensionSupported&lt;T&gt;()"/> method.</para>
 	/// </remarks>
-	public static class UIRequestProvider {
+	public static class UIRequestTools {
 		/// <summary>
 		/// Gets the URL of the RP icon for the OP to display.
 		/// </summary>
 		/// <param name="realm">The realm of the RP where the authentication request originated.</param>
-		/// <param name="provider">The Provider instance used to obtain the authentication request.</param>
+		/// <param name="webRequestHandler">The web request handler to use for discovery.
+		/// Usually available via <see cref="Channel.WebRequestHandler">OpenIdProvider.Channel.WebRequestHandler</see>.</param>
 		/// <returns>
 		/// A sequence of the RP's icons it has available for the Provider to display, in decreasing preferred order.
 		/// </returns>
@@ -49,13 +50,18 @@ namespace DotNetOpenAuth.OpenId.Extensions.UI {
 		/// &lt;/Service&gt;
 		/// </example>
 		/// </remarks>
-		public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, OpenIdProvider provider) {
+		public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, IDirectWebRequestHandler webRequestHandler) {
 			Contract.Requires(realm != null);
-			Contract.Requires(provider != null);
+			Contract.Requires(webRequestHandler != null);
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-			ErrorUtilities.VerifyArgumentNotNull(provider, "provider");
+			ErrorUtilities.VerifyArgumentNotNull(webRequestHandler, "webRequestHandler");
 
-			return UIRequest.GetRelyingPartyIconUrls(realm, provider.Channel.WebRequestHandler);
+			XrdsDocument xrds = realm.Discover(webRequestHandler, false);
+			if (xrds == null) {
+				return Enumerable.Empty<Uri>();
+			} else {
+				return xrds.FindRelyingPartyIcons();
+			}
 		}
 	}
 }

@@ -27,9 +27,9 @@
     <Compile Include="OpenId\ChannelElements\OpenIdProviderChannel.cs" />
     <Compile Include="OpenId\ChannelElements\OpenIdProviderMessageFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ProviderSigningBindingElement.cs" />
-    <Compile Include="OpenId\Extensions\ExtensionsInteropProviderHelper.cs" />
-    <Compile Include="OpenId\Extensions\UI\UIRequestProvider.cs" />
-    <Compile Include="OpenId\HmacShaAssociationProvider.cs" />
+    <Compile Include="OpenId\Provider\Extensions\ExtensionsInteropHelper.cs" />
+    <Compile Include="OpenId\Provider\Extensions\UI\UIRequestTools.cs" />
+    <Compile Include="OpenId\Provider\HmacShaAssociationProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\IAssociateRequestProvider.cs" />
@@ -38,7 +38,7 @@
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponseProviderContract.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseProvider.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponseProvider.cs" />
-    <Compile Include="OpenId\OpenIdProviderUtilities.cs" />
+    <Compile Include="OpenId\Provider\OpenIdProviderUtilities.cs" />
     <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
     <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
     <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />

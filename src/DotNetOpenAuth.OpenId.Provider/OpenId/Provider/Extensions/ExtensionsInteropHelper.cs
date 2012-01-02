@@ -1,16 +1,17 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ExtensionsInteropProviderHelper.cs" company="Andrew Arnott">
+// <copyright file="ExtensionsInteropHelper.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Extensions {
+namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -19,7 +20,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	/// A set of methods designed to assist in improving interop across different
 	/// OpenID implementations and their extensions.
 	/// </summary>
-	public static class ExtensionsInteropProviderHelper {
+	internal static class ExtensionsInteropHelper {
 		/// <summary>
 		/// Transforms an AX attribute type URI from the axschema.org format into a given format.
 		/// </summary>
@@ -51,7 +52,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 
 			var ax = req.GetExtension<FetchRequest>();
 			if (ax != null) {
-				sreg = new ClaimsRequest(SimpleRegistration.Constants.sreg_ns);
+				sreg = new ClaimsRequest(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns);
 				sreg.Synthesized = true;
 				((IProtocolMessageWithExtensions)req.RequestMessage).Extensions.Add(sreg);
 				sreg.BirthDate = GetDemandLevelFor(ax, WellKnownAttributes.BirthDate.WholeBirthDate);
