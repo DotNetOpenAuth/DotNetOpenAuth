@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.ComponentModel {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
-using System.Reflection;
+	using System.Reflection;
 	using System.Security;
 	using System.Security.Permissions;
 

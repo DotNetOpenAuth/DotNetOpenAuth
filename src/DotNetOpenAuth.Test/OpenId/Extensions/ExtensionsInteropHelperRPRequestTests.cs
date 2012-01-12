@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.OpenId.RelyingParty.Extensions;
 	using NUnit.Framework;
+	using ExtensionsInteropProviderHelper = DotNetOpenAuth.OpenId.Provider.Extensions.ExtensionsInteropHelper;
 
 	[TestFixture]
 	public class ExtensionsInteropHelperRPRequestTests : OpenIdTestBase {
