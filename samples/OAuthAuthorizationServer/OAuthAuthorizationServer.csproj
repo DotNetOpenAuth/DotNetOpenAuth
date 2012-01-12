@@ -141,9 +141,9 @@
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
-      <Name>DotNetOpenAuth.Messaging</Name>
+      <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.AuthorizationServer\DotNetOpenAuth.OAuth2.AuthorizationServer.csproj">
       <Project>{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}</Project>

@@ -24,9 +24,9 @@
     <Compile Include="OAuth2\WebServerClient.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+    <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
-      <Name>DotNetOpenAuth.Messaging</Name>
+      <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>

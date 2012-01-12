@@ -249,13 +249,13 @@
       <Project>{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}</Project>
       <Name>DotNetOpenAuth.InfoCard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging.UI\DotNetOpenAuth.Messaging.UI.csproj">
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj">
       <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
-      <Name>DotNetOpenAuth.Messaging.UI</Name>
+      <Name>DotNetOpenAuth.Core.UI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
-      <Name>DotNetOpenAuth.Messaging</Name>
+      <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.AuthorizationServer\DotNetOpenAuth.OAuth2.AuthorizationServer.csproj">
       <Project>{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}</Project>

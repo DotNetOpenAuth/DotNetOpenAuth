@@ -47,7 +47,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "DotNetOpenAuth.TestWeb\", "{47A84EF7-68C3-4D47-926A-9CCEA6518531}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
-		ProjectReferences = "{4376ECC9-C346-4A99-B13C-FA93C0FBD2C9}|DotNetOpenAuth.Test.dll;{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Messaging.dll;{A288FCC8-6FCF-46DA-A45E-5F9281556361}|DotNetOpenAuth.OAuth.dll;{3896A32A-E876-4C23-B9B8-78E17D134CD3}|DotNetOpenAuth.OpenId.dll;{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}|DotNetOpenAuth.OAuth2.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Messaging.UI.dll;{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}|DotNetOpenAuth.InfoCard.UI.dll;{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}|DotNetOpenAuth.OAuth.Consumer.dll;{FED1923A-6D70-49B5-A37A-FB744FEC1C86}|DotNetOpenAuth.OAuth.ServiceProvider.dll;{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}|DotNetOpenAuth.OAuth2.AuthorizationServer.dll;{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}|DotNetOpenAuth.OAuth2.Client.dll;{ADC2CC8C-541E-4F86-ACB1-DD504A36FA4B}|DotNetOpenAuth.OAuth2.Client.UI.dll;{A1A3150A-7B0E-4A34-8E35-045296CD3C76}|DotNetOpenAuth.OAuth2.ResourceServer.dll;{F8284738-3B5D-4733-A511-38C23F4A763F}|DotNetOpenAuth.OpenId.Provider.dll;{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}|DotNetOpenAuth.OpenId.RelyingParty.dll;{9D0F8866-2131-4C2A-BC0E-16FEA5B50828}|DotNetOpenAuth.OpenId.Provider.UI.dll;{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}|DotNetOpenAuth.OpenId.UI.dll;{1ED8D424-F8AB-4050-ACEB-F27F4F909484}|DotNetOpenAuth.OpenId.RelyingParty.UI.dll;"
+		ProjectReferences = "{4376ECC9-C346-4A99-B13C-FA93C0FBD2C9}|DotNetOpenAuth.Test.dll;{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Core.dll;{A288FCC8-6FCF-46DA-A45E-5F9281556361}|DotNetOpenAuth.OAuth.dll;{3896A32A-E876-4C23-B9B8-78E17D134CD3}|DotNetOpenAuth.OpenId.dll;{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}|DotNetOpenAuth.OAuth2.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Core.UI.dll;{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}|DotNetOpenAuth.InfoCard.UI.dll;{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}|DotNetOpenAuth.OAuth.Consumer.dll;{FED1923A-6D70-49B5-A37A-FB744FEC1C86}|DotNetOpenAuth.OAuth.ServiceProvider.dll;{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}|DotNetOpenAuth.OAuth2.AuthorizationServer.dll;{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}|DotNetOpenAuth.OAuth2.Client.dll;{ADC2CC8C-541E-4F86-ACB1-DD504A36FA4B}|DotNetOpenAuth.OAuth2.Client.UI.dll;{A1A3150A-7B0E-4A34-8E35-045296CD3C76}|DotNetOpenAuth.OAuth2.ResourceServer.dll;{F8284738-3B5D-4733-A511-38C23F4A763F}|DotNetOpenAuth.OpenId.Provider.dll;{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}|DotNetOpenAuth.OpenId.RelyingParty.dll;{9D0F8866-2131-4C2A-BC0E-16FEA5B50828}|DotNetOpenAuth.OpenId.Provider.UI.dll;{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}|DotNetOpenAuth.OpenId.UI.dll;{1ED8D424-F8AB-4050-ACEB-F27F4F909484}|DotNetOpenAuth.OpenId.RelyingParty.UI.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
 		Debug.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
@@ -74,7 +74,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\samples\InfoCardRelyingParty\", "{6EB90284-BD15-461C-BBF2-131CF55F7C8B}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
-		ProjectReferences = "{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Messaging.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Messaging.UI.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}|DotNetOpenAuth.InfoCard.UI.dll;"
+		ProjectReferences = "{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Core.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Core.UI.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}|DotNetOpenAuth.InfoCard.UI.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
 		Debug.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
@@ -149,7 +149,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthResourceServer", "..\s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthAuthorizationServer", "..\samples\OAuthAuthorizationServer\OAuthAuthorizationServer.csproj", "{C78E8235-1D46-43EB-A912-80B522C4E9AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Messaging", "DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj", "{60426312-6AE5-4835-8667-37EDEA670222}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Core", "DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj", "{60426312-6AE5-4835-8667-37EDEA670222}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OpenId", "DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj", "{3896A32A-E876-4C23-B9B8-78E17D134CD3}"
 EndProject
@@ -173,7 +173,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OpenId.Provi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OpenId.UI", "DotNetOpenAuth.OpenId.UI\DotNetOpenAuth.OpenId.UI.csproj", "{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Messaging.UI", "DotNetOpenAuth.Messaging.UI\DotNetOpenAuth.Messaging.UI.csproj", "{173E7B8D-E751-46E2-A133-F72297C0D2F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Core.UI", "DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj", "{173E7B8D-E751-46E2-A133-F72297C0D2F4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Product", "Product", "{8D4236F7-C49B-49D3-BA71-6B86C9514BDE}"
 EndProject

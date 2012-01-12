@@ -184,9 +184,9 @@
     <Content Include="Provider.ashx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth.Messaging\DotNetOpenAuth.Messaging.csproj">
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
-      <Name>DotNetOpenAuth.Messaging</Name>
+      <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth.ServiceProvider\DotNetOpenAuth.OAuth.ServiceProvider.csproj">
       <Project>{FED1923A-6D70-49B5-A37A-FB744FEC1C86}</Project>
