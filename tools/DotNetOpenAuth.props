@@ -71,8 +71,6 @@
 										 DotNetOpenAuth.InfoCard;
 										 DotNetOpenAuth.InfoCard.UI;
 										 DotNetOpenAuth.OpenIdInfoCard.UI;
-                                         DotNetOpenAuth.Web;
-                                         DotNetOpenAuth.WebPages
 										 " />
 		<ProductProjectNames Include="
 										 DotNetOpenAuth.OAuth2;
