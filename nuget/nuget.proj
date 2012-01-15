@@ -8,7 +8,7 @@
 			<NuGetLayoutPath>$(DropsRoot)NuGet\$(BuildVersion)\</NuGetLayoutPath>
 		</PropertyGroup>
 
-		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.csproj" Targets="DocumentationProjectOutputGroup" BuildInParallel="$(BuildInParallel)">
+		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj" Targets="DocumentationProjectOutputGroup" BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="NuGetSource"/>
 		</MSBuild>
 
