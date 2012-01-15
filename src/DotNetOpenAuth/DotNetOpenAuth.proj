@@ -26,16 +26,27 @@
 	</ItemGroup>
 
 	<Target Name="BuildILMergeInputs" DependsOnTargets="ResolveReferences">
-		<PropertyGroup>
+		<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
 			<!-- The ILMerge task doesn't properly quote the path. -->
-			<ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
+			<ILMergeTargetPlatformDirectory>"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
 		</PropertyGroup>
+		<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+			<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
+		</ItemGroup>
+
+		<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+			<!-- The ILMerge task doesn't properly quote the path. -->
+			<ILMergeSearchDirectories Include="
+																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.0;
+																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.5;
+																" />
+		</ItemGroup>
 
 		<ItemGroup>
 			<ILMergeProductInputAssemblies Include="@(ReferencePath)"
 			                               Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
 			<ILMergeInputContractAssemblies Include="@(ILMergeProductInputAssemblies->'%(RootDir)%(Directory)CodeContracts\%(FileName).Contracts%(Extension)')"
-																			Condition=" '%(FileName)' != 'Microsoft.Contracts' "/>
+			                                Condition=" '%(FileName)' != 'Microsoft.Contracts' "/>
 		</ItemGroup>
 	</Target>
 
@@ -50,7 +61,7 @@
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(ILMergeInputContractAssemblies)"
 			OutputFile="$(ILMergeOutputContractAssembly)"
-			SearchDirectories="$(OutputPath)"
+			SearchDirectories="$(OutputPath);@(ILMergeSearchDirectories)"
 			KeyFile="$(PublicKeyFile)"
 			DelaySign="true"
 			ToolPath="$(ProjectRoot)tools\ILMerge"
@@ -66,6 +77,7 @@
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)"
 			OutputFile="$(ILMergeOutputAssembly)"
+			SearchDirectories="@(ILMergeSearchDirectories)"
 			KeyFile="$(PublicKeyFile)"
 			DelaySign="true"
 			XmlDocumentation="true"
