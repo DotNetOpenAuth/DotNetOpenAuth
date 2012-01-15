@@ -41,8 +41,8 @@
 
 	<ItemGroup>
 		<ProductProjectNames Include="
-									   DotNetOpenAuth.Messaging;
-										 DotNetOpenAuth.Messaging.UI;
+									   DotNetOpenAuth.Core;
+										 DotNetOpenAuth.Core.UI;
 										 Mono.Math;
 										 Org.Mentalis.Security.Cryptography;
 										 DotNetOpenAuth.OpenId;
