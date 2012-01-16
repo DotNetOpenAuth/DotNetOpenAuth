@@ -16,7 +16,8 @@
 		<ItemGroup>
 			<NuGetSource Include="%(ResignedAssembliesOutputs.Identity)" Condition=" '%(FileName)%(Extension)' == 'DotNetOpenAuth.dll' "/>
 			<NuGetSource>
-				<TargetPath>$(NuGetLayoutPath)lib\%(FileName)%(Extension)</TargetPath>
+				<TargetPath Condition=" '$(ClrVersion)' == '2' ">$(NuGetLayoutPath)lib\full\%(FileName)%(Extension)</TargetPath>
+				<TargetPath Condition=" '$(ClrVersion)' == '4' ">$(NuGetLayoutPath)lib\net40-full\%(FileName)%(Extension)</TargetPath>
 			</NuGetSource>
 		</ItemGroup>
 		<ItemGroup>
