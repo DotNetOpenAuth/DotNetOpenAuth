@@ -16,8 +16,10 @@
 		<ItemGroup>
 			<NuGetSource Include="%(ResignedAssembliesOutputs.Identity)" Condition=" '%(FileName)%(Extension)' == 'DotNetOpenAuth.dll' "/>
 			<NuGetSource>
-				<TargetPath Condition=" '$(ClrVersion)' == '2' ">$(NuGetLayoutPath)lib\full\%(FileName)%(Extension)</TargetPath>
-				<TargetPath Condition=" '$(ClrVersion)' == '4' ">$(NuGetLayoutPath)lib\net40-full\%(FileName)%(Extension)</TargetPath>
+				<TargetPath>$(NuGetLayoutPath)lib\net40-full\%(FileName)%(Extension)</TargetPath>
+			</NuGetSource>
+			<NuGetSource Condition=" '$(ClrVersion)' == '2' " Include="@(NuGetSource)">
+				<TargetPath>$(NuGetLayoutPath)lib\full\%(FileName)%(Extension)</TargetPath>
 			</NuGetSource>
 		</ItemGroup>
 		<ItemGroup>
@@ -27,7 +29,7 @@
 			<NuGetSource Include="@(NuGetContentSource)">
 				<TargetPath>$(NuGetLayoutPath)content\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
 			</NuGetSource>
-			
+
 			<NuSpecSource Include="DotNetOpenAuth.Ultimate.nuspec">
 				<LayoutPath>$(NuGetLayoutPath)</LayoutPath>
 				<BeforeTokens>$version$</BeforeTokens>
@@ -52,7 +54,7 @@
 
 		<Purge Directories="$(NuGetLayoutPath)" IntendedFiles="@(NuGetContentsTarget);@(NuSpecTarget)" />
 	</Target>
-	
+
 	<Target Name="Build" DependsOnTargets="Layout">
 		<NuGetPack
 			NuSpec="%(NuSpecTarget.Identity)"
