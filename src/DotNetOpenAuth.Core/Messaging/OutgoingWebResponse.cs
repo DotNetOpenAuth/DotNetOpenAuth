@@ -142,6 +142,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ThreadAbortException">Typically thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public virtual void Send(HttpContext context) {
+			this.Respond(new HttpContextWrapper(context), true);
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent
+		/// and ends execution on the current page or handler.
+		/// </summary>
+		/// <param name="context">The context of the HTTP request whose response should be set.
+		/// Typically this is <see cref="HttpContext.Current"/>.</param>
+		/// <exception cref="ThreadAbortException">Typically thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public virtual void Send(HttpContextBase context) {
 			this.Respond(context, true);
 		}
 
@@ -176,7 +188,25 @@ namespace DotNetOpenAuth.Messaging {
 		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
 		/// Use the <see cref="Send()"/> method instead for web forms.
 		/// </remarks>
-		public virtual void Respond(HttpContext context) {
+		public void Respond(HttpContext context) {
+			Requires.NotNull(context, "context");
+			this.Respond(new HttpContextWrapper(context));
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent
+		/// and signals ASP.NET to short-circuit the page execution pipeline
+		/// now that the response has been completed.
+		/// Not safe to call from ASP.NET web forms.
+		/// </summary>
+		/// <param name="context">The context of the HTTP request whose response should be set.
+		/// Typically this is <see cref="HttpContext.Current"/>.</param>
+		/// <remarks>
+		/// This call is not safe to make from an ASP.NET web form (.aspx file or code-behind) because
+		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
+		/// Use the <see cref="Send()"/> method instead for web forms.
+		/// </remarks>
+		public virtual void Respond(HttpContextBase context) {
 			Requires.NotNull(context, "context");
 
 			this.Respond(context, false);
@@ -264,7 +294,21 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="endRequest">If set to <c>false</c>, this method calls
 		/// <see cref="HttpApplication.CompleteRequest"/> rather than <see cref="HttpResponse.End"/>
 		/// to avoid a <see cref="ThreadAbortException"/>.</param>
-		protected internal virtual void Respond(HttpContext context, bool endRequest) {
+		protected internal void Respond(HttpContext context, bool endRequest) {
+			this.Respond(new HttpContextWrapper(context), endRequest);
+		}
+
+		/// <summary>
+		/// Automatically sends the appropriate response to the user agent
+		/// and signals ASP.NET to short-circuit the page execution pipeline
+		/// now that the response has been completed.
+		/// </summary>
+		/// <param name="context">The context of the HTTP request whose response should be set.
+		/// Typically this is <see cref="HttpContext.Current"/>.</param>
+		/// <param name="endRequest">If set to <c>false</c>, this method calls
+		/// <see cref="HttpApplication.CompleteRequest"/> rather than <see cref="HttpResponse.End"/>
+		/// to avoid a <see cref="ThreadAbortException"/>.</param>
+		protected internal virtual void Respond(HttpContextBase context, bool endRequest) {
 			Requires.NotNull(context, "context");
 
 			context.Response.Clear();
