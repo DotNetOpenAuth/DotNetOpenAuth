@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\tools\drop.proj = ..\..\tools\drop.proj
 		..\..\EnlistmentInfo.props = ..\..\EnlistmentInfo.props
 		..\..\EnlistmentInfo.targets = ..\..\EnlistmentInfo.targets
-		..\..\nuget\nuget.proj = ..\..\nuget\nuget.proj
 		..\..\tools\ohloh.proj = ..\..\tools\ohloh.proj
 		..\..\projecttemplates\projecttemplates.proj = ..\..\projecttemplates\projecttemplates.proj
 		..\..\samples\Samples.proj = ..\..\samples\Samples.proj
@@ -30,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.BuildTasks",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{D49E2011-0E1C-4AB5-9887-BD1D42266503}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\nuget\DotNetOpenAuth.nuspec = ..\..\nuget\DotNetOpenAuth.nuspec
+		..\..\nuget\DotNetOpenAuth.Ultimate.nuspec = ..\..\nuget\DotNetOpenAuth.Ultimate.nuspec
 		..\..\nuget\nuget.proj = ..\..\nuget\nuget.proj
 	EndProjectSection
 EndProject
