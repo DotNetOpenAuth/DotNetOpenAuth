@@ -39,6 +39,20 @@
 		<ImportCodeContractsFromToolset>true</ImportCodeContractsFromToolset>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
+		<ILMergeTargetPlatformDirectory>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0</ILMergeTargetPlatformDirectory>
+	</PropertyGroup>
+	<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+		<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+		<ILMergeSearchDirectories Include="
+																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.0;
+																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.5;
+																" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProductProjectNames Include="
 									   DotNetOpenAuth.Core;

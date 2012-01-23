@@ -239,12 +239,16 @@
   </ItemGroup>
   <Target Name="BuildUnified" DependsOnTargets="Build" Inputs="@(ILMergeProjectInputAssemblies)" Outputs="$(ILMergeProjectOutputAssembly)">
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
-    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-		         InputAssemblies="@(ILMergeProjectInputAssemblies)"
-		         OutputFile="$(ILMergeProjectOutputAssembly)"
-		         ToolPath="$(ProjectRoot)tools\ILMerge"
-		         KeyFile="$(PublicKeyFile)"
-		         DelaySign="true" />
+    <ILMerge
+      ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
+      InputAssemblies="@(ILMergeProjectInputAssemblies)"
+      OutputFile="$(ILMergeProjectOutputAssembly)"
+      SearchDirectories="$(OutputPath);@(ILMergeSearchDirectories)"
+      ToolPath="$(ProjectRoot)tools\ILMerge"
+      KeyFile="$(PublicKeyFile)"
+      DelaySign="true" 
+      TargetPlatformVersion="$(ClrVersion).0"
+      TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
   </Target>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />

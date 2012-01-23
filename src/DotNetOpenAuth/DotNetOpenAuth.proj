@@ -26,22 +26,6 @@
 	</ItemGroup>
 
 	<Target Name="BuildILMergeInputs" DependsOnTargets="ResolveReferences">
-		<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
-			<!-- The ILMerge task doesn't properly quote the path. -->
-			<ILMergeTargetPlatformDirectory>"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
-		</PropertyGroup>
-		<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
-			<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
-		</ItemGroup>
-
-		<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
-			<!-- The ILMerge task doesn't properly quote the path. -->
-			<ILMergeSearchDirectories Include="
-																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.0;
-																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.5;
-																" />
-		</ItemGroup>
-
 		<ItemGroup>
 			<ILMergeProductInputAssemblies Include="@(ReferencePath)"
 			                               Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
