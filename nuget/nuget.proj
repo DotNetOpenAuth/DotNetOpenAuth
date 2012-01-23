@@ -3,7 +3,39 @@
 	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
 
-	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
+	<Target Name="BuildIntermediates">
+		<ItemGroup>
+			<ProductTargets Include="BuildUnifiedProduct;ReSignDelaySignedAssemblies" />
+		</ItemGroup>
+
+		<!-- We build the entire unified, signed product targeting both CLRs, since NuGet supports packages that contain both,
+		     and by building against CLR 4, several assembly references fall away from dotnetopenauth.dll, which makes some folks happy. -->
+		<MSBuild
+			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
+			Targets="@(ProductTargets)"
+			Properties="TargetFrameworkVersion=v3.5"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs35"/>
+		</MSBuild>
+		<MSBuild
+			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
+			Targets="@(ProductTargets)"
+			Properties="TargetFrameworkVersion=v4.0"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs40"/>
+		</MSBuild>
+
+		<ItemGroup>
+			<ResignedAssembliesOutputs Include="@(ResignedAssembliesOutputs35)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
+				<TargetFramework>v3.5</TargetFramework>
+			</ResignedAssembliesOutputs>
+			<ResignedAssembliesOutputs Include="@(ResignedAssembliesOutputs40)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
+				<TargetFramework>v4.0</TargetFramework>
+			</ResignedAssembliesOutputs>
+		</ItemGroup>
+	</Target>
+
+	<Target Name="Layout" DependsOnTargets="BuildIntermediates">
 		<PropertyGroup>
 			<NuGetLayoutPath>$(DropsRoot)NuGet\$(BuildVersion)\</NuGetLayoutPath>
 		</PropertyGroup>
@@ -14,12 +46,9 @@
 
 		<!-- IMPORTANT: These must appear as separate ItemGroups or else batching screws it up. -->
 		<ItemGroup>
-			<NuGetSource Include="%(ResignedAssembliesOutputs.Identity)" Condition=" '%(FileName)%(Extension)' == 'DotNetOpenAuth.dll' "/>
-			<NuGetSource>
-				<TargetPath>$(NuGetLayoutPath)lib\net40-full\%(FileName)%(Extension)</TargetPath>
-			</NuGetSource>
-			<NuGetSource Condition=" '$(ClrVersion)' == '2' " Include="@(NuGetSource)">
-				<TargetPath>$(NuGetLayoutPath)lib\full\%(FileName)%(Extension)</TargetPath>
+			<NuGetSource Include="%(ResignedAssembliesOutputs.Identity)" Condition=" '%(FileName)%(Extension)' == 'DotNetOpenAuth.dll' ">
+				<TargetPath Condition=" '%(TargetFramework)' == 'v4.0' ">$(NuGetLayoutPath)lib\net40-full\%(FileName)%(Extension)</TargetPath>
+				<TargetPath Condition=" '%(TargetFramework)' == 'v3.5' ">$(NuGetLayoutPath)lib\net35-full\%(FileName)%(Extension)</TargetPath>
 			</NuGetSource>
 		</ItemGroup>
 		<ItemGroup>
