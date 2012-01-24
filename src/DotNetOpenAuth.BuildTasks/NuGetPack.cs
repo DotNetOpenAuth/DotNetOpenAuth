@@ -40,6 +40,11 @@ namespace DotNetOpenAuth.BuildTasks {
 		public string Properties { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to generate a symbols nuget package.
+		/// </summary>
+		public bool Symbols { get; set; }
+
+		/// <summary>
 		/// Returns the fully qualified path to the executable file.
 		/// </summary>
 		/// <returns>
@@ -86,6 +91,9 @@ namespace DotNetOpenAuth.BuildTasks {
 			args.AppendSwitchIfNotNull("-BasePath ", this.BaseDirectory);
 			args.AppendSwitchIfNotNull("-OutputDirectory ", this.OutputPackageDirectory);
 			args.AppendSwitchIfNotNull("-Properties ", this.Properties);
+			if (this.Symbols) {
+				args.AppendSwitch("-Symbols");
+			}
 
 			return args.ToString();
 		}

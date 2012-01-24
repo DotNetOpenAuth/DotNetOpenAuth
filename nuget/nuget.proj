@@ -42,7 +42,11 @@
 
 	<Target Name="Build" DependsOnTargets="BuildIntermediates">
 		<ItemGroup>
-			<NuGetPackages Include="*.nuspec" />
+			<NuGetPackages Include="*.nuspec" Exclude="DotNetOpenAuth.Ultimate.nuspec">
+				<Symbols>true</Symbols>
+			</NuGetPackages>
+			<NuGetPackages Include="DotNetOpenAuth.Ultimate.nuspec" />
+
 			<NuGetProperties Include="version=$(BuildVersion)" />
 			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
 			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
@@ -51,6 +55,7 @@
 			NuSpec="%(NuGetPackages.Identity)"
 			OutputPackageDirectory="$(DropsRoot)"
 			Properties="@(NuGetProperties)"
+			Symbols="%(NuGetPackages.Symbols)"
 			ToolPath="$(NuGetToolPath)" />
 	</Target>
 

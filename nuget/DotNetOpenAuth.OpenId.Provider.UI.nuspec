@@ -20,7 +20,12 @@
 		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenId.Provider.UI.dll" target="lib\net35-full\DotNetOpenAuth.OpenId.Provider.UI.dll" />
 		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenId.Provider.UI.dll" target="lib\net40-full\DotNetOpenAuth.OpenId.Provider.UI.dll" />
 
+		<file src="$OutputPath35$DotNetOpenAuth.OpenId.Provider.UI.pdb" target="lib\net35-full\DotNetOpenAuth.OpenId.Provider.UI.pdb" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenId.Provider.UI.pdb" target="lib\net40-full\DotNetOpenAuth.OpenId.Provider.UI.pdb" />
+
 		<file src="$OutputPath35$DotNetOpenAuth.OpenId.Provider.UI.xml" target="lib\net35-full\DotNetOpenAuth.OpenId.Provider.UI.xml" />
 		<file src="$OutputPath40$DotNetOpenAuth.OpenId.Provider.UI.xml" target="lib\net40-full\DotNetOpenAuth.OpenId.Provider.UI.xml" />
+
+		<file src="..\src\DotNetOpenAuth.OpenId.Provider.UI\**\*.cs" target="src" />
 	</files>
 </package>

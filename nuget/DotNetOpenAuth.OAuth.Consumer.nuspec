@@ -19,7 +19,12 @@
 		<file src="$OutputPath35$signed\DotNetOpenAuth.OAuth.Consumer.dll" target="lib\net35-full\DotNetOpenAuth.OAuth.Consumer.dll" />
 		<file src="$OutputPath40$signed\DotNetOpenAuth.OAuth.Consumer.dll" target="lib\net40-full\DotNetOpenAuth.OAuth.Consumer.dll" />
 
+		<file src="$OutputPath35$DotNetOpenAuth.OAuth.Consumer.pdb" target="lib\net35-full\DotNetOpenAuth.OAuth.Consumer.pdb" />
+		<file src="$OutputPath40$DotNetOpenAuth.OAuth.Consumer.pdb" target="lib\net40-full\DotNetOpenAuth.OAuth.Consumer.pdb" />
+
 		<file src="$OutputPath35$DotNetOpenAuth.OAuth.Consumer.xml" target="lib\net35-full\DotNetOpenAuth.OAuth.Consumer.xml" />
 		<file src="$OutputPath40$DotNetOpenAuth.OAuth.Consumer.xml" target="lib\net40-full\DotNetOpenAuth.OAuth.Consumer.xml" />
+
+		<file src="..\src\DotNetOpenAuth.OAuth.Consumer\**\*.cs" target="src" />
 	</files>
 </package>

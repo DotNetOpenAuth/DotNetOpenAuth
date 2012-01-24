@@ -21,7 +21,12 @@
 		<file src="$OutputPath35$signed\DotNetOpenAuth.Core.UI.dll" target="lib\net35-full\DotNetOpenAuth.Core.UI.dll" />
 		<file src="$OutputPath40$signed\DotNetOpenAuth.Core.UI.dll" target="lib\net40-full\DotNetOpenAuth.Core.UI.dll" />
 
+		<file src="$OutputPath35$DotNetOpenAuth.Core.UI.pdb" target="lib\net35-full\DotNetOpenAuth.Core.UI.pdb" />
+		<file src="$OutputPath40$DotNetOpenAuth.Core.UI.pdb" target="lib\net40-full\DotNetOpenAuth.Core.UI.pdb" />
+
 		<file src="$OutputPath35$DotNetOpenAuth.Core.UI.xml" target="lib\net35-full\DotNetOpenAuth.Core.UI.xml" />
 		<file src="$OutputPath40$DotNetOpenAuth.Core.UI.xml" target="lib\net40-full\DotNetOpenAuth.Core.UI.xml" />
+
+		<file src="..\src\DotNetOpenAuth.Core.UI\**\*.cs" target="src" />
 	</files>
 </package>
