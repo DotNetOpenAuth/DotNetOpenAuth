@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>DotNetOpenAuth.InfoCard.UI</id>
+		<version>$version$</version>
+		<title>DotNetOpenAuth InfoCard (ASP.NET controls)</title>
+		<authors>Andrew Arnott</authors>
+		<owners>Outercurve Foundation</owners>
+		<projectUrl>http://www.dotnetopenauth.net/</projectUrl>
+		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
+		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Contains assemblies that are required to implement an InfoCard relying party.</summary>
+		<description>Contains assemblies that are required to implement an InfoCard relying party.</description>
+		<language>en-US</language>
+		<dependencies>
+			<dependency id="DotNetOpenAuth.Core.UI" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.InfoCard" version="[$version$]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$OutputPath35$signed\DotNetOpenAuth.InfoCard.UI.dll" target="lib\net35-full\DotNetOpenAuth.InfoCard.UI.dll" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.InfoCard.UI.dll" target="lib\net40-full\DotNetOpenAuth.InfoCard.UI.dll" />
+		<file src="$OutputPath35$DotNetOpenAuth.InfoCard.UI.xml" target="lib\net35-full\DotNetOpenAuth.InfoCard.UI.xml" />
+		<file src="$OutputPath40$DotNetOpenAuth.InfoCard.UI.xml" target="lib\net40-full\DotNetOpenAuth.InfoCard.UI.xml" />
+	</files>
+</package>
