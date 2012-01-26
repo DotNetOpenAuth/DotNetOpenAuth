@@ -4,16 +4,21 @@
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
 
 	<ItemGroup>
+		<!--Removed from NightlyProjects until it can be fixed up. samples\tools.proj;-->
 		<NightlyProjects Include="
-										samples\tools.proj;
-										tools\drop.proj;
 										nuget\nuget.proj;
 										" />
+		<NightlyProjects Include="
+										tools\drop.proj;
+										 ">
+			<BuildOnlyOnClr2>true</BuildOnlyOnClr2>
+		</NightlyProjects>
 		<NightlyProjects Include="
 										samples\samples.proj;
 										doc\doc.proj;
 										">
 			<Targets>DeployableArchive</Targets>
+			<BuildOnlyOnClr2>true</BuildOnlyOnClr2>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="
@@ -44,7 +49,7 @@
 			<NightlyProjects>
 				<Properties>TargetFrameworkVersion=v3.5</Properties>
 			</NightlyProjects>
-			<NightlyProjects Include="@(NightlyProjects)">
+			<NightlyProjects Include="@(NightlyProjects)" Condition=" '%(NightlyProjects.BuildOnlyOnClr2)' != 'true' ">
 				<Properties>TargetFrameworkVersion=v4.0</Properties>
 			</NightlyProjects>
 			<ProjectsToClean>
