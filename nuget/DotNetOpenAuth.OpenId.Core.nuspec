@@ -14,6 +14,10 @@
 		<dependencies>
 			<dependency id="DotNetOpenAuth.Core" version="[$version$]" />
 		</dependencies>
+		<references>
+			<!-- Explicitly specify references so that Mono.Math other implementation detail assemblies are not referenced. -->
+			<reference file="DotNetOpenAuth.OpenId.dll" />
+		</references>
 	</metadata>
 	<files>
 		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenId.dll" target="lib\net35-full\DotNetOpenAuth.OpenId.dll" />
