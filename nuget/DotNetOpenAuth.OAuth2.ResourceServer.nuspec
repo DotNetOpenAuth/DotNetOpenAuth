@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>DotNetOpenAuth.OAuth2.ResourceServer</id>
+		<version>$oauth2version$</version>
+		<title>DotNetOpenAuth OAuth 2.0 Resource Server</title>
+		<authors>Andrew Arnott</authors>
+		<owners>Outercurve Foundation</owners>
+		<projectUrl>http://www.dotnetopenauth.net/</projectUrl>
+		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
+		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Contains assemblies that are required to implement an OAuth 2.0 Resource Server.</description>
+		<dependencies>
+			<dependency id="DotNetOpenAuth.OAuth.ServiceProvider" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.OAuth2.Core" version="[$oauth2version$]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$OutputPath35$signed\DotNetOpenAuth.OAuth2.ResourceServer.dll" target="lib\net35-full" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.OAuth2.ResourceServer.dll" target="lib\net40-full" />
+
+		<file src="$OutputPath35$DotNetOpenAuth.OAuth2.ResourceServer.pdb" target="lib\net35-full" />
+		<file src="$OutputPath40$DotNetOpenAuth.OAuth2.ResourceServer.pdb" target="lib\net40-full" />
+
+		<file src="$OutputPath35$DotNetOpenAuth.OAuth2.ResourceServer.xml" target="lib\net35-full" />
+		<file src="$OutputPath40$DotNetOpenAuth.OAuth2.ResourceServer.xml" target="lib\net40-full" />
+
+		<file src="..\src\DotNetOpenAuth.OAuth2.ResourceServer\**\*.cs" target="src" />
+	</files>
+</package>
