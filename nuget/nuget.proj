@@ -47,7 +47,7 @@
 			</NuGetPackages>
 			<NuGetPackages Include="DotNetOpenAuth.Ultimate.nuspec" />
 
-			<NuGetProperties Include="version=$(BuildVersion)" />
+			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
 			<NuGetProperties Include="oauth2version=0.11.0-draft" />
 			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
 			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
