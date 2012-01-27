@@ -65,11 +65,6 @@
 										 DotNetOpenAuth.OpenId.Provider.UI;
 										 DotNetOpenAuth.OpenId.RelyingParty;
 										 DotNetOpenAuth.OpenId.RelyingParty.UI;
-										 DotNetOpenAuth.OAuth2;
-										 DotNetOpenAuth.OAuth2.AuthorizationServer;
-										 DotNetOpenAuth.OAuth2.Client;
-										 DotNetOpenAuth.OAuth2.Client.UI;
-										 DotNetOpenAuth.OAuth2.ResourceServer;
 										 DotNetOpenAuth.OAuth;
 										 DotNetOpenAuth.OAuth.Consumer;
 										 DotNetOpenAuth.OAuth.ServiceProvider;
@@ -77,6 +72,15 @@
 										 DotNetOpenAuth.InfoCard.UI;
 										 DotNetOpenAuth.OpenIdInfoCard.UI;
 										 " />
+		<ProductProjectNames Include="
+										 DotNetOpenAuth.OAuth2;
+										 DotNetOpenAuth.OAuth2.AuthorizationServer;
+										 DotNetOpenAuth.OAuth2.Client;
+										 DotNetOpenAuth.OAuth2.Client.UI;
+										 DotNetOpenAuth.OAuth2.ResourceServer;
+										">
+			<MergeIntoUnifiedAssembly Condition=" '$(IncludeOAuth2)' != 'true' ">false</MergeIntoUnifiedAssembly>
+		</ProductProjectNames>
 		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
 
 		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />
