@@ -10,8 +10,8 @@
     <ProjectGuid>{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DotNetOpenAuth.Web.Test</RootNamespace>
-    <AssemblyName>DotNetOpenAuth.Web.Test</AssemblyName>
+    <RootNamespace>DotNetOpenAuth.AspNet.Test</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.AspNet.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
