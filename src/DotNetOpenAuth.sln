@@ -246,7 +246,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.AspNet", "DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj", "{51835086-9611-4C53-819B-F2D5C9320873}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Web.Test", "DotNetOpenAuth.AspNet.Test\DotNetOpenAuth.Web.Test.csproj", "{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.AspNet.Test", "DotNetOpenAuth.AspNet.Test\DotNetOpenAuth.AspNet.Test.csproj", "{C23B217B-4D35-4A72-A1F7-FAEB4F39CB91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
