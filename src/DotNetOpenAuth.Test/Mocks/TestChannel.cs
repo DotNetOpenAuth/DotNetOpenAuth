@@ -25,6 +25,21 @@ namespace DotNetOpenAuth.Test.Mocks {
 			: base(messageTypeProvider, bindingElements) {
 		}
 
+		/// <summary>
+		/// Deserializes a dictionary of values into a message.
+		/// </summary>
+		/// <param name="fields">The dictionary of values that were read from an HTTP request or response.</param>
+		/// <param name="recipient">Information about where the message was directed.  Null for direct response messages.</param>
+		/// <returns>
+		/// The deserialized message, or null if no message could be recognized in the provided data.
+		/// </returns>
+		/// <remarks>
+		/// This internal method exposes Receive directly to unit tests for easier deserialization of custom (possibly malformed) messages.
+		/// </remarks>
+		internal new IProtocolMessage Receive(Dictionary<string, string> fields, MessageReceivingEndpoint recipient) {
+			return base.Receive(fields, recipient);
+		}
+
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
 			throw new NotImplementedException("ReadFromResponseInternal");
 		}

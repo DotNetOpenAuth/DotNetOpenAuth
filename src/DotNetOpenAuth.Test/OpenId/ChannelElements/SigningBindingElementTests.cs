@@ -6,13 +6,16 @@
 
 namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.Test.Mocks;
+	using Moq;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -67,6 +70,38 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			string[] signedParameters = signedResponse.SignedParameterOrder.Split(',');
 			Assert.IsTrue(signedParameters.Contains("somesigned"));
 			Assert.IsFalse(signedParameters.Contains("someunsigned"));
+		}
+
+		/// <summary>
+		/// Regression test for bug #45 (https://github.com/AArnott/dotnetopenid/issues/45)
+		/// </summary>
+		[TestCase, ExpectedException(typeof(ProtocolException))]
+		public void MissingSignedParameter() {
+			var cryptoStore = new MemoryCryptoKeyStore();
+			byte[] associationSecret = Convert.FromBase64String("rsSwv1zPWfjPRQU80hciu8FPDC+GONAMJQ/AvSo1a2M=");
+			string handle = "{634477555066085461}{TTYcIg==}{32}";
+			cryptoStore.StoreKey(ProviderAssociationKeyStorage.PrivateAssociationBucket, handle, new CryptoKey(associationSecret, DateTime.UtcNow.AddDays(1)));
+
+			var signer = new ProviderSigningBindingElement(new ProviderAssociationKeyStorage(cryptoStore), new ProviderSecuritySettings());
+			var testChannel = new TestChannel(new OpenIdProviderMessageFactory());
+			signer.Channel = testChannel;
+
+			var buggyRPMessage = new Dictionary<string, string>() {
+				{ "openid.assoc_handle", "{634477555066085461}{TTYcIg==}{32}" },
+				{ "openid.claimed_id", "https://openid.stackexchange.com/user/f5e91123-e5b4-43c5-871f-5f276c75d31a" },
+				{ "openid.identity", "https://openid.stackexchange.com/user/f5e91123-e5b4-43c5-871f-5f276c75d31a" },
+				{ "openid.mode", "check_authentication" },
+				{ "openid.op_endpoint", "https://openid.stackexchange.com/openid/provider" },
+				{ "openid.response_nonce", "2011-08-01T00:32:10Zvdyt3efw" },
+				{ "openid.return_to", "http://openid-consumer.appspot.com/finish?session_id=1543025&janrain_nonce=2011-08-01T00%3A32%3A09ZIPGz7D" },
+				{ "openid.sig", "b0Rll6Kt1KKBWWBEg/qBvW3sQYtmhOUmpI0/UREBVZ0=" },
+				{ "openid.signed", "claimed_id,identity,assoc_handle,op_endpoint,return_to,response_nonce,ns.sreg,sreg.email,sreg.fullname" },
+				{ "openid.sreg.email", "kevin.montrose@stackoverflow.com" },
+				{ "openid.sreg.fullname", "Kevin K Montrose" },
+			};
+			var message = (CheckAuthenticationRequest)testChannel.Receive(buggyRPMessage, new MessageReceivingEndpoint(OPUri, HttpDeliveryMethods.PostRequest));
+			var originalResponse = new IndirectSignedResponse(message, signer.Channel);
+			signer.ProcessIncomingMessage(originalResponse);
 		}
 	}
 }

@@ -128,8 +128,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// of check_authentication with its original id_res so the signature matches.
 			MessageDictionary dictionary = this.Channel.MessageDescriptions.GetAccessor(signedMessage);
 			var parametersToSign = from name in signedMessage.SignedParameterOrder.Split(',')
-								   let prefixedName = Protocol.V20.openid.Prefix + name
-								   select new KeyValuePair<string, string>(name, dictionary[prefixedName]);
+			                       let prefixedName = Protocol.V20.openid.Prefix + name
+			                       select new KeyValuePair<string, string>(name, dictionary.GetValueOrThrow(prefixedName, signedMessage));
 
 			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
 			string signature = Convert.ToBase64String(association.Sign(dataToSign));
