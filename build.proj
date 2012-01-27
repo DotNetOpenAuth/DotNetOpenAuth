@@ -41,6 +41,11 @@
 		                     $(ProjectRoot)**\*.log*;
 		                     $(ProjectRoot)doc\$(ProductName).chm;
 		                     " />
+
+		<TestProjects Include="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb"  Condition=" '$(ClrVersion)' == '2' " />
+		<TestProjects Include="DotNetOpenAuth_AspNet_Test"  Condition=" '$(ClrVersion)' == '4' " />
+		<TestAssemblies Include="$(OutputPath)$(ProductName).Test.dll"  Condition=" '$(ClrVersion)' == '2' " />
+		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" Condition=" '$(ClrVersion)' == '4' " />
 	</ItemGroup>
 
 	<Target Name="TouchUpProjectsForDualFrameworks">
@@ -62,7 +67,7 @@
 	</Target>
 
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
-		<MSBuild Projects="$(SolutionPath)" Targets="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="$(SolutionPath)" Targets="@(TestProjects)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Target Name="Build" DependsOnTargets="SkipVerification">
@@ -74,13 +79,13 @@
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="BuildTests"
-	        Inputs="$(OutputPath)$(ProductName).dll;$(OutputPath)$(ProductName).Test.dll"
+	        Inputs="$(OutputPath)$(ProductName).dll;@(TestAssemblies)"
 	        Outputs='$(OutputPath)Test-result.xml'>
 		<PropertyGroup>
 			<!-- Performance tests are only expected to pass in optimized builds. -->
 			<NUnitExcludeCategories Condition=" '$(Configuration)' != 'Release' ">Performance</NUnitExcludeCategories>
 		</PropertyGroup>
-		<NUnit Assemblies="$(OutputPath)$(ProductName).Test.dll"
+		<NUnit Assemblies="@(TestAssemblies)"
 		       ToolPath="$(NUnitToolPath)"
 		       OutputXmlFile="$(OutputPath)Test-result.xml"
 		       ExcludeCategory="$(NUnitExcludeCategories)" />
