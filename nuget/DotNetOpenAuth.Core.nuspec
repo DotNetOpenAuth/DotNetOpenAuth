@@ -16,6 +16,9 @@
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Configuration" targetFramework="net40" />
 		</frameworkAssemblies>
+		<dependencies>
+			<dependency id="CodeContracts.Unofficial" />
+		</dependencies>
 	</metadata>
 	<files>
 		<file src="$OutputPath35$signed\DotNetOpenAuth.Core.dll" target="lib\net35-full\DotNetOpenAuth.Core.dll" />
