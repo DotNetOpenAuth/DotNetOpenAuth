@@ -86,8 +86,8 @@ namespace DotNetOpenAuth.BuildTasks {
 
 			args.AppendSwitch("pack");
 			args.AppendFileNameIfNotNull(this.NuSpec);
-			args.AppendSwitchIfNotNull("-b ", this.BaseDirectory);
-			args.AppendSwitchIfNotNull("-o ", this.OutputPackageDirectory);
+			args.AppendSwitchIfNotNull("-BasePath ", this.BaseDirectory);
+			args.AppendSwitchIfNotNull("-OutputDirectory ", this.OutputPackageDirectory);
 
 			return args.ToString();
 		}

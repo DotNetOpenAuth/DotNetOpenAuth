@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>DotNetOpenAuth.OAuth.Consumer</id>
+		<version>$version$</version>
+		<title>DotNetOpenAuth OAuth 1.0(a) Consumer</title>
+		<authors>Andrew Arnott</authors>
+		<owners>Outercurve Foundation</owners>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Contains assemblies that are required to implement an OAuth consumer.</description>
+		<dependencies>
+			<dependency id="DotNetOpenAuth.Core" version="$version$" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="..\..\bin\v4.0\Release\DotNetOpenAuth.OAuth.Consumer.dll" target="lib\net40\DotNetOpenAuth.OAuth.Consumer.dll" />
+	</files>
+</package>

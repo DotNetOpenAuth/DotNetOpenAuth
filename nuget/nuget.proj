@@ -27,7 +27,7 @@
 				<TargetPath>$(NuGetLayoutPath)content\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
 			</NuGetSource>
 			
-			<NuSpecSource Include="DotNetOpenAuth.nuspec">
+			<NuSpecSource Include="DotNetOpenAuth.Ultimate.nuspec">
 				<LayoutPath>$(NuGetLayoutPath)</LayoutPath>
 				<BeforeTokens>$version$</BeforeTokens>
 				<AfterTokens>$(BuildVersion)</AfterTokens>
