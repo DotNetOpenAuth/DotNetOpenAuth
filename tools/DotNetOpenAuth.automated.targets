@@ -15,7 +15,7 @@
 		
 		<Delete Files="@(FilesToClean)" />
 		<RemoveDir Directories="@(DirectoriesToClean)" />
-		<MSBuild Projects="@(ProjectsToClean)" Targets="%(ProjectsToClean.Targets)" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="@(ProjectsToClean)" Targets="%(ProjectsToClean.Targets)" BuildInParallel="$(BuildInParallel)" Properties="%(ProjectsToClean.Properties)" />
 	</Target>
 
 	<Target Name="_SetDropProperties" DependsOnTargets="GetBuildVersion">

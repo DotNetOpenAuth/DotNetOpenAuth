@@ -123,5 +123,7 @@
 		</MSBuild>
 	</Target>
 
+	<Target Name="GetOutputPath" Outputs="$(OutputPath)" />
+
 	<Import Condition="'$(CodeContractsImported)' != 'true' AND ('$(DontImportCodeContracts)' != 'true' or '$(ImportCodeContractsFromToolset)' == 'true')" Project="$(CodeContractsInstallDir)\MsBuild\v4.0\Microsoft.CodeContracts.targets"/>
 </Project>

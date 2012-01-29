@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			new AttributeRequest(string.Empty);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTypeUri() {
 			new AttributeRequest(null);
 		}

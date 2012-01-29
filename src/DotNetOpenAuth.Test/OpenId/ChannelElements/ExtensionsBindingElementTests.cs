@@ -52,9 +52,9 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Assert.AreSame(this.factory, this.rpElement.ExtensionFactory);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase]
 		public void PrepareMessageForSendingNull() {
-			this.rpElement.ProcessOutgoingMessage(null);
+			Assert.IsNull(this.rpElement.ProcessOutgoingMessage(null));
 		}
 
 		/// <summary>

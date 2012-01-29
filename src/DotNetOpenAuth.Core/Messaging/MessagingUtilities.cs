@@ -906,7 +906,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="headers">The headers to add.</param>
 		/// <param name="response">The <see cref="HttpResponse"/> instance to set the appropriate values to.</param>
-		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpResponse response) {
+		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpResponseBase response) {
 			Requires.NotNull(headers, "headers");
 			Requires.NotNull(response, "response");
 

@@ -35,6 +35,12 @@ namespace DotNetOpenAuth.BuildTasks {
 		public string GitCommitId { get; private set; }
 
 		/// <summary>
+		/// Gets the build number (JDate) for this version.
+		/// </summary>
+		[Output]
+		public int BuildNumber { get; private set; }
+
+		/// <summary>
 		/// The file that contains the version base (Major.Minor.Build) to use.
 		/// </summary>
 		[Required]
@@ -48,11 +54,12 @@ namespace DotNetOpenAuth.BuildTasks {
 		public override bool Execute() {
 			try {
 				Version typedVersion = ReadVersionFromFile();
-				SimpleVersion = typedVersion.ToString();
+				this.SimpleVersion = typedVersion.ToString();
+				this.BuildNumber = this.CalculateJDate(DateTime.Now);
 
-				var fullVersion = new Version(typedVersion.Major, typedVersion.Minor, typedVersion.Build, CalculateJDate(DateTime.Now));
-				Version = fullVersion.ToString();
-	
+				var fullVersion = new Version(typedVersion.Major, typedVersion.Minor, typedVersion.Build, this.BuildNumber);
+				this.Version = fullVersion.ToString();
+
 				this.GitCommitId = GetGitHeadCommitId();
 			} catch (ArgumentOutOfRangeException ex) {
 				Log.LogErrorFromException(ex);

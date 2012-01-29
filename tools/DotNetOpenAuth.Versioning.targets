@@ -6,6 +6,9 @@
 	<PropertyGroup>
 		<VersionCsFile>$(IntermediatePath)\$(AssemblyName).Version.cs</VersionCsFile>
 		<NoWarn>$(NoWarn);1607</NoWarn>
+
+		<!-- PrereleaseVersion can be any alphanumeric identifier with a preceding hyphen, or blank. -->
+		<PrereleaseVersion>-beta</PrereleaseVersion>
 	</PropertyGroup>
 
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
@@ -16,15 +19,25 @@
 		                 GitRepoRoot="$(ProjectRoot)">
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 			<Output TaskParameter="SimpleVersion" PropertyName="BuildVersionSimple" />
-			<Output TaskParameter="GitCommitId" PropertyName="AssemblyInformationalVersion" />
+			<Output TaskParameter="GitCommitId" PropertyName="GitCommitId" />
+			<Output TaskParameter="BuildNumber" PropertyName="BuildNumber" />
 		</GetBuildVersion>
 		<PropertyGroup>
 			<!-- In TeamCity, the build agent doesn't get the .git directory, but the commit id is available by other means. -->
-			<AssemblyInformationalVersion Condition=" '$(AssemblyInformationalVersion)' == '' ">$(BUILD_VCS_NUMBER)</AssemblyInformationalVersion>
+			<GitCommitId Condition=" '$(GitCommitId)' == '' ">$(BUILD_VCS_NUMBER)</GitCommitId>
+
+			<SemVerBuildSuffix>+build.$(BuildNumber).$(GitCommitId.Substring(0,10))</SemVerBuildSuffix>
+			<AssemblyInformationalVersion>$(BuildVersionSimple)$(PrereleaseVersion)$(SemVerBuildSuffix)</AssemblyInformationalVersion>
+
+			<!-- When NuGet supports SemVer 2.0, we can set NuGetPackageVersion to be the same as $(AssemblyInformationalVersion) -->
+			<NuGetPackageVersion Condition=" '$(PrereleaseVersion)' == '' ">$(BuildVersion)</NuGetPackageVersion>
+			<NuGetPackageVersion Condition=" '$(PrereleaseVersion)' != '' ">$(BuildVersionSimple)$(PrereleaseVersion)</NuGetPackageVersion>
 		</PropertyGroup>
 		<Warning Condition=" '$(AssemblyInformationalVersion)' == '' " Text="Unable to determine the git HEAD commit ID to use for informational version number." />
-		<Message Condition=" '$(AssemblyInformationalVersion)' != '' " Text="Building version $(BuildVersion) from commit $(AssemblyInformationalVersion)"/>
+		<Message Condition=" '$(AssemblyInformationalVersion)' != '' " Text="Building version $(BuildVersion) from commit $(GitCommitId)"/>
 		<Message Condition=" '$(AssemblyInformationalVersion)' == '' " Text="Building version $(BuildVersion)"/>
+		<Message Importance="low" Text="AssemblyInformationalVersion: $(AssemblyInformationalVersion)" />
+		<Message Importance="low" Text="NuGetPackageVersion: $(NuGetPackageVersion)" />
 	</Target>
 
 	<Target Name="BeforeBuild" DependsOnTargets="GetBuildVersion">

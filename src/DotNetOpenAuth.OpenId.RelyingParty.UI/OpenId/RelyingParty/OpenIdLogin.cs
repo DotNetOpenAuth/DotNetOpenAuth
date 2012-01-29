@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // <copyright file="OpenIdLogin.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// The default value for the <see cref="ButtonText"/> property.
 		/// </summary>
-		private const string ButtonTextDefault = "Login �";
+		private const string ButtonTextDefault = "Login »";
 
 		/// <summary>
 		/// The default value for the <see cref="CanceledText"/> property.

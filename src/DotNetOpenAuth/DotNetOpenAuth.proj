@@ -18,7 +18,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="@(ProductProjects)">
-			<PrimaryProductOutput>true</PrimaryProductOutput>
+			<PrimaryProductOutput Condition=" '%(MergeIntoUnifiedAssembly)' != 'false' ">true</PrimaryProductOutput>
 		</ProjectReference>
 		<SignDependsOn Include="BuildUnifiedProduct" />
 		<DelaySignedAssemblies Include="$(ILMergeOutputContractAssembly)"
@@ -26,16 +26,11 @@
 	</ItemGroup>
 
 	<Target Name="BuildILMergeInputs" DependsOnTargets="ResolveReferences">
-		<PropertyGroup>
-			<!-- The ILMerge task doesn't properly quote the path. -->
-			<ILMergeTargetPlatformDirectory Condition=" '$(ClrVersion)' == '4' ">"$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"</ILMergeTargetPlatformDirectory>
-		</PropertyGroup>
-
 		<ItemGroup>
 			<ILMergeProductInputAssemblies Include="@(ReferencePath)"
 			                               Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
 			<ILMergeInputContractAssemblies Include="@(ILMergeProductInputAssemblies->'%(RootDir)%(Directory)CodeContracts\%(FileName).Contracts%(Extension)')"
-																			Condition=" '%(FileName)' != 'Microsoft.Contracts' "/>
+			                                Condition=" '%(FileName)' != 'Microsoft.Contracts' "/>
 		</ItemGroup>
 	</Target>
 
@@ -50,7 +45,7 @@
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(ILMergeInputContractAssemblies)"
 			OutputFile="$(ILMergeOutputContractAssembly)"
-			SearchDirectories="$(OutputPath)"
+			SearchDirectories="$(OutputPath);@(ILMergeSearchDirectories)"
 			KeyFile="$(PublicKeyFile)"
 			DelaySign="true"
 			ToolPath="$(ProjectRoot)tools\ILMerge"
@@ -66,6 +61,7 @@
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)"
 			OutputFile="$(ILMergeOutputAssembly)"
+			SearchDirectories="@(ILMergeSearchDirectories)"
 			KeyFile="$(PublicKeyFile)"
 			DelaySign="true"
 			XmlDocumentation="true"

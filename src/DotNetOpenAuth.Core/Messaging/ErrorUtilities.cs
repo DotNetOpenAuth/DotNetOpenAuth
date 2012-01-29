@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
@@ -360,6 +361,25 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(HttpContext.Current != null);
 			Contract.Ensures(HttpContext.Current.Request != null);
 			ErrorUtilities.VerifyOperation(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+		}
+
+		/// <summary>
+		/// Obtains a value from the dictionary if possible, or throws a <see cref="ProtocolException"/> if it's missing.
+		/// </summary>
+		/// <typeparam name="TKey">The type of key in the dictionary.</typeparam>
+		/// <typeparam name="TValue">The type of value in the dictionary.</typeparam>
+		/// <param name="dictionary">The dictionary.</param>
+		/// <param name="key">The key to use to look up the value.</param>
+		/// <param name="message">The message to claim is invalid if the key cannot be found.</param>
+		/// <returns>The value for the given key.</returns>
+		[Pure]
+		internal static TValue GetValueOrThrow<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, IMessage message) {
+			Requires.NotNull(dictionary, "dictionary");
+			Requires.NotNull(message, "message");
+
+			TValue value;
+			VerifyProtocol(dictionary.TryGetValue(key, out value), MessagingStrings.ExpectedParameterWasMissing, key, message.GetType().Name);
+			return value;
 		}
 	}
 }

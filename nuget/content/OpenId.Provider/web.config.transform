@@ -1,0 +1,8 @@
+<configuration>
+	<dotNetOpenAuth>
+		<openid>
+			<provider>
+			</provider>
+		</openid>
+	</dotNetOpenAuth>
+</configuration>

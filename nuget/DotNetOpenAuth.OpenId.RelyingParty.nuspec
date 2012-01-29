@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>DotNetOpenAuth.OpenId.RelyingParty</id>
+		<version>$version$</version>
+		<title>DotNetOpenAuth OpenID Relying Party</title>
+		<authors>Andrew Arnott</authors>
+		<owners>Outercurve Foundation</owners>
+		<projectUrl>http://www.dotnetopenauth.net/</projectUrl>
+		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
+		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Contains assemblies that are required to implement an OpenID Relying Party.</description>
+		<dependencies>
+			<dependency id="DotNetOpenAuth.OpenId.Core" version="[$version$]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net35-full\DotNetOpenAuth.OpenId.RelyingParty.dll" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net40-full\DotNetOpenAuth.OpenId.RelyingParty.dll" />
+
+		<file src="$OutputPath35$DotNetOpenAuth.OpenId.RelyingParty.pdb" target="lib\net35-full\DotNetOpenAuth.OpenId.RelyingParty.pdb" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenId.RelyingParty.pdb" target="lib\net40-full\DotNetOpenAuth.OpenId.RelyingParty.pdb" />
+
+		<file src="$OutputPath35$DotNetOpenAuth.OpenId.RelyingParty.xml" target="lib\net35-full\DotNetOpenAuth.OpenId.RelyingParty.xml" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenId.RelyingParty.xml" target="lib\net40-full\DotNetOpenAuth.OpenId.RelyingParty.xml" />
+
+		<file src="content\OpenId.RelyingParty\web.config.transform" target="content\web.config.transform" />
+
+		<file src="..\src\DotNetOpenAuth.OpenId.RelyingParty\**\*.cs" target="src" />
+	</files>
+</package>
