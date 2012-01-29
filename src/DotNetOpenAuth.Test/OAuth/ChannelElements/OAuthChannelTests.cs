@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void CtorNullSigner() {
 			new OAuthConsumerChannel(null, this.nonceStore, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
