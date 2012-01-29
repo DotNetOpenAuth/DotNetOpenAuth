@@ -23,10 +23,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// An array of known Diffie Hellman sessions, sorted by decreasing hash size.
 		/// </summary>
 		private static DHSha[] diffieHellmanSessionTypes = new List<DHSha> {
-			new DHSha(new SHA512Managed(), protocol => protocol.Args.SessionType.DH_SHA512),
-			new DHSha(new SHA384Managed(), protocol => protocol.Args.SessionType.DH_SHA384),
-			new DHSha(new SHA256Managed(), protocol => protocol.Args.SessionType.DH_SHA256),
-			new DHSha(new SHA1Managed(), protocol => protocol.Args.SessionType.DH_SHA1),
+			new DHSha(SHA512.Create(), protocol => protocol.Args.SessionType.DH_SHA512),
+			new DHSha(SHA384.Create(), protocol => protocol.Args.SessionType.DH_SHA384),
+			new DHSha(SHA256.Create(), protocol => protocol.Args.SessionType.DH_SHA256),
+			new DHSha(SHA1.Create(), protocol => protocol.Args.SessionType.DH_SHA1),
 		} .ToArray();
 
 		/// <summary>
