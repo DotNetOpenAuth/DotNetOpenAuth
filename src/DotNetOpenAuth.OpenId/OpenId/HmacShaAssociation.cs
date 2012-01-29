@@ -28,22 +28,22 @@ namespace DotNetOpenAuth.OpenId {
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA512(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
-				BaseHashAlgorithm = new SHA512Managed(),
+				BaseHashAlgorithm = SHA512.Create(),
 			},
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA384(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA384,
-				BaseHashAlgorithm = new SHA384Managed(),
+				BaseHashAlgorithm = SHA384.Create(),
 			},
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA256(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA256,
-				BaseHashAlgorithm = new SHA256Managed(),
+				BaseHashAlgorithm = SHA256.Create(),
 			},
 			new HmacSha {
 				CreateHasher = secretKey => new HMACSHA1(secretKey),
 				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
-				BaseHashAlgorithm = new SHA1Managed(),
+				BaseHashAlgorithm = SHA1.Create(),
 			},
 		} .ToArray();
 
