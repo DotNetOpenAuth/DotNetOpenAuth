@@ -29,14 +29,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.BuildTasks",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{D49E2011-0E1C-4AB5-9887-BD1D42266503}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\nuget\DotNetOpenAuth.Core.nuspec = ..\..\nuget\DotNetOpenAuth.Core.nuspec
+		..\..\nuget\DotNetOpenAuth.OAuth.Consumer.nuspec = ..\..\nuget\DotNetOpenAuth.OAuth.Consumer.nuspec
+		..\..\nuget\DotNetOpenAuth.OAuth.Core.nuspec = ..\..\nuget\DotNetOpenAuth.OAuth.Core.nuspec
+		..\..\nuget\DotNetOpenAuth.OpenId.Core.nuspec = ..\..\nuget\DotNetOpenAuth.OpenId.Core.nuspec
+		..\..\nuget\DotNetOpenAuth.OpenId.RelyingParty.nuspec = ..\..\nuget\DotNetOpenAuth.OpenId.RelyingParty.nuspec
 		..\..\nuget\DotNetOpenAuth.Ultimate.nuspec = ..\..\nuget\DotNetOpenAuth.Ultimate.nuspec
 		..\..\nuget\nuget.proj = ..\..\nuget\nuget.proj
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{BF3868D6-3BBA-4E40-B180-213370C15494}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\nuget\content\web.config.transform = ..\..\nuget\content\web.config.transform
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

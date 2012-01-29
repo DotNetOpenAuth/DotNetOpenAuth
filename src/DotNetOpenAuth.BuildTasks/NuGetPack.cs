@@ -35,6 +35,11 @@ namespace DotNetOpenAuth.BuildTasks {
 		public ITaskItem OutputPackageDirectory { get; set; }
 
 		/// <summary>
+		/// Gets or sets the semicolon delimited list of properties to supply to the NuGet Pack command to perform token substitution.
+		/// </summary>
+		public string Properties { get; set; }
+
+		/// <summary>
 		/// Returns the fully qualified path to the executable file.
 		/// </summary>
 		/// <returns>
@@ -63,15 +68,7 @@ namespace DotNetOpenAuth.BuildTasks {
 				Directory.CreateDirectory(Path.GetDirectoryName(this.OutputPackageDirectory.ItemSpec));
 			}
 
-			string fullPackagePath = this.DeriveFullPackagePath();
-			this.Log.LogMessage("Creating NuGet package '{0}'.", fullPackagePath);
-
 			bool result = base.Execute();
-
-			if (result) {
-				this.Log.LogMessage(MessageImportance.High, "Successfully created package '{0}'.", fullPackagePath);
-			}
-
 			return result;
 		}
 
@@ -88,21 +85,9 @@ namespace DotNetOpenAuth.BuildTasks {
 			args.AppendFileNameIfNotNull(this.NuSpec);
 			args.AppendSwitchIfNotNull("-BasePath ", this.BaseDirectory);
 			args.AppendSwitchIfNotNull("-OutputDirectory ", this.OutputPackageDirectory);
+			args.AppendSwitchIfNotNull("-Properties ", this.Properties);
 
 			return args.ToString();
-		}
-
-		/// <summary>
-		/// Derives the path to the generated .nupkg file.
-		/// </summary>
-		/// <returns>A relative path.</returns>
-		private string DeriveFullPackagePath() {
-			var spec = XDocument.Load(this.NuSpec.ItemSpec);
-			var metadata = spec.Element("package").Element("metadata");
-			string id = metadata.Element("id").Value;
-			string version = metadata.Element("version").Value;
-			string baseDirectory = this.OutputPackageDirectory != null ? this.OutputPackageDirectory.ItemSpec : String.Empty;
-			return Path.Combine(baseDirectory, String.Format("{0}.{1}.nupkg", id, version));
 		}
 	}
 }

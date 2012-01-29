@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>DotNetOpenAuth.OAuth.Consumer</id>
+		<id>DotNetOpenAuth.OAuth.ServiceProvider</id>
 		<version>$version$</version>
-		<title>DotNetOpenAuth OAuth 1.0(a) Consumer</title>
+		<title>DotNetOpenAuth OAuth 1.0(a) Service Provider</title>
 		<authors>Andrew Arnott</authors>
 		<owners>Outercurve Foundation</owners>
 		<projectUrl>http://www.dotnetopenauth.net/</projectUrl>
@@ -16,10 +16,10 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.OAuth.Consumer.dll" target="lib\net35-full\DotNetOpenAuth.OAuth.Consumer.dll" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.OAuth.Consumer.dll" target="lib\net40-full\DotNetOpenAuth.OAuth.Consumer.dll" />
+		<file src="$OutputPath35$signed\DotNetOpenAuth.OAuth.ServiceProvider.dll" target="lib\net35-full\DotNetOpenAuth.OAuth.ServiceProvider.dll" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.OAuth.ServiceProvider.dll" target="lib\net40-full\DotNetOpenAuth.OAuth.ServiceProvider.dll" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OAuth.Consumer.xml" target="lib\net35-full\DotNetOpenAuth.OAuth.Consumer.xml" />
-		<file src="$OutputPath40$DotNetOpenAuth.OAuth.Consumer.xml" target="lib\net40-full\DotNetOpenAuth.OAuth.Consumer.xml" />
+		<file src="$OutputPath35$DotNetOpenAuth.OAuth.ServiceProvider.xml" target="lib\net35-full\DotNetOpenAuth.OAuth.ServiceProvider.xml" />
+		<file src="$OutputPath40$DotNetOpenAuth.OAuth.ServiceProvider.xml" target="lib\net40-full\DotNetOpenAuth.OAuth.ServiceProvider.xml" />
 	</files>
 </package>

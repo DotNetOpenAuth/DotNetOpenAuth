@@ -12,10 +12,16 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Contains assemblies that are required to implement an OpenID Relying Party.</description>
 		<dependencies>
-			<dependency id="DotNetOpenAuth.Core" version="$version$" />
+			<dependency id="DotNetOpenAuth.OpenId.Core" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\..\bin\v4.0\Release\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net40\DotNetOpenAuth.OpenId.RelyingParty.dll" />
+		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net35-full\DotNetOpenAuth.OpenId.RelyingParty.dll" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net40-full\DotNetOpenAuth.OpenId.RelyingParty.dll" />
+
+		<file src="$OutputPath35$DotNetOpenAuth.OpenId.RelyingParty.xml" target="lib\net35-full\DotNetOpenAuth.OpenId.RelyingParty.xml" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenId.RelyingParty.xml" target="lib\net40-full\DotNetOpenAuth.OpenId.RelyingParty.xml" />
+
+		<file src="content\OpenId.RelyingParty\web.config.transform" target="content\web.config.transform" />
 	</files>
 </package>
