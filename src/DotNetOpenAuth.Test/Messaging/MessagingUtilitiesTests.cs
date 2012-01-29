@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullAspNetResponse() {
-			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpResponse)null);
+			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpResponseBase)null);
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullHeaders() {
-			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponse(new StringWriter()));
+			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponseWrapper(new HttpResponse(new StringWriter())));
 		}
 
 		[TestCase]
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			var headers = new WebHeaderCollection();
 			headers[HttpResponseHeader.ContentType] = "application/binary";
 
-			var response = new HttpResponse(new StringWriter());
+			var response = new HttpResponseWrapper(new HttpResponse(new StringWriter()));
 			MessagingUtilities.ApplyHeadersToResponse(headers, response);
 
 			Assert.AreEqual(headers[HttpResponseHeader.ContentType], response.ContentType);

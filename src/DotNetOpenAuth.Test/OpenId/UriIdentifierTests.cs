@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			new UriIdentifier((Uri)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullString() {
 			new UriIdentifier((string)null);
 		}

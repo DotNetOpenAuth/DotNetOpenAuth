@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3A8347E8-59A5-4092-8842-95C75D7D2F36}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.OpenIdInfoCard.UI</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="OpenId\RelyingParty\OpenIdInfoCardSelector.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorInfoCardButton.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.InfoCard.UI\DotNetOpenAuth.InfoCard.UI.csproj">
+      <Project>{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}</Project>
+      <Name>DotNetOpenAuth.InfoCard.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.InfoCard\DotNetOpenAuth.InfoCard.csproj">
+      <Project>{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}</Project>
+      <Name>DotNetOpenAuth.InfoCard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj">
+      <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
+      <Name>DotNetOpenAuth.Core.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty.UI\DotNetOpenAuth.OpenId.RelyingParty.UI.csproj">
+      <Project>{1ED8D424-F8AB-4050-ACEB-F27F4F909484}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.UI\DotNetOpenAuth.OpenId.UI.csproj">
+      <Project>{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}</Project>
+      <Name>DotNetOpenAuth.OpenId.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+      <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
+      <Name>Org.Mentalis.Security.Cryptography</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

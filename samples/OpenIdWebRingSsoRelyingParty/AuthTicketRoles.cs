@@ -12,9 +12,6 @@ namespace OpenIdWebRingSsoRelyingParty {
 	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuth;
-	using DotNetOpenAuth.OAuth.ChannelElements;
-	using DotNetOpenAuth.OAuth.Messages;
 
 	/// <summary>
 	/// An authentication module that utilizes the forms auth ticket cookie

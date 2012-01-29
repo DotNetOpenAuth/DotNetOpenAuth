@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.BuildTasks {
 					case ProjectClassification.VS2010Project:
 						this.Log.LogMessage(MessageImportance.Low, "Downgrading project \"{0}\".", taskItem.ItemSpec);
 						var project = new Project();
-						project.Load(taskItem.ItemSpec);
+						project.Load(taskItem.ItemSpec, ProjectLoadSettings.IgnoreMissingImports);
 						project.DefaultToolsVersion = "3.5";
 
 						if (this.DowngradeMvc2ToMvc1) {

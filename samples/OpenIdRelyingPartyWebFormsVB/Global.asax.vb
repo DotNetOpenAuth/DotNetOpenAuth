@@ -5,7 +5,6 @@ Imports System.IO
 Imports System.Text
 Imports System.Web
 Imports DotNetOpenAuth.ApplicationBlock
-Imports DotNetOpenAuth.OAuth
 Imports OpenIdRelyingPartyWebFormsVB
 
 Public Class Global_asax

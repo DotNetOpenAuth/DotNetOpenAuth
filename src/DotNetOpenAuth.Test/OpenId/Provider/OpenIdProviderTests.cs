@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			// Test some non-empty request scenario.
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
-					rp.Channel.Request(AssociateRequest.Create(rp.SecuritySettings, providerDescription));
+					rp.Channel.Request(AssociateRequestRelyingParty.Create(rp.SecuritySettings, providerDescription));
 				},
 				op => {
 					IRequest request = op.GetRequest();

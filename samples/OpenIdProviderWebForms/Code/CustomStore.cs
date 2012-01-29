@@ -67,7 +67,7 @@ namespace OpenIdProviderWebForms.Code {
 					return false;
 				}
 
-				TimeSpan maxMessageAge = DotNetOpenAuthSection.Configuration.Messaging.MaximumMessageLifetime;
+				TimeSpan maxMessageAge = DotNetOpenAuthSection.Messaging.MaximumMessageLifetime;
 				dataSet.Nonce.AddNonceRow(context, nonce, timestampUtc, timestampUtc + maxMessageAge);
 				return true;
 			}

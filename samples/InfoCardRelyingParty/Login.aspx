@@ -15,7 +15,7 @@
 	End Sub
 </script>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
+<%@ Register Assembly="DotNetOpenAuth.InfoCard.UI" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <asp:Content ID="Content2" ContentPlaceHolderID="Main" runat="Server">
 	<p>This login page demonstrates logging in using the InfoCard selector. Click the InfoCard
 		image below to login. </p>

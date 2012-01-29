@@ -20,9 +20,12 @@
 			$(LayoutDependsOn);
 		</LayoutDependsOn>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<ProjectTemplates Include="**\*.*proj" Exclude="$(MSBuildThisFile)" />
+
+		<ProjectReferencesToRemove Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj"/>
+		<AssemblyReferencesToReplaceWith Include="REMOVE" />
 	</ItemGroup>
 
 	<Target Name="Validate">
@@ -35,7 +38,7 @@
 	</Target>
 
 	<Target Name="LayoutProjects">
-		<MSBuild Projects="..\src\$(ProductName)\$(ProductName).csproj" Targets="Sign" BuildInParallel="$(BuildInParallel)">
+		<MSBuild Projects="..\src\$(ProductName)\$(ProductName).proj" Targets="Sign" BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="SignedProductAssemblies" />
 		</MSBuild>
 		<ItemGroup>
@@ -85,9 +88,9 @@
 		</CopyWithTokenSubstitution>
 		<ChangeProjectReferenceToAssemblyReference
 			Projects="@(CopiedProjectFiles)"
-			Condition=" '%(Extension)' == '.csproj' "
-			ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj;..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj"
-			References="Lib\$(ProductName).dll;REMOVE" />
+			Condition=" '%(CopiedProjectFiles.Extension)' == '.csproj' "
+			ProjectReferences="@(ProjectReferencesToRemove)"
+			References="@(AssemblyReferencesToReplaceWith)" />
 		<FixupReferenceHintPaths
 			Projects="@(CopiedProjectFiles)"
 			References="@(FixupReferenceAssemblies)"
@@ -133,12 +136,12 @@
 			<VS2010ProjectTemplateZipFiles Include="@(TopLevelVS2010ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
 		</ItemGroup>
 
-		<Copy 
-			SourceFiles="@(ProjectTemplatesSource)" 
-			DestinationFiles="@(ProjectTemplatesLayout)" 
+		<Copy
+			SourceFiles="@(ProjectTemplatesSource)"
+			DestinationFiles="@(ProjectTemplatesLayout)"
 			SkipUnchangedFiles="true" />
-		<CopyWithTokenSubstitution 
-			SourceFiles="@(TemplateProjectItemsForTransformSource)" 
+		<CopyWithTokenSubstitution
+			SourceFiles="@(TemplateProjectItemsForTransformSource)"
 			DestinationFiles="@(TemplateProjectItemsForTransformLayout)" />
 
 		<ItemGroup>
@@ -190,7 +193,7 @@
 			ZipLevel="$(ZipLevel)"
 			/>
 	</Target>
-	
+
 	<Target Name="Layout2008" DependsOnTargets="Layout">
 		<ItemGroup>
 			<ProjectTemplates2008Source Include="$(ProjectTemplatesLayoutPath)**" Exclude="$(ProjectTemplatesLayoutPath)*.zip" />
@@ -214,7 +217,7 @@
 			InPlaceDowngrade="true"
 			/>
 
-		<Purge Directories="$(ProjectTemplates2008LayoutPath)" 
+		<Purge Directories="$(ProjectTemplates2008LayoutPath)"
 					 IntendedFiles="@(ProjectTemplates2008Layout);@(VS2008ProjectTemplateZipFiles)" />
 	</Target>
 

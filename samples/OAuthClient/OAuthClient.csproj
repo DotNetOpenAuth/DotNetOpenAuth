@@ -173,9 +173,29 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
-      <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
-      <Name>DotNetOpenAuth</Name>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
+      <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>
+      <Name>DotNetOpenAuth.OAuth.Consumer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj">
+      <Project>{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
+      <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
+      <Name>DotNetOpenAuth.OAuth2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
+      <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
+      <Name>DotNetOpenAuth.OAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj">
       <Project>{AA78D112-D889-414B-A7D4-467B34C7B663}</Project>

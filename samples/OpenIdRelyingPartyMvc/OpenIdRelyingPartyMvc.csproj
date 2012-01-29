@@ -14,6 +14,7 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -116,7 +117,9 @@
     <Content Include="Global.asax" />
     <Content Include="Views\User\Index.aspx" />
     <Content Include="Views\User\Login.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\Site.css" />
     <Content Include="Views\Home\Index.aspx" />
     <Content Include="Views\Shared\Site.Master" />
@@ -124,14 +127,26 @@
     <Content Include="Views\Home\xrds.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
-      <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
-      <Name>DotNetOpenAuth</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.RelyingParty.UI\DotNetOpenAuth.OpenId.RelyingParty.UI.csproj">
+      <Project>{1ED8D424-F8AB-4050-ACEB-F27F4F909484}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

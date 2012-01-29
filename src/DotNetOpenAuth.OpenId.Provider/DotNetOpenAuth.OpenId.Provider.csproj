@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F8284738-3B5D-4733-A511-38C23F4A763F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.OpenId.Provider</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="OpenId\Provider\Behaviors\AXFetchAsSregTransform.cs" />
+    <Compile Include="OpenId\Provider\Behaviors\GsaIcamProfile.cs" />
+    <Compile Include="OpenId\Provider\Behaviors\PpidGeneration.cs" />
+    <Compile Include="OpenId\ChannelElements\AssociateUnencryptedProviderRequest.cs" />
+    <Compile Include="OpenId\ChannelElements\OpenIdProviderChannel.cs" />
+    <Compile Include="OpenId\ChannelElements\OpenIdProviderMessageFactory.cs" />
+    <Compile Include="OpenId\ChannelElements\ProviderSigningBindingElement.cs" />
+    <Compile Include="OpenId\Provider\Extensions\ExtensionsInteropHelper.cs" />
+    <Compile Include="OpenId\Provider\Extensions\UI\UIRequestTools.cs" />
+    <Compile Include="OpenId\Provider\HmacShaAssociationProvider.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderRequest.cs" />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
+    <Compile Include="OpenId\Messages\IAssociateRequestProvider.cs" />
+    <Compile Include="OpenId\Messages\AssociateRequestProviderTools.cs" />
+    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseProvider.cs" />
+    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseProviderContract.cs" />
+    <Compile Include="OpenId\Messages\AssociateUnencryptedResponseProvider.cs" />
+    <Compile Include="OpenId\Messages\CheckAuthenticationResponseProvider.cs" />
+    <Compile Include="OpenId\Provider\OpenIdProviderUtilities.cs" />
+    <Compile Include="OpenId\Provider\AssociationDataBag.cs" />
+    <Compile Include="OpenId\Provider\IProviderAssociationStore.cs" />
+    <Compile Include="OpenId\Provider\ProviderAssociationHandleEncoder.cs" />
+    <Compile Include="OpenId\Provider\ProviderAssociationKeyStorage.cs" />
+    <Compile Include="OpenId\Provider\AssociationRelyingPartyType.cs" />
+    <Compile Include="OpenId\Provider\PrivatePersonalIdentifierProviderBase.cs" />
+    <Compile Include="OpenId\Provider\AnonymousRequest.cs" />
+    <Compile Include="OpenId\Provider\AuthenticationRequest.cs" />
+    <Compile Include="OpenId\Provider\AutoResponsiveRequest.cs" />
+    <Compile Include="OpenId\Provider\HostProcessedRequest.cs" />
+    <Compile Include="OpenId\Provider\IAnonymousRequest.cs" />
+    <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
+    <Compile Include="OpenId\Provider\IErrorReporting.cs" />
+    <Compile Include="OpenId\Provider\Request.cs" />
+    <Compile Include="OpenId\Provider\RequestContract.cs" />
+    <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
+    <Compile Include="OpenId\Provider\OpenIdProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj" Condition=" '$(ExcludeDiffieHellman)' != 'true' ">
+      <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
+      <Name>Org.Mentalis.Security.Cryptography</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

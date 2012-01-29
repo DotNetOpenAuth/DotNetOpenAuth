@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 	public class SectionTests {
 		[TestCase]
 		public void UntrustedWebRequest() {
-			var uwr = DotNetOpenAuthSection.Configuration.Messaging.UntrustedWebRequest;
+			var uwr = DotNetOpenAuthSection.Messaging.UntrustedWebRequest;
 
 			Assert.AreEqual(TimeSpan.Parse("01:23:45"), uwr.Timeout);
 			Assert.AreEqual(TimeSpan.Parse("01:23:56"), uwr.ReadWriteTimeout);
@@ -31,12 +31,12 @@ namespace DotNetOpenAuth.Test.Configuration {
 
 		[TestCase]
 		public void OpenIdMaxAuthenticationTime() {
-			Assert.AreEqual(TimeSpan.Parse("00:08:17"), DotNetOpenAuthSection.Configuration.OpenId.MaxAuthenticationTime);
+			Assert.AreEqual(TimeSpan.Parse("00:08:17"), OpenIdElement.Configuration.MaxAuthenticationTime);
 		}
 
 		[TestCase]
 		public void OpenIdRelyingParty() {
-			var rp = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty;
+			var rp = OpenIdElement.Configuration.RelyingParty;
 			Assert.IsNull(rp.ApplicationStore.CustomType);
 
 			Assert.AreEqual(ProtocolVersion.V10, rp.SecuritySettings.MinimumRequiredOpenIdVersion);
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 
 		[TestCase]
 		public void OpenIdProvider() {
-			var op = DotNetOpenAuthSection.Configuration.OpenId.Provider;
+			var op = OpenIdElement.Configuration.Provider;
 			Assert.IsNull(op.ApplicationStore.CustomType);
 
 			Assert.IsTrue(op.SecuritySettings.ProtectDownlevelReplayAttacks);

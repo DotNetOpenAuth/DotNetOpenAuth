@@ -2,7 +2,7 @@
 	Inherits="OpenIdRelyingPartyWebForms.loginPlusOAuth" ValidateRequest="false"
 	MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
+<%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
 	<h2>Login Page </h2>

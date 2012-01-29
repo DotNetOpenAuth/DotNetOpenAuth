@@ -2,8 +2,8 @@
 	Inherits="OpenIdProviderWebForms._default" %>
 
 <%@ Import Namespace="OpenIdProviderWebForms.Code" %>
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId" TagPrefix="openid" %>
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth" TagPrefix="openauth" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.UI" Namespace="DotNetOpenAuth.OpenId" TagPrefix="openid" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.UI" Namespace="DotNetOpenAuth" TagPrefix="openauth" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
 	<openauth:XrdsPublisher runat="server" XrdsUrl="~/op_xrds.aspx" />
 

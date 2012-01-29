@@ -12,7 +12,9 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.OpenId.RelyingParty.Extensions;
 	using NUnit.Framework;
+	using ExtensionsInteropProviderHelper = DotNetOpenAuth.OpenId.Provider.Extensions.ExtensionsInteropHelper;
 
 	[TestFixture]
 	public class ExtensionsInteropHelperRPRequestTests : OpenIdTestBase {
@@ -76,8 +78,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg | AXAttributeFormats.SchemaOpenIdNet);
 			var ax = this.authReq.AppliedExtensions.OfType<FetchRequest>().Single();
 			Assert.IsTrue(ax.Attributes.Contains(WellKnownAttributes.Name.Alias));
-			Assert.IsTrue(ax.Attributes.Contains(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet)));
-			Assert.IsFalse(ax.Attributes.Contains(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.OpenIdNetSchema)));
+			Assert.IsTrue(ax.Attributes.Contains(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet)));
+			Assert.IsFalse(ax.Attributes.Contains(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.OpenIdNetSchema)));
 		}
 
 		/// <summary>
@@ -100,7 +102,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			this.InjectAdvertisedTypeUri(WellKnownAttributes.Name.FullName);
 			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.OpenIdNetSchema);
 			var ax = this.authReq.AppliedExtensions.OfType<FetchRequest>().Single();
-			Assert.IsFalse(ax.Attributes.Contains(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Contact.Email, AXAttributeFormats.OpenIdNetSchema)));
+			Assert.IsFalse(ax.Attributes.Contains(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Contact.Email, AXAttributeFormats.OpenIdNetSchema)));
 			Assert.IsTrue(ax.Attributes.Contains(WellKnownAttributes.Contact.Email));
 		}
 
@@ -109,9 +111,9 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		[TestCase]
 		public void TransformAXFormatTest() {
-			Assert.AreEqual(WellKnownAttributes.Name.Alias, ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.AXSchemaOrg));
-			Assert.AreEqual("http://schema.openid.net/namePerson/friendly", ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet));
-			Assert.AreEqual("http://openid.net/schema/namePerson/friendly", ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.OpenIdNetSchema));
+			Assert.AreEqual(WellKnownAttributes.Name.Alias, ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.AXSchemaOrg));
+			Assert.AreEqual("http://schema.openid.net/namePerson/friendly", ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet));
+			Assert.AreEqual("http://openid.net/schema/namePerson/friendly", ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.OpenIdNetSchema));
 		}
 
 		/// <summary>

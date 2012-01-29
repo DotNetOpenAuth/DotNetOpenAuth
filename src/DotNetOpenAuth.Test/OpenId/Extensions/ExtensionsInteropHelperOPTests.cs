@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.OpenId.Provider.Extensions;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -26,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			base.SetUp();
 
 			var op = this.CreateProvider();
-			var rpRequest = new CheckIdRequest(Protocol.Default.Version, OPUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Setup);
+			var rpRequest = new CheckIdRequest(Protocol.Default.Version, OPUri, DotNetOpenAuth.OpenId.AuthenticationRequestMode.Setup);
 			rpRequest.ReturnTo = RPUri;
 			this.extensions = rpRequest.Extensions;
 			this.request = new AuthenticationRequest(op, rpRequest);

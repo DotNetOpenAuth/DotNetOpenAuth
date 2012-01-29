@@ -99,6 +99,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" Condition=" '$(ClrVersion)' == '2' " />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -184,12 +185,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
-      <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
-      <Name>DotNetOpenAuth</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="openid.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -224,14 +219,36 @@
     <DelaySignedAssemblies Include="$(ILMergeProjectOutputAssembly)">
       <Visible>false</Visible>
     </DelaySignedAssemblies>
-    <ILMergeProjectInputAssemblies Include="$(TargetPath);
-                                            $(ProjectRoot)lib\Microsoft.Contracts.dll; ">
+    <ILMergeProjectInputAssemblies Include="$(TargetPath);&#xD;&#xA;                                            $(ProjectRoot)lib\Microsoft.Contracts.dll; ">
       <Visible>false</Visible>
     </ILMergeProjectInputAssemblies>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.Provider\DotNetOpenAuth.OpenId.Provider.csproj">
+      <Project>{F8284738-3B5D-4733-A511-38C23F4A763F}</Project>
+      <Name>DotNetOpenAuth.OpenId.Provider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Target Name="BuildUnified" DependsOnTargets="Build" Inputs="@(ILMergeProjectInputAssemblies)" Outputs="$(ILMergeProjectOutputAssembly)">
     <MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
-    <ILMerge ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt" InputAssemblies="@(ILMergeProjectInputAssemblies)" OutputFile="$(ILMergeProjectOutputAssembly)" KeyFile="$(PublicKeyFile)" DelaySign="true" />
+    <ILMerge
+      ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
+      InputAssemblies="@(ILMergeProjectInputAssemblies)"
+      OutputFile="$(ILMergeProjectOutputAssembly)"
+      SearchDirectories="$(OutputPath);@(ILMergeSearchDirectories)"
+      ToolPath="$(ProjectRoot)tools\ILMerge"
+      KeyFile="$(PublicKeyFile)"
+      DelaySign="true" 
+      TargetPlatformVersion="$(ClrVersion).0"
+      TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
   </Target>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />

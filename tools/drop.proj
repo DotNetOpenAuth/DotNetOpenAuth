@@ -47,10 +47,10 @@
 			<DropBinSourceFiles Include="
 																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).dll;
 																$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb;
-																$(OutputPath)$(ProductName).xml;
+																$(ILMergeOutputAssemblyDirectory)$(ProductName).xml;
 																$(OutputPath)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
-																$(ProjectRoot)src\$(ProductName)\Configuration\$(ProductName).xsd;
+																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />
 			<DropSatelliteSourceFiles Include="$(OutputPath)**\$(SignedSubPath)$(ProductName).resources.dll" />
 			<DropSatelliteSourceFiles>
@@ -74,14 +74,12 @@
 															$(ProjectRoot)**\Debug\**;
 															$(ProjectRoot)**\StyleCop.Cache;
 															$(ProjectRoot)Samples\_ReSharper.*\**;
-															$(ProjectRoot)Samples\**\DotNetOpenAuth.???;
-															$(ProjectRoot)Samples\**\DotNetOpenAuth.resources.???;
-															$(ProjectRoot)Samples\**\log4net.???;
-															$(ProjectRoot)Samples\**\PresentationCore.dll;
-															$(ProjectRoot)Samples\**\System.Printing.dll;
+															$(ProjectRoot)Samples\**\bin\**;
+															$(ProjectRoot)Samples\**\obj\**;
 															$(ProjectRoot)Samples\**\*.refresh_;
 															$(ProjectRoot)Samples\*.proj;
 															" />
+			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**\Bin\*.refresh"  />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
 			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)Samples\**\*.refresh_" />
 			<DropSpecsSourceFiles Include="$(ProjectRoot)Doc\specs\*.htm*" />
@@ -137,7 +135,22 @@
 		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\"
 		                          AddReferences="Microsoft.Contracts"/>
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
-		  ProjectReferences="..\..\src\$(ProductName)\$(ProductName).csproj" References="..\..\Bin\$(ProductName).dll" />
+		  ProjectReferences="@(ProjectReferencesToRemove)" References="@(AssemblyReferencesToReplaceWith)" />
+		<RegexFileReplace
+			Files="@(DropSamplesFiles)"
+			Pattern='&lt;%@ Register Assembly="DotNetOpenAuth[^"]+"'
+			Replacement='&lt;%@ Register Assembly="DotNetOpenAuth"'
+			Condition=" '%(Extension)' == '.aspx' " />
+		<RegexFileReplace
+			Files="@(DropSamplesFiles)"
+			Pattern='xmlns\:(.+)assembly=DotNetOpenAuth([^;"]+)'
+			Replacement='xmlns:$1assembly=DotNetOpenAuth'
+			Condition=" '%(Extension)' == '.xaml' " />
+		<RegexFileReplace
+			Files="@(DropSamplesFiles)"
+			Pattern='type=&quot;DotNetOpenAuth([^,]+), DotNetOpenAuth([^&quot;]+)&quot;'
+			Replacement='type=&quot;DotNetOpenAuth$1, DotNetOpenAuth&quot;'
+			Condition=" '%(Extension)' == '.config' " />
 		<DowngradeProjects
 			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
