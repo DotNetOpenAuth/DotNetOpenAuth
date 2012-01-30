@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					this.MessageType.Name,
 					Environment.NewLine,
 					parts.ToStringDeferred(),
-					this.messageVersion);
+					this.MessageVersion);
 				throw;
 			}
 		}
