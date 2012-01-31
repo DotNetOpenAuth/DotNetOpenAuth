@@ -1,9 +1,9 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AccountInfo.aspx.cs" Inherits="WebFormsRelyingParty.Members.AccountInfo"
 	MasterPageFile="~/Site.Master" ValidateRequest="false" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
+<%@ Register Assembly="DotNetOpenAuth.OpenID.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
+<%@ Register Assembly="DotNetOpenAuth.InfoCard.UI" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <%@ Register Assembly="System.Web.Entity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
 	Namespace="System.Web.UI.WebControls" TagPrefix="asp" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">

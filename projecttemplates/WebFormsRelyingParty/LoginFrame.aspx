@@ -1,10 +1,10 @@
 <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginFrame.aspx.cs" Inherits="WebFormsRelyingParty.LoginFrame"
 	EnableViewState="false" ValidateRequest="false" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
+<%@ Register Assembly="DotNetOpenAuth.OpenID.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration" TagPrefix="sreg" %>
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenID" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration" TagPrefix="sreg" %>
+<%@ Register Assembly="DotNetOpenAuth.InfoCard.UI" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- COPYRIGHT (C) 2009 Andrew Arnott.  All rights reserved. -->
 <!-- LICENSE: Microsoft Public License available at http://opensource.org/licenses/ms-pl.html -->
