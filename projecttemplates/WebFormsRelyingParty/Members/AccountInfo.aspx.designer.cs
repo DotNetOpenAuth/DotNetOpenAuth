@@ -136,7 +136,7 @@ namespace WebFormsRelyingParty.Members {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector openIdSelector;
+        protected global::DotNetOpenAuth.OpenId.RelyingParty.OpenIdInfoCardSelector openIdSelector;
         
         /// <summary>
         /// differentAccountLabel control.
