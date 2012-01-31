@@ -22,14 +22,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="message">The direct response message to send to the remote channel.  This message will be cloned.</param>
 		/// <param name="receivingChannel">The receiving channel.</param>
 		internal CoordinatingOutgoingWebResponse(IProtocolMessage message, CoordinatingChannel receivingChannel) {
-			Contract.Requires<ArgumentNullException>(message != null);
-			Contract.Requires<ArgumentNullException>(receivingChannel != null);
+			Requires.NotNull(message, "message");
+			Requires.NotNull(receivingChannel, "receivingChannel");
 
 			this.receivingChannel = receivingChannel;
 			this.OriginalMessage = message;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use the Respond method instead, and prepare for execution to continue on this page beyond the call to Respond.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override void Send() {
 			this.Respond();
 		}

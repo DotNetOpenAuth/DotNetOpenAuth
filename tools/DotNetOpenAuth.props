@@ -15,8 +15,9 @@
 		<Zip7ToolPath>$(ToolsDir)7-Zip.x86\</Zip7ToolPath>
 		<NuGetToolPath>$(ToolsDir)NuGet\</NuGetToolPath>
 		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
-		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4</ClrVersion>
-		<ClrVersion Condition=" '$(TargetFrameworkVersion)' != 'v4.0' ">2</ClrVersion>
+		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' or '$(TargetFrameworkVersion)' == 'v4.5' ">4</ClrVersion>
+		<ClrVersion Condition=" '$(ClrVersion)' == '' ">2</ClrVersion>
+		<BuildCodeContractsReferenceAssemblies>false</BuildCodeContractsReferenceAssemblies>
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
@@ -28,6 +29,9 @@
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
+		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
+		<ILMergeOutputContractAssemblyDirectory>$(ILMergeOutputAssemblyDirectory)CodeContracts\</ILMergeOutputContractAssemblyDirectory>
+		<ILMergeOutputContractAssembly>$(ILMergeOutputContractAssemblyDirectory)$(ProductName).Contracts.dll</ILMergeOutputContractAssembly>
 
 		<!-- Always use our own toolset's copy of Code Contracts for reliably reproducible builds. 
 		     Suppress the installed code contracts from importing itself. -->
@@ -35,9 +39,54 @@
 		<ImportCodeContractsFromToolset>true</ImportCodeContractsFromToolset>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
+		<ILMergeTargetPlatformDirectory>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0</ILMergeTargetPlatformDirectory>
+	</PropertyGroup>
+	<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+		<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+		<ILMergeSearchDirectories Include="
+																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.0;
+																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.5;
+																" />
+	</ItemGroup>
+
 	<ItemGroup>
-		<SignDependsOn Include="Build" />
-		<ILMergeInputAssemblies Include="$(OutputPath)$(ProductName).dll" />
+		<ProductProjectNames Include="
+									   DotNetOpenAuth.Core;
+										 DotNetOpenAuth.Core.UI;
+										 Mono.Math;
+										 Org.Mentalis.Security.Cryptography;
+										 DotNetOpenAuth.OpenId;
+										 DotNetOpenAuth.OpenId.UI;
+										 DotNetOpenAuth.OpenId.Provider;
+										 DotNetOpenAuth.OpenId.Provider.UI;
+										 DotNetOpenAuth.OpenId.RelyingParty;
+										 DotNetOpenAuth.OpenId.RelyingParty.UI;
+										 DotNetOpenAuth.OAuth;
+										 DotNetOpenAuth.OAuth.Consumer;
+										 DotNetOpenAuth.OAuth.ServiceProvider;
+										 DotNetOpenAuth.InfoCard;
+										 DotNetOpenAuth.InfoCard.UI;
+										 DotNetOpenAuth.OpenIdInfoCard.UI;
+										 " />
+		<ProductProjectNames Include="
+										 DotNetOpenAuth.OAuth2;
+										 DotNetOpenAuth.OAuth2.AuthorizationServer;
+										 DotNetOpenAuth.OAuth2.Client;
+										 DotNetOpenAuth.OAuth2.Client.UI;
+										 DotNetOpenAuth.OAuth2.ResourceServer;
+										">
+			<MergeIntoUnifiedAssembly Condition=" '$(IncludeOAuth2)' != 'true' ">false</MergeIntoUnifiedAssembly>
+		</ProductProjectNames>
+		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
+
+		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />
+		<AssemblyReferencesToReplaceWith Include="@(ProjectReferencesToRemove->'..\..\Bin\$(ProductName).dll')" />
+
+		<SignDependsOn Include="Build" Condition=" '$(SuppressBuildTarget)' != 'true' " />
 		<ILMergeInputAssemblies Condition=" '$(ClrVersion)' == '2' "
 		                        Include="$(ProjectRoot)lib\Microsoft.Contracts.dll" />
 	</ItemGroup>

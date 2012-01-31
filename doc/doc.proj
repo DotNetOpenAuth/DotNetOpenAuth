@@ -11,8 +11,8 @@
 	-->
 	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 	<Import Project="..\tools\DotNetOpenAuth.automated.props"/>
-
-	<Target Name="Build" DependsOnTargets="BuildProduct;Chm" Condition=" '$(NoDocumentation)' != 'true' " />
+	
+	<Target Name="Build" DependsOnTargets="BuildUnifiedProduct;Chm" Condition=" '$(NoDocumentation)' != 'true' " />
 
 	<Target Name="Prepare">
 		<Error Text="The BranchName property must be set." Condition=" '$(BranchName)' == '' " />

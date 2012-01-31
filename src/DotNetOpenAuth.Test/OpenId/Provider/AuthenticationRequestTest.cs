@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			// Construct a V1 immediate request
 			Protocol protocol = Protocol.V11;
 			OpenIdProvider provider = this.CreateProvider();
-			CheckIdRequest immediateRequest = new CheckIdRequest(protocol.Version, OPUri, DotNetOpenAuth.OpenId.RelyingParty.AuthenticationRequestMode.Immediate);
+			CheckIdRequest immediateRequest = new CheckIdRequest(protocol.Version, OPUri, DotNetOpenAuth.OpenId.AuthenticationRequestMode.Immediate);
 			immediateRequest.Realm = RPRealmUri;
 			immediateRequest.ReturnTo = RPUri;
 			immediateRequest.LocalIdentifier = "http://somebody";

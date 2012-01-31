@@ -1,7 +1,7 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Default.aspx.vb" Inherits="OpenIdRelyingPartyWebFormsVB._Default"
 	MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth" TagPrefix="openid" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.UI" Namespace="DotNetOpenAuth" TagPrefix="openid" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
 	<openid:XrdsPublisher ID="XrdsPublisher1" runat="server" XrdsUrl="~/xrds.aspx" />
 </asp:Content>

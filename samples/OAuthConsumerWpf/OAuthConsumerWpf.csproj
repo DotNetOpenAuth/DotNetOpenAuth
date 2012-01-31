@@ -71,7 +71,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL" Condition=" '$(TargetFrameworkVersion)' == 'v3.5' ">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
     </Reference>
@@ -186,9 +186,29 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth\DotNetOpenAuth.csproj">
-      <Project>{3191B653-F76D-4C1A-9A5A-347BC3AAAAB7}</Project>
-      <Name>DotNetOpenAuth</Name>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
+      <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>
+      <Name>DotNetOpenAuth.OAuth.Consumer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.Client.UI\DotNetOpenAuth.OAuth2.Client.UI.csproj">
+      <Project>{ADC2CC8C-541E-4F86-ACB1-DD504A36FA4B}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj">
+      <Project>{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
+      <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
+      <Name>DotNetOpenAuth.OAuth2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
+      <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
+      <Name>DotNetOpenAuth.OAuth</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj">
       <Project>{AA78D112-D889-414B-A7D4-467B34C7B663}</Project>

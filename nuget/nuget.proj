@@ -3,60 +3,60 @@
 	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 	<Import Project="$(MSBuildProjectDirectory)\..\tools\DotNetOpenAuth.automated.props"/>
 
-	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
-		<PropertyGroup>
-			<NuGetLayoutPath>$(DropsRoot)NuGet\$(BuildVersion)\</NuGetLayoutPath>
-		</PropertyGroup>
+	<Target Name="BuildIntermediates">
+		<ItemGroup>
+			<ProductTargets Include="BuildUnifiedProduct;ReSignDelaySignedAssemblies" Condition=" '$(SkipNugetDependenciesBuild)' != 'true' " />
+			<ProductTargets Include="GetOutputPath" />
+		</ItemGroup>
 
-		<MSBuild Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.csproj" Targets="DocumentationProjectOutputGroup" BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="NuGetSource"/>
+		<!-- We build the entire unified, signed product targeting both CLRs, since NuGet supports packages that contain both,
+		     and by building against CLR 4, several assembly references fall away from dotnetopenauth.dll, which makes some folks happy. -->
+		<MSBuild
+			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
+			Targets="@(ProductTargets)"
+			Properties="TargetFrameworkVersion=v3.5"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs35"/>
+		</MSBuild>
+		<MSBuild
+			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
+			Targets="@(ProductTargets)"
+			Properties="TargetFrameworkVersion=v4.0"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs40"/>
 		</MSBuild>
 
-		<!-- IMPORTANT: These must appear as separate ItemGroups or else batching screws it up. -->
 		<ItemGroup>
-			<NuGetSource Include="%(ResignedAssembliesOutputs.Identity)" Condition=" '%(FileName)%(Extension)' == 'DotNetOpenAuth.dll' "/>
-			<NuGetSource>
-				<TargetPath>$(NuGetLayoutPath)lib\%(FileName)%(Extension)</TargetPath>
-			</NuGetSource>
+			<ResignedAssembliesOutputs Include="@(TargetOutputs35)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
+				<TargetFramework>v3.5</TargetFramework>
+			</ResignedAssembliesOutputs>
+			<ResignedAssembliesOutputs Include="@(TargetOutputs40)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
+				<TargetFramework>v4.0</TargetFramework>
+			</ResignedAssembliesOutputs>
 		</ItemGroup>
-		<ItemGroup>
-			<NuGetContentSource Include="$(ProjectRoot)NuGet\content\**"/>
-		</ItemGroup>
-		<ItemGroup>
-			<NuGetSource Include="@(NuGetContentSource)">
-				<TargetPath>$(NuGetLayoutPath)content\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
-			</NuGetSource>
-			
-			<NuSpecSource Include="DotNetOpenAuth.nuspec">
-				<LayoutPath>$(NuGetLayoutPath)</LayoutPath>
-				<BeforeTokens>$version$</BeforeTokens>
-				<AfterTokens>$(BuildVersion)</AfterTokens>
-			</NuSpecSource>
-
-			<NuSpecTarget Include="@(NuSpecSource->'$(NuGetLayoutPath)%(FileName)%(Extension)')" />
-		</ItemGroup>
-		<ItemGroup>
-			<NuGetContentsTarget Include="%(NuGetSource.TargetPath)" />
-		</ItemGroup>
-
-		<CopyWithTokenSubstitution
-			SourceFiles="@(NuSpecSource)"
-			DestinationFiles="@(NuSpecTarget)"
-			/>
-
-		<Copy
-			SourceFiles="@(NuGetSource)"
-			DestinationFiles="@(NuGetContentsTarget)"
-			SkipUnchangedFiles="true" />
-
-		<Purge Directories="$(NuGetLayoutPath)" IntendedFiles="@(NuGetContentsTarget);@(NuSpecTarget)" />
+		<PropertyGroup>
+			<OutputPath35 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs35)</OutputPath35>
+			<OutputPath40 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs40)</OutputPath40>
+		</PropertyGroup>
 	</Target>
-	
-	<Target Name="Build" DependsOnTargets="Layout">
+
+	<Target Name="Build" DependsOnTargets="BuildIntermediates">
+		<ItemGroup>
+			<NuGetPackages Include="*.nuspec" Exclude="DotNetOpenAuth.Ultimate.nuspec">
+				<Symbols>true</Symbols>
+			</NuGetPackages>
+			<NuGetPackages Include="DotNetOpenAuth.Ultimate.nuspec" />
+
+			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
+			<NuGetProperties Include="oauth2version=0.11.0-draft" />
+			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
+			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
+		</ItemGroup>
 		<NuGetPack
-			NuSpec="%(NuSpecTarget.Identity)"
-			BaseDirectory="%(NuSpecTarget.LayoutPath)"
+			NuSpec="%(NuGetPackages.Identity)"
 			OutputPackageDirectory="$(DropsRoot)"
+			Properties="@(NuGetProperties)"
+			Symbols="%(NuGetPackages.Symbols)"
 			ToolPath="$(NuGetToolPath)" />
 	</Target>
 

@@ -1,7 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="WebFormsRelyingParty._Default"
 	MasterPageFile="~/Site.Master" Title="OpenID + InfoCard Relying Party template" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth" TagPrefix="dnoa" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenId.UI" Namespace="DotNetOpenAuth" TagPrefix="dnoa" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
 	<dnoa:XrdsPublisher runat="server" XrdsUrl="~/xrds.aspx" XrdsAdvertisement="Both" />
 </asp:Content>

@@ -4,9 +4,15 @@
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<OutputAssembly>DotNetOpenAuth</OutputAssembly>
+		<OutputAssemblyFile>$(ILMergeOutputAssembly)</OutputAssemblyFile>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
-		<DocumentationFile>$(OutputPath)$(OutputAssembly).xml</DocumentationFile>
+		<DocumentationFile>$(ILMergeOutputXmlDocs)</DocumentationFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<MRefDependencies Include="$(ProjectRoot)lib\log4net.dll" />
+		<MRefDependencies Include="$(ProjectRoot)lib\net-v3.5\System.Web.Mvc.dll" />
+	</ItemGroup>
 
 	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />
 

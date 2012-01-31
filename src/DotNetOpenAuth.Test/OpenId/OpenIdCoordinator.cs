@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private static Action<OpenIdRelyingParty> WrapAction(Action<OpenIdRelyingParty> action) {
-			Contract.Requires<ArgumentNullException>(action != null);
+			Requires.NotNull(action, "action");
 
 			return rp => {
 				action(rp);
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private static Action<OpenIdProvider> WrapAction(Action<OpenIdProvider> action) {
-			Contract.Requires<ArgumentNullException>(action != null);
+			Requires.NotNull(action, "action");
 
 			return op => {
 				action(op);

@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 					consumer.Channel.PrepareResponse(consumer.PrepareRequestUserAuthorization(new Uri("http://printer.example.com/request_token_ready"), null, null)); // .Send() dropped because this is just a simulation
 					string accessToken = consumer.ProcessUserAuthorization().AccessToken;
 					var photoRequest = consumer.CreateAuthorizingMessage(accessPhotoEndpoint, accessToken);
-					OutgoingWebResponse protectedPhoto = ((CoordinatingOAuthChannel)consumer.Channel).RequestProtectedResource(photoRequest);
+					OutgoingWebResponse protectedPhoto = ((CoordinatingOAuthConsumerChannel)consumer.Channel).RequestProtectedResource(photoRequest);
 					Assert.IsNotNull(protectedPhoto);
 					Assert.AreEqual(HttpStatusCode.OK, protectedPhoto.Status);
 					Assert.AreEqual("image/jpeg", protectedPhoto.Headers[HttpResponseHeader.ContentType]);
@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 					var accessRequest = sp.ReadAccessTokenRequest();
 					sp.Channel.PrepareResponse(sp.PrepareAccessTokenMessage(accessRequest)); // .Send() dropped because this is just a simulation
 					string accessToken = sp.ReadProtectedResourceAuthorization().AccessToken;
-					((CoordinatingOAuthChannel)sp.Channel).SendDirectRawResponse(new OutgoingWebResponse {
+					((CoordinatingOAuthServiceProviderChannel)sp.Channel).SendDirectRawResponse(new OutgoingWebResponse {
 						ResponseStream = new MemoryStream(new byte[] { 0x33, 0x66 }),
 						Headers = new WebHeaderCollection {
 							{ HttpResponseHeader.ContentType, "image/jpeg" },

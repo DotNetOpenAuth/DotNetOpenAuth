@@ -27,43 +27,43 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		private TestWebRequestHandler webRequestHandler;
 		private SigningBindingElementBase signingElement;
 		private INonceStore nonceStore;
-		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
-		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.Consumer.SecuritySettings.CreateSecuritySettings();
 
 		[SetUp]
 		public override void SetUp() {
 			base.SetUp();
 
 			this.webRequestHandler = new TestWebRequestHandler();
-			this.signingElement = new RsaSha1SigningBindingElement(new InMemoryTokenManager());
+			this.signingElement = new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager());
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-			this.channel = new OAuthChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory());
+			this.channel = new OAuthServiceProviderChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory());
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[TestCase, ExpectedException(typeof(ArgumentException))]
 		public void CtorNullSigner() {
-			new OAuthChannel(null, this.nonceStore, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
+			new OAuthConsumerChannel(null, this.nonceStore, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
+			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
+			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
 		[TestCase]
 		public void CtorSimpleConsumer() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager(), this.consumerSecuritySettings);
+			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager(), this.consumerSecuritySettings);
 		}
 
 		[TestCase]
 		public void CtorSimpleServiceProvider() {
-			new OAuthChannel(new RsaSha1SigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager(), this.serviceProviderSecuritySettings);
+			new OAuthServiceProviderChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager(), this.serviceProviderSecuritySettings);
 		}
 
 		[TestCase]
@@ -248,7 +248,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		}
 
 		private static string CreateAuthorizationHeader(IDictionary<string, string> fields) {
-			Contract.Requires<ArgumentNullException>(fields != null);
+			Requires.NotNull(fields, "fields");
 
 			StringBuilder authorization = new StringBuilder();
 			authorization.Append("OAuth ");

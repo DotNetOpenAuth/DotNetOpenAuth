@@ -19,8 +19,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 	internal class OAuthCoordinator : CoordinatorBase<WebConsumer, ServiceProvider> {
 		private ConsumerDescription consumerDescription;
 		private ServiceProviderDescription serviceDescription;
-		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.ServiceProvider.SecuritySettings.CreateSecuritySettings();
-		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.DotNetOpenAuthSection.Configuration.OAuth.Consumer.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.ServiceProvider.SecuritySettings.CreateSecuritySettings();
+		private DotNetOpenAuth.OAuth.ConsumerSecuritySettings consumerSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.Consumer.SecuritySettings.CreateSecuritySettings();
 
 		/// <summary>Initializes a new instance of the <see cref="OAuthCoordinator"/> class.</summary>
 		/// <param name="consumerDescription">The description of the consumer.</param>
@@ -29,8 +29,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// <param name="serviceProviderAction">The code path of the Service Provider.</param>
 		internal OAuthCoordinator(ConsumerDescription consumerDescription, ServiceProviderDescription serviceDescription, Action<WebConsumer> consumerAction, Action<ServiceProvider> serviceProviderAction)
 			: base(consumerAction, serviceProviderAction) {
-			Contract.Requires<ArgumentNullException>(consumerDescription != null);
-			Contract.Requires<ArgumentNullException>(serviceDescription != null);
+			Requires.NotNull(consumerDescription, "consumerDescription");
+			Requires.NotNull(serviceDescription, "serviceDescription");
 
 			this.consumerDescription = consumerDescription;
 			this.serviceDescription = serviceDescription;
@@ -52,8 +52,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 			serviceTokenManager.AddConsumer(this.consumerDescription);
 
 			// Prepare channels that will pass messages directly back and forth.
-			CoordinatingOAuthChannel consumerChannel = new CoordinatingOAuthChannel(consumerSigningElement, (IConsumerTokenManager)consumerTokenManager, this.consumerSecuritySettings);
-			CoordinatingOAuthChannel serviceProviderChannel = new CoordinatingOAuthChannel(spSigningElement, (IServiceProviderTokenManager)serviceTokenManager, this.serviceProviderSecuritySettings);
+			var consumerChannel = new CoordinatingOAuthConsumerChannel(consumerSigningElement, (IConsumerTokenManager)consumerTokenManager, this.consumerSecuritySettings);
+			var serviceProviderChannel = new CoordinatingOAuthServiceProviderChannel(spSigningElement, (IServiceProviderTokenManager)serviceTokenManager, this.serviceProviderSecuritySettings);
 			consumerChannel.RemoteChannel = serviceProviderChannel;
 			serviceProviderChannel.RemoteChannel = consumerChannel;
 

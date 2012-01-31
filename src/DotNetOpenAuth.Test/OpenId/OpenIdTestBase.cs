@@ -66,8 +66,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public override void SetUp() {
 			base.SetUp();
 
-			this.RelyingPartySecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.RelyingParty.SecuritySettings.CreateSecuritySettings();
-			this.ProviderSecuritySettings = DotNetOpenAuthSection.Configuration.OpenId.Provider.SecuritySettings.CreateSecuritySettings();
+			this.RelyingPartySecuritySettings = OpenIdElement.Configuration.RelyingParty.SecuritySettings.CreateSecuritySettings();
+			this.ProviderSecuritySettings = OpenIdElement.Configuration.Provider.SecuritySettings.CreateSecuritySettings();
 
 			this.MockResponder = MockHttpRequest.CreateUntrustedMockHttpHandler();
 			this.RequestHandler = this.MockResponder.MockWebRequestHandler;

@@ -2,7 +2,7 @@
 	Inherits="OpenIdRelyingPartyWebForms.loginGoogleApps" ValidateRequest="false"
 	MasterPageFile="~/Site.Master" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
+<%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
 	<rp:OpenIdLogin ID="OpenIdLogin1" runat="server" ExampleUrl="yourname@yourdomain.com"

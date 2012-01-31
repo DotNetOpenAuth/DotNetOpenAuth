@@ -18,8 +18,8 @@ namespace DotNetOpenAuth.Test {
 		private Action<T2> party2Action;
 
 		protected CoordinatorBase(Action<T1> party1Action, Action<T2> party2Action) {
-			Contract.Requires<ArgumentNullException>(party1Action != null);
-			Contract.Requires<ArgumentNullException>(party2Action != null);
+			Requires.NotNull(party1Action, "party1Action");
+			Requires.NotNull(party2Action, "party2Action");
 
 			this.party1Action = party1Action;
 			this.party2Action = party2Action;

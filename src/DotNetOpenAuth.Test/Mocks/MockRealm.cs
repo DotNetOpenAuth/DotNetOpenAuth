@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="relyingPartyDescriptions">The relying party descriptions.</param>
 		internal MockRealm(Realm wrappedRealm, params RelyingPartyEndpointDescription[] relyingPartyDescriptions)
 			: base(wrappedRealm) {
-			Contract.Requires<ArgumentNullException>(relyingPartyDescriptions != null);
+			Requires.NotNull(relyingPartyDescriptions, "relyingPartyDescriptions");
 
 			this.relyingPartyDescriptions = relyingPartyDescriptions;
 		}

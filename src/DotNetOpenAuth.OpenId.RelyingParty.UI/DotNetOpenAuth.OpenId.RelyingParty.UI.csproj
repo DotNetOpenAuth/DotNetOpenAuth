@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1ED8D424-F8AB-4050-ACEB-F27F4F909484}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.OpenId.RelyingParty.UI</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ComponentModel\IdentifierConverter.cs" />
+    <Compile Include="OpenId\Mvc\OpenIdAjaxOptions.cs" />
+    <Compile Include="OpenId\Mvc\OpenIdHelper.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxRelyingParty.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdAjaxTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' "/>
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
+    <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
+    <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
+    <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj">
+      <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
+      <Name>DotNetOpenAuth.Core.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
+      <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
+      <Name>Org.Mentalis.Security.Cryptography</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OpenId\RelyingParty\login_failure.png" />
+    <EmbeddedResource Include="OpenId\RelyingParty\login_success %28lock%29.png" />
+    <EmbeddedResource Include="OpenId\RelyingParty\login_success.png" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.css" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdAjaxTextBox.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.css" />
+    <EmbeddedResource Include="OpenId\RelyingParty\OpenIdSelector.js" />
+    <EmbeddedResource Include="OpenId\RelyingParty\openid_login.png" />
+    <EmbeddedResource Include="OpenId\RelyingParty\spinner.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenId\RelyingParty\Controls.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

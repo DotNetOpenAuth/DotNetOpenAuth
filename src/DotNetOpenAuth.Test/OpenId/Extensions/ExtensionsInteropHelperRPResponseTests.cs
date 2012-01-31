@@ -13,7 +13,9 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.OpenId.RelyingParty.Extensions;
 	using NUnit.Framework;
+	using ExtensionsInteropProviderHelper = DotNetOpenAuth.OpenId.Provider.Extensions.ExtensionsInteropHelper;
 
 	[TestFixture]
 	public class ExtensionsInteropHelperRPResponseTests : OpenIdTestBase {
@@ -74,7 +76,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[TestCase]
 		public void UnifyExtensionsasSregFromSchemaOpenIdNet() {
 			var axInjected = new FetchResponse();
-			axInjected.Attributes.Add(ExtensionsInteropHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet), "nate");
+			axInjected.Attributes.Add(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet), "nate");
 			this.extensions.Add(axInjected);
 			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.AreEqual("nate", sreg.Nickname);

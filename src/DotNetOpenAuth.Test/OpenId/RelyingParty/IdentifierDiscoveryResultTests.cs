@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsFalse(se.IsTypeUriPresent("http://someother"));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void IsTypeUriPresentNull() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			se.IsTypeUriPresent(null);
@@ -161,7 +161,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			se.IsExtensionSupported((Type)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void IsTypeUriPresentNullString() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsTypeUriPresent((string)null);

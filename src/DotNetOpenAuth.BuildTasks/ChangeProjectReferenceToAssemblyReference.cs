@@ -26,7 +26,7 @@
 		public ITaskItem[] ProjectReferences { get; set; }
 
 		/// <summary>
-		/// The assembly references to add.
+		/// The assembly references to replace removed project references with.
 		/// </summary>
 		[Required]
 		public ITaskItem[] References { get; set; }
@@ -34,6 +34,9 @@
 		public override bool Execute() {
 			if (this.ProjectReferences.Length != this.References.Length) {
 				this.Log.LogError("ProjectReferences and References arrays do not have matching lengths.");
+				this.Log.LogError("ProjectReferences contents ({0} elements): {1}", this.ProjectReferences.Length, String.Join<ITaskItem>(";", this.ProjectReferences));
+				this.Log.LogError("References contents ({0} elements): {1}", this.References.Length, String.Join<ITaskItem>(";", this.References));
+				return false;
 			}
 
 			foreach (var project in Projects) {
@@ -50,8 +53,12 @@
 					doc.RemoveItem(matchingReference.Remove);
 					if (matchingReference.Add.ItemSpec != "REMOVE") {
 						this.Log.LogMessage("Adding assembly reference to \"{0}\" to \"{1}\".", matchingReference.Add.ItemSpec, project.ItemSpec);
-						var newReference = doc.AddNewItem("Reference", Path.GetFileNameWithoutExtension(matchingReference.Add.ItemSpec), true);
-						newReference.SetMetadata("HintPath", matchingReference.Add.ItemSpec);
+
+						string newItemSpec = Path.GetFileNameWithoutExtension(matchingReference.Add.ItemSpec);
+						if (!doc.GetEvaluatedItemsByName("Reference").OfType<BuildItem>().Any(bi => String.Equals(bi.Include, newItemSpec, StringComparison.OrdinalIgnoreCase))) {
+							var newReference = doc.AddNewItem("Reference", newItemSpec, true);
+							newReference.SetMetadata("HintPath", matchingReference.Add.ItemSpec);
+						}
 					}
 				}
 

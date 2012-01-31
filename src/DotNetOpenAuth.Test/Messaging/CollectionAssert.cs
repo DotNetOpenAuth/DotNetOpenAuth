@@ -15,8 +15,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 	internal class CollectionAssert<T> {
 		internal static void AreEquivalent(ICollection<T> expected, ICollection<T> actual) {
-			Contract.Requires<ArgumentNullException>(expected != null);
-			Contract.Requires<ArgumentNullException>(actual != null);
+			Requires.NotNull(expected, "expected");
+			Requires.NotNull(actual, "actual");
 
 			ICollection expectedNonGeneric = new List<T>(expected);
 			ICollection actualNonGeneric = new List<T>(actual);
@@ -24,8 +24,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		internal static void AreEquivalentByEquality(ICollection<T> expected, ICollection<T> actual) {
-			Contract.Requires<ArgumentNullException>(expected != null);
-			Contract.Requires<ArgumentNullException>(actual != null);
+			Requires.NotNull(expected, "expected");
+			Requires.NotNull(actual, "actual");
 
 			Assert.AreEqual(expected.Count, actual.Count);
 			foreach (T value in expected) {
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		internal static void Contains(IEnumerable<T> sequence, T element) {
-			Contract.Requires<ArgumentNullException>(sequence != null);
+			Requires.NotNull(sequence, "sequence");
 
 			if (!sequence.Contains(element)) {
 				Assert.Fail("Sequence did not include expected element '{0}'.", element);

@@ -52,7 +52,7 @@ namespace OpenIdWebRingSsoProvider.Code {
 
 		internal static void ProcessAuthenticationChallenge(IAuthenticationRequest idrequest) {
 			// Verify that RP discovery is successful.
-			if (idrequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider) != RelyingPartyDiscoveryResult.Success) {
+			if (idrequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) != RelyingPartyDiscoveryResult.Success) {
 				idrequest.IsAuthenticated = false;
 				return;
 			}

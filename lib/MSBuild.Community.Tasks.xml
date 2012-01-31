@@ -322,12 +322,23 @@
             if the locale on the computer isn't supported. Example is setting this to "en-US".
             </summary>
         </member>
+        <member name="P:MSBuild.Community.Tasks.AssemblyInfo.UltimateResourceFallbackLocation">
+            <summary>
+            Gets or sets the ultimate resource fallback location.
+            </summary>
+            <value>The ultimate resource fallback location.</value>
+        </member>
         <member name="P:MSBuild.Community.Tasks.AssemblyInfo.InternalsVisibleTo">
             <summary>
             Makes it possible to make certain assemblies able to use constructs marked as internal.
             Example might be setting this value to "UnitTests" assembly. The typical use case might 
             be constructors in classes which shouldn't be available to other assemblies, but the unit
             tests should be able to use them.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.AssemblyInfo.AllowPartiallyTrustedCallers">
+            <summary>
+            Gets or sets whether to allow strong-named assemblies to be called by partially trusted code.
             </summary>
         </member>
         <member name="P:MSBuild.Community.Tasks.AssemblyInfo.OutputFile">
@@ -1677,6 +1688,91 @@
             Optional; the name of the file to write the response to.
             </summary>
         </member>
+        <member name="T:MSBuild.Community.Tasks.NuGet">
+            <summary>
+            Creates a NuGet package based on the specified manifest (Nuspec) file.
+            Can set the version number in the manifest prior to building the package.
+            </summary>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.NuGet.Execute">
+            <summary>
+            Runs the exectuable file with the specified task parameters.
+            </summary>
+            <returns>
+            true if the task runs successfully; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.NuGet.GenerateCommandLineCommands">
+            <summary>
+            Returns a string value containing the command line arguments to pass directly to the executable file.
+            </summary>
+            <returns>
+            A string value containing the command line arguments to pass directly to the executable file.
+            </returns>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.NuGet.GenerateFullPathToTool">
+            <summary>
+            Returns the fully qualified path to the executable file.
+            </summary>
+            <returns>
+            The fully qualified path to the executable file.
+            </returns>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.NuGet.GetWorkingDirectory">
+            <summary>
+            Returns the directory in which to run the executable file.
+            </summary>
+            <returns>
+            The directory in which to run the executable file, or a null reference (Nothing in Visual Basic) if the executable file should be run in the current directory.
+            </returns>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.Manifest">
+            <summary>
+            The location of the manifest (Nuspec) file to create a package.
+            </summary>
+            <value>The manifest.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.OutputDirectory">
+            <summary>
+            Specifies the directory for the created NuGet package.
+            </summary>
+            <value>The output directory.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.BasePath">
+            <summary>
+            The Base Path of the files defined in the nuspec file.
+            </summary>
+            <value>The base path.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.Verbose">
+            <summary>
+            Shows verbose output for package building.
+            </summary>
+            <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.Version">
+            <summary>
+            Sets the version of the package in the manifest (Nuspec) file.
+            The version must specify at least two places "X.X".
+            </summary>
+            <value>The version to set in the manifest.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.WorkingDirectory">
+            <summary>
+            Gets or sets the working directory.
+            </summary>
+            <value>The working directory.</value>
+            <returns>
+            The directory in which to run the executable file, or a null reference (Nothing in Visual Basic) if the executable file should be run in the current directory.
+            </returns>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.ToolName">
+            <summary>
+            Gets the name of the executable file to run.
+            </summary>
+            <value></value>
+            <returns>The name of the executable file to run.</returns>
+        </member>
         <member name="M:MSBuild.Community.Tasks.PathUtil.RelativePathTo(System.String,System.String)">
             <summary>  
             Creates a relative path from one file  
@@ -1864,6 +1960,12 @@
             Gets or sets the regular expressions.
             </summary>
             <value>The regular expressions.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.RegexCompiler.RegularExpressionsFile">
+            <summary>
+            Gets or sets the file defining the regular expressions.
+            </summary>
+            <value>The regular expressions file.</value>
         </member>
         <member name="P:MSBuild.Community.Tasks.RegexCompiler.IsPublic">
             <summary>
@@ -4000,6 +4102,16 @@
         <member name="P:MSBuild.Community.Tasks.Subversion.LastCommit.Revision">
             <remarks/>
         </member>
+        <member name="T:MSBuild.Community.Tasks.Subversion.SvnStatus">
+            <summary>
+             Subversion status command.
+            </summary>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.Subversion.SvnStatus.#ctor">
+            <summary>
+             Creates an instance of SvnStatus.
+            </summary>
+        </member>
         <member name="T:MSBuild.Community.Tasks.SymbolServer.SymStoreCommands">
             <summary>
             Commands for the SymStore tasks.
@@ -4189,99 +4301,50 @@
             <value></value>
             <returns>The <see cref="T:Microsoft.Build.Framework.MessageImportance"></see> with which to log errors.</returns>
         </member>
-        <member name="T:MSBuild.Community.Tasks.Tfs.IServer">
+        <member name="M:MSBuild.Community.Tasks.Tfs.TfsClient.GenerateFullPathToTool">
             <summary>
-            Describes the behavior of a Team Foundation Server
-            </summary>
-            <exclude />
-        </member>
-        <member name="M:MSBuild.Community.Tasks.Tfs.IServer.GetLatestChangesetId(System.String,System.Net.ICredentials)">
-            <summary>
-            Retrieves the latest changeset ID associated with a path
-            </summary>
-            <param name="localPath">A path on the local filesystem</param>
-            <param name="credentials">Credentials used to authenticate against the serer</param>
-            <returns></returns>
-        </member>
-        <member name="T:MSBuild.Community.Tasks.Tfs.TeamFoundationServer">
-            <summary>
-            Handles all communication with the Team Foundation Server
-            </summary>
-        </member>
-        <member name="M:MSBuild.Community.Tasks.Tfs.TeamFoundationServer.#ctor(System.String)">
-            <summary>
-            Creates an instace of the TeamFoundationServer class
-            </summary>
-            <param name="clientLocation">The local file path containing the TFS libraries. null if TFS is in the GAC.</param>
-        </member>
-        <member name="M:MSBuild.Community.Tasks.Tfs.TeamFoundationServer.GetLatestChangesetId(System.String,System.Net.ICredentials)">
-            <summary>
-            Retrieves the latest changeset ID associated with a path
-            </summary>
-            <param name="localPath">A path on the local filesystem</param>
-            <param name="credentials">Credentials used to authenticate against the serer</param>
-            <returns></returns>
-        </member>
-        <member name="T:MSBuild.Community.Tasks.Tfs.TeamFoundationServerException">
-            <summary>
-            Exceptions returned by the Team Foundation Server
-            </summary>
-            <exclude />
-        </member>
-        <member name="M:MSBuild.Community.Tasks.Tfs.TeamFoundationServerException.#ctor">
-            <summary>
-            Creates a new instance of the exception
-            </summary>
-        </member>
-        <member name="M:MSBuild.Community.Tasks.Tfs.TeamFoundationServerException.#ctor(System.String)">
-            <summary>
-            Creates a new instance of the exception
-            </summary>
-            <param name="message">A description of the exception</param>
-        </member>
-        <member name="T:MSBuild.Community.Tasks.Tfs.TfsVersion">
-            <summary>
-            Determines the changeset in a local Team Foundation Server workspace
-            </summary>
-        </member>
-        <member name="M:MSBuild.Community.Tasks.Tfs.TfsVersion.Execute">
-            <summary>
-            Runs the exectuable file with the specified task parameters.
+            Returns the fully qualified path to the executable file.
             </summary>
             <returns>
-            true if the task runs successfully; otherwise, false.
+            The fully qualified path to the executable file.
             </returns>
         </member>
-        <member name="P:MSBuild.Community.Tasks.Tfs.TfsVersion.Username">
+        <member name="M:MSBuild.Community.Tasks.Tfs.TfsClient.LogToolCommand(System.String)">
             <summary>
-            The user to authenticate on the server
+            Logs the starting point of the run to all registered loggers.
             </summary>
-            <remarks>Leave empty to use the credentials of the current user.</remarks>
+            <param name="message">A descriptive message to provide loggers, usually the command line and switches.</param>
         </member>
-        <member name="P:MSBuild.Community.Tasks.Tfs.TfsVersion.Password">
+        <member name="M:MSBuild.Community.Tasks.Tfs.TfsClient.GenerateCommandLineCommands">
             <summary>
-            The password for the user to authenticate on the server
+            Returns a string value containing the command line arguments to pass directly to the executable file.
             </summary>
-            <remarks>Leave empty to use the credentials of the current user.</remarks>
+            <returns>
+            A string value containing the command line arguments to pass directly to the executable file.
+            </returns>
         </member>
-        <member name="P:MSBuild.Community.Tasks.Tfs.TfsVersion.Domain">
+        <member name="M:MSBuild.Community.Tasks.Tfs.TfsClient.ValidateParameters">
             <summary>
-            The domain of the user to authenticate on the server
+            Indicates whether all task paratmeters are valid.
             </summary>
-            <remarks>Leave empty to use the credentials of the current user.</remarks>
+            <returns>
+            true if all task parameters are valid; otherwise, false.
+            </returns>
         </member>
-        <member name="P:MSBuild.Community.Tasks.Tfs.TfsVersion.LocalPath">
-            <summary>Path to local working copy.</summary>
-        </member>
-        <member name="P:MSBuild.Community.Tasks.Tfs.TfsVersion.Changeset">
+        <member name="P:MSBuild.Community.Tasks.Tfs.TfsClient.StandardOutputLoggingImportance">
             <summary>
-            The latest changeset ID in the local path
+            Gets the <see cref="T:Microsoft.Build.Framework.MessageImportance"></see> with which to log errors.
             </summary>
+            <value></value>
+            <returns>The <see cref="T:Microsoft.Build.Framework.MessageImportance"></see> with which to log errors.</returns>
         </member>
-        <member name="P:MSBuild.Community.Tasks.Tfs.TfsVersion.TfsLibraryLocation">
+        <member name="P:MSBuild.Community.Tasks.Tfs.TfsClient.ToolName">
             <summary>
-            The location of the Team Foundation Server client assemblies. Leave empty when the client is installed in the Global Assembly Cache.
+            Gets the name of the executable file to run.
             </summary>
+            <returns>
+            The name of the executable file to run.
+            </returns>
         </member>
         <member name="T:MSBuild.Community.Tasks.Services.IRegistry">
             <summary>
@@ -4927,45 +4990,42 @@
             </summary>
         </member>
         <member name="T:MSBuild.Community.Tasks.ILMerge">
-             <summary>
-             A wrapper for the ILMerge tool.
-             </summary>
-             <remarks>
-             <para>
-             The ILMerge tool itself must be installed separately.
-             It is available <a href="http://research.microsoft.com/~mbarnett/ILMerge.aspx">here</a>.
-             </para>
-             <para>
-             The command line options "/wildcards" and "/lib" of ILMerge are not supported,
-             because MSBuild is in charge of expanding wildcards for item groups.
-             </para>
-             </remarks>
-             <example>
-             This example merges two assemblies A.dll and B.dll into one:
-             <code><![CDATA[
-             <PropertyGroup>
-                 <outputFile>$(testDir)\ilmergetest.dll</outputFile>
-                 <keyFile>$(testDir)\keypair.snk</keyFile>
-                 <excludeFile>$(testDir)\ExcludeTypes.txt</excludeFile>
-                 <logFile>$(testDir)\ilmergetest.log</logFile>
-             </PropertyGroup>
-            
-             <ItemGroup>
-                 <inputAssemblies Include="$(testDir)\A.dll" />
-                 <inputAssemblies Include="$(testDir)\B.dll" />
-            
-                 <allowDuplicates Include="ClassAB" />
-             </ItemGroup>
-            
-             <Target Name="merge" >
-                <ILMerge InputAssemblies="@(inputAssemblies)" 
-                    AllowDuplicateTypes="@(allowDuplicates)"
-                    ExcludeFile="$(excludeFile)"
-                    OutputFile="$(outputFile)" LogFile="$(logFile)"
-                    DebugInfo="true" XmlDocumentation="true" 
-                    KeyFile="$(keyFile)" DelaySign="true" />
-             </Target>]]></code>
-             </example>
+            <summary>
+            A wrapper for the ILMerge tool.
+            </summary>
+            <remarks>
+            <para>
+            The ILMerge tool itself must be installed separately.
+            It is available <a href="http://research.microsoft.com/~mbarnett/ILMerge.aspx">here</a>.
+            </para>
+            <para>
+            The command line options "/wildcards" and "/lib" of ILMerge are not supported,
+            because MSBuild is in charge of expanding wildcards for item groups.
+            </para>
+            </remarks>
+            <example>
+            This example merges two assemblies A.dll and B.dll into one:
+            <code><![CDATA[
+            <PropertyGroup>
+                <outputFile>$(testDir)\ilmergetest.dll</outputFile>
+                <keyFile>$(testDir)\keypair.snk</keyFile>
+                <excludeFile>$(testDir)\ExcludeTypes.txt</excludeFile>
+                <logFile>$(testDir)\ilmergetest.log</logFile>
+            </PropertyGroup>
+            <ItemGroup>
+                <inputAssemblies Include="$(testDir)\A.dll" />
+                <inputAssemblies Include="$(testDir)\B.dll" />
+                <allowDuplicates Include="ClassAB" />
+            </ItemGroup>
+            <Target Name="merge" >
+               <ILMerge InputAssemblies="@(inputAssemblies)" 
+                   AllowDuplicateTypes="@(allowDuplicates)"
+                   ExcludeFile="$(excludeFile)"
+                   OutputFile="$(outputFile)" LogFile="$(logFile)"
+                   DebugInfo="true" XmlDocumentation="true" 
+                   KeyFile="$(keyFile)" DelaySign="true" />
+            </Target>]]></code>
+            </example>
         </member>
         <member name="M:MSBuild.Community.Tasks.ILMerge.#ctor">
             <summary>
@@ -4984,11 +5044,11 @@
         </member>
         <member name="M:MSBuild.Community.Tasks.ILMerge.GenerateCommandLineCommands">
             <summary>
-            Returns a string value containing the command line arguments
+            Generates a string value containing the command line arguments
             to pass directly to the executable file.
             </summary>
             <returns>
-            Returns a string value containing the command line arguments 
+            Returns a string value containing the command line arguments
             to pass directly to the executable file.
             </returns>
         </member>
@@ -5006,7 +5066,7 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.AllowZeroPeKind">
             <summary>
-            Gets or sets the flag to treat an assembly 
+            Gets or sets a value indicating whether to treat an assembly 
             with a zero PeKind flag 
             (this is the value of the field listed as .corflags in the Manifest)
             as if it was ILonly.
@@ -5035,8 +5095,8 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.Closed">
             <summary>
-            Gets or sets the flag to indicate
-            whether to augment the list of input assemblies
+            Gets or sets a value indicating whether 
+            to augment the list of input assemblies
             to its "transitive closure".
             </summary>
             <remarks>
@@ -5053,8 +5113,8 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.CopyAttributes">
             <summary>
-            Gets or sets the flag to indicate
-            whether to copy the assembly level attributes
+            Gets or sets a value indicating whether 
+            to copy the assembly level attributes
             of each input assembly over into the target assembly.
             </summary>
             <remarks>
@@ -5069,8 +5129,8 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.DebugInfo">
             <summary>
-            Gets or sets the flag to indicate
-            whether to preserve any .pdb files
+            Gets or sets a value indicating whether 
+            to preserve any .pdb files
             that are found for the input assemblies
             into a .pdb file for the target assembly.
             </summary>
@@ -5081,8 +5141,8 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.DelaySign">
             <summary>
-            Gets or sets the flag to indicate
-            whether the target assembly will be delay signed.
+            Gets or sets a value indicating whether 
+            the target assembly will be delay signed.
             </summary>
             <remarks>
             <para>This property can be set only in conjunction with <see cref="P:MSBuild.Community.Tasks.ILMerge.KeyFile"/>.</para>
@@ -5171,8 +5231,8 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.PublicKeyTokens">
             <summary>
-            Gets or sets the flag to indicate
-            whether external assembly references in the manifest
+            Gets or sets a value indicating whether 
+            external assembly references in the manifest
             of the target assembly will use public keys (<c>false</c>)
             or public key tokens (<c>true</c>).
             </summary>
@@ -5180,6 +5240,12 @@
             <para>Corresponds to command line option "/publickeytokens".</para>
             <para>The default value is <c>false</c>.</para>
             </remarks>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.ILMerge.SearchDirectories">
+            <summary>
+            Gets or sets the directories to be used to search for input assemblies.
+            </summary>
+            <value>The search directories.</value>
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.TargetPlatformVersion">
             <summary>
@@ -5224,8 +5290,8 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.XmlDocumentation">
             <summary>
-            Gets or sets the flag to indicate
-            whether to merge XML documentation files
+            Gets or sets a value indicating whether 
+            to merge XML documentation files
             into one for the target assembly.
             </summary>
             <remarks>
@@ -5237,6 +5303,22 @@
             <summary>
             Gets the name of the executable file to run.
             </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.ILMerge.StandardOutputLoggingImportance">
+            <summary>
+            Gets the <see cref="T:Microsoft.Build.Framework.MessageImportance"></see> with which to log errors.
+            </summary>
+            <value></value>
+            <returns>The <see cref="T:Microsoft.Build.Framework.MessageImportance"></see> with which to log errors.</returns>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.ILMerge.StandardErrorLoggingImportance">
+            <summary>
+            Gets the <see cref="T:Microsoft.Build.Framework.MessageImportance"/> with which to log errors.
+            </summary>
+            <value></value>
+            <returns>
+            The <see cref="T:Microsoft.Build.Framework.MessageImportance"/> with which to log errors.
+            </returns>
         </member>
         <member name="T:MSBuild.Community.Tasks.Install.InstallAssembly">
              <summary>
@@ -6407,7 +6489,7 @@
       </p>
       <p>
         Parameter <see cref="P:MSBuild.Community.Tasks.Xslt.RootAttributes"/> defaults to
-        one attribute with a name specified by <see cref="F:MSBuild.Community.Tasks.Xslt.CREATED_ATTRIBUTE"/>,
+        one attribute with a name specified by <see cref="F:MSBuild.Community.Tasks.Xslt.CreatedAttributeName"/>,
         and a local time stamp as value.
         To suppress the default value, an empty parameter
         <code>RootAttributes=""</code>
@@ -6423,6 +6505,13 @@
         can be given any number of metadata,
         which will be handed to the xsl transformation
         as parameters.
+      </p>
+      <p>
+        If only one input file is given with <see cref="T:Microsoft.Build.Framework.ITaskItem"/> <see cref="P:MSBuild.Community.Tasks.Xslt.Inputs"/>,
+        metadata will also be handed to the xsl transformation.
+        However, the <see cref="P:MSBuild.Community.Tasks.Xslt.Xsl"/> metadata is preferred in case of equal names.
+        To overcome this limitation, for each input item metadatum, an additional parameter
+        prefixed with <see cref="F:MSBuild.Community.Tasks.Xslt.InputMetadataArgumentPrefix"/> is created.
       </p>
       <p>
         The output is written to the file
@@ -6468,12 +6557,18 @@
       </code>
     </example>
         </member>
-        <member name="F:MSBuild.Community.Tasks.Xslt.CREATED_ATTRIBUTE">
+        <member name="F:MSBuild.Community.Tasks.Xslt.CreatedAttributeName">
             <summary>
             The name of the default attribute
             of the <see cref="P:MSBuild.Community.Tasks.Xslt.RootTag"/>.
             The value is <c>"created"</c>,
             and the attribute will contain a local time stamp.
+            </summary>
+        </member>
+        <member name="F:MSBuild.Community.Tasks.Xslt.InputMetadataArgumentPrefix">
+            <summary>
+            The prefix of XSLT parameters created from single XML input metadata.
+            <para>The value is <c>"input_"</c>.</para>
             </summary>
         </member>
         <member name="M:MSBuild.Community.Tasks.Xslt.Execute">
@@ -6483,6 +6578,17 @@
             <returns>
             Returns <c>true</c> if the task successfully executed; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.Xslt.AddParameter(System.String,System.String,System.Xml.Xsl.XsltArgumentList)">
+            <summary>
+            Adds a new xsl parameter with to the specified argument list.
+            </summary>
+            <param name="name">The name of the parameter.</param>
+            <param name="value">The value of the parameter.</param>
+            <param name="parameters">The parameter list.</param>
+            <returns>Whether the parameter was added.</returns>
+            <remarks>Does not add the parameter
+            when a parameter with the same name is already part of the <paramref name="parameters"/>.</remarks>
         </member>
         <member name="P:MSBuild.Community.Tasks.Xslt.Inputs">
             <summary>
@@ -6670,6 +6776,11 @@
             should be run in the current directory.
             </returns>
         </member>
+        <member name="P:MSBuild.Community.Tasks.FxCop.SearchGac">
+            <summary>
+            Tells FxCop to search the GAC for assembly references. This parameter was added in FxCop 1.35
+            </summary>
+        </member>
         <member name="P:MSBuild.Community.Tasks.FxCop.ApplyOutXsl">
             <summary>
             Applies the XSL transformation specified in /outXsl to the 
@@ -6707,6 +6818,11 @@
             Specifies the name of an analysis report or project file to import. 
             Any messages in the imported file that are marked as excluded are not 
             included in the analysis results.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.FxCop.CustomDictionary">
+            <summary>
+            Specifies the custom dictionary.
             </summary>
         </member>
         <member name="P:MSBuild.Community.Tasks.FxCop.RuleLibraries">
@@ -8377,6 +8493,16 @@
             Allows tests to be run in a new thread, allowing you to take advantage of ApartmentState and ThreadPriority settings in the config file.
             </summary>
         </member>
+        <member name="P:MSBuild.Community.Tasks.NUnit.Force32Bit">
+            <summary>
+            Determines whether the tests are run in a 32bit process on a 64bit OS.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NUnit.Framework">
+            <summary>
+            Determines the framework to run aganist.
+            </summary>
+        </member>
         <member name="P:MSBuild.Community.Tasks.NUnit.ToolName">
             <summary>
             Gets the name of the executable file to run.
@@ -8923,17 +9049,17 @@
         </member>
         <member name="P:MSBuild.Community.Tasks.Properties.Resources.XsltAddingParameter">
             <summary>
-              Looks up a localized string similar to Adding Parameter \&quot;{0}\&quot;: \&quot;{1}\&quot;..
+              Looks up a localized string similar to Adding Parameter &quot;{0}&quot;: &quot;{1}&quot;..
             </summary>
         </member>
         <member name="P:MSBuild.Community.Tasks.Properties.Resources.XsltAddingRootAttribute">
             <summary>
-              Looks up a localized string similar to Adding root attribute {0}=\&quot;{1}\&quot;..
+              Looks up a localized string similar to Adding root attribute {0}=&quot;{1}&quot;..
             </summary>
         </member>
         <member name="P:MSBuild.Community.Tasks.Properties.Resources.XsltCreatingRootTag">
             <summary>
-              Looks up a localized string similar to Creating root tag \&quot;{0}\&quot;..
+              Looks up a localized string similar to Creating root tag &quot;{0}&quot;..
             </summary>
         </member>
         <member name="P:MSBuild.Community.Tasks.Properties.Resources.XsltNoInputFiles">
@@ -9635,6 +9761,12 @@
             The command to execute
             </summary>
         </member>
+        <member name="P:MSBuild.Community.Tasks.SqlExecute.CommandTimeout">
+            <summary>
+            Command Timeout
+            </summary>
+            <remarks>Defaults to 30 seconds. Set to 0 for an infinite timeout period.</remarks>
+        </member>
         <member name="P:MSBuild.Community.Tasks.SqlExecute.SelectMode">
             <summary>
             The SQL Selection Mode.  Set to NonQuery, Scalar, or ScalarXml.  Default is NonQuery.
@@ -10331,6 +10463,21 @@
             <remarks>
             The working directory is the base of the zip file.  
             All files will be made relative from the working directory.
+            </remarks>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.Zip.Password">
+            <summary>
+            Gets or sets the password.
+            </summary>
+            <value>The password.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.Zip.Encryption">
+            <summary>
+            Gets or sets the encryption algorithm.
+            </summary>
+            <value>The encryption algorithm.</value>
+            <remarks>
+            Possible values are None, PkzipWeak, WinZipAes128 and WinZipAes256
             </remarks>
         </member>
     </members>

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}</ProjectGuid>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>DotNetOpenAuth.InfoCard.UI</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ComponentModel\IssuersSuggestions.cs" />
+    <Compile Include="ComponentModel\UriConverter.cs" />
+    <Compile Include="InfoCard\ClaimType.cs" />
+    <Compile Include="InfoCard\InfoCardImage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(NoUIControls)' != 'true' ">
+    <Compile Include="InfoCard\ReceivingTokenEventArgs.cs" />
+    <Compile Include="InfoCard\TokenProcessingErrorEventArgs.cs" />
+    <Compile Include="InfoCard\InfoCardSelector.cs" />
+    <Compile Include="InfoCard\ReceivedTokenEventArgs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="InfoCard\infocard_114x80.png" />
+    <EmbeddedResource Include="InfoCard\infocard_14x10.png" />
+    <EmbeddedResource Include="InfoCard\infocard_214x150.png" />
+    <EmbeddedResource Include="InfoCard\infocard_23x16.png" />
+    <EmbeddedResource Include="InfoCard\infocard_300x210.png" />
+    <EmbeddedResource Include="InfoCard\infocard_34x24.png" />
+    <EmbeddedResource Include="InfoCard\infocard_365x256.png" />
+    <EmbeddedResource Include="InfoCard\infocard_41x29.png" />
+    <EmbeddedResource Include="InfoCard\infocard_50x35.png" />
+    <EmbeddedResource Include="InfoCard\infocard_60x42.png" />
+    <EmbeddedResource Include="InfoCard\infocard_71x50.png" />
+    <EmbeddedResource Include="InfoCard\infocard_81x57.png" />
+    <EmbeddedResource Include="InfoCard\infocard_92x64.png" />
+    <EmbeddedResource Include="InfoCard\SupportingScript.js">
+      <Copyright>$(StandardCopyright)</Copyright>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.InfoCard\DotNetOpenAuth.InfoCard.csproj">
+      <Project>{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}</Project>
+      <Name>DotNetOpenAuth.InfoCard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj">
+      <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
+      <Name>DotNetOpenAuth.Core.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private readonly Dictionary<Uri, IncomingWebResponse> registeredMockResponses = new Dictionary<Uri, IncomingWebResponse>();
 
 		private MockHttpRequest(IDirectWebRequestHandler mockHandler) {
-			Contract.Requires<ArgumentNullException>(mockHandler != null);
+			Requires.NotNull(mockHandler, "mockHandler");
 			this.MockWebRequestHandler = mockHandler;
 		}
 
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockResponse(IncomingWebResponse response) {
-			Contract.Requires<ArgumentNullException>(response != null);
+			Requires.NotNull(response, "response");
 			if (this.registeredMockResponses.ContainsKey(response.RequestUri)) {
 				Logger.Http.WarnFormat("Mock HTTP response already registered for {0}.", response.RequestUri);
 			} else {
@@ -59,9 +59,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, WebHeaderCollection headers, string responseBody) {
-			Contract.Requires<ArgumentNullException>(requestUri != null);
-			Contract.Requires<ArgumentNullException>(responseUri != null);
-			Contract.Requires<ArgumentException>(!String.IsNullOrEmpty(contentType));
+			Requires.NotNull(requestUri, "requestUri");
+			Requires.NotNull(responseUri, "responseUri");
+			Requires.NotNullOrEmpty(contentType, "contentType");
 
 			// Set up the redirect if appropriate
 			if (requestUri != responseUri) {
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockXrdsResponse(IdentifierDiscoveryResult endpoint) {
-			Contract.Requires<ArgumentNullException>(endpoint != null);
+			Requires.NotNull(endpoint, "endpoint");
 
 			string identityUri;
 			if (endpoint.ClaimedIdentifier == endpoint.Protocol.ClaimedIdentifierForOPIdentifier) {
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal void RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<IdentifierDiscoveryResult> endpoints) {
-			Contract.Requires<ArgumentNullException>(endpoints != null);
+			Requires.NotNull(endpoints, "endpoints");
 
 			StringBuilder xrds = new StringBuilder();
 			xrds.AppendLine(@"<xrds:XRDS xmlns:xrds='xri://$xrds' xmlns:openid='http://openid.net/xmlns/1.0' xmlns='xri://$xrd*($v*2.0)'>

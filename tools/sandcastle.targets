@@ -11,7 +11,7 @@
 		<Presentation>$(DxRoot)Presentation\$(PresentationStyle)\</Presentation>
 		<HHC>$(PROGRAMFILES)\Html Help Workshop\hhc.exe</HHC>
 
-		<OutputAssemblyFile>$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
+		<OutputAssemblyFile Condition=" '$(OutputAssemblyFile)' == '' ">$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
 
 		<DocOutputApiPath>$(DocOutputPath)api\</DocOutputApiPath>
 		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)\</DocIntermediatePath>
@@ -114,9 +114,15 @@
 		<MakeDir Directories="$(DocOutputApiPath)html;$(DocOutputApiPath)media;$(DocOutputApiPath)intellisense"/>
 	</Target>
 
-	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)" 
+	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)"
 					DependsOnTargets="SetEnvironmentVars;CreateIntermediatePath;ProductionTools">
-		<Exec Command='"$(ProductionTools)MRefBuilder.exe" "$(OutputAssemblyFile)" /out:"$(ReflectionBaseFile)"' />
+		<ItemGroup>
+			<MRefDependenciesSwitch Include="@(MRefDependencies->'/dep:&quot;%(Identity)&quot;')" />
+		</ItemGroup>
+		<PropertyGroup>
+			<MRefDependenciesSwitch>@(MRefDependenciesSwitch,' ')</MRefDependenciesSwitch>
+		</PropertyGroup>
+		<Exec Command='"$(ProductionTools)MRefBuilder.exe" "$(OutputAssemblyFile)" /out:"$(ReflectionBaseFile)" $(MRefDependenciesSwitch)' />
 	</Target>
 
 	<Target Name="ReflectionData" DependsOnTargets="FxReflection;ReflectionBase" Inputs="$(ReflectionBaseFile)" Outputs="$(ReflectionFile)">
