@@ -5,6 +5,7 @@
 	TagPrefix="rp" %>
 <%@ Register Assembly="DotNetOpenAuth.OpenID" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration" TagPrefix="sreg" %>
 <%@ Register Assembly="DotNetOpenAuth.InfoCard.UI" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenIdInfoCard.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rpic" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- COPYRIGHT (C) 2009 Andrew Arnott.  All rights reserved. -->
 <!-- LICENSE: Microsoft Public License available at http://opensource.org/licenses/ms-pl.html -->
@@ -32,13 +33,13 @@
 		<p>
 			Login with an account you already use!
 		</p>
-		<rp:OpenIdSelector runat="server" ID="openIdSelector" OnLoggedIn="openIdSelector_LoggedIn"
+		<rpic:OpenIdInfoCardSelector runat="server" ID="openIdSelector" OnLoggedIn="openIdSelector_LoggedIn"
 			OnFailed="openIdSelector_Failed" OnCanceled="openIdSelector_Failed" OnReceivedToken="openIdSelector_ReceivedToken"
 			OnTokenProcessingError="openIdSelector_TokenProcessingError">
 			<Buttons>
 				<rp:SelectorProviderButton OPIdentifier="https://me.yahoo.com/" Image="images/yahoo.gif" />
 				<rp:SelectorProviderButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="images/google.gif" />
-				<rp:SelectorInfoCardButton>
+				<rpic:SelectorInfoCardButton>
 					<InfoCardSelector Issuer="">
 						<ClaimsRequested>
 							<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" IsOptional="false" />
@@ -46,13 +47,13 @@
 							<ic:ClaimType Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" IsOptional="true" />
 						</ClaimsRequested>
 					</InfoCardSelector>
-				</rp:SelectorInfoCardButton>
+				</rpic:SelectorInfoCardButton>
 				<rp:SelectorOpenIdButton Image="images/openid.png" />
 			</Buttons>
 			<Extensions>
 				<sreg:ClaimsRequest Email="Require" FullName="Request" />
 			</Extensions>
-		</rp:OpenIdSelector>
+		</rpic:OpenIdInfoCardSelector>
 		<asp:HiddenField runat="server" ID="topWindowUrl" />
 		<asp:Panel ID="errorPanel" runat="server" EnableViewState="false" Visible="false" ForeColor="Red">
 			Oops. Something went wrong while logging you in. Trying again may work. <a href="#" onclick="$('#errorMessage').show()">

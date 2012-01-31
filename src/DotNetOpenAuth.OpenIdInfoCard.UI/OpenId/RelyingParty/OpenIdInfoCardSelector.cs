@@ -4,9 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName, "text/javascript")]
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName, "text/css")]
-
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
@@ -29,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// An ASP.NET control that provides a user-friendly way of logging into a web site using OpenID.
 	/// </summary>
-	[ToolboxData("<{0}:OpenIdSelector runat=\"server\"></{0}:OpenIdSelector>")]
+	[ToolboxData("<{0}:OpenIdInfoCardSelector runat=\"server\"></{0}:OpenIdInfoCardSelector>")]
 	public class OpenIdInfoCardSelector : OpenIdSelector {
 		/// <summary>
 		/// The InfoCard selector button.
