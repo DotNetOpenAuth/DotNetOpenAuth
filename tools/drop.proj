@@ -120,6 +120,19 @@
 										@(DropDocFiles);
 										@(DropSpecsFiles)
 										" />
+
+			<DropSamplesFilesFixups Include="@(DropSamplesFiles)" Condition=" '%(Extension)' == '.aspx' ">
+				<Pattern>&lt;%@ Register Assembly="DotNetOpenAuth[^"]+"</Pattern>
+				<Replacement>&lt;%@ Register Assembly="DotNetOpenAuth"</Replacement>
+			</DropSamplesFilesFixups>
+			<DropSamplesFilesFixups Include="@(DropSamplesFiles)" Condition=" '%(Extension)' == '.xaml' ">
+				<Pattern>xmlns\:(.+)assembly=DotNetOpenAuth([^;"]+)</Pattern>
+				<Replacement>xmlns:$1assembly=DotNetOpenAuth</Replacement>
+			</DropSamplesFilesFixups>
+			<DropSamplesFilesFixups Include="@(DropSamplesFiles)" Condition=" '%(Extension)' == '.config' ">
+				<Pattern>type=&quot;DotNetOpenAuth([^,]+), DotNetOpenAuth([^&quot;]+)&quot;</Pattern>
+				<Replacement>type=&quot;DotNetOpenAuth$1, DotNetOpenAuth&quot;</Replacement>
+			</DropSamplesFilesFixups>
 		</ItemGroup>
 
 		<!-- clean up any previous drop with the same name so we don't aggregate files. -->
@@ -137,20 +150,9 @@
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReferences="@(ProjectReferencesToRemove)" References="@(AssemblyReferencesToReplaceWith)" />
 		<RegexFileReplace
-			Files="@(DropSamplesFiles)"
-			Pattern='&lt;%@ Register Assembly="DotNetOpenAuth[^"]+"'
-			Replacement='&lt;%@ Register Assembly="DotNetOpenAuth"'
-			Condition=" '%(Extension)' == '.aspx' " />
-		<RegexFileReplace
-			Files="@(DropSamplesFiles)"
-			Pattern='xmlns\:(.+)assembly=DotNetOpenAuth([^;"]+)'
-			Replacement='xmlns:$1assembly=DotNetOpenAuth'
-			Condition=" '%(Extension)' == '.xaml' " />
-		<RegexFileReplace
-			Files="@(DropSamplesFiles)"
-			Pattern='type=&quot;DotNetOpenAuth([^,]+), DotNetOpenAuth([^&quot;]+)&quot;'
-			Replacement='type=&quot;DotNetOpenAuth$1, DotNetOpenAuth&quot;'
-			Condition=" '%(Extension)' == '.config' " />
+			Files="@(DropSamplesFilesFixups)"
+			Pattern="%(Pattern)"
+			Replacement="%(Replacement)" />
 		<DowngradeProjects
 			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
 			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
