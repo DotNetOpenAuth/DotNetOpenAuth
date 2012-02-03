@@ -61,7 +61,8 @@
 																" />
 			<DropProjectTemplatesSourceFiles Include="@(ProjectTemplatesVsi)" />
 			<DropVsixSourceFiles Include="@(ExtensionVsix)" Condition=" '%(ExtensionVsix.IncludeInDrop)' == 'true' " />
-			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="
+
+			<ExcludedDropSamplesSourceFiles Include="
 															$(ProjectRoot)**\obj\**;
 															$(ProjectRoot)**\*.sln.cache;
 															$(ProjectRoot)**\*.suo;
@@ -79,6 +80,12 @@
 															$(ProjectRoot)Samples\**\*.refresh_;
 															$(ProjectRoot)Samples\*.proj;
 															" />
+			<ExcludedDropSamplesSourceFiles Condition=" '$(IncludeOAuth2)' != 'true' " Include="
+															$(ProjectRoot)Samples\OAuthClient\**;
+															$(ProjectRoot)Samples\OAuthAuthorizationServer\**;
+															$(ProjectRoot)Samples\OAuthResourceServer\**;
+															" />
+			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**" Exclude="@(ExcludedDropSamplesSourceFiles)" />
 			<DropSamplesSourceFiles Include="$(ProjectRoot)Samples\**\Bin\*.refresh"  />
 			<!-- Some .refresh files are only applicable to drop builds, so we rename them from *.refresh_ -->
 			<DropSamplesRefreshSourceFiles Include="$(ProjectRoot)Samples\**\*.refresh_" />
