@@ -53,13 +53,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopes">The scope of authorized access requested.</param>
 		/// <param name="state">The state of the client that should be sent back with the authorization response.</param>
-    /// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
+		/// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
 		/// <returns>The authorization request.</returns>
-		public OutgoingWebResponse PrepareRequestUserAuthorization(IEnumerable<string> scopes = null, string state = null, Uri returnTo = null)
-		{
-		  var authorizationState = new AuthorizationState(scopes) {
-        Callback = returnTo,
-      };
+		public OutgoingWebResponse PrepareRequestUserAuthorization(IEnumerable<string> scopes = null, string state = null, Uri returnTo = null) {
+			var authorizationState = new AuthorizationState(scopes) {
+				Callback = returnTo,
+			};
 			return this.PrepareRequestUserAuthorization(authorizationState, state);
 		}
 
