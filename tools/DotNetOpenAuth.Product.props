@@ -10,7 +10,7 @@
 		<TargetFrameworkProfile />
 		<DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
 		<StandardCopyright>
-Copyright (c) 2011, Andrew Arnott. All rights reserved.
+Copyright (c) 2012, Outercurve Foundation. All rights reserved.
 Code licensed under the Ms-PL License:
 http://opensource.org/licenses/ms-pl.html
 		</StandardCopyright>

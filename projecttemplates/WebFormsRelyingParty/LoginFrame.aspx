@@ -7,7 +7,7 @@
 <%@ Register Assembly="DotNetOpenAuth.InfoCard.UI" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <%@ Register Assembly="DotNetOpenAuth.OpenIdInfoCard.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rpic" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<!-- COPYRIGHT (C) 2009 Andrew Arnott.  All rights reserved. -->
+<!-- COPYRIGHT (C) 2011 Outercurve Foundation.  All rights reserved. -->
 <!-- LICENSE: Microsoft Public License available at http://opensource.org/licenses/ms-pl.html -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">

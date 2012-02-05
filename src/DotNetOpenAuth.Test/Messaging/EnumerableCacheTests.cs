@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="EnumerableCacheTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="EnumerableCacheTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 //     This code is released under the Microsoft Public License (Ms-PL).
 // </copyright>
 //-----------------------------------------------------------------------

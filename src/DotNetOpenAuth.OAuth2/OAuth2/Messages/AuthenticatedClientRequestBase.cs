@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="AuthenticatedClientRequestBase.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AuthenticatedClientRequestBase.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

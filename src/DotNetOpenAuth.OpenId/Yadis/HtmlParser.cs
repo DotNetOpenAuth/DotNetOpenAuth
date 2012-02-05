@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="HtmlParser.cs" company="Andrew Arnott, Scott Hanselman, Jason Alexander">
-//     Copyright (c) Andrew Arnott, Scott Hanselman, Jason Alexander. All rights reserved.
+// <copyright file="HtmlParser.cs" company="Outercurve Foundation, Scott Hanselman, Jason Alexander">
+//     Copyright (c) Outercurve Foundation, Scott Hanselman, Jason Alexander. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
