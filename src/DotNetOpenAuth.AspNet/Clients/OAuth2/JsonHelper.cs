@@ -1,20 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Json;
+﻿namespace DotNetOpenAuth.AspNet.Clients {
+	using System;
+	using System.IO;
+	using System.Runtime.Serialization.Json;
 
-namespace DotNetOpenAuth.AspNet.Clients
-{
-    internal static class JsonHelper
-    {
-        public static T Deserialize<T>(Stream stream) where T : class
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");
-            }
+	internal static class JsonHelper {
+		public static T Deserialize<T>(Stream stream) where T : class {
+			if (stream == null) {
+				throw new ArgumentNullException("stream");
+			}
 
-            var serializer = new DataContractJsonSerializer(typeof(T));
-            return (T)serializer.ReadObject(stream);
-        }
-    }
+			var serializer = new DataContractJsonSerializer(typeof(T));
+			return (T)serializer.ReadObject(stream);
+		}
+	}
 }
