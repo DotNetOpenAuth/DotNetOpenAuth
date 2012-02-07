@@ -1,17 +1,14 @@
-﻿using System;
-using DotNetOpenAuth.AspNet.Clients;
-using NUnit.Framework;
+﻿namespace DotNetOpenAuth.AspNet.Test {
+	using System;
+	using DotNetOpenAuth.AspNet.Clients;
+	using NUnit.Framework;
 
-namespace DotNetOpenAuth.AspNet.Test
-{
-    [TestFixture]
-    public class UriHelperTest
-    {
-        [TestCase]
-        public void TestAttachQueryStringParameterMethod()
-        {
-            // Arrange
-            string[] input = new string[]
+	[TestFixture]
+	public class UriHelperTest {
+		[TestCase]
+		public void TestAttachQueryStringParameterMethod() {
+			// Arrange
+			string[] input = new string[]
                                   {
                                       "http://x.com",
                                       "https://xxx.com/one?s=123",
@@ -19,7 +16,7 @@ namespace DotNetOpenAuth.AspNet.Test
                                       "https://zzz.com/default.aspx?name=sd"
                                   };
 
-            string[] expectedOutput = new string[]
+			string[] expectedOutput = new string[]
                                           {
                                               "http://x.com/?s=awesome",
                                               "https://xxx.com/one?s=awesome",
@@ -27,15 +24,14 @@ namespace DotNetOpenAuth.AspNet.Test
                                               "https://zzz.com/default.aspx?name=sd&s=awesome"
                                           };
 
-            for (int i = 0; i < input.Length; i++)
-            {
-                // Act
-                var inputUrl = new Uri(input[i]);
-                var outputUri = UriHelper.AttachQueryStringParameter(inputUrl, "s", "awesome");
+			for (int i = 0; i < input.Length; i++) {
+				// Act
+				var inputUrl = new Uri(input[i]);
+				var outputUri = UriHelper.AttachQueryStringParameter(inputUrl, "s", "awesome");
 
-                // Assert
-                Assert.AreEqual(expectedOutput[i], outputUri.ToString());
-            }
-        }
-    }
+				// Assert
+				Assert.AreEqual(expectedOutput[i], outputUri.ToString());
+			}
+		}
+	}
 }
