@@ -27,7 +27,7 @@
 				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 			};
 
-			WebConsumer consumer = new WebConsumer(serviceDescription, Global.OwnSampleOPHybridTokenManager);
+			var consumer = new WebConsumerOpenIdRelyingParty(serviceDescription, Global.OwnSampleOPHybridTokenManager);
 			consumer.AttachAuthorizationRequest(e.Request, "http://tempuri.org/IDataApi/GetName");
 		}
 
@@ -38,7 +38,7 @@
 				AccessTokenEndpoint = new MessageReceivingEndpoint(new Uri(e.Response.Provider.Uri, "/access_token.ashx"), HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest),
 				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 			};
-			WebConsumer consumer = new WebConsumer(serviceDescription, Global.OwnSampleOPHybridTokenManager);
+			var consumer = new WebConsumerOpenIdRelyingParty(serviceDescription, Global.OwnSampleOPHybridTokenManager);
 
 			AuthorizedTokenResponse accessToken = consumer.ProcessUserAuthorization(e.Response);
 			if (accessToken != null) {

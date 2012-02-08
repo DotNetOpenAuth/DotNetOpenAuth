@@ -18,7 +18,7 @@ namespace OpenIdProviderWebForms.Code {
 		/// Initializes static members of the <see cref="OAuthHybrid"/> class.
 		/// </summary>
 		static OAuthHybrid() {
-			ServiceProvider = new ServiceProvider(GetServiceDescription(), TokenManager);
+			ServiceProvider = new ServiceProviderOpenIdProvider(GetServiceDescription(), TokenManager);
 		}
 
 		internal static IServiceProviderTokenManager TokenManager {
@@ -35,7 +35,7 @@ namespace OpenIdProviderWebForms.Code {
 			}
 		}
 
-		internal static ServiceProvider ServiceProvider { get; private set; }
+		internal static ServiceProviderOpenIdProvider ServiceProvider { get; private set; }
 
 		internal static ServiceProviderDescription GetServiceDescription() {
 			return new ServiceProviderDescription {

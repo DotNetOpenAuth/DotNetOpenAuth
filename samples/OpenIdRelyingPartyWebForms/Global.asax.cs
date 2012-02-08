@@ -14,11 +14,11 @@
 
 		internal static StringBuilder LogMessages = new StringBuilder();
 
-		internal static WebConsumer GoogleWebConsumer {
+		internal static WebConsumerOpenIdRelyingParty GoogleWebConsumer {
 			get {
-				var googleWebConsumer = (WebConsumer)HttpContext.Current.Application["GoogleWebConsumer"];
+				var googleWebConsumer = (WebConsumerOpenIdRelyingParty)HttpContext.Current.Application["GoogleWebConsumer"];
 				if (googleWebConsumer == null) {
-					googleWebConsumer = new WebConsumer(GoogleConsumer.ServiceDescription, GoogleTokenManager);
+					googleWebConsumer = new WebConsumerOpenIdRelyingParty(GoogleConsumer.ServiceDescription, GoogleTokenManager);
 					HttpContext.Current.Application["GoogleWebConsumer"] = googleWebConsumer;
 				}
 
