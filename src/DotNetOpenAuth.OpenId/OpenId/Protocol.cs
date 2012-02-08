@@ -44,6 +44,12 @@ namespace DotNetOpenAuth.OpenId {
 		internal const string OpenId2Namespace = "http://specs.openid.net/auth/2.0";
 
 		/// <summary>
+		/// The parameter of the callback parameter we tack onto the return_to URL
+		/// to store the replay-detection nonce.
+		/// </summary>
+		internal const string ReturnToNonceParameter = OpenIdUtilities.CustomParameterPrefix + "request_nonce";
+
+		/// <summary>
 		/// Scans a list for matches with some element of the OpenID protocol,
 		/// searching from newest to oldest protocol for the first and best match.
 		/// </summary>

@@ -91,6 +91,8 @@
     <Compile Include="OpenId\Extensions\OpenIdExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
+    <Compile Include="OpenId\IdentifierDiscoveryServices.cs" />
+    <Compile Include="OpenId\IOpenIdHost.cs" />
     <Compile Include="OpenId\IProviderEndpoint.cs" />
     <Compile Include="OpenId\Provider\IAuthenticationRequest.cs" />
     <Compile Include="OpenId\Provider\IHostProcessedRequest.cs" />

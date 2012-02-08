@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// </summary>
 	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "By design")]
 	[ContractVerification(true)]
-	public sealed class OpenIdProvider : IDisposable {
+	public sealed class OpenIdProvider : IDisposable, IOpenIdHost {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardProviderApplicationStore"/> to use.
@@ -38,6 +38,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Backing store for the <see cref="Behaviors"/> property.
 		/// </summary>
 		private readonly ObservableCollection<IProviderBehavior> behaviors = new ObservableCollection<IProviderBehavior>();
+
+		/// <summary>
+		/// The discovery service used to perform discovery on identifiers being sent in
+		/// unsolicited positive assertions.
+		/// </summary>
+		private readonly IdentifierDiscoveryServices discoveryServices;
 
 		/// <summary>
 		/// A type initializer that ensures that another type initializer runs in order to guarantee that
@@ -55,12 +61,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Backing field for the <see cref="SecuritySettings"/> property.
 		/// </summary>
 		private ProviderSecuritySettings securitySettings;
-
-		/// <summary>
-		/// The relying party used to perform discovery on identifiers being sent in
-		/// unsolicited positive assertions.
-		/// </summary>
-		private RP.OpenIdRelyingParty relyingParty;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
@@ -102,6 +102,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.AssociationStore = new SwitchingAssociationStore(cryptoKeyStore, this.SecuritySettings);
 			this.Channel = new OpenIdProviderChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
 			this.CryptoKeyStore = cryptoKeyStore;
+			this.discoveryServices = new IdentifierDiscoveryServices(this);
 
 			Reporting.RecordFeatureAndDependencyUse(this, nonceStore);
 		}
@@ -154,6 +155,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Gets the security settings.
+		/// </summary>
+		SecuritySettings IOpenIdHost.SecuritySettings {
+			get { return this.SecuritySettings; }
+		}
+
+		/// <summary>
 		/// Gets the extension factories.
 		/// </summary>
 		public IList<IOpenIdExtensionFactory> ExtensionFactories {
@@ -183,6 +191,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public ICryptoKeyStore CryptoKeyStore { get; private set; }
 
 		/// <summary>
+		/// Gets the web request handler to use for discovery and the part of
+		/// authentication where direct messages are sent to an untrusted remote party.
+		/// </summary>
+		IDirectWebRequestHandler IOpenIdHost.WebRequestHandler {
+			get { return this.Channel.WebRequestHandler; }
+		}
+
+		/// <summary>
 		/// Gets the association store.
 		/// </summary>
 		internal IProviderAssociationStore AssociationStore { get; private set; }
@@ -195,10 +211,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
+		/// Gets the list of services that can perform discovery on identifiers given.
 		/// </summary>
 		internal IList<IIdentifierDiscoveryService> DiscoveryServices {
-			get { return this.RelyingParty.DiscoveryServices; }
+			get { return this.discoveryServices.DiscoveryServices; }
 		}
 
 		/// <summary>
@@ -207,25 +223,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		internal IDirectWebRequestHandler WebRequestHandler {
 			get { return this.Channel.WebRequestHandler; }
-		}
-
-		/// <summary>
-		/// Gets the relying party used for discovery of identifiers sent in unsolicited assertions.
-		/// </summary>
-		private RP.OpenIdRelyingParty RelyingParty {
-			get {
-				if (this.relyingParty == null) {
-					lock (this) {
-						if (this.relyingParty == null) {
-							// we just need an RP that's capable of discovery, so stateless mode is fine.
-							this.relyingParty = new RP.OpenIdRelyingParty(null);
-						}
-					}
-				}
-
-				this.relyingParty.Channel.WebRequestHandler = this.WebRequestHandler;
-				return this.relyingParty;
-			}
 		}
 
 		/// <summary>
@@ -445,7 +442,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// and make sure that it is tied to this OP and OP local identifier.
 			if (this.SecuritySettings.UnsolicitedAssertionVerification != ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.NeverVerify) {
 				var serviceEndpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
-				var discoveredEndpoints = this.RelyingParty.Discover(claimedIdentifier);
+				var discoveredEndpoints = this.discoveryServices.Discover(claimedIdentifier);
 				if (!discoveredEndpoints.Contains(serviceEndpoint)) {
 					Logger.OpenId.WarnFormat(
 						"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
@@ -505,10 +502,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				IDisposable channel = this.Channel as IDisposable;
 				if (channel != null) {
 					channel.Dispose();
-				}
-
-				if (this.relyingParty != null) {
-					this.relyingParty.Dispose();
 				}
 			}
 		}
