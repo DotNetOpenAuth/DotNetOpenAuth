@@ -23,10 +23,9 @@
     <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuth1Principal.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderChannel.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthIdentity.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthPrincipal.cs" />
     <Compile Include="OAuth\ChannelElements\RsaSha1ServiceProviderSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
@@ -41,6 +40,10 @@
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
+      <Project>{115217C5-22CD-415C-A292-0DD0238CDD89}</Project>
+      <Name>DotNetOpenAuth.OAuth.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
       <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>

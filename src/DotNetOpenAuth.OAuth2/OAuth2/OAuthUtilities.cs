@@ -114,9 +114,9 @@ namespace DotNetOpenAuth.OAuth2 {
 			try {
 				return authorizationServer.GetClient(clientIdentifier);
 			} catch (KeyNotFoundException ex) {
-				throw ErrorUtilities.Wrap(ex, OAuth.OAuthStrings.ConsumerOrTokenSecretNotFound);
+				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
 			} catch (ArgumentException ex) {
-				throw ErrorUtilities.Wrap(ex, OAuth.OAuthStrings.ConsumerOrTokenSecretNotFound);
+				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
 			}
 		}
 	}

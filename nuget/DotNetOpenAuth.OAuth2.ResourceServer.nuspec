@@ -12,8 +12,8 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Contains assemblies that are required to implement an OAuth 2.0 Resource Server.</description>
 		<dependencies>
-			<dependency id="DotNetOpenAuth.OAuth.ServiceProvider" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OAuth2.Core" version="[$oauth2version$]" />
+			<dependency id="DotNetOpenAuth.OAuth.Common" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>

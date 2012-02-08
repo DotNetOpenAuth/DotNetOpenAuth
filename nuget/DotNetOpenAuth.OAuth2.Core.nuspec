@@ -13,7 +13,6 @@
 		<description>Contains assemblies that are required to implement an OAuth 2.0 client, authorization server or resource server.</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.Core" version="[$version$]" />
-			<dependency id="DotNetOpenAuth.OAuth.Core" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>

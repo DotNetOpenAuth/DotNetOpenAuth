@@ -38,17 +38,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthPrincipal"/> class.
 		/// </summary>
-		/// <param name="token">The access token.</param>
-		internal OAuthPrincipal(IServiceProviderAccessToken token)
-			: this(token.Username, token.Roles) {
-			Requires.NotNull(token, "token");
-
-			this.AccessToken = token.Token;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthPrincipal"/> class.
-		/// </summary>
 		/// <param name="identity">The identity.</param>
 		/// <param name="roles">The roles this user belongs to.</param>
 		internal OAuthPrincipal(OAuthIdentity identity, string[] roles) {
@@ -57,10 +46,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Gets the access token used to create this principal.
+		/// Gets or sets the access token used to create this principal.
 		/// </summary>
 		/// <value>A non-empty string.</value>
-		public string AccessToken { get; private set; }
+		public string AccessToken { get; protected set; }
 
 		/// <summary>
 		/// Gets the roles that this principal has as a ReadOnlyCollection.

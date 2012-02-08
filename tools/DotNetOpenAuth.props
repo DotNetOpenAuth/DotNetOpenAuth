@@ -65,6 +65,7 @@
 										 DotNetOpenAuth.OpenId.Provider.UI;
 										 DotNetOpenAuth.OpenId.RelyingParty;
 										 DotNetOpenAuth.OpenId.RelyingParty.UI;
+										 DotNetOpenAuth.OAuth.Common;
 										 DotNetOpenAuth.OAuth;
 										 DotNetOpenAuth.OAuth.Consumer;
 										 DotNetOpenAuth.OAuth.ServiceProvider;

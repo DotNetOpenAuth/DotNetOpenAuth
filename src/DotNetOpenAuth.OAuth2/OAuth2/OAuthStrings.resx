@@ -129,6 +129,9 @@
   <data name="ClientCallbackDisallowed" xml:space="preserve">
     <value>The callback URL ({0}) is not allowed for this client.</value>
   </data>
+  <data name="ClientOrTokenSecretNotFound" xml:space="preserve">
+    <value>Failure looking up secret for client or token.</value>
+  </data>
   <data name="HttpsRequired" xml:space="preserve">
     <value>This message can only be sent over HTTPS.</value>
   </data>

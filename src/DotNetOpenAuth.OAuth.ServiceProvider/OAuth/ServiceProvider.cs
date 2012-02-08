@@ -462,7 +462,7 @@ namespace DotNetOpenAuth.OAuth {
 			Requires.NotNull(request, "request");
 
 			IServiceProviderAccessToken accessToken = this.TokenManager.GetAccessToken(request.AccessToken);
-			return new OAuthPrincipal(accessToken);
+			return new OAuth1Principal(accessToken);
 		}
 
 		#region IDisposable Members

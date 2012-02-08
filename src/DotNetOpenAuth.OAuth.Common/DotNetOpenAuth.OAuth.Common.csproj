@@ -8,9 +8,11 @@
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A1A3150A-7B0E-4A34-8E35-045296CD3C76}</ProjectGuid>
+    <ProjectGuid>{115217C5-22CD-415C-A292-0DD0238CDD89}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>DotNetOpenAuth.OAuth2.ResourceServer</AssemblyName>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.OAuth.Common</AssemblyName>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -18,21 +20,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OAuth2\ResourceServer.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthIdentity.cs" />
+    <Compile Include="OAuth\ChannelElements\OAuthPrincipal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
-      <Project>{115217C5-22CD-415C-A292-0DD0238CDD89}</Project>
-      <Name>DotNetOpenAuth.OAuth.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
-      <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
-      <Name>DotNetOpenAuth.OAuth2</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
