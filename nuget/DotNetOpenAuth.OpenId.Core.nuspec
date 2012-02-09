@@ -20,26 +20,26 @@
 		</references>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenId.dll" target="lib\net35-full\DotNetOpenAuth.OpenId.dll" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenId.dll" target="lib\net40-full\DotNetOpenAuth.OpenId.dll" />
-		<file src="$OutputPath35$DotNetOpenAuth.OpenId.pdb" target="lib\net35-full\DotNetOpenAuth.OpenId.pdb" />
-		<file src="$OutputPath40$DotNetOpenAuth.OpenId.pdb" target="lib\net40-full\DotNetOpenAuth.OpenId.pdb" />
-		<file src="$OutputPath35$DotNetOpenAuth.OpenId.xml" target="lib\net35-full\DotNetOpenAuth.OpenId.xml" />
-		<file src="$OutputPath40$DotNetOpenAuth.OpenId.xml" target="lib\net40-full\DotNetOpenAuth.OpenId.xml" />
+		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenId.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenId.dll" target="lib\net40-full\" />
+		<file src="$OutputPath35$DotNetOpenAuth.OpenId.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenId.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath35$DotNetOpenAuth.OpenId.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenId.xml" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$signed\Org.Mentalis.Security.Cryptography.dll" target="lib\net35-full\Org.Mentalis.Security.Cryptography.dll" />
-		<file src="$OutputPath40$signed\Org.Mentalis.Security.Cryptography.dll" target="lib\net40-full\Org.Mentalis.Security.Cryptography.dll" />
-		<file src="$OutputPath35$Org.Mentalis.Security.Cryptography.pdb" target="lib\net35-full\Org.Mentalis.Security.Cryptography.pdb" />
-		<file src="$OutputPath40$Org.Mentalis.Security.Cryptography.pdb" target="lib\net40-full\Org.Mentalis.Security.Cryptography.pdb" />
-		<file src="$OutputPath35$Org.Mentalis.Security.Cryptography.xml" target="lib\net35-full\Org.Mentalis.Security.Cryptography.xml" />
-		<file src="$OutputPath40$Org.Mentalis.Security.Cryptography.xml" target="lib\net40-full\Org.Mentalis.Security.Cryptography.xml" />
+		<file src="$OutputPath35$signed\Org.Mentalis.Security.Cryptography.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\Org.Mentalis.Security.Cryptography.dll" target="lib\net40-full\" />
+		<file src="$OutputPath35$Org.Mentalis.Security.Cryptography.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$Org.Mentalis.Security.Cryptography.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath35$Org.Mentalis.Security.Cryptography.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$Org.Mentalis.Security.Cryptography.xml" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$signed\Mono.Math.dll" target="lib\net35-full\Mono.Math.dll" />
-		<file src="$OutputPath40$signed\Mono.Math.dll" target="lib\net40-full\Mono.Math.dll" />
-		<file src="$OutputPath35$Mono.Math.pdb" target="lib\net35-full\Mono.Math.pdb" />
-		<file src="$OutputPath40$Mono.Math.pdb" target="lib\net40-full\Mono.Math.pdb" />
-		<file src="$OutputPath35$Mono.Math.xml" target="lib\net35-full\Mono.Math.xml" />
-		<file src="$OutputPath40$Mono.Math.xml" target="lib\net40-full\Mono.Math.xml" />
+		<file src="$OutputPath35$signed\Mono.Math.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\Mono.Math.dll" target="lib\net40-full\" />
+		<file src="$OutputPath35$Mono.Math.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$Mono.Math.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath35$Mono.Math.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$Mono.Math.xml" target="lib\net40-full\" />
 
 		<file src="content\OpenId.Core\web.config.transform" target="content\web.config.transform" />
 
