@@ -32,6 +32,7 @@ namespace DotNetOpenAuth.Mvc {
 		/// </summary>
 		/// <param name="html">The <see cref="HtmlHelper"/> on the view.</param>
 		/// <returns>HTML that should be sent directly to the browser.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		public static string OpenIdSelectorStyles(this HtmlHelper html) {
 			Requires.NotNull(html, "html");
 			Contract.Ensures(Contract.Result<string>() != null);
@@ -240,6 +241,7 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// <returns>
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
 		public static string OpenIdSelector(this HtmlHelper html, params SelectorButton[] buttons) {
 			Requires.NotNull(html, "html");
@@ -306,6 +308,7 @@ window.openid_trace = {1}; // causes lots of messages";
 		/// HTML that should be sent directly to the browser.
 		/// </returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		private static string OpenIdSelectorButton(this HtmlHelper html, string id, string cssClass, string imageUrl) {
 			Requires.NotNull(html, "html");
 			Requires.NotNull(id, "id");
