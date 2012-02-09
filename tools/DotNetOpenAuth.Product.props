@@ -18,7 +18,7 @@ http://opensource.org/licenses/ms-pl.html
 		<WarningLevel>4</WarningLevel>
 
 		<CodeAnalysisRules />
-		<CodeAnalysisRuleSet>Migrated rules for DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRuleSet>$(ProjectRoot)src\DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
 		<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
 		<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
 
@@ -83,6 +83,12 @@ http://opensource.org/licenses/ms-pl.html
 	<ItemGroup>
 		<DelaySignedAssemblies Include="$(OutputPath)CodeContracts\$(AssemblyName).Contracts.dll"
 		                       Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' and '$(AddContractsAssemblyForDelaySigning)' != 'false' "/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="$(ProjectRoot)src\GlobalSuppressions.cs">
+			<Link>GlobalSuppressions.cs</Link>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>

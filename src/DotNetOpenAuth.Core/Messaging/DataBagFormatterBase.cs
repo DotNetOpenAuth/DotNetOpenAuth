@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
@@ -143,6 +144,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to serialize.  Must not be null.</param>
 		/// <returns>A non-null, non-empty value.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		public string Serialize(T message) {
 			message.UtcCreationDate = DateTime.UtcNow;
 
@@ -191,6 +193,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <returns>The deserialized value.  Never null.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		public T Deserialize(IProtocolMessage containingMessage, string value) {
 			string symmetricSecretHandle = null;
 			if (this.encrypted && this.cryptoKeyStore != null) {
@@ -271,6 +274,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		///   <c>true</c> if the signature is valid; otherwise, <c>false</c>.
 		/// </returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private bool IsSignatureValid(byte[] signedData, byte[] signature, string symmetricSecretHandle) {
 			Requires.NotNull(signedData, "signedData");
 			Requires.NotNull(signature, "signature");
@@ -292,6 +296,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// The calculated signature.
 		/// </returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private byte[] CalculateSignature(byte[] bytesToSign, string symmetricSecretHandle) {
 			Requires.NotNull(bytesToSign, "bytesToSign");
 			Requires.ValidState(this.asymmetricSigning != null || this.cryptoKeyStore != null);
@@ -303,7 +308,7 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			} else {
 				var key = this.cryptoKeyStore.GetKey(this.cryptoKeyBucket, symmetricSecretHandle);
-				ErrorUtilities.VerifyProtocol(key != null, "Missing decryption key.");
+				ErrorUtilities.VerifyProtocol(key != null, MessagingStrings.MissingDecryptionKeyForHandle, this.cryptoKeyBucket, symmetricSecretHandle);
 				using (var symmetricHasher = new HMACSHA256(key.Key)) {
 					return symmetricHasher.ComputeHash(bytesToSign);
 				}
@@ -346,7 +351,7 @@ namespace DotNetOpenAuth.Messaging {
 				return this.asymmetricEncrypting.DecryptWithRandomSymmetricKey(value);
 			} else {
 				var key = this.cryptoKeyStore.GetKey(this.cryptoKeyBucket, symmetricSecretHandle);
-				ErrorUtilities.VerifyProtocol(key != null, "Missing decryption key.");
+				ErrorUtilities.VerifyProtocol(key != null, MessagingStrings.MissingDecryptionKeyForHandle, this.cryptoKeyBucket, symmetricSecretHandle);
 				return MessagingUtilities.Decrypt(value, key.Key);
 			}
 		}

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Reflection;
@@ -92,6 +93,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
 		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
 		/// <returns>The newly instantiated type.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		public T CreateInstance(T defaultValue, bool allowInternals) {
 			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
 

@@ -585,6 +585,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to encrypt.</param>
 		/// <param name="key">The symmetric secret to use to encrypt the buffer.  Allowed values are 128, 192, or 256 bytes in length.</param>
 		/// <returns>The encrypted buffer</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		internal static byte[] Encrypt(byte[] buffer, byte[] key) {
 			using (SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key)) {
 				using (var ms = new MemoryStream()) {
@@ -609,6 +610,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="key">The symmetric secret to use to decrypt the buffer.  Allowed values are 128, 192, and 256.</param>
 		/// <returns>The encrypted buffer</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		internal static byte[] Decrypt(byte[] buffer, byte[] key) {
 			using (SymmetricAlgorithm crypto = CreateSymmetricAlgorithm(key)) {
 				using (var ms = new MemoryStream(buffer)) {
@@ -664,6 +666,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="crypto">The asymmetric encryption provider to use for encryption.</param>
 		/// <param name="buffer">The buffer to encrypt.</param>
 		/// <returns>The encrypted data.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		internal static byte[] EncryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
 			Requires.NotNull(crypto, "crypto");
 			Requires.NotNull(buffer, "buffer");
@@ -699,6 +702,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to decrypt.</param>
 		/// <returns>The decrypted data.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		internal static byte[] DecryptWithRandomSymmetricKey(this RSACryptoServiceProvider crypto, byte[] buffer) {
 			Requires.NotNull(crypto, "crypto");
 			Requires.NotNull(buffer, "buffer");
@@ -781,6 +785,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="buffer">The buffer to compress.</param>
 		/// <returns>The compressed data.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		internal static byte[] Compress(byte[] buffer) {
 			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
@@ -799,6 +804,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="buffer">The buffer to decompress.</param>
 		/// <returns>The decompressed data.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] Decompress(byte[] buffer) {
 			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
@@ -1543,7 +1550,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(reader, "reader");
 			int length = reader.ReadInt32();
 			byte[] buffer = new byte[length];
-			ErrorUtilities.VerifyProtocol(reader.Read(buffer, 0, length) == length, "Unexpected buffer length.");
+			ErrorUtilities.VerifyProtocol(reader.Read(buffer, 0, length) == length, MessagingStrings.UnexpectedBufferLength);
 			return buffer;
 		}
 
@@ -1654,6 +1661,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="key">The symmetric key to use for encryption/decryption.</param>
 		/// <returns>A symmetric algorithm.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private static SymmetricAlgorithm CreateSymmetricAlgorithm(byte[] key) {
 			SymmetricAlgorithm result = null;
 			try {

@@ -8,7 +8,9 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 
@@ -37,7 +39,7 @@ namespace DotNetOpenAuth {
 		[Pure, DebuggerStepThrough]
 		internal static void True(bool condition, string unformattedMessage, params object[] args) {
 			if (!condition) {
-				Fail(String.Format(unformattedMessage, args));
+				Fail(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
 			}
 		}
 
@@ -57,6 +59,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// An internal error exception that should never be caught.
 		/// </summary>
+		[SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic", Justification = "This exception should never be caught.")]
 		[Serializable]
 		private class InternalErrorException : Exception {
 			/// <summary>
@@ -69,15 +72,8 @@ namespace DotNetOpenAuth {
 			/// Initializes a new instance of the <see cref="InternalErrorException"/> class.
 			/// </summary>
 			/// <param name="message">The message.</param>
-			internal InternalErrorException(string message) : base(message) {
-			}
-
-			/// <summary>
-			/// Initializes a new instance of the <see cref="InternalErrorException"/> class.
-			/// </summary>
-			/// <param name="message">The message.</param>
-			/// <param name="inner">The inner exception.</param>
-			internal InternalErrorException(string message, Exception inner) : base(message, inner) {
+			internal InternalErrorException(string message)
+				: base(message) {
 			}
 
 			/// <summary>

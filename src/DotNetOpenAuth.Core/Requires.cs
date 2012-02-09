@@ -134,7 +134,7 @@ namespace DotNetOpenAuth {
 		[Pure, DebuggerStepThrough]
 		internal static void True(bool condition, string parameterName, string unformattedMessage, params object[] args) {
 			if (!condition) {
-				throw new ArgumentException(String.Format(unformattedMessage, args), parameterName);
+				throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args), parameterName);
 			}
 
 			Contract.EndContractBlock();

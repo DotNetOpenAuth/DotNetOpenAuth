@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
@@ -52,6 +53,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <returns>The buffer containing the serialized data.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		protected override byte[] SerializeCore(T message) {
 			using (var stream = new MemoryStream()) {
 				message.Serialize(stream);
@@ -64,6 +66,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message instance to initialize with data from the buffer.</param>
 		/// <param name="data">The data buffer.</param>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		protected override void DeserializeCore(T message, byte[] data) {
 			using (var stream = new MemoryStream(data)) {
 				message.Deserialize(stream);
