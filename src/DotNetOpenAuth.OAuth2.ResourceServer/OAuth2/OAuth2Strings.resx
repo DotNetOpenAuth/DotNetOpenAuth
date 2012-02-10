@@ -117,40 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AbsoluteUriRequired" xml:space="preserve">
-    <value>The value for message part "{0}" must be an absolute URI.</value>
+  <data name="InvalidAccessToken" xml:space="preserve">
+    <value>Invalid access token.</value>
   </data>
-  <data name="AccessScopeExceedsGrantScope" xml:space="preserve">
-    <value>The requested access scope ("{0}") exceeds the grant scope ("{1}").</value>
-  </data>
-  <data name="AccessTokenInvalidForHttpAuthorizationHeader" xml:space="preserve">
-    <value>The access token contains characters that must not appear in the HTTP Authorization header.</value>
-  </data>
-  <data name="CannotObtainAccessTokenWithReason" xml:space="preserve">
-    <value>Failed to obtain access token.  Authorization Server reports reason: {0}</value>
-  </data>
-  <data name="ClientCallbackDisallowed" xml:space="preserve">
-    <value>The callback URL ({0}) is not allowed for this client.</value>
-  </data>
-  <data name="ClientOrTokenSecretNotFound" xml:space="preserve">
-    <value>Failure looking up secret for client or token.</value>
-  </data>
-  <data name="HttpsRequired" xml:space="preserve">
-    <value>This message can only be sent over HTTPS.</value>
-  </data>
-  <data name="InvalidClientCredentials" xml:space="preserve">
-    <value>Failed to obtain access token due to invalid Client Identifier or Client Secret.</value>
-  </data>
-  <data name="NoCallback" xml:space="preserve">
-    <value>No callback URI was available for this request.</value>
-  </data>
-  <data name="NoGrantNoRefreshToken" xml:space="preserve">
-    <value>Refresh tokens should not be granted without the request including an access grant.</value>
-  </data>
-  <data name="ScopesMayNotContainSpaces" xml:space="preserve">
-    <value>Individual scopes may not contain spaces.</value>
-  </data>
-  <data name="UnexpectedResponseContentType" xml:space="preserve">
-    <value>Unexpected response Content-Type {0}</value>
+  <data name="MissingAccessToken" xml:space="preserve">
+    <value>Missing access token.</value>
   </data>
 </root>

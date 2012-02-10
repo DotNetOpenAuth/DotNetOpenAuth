@@ -79,6 +79,15 @@ namespace DotNetOpenAuth.OAuth2 {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The access token contains characters that must not appear in the HTTP Authorization header..
+        /// </summary>
+        internal static string AccessTokenInvalidForHttpAuthorizationHeader {
+            get {
+                return ResourceManager.GetString("AccessTokenInvalidForHttpAuthorizationHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to obtain access token.  Authorization Server reports reason: {0}.
         /// </summary>
         internal static string CannotObtainAccessTokenWithReason {
@@ -147,6 +156,15 @@ namespace DotNetOpenAuth.OAuth2 {
         internal static string ScopesMayNotContainSpaces {
             get {
                 return ResourceManager.GetString("ScopesMayNotContainSpaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected response Content-Type {0}.
+        /// </summary>
+        internal static string UnexpectedResponseContentType {
+            get {
+                return ResourceManager.GetString("UnexpectedResponseContentType", resourceCulture);
             }
         }
     }

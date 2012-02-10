@@ -117,40 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AbsoluteUriRequired" xml:space="preserve">
-    <value>The value for message part "{0}" must be an absolute URI.</value>
+  <data name="AccessTokenRefreshFailed" xml:space="preserve">
+    <value>Access token has expired and cannot be automatically refreshed.</value>
   </data>
-  <data name="AccessScopeExceedsGrantScope" xml:space="preserve">
-    <value>The requested access scope ("{0}") exceeds the grant scope ("{1}").</value>
+  <data name="AuthorizationExpired" xml:space="preserve">
+    <value>Authorization has expired.</value>
   </data>
-  <data name="AccessTokenInvalidForHttpAuthorizationHeader" xml:space="preserve">
-    <value>The access token contains characters that must not appear in the HTTP Authorization header.</value>
-  </data>
-  <data name="CannotObtainAccessTokenWithReason" xml:space="preserve">
-    <value>Failed to obtain access token.  Authorization Server reports reason: {0}</value>
-  </data>
-  <data name="ClientCallbackDisallowed" xml:space="preserve">
-    <value>The callback URL ({0}) is not allowed for this client.</value>
-  </data>
-  <data name="ClientOrTokenSecretNotFound" xml:space="preserve">
-    <value>Failure looking up secret for client or token.</value>
-  </data>
-  <data name="HttpsRequired" xml:space="preserve">
-    <value>This message can only be sent over HTTPS.</value>
-  </data>
-  <data name="InvalidClientCredentials" xml:space="preserve">
-    <value>Failed to obtain access token due to invalid Client Identifier or Client Secret.</value>
-  </data>
-  <data name="NoCallback" xml:space="preserve">
-    <value>No callback URI was available for this request.</value>
-  </data>
-  <data name="NoGrantNoRefreshToken" xml:space="preserve">
-    <value>Refresh tokens should not be granted without the request including an access grant.</value>
-  </data>
-  <data name="ScopesMayNotContainSpaces" xml:space="preserve">
-    <value>Individual scopes may not contain spaces.</value>
-  </data>
-  <data name="UnexpectedResponseContentType" xml:space="preserve">
-    <value>Unexpected response Content-Type {0}</value>
+  <data name="AuthorizationResponseUnexpectedMismatch" xml:space="preserve">
+    <value>Unexpected OAuth authorization response received with callback and client state that does not match an expected value.</value>
   </data>
 </root>

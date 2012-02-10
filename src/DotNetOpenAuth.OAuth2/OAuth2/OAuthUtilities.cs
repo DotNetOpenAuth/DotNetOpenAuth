@@ -93,7 +93,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal static void AuthorizeWithBearerToken(this HttpWebRequest request, string accessToken) {
 			Requires.NotNull(request, "request");
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
-			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), "The access token contains characters that must not appear in the HTTP Authorization header.");
+			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), OAuthStrings.AccessTokenInvalidForHttpAuthorizationHeader);
 
 			request.Headers[HttpRequestHeader.Authorization] = string.Format(
 				CultureInfo.InvariantCulture,

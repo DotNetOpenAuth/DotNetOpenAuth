@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -56,6 +57,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
 		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestInfo request = null) {
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();

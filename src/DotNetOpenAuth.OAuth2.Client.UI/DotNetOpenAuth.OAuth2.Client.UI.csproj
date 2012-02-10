@@ -18,6 +18,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuth2\ClientAuthorizationCompleteEventArgs.cs" />
     <Compile Include="OAuth2\ClientAuthorizationView.cs">
       <SubType>UserControl</SubType>
     </Compile>

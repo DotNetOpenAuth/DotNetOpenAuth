@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				IAuthorizationState authorizationState;
 				if (this.AuthorizationTracker != null) {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);
-					ErrorUtilities.VerifyProtocol(authorizationState != null, "Unexpected OAuth authorization response received with callback and client state that does not match an expected value.");
+					ErrorUtilities.VerifyProtocol(authorizationState != null, OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
 				} else {
 					authorizationState = new AuthorizationState { Callback = callback };
 				}

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -80,6 +81,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// and the callback URL given in the access token request match.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown when the callback URLs do not match.</exception>
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "redirecturimismatch", Justification = "Protocol requirement")]
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
 		internal void VerifyCallback(Uri callback) {
 			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalent(this.CallbackHash, CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
 		}
@@ -91,6 +94,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// A base64 encoding of the hash of the URL.
 		/// </returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		private static byte[] CalculateCallbackHash(Uri callback) {
 			using (var hasher = new SHA256Managed()) {
 				return hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
