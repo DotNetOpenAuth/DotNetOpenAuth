@@ -30,11 +30,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		internal OAuthConsumerChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings, IMessageFactory messageFactory = null)
 			: base(
 			signingBindingElement,
-			store,
 			tokenManager,
 			securitySettings,
 			messageFactory ?? new OAuthConsumerMessageFactory(),
-			InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
+			InitializeBindingElements(signingBindingElement, store)) {
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(securitySettings, "securitySettings");
 			Requires.NotNull(signingBindingElement, "signingBindingElement");
@@ -56,15 +55,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="signingBindingElement">The signing binding element.</param>
 		/// <param name="store">The nonce store.</param>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="securitySettings">The security settings.</param>
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		private static new IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
-			Contract.Requires(securitySettings != null);
-
-			return OAuthChannel.InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings).ToArray();
+		private static new IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store) {
+			return OAuthChannel.InitializeBindingElements(signingBindingElement, store).ToArray();
 		}
 	}
 }

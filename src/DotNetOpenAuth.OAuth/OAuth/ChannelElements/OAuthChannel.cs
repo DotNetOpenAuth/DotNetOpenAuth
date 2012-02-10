@@ -30,7 +30,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
-		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The ITokenManager instance to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="messageTypeProvider">An injected message type provider instance.
@@ -38,7 +37,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// OAuthConsumerMessageFactory or OAuthServiceProviderMessageFactory.</param>
 		/// <param name="bindingElements">The binding elements.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
+		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
 			: base(messageTypeProvider, bindingElements) {
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(securitySettings, "securitySettings");
@@ -90,14 +89,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="signingBindingElement">The signing binding element.</param>
 		/// <param name="store">The nonce store.</param>
-		/// <param name="tokenManager">The token manager.</param>
-		/// <param name="securitySettings">The security settings.</param>
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		protected static List<IChannelBindingElement> InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
-			Contract.Requires(securitySettings != null);
-
+		protected static List<IChannelBindingElement> InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store) {
 			var bindingElements = new List<IChannelBindingElement> {
 				new OAuthHttpMethodBindingElement(),
 				signingBindingElement,

@@ -75,3 +75,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Scope = "member", Target = "DotNetOpenAuth.Messaging.IHttpDirectResponseContract.#DotNetOpenAuth.Messaging.IHttpDirectResponse.HttpStatusCode", Justification = "Code contract")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Scope = "member", Target = "DotNetOpenAuth.Messaging.IHttpDirectResponseContract.#DotNetOpenAuth.Messaging.IHttpDirectResponse.HttpStatusCode", Justification = "Code contract")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenAuth.ComponentModel", Justification = "Types distributed across assemblies.")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenAuth.OAuth")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenAuth.OAuth.ChannelElements")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "DotNetOpenAuth.Messaging")]
