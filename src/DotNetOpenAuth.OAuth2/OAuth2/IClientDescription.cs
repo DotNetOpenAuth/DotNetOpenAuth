@@ -27,6 +27,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		Uri DefaultCallback { get; }
 
 		/// <summary>
+		/// Gets the type of the client.
+		/// </summary>
+		ClientType ClientType { get; }
+
+		/// <summary>
 		/// Determines whether a callback URI included in a client's authorization request 
 		/// is among those allowed callbacks for the registered client.
 		/// </summary>
@@ -65,6 +70,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <value></value>
 		string IClientDescription.Secret {
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <summary>
+		/// Gets the type of the client.
+		/// </summary>
+		ClientType IClientDescription.ClientType {
 			get { throw new NotImplementedException(); }
 		}
 

@@ -36,6 +36,7 @@
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCodeBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
+    <Compile Include="OAuth2\ClientType.cs" />
     <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\IAuthorizationServer.cs" />
     <Compile Include="OAuth2\IAuthorizationState.cs" />
