@@ -72,7 +72,9 @@ namespace DotNetOpenAuth.OAuth2 {
 				return new HashSet<string>();
 			}
 
-			return new HashSet<string>(scope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries), ScopeStringComparer);
+			var set = new HashSet<string>(scope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries), ScopeStringComparer);
+			VerifyValidScopeTokens(set);
+			return set;
 		}
 
 		/// <summary>
@@ -82,7 +84,34 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>A space-delimited list.</returns>
 		public static string JoinScopes(HashSet<string> scopes) {
 			Requires.NotNull(scopes, "scopes");
+			VerifyValidScopeTokens(scopes);
 			return string.Join(" ", scopes.ToArray());
+		}
+
+		/// <summary>
+		/// Verifies that a sequence of scope tokens are all valid.
+		/// </summary>
+		/// <param name="scopes">The scopes.</param>
+		internal static void VerifyValidScopeTokens(IEnumerable<string> scopes) {
+			Requires.NotNull(scopes, "scopes");
+			foreach (string scope in scopes) {
+				VerifyValidScopeToken(scope);
+			}
+		}
+
+		/// <summary>
+		/// Verifies that a given scope token (not a space-delimited set, but a single token) is valid.
+		/// </summary>
+		/// <param name="scopeToken">The scope token.</param>
+		internal static void VerifyValidScopeToken(string scopeToken) {
+			ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(scopeToken), OAuthStrings.InvalidScopeToken, scopeToken);
+			for (int i = 0; i < scopeToken.Length; i++) {
+				// The allowed set of characters comes from OAuth 2.0 section 3.3 (draft 23)
+				char ch = scopeToken[i];
+				if (!(ch == '\x21' || (ch >= '\x23' && ch <= '\x5B') || (ch >= '\x5D' && ch <= '\x7E'))) {
+					ErrorUtilities.ThrowProtocol(OAuthStrings.InvalidScopeToken, scopeToken);
+				}
+			}
 		}
 
 		/// <summary>

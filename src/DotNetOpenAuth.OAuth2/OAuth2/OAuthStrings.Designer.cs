@@ -133,6 +133,15 @@ namespace DotNetOpenAuth.OAuth2 {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The scope token &quot;{0}&quot; contains illegal characters or is empty..
+        /// </summary>
+        internal static string InvalidScopeToken {
+            get {
+                return ResourceManager.GetString("InvalidScopeToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No callback URI was available for this request..
         /// </summary>
         internal static string NoCallback {

@@ -141,6 +141,9 @@
   <data name="InvalidClientCredentials" xml:space="preserve">
     <value>Failed to obtain access token due to invalid Client Identifier or Client Secret.</value>
   </data>
+  <data name="InvalidScopeToken" xml:space="preserve">
+    <value>The scope token "{0}" contains illegal characters or is empty.</value>
+  </data>
   <data name="NoCallback" xml:space="preserve">
     <value>No callback URI was available for this request.</value>
   </data>
