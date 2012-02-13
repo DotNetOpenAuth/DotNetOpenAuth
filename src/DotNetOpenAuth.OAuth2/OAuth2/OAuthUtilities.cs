@@ -107,9 +107,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationServer">The authorization server.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client information.  Never null.</returns>
-		internal static IConsumerDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
+		internal static IClientDescription GetClientOrThrow(this IAuthorizationServer authorizationServer, string clientIdentifier) {
 			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
-			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
+			Contract.Ensures(Contract.Result<IClientDescription>() != null);
 
 			try {
 				return authorizationServer.GetClient(clientIdentifier);

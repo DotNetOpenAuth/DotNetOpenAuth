@@ -40,7 +40,7 @@
     <Compile Include="OAuth2\IAuthorizationServer.cs" />
     <Compile Include="OAuth2\IAuthorizationState.cs" />
     <Compile Include="OAuth2\IClientAuthorizationTracker.cs" />
-    <Compile Include="OAuth2\IConsumerDescription.cs" />
+    <Compile Include="OAuth2\IClientDescription.cs" />
     <Compile Include="OAuth2\Messages\AccessProtectedResourceRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs" />

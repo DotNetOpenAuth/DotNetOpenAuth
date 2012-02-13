@@ -10,13 +10,13 @@ namespace RelyingPartyLogic {
 
 	using DotNetOpenAuth.OAuth2;
 
-	public partial class Client : IConsumerDescription {
+	public partial class Client : IClientDescription {
 		#region IConsumerDescription Members
 
 		/// <summary>
 		/// Gets the client secret.
 		/// </summary>
-		string IConsumerDescription.Secret {
+		string IClientDescription.Secret {
 			get { return this.ClientSecret; }
 		}
 
@@ -27,7 +27,7 @@ namespace RelyingPartyLogic {
 		/// <value>
 		/// An absolute URL; or <c>null</c> if none is registered.
 		/// </value>
-		Uri IConsumerDescription.DefaultCallback {
+		Uri IClientDescription.DefaultCallback {
 			get { return string.IsNullOrEmpty(this.CallbackAsString) ? null : new Uri(this.CallbackAsString); }
 		}
 
@@ -39,7 +39,7 @@ namespace RelyingPartyLogic {
 		/// <returns>
 		///   <c>true</c> if the callback URL is allowable for this client; otherwise, <c>false</c>.
 		/// </returns>
-		bool IConsumerDescription.IsCallbackAllowed(Uri callback) {
+		bool IClientDescription.IsCallbackAllowed(Uri callback) {
 			return string.IsNullOrEmpty(this.CallbackAsString) || callback == new Uri(this.CallbackAsString);
 		}
 

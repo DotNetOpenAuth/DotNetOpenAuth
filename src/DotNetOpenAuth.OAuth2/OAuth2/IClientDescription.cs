@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IConsumerDescription.cs" company="Outercurve Foundation">
+// <copyright file="IClientDescription.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,8 +12,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// A description of a client from an Authorization Server's point of view.
 	/// </summary>
-	[ContractClass(typeof(IConsumerDescriptionContract))]
-	public interface IConsumerDescription {
+	[ContractClass(typeof(IClientDescriptionContract))]
+	public interface IClientDescription {
 		/// <summary>
 		/// Gets the client secret.
 		/// </summary>
@@ -54,17 +54,17 @@ namespace DotNetOpenAuth.OAuth2 {
 	}
 
 	/// <summary>
-	/// Contract class for the <see cref="IConsumerDescription"/> interface.
+	/// Contract class for the <see cref="IClientDescription"/> interface.
 	/// </summary>
-	[ContractClassFor(typeof(IConsumerDescription))]
-	internal abstract class IConsumerDescriptionContract : IConsumerDescription {
-		#region IConsumerDescription Members
+	[ContractClassFor(typeof(IClientDescription))]
+	internal abstract class IClientDescriptionContract : IClientDescription {
+		#region IClientDescription Members
 
 		/// <summary>
 		/// Gets the client secret.
 		/// </summary>
 		/// <value></value>
-		string IConsumerDescription.Secret {
+		string IClientDescription.Secret {
 			get { throw new NotImplementedException(); }
 		}
 
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <value>
 		/// An absolute URL; or <c>null</c> if none is registered.
 		/// </value>
-		Uri IConsumerDescription.DefaultCallback {
+		Uri IClientDescription.DefaultCallback {
 			get {
 				Contract.Ensures(Contract.Result<Uri>() == null || Contract.Result<Uri>().IsAbsoluteUri);
 				throw new NotImplementedException();
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		///   <c>true</c> if the callback is allowed; otherwise, <c>false</c>.
 		/// </returns>
-		bool IConsumerDescription.IsCallbackAllowed(Uri callback) {
+		bool IClientDescription.IsCallbackAllowed(Uri callback) {
 			Requires.NotNull(callback, "callback");
 			Requires.True(callback.IsAbsoluteUri, "callback");
 			throw new NotImplementedException();

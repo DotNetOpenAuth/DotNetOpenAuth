@@ -70,7 +70,7 @@
 			return resourceServerEncryptionKey;
 		}
 
-		public IConsumerDescription GetClient(string clientIdentifier) {
+		public IClientDescription GetClient(string clientIdentifier) {
 			var consumerRow = MvcApplication.DataContext.Clients.SingleOrDefault(
 				consumerCandidate => consumerCandidate.ClientIdentifier == clientIdentifier);
 			if (consumerRow == null) {
