@@ -340,6 +340,16 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// The requested scope is invalid, unknown, or malformed.
 			/// </summary>
 			internal const string InvalidScope = "invalid_scope";
+
+			/// <summary>
+			/// The authorization server encountered an unexpected condition which prevented it from fulfilling the request.
+			/// </summary>
+			internal const string ServerError = "server_error";
+
+			/// <summary>
+			/// The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.
+			/// </summary>
+			internal const string TemporarilyUnavailable = "temporarily_unavailable";
 		}
 
 		/// <summary>
