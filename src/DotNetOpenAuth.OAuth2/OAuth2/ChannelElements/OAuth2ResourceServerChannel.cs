@@ -107,9 +107,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			// First initialize based on the specifics within the message.
 			var httpResponse = response as IHttpDirectResponse;
-			webResponse.Status = httpResponse != null ? httpResponse.HttpStatusCode : HttpStatusCode.Unauthorized;
-			foreach (string headerName in httpResponse.Headers) {
-				webResponse.Headers.Add(headerName, httpResponse.Headers[headerName]);
+			if (httpResponse != null) {
+				webResponse.Status = httpResponse.HttpStatusCode;
+				foreach (string headerName in httpResponse.Headers) {
+					webResponse.Headers.Add(headerName, httpResponse.Headers[headerName]);
+				}
+			} else {
+				webResponse.Status = HttpStatusCode.Unauthorized;
 			}
 
 			// Now serialize all the message parts into the WWW-Authenticate header.
