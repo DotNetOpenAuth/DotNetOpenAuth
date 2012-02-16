@@ -160,6 +160,15 @@ namespace DotNetOpenAuth.OAuth2 {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The request message type {0} should not be responded to with a refresh token..
+        /// </summary>
+        internal static string RefreshTokenInappropriateForRequestType {
+            get {
+                return ResourceManager.GetString("RefreshTokenInappropriateForRequestType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Individual scopes may not contain spaces..
         /// </summary>
         internal static string ScopesMayNotContainSpaces {
