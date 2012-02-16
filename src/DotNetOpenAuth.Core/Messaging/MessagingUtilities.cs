@@ -427,7 +427,7 @@ namespace DotNetOpenAuth.Messaging {
 					if (trimmedAuth.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) { // RFC 2617 says this is case INsensitive
 						string data = trimmedAuth.Substring(prefix.Length);
 						return from element in data.Split(CommaArray)
-							   let parts = element.Split(EqualsArray, 2)
+							   let parts = element.Trim().Split(EqualsArray, 2)
 							   let key = Uri.UnescapeDataString(parts[0])
 							   let value = Uri.UnescapeDataString(parts[1].Trim(QuoteArray))
 							   select new KeyValuePair<string, string>(key, value);
