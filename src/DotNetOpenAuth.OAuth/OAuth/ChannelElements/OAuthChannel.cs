@@ -223,11 +223,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				Headers = new System.Net.WebHeaderCollection(),
 			};
 
-			IHttpDirectResponse httpMessage = response as IHttpDirectResponse;
-			if (httpMessage != null) {
-				encodedResponse.Status = httpMessage.HttpStatusCode;
-			}
-
+			this.ApplyMessageTemplate(response, encodedResponse);
 			return encodedResponse;
 		}
 
