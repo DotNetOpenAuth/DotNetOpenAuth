@@ -1038,6 +1038,22 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Applies message prescribed HTTP response headers to an outgoing web response.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <param name="response">The HTTP response.</param>
+		protected void ApplyMessageTemplate(IMessage message, OutgoingWebResponse response) {
+			Requires.NotNull(message, "message");
+			var httpMessage = message as IHttpDirectResponse;
+			if (httpMessage != null) {
+				response.Status = httpMessage.HttpStatusCode;
+				foreach (string headerName in httpMessage.Headers) {
+					response.Headers.Add(headerName, httpMessage.Headers[headerName]);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Prepares to send a request to the Service Provider as the query string in a GET request.
 		/// </summary>
 		/// <param name="requestMessage">The message to be transmitted to the ServiceProvider.</param>

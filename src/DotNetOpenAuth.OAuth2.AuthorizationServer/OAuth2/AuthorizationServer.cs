@@ -222,6 +222,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
 			Requires.NotNull(request, "request");
 
+			if (includeRefreshToken) {
+				if (request is AccessTokenClientCredentialsRequest) {
+					// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
+					// in a response to an access token request that used the client credential grant type.
+					Logger.OAuth.Debug("Suppressing refresh token in access token response because the grant type used by the client disallows it.");
+					includeRefreshToken = false;
+				}
+			}
+
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
 			var response = new AccessTokenSuccessResponse(request) {
 				Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request),
