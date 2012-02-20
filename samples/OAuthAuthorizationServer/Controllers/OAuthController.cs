@@ -36,6 +36,7 @@
 		/// </summary>
 		/// <returns>The browser HTML response that prompts the user to authorize the client.</returns>
 		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
+		[HttpHeader("x-frame-options", "SAMEORIGIN")] // mitigates clickjacking
 		public ActionResult Authorize() {
 			var pendingRequest = this.authorizationServer.ReadAuthorizationRequest();
 			if (pendingRequest == null) {
