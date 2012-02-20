@@ -46,6 +46,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 				return new WebHeaderCollection
 				{
 					{ HttpResponseHeader.CacheControl, "no-store" },
+					{ HttpResponseHeader.Pragma, "no-cache" },
 				};
 			}
 		}
