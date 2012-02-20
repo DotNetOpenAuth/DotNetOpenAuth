@@ -29,6 +29,13 @@
 		}
 
 		/// <summary>
+		/// Gets the type of the client.
+		/// </summary>
+		ClientType IClientDescription.ClientType {
+			get { return (ClientType)this.ClientType; }
+		}
+
+		/// <summary>
 		/// Determines whether a callback URI included in a client's authorization request
 		/// is among those allowed callbacks for the registered client.
 		/// </summary>
