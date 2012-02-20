@@ -33,12 +33,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Initializes a new instance of the <see cref="AuthorizationCode"/> class.
 		/// </summary>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="callback">The callback the client used to obtain authorization.</param>
+		/// <param name="callback">The callback the client used to obtain authorization, if one was explicitly included in the request.</param>
 		/// <param name="scopes">The authorized scopes.</param>
 		/// <param name="username">The name on the account that authorized access.</param>
 		internal AuthorizationCode(string clientIdentifier, Uri callback, IEnumerable<string> scopes, string username) {
 			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
-			Requires.NotNull(callback, "callback");
 
 			this.ClientIdentifier = clientIdentifier;
 			this.CallbackHash = CalculateCallbackHash(callback);
@@ -96,6 +95,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		private static byte[] CalculateCallbackHash(Uri callback) {
+			if (callback == null) {
+				return null;
+			}
+
 			using (var hasher = new SHA256Managed()) {
 				return hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
 			}

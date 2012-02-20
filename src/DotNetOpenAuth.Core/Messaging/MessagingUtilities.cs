@@ -1107,12 +1107,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// Tests whether two arrays are equal in contents and ordering.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the arrays.</typeparam>
-		/// <param name="first">The first array in the comparison.  May not be null.</param>
-		/// <param name="second">The second array in the comparison. May not be null.</param>
+		/// <param name="first">The first array in the comparison.  May be null.</param>
+		/// <param name="second">The second array in the comparison.  May be null.</param>
 		/// <returns>True if the arrays equal; false otherwise.</returns>
 		internal static bool AreEquivalent<T>(T[] first, T[] second) {
-			Requires.NotNull(first, "first");
-			Requires.NotNull(second, "second");
+			if (first == null && second == null) {
+				return true;
+			}
+
+			if (first == null || second == null) {
+				return false;
+			}
+
 			if (first.Length != second.Length) {
 				return false;
 			}

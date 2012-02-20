@@ -81,7 +81,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>
 		/// The Callback URL used to obtain the Verification Code.
 		/// </value>
-		[MessagePart(Protocol.redirect_uri, IsRequired = true)]
+		/// <remarks>
+		/// REQUIRED, if the redirect_uri parameter was included in the authorization request as described in Section 4.1.1, and their values MUST be identical.
+		/// </remarks>
+		[MessagePart(Protocol.redirect_uri, IsRequired = false)]
 		internal Uri Callback { get; set; }
 
 		/// <summary>
