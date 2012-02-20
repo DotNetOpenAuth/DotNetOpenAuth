@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="NonceMemoryStore.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="NonceMemoryStore.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

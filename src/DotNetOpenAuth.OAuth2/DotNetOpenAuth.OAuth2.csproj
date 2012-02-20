@@ -36,11 +36,12 @@
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCodeBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
+    <Compile Include="OAuth2\ClientType.cs" />
     <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\IAuthorizationServer.cs" />
     <Compile Include="OAuth2\IAuthorizationState.cs" />
     <Compile Include="OAuth2\IClientAuthorizationTracker.cs" />
-    <Compile Include="OAuth2\IConsumerDescription.cs" />
+    <Compile Include="OAuth2\IClientDescription.cs" />
     <Compile Include="OAuth2\Messages\AccessProtectedResourceRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs" />
@@ -88,10 +89,6 @@
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
-      <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
-      <Name>DotNetOpenAuth.OAuth</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

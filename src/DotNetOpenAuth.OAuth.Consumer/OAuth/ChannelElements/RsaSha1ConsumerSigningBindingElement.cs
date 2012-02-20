@@ -1,11 +1,12 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RsaSha1ConsumerSigningBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="RsaSha1ConsumerSigningBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
@@ -15,6 +16,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha", Justification = "Acronym")]
 	public class RsaSha1ConsumerSigningBindingElement : RsaSha1SigningBindingElement {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RsaSha1ConsumerSigningBindingElement"/> class.

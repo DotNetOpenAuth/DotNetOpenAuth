@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssociateDiffieHellmanProviderResponse.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AssociateDiffieHellmanProviderResponse.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

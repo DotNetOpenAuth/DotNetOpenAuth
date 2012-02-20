@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="Database" EntityNamespace="OAuthServiceProvider.Code" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True;User Instance=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DatabaseConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.[User]" Member="Users">
+    <Type Name="User">
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="OpenIDClaimedIdentifier" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="OpenIDFriendlyIdentifier" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="FullName" Type="System.String" DbType="NVarChar(150)" CanBeNull="false" />
+      <Column Name="Age" Type="System.Int32" DbType="int" CanBeNull="true" />
+      <Association Name="User_FavoriteSite" Member="FavoriteSites" ThisKey="UserId" OtherKey="UserId" Type="FavoriteSite" />
+      <Association Name="User_OAuthToken" Member="OAuthTokens" ThisKey="UserId" OtherKey="UserId" Type="OAuthToken" />
+    </Type>
+  </Table>
+  <Table Name="dbo.FavoriteSite" Member="FavoriteSites">
+    <Type Name="FavoriteSite">
+      <Column Name="FavoriteSiteId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SiteUrl" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Association Name="User_FavoriteSite" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.OAuthConsumer" Member="OAuthConsumers">
+    <Type Name="OAuthConsumer">
+      <Column Name="ConsumerId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ConsumerKey" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="ConsumerSecret" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Callback" Type="System.String" CanBeNull="true" />
+      <Column Name="VerificationCodeFormat" Type="DotNetOpenAuth.OAuth.VerificationCodeFormat" CanBeNull="false" />
+      <Column Name="VerificationCodeLength" Type="System.Int32" CanBeNull="false" />
+      <Association Name="OAuthConsumer_OAuthToken" Member="OAuthTokens" ThisKey="ConsumerId" OtherKey="ConsumerId" Type="OAuthToken" />
+    </Type>
+  </Table>
+  <Table Name="dbo.OAuthToken" Member="OAuthTokens">
+    <Type Name="OAuthToken">
+      <Column Name="TokenId" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Token" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="TokenSecret" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="State" Type="OAuthServiceProvider.Code.TokenAuthorizationState" DbType="INT NOT NULL" CanBeNull="false" />
+      <Column Name="IssueDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="ConsumerId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Scope" Type="System.String" DbType="nvarchar(MAX)" CanBeNull="false" />
+      <Column Name="RequestTokenVerifier" Type="System.String" CanBeNull="true" />
+      <Column Name="RequestTokenCallback" Type="System.String" CanBeNull="true" />
+      <Column Name="ConsumerVersion" Type="System.String" CanBeNull="true" />
+      <Association Name="OAuthConsumer_OAuthToken" Member="OAuthConsumer" ThisKey="ConsumerId" OtherKey="ConsumerId" Type="OAuthConsumer" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="User_OAuthToken" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" DeleteRule="CASCADE" />
+    </Type>
+  </Table>
+  <Table Name="" Member="Nonces">
+    <Type Name="Nonce">
+      <Column Member="Context" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="Code" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="Timestamp" Type="System.DateTime" IsPrimaryKey="true" CanBeNull="false" />
+    </Type>
+  </Table>
+</Database>

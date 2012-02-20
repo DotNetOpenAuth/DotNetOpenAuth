@@ -21,14 +21,14 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.Core.dll" target="lib\net35-full\DotNetOpenAuth.Core.dll" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.Core.dll" target="lib\net40-full\DotNetOpenAuth.Core.dll" />
+		<file src="$OutputPath35$signed\DotNetOpenAuth.Core.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.Core.dll" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.Core.pdb" target="lib\net35-full\DotNetOpenAuth.Core.pdb" />
-		<file src="$OutputPath40$DotNetOpenAuth.Core.pdb" target="lib\net40-full\DotNetOpenAuth.Core.pdb" />
+		<file src="$OutputPath35$DotNetOpenAuth.Core.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.Core.pdb" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.Core.xml" target="lib\net35-full\DotNetOpenAuth.Core.xml" />
-		<file src="$OutputPath40$DotNetOpenAuth.Core.xml" target="lib\net40-full\DotNetOpenAuth.Core.xml" />
+		<file src="$OutputPath35$DotNetOpenAuth.Core.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.Core.xml" target="lib\net40-full\" />
 
 		<file src="content\Core\web.config.transform" target="content\web.config.transform" />
 

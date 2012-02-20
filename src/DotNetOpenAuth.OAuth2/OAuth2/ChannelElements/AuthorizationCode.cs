@@ -1,12 +1,13 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthorizationCode.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AuthorizationCode.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -32,12 +33,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Initializes a new instance of the <see cref="AuthorizationCode"/> class.
 		/// </summary>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="callback">The callback the client used to obtain authorization.</param>
+		/// <param name="callback">The callback the client used to obtain authorization, if one was explicitly included in the request.</param>
 		/// <param name="scopes">The authorized scopes.</param>
 		/// <param name="username">The name on the account that authorized access.</param>
 		internal AuthorizationCode(string clientIdentifier, Uri callback, IEnumerable<string> scopes, string username) {
 			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
-			Requires.NotNull(callback, "callback");
 
 			this.ClientIdentifier = clientIdentifier;
 			this.CallbackHash = CalculateCallbackHash(callback);
@@ -80,6 +80,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// and the callback URL given in the access token request match.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown when the callback URLs do not match.</exception>
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "redirecturimismatch", Justification = "Protocol requirement")]
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
 		internal void VerifyCallback(Uri callback) {
 			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalent(this.CallbackHash, CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
 		}
@@ -91,7 +93,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// A base64 encoding of the hash of the URL.
 		/// </returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		private static byte[] CalculateCallbackHash(Uri callback) {
+			if (callback == null) {
+				return null;
+			}
+
 			using (var hasher = new SHA256Managed()) {
 				return hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
 			}

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenSuccessResponse.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AccessTokenSuccessResponse.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -46,6 +46,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 				return new WebHeaderCollection
 				{
 					{ HttpResponseHeader.CacheControl, "no-store" },
+					{ HttpResponseHeader.Pragma, "no-cache" },
 				};
 			}
 		}
@@ -95,5 +96,18 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets a value indicating whether a refresh token is or should be included in the response.
 		/// </summary>
 		internal bool HasRefreshToken { get; set; }
+
+		/// <summary>
+		/// Checks the message state for conformity to the protocol specification
+		/// and throws an exception if the message is invalid.
+		/// </summary>
+		/// <exception cref="ProtocolException">Thrown if the message is invalid.</exception>
+		protected override void EnsureValidMessage() {
+			base.EnsureValidMessage();
+
+			// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
+			// in a response to an access token request that used the client credential grant type.
+			ErrorUtilities.VerifyProtocol(!this.HasRefreshToken || !(this.OriginatingRequest is AccessTokenClientCredentialsRequest), OAuthStrings.RefreshTokenInappropriateForRequestType, this.OriginatingRequest.GetType().Name);
+		}
 	}
 }

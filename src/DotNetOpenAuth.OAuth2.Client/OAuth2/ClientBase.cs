@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ClientBase.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ClientBase.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -79,10 +79,10 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(authorization, "authorization");
 			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization");
-			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, "authorization has expired");
+			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, OAuth2Strings.AuthorizationExpired);
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
-				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, "Access token has expired and cannot be automatically refreshed.");
+				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, OAuth2Strings.AccessTokenRefreshFailed);
 				this.RefreshAuthorization(authorization);
 			}
 

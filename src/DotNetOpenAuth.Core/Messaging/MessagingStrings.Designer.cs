@@ -295,6 +295,15 @@ namespace DotNetOpenAuth.Messaging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Message too large for a HTTP GET, and HTTP POST is not allowed for this message type..
+        /// </summary>
+        internal static string MessageExceedsGetSizePostNotAllowed {
+            get {
+                return ResourceManager.GetString("MessageExceedsGetSizePostNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} message does not support extensions..
         /// </summary>
         internal static string MessageNotExtensible {
@@ -345,6 +354,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string MessageTimestampInFuture {
             get {
                 return ResourceManager.GetString("MessageTimestampInFuture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing decryption key for bucket &quot;{0}&quot; handle &quot;{1}&quot;.
+        /// </summary>
+        internal static string MissingDecryptionKeyForHandle {
+            get {
+                return ResourceManager.GetString("MissingDecryptionKeyForHandle", resourceCulture);
             }
         }
         
@@ -516,6 +534,15 @@ namespace DotNetOpenAuth.Messaging {
         internal static string TooManyRedirects {
             get {
                 return ResourceManager.GetString("TooManyRedirects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected buffer length..
+        /// </summary>
+        internal static string UnexpectedBufferLength {
+            get {
+                return ResourceManager.GetString("UnexpectedBufferLength", resourceCulture);
             }
         }
         

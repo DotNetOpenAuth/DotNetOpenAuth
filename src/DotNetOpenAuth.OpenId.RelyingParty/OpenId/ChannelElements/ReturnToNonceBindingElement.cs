@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ReturnToNonceBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ReturnToNonceBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -46,12 +46,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// only on the RP side and only on some messages.</para>
 	/// </remarks>
 	internal class ReturnToNonceBindingElement : IChannelBindingElement {
-		/// <summary>
-		/// The parameter of the callback parameter we tack onto the return_to URL
-		/// to store the replay-detection nonce.
-		/// </summary>
-		internal const string NonceParameter = OpenIdUtilities.CustomParameterPrefix + "request_nonce";
-
 		/// <summary>
 		/// The context within which return_to nonces must be unique -- they all go into the same bucket.
 		/// </summary>
@@ -146,7 +140,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// We only add a nonce to some auth requests.
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (this.UseRequestNonce(request)) {
-				request.AddReturnToArguments(NonceParameter, CustomNonce.NewNonce().Serialize());
+				request.AddReturnToArguments(Protocol.ReturnToNonceParameter, CustomNonce.NewNonce().Serialize());
 				request.SignReturnTo = true; // a nonce without a signature is completely pointless
 
 				return MessageProtections.ReplayProtection;
@@ -179,7 +173,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					Logger.OpenId.Error("Incoming message is expected to have a nonce, but the return_to parameter is not signed.");
 				}
 
-				string nonceValue = response.GetReturnToArgument(NonceParameter);
+				string nonceValue = response.GetReturnToArgument(Protocol.ReturnToNonceParameter);
 				ErrorUtilities.VerifyProtocol(
 					nonceValue != null && response.ReturnToParametersSignatureValidated,
 					this.securitySettings.RejectUnsolicitedAssertions ? OpenIdStrings.UnsolicitedAssertionsNotAllowed : OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);

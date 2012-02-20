@@ -1,11 +1,12 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RsaSha1ServiceProviderSigningBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="RsaSha1ServiceProviderSigningBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
@@ -15,6 +16,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sha", Justification = "Acronym")]
 	public class RsaSha1ServiceProviderSigningBindingElement : RsaSha1SigningBindingElement {
 		/// <summary>
 		/// The token manager for the service provider.

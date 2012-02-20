@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Reporting.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="Reporting.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -28,6 +28,7 @@ namespace DotNetOpenAuth {
 	/// The statistical reporting mechanism used so this library's project authors
 	/// know what versions and features are in use.
 	/// </summary>
+	[SuppressMessage("Microsoft.Design", "CA1053:StaticHolderTypesShouldNotHaveConstructors", Justification = "This class is derived from, so it can't be static.")]
 	public class Reporting {
 		/// <summary>
 		/// A UTF8 encoder that doesn't emit the preamble.  Used for mid-stream writers.
@@ -116,6 +117,12 @@ namespace DotNetOpenAuth {
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Reporting MUST NOT cause unhandled exceptions.")]
 		static Reporting() {
 			Enabled = DotNetOpenAuthSection.Reporting.Enabled;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Reporting"/> class.
+		/// </summary>
+		protected Reporting() {
 		}
 
 		/// <summary>
@@ -367,6 +374,7 @@ namespace DotNetOpenAuth {
 		/// Assembles a report for submission.
 		/// </summary>
 		/// <returns>A stream that contains the report.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "If we dispose of the StreamWriter, it disposes of the underlying stream.")]
 		private static Stream GetReport() {
 			var stream = new MemoryStream();
 			try {
@@ -553,6 +561,7 @@ namespace DotNetOpenAuth {
 		/// The identifier is made persistent by storing the identifier in isolated storage.
 		/// If an existing identifier is not found, a new one is created, persisted, and returned.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private static Guid GetOrCreateOriginIdentity() {
 			Requires.ValidState(file != null);
 			Contract.Ensures(Contract.Result<Guid>() != Guid.Empty);

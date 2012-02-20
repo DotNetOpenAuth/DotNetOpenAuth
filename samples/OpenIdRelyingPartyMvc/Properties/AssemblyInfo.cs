@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OpenIdRelyingPartyMvc")]
-[assembly: AssemblyCopyright("Copyright © Andrew Arnott 2008")]
+[assembly: AssemblyCopyright("Copyright © Outercurve Foundation 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

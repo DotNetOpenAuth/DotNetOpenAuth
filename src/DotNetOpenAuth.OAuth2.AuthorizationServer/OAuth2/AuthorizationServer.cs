@@ -1,12 +1,13 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthorizationServer.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AuthorizationServer.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -56,6 +57,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
 		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestInfo request = null) {
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
@@ -219,6 +221,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The response message to send to the client.</returns>
 		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
 			Requires.NotNull(request, "request");
+
+			if (includeRefreshToken) {
+				if (request is AccessTokenClientCredentialsRequest) {
+					// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
+					// in a response to an access token request that used the client credential grant type.
+					Logger.OAuth.Debug("Suppressing refresh token in access token response because the grant type used by the client disallows it.");
+					includeRefreshToken = false;
+				}
+			}
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
 			var response = new AccessTokenSuccessResponse(request) {

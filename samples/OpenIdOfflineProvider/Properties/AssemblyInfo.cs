@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AssemblyInfo.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -18,9 +18,9 @@ using System.Windows;
 [assembly: AssemblyTitle("OpenIdOfflineProvider")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Andrew Arnott")]
+[assembly: AssemblyCompany("Outercurve Foundation")]
 [assembly: AssemblyProduct("DotNetOpenAuth Offline OpenID Provider")]
-[assembly: AssemblyCopyright("Copyright © Andrew Arnott 2009")]
+[assembly: AssemblyCopyright("Copyright © Outercurve Foundation 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

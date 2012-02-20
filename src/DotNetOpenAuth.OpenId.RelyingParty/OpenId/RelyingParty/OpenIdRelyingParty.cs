@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdRelyingParty.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdRelyingParty.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
 	[ContractVerification(true)]
-	public class OpenIdRelyingParty : IDisposable {
+	public class OpenIdRelyingParty : IDisposable, IOpenIdHost {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
 		/// instance of <see cref="StandardRelyingPartyApplicationStore"/> to use.
@@ -54,9 +54,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private readonly ObservableCollection<IRelyingPartyBehavior> behaviors = new ObservableCollection<IRelyingPartyBehavior>();
 
 		/// <summary>
-		/// Backing field for the <see cref="DiscoveryServices"/> property.
+		/// The discovery services to use for identifiers.
 		/// </summary>
-		private readonly IList<IIdentifierDiscoveryService> discoveryServices = new List<IIdentifierDiscoveryService>(2);
+		private readonly IdentifierDiscoveryServices discoveryServices;
 
 		/// <summary>
 		/// A type initializer that ensures that another type initializer runs in order to guarantee that
@@ -130,10 +130,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.securitySettings = OpenIdElement.Configuration.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
-			foreach (var discoveryService in OpenIdElement.Configuration.RelyingParty.DiscoveryServices.CreateInstances(true)) {
-				this.discoveryServices.Add(discoveryService);
-			}
-
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
 			foreach (var behavior in OpenIdElement.Configuration.RelyingParty.Behaviors.CreateInstances(false)) {
 				this.behaviors.Add(behavior);
@@ -155,6 +151,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.channel = new OpenIdRelyingPartyChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
 			this.AssociationManager = new AssociationManager(this.Channel, new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore), this.SecuritySettings);
+			this.discoveryServices = new IdentifierDiscoveryServices(this);
 
 			Reporting.RecordFeatureAndDependencyUse(this, cryptoKeyStore, nonceStore);
 		}
@@ -230,6 +227,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the security settings.
+		/// </summary>
+		SecuritySettings IOpenIdHost.SecuritySettings {
+			get { return this.SecuritySettings; }
+		}
+
+		/// <summary>
 		/// Gets or sets the optional Provider Endpoint filter to use.
 		/// </summary>
 		/// <remarks>
@@ -283,7 +287,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the list of services that can perform discovery on identifiers given to this relying party.
 		/// </summary>
 		public IList<IIdentifierDiscoveryService> DiscoveryServices {
-			get { return this.discoveryServices; }
+			get { return this.discoveryServices.DiscoveryServices; }
+		}
+
+		/// <summary>
+		/// Gets the web request handler to use for discovery and the part of
+		/// authentication where direct messages are sent to an untrusted remote party.
+		/// </summary>
+		IDirectWebRequestHandler IOpenIdHost.WebRequestHandler {
+			get { return this.Channel.WebRequestHandler; }
 		}
 
 		/// <summary>
@@ -752,34 +764,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="identifier">The identifier to discover services for.</param>
 		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
 		internal IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
-			Requires.NotNull(identifier, "identifier");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
-
-			IEnumerable<IdentifierDiscoveryResult> results = Enumerable.Empty<IdentifierDiscoveryResult>();
-			foreach (var discoverer in this.DiscoveryServices) {
-				bool abortDiscoveryChain;
-				var discoveryResults = discoverer.Discover(identifier, this.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();
-				results = results.Concat(discoveryResults);
-				if (abortDiscoveryChain) {
-					Logger.OpenId.InfoFormat("Further discovery on '{0}' was stopped by the {1} discovery service.", identifier, discoverer.GetType().Name);
-					break;
-				}
-			}
-
-			// If any OP Identifier service elements were found, we must not proceed
-			// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.
-			// For a discussion on this topic, see
-			// http://groups.google.com/group/dotnetopenid/browse_thread/thread/4b5a8c6b2210f387/5e25910e4d2252c8
-			// Sometimes the IIdentifierDiscoveryService will automatically filter this for us, but
-			// just to be sure, we'll do it here as well.
-			if (!this.SecuritySettings.AllowDualPurposeIdentifiers) {
-				results = results.CacheGeneratedResults(); // avoid performing discovery repeatedly
-				var opIdentifiers = results.Where(result => result.ClaimedIdentifier == result.Protocol.ClaimedIdentifierForOPIdentifier);
-				var claimedIdentifiers = results.Where(result => result.ClaimedIdentifier != result.Protocol.ClaimedIdentifierForOPIdentifier);
-				results = opIdentifiers.Any() ? opIdentifiers : claimedIdentifiers;
-			}
-
-			return results;
+			return this.discoveryServices.Discover(identifier);
 		}
 
 		/// <summary>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4BFAA336-5DF3-4F27-82D3-06D13240E8AB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNetOpenAuth</RootNamespace>
+    <AssemblyName>DotNetOpenAuth.OpenIdOAuth</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
+    <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
+    <Compile Include="OAuth\ServiceProviderOpenIdProvider.cs" />
+    <Compile Include="OAuth\WebConsumerOpenIdRelyingParty.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
+      <Project>{115217C5-22CD-415C-A292-0DD0238CDD89}</Project>
+      <Name>DotNetOpenAuth.OAuth.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
+      <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>
+      <Name>DotNetOpenAuth.OAuth.Consumer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.ServiceProvider\DotNetOpenAuth.OAuth.ServiceProvider.csproj">
+      <Project>{FED1923A-6D70-49B5-A37A-FB744FEC1C86}</Project>
+      <Name>DotNetOpenAuth.OAuth.ServiceProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
+      <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
+      <Name>DotNetOpenAuth.OAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthAuthorizationServer.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OAuthAuthorizationServer.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -95,7 +95,7 @@ namespace RelyingPartyLogic {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
-		public IConsumerDescription GetClient(string clientIdentifier) {
+		public IClientDescription GetClient(string clientIdentifier) {
 			try {
 				return Database.DataContext.Clients.First(c => c.ClientIdentifier == clientIdentifier);
 			} catch (InvalidOperationException ex) {

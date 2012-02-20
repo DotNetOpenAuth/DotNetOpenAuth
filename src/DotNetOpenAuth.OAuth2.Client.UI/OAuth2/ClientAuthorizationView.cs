@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ClientAuthorizationView.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ClientAuthorizationView.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Data;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Drawing;
 	using System.Linq;
@@ -106,6 +107,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Avoid bug in .NET WebBrowser control.")]
+		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "It's a new instance we control.")]
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
@@ -144,7 +147,11 @@ namespace DotNetOpenAuth.OAuth2 {
 				try {
 					this.Client.ProcessUserAuthorization(location, this.Authorization);
 				} catch (ProtocolException ex) {
-					MessageBox.Show(ex.ToStringDescriptive());
+					var options = (MessageBoxOptions)0;
+					if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
+						options |= MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign;
+					}
+					MessageBox.Show(this, ex.ToStringDescriptive(), ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, options);
 				} finally {
 					this.OnCompleted();
 				}
@@ -167,26 +174,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void WebBrowser1_LocationChanged(object sender, EventArgs e) {
 			this.ProcessLocationChanged(this.webBrowser1.Url);
-		}
-
-		/// <summary>
-		/// Describes the results of a completed authorization flow.
-		/// </summary>
-		public class ClientAuthorizationCompleteEventArgs : EventArgs {
-			/// <summary>
-			/// Initializes a new instance of the <see cref="ClientAuthorizationCompleteEventArgs"/> class.
-			/// </summary>
-			/// <param name="authorization">The authorization.</param>
-			public ClientAuthorizationCompleteEventArgs(IAuthorizationState authorization) {
-				Requires.NotNull(authorization, "authorization");
-				this.Authorization = authorization;
-			}
-
-			/// <summary>
-			/// Gets the authorization tracking object.
-			/// </summary>
-			/// <value>Null if authorization was rejected by the user.</value>
-			public IAuthorizationState Authorization { get; private set; }
 		}
 	}
 }

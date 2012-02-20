@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuth2AuthorizationServerChannel.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OAuth2AuthorizationServerChannel.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -56,6 +56,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			var webResponse = new OutgoingWebResponse();
+			this.ApplyMessageTemplate(response, webResponse);
 			string json = this.SerializeAsJson(response);
 			webResponse.SetResponse(json, new ContentType(JsonEncoded));
 			return webResponse;

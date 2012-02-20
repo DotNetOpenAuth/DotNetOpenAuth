@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ResourceServer.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ResourceServer.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using ChannelElements;
+	using DotNetOpenAuth.OAuth.ChannelElements;
 	using Messages;
 	using Messaging;
 
@@ -81,9 +82,9 @@ namespace DotNetOpenAuth.OAuth2 {
 						return null;
 					}
 
-					throw ErrorUtilities.ThrowProtocol("Bad access token");
+					throw ErrorUtilities.ThrowProtocol(OAuth2Strings.InvalidAccessToken);
 				} else {
-					var response = new UnauthorizedResponse(new ProtocolException("Missing access token"));
+					var response = new UnauthorizedResponse(new ProtocolException(OAuth2Strings.MissingAccessToken));
 
 					userName = null;
 					scope = null;
@@ -111,7 +112,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			string username;
 			HashSet<string> scope;
 			var result = this.VerifyAccess(httpRequestInfo, out username, out scope);
-			principal = result == null ? new OAuth.ChannelElements.OAuthPrincipal(username, scope != null ? scope.ToArray() : new string[0]) : null;
+			principal = result == null ? new OAuthPrincipal(username, scope != null ? scope.ToArray() : new string[0]) : null;
 			return result;
 		}
 

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IAuthorizationServer.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="IAuthorizationServer.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
-		IConsumerDescription GetClient(string clientIdentifier);
+		IClientDescription GetClient(string clientIdentifier);
 
 		/// <summary>
 		/// Determines whether a described authorization is (still) valid.
@@ -202,9 +202,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
-		IConsumerDescription IAuthorizationServer.GetClient(string clientIdentifier) {
+		IClientDescription IAuthorizationServer.GetClient(string clientIdentifier) {
 			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
-			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
+			Contract.Ensures(Contract.Result<IClientDescription>() != null);
 			throw new NotImplementedException();
 		}
 

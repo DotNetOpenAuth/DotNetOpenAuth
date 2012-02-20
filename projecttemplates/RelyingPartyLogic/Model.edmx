@@ -55,6 +55,7 @@
           <Property Name="ClientIdentifier" Type="varchar" Nullable="false" MaxLength="255" />
           <Property Name="ClientSecret" Type="varchar" MaxLength="255" />
           <Property Name="Callback" Type="varchar" MaxLength="2048" />
+          <Property Name="ClientType" Type="int" Nullable="false" />
           <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
         </EntityType>
         <EntityType Name="ClientAuthorization">
@@ -274,6 +275,7 @@
           <Property Type="String" Name="CallbackAsString" MaxLength="2048" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Name" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="ClientAuthorizations" Relationship="DatabaseModel.FK_IssuedToken_Consumer" FromRole="Client" ToRole="ClientAuthorization" />
+          <Property Type="Int32" Name="ClientType" Nullable="false" />
         </EntityType>
         <EntityType Name="ClientAuthorization">
           <Key>
@@ -363,6 +365,7 @@
           <EntitySetMapping Name="Clients">
             <EntityTypeMapping TypeName="DatabaseModel.Client">
               <MappingFragment StoreEntitySet="Client">
+                <ScalarProperty Name="ClientType" ColumnName="ClientType" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="CallbackAsString" ColumnName="Callback" />
                 <ScalarProperty Name="ClientSecret" ColumnName="ClientSecret" />
@@ -441,11 +444,11 @@
           <ConnectorPoint PointX="4.625" PointY="1.9324446614583337" />
           <ConnectorPoint PointX="5.25" PointY="1.9324446614583337" /></AssociationConnector>
         <EntityTypeShape EntityType="DatabaseModel.Nonce" Width="1.5" PointX="9.625" PointY="0.75" Height="1.9802864583333326" />
-        <EntityTypeShape EntityType="DatabaseModel.Client" Width="1.625" PointX="5.25" PointY="3.75" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="DatabaseModel.Client" Width="1.625" PointX="5.25" PointY="3.75" Height="2.3648893229166665" />
         <EntityTypeShape EntityType="DatabaseModel.ClientAuthorization" Width="1.75" PointX="2.875" PointY="3.75" Height="2.1725878906250031" />
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_Consumer" >
-          <ConnectorPoint PointX="5.25" PointY="4.8362939453125" />
-          <ConnectorPoint PointX="4.625" PointY="4.8362939453125" />
+          <ConnectorPoint PointX="5.25" PointY="4.8362939453125016" />
+          <ConnectorPoint PointX="4.625" PointY="4.8362939453125016" />
         </AssociationConnector>
         <AssociationConnector Association="DatabaseModel.FK_IssuedToken_User" >
           <ConnectorPoint PointX="3.75" PointY="3.2494921875" />

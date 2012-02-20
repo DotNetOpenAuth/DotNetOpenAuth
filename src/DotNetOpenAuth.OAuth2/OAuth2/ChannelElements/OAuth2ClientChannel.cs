@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuth2ClientChannel.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OAuth2ClientChannel.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
 				return HttpUtility.ParseQueryString(body).ToDictionary();
 			} else {
-				throw ErrorUtilities.ThrowProtocol("Unexpected response Content-Type {0}", response.ContentType.MediaType);
+				throw ErrorUtilities.ThrowProtocol(OAuthStrings.UnexpectedResponseContentType, response.ContentType.MediaType);
 			}
 		}
 
