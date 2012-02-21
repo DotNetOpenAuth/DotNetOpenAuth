@@ -142,7 +142,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			ErrorUtilities.VerifyInternal(this.incomingMessage == null, "Oops, a message is already waiting for the remote party!");
 			this.incomingMessage = this.MessageDescriptions.GetAccessor(message).Serialize();
 			var directedMessage = message as IDirectedProtocolMessage;
-			this.incomingMessageRecipient = directedMessage != null ? new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods) : null;
+			this.incomingMessageRecipient = (directedMessage != null && directedMessage.Recipient != null) ? new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods) : null;
 			this.incomingMessageSignal.Set();
 		}
 

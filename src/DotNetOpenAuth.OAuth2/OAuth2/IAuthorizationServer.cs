@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	[ContractClass(typeof(IAuthorizationServerContract))]
 	public interface IAuthorizationServer {
 		/// <summary>
-		/// Gets the store for storeing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
+		/// Gets the store for storing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
 		/// <remarks>
 		/// This store should be kept strictly confidential in the authorization server(s)

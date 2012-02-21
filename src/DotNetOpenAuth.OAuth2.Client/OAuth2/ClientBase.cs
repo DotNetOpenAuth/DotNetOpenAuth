@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the OAuth channel.
 		/// </summary>
 		/// <value>The channel.</value>
-		public Channel Channel { get; private set; }
+		public Channel Channel { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.

@@ -26,6 +26,7 @@
     <Compile Include="OAuth2\ChannelElements\AuthServerBindingElementBase.cs" />
     <Compile Include="OAuth2\ChannelElements\GrantTypeEncoder.cs" />
     <Compile Include="OAuth2\ChannelElements\EndUserAuthorizationResponseTypeEncoder.cs" />
+    <Compile Include="OAuth2\ChannelElements\IOAuth2ChannelWithAuthorizationServer.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ChannelBase.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ClientChannel.cs" />
     <Compile Include="OAuth2\ChannelElements\ScopeEncoder.cs" />
@@ -36,6 +37,7 @@
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCodeBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerAllFlowsBindingElement.cs" />
+    <Compile Include="OAuth2\ClientDescription.cs" />
     <Compile Include="OAuth2\ClientType.cs" />
     <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\IAuthorizationServer.cs" />

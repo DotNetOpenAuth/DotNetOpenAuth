@@ -86,5 +86,14 @@ namespace DotNetOpenAuth.OAuth2 {
                 return ResourceManager.GetString("AuthorizationResponseUnexpectedMismatch", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property {0} must be set before this operation is allowed..
+        /// </summary>
+        internal static string RequiredPropertyNotYetPreset {
+            get {
+                return ResourceManager.GetString("RequiredPropertyNotYetPreset", resourceCulture);
+            }
+        }
     }
 }

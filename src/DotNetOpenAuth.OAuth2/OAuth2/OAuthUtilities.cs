@@ -141,7 +141,9 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Ensures(Contract.Result<IClientDescription>() != null);
 
 			try {
-				return authorizationServer.GetClient(clientIdentifier);
+				var result = authorizationServer.GetClient(clientIdentifier);
+				ErrorUtilities.VerifyHost(result != null, OAuthStrings.ResultShouldNotBeNull, authorizationServer.GetType().FullName, "GetClient(string)");
+				return result;
 			} catch (KeyNotFoundException ex) {
 				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
 			} catch (ArgumentException ex) {

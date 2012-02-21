@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// The channel for the OAuth protocol.
 	/// </summary>
-	internal class OAuth2AuthorizationServerChannel : OAuth2ChannelBase {
+	internal class OAuth2AuthorizationServerChannel : OAuth2ChannelBase, IOAuth2ChannelWithAuthorizationServer {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2AuthorizationServerChannel"/> class.
 		/// </summary>

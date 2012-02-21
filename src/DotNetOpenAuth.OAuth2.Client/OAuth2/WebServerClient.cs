@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public OutgoingWebResponse PrepareRequestUserAuthorization(IAuthorizationState authorization, string state = null) {
 			Requires.NotNull(authorization, "authorization");
 			Requires.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			if (authorization.Callback == null) {
@@ -97,8 +97,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
 		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request = null) {
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientSecret));
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientSecret), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientSecret");
 
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();

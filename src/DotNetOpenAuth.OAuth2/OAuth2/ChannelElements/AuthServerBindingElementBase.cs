@@ -18,8 +18,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthServerBindingElementBase"/> class.
 		/// </summary>
-		protected AuthServerBindingElementBase()
-		{
+		protected AuthServerBindingElementBase() {
 		}
 
 		/// <summary>
@@ -39,21 +38,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public abstract MessageProtections Protection { get; }
 
 		/// <summary>
-		/// Gets the channel that this binding element belongs to.
-		/// </summary>
-		/// <remarks>
-		/// This property is set by the channel when it is first constructed.
-		/// </remarks>
-		protected OAuth2AuthorizationServerChannel OAuthChannel {
-			get { return (OAuth2AuthorizationServerChannel)this.Channel; }
-		}
-
-		/// <summary>
 		/// Gets the authorization server hosting this channel.
 		/// </summary>
 		/// <value>The authorization server.</value>
 		protected IAuthorizationServer AuthorizationServer {
-			get { return this.OAuthChannel.AuthorizationServer; }
+			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
 		}
 
 		/// <summary>

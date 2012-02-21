@@ -126,4 +126,7 @@
   <data name="AuthorizationResponseUnexpectedMismatch" xml:space="preserve">
     <value>Unexpected OAuth authorization response received with callback and client state that does not match an expected value.</value>
   </data>
+  <data name="RequiredPropertyNotYetPreset" xml:space="preserve">
+    <value>The property {0} must be set before this operation is allowed.</value>
+  </data>
 </root>

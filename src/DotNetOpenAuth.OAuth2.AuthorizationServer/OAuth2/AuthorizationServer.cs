@@ -26,29 +26,22 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationServer">The authorization server.</param>
 		public AuthorizationServer(IAuthorizationServer authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			this.OAuthChannel = new OAuth2AuthorizationServerChannel(authorizationServer);
+			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer);
 		}
 
 		/// <summary>
 		/// Gets the channel.
 		/// </summary>
 		/// <value>The channel.</value>
-		public Channel Channel {
-			get { return this.OAuthChannel; }
-		}
+		public Channel Channel { get; internal set; }
 
 		/// <summary>
 		/// Gets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.</value>
 		public IAuthorizationServer AuthorizationServerServices {
-			get { return this.OAuthChannel.AuthorizationServer; }
+			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
 		}
-
-		/// <summary>
-		/// Gets the channel.
-		/// </summary>
-		internal OAuth2AuthorizationServerChannel OAuthChannel { get; private set; }
 
 		/// <summary>
 		/// Reads in a client's request for the Authorization Server to obtain permission from
