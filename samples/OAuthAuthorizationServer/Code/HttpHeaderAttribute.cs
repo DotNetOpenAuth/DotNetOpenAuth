@@ -10,6 +10,16 @@
 	/// </summary>
 	public class HttpHeaderAttribute : ActionFilterAttribute {
 		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpHeaderAttribute"/> class.
+		/// </summary>
+		/// <param name="name">The HTTP header name.</param>
+		/// <param name="value">The HTTP header value.</param>
+		public HttpHeaderAttribute(string name, string value) {
+			this.Name = name;
+			this.Value = value;
+		}
+
+		/// <summary>
 		/// Gets or sets the name of the HTTP Header.
 		/// </summary>
 		public string Name { get; set; }
@@ -20,19 +30,11 @@
 		public string Value { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="HttpHeaderAttribute"/> class.
-		/// </summary>
-		public HttpHeaderAttribute(string name, string value) {
-			Name = name;
-			Value = value;
-		}
-
-		/// <summary>
 		/// Called by the MVC framework after the action result executes.
 		/// </summary>
 		/// <param name="filterContext">The filter context.</param>
 		public override void OnResultExecuted(ResultExecutedContext filterContext) {
-			filterContext.HttpContext.Response.AppendHeader(Name, Value);
+			filterContext.HttpContext.Response.AppendHeader(this.Name, this.Value);
 			base.OnResultExecuted(filterContext);
 		}
 	}
