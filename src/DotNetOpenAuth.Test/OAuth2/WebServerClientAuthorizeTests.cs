@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthorizeTests.cs" company="Outercurve Foundation">
+// <copyright file="WebServerClientAuthorizeTests.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -9,21 +9,17 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2;
-	using DotNetOpenAuth.OAuth2.ChannelElements;
-	using DotNetOpenAuth.OAuth2.Messages;
-	using Moq;
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class AuthorizeTests : OAuth2TestBase {
+	public class WebServerClientAuthorizeTests : OAuth2TestBase {
 		[TestCase]
-		public void AuthCodeGrantAuthorization() {
-			var coordinator = new OAuth2Coordinator(
+		public void AuthorizationCodeGrantAuthorization() {
+			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
 				AuthorizationServerMock,
+				new WebServerClient(AuthorizationServerDescription),
 				client => {
 					var authState = new AuthorizationState {
 						Callback = ClientCallback,

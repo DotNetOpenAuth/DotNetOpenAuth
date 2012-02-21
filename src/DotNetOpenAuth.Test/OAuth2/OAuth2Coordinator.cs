@@ -12,34 +12,43 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.Test.Mocks;
 
-	internal class OAuth2Coordinator : CoordinatorBase<WebServerClient, AuthorizationServer> {
+	internal class OAuth2Coordinator<TClient> : CoordinatorBase<TClient, AuthorizationServer>
+		where TClient : ClientBase {
 		private readonly AuthorizationServerDescription serverDescription;
 		private readonly IAuthorizationServer authServerHost;
+		private readonly TClient client;
 
-		internal OAuth2Coordinator(AuthorizationServerDescription serverDescription, IAuthorizationServer authServerHost, Action<WebServerClient> clientAction, Action<AuthorizationServer> authServerAction)
+		internal OAuth2Coordinator(
+			AuthorizationServerDescription serverDescription,
+			IAuthorizationServer authServerHost,
+			TClient client,
+			Action<TClient> clientAction,
+			Action<AuthorizationServer> authServerAction)
 			: base(clientAction, authServerAction) {
 			Requires.NotNull(serverDescription, "serverDescription");
 			Requires.NotNull(authServerHost, "authServerHost");
+			Requires.NotNull(client, "client");
+
 			this.serverDescription = serverDescription;
 			this.authServerHost = authServerHost;
+			this.client = client;
+
+			this.client.ClientIdentifier = OAuth2TestBase.ClientId;
+			this.client.ClientSecret = OAuth2TestBase.ClientSecret;
 		}
 
 		internal override void Run() {
-			var client = new WebServerClient(this.serverDescription) {
-				ClientIdentifier = OAuth2TestBase.ClientId,
-				ClientSecret = OAuth2TestBase.ClientSecret,
-			};
 			var authServer = new AuthorizationServer(this.authServerHost);
 
-			var rpCoordinatingChannel = new CoordinatingChannel(client.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
+			var rpCoordinatingChannel = new CoordinatingChannel(this.client.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			var opCoordinatingChannel = new CoordinatingOAuth2AuthServerChannel(authServer.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			rpCoordinatingChannel.RemoteChannel = opCoordinatingChannel;
 			opCoordinatingChannel.RemoteChannel = rpCoordinatingChannel;
 
-			client.Channel = rpCoordinatingChannel;
+			this.client.Channel = rpCoordinatingChannel;
 			authServer.Channel = opCoordinatingChannel;
 
-			this.RunCore(client, authServer);
+			this.RunCore(this.client, authServer);
 		}
 
 		private static Action<WebServerClient> WrapAction(Action<WebServerClient> action) {

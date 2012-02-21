@@ -72,17 +72,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorization, "authorization");
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
-			if (authorization.Callback == null) {
-				authorization.Callback = new Uri("http://localhost/");
-			}
-
-			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
-				ClientIdentifier = this.ClientIdentifier,
-				Callback = authorization.Callback,
-				ClientState = state,
-			};
-			request.Scope.ResetContents(authorization.Scope);
-
+			var request = this.PrepareRequestUserAuthorization(authorization, state);
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);
 		}
 
@@ -105,6 +95,21 @@ namespace DotNetOpenAuth.OAuth2 {
 				return null;
 			}
 
+			return this.ProcessUserAuthorization(authorizationState, response);
+		}
+
+		/// <summary>
+		/// Scans the incoming request for an authorization response message.
+		/// </summary>
+		/// <param name="authorizationState">The authorization.</param>
+		/// <param name="response">The incoming authorization response message.</param>
+		/// <returns>
+		/// The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.
+		/// </returns>
+		internal IAuthorizationState ProcessUserAuthorization(IAuthorizationState authorizationState, IDirectedProtocolMessage response) {
+			Requires.NotNull(authorizationState, "authorizationState");
+			Requires.NotNull(response, "response");
+
 			EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess;
 			EndUserAuthorizationSuccessAuthCodeResponse authCodeSuccess;
 			EndUserAuthorizationFailedResponse failure;
@@ -118,6 +123,33 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			return authorizationState;
+		}
+
+		/// <summary>
+		/// Generates a URL that the user's browser can be directed to in order to authorize
+		/// this client to access protected data at some resource server.
+		/// </summary>
+		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
+		/// <param name="state">The client state that should be returned with the authorization response.</param>
+		/// <returns>
+		/// A message to send to the authorization server.
+		/// </returns>
+		internal EndUserAuthorizationRequest PrepareRequestUserAuthorization(IAuthorizationState authorization, string state = null) {
+			Requires.NotNull(authorization, "authorization");
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
+
+			if (authorization.Callback == null) {
+				authorization.Callback = new Uri("http://localhost/");
+			}
+
+			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
+				ClientIdentifier = this.ClientIdentifier,
+				Callback = authorization.Callback,
+				ClientState = state,
+			};
+			request.Scope.ResetContents(authorization.Scope);
+
+			return request;
 		}
 	}
 }
