@@ -20,22 +20,18 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	[TestFixture]
 	public class AuthorizeTests : OAuth2TestBase {
 		[TestCase]
-		public void Test1() {
-			var authHostMock = new Mock<IAuthorizationServer>();
-			var cryptoStore = new MemoryCryptoKeyStore();
-			authHostMock.Setup(m => m.GetClient(ClientId)).Returns(ClientDescription);
-			authHostMock.SetupGet(m => m.CryptoKeyStore).Returns(cryptoStore);
-			authHostMock.Setup(m => m.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.ClientIdentifier == ClientId && d.User == Username))).Returns(true);
+		public void AuthCodeGrantAuthorization() {
 			var coordinator = new OAuth2Coordinator(
 				AuthorizationServerDescription,
-				authHostMock.Object,
+				AuthorizationServerMock,
 				client => {
 					var authState = new AuthorizationState {
 						Callback = ClientCallback,
 					};
 					client.PrepareRequestUserAuthorization(authState).Respond();
 					var result = client.ProcessUserAuthorization();
-					Assert.IsNotNull(result.AccessToken);
+					Assert.IsNotNullOrEmpty(result.AccessToken);
+					Assert.IsNotNullOrEmpty(result.RefreshToken);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
