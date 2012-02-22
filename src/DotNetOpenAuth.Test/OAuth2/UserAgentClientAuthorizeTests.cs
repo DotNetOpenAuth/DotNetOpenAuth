@@ -30,6 +30,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 						Callback = ClientCallback,
 					};
 					var request = client.PrepareRequestUserAuthorization(authState);
+					Assert.AreEqual(EndUserAuthorizationResponseType.AuthorizationCode, request.ResponseType);
 					client.Channel.Respond(request);
 					var incoming = client.Channel.ReadFromRequest();
 					var result = client.ProcessUserAuthorization(authState, incoming);
@@ -59,8 +60,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var authState = new AuthorizationState {
 						Callback = ClientCallback,
 					};
-					var request = client.PrepareRequestUserAuthorization(authState);
-					request.ResponseType = EndUserAuthorizationResponseType.AccessToken;
+					var request = client.PrepareRequestUserAuthorization(authState, implicitResponseType: true);
+					Assert.AreEqual(EndUserAuthorizationResponseType.AccessToken, request.ResponseType);
 					client.Channel.Respond(request);
 					var incoming = client.Channel.ReadFromRequest();
 					var result = client.ProcessUserAuthorization(authState, incoming);
@@ -69,7 +70,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
-					IAccessTokenRequest accessTokenRequest = request;
+					IAccessTokenRequest accessTokenRequest = (EndUserAuthorizationImplicitRequest)request;
 					Assert.IsFalse(accessTokenRequest.ClientAuthenticated);
 					server.ApproveAuthorizationRequest(request, Username);
 				});

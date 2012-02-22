@@ -50,6 +50,7 @@
     <Compile Include="OAuth2\Messages\AccessTokenRequestBase.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenClientCredentialsRequest.cs" />
     <Compile Include="OAuth2\Messages\AuthenticatedClientRequestBase.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationImplicitRequest.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAccessTokenResponse.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationFailedResponse.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponse.cs" />

@@ -45,6 +45,17 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		}
 
 		[TestCase]
+		public void EndUserAuthorizationImplicitRequest() {
+			var fields = new Dictionary<string, string> {
+				{ Protocol.response_type, "token" },
+				{ Protocol.client_id, "abc" },
+				{ Protocol.redirect_uri, "abc" },
+			};
+			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			Assert.IsInstanceOf(typeof(EndUserAuthorizationImplicitRequest), request);
+		}
+
+		[TestCase]
 		public void EndUserAuthorizationSuccessResponseWithCode() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.code, "abc" },
