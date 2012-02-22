@@ -40,6 +40,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var request = server.ReadAuthorizationRequest();
 					server.ApproveAuthorizationRequest(request, Username);
 					var tokenRequest = server.ReadAccessTokenRequest();
+					IAccessTokenRequest accessTokenRequest = tokenRequest;
+					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
 					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
 					server.Channel.Respond(tokenResponse);
 				});
@@ -48,10 +50,11 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 		[TestCase]
 		public void ImplicitGrantAuthorization() {
+			var coordinatorClient = new UserAgentClient(AuthorizationServerDescription);
 			var coordinator = new OAuth2Coordinator<UserAgentClient>(
 				AuthorizationServerDescription,
 				AuthorizationServerMock,
-				new UserAgentClient(AuthorizationServerDescription),
+				coordinatorClient,
 				client => {
 					var authState = new AuthorizationState {
 						Callback = ClientCallback,
@@ -66,8 +69,12 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
+					IAccessTokenRequest accessTokenRequest = request;
+					Assert.IsFalse(accessTokenRequest.ClientAuthenticated);
 					server.ApproveAuthorizationRequest(request, Username);
 				});
+
+			coordinatorClient.ClientSecret = null; // implicit grant clients don't need a secret.
 			coordinator.Run();
 		}
 	}

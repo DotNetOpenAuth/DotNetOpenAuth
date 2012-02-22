@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.OAuth2.Messages;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -33,6 +34,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var request = server.ReadAuthorizationRequest();
 					server.ApproveAuthorizationRequest(request, Username);
 					var tokenRequest = server.ReadAccessTokenRequest();
+					IAccessTokenRequest accessTokenRequest = tokenRequest;
+					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
 					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
 					server.Channel.Respond(tokenResponse);
 				});
