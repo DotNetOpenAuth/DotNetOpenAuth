@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the grant type that the client expects of the authorization server.
 		/// </summary>
-		/// <value>Always <see cref="EndUserAuthorizationResponseType.Token"/>.  Other response types are not supported.</value>
+		/// <value>Always <see cref="EndUserAuthorizationResponseType.AccessToken"/>.  Other response types are not supported.</value>
 		[MessagePart(Protocol.response_type, IsRequired = true, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
 		private const EndUserAuthorizationResponseType ResponseTypeConst = EndUserAuthorizationResponseType.AccessToken;
 
