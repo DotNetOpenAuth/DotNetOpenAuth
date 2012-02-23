@@ -64,10 +64,11 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
 		}
 
-		[TestCase, Ignore("Not yet supported")]
+		[TestCase]
 		public void EndUserAuthorizationSuccessResponseWithAccessToken() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.access_token, "abc" },
+				{ Protocol.token_type, "bearer" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
