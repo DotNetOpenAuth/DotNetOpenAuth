@@ -55,26 +55,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as IAuthorizationCarryingRequest;
-			if (response != null) {
-				switch (response.CodeOrTokenType) {
-					case CodeOrTokenType.AuthorizationCode:
-						var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-						var code = (AuthorizationCode)response.AuthorizationDescription;
-						response.CodeOrToken = codeFormatter.Serialize(code);
-						break;
-					case CodeOrTokenType.AccessToken:
-						var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
-						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
+			if (authCodeCarrier != null) {
+				var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
+				var code = authCodeCarrier.AuthorizationDescription;
+				authCodeCarrier.Code = codeFormatter.Serialize(code);
+				return MessageProtections.None;
+			}
 
-						using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
-							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
-							var token = (AccessToken)response.AuthorizationDescription;
-							response.CodeOrToken = tokenFormatter.Serialize(token);
-							break;
-						}
-					default:
-						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));
+			var accessTokenCarrier = message as IAccessTokenCarryingRequest;
+			if (accessTokenCarrier != null) {
+				var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
+				var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+
+				using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
+					var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
+					var token = accessTokenCarrier.AuthorizationDescription;
+					accessTokenCarrier.AccessToken = tokenFormatter.Serialize(token);
 				}
 
 				return MessageProtections.None;
@@ -115,19 +112,18 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var tokenRequest = message as IAuthorizationCarryingRequest;
 			if (tokenRequest != null) {
 				try {
-					switch (tokenRequest.CodeOrTokenType) {
-						case CodeOrTokenType.AuthorizationCode:
-							var verificationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-							var verificationCode = verificationCodeFormatter.Deserialize(message, tokenRequest.CodeOrToken);
-							tokenRequest.AuthorizationDescription = verificationCode;
-							break;
-						case CodeOrTokenType.RefreshToken:
-							var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-							var refreshToken = refreshTokenFormatter.Deserialize(message, tokenRequest.CodeOrToken);
-							tokenRequest.AuthorizationDescription = refreshToken;
-							break;
-						default:
-							throw ErrorUtilities.ThrowInternal("Unexpected value for CodeOrTokenType: " + tokenRequest.CodeOrTokenType);
+					var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
+					var refreshTokenCarrier = message as IRefreshTokenCarryingRequest;
+					if (authCodeCarrier != null) {
+						var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
+						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code);
+						authCodeCarrier.AuthorizationDescription = authorizationCode;
+					} else if (refreshTokenCarrier != null) {
+						var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
+						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken);
+						refreshTokenCarrier.AuthorizationDescription = refreshToken;
+					} else {
+						throw ErrorUtilities.ThrowInternal("Unexpected message type: " + tokenRequest.GetType());
 					}
 				} catch (ExpiredMessageException ex) {
 					throw ErrorUtilities.Wrap(ex, Protocol.authorization_expired);

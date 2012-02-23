@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// When support for additional access token types is added, this class should probably be refactored
 	/// into derived types, where each derived type supports a particular access token type.
 	/// </remarks>
-	internal class AccessProtectedResourceRequest : MessageBase, IAuthorizationCarryingRequest {
+	internal class AccessProtectedResourceRequest : MessageBase, IAccessTokenCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
 		/// </summary>
@@ -30,19 +30,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: base(version, MessageTransport.Direct, recipient) {
 		}
 
-		/// <summary>
-		/// Gets the type of the code or token.
-		/// </summary>
-		/// <value>The type of the code or token.</value>
-		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.AccessToken; }
-		}
+		#region IAccessTokenCarryingRequest Members
 
 		/// <summary>
-		/// Gets or sets the verification code or refresh/access token.
+		/// Gets or sets the access token.
 		/// </summary>
-		/// <value>The code or token.</value>
-		string IAuthorizationCarryingRequest.CodeOrToken {
+		string IAccessTokenCarryingRequest.AccessToken {
 			get { return this.AccessToken; }
 			set { this.AccessToken = value; }
 		}
@@ -50,7 +43,16 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
-		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
+		AccessToken IAccessTokenCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets the authorization that the token describes.
+		/// </summary>
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
+			get { return ((IAccessTokenCarryingRequest)this).AuthorizationDescription; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets the type of the access token.
