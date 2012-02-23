@@ -19,7 +19,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 		protected internal const string ClientSecret = "TestClientSecret";
 
-		protected const string Username = "TestUser";
+		protected const string ResourceOwnerUsername = "TestUser";
+
+		protected const string ResourceOwnerPassword = "TestUserPassword";
 
 		protected static readonly Uri ClientCallback = new Uri("http://client/callback");
 
@@ -40,7 +42,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			var cryptoStore = new MemoryCryptoKeyStore();
 			authHostMock.Setup(m => m.GetClient(ClientId)).Returns(ClientDescription);
 			authHostMock.SetupGet(m => m.CryptoKeyStore).Returns(cryptoStore);
-			authHostMock.Setup(m => m.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.ClientIdentifier == ClientId && d.User == Username))).Returns(true);
+			authHostMock.Setup(m => m.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername))).Returns(true);
 			return authHostMock;
 		}
 	}

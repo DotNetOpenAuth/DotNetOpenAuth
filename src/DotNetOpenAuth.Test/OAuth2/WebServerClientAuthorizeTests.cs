@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	[TestFixture]
 	public class WebServerClientAuthorizeTests : OAuth2TestBase {
 		[TestCase]
-		public void AuthorizationCodeGrantAuthorization() {
+		public void AuthorizationCodeGrant() {
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
 				AuthorizationServerMock,
@@ -32,12 +32,31 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
-					server.ApproveAuthorizationRequest(request, Username);
+					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 					var tokenRequest = server.ReadAccessTokenRequest();
 					IAccessTokenRequest accessTokenRequest = tokenRequest;
 					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
 					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
 					server.Channel.Respond(tokenResponse);
+				});
+			coordinator.Run();
+		}
+
+		[TestCase, Ignore("Not yet passing")]
+		public void ResourceOwnerPasswordCredentialGrant() {
+			var coordinator = new OAuth2Coordinator<WebServerClient>(
+				AuthorizationServerDescription,
+				AuthorizationServerMock,
+				new WebServerClient(AuthorizationServerDescription),
+				client => {
+					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword);
+					Assert.IsNotNullOrEmpty(authState.AccessToken);
+					Assert.IsNotNullOrEmpty(authState.RefreshToken);
+				},
+				server => {
+					var request = server.ReadAccessTokenRequest();
+					var response = server.PrepareAccessTokenResponse(request);
+					server.Channel.Respond(response);
 				});
 			coordinator.Run();
 		}

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Security;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -153,6 +154,40 @@ namespace DotNetOpenAuth.OAuth2 {
 			UpdateAuthorizationWithResponse(authorization, response);
 
 			return authorization;
+		}
+
+		/// <summary>
+		/// Exchanges a resource owner's password credential for OAuth 2.0 refresh and access tokens.
+		/// </summary>
+		/// <param name="userName">The resource owner's username, as it is known by the authorization server.</param>
+		/// <param name="password">The resource owner's account password.</param>
+		/// <param name="scopes">The desired scope of access.</param>
+		/// <returns>The result, containing the tokens if successful.</returns>
+		public IAuthorizationState ExchangeUserCredentialForToken(string userName, string password, IEnumerable<string> scopes = null) {
+			Requires.NotNullOrEmpty(userName, "userName");
+			Requires.NotNull(password, "password");
+
+			var authorizationState = new AuthorizationState(scopes);
+
+			var request = new AccessTokenResourceOwnerPasswordCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version) {
+				ClientIdentifier = this.ClientIdentifier,
+				ClientSecret = this.ClientSecret,
+				UserName = userName,
+				Password = password,
+			};
+
+			var response = this.Channel.Request(request);
+			var success = response as AccessTokenSuccessResponse;
+			var failure = response as AccessTokenFailedResponse;
+			ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
+			if (success != null) {
+				UpdateAuthorizationWithResponse(authorizationState, success);
+			} else { // failure
+				Logger.OAuth.Info("Resource Owner credentials rejected by the Authorization Server.");
+				authorizationState.Delete();
+			}
+
+			return authorizationState;
 		}
 
 		/// <summary>

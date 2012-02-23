@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	[TestFixture]
 	public class UserAgentClientAuthorizeTests : OAuth2TestBase {
 		[TestCase]
-		public void AuthorizationCodeGrantAuthorization() {
+		public void AuthorizationCodeGrant() {
 			var coordinator = new OAuth2Coordinator<UserAgentClient>(
 				AuthorizationServerDescription,
 				AuthorizationServerMock,
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
-					server.ApproveAuthorizationRequest(request, Username);
+					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 					var tokenRequest = server.ReadAccessTokenRequest();
 					IAccessTokenRequest accessTokenRequest = tokenRequest;
 					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		}
 
 		[TestCase]
-		public void ImplicitGrantAuthorization() {
+		public void ImplicitGrant() {
 			var coordinatorClient = new UserAgentClient(AuthorizationServerDescription);
 			var coordinator = new OAuth2Coordinator<UserAgentClient>(
 				AuthorizationServerDescription,
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var request = server.ReadAuthorizationRequest();
 					IAccessTokenRequest accessTokenRequest = (EndUserAuthorizationImplicitRequest)request;
 					Assert.IsFalse(accessTokenRequest.ClientAuthenticated);
-					server.ApproveAuthorizationRequest(request, Username);
+					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 				});
 
 			coordinatorClient.ClientSecret = null; // implicit grant clients don't need a secret.
