@@ -28,6 +28,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="version">The version.</param>
 		internal AccessProtectedResourceRequest(Uri recipient, Version version)
 			: base(version, MessageTransport.Direct, recipient) {
+			this.HttpMethods = HttpDeliveryMethods.HttpVerbMask;
 		}
 
 		#region IAccessTokenCarryingRequest Members
