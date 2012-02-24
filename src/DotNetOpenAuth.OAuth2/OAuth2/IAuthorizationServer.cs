@@ -113,6 +113,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// account or piece of hardware in which the tokens were stored. </para>
 		/// </remarks>
 		bool IsAuthorizationValid(IAuthorizationDescription authorization);
+
+		/// <summary>
+		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database.
+		/// </summary>
+		/// <param name="userName">Username on the account.</param>
+		/// <param name="password">The user's password.</param>
+		/// <returns>
+		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
+		bool IsResourceOwnerCredentialValid(string userName, string password);
 	}
 
 	/// <summary>
@@ -232,6 +243,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </remarks>
 		bool IAuthorizationServer.IsAuthorizationValid(IAuthorizationDescription authorization) {
 			Requires.NotNull(authorization, "authorization");
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database.
+		/// </summary>
+		/// <param name="userName">Username on the account.</param>
+		/// <param name="password">The user's password.</param>
+		/// <returns>
+		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
+		bool IAuthorizationServer.IsResourceOwnerCredentialValid(string userName, string password) {
+			Contract.Requires(!String.IsNullOrEmpty(userName));
+			Contract.Requires(password != null);
 			throw new NotImplementedException();
 		}
 	}

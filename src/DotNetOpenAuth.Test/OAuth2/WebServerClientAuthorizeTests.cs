@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			coordinator.Run();
 		}
 
-		[TestCase, Ignore("Not yet passing")]
+		[TestCase]
 		public void ResourceOwnerPasswordCredentialGrant() {
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,

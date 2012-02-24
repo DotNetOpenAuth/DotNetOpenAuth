@@ -114,6 +114,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				try {
 					var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
 					var refreshTokenCarrier = message as IRefreshTokenCarryingRequest;
+					var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
 					if (authCodeCarrier != null) {
 						var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
 						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code);
@@ -122,6 +123,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
 						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken);
 						refreshTokenCarrier.AuthorizationDescription = refreshToken;
+					} else if (resourceOwnerPasswordCarrier != null) {
+						try {
+							if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
+								resourceOwnerPasswordCarrier.CredentialsValidated = true;
+							} else {
+								Logger.OAuth.WarnFormat("Resource owner password credential for user \"{0}\" rejected by authorization server host.", resourceOwnerPasswordCarrier.UserName);
+
+								// TODO: fix this to report the appropriate error code for a bad credential.
+								throw new ProtocolException();
+							}
+						} catch (NotSupportedException) {
+							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
+							throw new ProtocolException();
+						} catch (NotImplementedException) {
+							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
+							throw new ProtocolException();
+						}
 					} else {
 						throw ErrorUtilities.ThrowInternal("Unexpected message type: " + tokenRequest.GetType());
 					}

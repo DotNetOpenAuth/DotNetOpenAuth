@@ -43,6 +43,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authHostMock.Setup(m => m.GetClient(ClientId)).Returns(ClientDescription);
 			authHostMock.SetupGet(m => m.CryptoKeyStore).Returns(cryptoStore);
 			authHostMock.Setup(m => m.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername))).Returns(true);
+			authHostMock.Setup(m => m.IsResourceOwnerCredentialValid(ResourceOwnerUsername, ResourceOwnerPassword)).Returns(true);
 			return authHostMock;
 		}
 	}
