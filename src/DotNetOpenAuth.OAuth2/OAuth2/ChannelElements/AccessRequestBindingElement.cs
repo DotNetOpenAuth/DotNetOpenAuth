@@ -126,8 +126,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						refreshTokenCarrier.AuthorizationDescription = refreshToken;
 					} else if (resourceOwnerPasswordCarrier != null) {
 						try {
-							if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName,
-																						resourceOwnerPasswordCarrier.Password)) {
+							if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
 								resourceOwnerPasswordCarrier.CredentialsValidated = true;
 							} else {
 								Logger.OAuth.WarnFormat(
