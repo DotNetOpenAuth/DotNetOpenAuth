@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				AuthorizationServerMock,
 				new UserAgentClient(AuthorizationServerDescription),
 				client => {
-					var authState = new AuthorizationState {
+					var authState = new AuthorizationState(TestScopes) {
 						Callback = ClientCallback,
 					};
 					var request = client.PrepareRequestUserAuthorization(authState);
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				AuthorizationServerMock,
 				coordinatorClient,
 				client => {
-					var authState = new AuthorizationState {
+					var authState = new AuthorizationState(TestScopes) {
 						Callback = ClientCallback,
 					};
 					var request = client.PrepareRequestUserAuthorization(authState, implicitResponseType: true);

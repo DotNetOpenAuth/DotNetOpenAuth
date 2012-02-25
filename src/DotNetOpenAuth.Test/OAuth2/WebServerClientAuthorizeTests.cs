@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -24,7 +25,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				AuthorizationServerMock,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
-					var authState = new AuthorizationState {
+					var authState = new AuthorizationState(TestScopes) {
 						Callback = ClientCallback,
 					};
 					client.PrepareRequestUserAuthorization(authState).Respond();
@@ -51,7 +52,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				AuthorizationServerMock,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
-					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword);
+					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword, TestScopes);
 					Assert.IsNotNullOrEmpty(authState.AccessToken);
 					Assert.IsNotNullOrEmpty(authState.RefreshToken);
 				},
@@ -67,14 +68,14 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		public void ClientCredentialGrant() {
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
-				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId)))
+				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns(true);
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
 				authServer.Object,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
-					var authState = client.GetClientAccessToken();
+					var authState = client.GetClientAccessToken(TestScopes);
 					Assert.IsNotNullOrEmpty(authState.AccessToken);
 					Assert.IsNull(authState.RefreshToken);
 				},

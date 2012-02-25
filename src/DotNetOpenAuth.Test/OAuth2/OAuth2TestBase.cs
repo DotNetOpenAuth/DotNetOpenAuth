@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -22,6 +23,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		protected const string ResourceOwnerUsername = "TestUser";
 
 		protected const string ResourceOwnerPassword = "TestUserPassword";
+
+		protected static readonly string[] TestScopes = new[] { "Scope1", "Scope2" };
 
 		protected static readonly Uri ClientCallback = new Uri("http://client/callback");
 
@@ -42,7 +45,13 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			var cryptoStore = new MemoryCryptoKeyStore();
 			authHostMock.Setup(m => m.GetClient(ClientId)).Returns(ClientDescription);
 			authHostMock.SetupGet(m => m.CryptoKeyStore).Returns(cryptoStore);
-			authHostMock.Setup(m => m.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername))).Returns(true);
+			authHostMock.Setup(
+				m =>
+				m.IsAuthorizationValid(
+					It.Is<IAuthorizationDescription>(
+						d =>
+						d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername &&
+						MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
 			authHostMock.Setup(m => m.IsResourceOwnerCredentialValid(ResourceOwnerUsername, ResourceOwnerPassword)).Returns(true);
 			return authHostMock;
 		}
