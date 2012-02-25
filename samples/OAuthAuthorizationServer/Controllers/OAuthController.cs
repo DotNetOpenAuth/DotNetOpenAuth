@@ -21,14 +21,12 @@
 		/// </summary>
 		/// <returns>The response to the Client.</returns>
 		public ActionResult Token() {
-			var request = this.authorizationServer.ReadAccessTokenRequest();
-			if (request != null) {
-				// Prepare the refresh and access tokens.
-				var response = this.authorizationServer.PrepareAccessTokenResponse(request);
+			IDirectResponseProtocolMessage response;
+			if (this.authorizationServer.TryPrepareAccessTokenResponse(out response)) {
 				return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
+			} else {
+				throw new HttpException((int) HttpStatusCode.BadRequest, "Missing OAuth 2.0 request message.");
 			}
-
-			throw new HttpException((int)HttpStatusCode.BadRequest, "Missing OAuth 2.0 request message.");
 		}
 
 		/// <summary>
