@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				authServer.Object,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
-					var authState = client.ObtainClientAccessToken();
+					var authState = client.GetClientAccessToken();
 					Assert.IsNotNullOrEmpty(authState.AccessToken);
 					Assert.IsNull(authState.RefreshToken);
 				},

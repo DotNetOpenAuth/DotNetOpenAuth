@@ -180,7 +180,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopes">The desired scopes.</param>
 		/// <returns>The result of the authorization request.</returns>
-		public IAuthorizationState ObtainClientAccessToken(IEnumerable<string> scopes = null) {
+		public IAuthorizationState GetClientAccessToken(IEnumerable<string> scopes = null) {
 			var request = new AccessTokenClientCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version);
 			return this.RequestAccessToken(request, scopes);
 		}
