@@ -3,9 +3,12 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <PostConversionRemoveFromScc>;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\Properties\Database.sqldeployment;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\Properties\Database.sqlsettings;Properties\Database.sqlsettings;Properties\Database.sqldeployment;Properties\Database.sqlcmdvars;Properties\Database.sqlpermissions;Schema Objects\Database Level Objects\Storage\Files\Database.mdf.sqlfile.sql;Schema Objects\Database Level Objects\Storage\Files\Database_log.sqlfile.sql;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\RelyingPartyDatabase.dbproj</PostConversionRemoveFromScc>
-    <PostConversionAddToScc>;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\Release.publish.xml;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\Debug.publish.xml;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\Permissions.sql;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\RelyingPartyDatabase.sqlproj</PostConversionAddToScc>
-    <PostConversionCheckOutFromScc>;C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\Schema Comparisons\SchemaComparison1.scmp</PostConversionCheckOutFromScc>
+    <PostConversionRemoveFromScc>
+    </PostConversionRemoveFromScc>
+    <PostConversionAddToScc>
+    </PostConversionAddToScc>
+    <PostConversionCheckOutFromScc>
+    </PostConversionCheckOutFromScc>
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
   <PropertyGroup>
