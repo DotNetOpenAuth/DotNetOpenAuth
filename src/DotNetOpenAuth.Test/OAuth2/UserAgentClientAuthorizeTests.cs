@@ -34,15 +34,15 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					client.Channel.Respond(request);
 					var incoming = client.Channel.ReadFromRequest();
 					var result = client.ProcessUserAuthorization(authState, incoming);
-					Assert.IsNotNullOrEmpty(result.AccessToken);
-					Assert.IsNotNullOrEmpty(result.RefreshToken);
+					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 					var tokenRequest = server.ReadAccessTokenRequest();
 					IAccessTokenRequest accessTokenRequest = tokenRequest;
-					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
+					Assert.That(accessTokenRequest.ClientAuthenticated);
 					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
 					server.Channel.Respond(tokenResponse);
 				});
@@ -61,17 +61,17 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 						Callback = ClientCallback,
 					};
 					var request = client.PrepareRequestUserAuthorization(authState, implicitResponseType: true);
-					Assert.AreEqual(EndUserAuthorizationResponseType.AccessToken, request.ResponseType);
+					Assert.That(request.ResponseType, Is.EqualTo(EndUserAuthorizationResponseType.AccessToken));
 					client.Channel.Respond(request);
 					var incoming = client.Channel.ReadFromRequest();
 					var result = client.ProcessUserAuthorization(authState, incoming);
-					Assert.IsNotNullOrEmpty(result.AccessToken);
-					Assert.IsNull(result.RefreshToken);
+					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(result.RefreshToken, Is.Null);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
 					IAccessTokenRequest accessTokenRequest = (EndUserAuthorizationImplicitRequest)request;
-					Assert.IsFalse(accessTokenRequest.ClientAuthenticated);
+					Assert.That(accessTokenRequest.ClientAuthenticated, Is.False);
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 				});
 

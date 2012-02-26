@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationRequest)));
 		}
 
 		[Test]
@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationImplicitRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationImplicitRequest)));
 		}
 
 		[Test]
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.code, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationSuccessResponseBase)));
 		}
 
 		[Test]
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.token_type, "bearer" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationSuccessResponseBase)));
 		}
 
 		[Test]
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.error, "access-denied" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationFailedResponse), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationFailedResponse)));
 		}
 
 		#endregion
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.grant_type, "refresh-token" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenRefreshRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenRefreshRequest)));
 		}
 
 		[Test]
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.redirect_uri, "http://someUri" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenAuthorizationCodeRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenAuthorizationCodeRequest)));
 		}
 
 		[Test]
@@ -120,7 +120,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.password, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenResourceOwnerPasswordCredentialsRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenResourceOwnerPasswordCredentialsRequest)));
 		}
 
 		[Test]
@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.grant_type, "none" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenClientCredentialsRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenClientCredentialsRequest)));
 		}
 
 		#endregion

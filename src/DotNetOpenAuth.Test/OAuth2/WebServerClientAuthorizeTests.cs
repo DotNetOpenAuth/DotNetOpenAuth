@@ -30,15 +30,15 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					};
 					client.PrepareRequestUserAuthorization(authState).Respond();
 					var result = client.ProcessUserAuthorization();
-					Assert.IsNotNullOrEmpty(result.AccessToken);
-					Assert.IsNotNullOrEmpty(result.RefreshToken);
+					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 					var tokenRequest = server.ReadAccessTokenRequest();
 					IAccessTokenRequest accessTokenRequest = tokenRequest;
-					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
+					Assert.That(accessTokenRequest.ClientAuthenticated);
 					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
 					server.Channel.Respond(tokenResponse);
 				});
@@ -53,8 +53,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
 					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword, TestScopes);
-					Assert.IsNotNullOrEmpty(authState.AccessToken);
-					Assert.IsNotNullOrEmpty(authState.RefreshToken);
+					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(authState.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
 					var request = server.ReadAccessTokenRequest();
@@ -76,8 +76,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
 					var authState = client.GetClientAccessToken(TestScopes);
-					Assert.IsNotNullOrEmpty(authState.AccessToken);
-					Assert.IsNull(authState.RefreshToken);
+					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(authState.RefreshToken, Is.Null);
 				},
 				server => {
 					var request = server.ReadAccessTokenRequest();
