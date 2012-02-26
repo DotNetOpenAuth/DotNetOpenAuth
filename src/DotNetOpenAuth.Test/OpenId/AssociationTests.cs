@@ -41,12 +41,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 			TimeSpan lifetime = TimeSpan.FromMinutes(2);
 			Association assoc = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, handle, this.sha1Secret, lifetime);
 			Assert.IsFalse(assoc.IsExpired);
-			Assert.IsTrue(Math.Abs((DateTime.Now - assoc.Issued.ToLocalTime()).TotalSeconds) < deltaDateTime.TotalSeconds);
-			Assert.IsTrue(Math.Abs((DateTime.Now.ToLocalTime() + lifetime - assoc.Expires.ToLocalTime()).TotalSeconds) < deltaDateTime.TotalSeconds);
-			Assert.AreEqual(handle, assoc.Handle);
-			Assert.IsTrue(Math.Abs(lifetime.TotalSeconds - assoc.SecondsTillExpiration) < deltaDateTime.TotalSeconds);
-			Assert.IsTrue(MessagingUtilities.AreEquivalent(this.sha1Secret, assoc.SecretKey));
-			Assert.AreEqual(0, assoc.Issued.Millisecond, "No milliseconds because this can be cut off in conversions.");
+			Assert.That(assoc.Issued, Is.EqualTo(DateTime.UtcNow).Within(deltaDateTime));
+			Assert.That(assoc.Expires, Is.EqualTo(DateTime.UtcNow + lifetime).Within(deltaDateTime));
+			Assert.That(assoc.Handle, Is.EqualTo(handle));
+			Assert.That(assoc.SecondsTillExpiration, Is.EqualTo(lifetime.TotalSeconds).Within(deltaDateTime.TotalSeconds));
+			Assert.That(assoc.SecretKey, Is.EqualTo(this.sha1Secret));
+			Assert.That(assoc.Issued.Millisecond, Is.EqualTo(0), "No milliseconds because this can be cut off in conversions.");
 		}
 
 		[Test]
@@ -58,21 +58,21 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 			// sign once and verify that it's sane
 			byte[] signature1 = assoc1.Sign(data);
-			Assert.IsNotNull(signature1);
-			Assert.AreNotEqual(0, signature1.Length);
+			Assert.That(signature1, Is.Not.Null);
+			Assert.That(signature1.Length, Is.Not.EqualTo(0));
 
 			// sign again and make sure it's different
 			byte[] signature2 = assoc2.Sign(data);
-			Assert.IsNotNull(signature2);
-			Assert.AreNotEqual(0, signature2.Length);
-			Assert.IsFalse(MessagingUtilities.AreEquivalent(signature1, signature2));
+			Assert.That(signature2, Is.Not.Null);
+			Assert.That(signature2.Length, Is.Not.EqualTo(0));
+			Assert.That(signature1, Is.Not.EqualTo(signature2));
 
 			// sign again with the same secret and make sure it's the same.
-			Assert.IsTrue(MessagingUtilities.AreEquivalent(signature1, assoc1.Sign(data)));
+			Assert.That(assoc1.Sign(data), Is.EqualTo(signature1));
 
 			// now change the data and make sure signature changes
 			data[1] = 0xee;
-			Assert.IsFalse(MessagingUtilities.AreEquivalent(signature1, assoc1.Sign(data)));
+			Assert.That(assoc1.Sign(data), Is.Not.EqualTo(signature1));
 		}
 	}
 }
