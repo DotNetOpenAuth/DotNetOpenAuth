@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// <summary>
 		/// Verifies the CreateVerificationCode method.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void CreateVerificationCode() {
 			this.TestCode(VerificationCodeFormat.Numeric, 3, MessagingUtilities.Digits);
 			this.TestCode(VerificationCodeFormat.AlphaLower, 5, MessagingUtilities.LowercaseLetters);

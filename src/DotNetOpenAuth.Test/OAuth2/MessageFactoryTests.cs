@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 		#region End user authorization messages
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.response_type, "code" },
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationRequest), request);
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationImplicitRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.response_type, "token" },
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationImplicitRequest), request);
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationSuccessResponseWithCode() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.code, "abc" },
@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationSuccessResponseWithAccessToken() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.access_token, "abc" },
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationFailedResponse() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.error, "access-denied" },
@@ -87,7 +87,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 		#region Access token request messages
 
-		[TestCase]
+		[Test]
 		public void AccessTokenRefreshRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(AccessTokenRefreshRequest), request);
 		}
 
-		[TestCase]
+		[Test]
 		public void AccessTokenAuthorizationCodeRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(AccessTokenAuthorizationCodeRequest), request);
 		}
 
-		[TestCase]
+		[Test]
 		public void AccessTokenBasicCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			Assert.IsInstanceOf(typeof(AccessTokenResourceOwnerPasswordCredentialsRequest), request);
 		}
 
-		[TestCase]
+		[Test]
 		public void AccessTokenClientCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },

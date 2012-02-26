@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 	[TestFixture]
 	public class WebServerClientAuthorizeTests : OAuth2TestBase {
-		[TestCase]
+		[Test]
 		public void AuthorizationCodeGrant() {
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void ResourceOwnerPasswordCredentialGrant() {
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void ClientCredentialGrant() {
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(

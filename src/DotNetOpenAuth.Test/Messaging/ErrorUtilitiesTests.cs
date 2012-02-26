@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(null, "someArg");
 		}
 
-		[TestCase]
+		[Test]
 		public void VerifyArgumentNotNullDoesNotThrow() {
 			ErrorUtilities.VerifyArgumentNotNull("hi", "someArg");
 		}
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			ErrorUtilities.VerifyNonZeroLength(string.Empty, "someArg");
 		}
 
-		[TestCase]
+		[Test]
 		public void VerifyNonZeroLengthOnNonEmpty() {
 			ErrorUtilities.VerifyNonZeroLength("some Value", "someArg");
 		}

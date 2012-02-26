@@ -10,23 +10,23 @@ namespace DotNetOpenAuth.Test.OAuth {
 
 	[TestFixture]
 	public class ProtocolTests {
-		[TestCase]
+		[Test]
 		public void Default() {
 			Assert.AreSame(Protocol.V10a, Protocol.Default);
 		}
 
-		[TestCase]
+		[Test]
 		public void DataContractNamespace() {
 			Assert.AreEqual("http://oauth.net/core/1.0/", Protocol.V10.DataContractNamespace);
 			Assert.AreEqual("http://oauth.net/core/1.0/", Protocol.DataContractNamespaceV10);
 		}
 
-		[TestCase]
+		[Test]
 		public void AuthorizationHeaderScheme() {
 			Assert.AreEqual("OAuth", Protocol.AuthorizationHeaderScheme);
 		}
 
-		[TestCase]
+		[Test]
 		public void ParameterPrefix() {
 			Assert.AreEqual("oauth_", Protocol.ParameterPrefix);
 		}

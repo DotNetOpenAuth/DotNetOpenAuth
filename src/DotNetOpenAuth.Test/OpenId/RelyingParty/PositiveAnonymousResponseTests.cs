@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that the Status property returns the correct value.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void CtorAndProperties() {
 			var responseMessage = new IndirectSignedResponse(Protocol.V20.Version, this.returnTo);
 			var ext = new ClaimsResponse();
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies the Provider property.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ProviderTest() {
 			var responseMessage = new IndirectSignedResponse(Protocol.V20.Version, this.returnTo);
 			responseMessage.ProviderEndpoint = OPUri;

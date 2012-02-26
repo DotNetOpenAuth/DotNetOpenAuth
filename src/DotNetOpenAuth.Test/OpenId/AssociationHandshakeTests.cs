@@ -21,12 +21,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 			base.SetUp();
 		}
 
-		[TestCase]
+		[Test]
 		public void AssociateUnencrypted() {
 			this.ParameterizedAssociationTest(new Uri("https://host"));
 		}
 
-		[TestCase]
+		[Test]
 		public void AssociateDiffieHellmanOverHttp() {
 			this.ParameterizedAssociationTest(new Uri("http://host"));
 		}
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Some OPs out there flatly refuse to do this, and the spec doesn't forbid
 		/// putting the two together, so we verify that DNOI can handle it.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void AssociateDiffieHellmanOverHttps() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies that the RP and OP can renegotiate an association type if the RP's
 		/// initial request for an association is for a type the OP doesn't support.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AssociateRenegotiateBitLength() {
 			Protocol protocol = Protocol.V20;
 
@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <remarks>
 		/// Verifies OP's compliance with OpenID 2.0 section 8.4.1.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void OPRejectsHttpNoEncryptionAssociateRequests() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -129,7 +129,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies that the OP rejects an associate request
 		/// when the HMAC and DH bit lengths do not match.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void OPRejectsMismatchingAssociationAndSessionTypes() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -152,7 +152,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies that the RP quietly rejects an OP that suggests an unknown association type.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RPRejectsUnrecognizedAssociationType() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -179,7 +179,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <remarks>
 		/// Verifies RP's compliance with OpenID 2.0 section 8.4.1.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void RPRejectsUnencryptedSuggestion() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -204,7 +204,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies that the RP rejects an associate renegotiate request 
 		/// when the HMAC and DH bit lengths do not match.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RPRejectsMismatchingAssociationAndSessionBitLengths() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -229,7 +229,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies that the RP cannot get caught in an infinite loop if a bad OP
 		/// keeps sending it association retry messages.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RPOnlyRenegotiatesOnce() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -262,7 +262,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies security settings limit RP's acceptance of OP's counter-suggestion
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AssociateRenegotiateLimitedByRPSecuritySettings() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -282,7 +282,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies that the RP can recover from an invalid or non-existent 
 		/// response from the OP, for example in the HTTP timeout case.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AssociateQuietlyFailsAfterHttpError() {
 			this.MockResponder.RegisterMockNotFound(OPUri);
 			var rp = this.CreateRelyingParty();

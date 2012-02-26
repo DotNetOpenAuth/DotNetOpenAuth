@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 	[TestFixture]
 	public class UserAgentClientAuthorizeTests : OAuth2TestBase {
-		[TestCase]
+		[Test]
 		public void AuthorizationCodeGrant() {
 			var coordinator = new OAuth2Coordinator<UserAgentClient>(
 				AuthorizationServerDescription,
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void ImplicitGrant() {
 			var coordinatorClient = new UserAgentClient(AuthorizationServerDescription);
 			var coordinator = new OAuth2Coordinator<UserAgentClient>(

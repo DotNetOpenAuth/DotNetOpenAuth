@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.sha1Secret2[1] = 0xcc;
 		}
 
-		[TestCase]
+		[Test]
 		public void Properties() {
 			string handle = "somehandle";
 			TimeSpan lifetime = TimeSpan.FromMinutes(2);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(0, assoc.Issued.Millisecond, "No milliseconds because this can be cut off in conversions.");
 		}
 
-		[TestCase]
+		[Test]
 		public void Sign() {
 			Association assoc1 = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, "h1", this.sha1Secret, TimeSpan.FromMinutes(2));
 			Association assoc2 = HmacShaAssociation.Create(Protocol.Default, Protocol.Default.Args.SignatureAlgorithm.HMAC_SHA1, "h2", this.sha1Secret2, TimeSpan.FromMinutes(2));

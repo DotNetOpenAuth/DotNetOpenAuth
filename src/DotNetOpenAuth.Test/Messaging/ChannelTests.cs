@@ -24,12 +24,12 @@ namespace DotNetOpenAuth.Test.Messaging {
 			new TestBadChannel(true);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestQueryString() {
 			this.ParameterizedReceiveTest("GET");
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestForm() {
 			this.ParameterizedReceiveTest("POST");
 		}
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			this.Channel.PrepareResponse(message);
 		}
 
-		[TestCase]
+		[Test]
 		public void SendIndirectMessage301Get() {
 			TestDirectedMessage message = new TestDirectedMessage(MessageTransport.Indirect);
 			GetStandardTestMessage(FieldFill.CompleteBeforeBindings, message);
@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			badChannel.Create301RedirectResponse(message, null);
 		}
 
-		[TestCase]
+		[Test]
 		public void SendIndirectMessageFormPost() {
 			// We craft a very large message to force fallback to form POST.
 			// We'll also stick some HTML reserved characters in the string value
@@ -183,13 +183,13 @@ namespace DotNetOpenAuth.Test.Messaging {
 			badChannel.Receive(null, null);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReceiveUnrecognizedMessage() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			Assert.IsNull(badChannel.Receive(new Dictionary<string, string>(), null));
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestWithContext() {
 			var fields = GetStandardTestFields(FieldFill.AllRequired);
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.AllRequired);
@@ -214,7 +214,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			badChannel.ReadFromRequest(null);
 		}
 
-		[TestCase]
+		[Test]
 		public void SendReplayProtectedMessageSetsNonce() {
 			TestReplayProtectedMessage message = new TestReplayProtectedMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://localtest");
@@ -230,7 +230,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReceivedReplayProtectedMessageJustOnce() {
 			this.Channel = CreateChannel(MessageProtections.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
@@ -259,7 +259,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			channel.ProcessOutgoingMessageTestHook(new TestSignedDirectedMessage());
 		}
 
-		[TestCase]
+		[Test]
 		public void BindingElementsOrdering() {
 			IChannelBindingElement transformA = new MockTransformationBindingElement("a");
 			IChannelBindingElement transformB = new MockTransformationBindingElement("b");

@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			base.SetUp();
 		}
 
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.AreEqual(this.claimedId, se.ClaimedIdentifier);
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(this.servicePriority, se.ServicePriority);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorImpliedLocalIdentifier() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, null, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.AreEqual(this.claimedId, se.ClaimedIdentifier);
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			CollectionAssert<string>.AreEquivalent(this.v20TypeUris, se.Capabilities);
 		}
 
-		[TestCase]
+		[Test]
 		public void ProtocolDetection() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.AreSame(Protocol.V20, se.Protocol);
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreSame(Protocol.V11, se.Protocol);
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualsTests() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			IdentifierDiscoveryResult se2 = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedId, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), (int?)null, (int?)null);
@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsTrue(list.Contains(se2));
 		}
 
-		[TestCase]
+		[Test]
 		public void GetFriendlyIdentifierForDisplay() {
 			Uri providerEndpoint = new Uri("http://someprovider");
 			Identifier localId = "someuser";
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", se.FriendlyIdentifierForDisplay);
 		}
 
-		[TestCase]
+		[Test]
 		public void IsTypeUriPresent() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			Assert.IsTrue(se.IsTypeUriPresent(Protocol.Default.ClaimedIdentifierServiceTypeURI));
@@ -179,7 +179,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			se.IsExtensionSupported((IOpenIdMessageExtension)null);
 		}
 
-		[TestCase]
+		[Test]
 		public void IsExtensionSupported() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			Assert.IsFalse(se.IsExtensionSupported<ClaimsRequest>());

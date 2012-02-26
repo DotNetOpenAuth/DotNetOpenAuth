@@ -47,14 +47,14 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies the SecuritySettings property can be set to a new instance.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SecuritySettings() {
 			var newSettings = new ProviderSecuritySettings();
 			this.provider.SecuritySettings = newSettings;
 			Assert.AreSame(newSettings, this.provider.SecuritySettings);
 		}
 
-		[TestCase]
+		[Test]
 		public void ExtensionFactories() {
 			var factories = this.provider.ExtensionFactories;
 			Assert.IsNotNull(factories);
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies the Channel property.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ChannelGetter() {
 			Assert.IsNotNull(this.provider.Channel);
 		}
@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that GetRequest correctly returns the right messages.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void GetRequest() {
 			HttpRequestInfo httpInfo = new HttpRequestInfo();
 			httpInfo.UrlBeforeRewriting = new Uri("http://someUri");
@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void BadRequestsGenerateValidErrorResponses() {
 			var coordinator = new OpenIdCoordinator(
 				rp => {

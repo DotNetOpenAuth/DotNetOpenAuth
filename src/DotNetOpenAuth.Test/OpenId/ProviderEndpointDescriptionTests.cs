@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 	[TestFixture]
 	public class ProviderEndpointDescriptionTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void NonNullCapabilities() {
 			var epd = new ProviderEndpointDescription(OPUri, Protocol.Default.Version);
 			Assert.IsNotNull(epd.Capabilities);

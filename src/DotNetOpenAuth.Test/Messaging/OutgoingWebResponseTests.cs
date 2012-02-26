@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that setting the Body property correctly converts to a byte stream.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SetBodyToByteStream() {
 			var response = new OutgoingWebResponse();
 			string stringValue = "abc";

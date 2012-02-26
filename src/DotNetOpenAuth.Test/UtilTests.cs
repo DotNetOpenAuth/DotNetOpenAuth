@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// Verifies ToStringDeferred generates a reasonable string for an empty, multi-line list.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ToStringDeferredEmptyMultiLine() {
 			Assert.AreEqual("[]", Util.ToStringDeferred(Enumerable.Empty<string>(), true).ToString());
 		}

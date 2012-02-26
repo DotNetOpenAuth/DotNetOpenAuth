@@ -56,17 +56,17 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorSimpleConsumer() {
 			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager(), this.consumerSecuritySettings);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorSimpleServiceProvider() {
 			new OAuthServiceProviderChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager(), this.serviceProviderSecuritySettings);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestAuthorization() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
 		}
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// Verifies that the OAuth ReadFromRequest method gathers parameters
 		/// from the Authorization header, the query string and the entity form data.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ReadFromRequestAuthorizationScattered() {
 			// Start by creating a standard POST HTTP request.
 			var fields = new Dictionary<string, string> {
@@ -106,17 +106,17 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestForm() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.PostRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestQueryString() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.GetRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void SendDirectMessageResponse() {
 			IProtocolMessage message = new TestDirectedMessage {
 				Age = 15,
@@ -135,7 +135,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual("http://hostb/pathB", body["Location"]);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromResponse() {
 			var fields = new Dictionary<string, string> {
 				{ "age", "15" },
@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			this.channel.Request(message);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingAuthorizationHeader() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
 		}
@@ -183,7 +183,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies that message parts can be distributed to the query, form, and Authorization header.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RequestUsingAuthorizationHeaderScattered() {
 			TestDirectedMessage request = new TestDirectedMessage(MessageTransport.Direct) {
 				Age = 15,
@@ -216,17 +216,17 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual("appearinform=formish", this.webRequestHandler.RequestEntityAsString);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingGet() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.GetRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingPost() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.PostRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingHead() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.HeadRequest);
 		}
@@ -234,7 +234,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies that messages asking for special HTTP status codes get them.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);

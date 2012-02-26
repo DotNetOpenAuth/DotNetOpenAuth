@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that IsApproved controls which response message is returned.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void IsApprovedDeterminesReturnedMessage() {
 			var op = CreateProvider();
 			Protocol protocol = Protocol.V20;

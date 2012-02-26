@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that the signatures generated match Known Good signatures.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SignaturesMatchKnownGood() {
 			Protocol protocol = Protocol.V20;
 			var settings = new ProviderSecuritySettings();
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that all parameters in ExtraData in signed responses are signed.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SignedResponsesIncludeExtraDataInSignature() {
 			Protocol protocol = Protocol.Default;
 			SigningBindingElement sbe = new ProviderSigningBindingElement(new ProviderAssociationHandleEncoder(new MemoryCryptoKeyStore()), new ProviderSecuritySettings());
