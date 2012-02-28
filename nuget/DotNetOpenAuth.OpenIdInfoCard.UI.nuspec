@@ -17,14 +17,14 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenIdInfoCard.UI.dll" target="lib\net35-full\DotNetOpenAuth.OpenIdInfoCard.UI.dll" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenIdInfoCard.UI.dll" target="lib\net40-full\DotNetOpenAuth.OpenIdInfoCard.UI.dll" />
+		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenIdInfoCard.UI.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenIdInfoCard.UI.dll" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OpenIdInfoCard.UI.pdb" target="lib\net35-full\DotNetOpenAuth.OpenIdInfoCard.UI.pdb" />
-		<file src="$OutputPath40$DotNetOpenAuth.OpenIdInfoCard.UI.pdb" target="lib\net40-full\DotNetOpenAuth.OpenIdInfoCard.UI.pdb" />
+		<file src="$OutputPath35$DotNetOpenAuth.OpenIdInfoCard.UI.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenIdInfoCard.UI.pdb" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OpenIdInfoCard.UI.xml" target="lib\net35-full\DotNetOpenAuth.OpenIdInfoCard.UI.xml" />
-		<file src="$OutputPath40$DotNetOpenAuth.OpenIdInfoCard.UI.xml" target="lib\net40-full\DotNetOpenAuth.OpenIdInfoCard.UI.xml" />
+		<file src="$OutputPath35$DotNetOpenAuth.OpenIdInfoCard.UI.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.OpenIdInfoCard.UI.xml" target="lib\net40-full\" />
 
 		<file src="..\src\DotNetOpenAuth.OpenIdInfoCard.UI\**\*.cs" target="src" />
 	</files>

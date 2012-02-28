@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UtilTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="UtilTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test {
 		/// <summary>
 		/// Verifies ToStringDeferred generates a reasonable string for an empty, multi-line list.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ToStringDeferredEmptyMultiLine() {
 			Assert.AreEqual("[]", Util.ToStringDeferred(Enumerable.Empty<string>(), true).ToString());
 		}

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="PolicyRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="PolicyRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 
 	[TestFixture]
 	public class PolicyRequestTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			PolicyRequest req = new PolicyRequest();
 			Assert.IsNull(req.MaximumAuthenticationAge);
@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(0, req.PreferredPolicies.Count);
 		}
 
-		[TestCase]
+		[Test]
 		public void MaximumAuthenticationAgeTest() {
 			PolicyRequest req = new PolicyRequest();
 			req.MaximumAuthenticationAge = TimeSpan.FromHours(1);
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsNull(req.MaximumAuthenticationAge);
 		}
 
-		[TestCase]
+		[Test]
 		public void AddPolicies() {
 			PolicyRequest resp = new PolicyRequest();
 			resp.PreferredPolicies.Add(AuthenticationPolicies.MultiFactor);
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(AuthenticationPolicies.PhishingResistant, resp.PreferredPolicies[1]);
 		}
 
-		[TestCase]
+		[Test]
 		public void AddPolicyMultipleTimes() {
 			// Although this isn't really the desired behavior (we'd prefer to see an
 			// exception thrown), since we're using a List<string> internally we can't
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(2, resp.PreferredPolicies.Count);
 		}
 
-		[TestCase]
+		[Test]
 		public void AddAuthLevelTypes() {
 			PolicyRequest req = new PolicyRequest();
 			req.PreferredAuthLevelTypes.Add(Constants.AssuranceLevels.NistTypeUri);
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsTrue(req.PreferredAuthLevelTypes.Contains(Constants.AssuranceLevels.NistTypeUri));
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualsTest() {
 			PolicyRequest req = new PolicyRequest();
 			PolicyRequest req2 = new PolicyRequest();
@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(req, req2);
 		}
 
-		[TestCase]
+		[Test]
 		public void Serialize() {
 			PolicyRequest req = new PolicyRequest();
 			IMessageWithEvents reqEvents = req;

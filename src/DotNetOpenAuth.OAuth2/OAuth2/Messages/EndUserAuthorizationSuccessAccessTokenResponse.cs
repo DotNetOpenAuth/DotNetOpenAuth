@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="EndUserAuthorizationSuccessAccessTokenResponse.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="EndUserAuthorizationSuccessAccessTokenResponse.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, carrying only an access token,
 	/// and to return the user to the Client where they started their experience.
 	/// </summary>
-	internal class EndUserAuthorizationSuccessAccessTokenResponse : EndUserAuthorizationSuccessResponseBase, IAuthorizationCarryingRequest, IHttpIndirectResponse {
+	internal class EndUserAuthorizationSuccessAccessTokenResponse : EndUserAuthorizationSuccessResponseBase, IAccessTokenCarryingRequest, IHttpIndirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessAccessTokenResponse"/> class.
 		/// </summary>
@@ -45,30 +45,20 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			this.TokenType = Protocol.AccessTokenTypes.Bearer;
 		}
 
-		#region IAuthorizationCarryingRequest Members
-
-		/// <summary>
-		/// Gets or sets the verification code or refresh/access token.
-		/// </summary>
-		/// <value>The code or token.</value>
-		string IAuthorizationCarryingRequest.CodeOrToken {
-			get { return this.AccessToken; }
-			set { this.AccessToken = value; }
-		}
-
-		/// <summary>
-		/// Gets the type of the code or token.
-		/// </summary>
-		/// <value>The type of the code or token.</value>
-		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.AccessToken; }
-		}
+		#region IAccessTokenCarryingRequest Members
 
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
 		/// <value></value>
-		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
+		AccessToken IAccessTokenCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets the authorization that the token describes.
+		/// </summary>
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
+			get { return ((IAccessTokenCarryingRequest)this).AuthorizationDescription; }
+		}
 
 		#endregion
 

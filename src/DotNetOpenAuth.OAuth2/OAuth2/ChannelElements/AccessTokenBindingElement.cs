@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AccessTokenBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			var implicitGrantResponse = message as EndUserAuthorizationSuccessAccessTokenResponse;
 			if (implicitGrantResponse != null) {
-				IAuthorizationCarryingRequest tokenCarryingResponse = implicitGrantResponse;
+				IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
 				tokenCarryingResponse.AuthorizationDescription = new AccessToken(request.ClientIdentifier, implicitGrantResponse.Scope, implicitGrantResponse.AuthorizingUsername, implicitGrantResponse.Lifetime);
 
 				return MessageProtections.None;

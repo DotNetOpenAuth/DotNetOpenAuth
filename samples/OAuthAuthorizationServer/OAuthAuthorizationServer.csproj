@@ -78,6 +78,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Code\HttpHeaderAttribute.cs" />
     <Compile Include="Code\OAuth2AuthorizationServer.cs" />
     <Compile Include="Code\Utilities.cs" />
     <Compile Include="Controllers\AccountController.cs" />

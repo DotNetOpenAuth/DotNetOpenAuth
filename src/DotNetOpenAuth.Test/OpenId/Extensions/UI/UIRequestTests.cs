@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UIRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="UIRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 
 	[TestFixture]
 	public class UIRequestTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void Defaults() {
 			var request = new UIRequest();
 			Assert.AreEqual("popup", request.Mode);
@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 			Assert.IsFalse(request.Icon.HasValue);
 		}
 
-		[TestCase]
+		[Test]
 		public void IconEncodingDecoding()
 		{
 			var request = new UIRequest();
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 			Assert.AreEqual("true", dictionary["icon"]);
 		}
 
-		[TestCase]
+		[Test]
 		public void LanguagePreferenceEncodingDecoding() {
 			var request = new UIRequest();
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(request);
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.UI {
 			Assert.AreEqual(new CultureInfo("es-ES"), request.LanguagePreference[1]);
 		}
 
-		[TestCase]
+		[Test]
 		public void ModeEncoding() {
 			var request = new UIRequest();
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(request);

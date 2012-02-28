@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AsymmetricCryptoKeyStoreWrapper.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AsymmetricCryptoKeyStoreWrapper.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -154,6 +154,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			/// Invariant conditions.
 			/// </summary>
 			[ContractInvariantMethod]
+			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Code contracts")]
 			[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
 			private void ObjectInvariant() {
 				Contract.Invariant(this.EncryptedKey != null);

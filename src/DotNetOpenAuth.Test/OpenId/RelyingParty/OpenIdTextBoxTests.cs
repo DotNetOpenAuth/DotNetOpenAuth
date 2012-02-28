@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdTextBoxTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdTextBoxTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that the Text and Identifier properties interact correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void IdentifierTextInteraction() {
 			var box = new OpenIdTextBox();
 			Assert.AreEqual(string.Empty, box.Text);

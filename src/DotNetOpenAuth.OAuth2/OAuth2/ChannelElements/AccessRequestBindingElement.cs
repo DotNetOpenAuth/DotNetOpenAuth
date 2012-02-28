@@ -1,12 +1,13 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessRequestBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AccessRequestBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -54,26 +55,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as IAuthorizationCarryingRequest;
-			if (response != null) {
-				switch (response.CodeOrTokenType) {
-					case CodeOrTokenType.AuthorizationCode:
-						var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-						var code = (AuthorizationCode)response.AuthorizationDescription;
-						response.CodeOrToken = codeFormatter.Serialize(code);
-						break;
-					case CodeOrTokenType.AccessToken:
-						var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
-						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
+			if (authCodeCarrier != null) {
+				var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
+				var code = authCodeCarrier.AuthorizationDescription;
+				authCodeCarrier.Code = codeFormatter.Serialize(code);
+				return MessageProtections.None;
+			}
 
-						using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
-							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
-							var token = (AccessToken)response.AuthorizationDescription;
-							response.CodeOrToken = tokenFormatter.Serialize(token);
-							break;
-						}
-					default:
-						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));
+			var accessTokenCarrier = message as IAccessTokenCarryingRequest;
+			if (accessTokenCarrier != null) {
+				var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
+				var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+
+				using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
+					var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
+					var token = accessTokenCarrier.AuthorizationDescription;
+					accessTokenCarrier.AccessToken = tokenFormatter.Serialize(token);
 				}
 
 				return MessageProtections.None;
@@ -106,23 +104,50 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol requirement")]
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "incorrectclientcredentials", Justification = "Protocol requirement")]
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "authorizationexpired", Justification = "Protocol requirement")]
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
 			var tokenRequest = message as IAuthorizationCarryingRequest;
 			if (tokenRequest != null) {
 				try {
-					switch (tokenRequest.CodeOrTokenType) {
-						case CodeOrTokenType.AuthorizationCode:
-							var verificationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-							var verificationCode = verificationCodeFormatter.Deserialize(message, tokenRequest.CodeOrToken);
-							tokenRequest.AuthorizationDescription = verificationCode;
-							break;
-						case CodeOrTokenType.RefreshToken:
-							var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-							var refreshToken = refreshTokenFormatter.Deserialize(message, tokenRequest.CodeOrToken);
-							tokenRequest.AuthorizationDescription = refreshToken;
-							break;
-						default:
-							throw ErrorUtilities.ThrowInternal("Unexpected value for CodeOrTokenType: " + tokenRequest.CodeOrTokenType);
+					var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
+					var refreshTokenCarrier = message as IRefreshTokenCarryingRequest;
+					var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
+					var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
+					if (authCodeCarrier != null) {
+						var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
+						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code);
+						authCodeCarrier.AuthorizationDescription = authorizationCode;
+					} else if (refreshTokenCarrier != null) {
+						var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
+						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken);
+						refreshTokenCarrier.AuthorizationDescription = refreshToken;
+					} else if (resourceOwnerPasswordCarrier != null) {
+						try {
+							if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
+								resourceOwnerPasswordCarrier.CredentialsValidated = true;
+							} else {
+								Logger.OAuth.WarnFormat(
+									"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
+									resourceOwnerPasswordCarrier.UserName);
+
+								// TODO: fix this to report the appropriate error code for a bad credential.
+								throw new ProtocolException();
+							}
+						} catch (NotSupportedException) {
+							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
+							throw new ProtocolException();
+						} catch (NotImplementedException) {
+							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
+							throw new ProtocolException();
+						}
+					} else if (clientCredentialOnly != null) {
+						// this method will throw later if the credentials are false.
+						clientCredentialOnly.CredentialsValidated = true;
+					} else {
+						throw ErrorUtilities.ThrowInternal("Unexpected message type: " + tokenRequest.GetType());
 					}
 				} catch (ExpiredMessageException ex) {
 					throw ErrorUtilities.Wrap(ex, Protocol.authorization_expired);

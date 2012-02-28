@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Claims;
 	using System.IdentityModel.Policy;
@@ -104,6 +105,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		/// <param name="claim">Claim to translate to a string</param>
 		/// <returns>The string representation of a claim's value.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		internal static string GetResourceValue(Claim claim) {
 			string strClaim = claim.Resource as string;
 			if (!string.IsNullOrEmpty(strClaim)) {
@@ -218,6 +220,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <value>The ID displayed by the Identity Selector.</value>
 		/// <param name="ppid">The personal private identifier.</param>
 		/// <returns>A string containing the XXX-XXXX-XXX cosmetic value.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		internal static string CalculateSiteSpecificID(string ppid) {
 			Requires.NotNull(ppid, "ppid");
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
@@ -270,6 +273,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="issuerKey">The key of the issuer of the token</param>
 		/// <param name="claimValue">the claim value to hash with.</param>
 		/// <returns>A base64 representation of the combined ID.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		private static string ComputeCombinedId(RSA issuerKey, string claimValue) {
 			Requires.NotNull(issuerKey, "issuerKey");
 			Requires.NotNull(claimValue, "claimValue");

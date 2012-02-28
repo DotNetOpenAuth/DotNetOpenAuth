@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ProtocolExceptionTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ProtocolExceptionTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -11,18 +11,18 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 	[TestFixture]
 	public class ProtocolExceptionTests : TestBase {
-		[TestCase]
+		[Test]
 		public void CtorDefault() {
 			ProtocolException ex = new ProtocolException();
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorWithTextMessage() {
 			ProtocolException ex = new ProtocolException("message");
 			Assert.AreEqual("message", ex.Message);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorWithTextMessageAndInnerException() {
 			Exception innerException = new Exception();
 			ProtocolException ex = new ProtocolException("message", innerException);
@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreSame(innerException, ex.InnerException);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorWithProtocolMessage() {
 			IProtocolMessage message = new Mocks.TestDirectedMessage();
 			ProtocolException ex = new ProtocolException("message", message);

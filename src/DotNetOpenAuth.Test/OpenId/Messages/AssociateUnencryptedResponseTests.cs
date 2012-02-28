@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssociateUnencryptedResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AssociateUnencryptedResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response = new AssociateUnencryptedResponse(request.Version, request);
 		}
 
-		[TestCase]
+		[Test]
 		public void ParameterNames() {
 			this.response.AssociationHandle = "HANDLE";
 			this.response.AssociationType = "HMAC-SHA1";
@@ -38,12 +38,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual("50", fields["expires_in"]);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequiredProtection() {
 			Assert.AreEqual(MessageProtections.None, this.response.RequiredProtection);
 		}
 
-		[TestCase]
+		[Test]
 		public void Transport() {
 			Assert.AreEqual(MessageTransport.Direct, this.response.Transport);
 		}

@@ -324,4 +324,13 @@
   <data name="ExpectedParameterWasMissing" xml:space="preserve">
     <value>The message part {0} was expected in the {1} message but was not found.</value>
   </data>
+  <data name="MessageExceedsGetSizePostNotAllowed" xml:space="preserve">
+    <value>Message too large for a HTTP GET, and HTTP POST is not allowed for this message type.</value>
+  </data>
+  <data name="MissingDecryptionKeyForHandle" xml:space="preserve">
+    <value>Missing decryption key for bucket "{0}" handle "{1}"</value>
+  </data>
+  <data name="UnexpectedBufferLength" xml:space="preserve">
+    <value>Unexpected buffer length.</value>
+  </data>
 </root>

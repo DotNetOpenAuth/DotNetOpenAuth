@@ -5,6 +5,7 @@
 <title>NUnit - Nunit-gui</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -50,11 +51,19 @@
 <p>The symbols shown in the tree are actually files in the NUnit bin directory.
    These files are named Success.jpg, Failure.jpg and Ignored.jpg and may be
    modified or replaced by the user.</p>
+
+<p><b>Note:</b> Beginning with NUnit 2.6, tests marked with the <b>IgnoreAttribtute</b> are shown in yellow immediately upon loading. Similarly,
+non-runnable tests (e.g.: wrong argument type) are shown in red at load time.
    
 <h4>Progress Bar</h4>
 <p>The progress bar shows the progress of the test. It is colored according
 to the "worst" result obtained: red if there were any failures, yellow if
 some tests were ignored and green for success.
+
+<h4>Result Summary</h4>
+<p>At the end of the test run, a summary of the results is displayed immediately
+below the progress bar. If the result information does not fit in the space
+available, hovering over it shows the full information.
 
 <h4>Result Tabs</h4>
 <p>The tabs along the bottom of the display show the results of running
@@ -90,12 +99,10 @@ see the documentation for the
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
-<li><a href="assertions.html">Assertions</a></li>
-<li><a href="constraintModel.html">Constraints</a></li>
-<li><a href="attributes.html">Attributes</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <ul>
 <li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
@@ -108,9 +115,10 @@ see the documentation for the
 <li><a href="addinsDialog.html">Addins&nbsp;Dialog</a></li>
 <li><a href="testProperties.html">Test&nbsp;Properties</a></li>
 <li><a href="configEditor.html">Configuration&nbsp;Editor</a></li>
-<li><a href="projectEditor.html">Project&nbsp;Editor</a></li>
 </ul>
 <li><a href="pnunit.html">PNUnit&nbsp;Runner</a></li>
+<li><a href="nunit-agent.html">NUnit&nbsp;Agent</a></li>
+<li><a href="projectEditor.html">Project&nbsp;Editor</a></li>
 <li><a href="runtimeSelection.html">Runtime&nbsp;Selection</a></li>
 <li><a href="assemblyIsolation.html">Assembly&nbsp;Isolation</a></li>
 <li><a href="configFiles.html">Configuration&nbsp;Files</a></li>
@@ -122,6 +130,12 @@ see the documentation for the
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -129,7 +143,7 @@ see the documentation for the
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

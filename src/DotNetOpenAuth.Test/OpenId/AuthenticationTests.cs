@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthenticationTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AuthenticationTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			base.SetUp();
 		}
 
-		[TestCase]
+		[Test]
 		public void SharedAssociationPositive() {
 			this.ParameterizedAuthenticationTest(true, true, false);
 		}
@@ -31,17 +31,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies that a shared association protects against tampering.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SharedAssociationTampered() {
 			this.ParameterizedAuthenticationTest(true, true, true);
 		}
 
-		[TestCase]
+		[Test]
 		public void SharedAssociationNegative() {
 			this.ParameterizedAuthenticationTest(true, false, false);
 		}
 
-		[TestCase]
+		[Test]
 		public void PrivateAssociationPositive() {
 			this.ParameterizedAuthenticationTest(false, true, false);
 		}
@@ -49,17 +49,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies that a private association protects against tampering.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void PrivateAssociationTampered() {
 			this.ParameterizedAuthenticationTest(false, true, true);
 		}
 
-		[TestCase]
+		[Test]
 		public void NoAssociationNegative() {
 			this.ParameterizedAuthenticationTest(false, false, false);
 		}
 
-		[TestCase]
+		[Test]
 		public void UnsolicitedAssertion() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void UnsolicitedAssertionRejected() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies that delegating identifiers are rejected in unsolicited assertions
 		/// when the appropriate security setting is set.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UnsolicitedDelegatingIdentifierRejection() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ClientBase.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ClientBase.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Security;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -44,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the OAuth channel.
 		/// </summary>
 		/// <value>The channel.</value>
-		public Channel Channel { get; private set; }
+		public Channel Channel { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
@@ -79,10 +80,10 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(authorization, "authorization");
 			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization");
-			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, "authorization has expired");
+			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, OAuth2Strings.AuthorizationExpired);
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
-				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, "Access token has expired and cannot be automatically refreshed.");
+				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, OAuth2Strings.AccessTokenRefreshFailed);
 				this.RefreshAuthorization(authorization);
 			}
 
@@ -153,6 +154,35 @@ namespace DotNetOpenAuth.OAuth2 {
 			UpdateAuthorizationWithResponse(authorization, response);
 
 			return authorization;
+		}
+
+		/// <summary>
+		/// Exchanges a resource owner's password credential for OAuth 2.0 refresh and access tokens.
+		/// </summary>
+		/// <param name="userName">The resource owner's username, as it is known by the authorization server.</param>
+		/// <param name="password">The resource owner's account password.</param>
+		/// <param name="scopes">The desired scope of access.</param>
+		/// <returns>The result, containing the tokens if successful.</returns>
+		public IAuthorizationState ExchangeUserCredentialForToken(string userName, string password, IEnumerable<string> scopes = null) {
+			Requires.NotNullOrEmpty(userName, "userName");
+			Requires.NotNull(password, "password");
+
+			var request = new AccessTokenResourceOwnerPasswordCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version) {
+				UserName = userName,
+				Password = password,
+			};
+
+			return this.RequestAccessToken(request, scopes);
+		}
+
+		/// <summary>
+		/// Obtains an access token for accessing client-controlled resources on the resource server.
+		/// </summary>
+		/// <param name="scopes">The desired scopes.</param>
+		/// <returns>The result of the authorization request.</returns>
+		public IAuthorizationState GetClientAccessToken(IEnumerable<string> scopes = null) {
+			var request = new AccessTokenClientCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version);
+			return this.RequestAccessToken(request, scopes);
 		}
 
 		/// <summary>
@@ -251,6 +281,35 @@ namespace DotNetOpenAuth.OAuth2 {
 			TimeSpan elapsedLifetime = DateTime.UtcNow - authorization.AccessTokenIssueDateUtc.Value;
 			double proportionLifetimeRemaining = 1 - (elapsedLifetime.TotalSeconds / totalLifetime.TotalSeconds);
 			return proportionLifetimeRemaining;
+		}
+
+		/// <summary>
+		/// Requests an access token using a partially .initialized request message.
+		/// </summary>
+		/// <param name="request">The request message.</param>
+		/// <param name="scopes">The scopes requested by the client.</param>
+		/// <returns>The result of the request.</returns>
+		private IAuthorizationState RequestAccessToken(ScopedAccessTokenRequest request, IEnumerable<string> scopes = null) {
+			Requires.NotNull(request, "request");
+
+			var authorizationState = new AuthorizationState(scopes);
+
+			request.ClientIdentifier = this.ClientIdentifier;
+			request.ClientSecret = this.ClientSecret;
+			request.Scope.UnionWith(authorizationState.Scope);
+
+			var response = this.Channel.Request(request);
+			var success = response as AccessTokenSuccessResponse;
+			var failure = response as AccessTokenFailedResponse;
+			ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
+			if (success != null) {
+				UpdateAuthorizationWithResponse(authorizationState, success);
+			} else { // failure
+				Logger.OAuth.Info("Credentials rejected by the Authorization Server.");
+				authorizationState.Delete();
+			}
+
+			return authorizationState;
 		}
 	}
 }

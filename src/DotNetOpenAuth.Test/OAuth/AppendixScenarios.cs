@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AppendixScenarios.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AppendixScenarios.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 
 	[TestFixture]
 	public class AppendixScenarios : TestBase {
-		[TestCase]
+		[Test]
 		public void SpecAppendixAExample() {
 			ServiceProviderDescription serviceDescription = new ServiceProviderDescription() {
 				RequestTokenEndpoint = new MessageReceivingEndpoint("https://photos.example.net/request_token", HttpDeliveryMethods.PostRequest),

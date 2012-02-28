@@ -5,6 +5,7 @@
 <title>NUnit - EqualConstraint</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -190,13 +191,34 @@ as the argument to <b>Using</b>.
 Assert.That( myObj1, Is.EqualTo( myObj2 ).Using( myComparer ) );
 </pre></div>
 
+<p>Prior to NUnit 2.6, only one comparer could be used. If multiple
+comparers were specified, all but one was ignored. Beginning with NUnit 2.6,
+multiple generic comparers for different types may be specified. NUnit 
+will use the appropriate comparer for any two types being compared. As a result,
+it is now possible to provide a comparer for an array, a collection type or
+a dictionary. The user-provided comparer will be used directly, bypassing the
+default NUnit logic for array, collection or dictionary equality.
+
+<div class="code"><pre>
+class ListOfIntComparer : IEqualityComparer&lt;List&lt;int&gt;&gt;
+{
+	...
+}
+
+var list1 = new List&lt;int&gt;();
+var list2 = new List&lt;int&gt;();
+var myComparer = new ListOfIntComparer();
+...
+Assert.That( list1, Is.EqualTo(list2).Using( myComparer ) );
+</pre></div>
+
 <h4>Notes</h4>
 <ol>
-<li><p>When checking the equality of user-defined classes, NUnit makes use 
-    of the <b>Equals</b> override on the expected object. If you neglect to 
-	override <b>Equals</b>, you can expect failures non-identical objects. 
+<li><p>When checking the equality of user-defined classes, NUnit first examines each class to determine whether it implements <b>IEquatable&lt;T&gt;</b>. If either object implements the interface for the type of the other object, then that implementation is used in making the comparison. If neither class implements the appropriate interface, NUnit makes use 
+    of the <b>Equals</b> override on the expected object. If you neglect to either implement <b>IEquatable&lt;T&gt;</b> or to
+	override <b>Equals</b>, you can expect failures comparing non-identical objects. 
 	In particular, overriding <b>operator==</b> without overriding <b>Equals</b>
-	has no effect.
+or implementing the interface has no effect.
 <li><p>The <b>Within</b> modifier was originally designed for use with floating point
     values only. Beginning with NUnit 2.4, comparisons of <b>DateTime</b> values 
 	may use a <b>TimeSpan</b> as a tolerance. Beginning with NUnit 2.4.2, 
@@ -232,10 +254,13 @@ For a <b>DirectoryInfo</b>, the first-level directory contents are compared.
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
+<ul>
 <li><a href="assertions.html">Assertions</a></li>
+<li><a href="attributes.html">Attributes</a></li>
 <li><a href="constraintModel.html">Constraints</a></li>
 <ul>
 <li id="current"><a href="equalConstraint.html">Equal&nbsp;Constraint</a></li>
@@ -253,13 +278,20 @@ For a <b>DirectoryInfo</b>, the first-level directory contents are compared.
 <li><a href="listMapper.html">List&nbsp;Mapper</a></li>
 <li><a href="reusableConstraint.html">Reusable&nbsp;Constraint</a></li>
 </ul>
-<li><a href="attributes.html">Attributes</a></li>
+<li><a href="testContext.html">Test&nbsp;Context</a></li>
+</ul>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <li><a href="extensibility.html">Extensibility</a></li>
 <li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -267,7 +299,7 @@ For a <b>DirectoryInfo</b>, the first-level directory contents are compared.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

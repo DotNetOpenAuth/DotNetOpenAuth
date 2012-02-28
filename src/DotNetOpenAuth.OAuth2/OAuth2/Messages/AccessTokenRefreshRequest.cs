@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AccessTokenRefreshRequest.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AccessTokenRefreshRequest.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A request from the client to the token endpoint for a new access token
 	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
-	internal class AccessTokenRefreshRequest : ScopedAccessTokenRequest, IAuthorizationCarryingRequest {
+	internal class AccessTokenRefreshRequest : ScopedAccessTokenRequest, IRefreshTokenCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenRefreshRequest"/> class.
 		/// </summary>
@@ -32,19 +32,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
 		}
 
-		/// <summary>
-		/// Gets the type of the code or token.
-		/// </summary>
-		/// <value>The type of the code or token.</value>
-		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.RefreshToken; }
-		}
+		#region IRefreshTokenCarryingRequest members
 
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>
 		/// <value>The code or token.</value>
-		string IAuthorizationCarryingRequest.CodeOrToken {
+		string IRefreshTokenCarryingRequest.RefreshToken {
 			get { return this.RefreshToken; }
 			set { this.RefreshToken = value; }
 		}
@@ -52,7 +46,16 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
-		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
+		RefreshToken IRefreshTokenCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets the authorization that the token describes.
+		/// </summary>
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
+			get { return ((IRefreshTokenCarryingRequest)this).AuthorizationDescription; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets or sets the refresh token.

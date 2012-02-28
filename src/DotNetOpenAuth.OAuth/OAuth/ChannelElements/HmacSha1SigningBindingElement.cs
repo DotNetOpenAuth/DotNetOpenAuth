@@ -1,11 +1,12 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="HmacSha1SigningBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="HmacSha1SigningBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -30,6 +31,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <remarks>
 		/// This method signs the message per OAuth 1.0 section 9.2.
 		/// </remarks>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			string key = GetConsumerAndTokenSecretString(message);
 			using (HashAlgorithm hasher = new HMACSHA1(Encoding.ASCII.GetBytes(key))) {

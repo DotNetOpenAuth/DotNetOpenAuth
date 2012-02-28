@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StandardReplayProtectionBindingElementTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="StandardReplayProtectionBindingElementTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that the generated nonce includes random characters.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RandomCharactersTest() {
 			Assert.IsNotNull(this.nonceElement.ProcessOutgoingMessage(this.message));
 			Assert.IsNotNull(this.message.Nonce, "No nonce was set on the message.");
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that a message is received correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ValidMessageReceivedTest() {
 			this.message.Nonce = "a";
 			Assert.IsNotNull(this.nonceElement.ProcessIncomingMessage(this.message));
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		/// <summary>
 		/// Verifies that a message that doesn't have a string of random characters is received correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ValidMessageNoNonceReceivedTest() {
 			this.message.Nonce = string.Empty;
 			this.nonceElement.AllowZeroLengthNonce = true;

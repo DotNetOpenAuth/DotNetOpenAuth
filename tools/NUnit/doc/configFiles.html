@@ -5,6 +5,7 @@
 <title>NUnit - ConfigFiles</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -66,73 +67,44 @@ configuration files for each of the assemblies are used.
 <p>Generally, you should be able to simply copy your application config file and rename it as
 described above.</p>
 
-<p>It is also possible to effect the behavior of NUnit by adding special sections
-to the test config file. A config file using these sections might look like this:
+<p>In versions of NUnit prior to 2.6, it was possible to change the behavior of 
+NUnit by adding special sections to the test config file. This feature is no
+longer supported.
 
-<div class="code" style="width: 36em">
-<pre>
-&lt;?xml version="1.0" encoding="utf-8" ?&gt;
-&lt;configuration&gt;
-  &lt;configSections&gt;
-    &lt;sectionGroup name="NUnit"&gt;
-      &lt;section name="TestCaseBuilder"
-	    type="System.Configuration.NameValueSectionHandler"/&gt;
-      &lt;section name="TestRunner"
-	    type="System.Configuration.NameValueSectionHandler"/&gt;
-    &lt;/sectionGroup&gt;
-  &lt;/configSections&gt;
-	
-  &lt;NUnit&gt;
-    &lt;TestCaseBuilder&gt;
-      &lt;add key="OldStyleTestCases" value="false" /&gt;
-    &lt;/TestCaseBuilder&gt;
-    &lt;TestRunner&gt;
-      &lt;add key="ApartmentState" value="MTA" /&gt;
-      &lt;add key="ThreadPriority" value="Normal" /&gt;
-	  &lt;add key="DefaultLogThreshold" value="Error" /&gt;
-	&lt;/TestRunner&gt;
-  &lt;/NUnit&gt;
-	
-  ...
-	
-&lt;/configuration&gt; 
-</pre>
-</div>
-
-<p>The entries in the above file are all 
-set to default values. The meaning of each setting is as follows:
+<p>The following recommendations are provided in the case of each of the settings
+that are no longer available:
 
 <h4>OldStyleTestCases</h4>
-<p>If set to "true" NUnit will recognize methods beginning 
-"test..." as tests. The prefix is case insensitive.
+<p>NUnit no longer recognizes test methods without attributes.Use <b>TestAttribute</b>.
 
 <h4>ApartmentState</h4>
-<p>Sets the apartment state for the thread used to run tests.
+<p>We recommend the use of <b>RequiresSTAAttribute</b> or <b>RequiresMTAAttribute</b>
+on those test cases, test fixtures or setup fixtures that require a particular apartment.
+As a temporary measure, the nunit-console <b>-apartment</b> option may be used.
 
 <h4>ThreadPriority</h4>
-<p>Sets the thread priority for the test thread.
+<p>This is no longer supported.
 
 <h4>DefaultLogThreshold</h4>
-<p>Sets the level for logging captured by NUnit. In the
-current version only log4net logging is captured, so the
-level must be one that is defined by log4net.
+<p>This is now controlled by a setting in the NUnit Gui runner.
+
 
 </div>
 
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
-<li><a href="assertions.html">Assertions</a></li>
-<li><a href="constraintModel.html">Constraints</a></li>
-<li><a href="attributes.html">Attributes</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <ul>
 <li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
 <li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
 <li><a href="pnunit.html">PNUnit&nbsp;Runner</a></li>
+<li><a href="nunit-agent.html">NUnit&nbsp;Agent</a></li>
+<li><a href="projectEditor.html">Project&nbsp;Editor</a></li>
 <li><a href="runtimeSelection.html">Runtime&nbsp;Selection</a></li>
 <li><a href="assemblyIsolation.html">Assembly&nbsp;Isolation</a></li>
 <li id="current"><a href="configFiles.html">Configuration&nbsp;Files</a></li>
@@ -144,6 +116,12 @@ level must be one that is defined by log4net.
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -151,7 +129,7 @@ level must be one that is defined by log4net.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

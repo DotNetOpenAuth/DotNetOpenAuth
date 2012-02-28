@@ -5,6 +5,7 @@
 <title>NUnit - VsSupport</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -26,10 +27,9 @@
 
 <h2>Visual Studio Support</h2>
 
-<p>Visual Studio support in this release is a sort of “poor man’s integration.” We have implemented
-a number of features while avoiding any that would require using an Addin or otherwise
-interacting with the Visual Studio extensibility model.</p>
-
+<p>NUnit supports the Visual Studio project and solution format, which are also 
+   used by a number of other IDEs. Visual Studio support is enabled/disabled
+   by use of the <a href="settingsDialog.html">Settings Dialog</a>
 <h3>Running From Within Visual Studio</h3>
 
 <p>The most convenient way to do this is to set up a custom tool entry specifying the path to 
@@ -73,7 +73,7 @@ node with the assembly shown as its descendant.</p>
 
 <p>When tests are run for a Visual studio project, they run just as if the output assembly had been
 loaded with one exception. The default location for the config file is the directory containing the
-project file and it’s default name is the same as the project file with an extension of .config.
+project file and it's default name is the same as the project file with an extension of .config.
 For example, the following command would load the tests in the nunit.tests assembly using the
 configuration file nunit.tests.dll.config located in the same directory as the dll.
 	<pre class="programtext">        nunit.exe nunit.tests.dll</pre>
@@ -92,7 +92,7 @@ possible to load and run tests using this method directly.</p>
 <p>Beginning with NUnit 2.2.2, you may also open a Visual Studio solution by dragging it to the gui tree control.</p>
 
 <p>When a solution contains projects located elsewhere in the file system, it may not be possible to
-run the tests – although the solution will generally load without problem. In this case, the Project
+run the tests - although the solution will generally load without problem. In this case, the Project
 Editor should be use to modify and save the NUnit test project so that there is all referenced
 assemblies are located in or beneath the application base directory.</p>
 
@@ -107,17 +107,17 @@ specified in the VS project.</p>
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
-<li><a href="assertions.html">Assertions</a></li>
-<li><a href="constraintModel.html">Constraints</a></li>
-<li><a href="attributes.html">Attributes</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <ul>
 <li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
 <li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
 <li><a href="pnunit.html">PNUnit&nbsp;Runner</a></li>
+<li><a href="nunit-agent.html">NUnit&nbsp;Agent</a></li>
+<li><a href="projectEditor.html">Project&nbsp;Editor</a></li>
 <li><a href="runtimeSelection.html">Runtime&nbsp;Selection</a></li>
 <li><a href="assemblyIsolation.html">Assembly&nbsp;Isolation</a></li>
 <li><a href="configFiles.html">Configuration&nbsp;Files</a></li>
@@ -129,6 +129,12 @@ specified in the VS project.</p>
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -136,7 +142,7 @@ specified in the VS project.</p>
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="FetchRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="FetchRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -18,13 +18,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			new FetchRequest().Attributes.Add(null);
 		}
 
-		[TestCase]
+		[Test]
 		public void AddAttributeRequest() {
 			var req = new FetchRequest();
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://someUri" });
 		}
 
-		[TestCase]
+		[Test]
 		public void AddAttributeRequestStrangeUri() {
 			var req = new FetchRequest();
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "=someUri*who*knows*but*this*is*legal" });
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://UriTwice" });
 		}
 
-		[TestCase]
+		[Test]
 		public void RespondSimpleValue() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual("value", resp.Values[0]);
 		}
 
-		[TestCase]
+		[Test]
 		public void RespondTwoValues() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";
@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			req.Respond(null);
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualityTests() {
 			var req1 = new FetchRequest();
 			var req2 = new FetchRequest();
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Serializable() {
 			var fetch = new FetchRequest();
 			fetch.Attributes.AddRequired("http://someAttribute");

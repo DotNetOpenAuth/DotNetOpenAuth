@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MessageDescriptionTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="MessageDescriptionTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			new MessageDescription(typeof(string), new Version(1, 0));
 		}
 
-		[TestCase]
+		[Test]
 		public void MultiVersionedMessageTest() {
 			var v10 = new MessageDescription(typeof(MultiVersionMessage), new Version(1, 0));
 			var v20 = new MessageDescription(typeof(MultiVersionMessage), new Version(2, 0));
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// Verifies that the constructors cache is properly initialized.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void CtorsCache() {
 			var message = new MessageDescription(typeof(MultiVersionMessage), new Version(1, 0));
 			Assert.IsNotNull(message.Constructors);

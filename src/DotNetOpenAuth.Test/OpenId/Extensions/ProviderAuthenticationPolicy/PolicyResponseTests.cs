@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="PolicyResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="PolicyResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 		private static readonly DateTime someUtcTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
 		private static readonly DateTime someUnspecifiedTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Unspecified);
 
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			PolicyResponse resp = new PolicyResponse();
 			Assert.IsNotNull(resp.ActualPolicies);
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsNull(resp.NistAssuranceLevel);
 		}
 
-		[TestCase]
+		[Test]
 		public void AddPolicies() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.ActualPolicies.Add(AuthenticationPolicies.MultiFactor);
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(AuthenticationPolicies.PhishingResistant, resp.ActualPolicies[1]);
 		}
 
-		[TestCase]
+		[Test]
 		public void AddPolicyMultipleTimes() {
 			// Although this isn't really the desired behavior (we'd prefer to see an
 			// exception thrown), since we're using a List<string> internally we can't
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(2, resp.ActualPolicies.Count);
 		}
 
-		[TestCase]
+		[Test]
 		public void AuthenticationTimeUtcConvertsToUtc() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = someLocalTime;
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(someLocalTime.ToUniversalTime(), resp.AuthenticationTimeUtc.Value);
 		}
 
-		[TestCase]
+		[Test]
 		public void AuthenticationTimeUtcSetUtc() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = someUtcTime;
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			resp.AuthenticationTimeUtc = someUnspecifiedTime;
 		}
 
-		[TestCase]
+		[Test]
 		public void AuthenticationTimeUtcSetNull() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = null;
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsNull(resp.AuthenticationTimeUtc);
 		}
 
-		[TestCase]
+		[Test]
 		public void NistAssuranceLevelSetVarious() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.NistAssuranceLevel = NistAssuranceLevel.Level1;
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(NistAssuranceLevel.InsufficientForLevel1, resp.NistAssuranceLevel);
 		}
 
-		[TestCase]
+		[Test]
 		public void AssuranceLevels() {
 			PolicyResponse resp = new PolicyResponse();
 			Assert.AreEqual(0, resp.AssuranceLevels.Count);
@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.IsNull(resp.NistAssuranceLevel);
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualsTest() {
 			PolicyResponse resp = new PolicyResponse();
 			PolicyResponse resp2 = new PolicyResponse();
@@ -164,7 +164,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(resp, resp2);
 		}
 
-		[TestCase]
+		[Test]
 		public void Serialize() {
 			PolicyResponse resp = new PolicyResponse();
 			IMessageWithEvents respEvents = resp;

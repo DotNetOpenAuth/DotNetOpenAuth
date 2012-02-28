@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="PlaintextSigningBindingElementTest.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="PlaintextSigningBindingElementTest.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 
 	[TestFixture]
 	public class PlaintextSigningBindingElementTest {
-		[TestCase]
+		[Test]
 		public void HttpsSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual("cs&ts", message.Signature);
 		}
 
-		[TestCase]
+		[Test]
 		public void HttpsSignatureVerification() {
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
 			ITamperProtectionChannelBindingElement target = new PlaintextSigningBindingElement();
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.IsNotNull(target.ProcessIncomingMessage(message));
 		}
 
-		[TestCase]
+		[Test]
 		public void HttpsSignatureVerificationNotApplicable() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual(MessageProtections.None, target.ProcessIncomingMessage(message), "PLAINTEXT binding element should opt-out where it doesn't understand.");
 		}
 
-		[TestCase]
+		[Test]
 		public void HttpSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.IsNull(message.Signature);
 		}
 
-		[TestCase]
+		[Test]
 		public void HttpSignatureVerification() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();

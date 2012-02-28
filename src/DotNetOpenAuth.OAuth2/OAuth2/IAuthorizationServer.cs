@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IAuthorizationServer.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="IAuthorizationServer.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	[ContractClass(typeof(IAuthorizationServerContract))]
 	public interface IAuthorizationServer {
 		/// <summary>
-		/// Gets the store for storeing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
+		/// Gets the store for storing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
 		/// <remarks>
 		/// This store should be kept strictly confidential in the authorization server(s)
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
-		IConsumerDescription GetClient(string clientIdentifier);
+		IClientDescription GetClient(string clientIdentifier);
 
 		/// <summary>
 		/// Determines whether a described authorization is (still) valid.
@@ -113,6 +113,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// account or piece of hardware in which the tokens were stored. </para>
 		/// </remarks>
 		bool IsAuthorizationValid(IAuthorizationDescription authorization);
+
+		/// <summary>
+		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database.
+		/// </summary>
+		/// <param name="userName">Username on the account.</param>
+		/// <param name="password">The user's password.</param>
+		/// <returns>
+		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
+		bool IsResourceOwnerCredentialValid(string userName, string password);
 	}
 
 	/// <summary>
@@ -202,9 +213,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
-		IConsumerDescription IAuthorizationServer.GetClient(string clientIdentifier) {
+		IClientDescription IAuthorizationServer.GetClient(string clientIdentifier) {
 			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
-			Contract.Ensures(Contract.Result<IConsumerDescription>() != null);
+			Contract.Ensures(Contract.Result<IClientDescription>() != null);
 			throw new NotImplementedException();
 		}
 
@@ -232,6 +243,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </remarks>
 		bool IAuthorizationServer.IsAuthorizationValid(IAuthorizationDescription authorization) {
 			Requires.NotNull(authorization, "authorization");
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database.
+		/// </summary>
+		/// <param name="userName">Username on the account.</param>
+		/// <param name="password">The user's password.</param>
+		/// <returns>
+		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
+		bool IAuthorizationServer.IsResourceOwnerCredentialValid(string userName, string password) {
+			Contract.Requires(!String.IsNullOrEmpty(userName));
+			Contract.Requires(password != null);
 			throw new NotImplementedException();
 		}
 	}

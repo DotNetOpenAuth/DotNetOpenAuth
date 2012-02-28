@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IndirectErrorResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="IndirectErrorResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -23,12 +23,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response = new IndirectErrorResponse(request);
 		}
 
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			Assert.AreEqual(RPUri, this.response.Recipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void ParameterNames() {
 			this.response.ErrorMessage = "Some Error";
 			this.response.Contact = "Andrew Arnott";

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdChannel.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdChannel.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -181,6 +181,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			byte[] keyValueEncoding = KeyValueFormEncoding.GetBytes(fields);
 
 			OutgoingWebResponse preparedResponse = new OutgoingWebResponse();
+			this.ApplyMessageTemplate(response, preparedResponse);
 			preparedResponse.Headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);
 			preparedResponse.OriginalMessage = response;
 			preparedResponse.ResponseStream = new MemoryStream(keyValueEncoding);

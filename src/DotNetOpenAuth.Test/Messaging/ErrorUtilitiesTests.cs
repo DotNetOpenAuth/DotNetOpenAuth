@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ErrorUtilitiesTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ErrorUtilitiesTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull(null, "someArg");
 		}
 
-		[TestCase]
+		[Test]
 		public void VerifyArgumentNotNullDoesNotThrow() {
 			ErrorUtilities.VerifyArgumentNotNull("hi", "someArg");
 		}
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			ErrorUtilities.VerifyNonZeroLength(string.Empty, "someArg");
 		}
 
-		[TestCase]
+		[Test]
 		public void VerifyNonZeroLengthOnNonEmpty() {
 			ErrorUtilities.VerifyNonZeroLength("some Value", "someArg");
 		}

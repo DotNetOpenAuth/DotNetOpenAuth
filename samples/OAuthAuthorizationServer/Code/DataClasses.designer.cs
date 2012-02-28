@@ -272,6 +272,8 @@ namespace OAuthAuthorizationServer.Code
 		
 		private string _Name;
 		
+		private int _ClientType;
+		
 		private EntitySet<ClientAuthorization> _OAuthTokens;
 		
     #region Extensibility Method Definitions
@@ -288,6 +290,8 @@ namespace OAuthAuthorizationServer.Code
     partial void OnCallbackChanged();
     partial void OnNameChanging(string value);
     partial void OnNameChanged();
+    partial void OnClientTypeChanging(int value);
+    partial void OnClientTypeChanged();
     #endregion
 		
 		public Client()
@@ -392,6 +396,26 @@ namespace OAuthAuthorizationServer.Code
 					this._Name = value;
 					this.SendPropertyChanged("Name");
 					this.OnNameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ClientType")]
+		public int ClientType
+		{
+			get
+			{
+				return this._ClientType;
+			}
+			set
+			{
+				if ((this._ClientType != value))
+				{
+					this.OnClientTypeChanging(value);
+					this.SendPropertyChanging();
+					this._ClientType = value;
+					this.SendPropertyChanged("ClientType");
+					this.OnClientTypeChanged();
 				}
 			}
 		}

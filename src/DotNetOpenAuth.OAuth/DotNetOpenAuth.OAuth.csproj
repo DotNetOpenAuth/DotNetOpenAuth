@@ -25,8 +25,6 @@
     <Compile Include="Configuration\OAuthServiceProviderSecuritySettingsElement.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
     <Compile Include="OAuthReporting.cs" />
-    <Compile Include="OAuth\ChannelElements\ICombinedOpenIdProviderTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\IOpenIdOAuthTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
@@ -82,10 +80,6 @@
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
-      <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
-      <Name>DotNetOpenAuth.OpenId</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

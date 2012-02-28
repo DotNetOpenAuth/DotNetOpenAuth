@@ -281,6 +281,10 @@
       <Project>{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}</Project>
       <Name>DotNetOpenAuth.OpenId.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenIdInfoCard.UI\DotNetOpenAuth.OpenIdInfoCard.UI.csproj">
+      <Project>{3A8347E8-59A5-4092-8842-95C75D7D2F36}</Project>
+      <Name>DotNetOpenAuth.OpenIdInfoCard.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>

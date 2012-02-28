@@ -134,6 +134,19 @@
 
 			<TopLevelVS2010ProjectTemplates Include="@(ProjectTemplatesLayout)" Condition=" '%(Extension)' == '.vstemplate' and '%(RootDir)%(Directory)' == '$(ProjectTemplatesLayoutPath)' " />
 			<VS2010ProjectTemplateZipFiles Include="@(TopLevelVS2010ProjectTemplates->'%(RootDir)%(Directory)%(FileName).zip')" />
+
+			<TemplateProjectItemsForTransformLayoutFixups Include="@(TemplateProjectItemsForTransformLayout)" Condition=" '%(Extension)' == '.aspx' ">
+				<Pattern>&lt;%@ Register Assembly="DotNetOpenAuth[^"]+"</Pattern>
+				<Replacement>&lt;%@ Register Assembly="DotNetOpenAuth"</Replacement>
+			</TemplateProjectItemsForTransformLayoutFixups>
+			<TemplateProjectItemsForTransformLayoutFixups Include="@(TemplateProjectItemsForTransformLayout)" Condition=" '%(Extension)' == '.xaml' ">
+				<Pattern>xmlns\:(.+)assembly=DotNetOpenAuth([^;"]+)</Pattern>
+				<Replacement>xmlns:$1assembly=DotNetOpenAuth</Replacement>
+			</TemplateProjectItemsForTransformLayoutFixups>
+			<TemplateProjectItemsForTransformLayoutFixups Include="@(TemplateProjectItemsForTransformLayout)" Condition=" '%(Extension)' == '.config' ">
+				<Pattern>type=&quot;DotNetOpenAuth([^,]+), DotNetOpenAuth([^&quot;]+)&quot;</Pattern>
+				<Replacement>type=&quot;DotNetOpenAuth$1, DotNetOpenAuth&quot;</Replacement>
+			</TemplateProjectItemsForTransformLayoutFixups>
 		</ItemGroup>
 
 		<Copy
@@ -143,6 +156,10 @@
 		<CopyWithTokenSubstitution
 			SourceFiles="@(TemplateProjectItemsForTransformSource)"
 			DestinationFiles="@(TemplateProjectItemsForTransformLayout)" />
+		<RegexFileReplace
+			Files="@(TemplateProjectItemsForTransformLayoutFixups)"
+			Pattern="%(Pattern)"
+			Replacement="%(Replacement)" />
 
 		<ItemGroup>
 			<ProjectTemplateIntendedFiles Include="

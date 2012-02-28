@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="DiffieHellmanTests.cs" company="Jason Alexander, Andrew Arnott">
-//     Copyright (c) Jason Alexander, Andrew Arnott. All rights reserved.
+// <copyright file="DiffieHellmanTests.cs" company="Jason Alexander, Outercurve Foundation">
+//     Copyright (c) Jason Alexander, Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 	[TestFixture]
 	public class DiffieHellmanTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void Test() {
 			string s1 = Test1();
 			string s2 = Test1();

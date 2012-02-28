@@ -1,11 +1,8 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdInfoCardSelector.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdInfoCardSelector.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.EmbeddedScriptResourceName, "text/javascript")]
-[assembly: System.Web.UI.WebResource(DotNetOpenAuth.OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName, "text/css")]
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
@@ -29,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// <summary>
 	/// An ASP.NET control that provides a user-friendly way of logging into a web site using OpenID.
 	/// </summary>
-	[ToolboxData("<{0}:OpenIdSelector runat=\"server\"></{0}:OpenIdSelector>")]
+	[ToolboxData("<{0}:OpenIdInfoCardSelector runat=\"server\"></{0}:OpenIdInfoCardSelector>")]
 	public class OpenIdInfoCardSelector : OpenIdSelector {
 		/// <summary>
 		/// The InfoCard selector button.

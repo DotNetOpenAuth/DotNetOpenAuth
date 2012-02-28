@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthenticationRequestTest.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AuthenticationRequestTest.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies the user_setup_url is set properly for immediate negative responses.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UserSetupUrl() {
 			// Construct a V1 immediate request
 			Protocol protocol = Protocol.V11;

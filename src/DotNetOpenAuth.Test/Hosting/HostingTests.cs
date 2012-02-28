@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="HostingTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="HostingTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 
 	[TestFixture, Category("HostASPNET")]
 	public class HostingTests : TestBase {
-		[TestCase]
+		[Test]
 		public void AspHostBasicTest() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {

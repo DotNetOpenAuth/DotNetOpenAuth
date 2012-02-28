@@ -1,11 +1,12 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AccountInfo.aspx.cs" Inherits="WebFormsRelyingParty.Members.AccountInfo"
 	MasterPageFile="~/Site.Master" ValidateRequest="false" %>
 
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
+<%@ Register Assembly="DotNetOpenAuth.OpenID.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>
-<%@ Register Assembly="DotNetOpenAuth" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
+<%@ Register Assembly="DotNetOpenAuth.InfoCard.UI" Namespace="DotNetOpenAuth.InfoCard" TagPrefix="ic" %>
 <%@ Register Assembly="System.Web.Entity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
 	Namespace="System.Web.UI.WebControls" TagPrefix="asp" %>
+<%@ Register Assembly="DotNetOpenAuth.OpenIdInfoCard.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rpic" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
 <% if (Request.Url.IsLoopback) { %>
 	<script type="text/javascript" src="../scripts/jquery-1.3.1.js"></script>
@@ -130,17 +131,17 @@
 		<p>
 			Add a way to log into your account:
 		</p>
-		<rp:OpenIdSelector runat="server" ID="openIdSelector" OnLoggedIn="openIdBox_LoggedIn"
+		<rpic:OpenIdInfoCardSelector runat="server" ID="openIdSelector" OnLoggedIn="openIdBox_LoggedIn"
 			OnReceivedToken="InfoCardSelector1_ReceivedToken">
 			<Buttons>
 				<rp:SelectorProviderButton OPIdentifier="https://me.yahoo.com/" Image="~/images/yahoo.gif" />
 				<rp:SelectorProviderButton OPIdentifier="https://www.google.com/accounts/o8/id" Image="~/images/google.gif" />
-				<rp:SelectorInfoCardButton>
+				<rpic:SelectorInfoCardButton>
 					<InfoCardSelector Issuer="" />
-				</rp:SelectorInfoCardButton>
+				</rpic:SelectorInfoCardButton>
 				<rp:SelectorOpenIdButton Image="~/images/openid.png" />
 			</Buttons>
-		</rp:OpenIdSelector>
+		</rpic:OpenIdInfoCardSelector>
 	</div>
 	<asp:Label ID="differentAccountLabel" runat="server" EnableViewState="False" ForeColor="Red"
 		Text="This identifier already belongs to a different user account." Visible="False" />

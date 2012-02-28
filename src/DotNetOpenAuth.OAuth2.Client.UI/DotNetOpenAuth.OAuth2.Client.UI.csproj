@@ -18,6 +18,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuth2\ClientAuthorizationCompleteEventArgs.cs" />
     <Compile Include="OAuth2\ClientAuthorizationView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -38,10 +39,6 @@
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OAuth\DotNetOpenAuth.OAuth.csproj">
-      <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
-      <Name>DotNetOpenAuth.OAuth</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
