@@ -89,7 +89,14 @@
 				return AuthenticationResult.Failed;
 			}
 
-			return VerifyAuthenticationCore(response);
+			// add the access token to the user data dictionary just in case page developers want to use it
+			AuthenticationResult result = VerifyAuthenticationCore(response);
+			if (result.IsSuccessful && result.ExtraData != null)
+			{
+				result.ExtraData["accesstoken"] = response.AccessToken;
+			}
+
+			return result;
 		}
 
 		/// <summary>

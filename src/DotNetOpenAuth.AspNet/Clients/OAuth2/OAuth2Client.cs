@@ -83,6 +83,9 @@
 				name = id;
 			}
 
+			// add the access token to the user data dictionary just in case page developers want to use it
+			userData["accesstoken"] = accessToken;
+
 			return new AuthenticationResult(
 				isSuccessful: true,
 				provider: ProviderName,
