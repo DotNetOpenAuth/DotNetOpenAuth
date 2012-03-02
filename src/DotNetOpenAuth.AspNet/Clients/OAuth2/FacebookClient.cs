@@ -13,65 +13,98 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.AspNet.Resources;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// The facebook client.
+	/// </summary>
 	public sealed class FacebookClient : OAuth2Client {
+		#region Constants and Fields
+
+		/// <summary>
+		/// The authorization endpoint.
+		/// </summary>
 		private const string AuthorizationEndpoint = "https://www.facebook.com/dialog/oauth";
+
+		/// <summary>
+		/// The token endpoint.
+		/// </summary>
 		private const string TokenEndpoint = "https://graph.facebook.com/oauth/access_token";
 
+		/// <summary>
+		/// The _app id.
+		/// </summary>
 		private readonly string _appId;
+
+		/// <summary>
+		/// The _app secret.
+		/// </summary>
 		private readonly string _appSecret;
 
+		#endregion
+
+		#region Constructors and Destructors
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FacebookClient"/> class.
+		/// </summary>
+		/// <param name="appId">
+		/// The app id.
+		/// </param>
+		/// <param name="appSecret">
+		/// The app secret.
+		/// </param>
+		/// <exception cref="ArgumentException">
+		/// </exception>
+		/// <exception cref="ArgumentException">
+		/// </exception>
 		public FacebookClient(string appId, string appSecret)
 			: base("facebook") {
-			if (String.IsNullOrEmpty(appId)) {
+			if (string.IsNullOrEmpty(appId)) {
 				throw new ArgumentException(
-					String.Format(CultureInfo.CurrentCulture, WebResources.Argument_Cannot_Be_Null_Or_Empty, "appId"),
-					"appId");
+					string.Format(CultureInfo.CurrentCulture, WebResources.Argument_Cannot_Be_Null_Or_Empty, "appId"), "appId");
 			}
 
-			if (String.IsNullOrEmpty("appSecret")) {
+			if (string.IsNullOrEmpty("appSecret")) {
 				throw new ArgumentException(
-					String.Format(CultureInfo.CurrentCulture, WebResources.Argument_Cannot_Be_Null_Or_Empty, "appSecret"),
-					"appSecret");
+					string.Format(CultureInfo.CurrentCulture, WebResources.Argument_Cannot_Be_Null_Or_Empty, "appSecret"), "appSecret");
 			}
 
-			_appId = appId;
-			_appSecret = appSecret;
+			this._appId = appId;
+			this._appSecret = appSecret;
 		}
 
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// The get service login url.
+		/// </summary>
+		/// <param name="returnUrl">
+		/// The return url.
+		/// </param>
+		/// <returns>
+		/// </returns>
 		protected override Uri GetServiceLoginUrl(Uri returnUrl) {
 			// Note: Facebook doesn't like us to url-encode the redirect_uri value
 			var builder = new UriBuilder(AuthorizationEndpoint);
-			builder.AppendQueryArgs(new Dictionary<string, string> {
-					{ "client_id", _appId },
-					{ "redirect_uri", returnUrl.AbsoluteUri },
-				});
+			builder.AppendQueryArgs(
+				new Dictionary<string, string> { { "client_id", this._appId }, { "redirect_uri", returnUrl.AbsoluteUri }, });
 			return builder.Uri;
 		}
 
-		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
-			// Note: Facebook doesn't like us to url-encode the redirect_uri value
-			var builder = new UriBuilder(TokenEndpoint);
-			builder.AppendQueryArgs(new Dictionary<string, string> {
-				{ "client_id", _appId },
-				{ "redirect_uri", returnUrl.AbsoluteUri },
-				{ "client_secret", _appSecret },
-				{ "code", authorizationCode },
-			});
-
-			using (WebClient client = new WebClient()) {
-				string data = client.DownloadString(builder.Uri);
-				if (String.IsNullOrEmpty(data)) {
-					return null;
-				}
-
-				var parsedQueryString = HttpUtility.ParseQueryString(data);
-				return parsedQueryString["access_token"];
-			}
-		}
-
+		/// <summary>
+		/// The get user data.
+		/// </summary>
+		/// <param name="accessToken">
+		/// The access token.
+		/// </param>
+		/// <returns>
+		/// </returns>
 		protected override IDictionary<string, string> GetUserData(string accessToken) {
 			FacebookGraphData graphData;
-			var request = WebRequest.Create("https://graph.facebook.com/me?access_token=" + MessagingUtilities.EscapeUriDataStringRfc3986(accessToken));
+			var request =
+				WebRequest.Create(
+					"https://graph.facebook.com/me?access_token=" + MessagingUtilities.EscapeUriDataStringRfc3986(accessToken));
 			using (var response = request.GetResponse()) {
 				using (var responseStream = response.GetResponseStream()) {
 					graphData = JsonHelper.Deserialize<FacebookGraphData>(responseStream);
@@ -88,5 +121,41 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			userData.AddItemIfNotEmpty("birthday", graphData.Birthday);
 			return userData;
 		}
+
+		/// <summary>
+		/// The query access token.
+		/// </summary>
+		/// <param name="returnUrl">
+		/// The return url.
+		/// </param>
+		/// <param name="authorizationCode">
+		/// The authorization code.
+		/// </param>
+		/// <returns>
+		/// The query access token.
+		/// </returns>
+		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
+			// Note: Facebook doesn't like us to url-encode the redirect_uri value
+			var builder = new UriBuilder(TokenEndpoint);
+			builder.AppendQueryArgs(
+				new Dictionary<string, string> {
+					{ "client_id", this._appId }, 
+					{ "redirect_uri", returnUrl.AbsoluteUri }, 
+					{ "client_secret", this._appSecret }, 
+					{ "code", authorizationCode }, 
+				});
+
+			using (WebClient client = new WebClient()) {
+				string data = client.DownloadString(builder.Uri);
+				if (string.IsNullOrEmpty(data)) {
+					return null;
+				}
+
+				var parsedQueryString = HttpUtility.ParseQueryString(data);
+				return parsedQueryString["access_token"];
+			}
+		}
+
+		#endregion
 	}
 }

@@ -9,29 +9,30 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
+	/// <summary>
+	/// The yahoo open id client.
+	/// </summary>
 	public sealed class YahooOpenIdClient : OpenIdClient {
-		public YahooOpenIdClient() :
-			base("yahoo", "http://me.yahoo.com") {
-		}
+		#region Constructors and Destructors
 
 		/// <summary>
-		/// Called just before the authentication request is sent to service provider.
+		/// Initializes a new instance of the <see cref="YahooOpenIdClient"/> class.
 		/// </summary>
-		/// <param name="request">The request.</param>
-		protected override void OnBeforeSendingAuthenticationRequest(IAuthenticationRequest request) {
-			// Attribute Exchange extensions
-			var fetchRequest = new FetchRequest();
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Contact.Email, isRequired: true));
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Name.FullName, isRequired: false));
+		public YahooOpenIdClient()
+			: base("yahoo", "http://me.yahoo.com") {}
 
-			request.AddExtension(fetchRequest);
-		}
+		#endregion
+
+		#region Methods
 
 		/// <summary>
 		/// Gets the extra data obtained from the response message when authentication is successful.
 		/// </summary>
-		/// <param name="response">The response message.</param>
-		/// <returns></returns>
+		/// <param name="response">
+		/// The response message. 
+		/// </param>
+		/// <returns>
+		/// </returns>
 		protected override Dictionary<string, string> GetExtraData(IAuthenticationResponse response) {
 			FetchResponse fetchResponse = response.GetExtension<FetchResponse>();
 			if (fetchResponse != null) {
@@ -44,5 +45,22 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 			return null;
 		}
+
+		/// <summary>
+		/// Called just before the authentication request is sent to service provider.
+		/// </summary>
+		/// <param name="request">
+		/// The request. 
+		/// </param>
+		protected override void OnBeforeSendingAuthenticationRequest(IAuthenticationRequest request) {
+			// Attribute Exchange extensions
+			var fetchRequest = new FetchRequest();
+			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Contact.Email, isRequired: true));
+			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Name.FullName, isRequired: false));
+
+			request.AddExtension(fetchRequest);
+		}
+
+		#endregion
 	}
 }

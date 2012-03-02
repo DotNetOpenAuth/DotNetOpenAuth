@@ -10,9 +10,39 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
 
+	/// <summary>
+	/// The io auth web worker.
+	/// </summary>
 	public interface IOAuthWebWorker {
-		void RequestAuthentication(Uri callback);
-		AuthorizedTokenResponse ProcessUserAuthorization();
+		#region Public Methods and Operators
+
+		/// <summary>
+		/// The prepare authorized request.
+		/// </summary>
+		/// <param name="profileEndpoint">
+		/// The profile endpoint.
+		/// </param>
+		/// <param name="accessToken">
+		/// The access token.
+		/// </param>
+		/// <returns>
+		/// </returns>
 		HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint profileEndpoint, string accessToken);
+
+		/// <summary>
+		/// The process user authorization.
+		/// </summary>
+		/// <returns>
+		/// </returns>
+		AuthorizedTokenResponse ProcessUserAuthorization();
+
+		/// <summary>
+		/// The request authentication.
+		/// </summary>
+		/// <param name="callback">
+		/// The callback.
+		/// </param>
+		void RequestAuthentication(Uri callback);
+		#endregion
 	}
 }

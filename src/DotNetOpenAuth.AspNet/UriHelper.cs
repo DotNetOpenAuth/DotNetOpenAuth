@@ -10,23 +10,26 @@ namespace DotNetOpenAuth.AspNet {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 
+	/// <summary>
+	/// The uri helper.
+	/// </summary>
 	internal static class UriHelper {
+		#region Public Methods and Operators
+
 		/// <summary>
-		/// Attaches the query string '__provider' to an existing url. If the url already 
-		/// contains the __provider query string, it overrides it with the specified provider name.
+		/// The attach query string parameter.
 		/// </summary>
-		/// <param name="url">The original url.</param>
-		/// <param name="providerName">Name of the provider.</param>
-		/// <returns>The new url with the provider name query string attached</returns>
-		/// <example>
-		/// If the url is: http://contoso.com, and providerName='facebook', the returned value is: http://contoso.com?__provider=facebook
-		/// If the url is: http://contoso.com?a=1, and providerName='twitter', the returned value is: http://contoso.com?a=1&__provider=twitter
-		/// If the url is: http://contoso.com?a=1&__provider=twitter, and providerName='linkedin', the returned value is: http://contoso.com?a=1&__provider=linkedin
-		/// </example>
-		/// <remarks>
-		/// The reason we have to do this is so that when the external service provider forwards user 
-		/// back to our site, we know which provider it comes back from.
-		/// </remarks>
+		/// <param name="url">
+		/// The url.
+		/// </param>
+		/// <param name="parameterName">
+		/// The parameter name.
+		/// </param>
+		/// <param name="parameterValue">
+		/// The parameter value.
+		/// </param>
+		/// <returns>
+		/// </returns>
 		public static Uri AttachQueryStringParameter(this Uri url, string parameterName, string parameterValue) {
 			UriBuilder builder = new UriBuilder(url);
 			string query = builder.Query;
@@ -44,8 +47,10 @@ namespace DotNetOpenAuth.AspNet {
 				if (newQuery.Length > 0) {
 					newQuery += "&";
 				}
+
 				newQuery = newQuery + parameterPrefix + encodedParameterValue;
 			}
+
 			builder.Query = newQuery;
 
 			return builder.Uri;
@@ -54,8 +59,14 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// Converts an app-relative url, e.g. ~/Content/Return.cshtml, to a full-blown url, e.g. http://mysite.com/Content/Return.cshtml
 		/// </summary>
-		/// <param name="returnUrl">The return URL.</param>
-		/// <returns></returns>
+		/// <param name="returnUrl">
+		/// The return URL. 
+		/// </param>
+		/// <param name="context">
+		/// The context.
+		/// </param>
+		/// <returns>
+		/// </returns>
 		public static Uri ConvertToAbsoluteUri(string returnUrl, HttpContextBase context) {
 			if (Uri.IsWellFormedUriString(returnUrl, UriKind.Absolute)) {
 				return new Uri(returnUrl, UriKind.Absolute);
@@ -68,5 +79,7 @@ namespace DotNetOpenAuth.AspNet {
 			Uri publicUrl = HttpRequestInfo.GetPublicFacingUrl(context.Request, context.Request.ServerVariables);
 			return new Uri(publicUrl, returnUrl);
 		}
+
+		#endregion
 	}
 }
