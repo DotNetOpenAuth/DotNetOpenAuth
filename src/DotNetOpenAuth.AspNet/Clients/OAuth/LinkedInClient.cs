@@ -19,6 +19,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// Represents LinkedIn authentication client.
 	/// </summary>
 	public sealed class LinkedInClient : OAuthClient {
+		/// <summary>
+		/// Describes the OAuth service provider endpoints for LinkedIn.
+		/// </summary>
 		public static readonly ServiceProviderDescription LinkedInServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint = new MessageReceivingEndpoint("https://api.linkedin.com/uas/oauth/requestToken", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.linkedin.com/uas/oauth/authenticate", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),

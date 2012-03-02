@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.AspNet {
 	using System.Web.Security;
 	using DotNetOpenAuth.AspNet.Resources;
 
+	/// <summary>
+	/// Helper methods for setting and retrieving a custom forms authentication ticket for delegation protocols.
+	/// </summary>
 	internal static class OpenAuthAuthenticationTicketHelper {
 		private const string OpenAuthCookieToken = "OpenAuth";
 

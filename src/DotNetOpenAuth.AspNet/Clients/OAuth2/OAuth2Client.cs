@@ -101,11 +101,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		}
 
 		/// <summary>
-		/// Gets the full url pointing to the login page for this client. The url should include the 
+		/// Gets the full url pointing to the login page for this client. The url should include the
 		/// specified return url so that when the login completes, user is redirected back to that url.
 		/// </summary>
 		/// <param name="returnUrl">The return URL.</param>
-		/// <returns></returns>
+		/// <returns>An absolute URL.</returns>
 		[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login", Justification = "Login is used more consistently in ASP.Net")]
 		protected abstract Uri GetServiceLoginUrl(Uri returnUrl);
 
@@ -114,7 +114,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		/// <param name="returnUrl">The return URL.</param>
 		/// <param name="authorizationCode">The authorization code.</param>
-		/// <returns></returns>
+		/// <returns>The access token</returns>
 		protected abstract string QueryAccessToken(Uri returnUrl, string authorizationCode);
 
 		/// <summary>
