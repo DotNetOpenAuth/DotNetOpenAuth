@@ -1248,7 +1248,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(args, "args");
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			if (args.Count() == 0) {
+			if (!args.Any()) {
 				return string.Empty;
 			}
 			StringBuilder sb = new StringBuilder(args.Count() * 10);

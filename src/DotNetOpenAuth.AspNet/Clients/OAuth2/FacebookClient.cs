@@ -41,24 +41,22 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		protected override Uri GetServiceLoginUrl(Uri returnUrl) {
 			// Note: Facebook doesn't like us to url-encode the redirect_uri value
 			var builder = new UriBuilder(AuthorizationEndpoint);
-			MessagingUtilities.AppendQueryArgs(builder,
-				new KeyValuePair<string, string>[] {
-                    new KeyValuePair<string, string>("client_id", _appId),
-                    new KeyValuePair<string, string>("redirect_uri", returnUrl.AbsoluteUri)
-                });
+			builder.AppendQueryArgs(new Dictionary<string, string> {
+					{ "client_id", _appId },
+					{ "redirect_uri", returnUrl.AbsoluteUri },
+				});
 			return builder.Uri;
 		}
 
 		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
 			// Note: Facebook doesn't like us to url-encode the redirect_uri value
 			var builder = new UriBuilder(TokenEndpoint);
-			MessagingUtilities.AppendQueryArgs(builder,
-				new KeyValuePair<string, string>[] {
-                    new KeyValuePair<string, string>("client_id", _appId),
-                    new KeyValuePair<string, string>("redirect_uri", returnUrl.AbsoluteUri),
-                    new KeyValuePair<string, string>("client_secret", _appSecret),
-                    new KeyValuePair<string, string>("code", authorizationCode)
-                });
+			builder.AppendQueryArgs(new Dictionary<string, string> {
+				{ "client_id", _appId },
+				{ "redirect_uri", returnUrl.AbsoluteUri },
+				{ "client_secret", _appSecret },
+				{ "code", authorizationCode },
+			});
 
 			using (WebClient client = new WebClient()) {
 				string data = client.DownloadString(builder.Uri);
@@ -67,16 +65,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				}
 
 				var parsedQueryString = HttpUtility.ParseQueryString(data);
-				if (parsedQueryString != null) {
-					return parsedQueryString["access_token"];
-				}
+				return parsedQueryString["access_token"];
 			}
-			return null;
 		}
 
 		protected override IDictionary<string, string> GetUserData(string accessToken) {
 			FacebookGraphData graphData;
-			var request = WebRequest.Create("https://graph.facebook.com/me?access_token=" + Uri.EscapeDataString(accessToken));
+			var request = WebRequest.Create("https://graph.facebook.com/me?access_token=" + MessagingUtilities.EscapeUriDataStringRfc3986(accessToken));
 			using (var response = request.GetResponse()) {
 				using (var responseStream = response.GetResponseStream()) {
 					graphData = JsonHelper.Deserialize<FacebookGraphData>(responseStream);

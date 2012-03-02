@@ -39,13 +39,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">The return URL.</param>
 		protected override Uri GetServiceLoginUrl(Uri returnUrl) {
 			var builder = new UriBuilder(AuthorizationEndpoint);
-			MessagingUtilities.AppendQueryArgs(builder,
-				new KeyValuePair<string, string>[]
-				{
-					new KeyValuePair<string, string>("client_id", _appId),
-					new KeyValuePair<string, string>("scope", "wl.basic"),
-					new KeyValuePair<string, string>("response_type", "code"),
-					new KeyValuePair<string, string>("redirect_uri", returnUrl.AbsoluteUri)
+			builder.AppendQueryArgs(new Dictionary<string, string> {
+					{ "client_id", _appId },
+					{ "scope", "wl.basic" },
+					{ "response_type", "code" },
+					{ "redirect_uri", returnUrl.AbsoluteUri },
 				});
 
 			return builder.Uri;
@@ -57,21 +55,24 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">The return URL.</param>
 		/// <param name="authorizationCode">The authorization code.</param>
 		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
-			var builder = new StringBuilder();
-			builder.AppendFormat("client_id={0}", _appId);
-			builder.AppendFormat("&redirect_uri={0}", Uri.EscapeDataString(returnUrl.AbsoluteUri));
-			builder.AppendFormat("&client_secret={0}", _appSecret);
-			builder.AppendFormat("&code={0}", authorizationCode);
-			builder.Append("&grant_type=authorization_code");
+			var entity =
+				MessagingUtilities.CreateQueryString(
+					new Dictionary<string, string> {
+						{ "client_id", _appId },
+						{ "redirect_uri", returnUrl.AbsoluteUri },
+						{ "client_secret", _appSecret },
+						{ "code", authorizationCode },
+						{ "grant_type", "authorization_code" },
+					});
 
 			WebRequest tokenRequest = WebRequest.Create(TokenEndpoint);
 			tokenRequest.ContentType = "application/x-www-form-urlencoded";
-			tokenRequest.ContentLength = builder.Length;
+			tokenRequest.ContentLength = entity.Length;
 			tokenRequest.Method = "POST";
 
 			using (Stream requestStream = tokenRequest.GetRequestStream()) {
 				var writer = new StreamWriter(requestStream);
-				writer.Write(builder.ToString());
+				writer.Write(entity);
 				writer.Flush();
 			}
 
@@ -98,7 +99,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </returns>
 		protected override IDictionary<string, string> GetUserData(string accessToken) {
 			WindowsLiveUserData graph;
-			var request = WebRequest.Create("https://apis.live.net/v5.0/me?access_token=" + Uri.EscapeDataString(accessToken));
+			var request = WebRequest.Create("https://apis.live.net/v5.0/me?access_token=" + MessagingUtilities.EscapeUriDataStringRfc3986(accessToken));
 			using (var response = request.GetResponse()) {
 				using (var responseStream = response.GetResponseStream()) {
 					graph = JsonHelper.Deserialize<WindowsLiveUserData>(responseStream);
