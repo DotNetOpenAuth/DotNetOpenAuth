@@ -25,7 +25,7 @@
 			if (this.authorizationServer.TryPrepareAccessTokenResponse(out response)) {
 				return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
 			} else {
-				throw new HttpException((int) HttpStatusCode.BadRequest, "Missing OAuth 2.0 request message.");
+				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing OAuth 2.0 request message.");
 			}
 		}
 
