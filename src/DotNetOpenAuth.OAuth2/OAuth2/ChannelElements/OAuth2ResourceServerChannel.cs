@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuth2ResourceServerChannel.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OAuth2ResourceServerChannel.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -106,10 +106,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			ErrorUtilities.VerifyInternal(unauthorizedResponse != null, "Only unauthorized responses are expected.");
 
 			// First initialize based on the specifics within the message.
-			var httpResponse = response as IHttpDirectResponse;
-			webResponse.Status = httpResponse != null ? httpResponse.HttpStatusCode : HttpStatusCode.Unauthorized;
-			foreach (string headerName in httpResponse.Headers) {
-				webResponse.Headers.Add(headerName, httpResponse.Headers[headerName]);
+			this.ApplyMessageTemplate(response, webResponse);
+			if (!(response is IHttpDirectResponse)) {
+				webResponse.Status = HttpStatusCode.Unauthorized;
 			}
 
 			// Now serialize all the message parts into the WWW-Authenticate header.

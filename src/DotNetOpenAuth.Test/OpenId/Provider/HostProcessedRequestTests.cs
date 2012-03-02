@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="HostProcessedRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="HostProcessedRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -30,12 +30,12 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void IsReturnUrlDiscoverableNoResponse() {
 			Assert.AreEqual(RelyingPartyDiscoveryResult.NoServiceDocument, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
 		}
 
-		[TestCase]
+		[Test]
 		public void IsReturnUrlDiscoverableValidResponse() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// Verifies that when discovery would be performed over standard HTTP and RequireSsl
 		/// is set, that discovery fails.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void IsReturnUrlDiscoverableNotSsl() {
 			this.provider.SecuritySettings.RequireSsl = true;
 			this.MockResponder.RegisterMockRPDiscovery();
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that when discovery would be performed over HTTPS that discovery succeeds.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void IsReturnUrlDiscoverableRequireSsl() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			this.checkIdRequest.Realm = RPRealmUriSsl;
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
 		}
 
-		[TestCase]
+		[Test]
 		public void IsReturnUrlDiscoverableValidButNoMatch() {
 			this.MockResponder.RegisterMockRPDiscovery();
 			this.provider.SecuritySettings.RequireSsl = false; // reset for another failure test case

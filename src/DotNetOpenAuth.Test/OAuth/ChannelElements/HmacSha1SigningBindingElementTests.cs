@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="HmacSha1SigningBindingElementTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="HmacSha1SigningBindingElementTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 
 	[TestFixture]
 	public class HmacSha1SigningBindingElementTests : MessagingTestBase {
-		[TestCase]
+		[Test]
 		public void SignatureTest() {
 			UnauthorizedTokenRequest message = SigningBindingElementBaseTests.CreateTestRequestTokenMessage(this.MessageDescriptions, null);
 

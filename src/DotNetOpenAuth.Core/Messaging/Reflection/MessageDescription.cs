@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MessageDescription.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="MessageDescription.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -108,10 +108,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				this.CheckMessagePartsConstantValues(parts, true);
 			} catch (ProtocolException) {
 				Logger.Messaging.ErrorFormat(
-					"Error while performing basic validation of {0} with these message parts:{1}{2}",
+					"Error while performing basic validation of {0} ({3}) with these message parts:{1}{2}",
 					this.MessageType.Name,
 					Environment.NewLine,
-					parts.ToStringDeferred());
+					parts.ToStringDeferred(),
+					this.MessageVersion);
 				throw;
 			}
 		}

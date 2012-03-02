@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ProviderSigningBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ProviderSigningBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -189,7 +189,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			// Since this library's RP has a built-in request_nonce parameter for replay
 			// protection, we'll allow for that.
 			var returnToArgs = HttpUtility.ParseQueryString(response.ReturnTo.Query);
-			if (!string.IsNullOrEmpty(returnToArgs[ReturnToNonceBindingElement.NonceParameter])) {
+			if (!string.IsNullOrEmpty(returnToArgs[Protocol.ReturnToNonceParameter])) {
 				return false;
 			}
 

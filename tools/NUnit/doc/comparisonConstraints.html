@@ -5,6 +5,7 @@
 <title>NUnit - ComparisonConstraints</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -48,6 +49,7 @@ GreaterThanConstraint(object expected)
 <h4>Syntax</h4>
 <div class="code"><pre>
 Is.GreaterThan(object expected)
+Is.Positive // Equivalent to Is.GreaterThan(0)
 </pre></div>
 
 <h4>Modifiers</h4>
@@ -62,6 +64,7 @@ Is.GreaterThan(object expected)
 Assert.That(7, Is.GreaterThan(3));
 Assert.That(myOwnObject, 
     Is.GreaterThan(theExpected).Using(myComparer));
+Assert.That(42, Is.Positive);
 </pre></div>
 
 <h3>GreaterThanOrEqualConstraint</h3>
@@ -110,6 +113,7 @@ LessThanConstraint(object expected)
 <h4>Syntax</h4>
 <div class="code"><pre>
 Is.LessThan(object expected)
+Is.Negative // Equivalent to Is.LessThan(0)
 </pre></div>
 
 <h4>Modifiers</h4>
@@ -124,6 +128,7 @@ Is.LessThan(object expected)
 Assert.That(3, Is.LessThan(7));
 Assert.That(myOwnObject, 
     Is.LessThan(theExpected).Using(myComparer));
+Assert.That(-5, Is.Negative);
 </pre></div>
 
 <h3>LessThanOrEqualConstraint</h3>
@@ -196,10 +201,13 @@ Assert.That(myOwnObject,
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
+<ul>
 <li><a href="assertions.html">Assertions</a></li>
+<li><a href="attributes.html">Attributes</a></li>
 <li><a href="constraintModel.html">Constraints</a></li>
 <ul>
 <li><a href="equalConstraint.html">Equal&nbsp;Constraint</a></li>
@@ -217,13 +225,20 @@ Assert.That(myOwnObject,
 <li><a href="listMapper.html">List&nbsp;Mapper</a></li>
 <li><a href="reusableConstraint.html">Reusable&nbsp;Constraint</a></li>
 </ul>
-<li><a href="attributes.html">Attributes</a></li>
+<li><a href="testContext.html">Test&nbsp;Context</a></li>
+</ul>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <li><a href="extensibility.html">Extensibility</a></li>
 <li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -231,7 +246,7 @@ Assert.That(myOwnObject,
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

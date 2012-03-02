@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="CheckAuthenticationResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="CheckAuthenticationResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			base.SetUp();
 		}
 
-		[TestCase]
+		[Test]
 		public void IsValid() {
 			Protocol protocol = Protocol.Default;
 			var request = new CheckAuthenticationRequest(protocol.Version, OPUri);

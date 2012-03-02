@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UriUtilTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="UriUtilTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test {
 
 	[TestFixture]
 	public class UriUtilTests {
-		[TestCase]
+		[Test]
 		public void QueryStringContainPrefixedParametersNull() {
 			Assert.IsFalse(UriUtil.QueryStringContainPrefixedParameters(null, "prefix."));
 		}

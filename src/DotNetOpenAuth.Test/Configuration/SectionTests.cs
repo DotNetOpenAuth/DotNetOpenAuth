@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SectionTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="SectionTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 
 	[TestFixture]
 	public class SectionTests {
-		[TestCase]
+		[Test]
 		public void UntrustedWebRequest() {
 			var uwr = DotNetOpenAuthSection.Messaging.UntrustedWebRequest;
 
@@ -29,12 +29,12 @@ namespace DotNetOpenAuth.Test.Configuration {
 			Assert.IsTrue(uwr.WhitelistHostsRegex.KeysAsStrings.Contains(".+trusted.+"));
 		}
 
-		[TestCase]
+		[Test]
 		public void OpenIdMaxAuthenticationTime() {
 			Assert.AreEqual(TimeSpan.Parse("00:08:17"), OpenIdElement.Configuration.MaxAuthenticationTime);
 		}
 
-		[TestCase]
+		[Test]
 		public void OpenIdRelyingParty() {
 			var rp = OpenIdElement.Configuration.RelyingParty;
 			Assert.IsNull(rp.ApplicationStore.CustomType);
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.Configuration {
 			Assert.IsFalse(rp.SecuritySettings.RequireSsl);
 		}
 
-		[TestCase]
+		[Test]
 		public void OpenIdProvider() {
 			var op = OpenIdElement.Configuration.Provider;
 			Assert.IsNull(op.ApplicationStore.CustomType);

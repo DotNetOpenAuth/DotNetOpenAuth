@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="PerformanceTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="PerformanceTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			this.provider = CreateProvider();
 		}
 
-		[TestCase]
+		[Test]
 		public void AssociateDH() {
 			var associateRequest = this.CreateAssociateRequest(OPUri);
 			MeasurePerformance(
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				iterations: 1);
 		}
 
-		[TestCase]
+		[Test]
 		public void AssociateClearText() {
 			var associateRequest = this.CreateAssociateRequest(OPUriSsl); // SSL will cause a plaintext association
 			MeasurePerformance(
@@ -59,14 +59,14 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				iterations: 1000);
 		}
 
-		[TestCase]
+		[Test]
 		public void CheckIdSharedHmacSha1Association() {
 			Protocol protocol = Protocol.Default;
 			string assocType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.ParameterizedCheckIdTest(protocol, assocType);
 		}
 
-		[TestCase]
+		[Test]
 		public void CheckIdSharedHmacSha256Association() {
 			Protocol protocol = Protocol.Default;
 			string assocType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;

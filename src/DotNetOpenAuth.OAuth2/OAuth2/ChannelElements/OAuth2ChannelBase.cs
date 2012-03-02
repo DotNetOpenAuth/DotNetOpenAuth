@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuth2ChannelBase.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OAuth2ChannelBase.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -28,6 +28,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			typeof(AccessTokenSuccessResponse),
 			typeof(AccessTokenFailedResponse),
 			typeof(EndUserAuthorizationRequest),
+			typeof(EndUserAuthorizationImplicitRequest),
 			typeof(EndUserAuthorizationSuccessAuthCodeResponse),
 			typeof(EndUserAuthorizationSuccessAccessTokenResponse),
 			typeof(EndUserAuthorizationFailedResponse),

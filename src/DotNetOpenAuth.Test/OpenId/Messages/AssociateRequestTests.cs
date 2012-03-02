@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssociateRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AssociateRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -25,17 +25,17 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.request = new AssociateUnencryptedRequest(this.protocol.Version, this.secureRecipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void ConstructorTest() {
 			Assert.AreEqual(this.secureRecipient, this.request.Recipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void Mode() {
 			Assert.AreEqual(this.protocol.Args.Mode.associate, this.request.Mode);
 		}
 
-		[TestCase]
+		[Test]
 		public void MessagePartsTest() {
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 			this.request.SessionType = this.protocol.Args.SessionType.NoEncryption;
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.protocol.Args.SessionType.NoEncryption, dict[this.protocol.openid.session_type]);
 		}
 
-		[TestCase]
+		[Test]
 		public void ValidMessageTest() {
 			this.request = new AssociateUnencryptedRequest(Protocol.V20.Version, this.secureRecipient);
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;
@@ -65,12 +65,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.request.EnsureValidMessage(); // no-encryption only allowed for secure channels.
 		}
 
-		[TestCase]
+		[Test]
 		public void RequiredProtection() {
 			Assert.AreEqual(MessageProtections.None, this.request.RequiredProtection);
 		}
 
-		[TestCase]
+		[Test]
 		public void Transport() {
 			Assert.AreEqual(MessageTransport.Direct, this.request.Transport);
 		}
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// <summary>
 		/// Verifies security settings limit RP's initial associate request
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AssociateRequestDeterminedBySecuritySettings() {
 			Protocol protocol = Protocol.V20;
 			SecuritySettings securitySettings = new RelyingPartySecuritySettings();

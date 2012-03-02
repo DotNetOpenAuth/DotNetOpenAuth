@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StoreResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="StoreResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the constructor's behavior.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			var response = new StoreResponse();
 			Assert.IsTrue(response.Succeeded, "The default status should be Succeeded.");
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the Equals method.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void EqualityTests() {
 			var response1 = new StoreResponse();
 			var response2 = new StoreResponse();
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Serializable() {
 			var store = new StoreResponse();
 			store.Succeeded = false;

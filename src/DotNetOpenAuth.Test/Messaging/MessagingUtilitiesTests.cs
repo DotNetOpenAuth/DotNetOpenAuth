@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MessagingUtilitiesTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="MessagingUtilitiesTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 	[TestFixture]
 	public class MessagingUtilitiesTests : TestBase {
-		[TestCase]
+		[Test]
 		public void CreateQueryString() {
 			var args = new Dictionary<string, string>();
 			args.Add("a", "b");
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual("a=b&c%2Fd=e%2Ff", MessagingUtilities.CreateQueryString(args));
 		}
 
-		[TestCase]
+		[Test]
 		public void CreateQueryStringEmptyCollection() {
 			Assert.AreEqual(0, MessagingUtilities.CreateQueryString(new Dictionary<string, string>()).Length);
 		}
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessagingUtilities.CreateQueryString(null);
 		}
 
-		[TestCase]
+		[Test]
 		public void AppendQueryArgs() {
 			UriBuilder uri = new UriBuilder("http://baseline.org/page");
 			var args = new Dictionary<string, string>();
@@ -56,12 +56,12 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessagingUtilities.AppendQueryArgs(null, new Dictionary<string, string>());
 		}
 
-		[TestCase]
+		[Test]
 		public void AppendQueryArgsNullDictionary() {
 			MessagingUtilities.AppendQueryArgs(new UriBuilder(), null);
 		}
 
-		[TestCase]
+		[Test]
 		public void ToDictionary() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc["a"] = "b";
@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			nvc.ToDictionary(true);
 		}
 
-		[TestCase]
+		[Test]
 		public void ToDictionaryWithSkippedNullKey() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc[null] = "a";
@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(nvc["b"], dictionary["b"]);
 		}
 
-		[TestCase]
+		[Test]
 		public void ToDictionaryNull() {
 			Assert.IsNull(MessagingUtilities.ToDictionary(null));
 		}
@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponseWrapper(new HttpResponse(new StringWriter())));
 		}
 
-		[TestCase]
+		[Test]
 		public void ApplyHeadersToResponse() {
 			var headers = new WebHeaderCollection();
 			headers[HttpResponseHeader.ContentType] = "application/binary";
@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <remarks>
 		/// The tests in this method come from http://wiki.oauth.net/TestCases
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void EscapeUriDataStringRfc3986Tests() {
 			Assert.AreEqual("abcABC123", MessagingUtilities.EscapeUriDataStringRfc3986("abcABC123"));
 			Assert.AreEqual("-._~", MessagingUtilities.EscapeUriDataStringRfc3986("-._~"));
@@ -145,7 +145,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies the overall format of the multipart POST is correct.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void PostMultipart() {
 			var httpHandler = new TestWebRequestHandler();
 			bool callbackTriggered = false;
@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies proper behavior of GetHttpVerb
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void GetHttpVerbTest() {
 			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest));
 			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest));
@@ -200,7 +200,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies proper behavior of GetHttpDeliveryMethod
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void GetHttpDeliveryMethodTest() {
 			Assert.AreEqual(HttpDeliveryMethods.GetRequest, MessagingUtilities.GetHttpDeliveryMethod("GET"));
 			Assert.AreEqual(HttpDeliveryMethods.PostRequest, MessagingUtilities.GetHttpDeliveryMethod("POST"));
@@ -217,7 +217,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessagingUtilities.GetHttpDeliveryMethod("UNRECOGNIZED");
 		}
 
-		[TestCase]
+		[Test]
 		public void EncryptDecrypt() {
 			const string PlainText = "Hi folks!";
 			byte[] key = MessagingUtilities.GetCryptoRandomData(128 / 8);
@@ -232,7 +232,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that the time-independent string equality check works accurately.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void EqualsConstantTime() {
 			this.EqualsConstantTimeHelper(null, null);
 			this.EqualsConstantTimeHelper(null, string.Empty);

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AttributeExchangeRoundtripTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AttributeExchangeRoundtripTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		private const string IncrementingAttribute = "http://incatt";
 		private int incrementingAttributeValue = 1;
 
-		[TestCase]
+		[Test]
 		public void Fetch() {
 			var request = new FetchRequest();
 			request.Attributes.Add(new AttributeRequest(NicknameTypeUri));
@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
-		[TestCase]
+		[Test]
 		public void Store() {
 			var request = new StoreRequest();
 			var newAttribute = new AttributeValues(

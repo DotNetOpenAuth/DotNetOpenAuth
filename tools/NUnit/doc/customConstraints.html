@@ -5,6 +5,7 @@
 <title>NUnit - CustomConstraints</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -47,7 +48,7 @@ default implementation that may be overridden as needed:
 </div>   
 
 <p>Your derived class should save the actual argument to Matches in the protected
-field actual for later use.
+field <b>actual</b> for later use.
 
 <p>The MessageWriter abstract class is implemented in the framework by
 TextMessageWriter. Examining the source for some of the builtin constraints
@@ -56,23 +57,47 @@ requirements for error messages.
 
 <h3>Custom Constraint Syntax</h3>
 
-<p>NUnit includes classes that implement a special constraint syntax,
-allowing you to write things like...
+<p>Having written a custom constraint class, you can use it directly through its constructor:
+
+<div class="code">
+<pre>Assert.That(myObject, new CustomConstraint());</pre>
+</div>
+
+<p>You may also use it in expressions through NUnit's <b>Matches</b> syntax element:
+<div class="code">
+<pre>Assert.That(myObject, Is.Not.Null.And.Matches(new CustomConstraint());</pre>
+</div>
+
+<p>The direct construction approach is not very convenient or easy to read.
+For its built-in constraints, NUnit includes classes that implement a special 
+constraint syntax, allowing you to write things like...
 
 <div class="code">
 <pre>Assert.That( myArray, Is.All.InRange(1,100) );</pre>
 </div>
 
-<p>Of course, the NUnit constraint syntax will not be aware of your
-custom constraint unless you modify NUnit itself. As an alternative,
-you may use the <b>Matches(Constraint)</b> syntactic element in order
-to write code like...
+<p>Ideally, that's what you would like to do with the custom constraint as well.
+To accomplish this, two separate steps are required:
+
+<ol>
+
+<li>Provide a static class patterned after NUnit's <b>Is</b> class, with properties
+or methods that constuct your custom constructor. If you like, you can even call it
+<b>Is</b>, provided you place it in your own namespace and avoid any conflicts. This
+allows you to write things like:
 
 <div class="code">
-<pre>MyConstraint myConstraint = new MyConstraint();
-Assert.That( myArray, Has.Some.Matches(myConstraint) );</pre>
+<pre>Assert.That( myObject, Is.Custom(x,y) );</pre>
 </div>
 
+<li>Provide an extension method for NUnit's <b>ConstraintExpression</b>, allowing
+you to write things like:
+
+<div class="code">
+<pre>Assert.That( myList, Is.Not.All.Custom(x,y) );</pre>
+</div>
+
+</ol>
 
 
 </div>
@@ -80,12 +105,10 @@ Assert.That( myArray, Has.Some.Matches(myConstraint) );</pre>
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
-<li><a href="assertions.html">Assertions</a></li>
-<li><a href="constraintModel.html">Constraints</a></li>
-<li><a href="attributes.html">Attributes</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <li><a href="extensibility.html">Extensibility</a></li>
 <ul>
@@ -97,6 +120,12 @@ Assert.That( myArray, Has.Some.Matches(myConstraint) );</pre>
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -104,7 +133,7 @@ Assert.That( myArray, Has.Some.Matches(myConstraint) );</pre>
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

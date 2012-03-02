@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdSelector.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdSelector.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -289,7 +289,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var css = new HtmlLink();
 			try {
-				css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
+				css.Href = this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdSelector), EmbeddedStylesheetResourceName);
 				css.Attributes["rel"] = "stylesheet";
 				css.Attributes["type"] = "text/css";
 				ErrorUtilities.VerifyHost(this.Page.Header != null, OpenIdStrings.HeadTagMustIncludeRunatServer);

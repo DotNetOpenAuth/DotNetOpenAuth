@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Channel.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="Channel.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -817,7 +817,7 @@ namespace DotNetOpenAuth.Messaging {
 			if (tooLargeForGet) {
 				ErrorUtilities.VerifyProtocol(
 					(message.HttpMethods & HttpDeliveryMethods.PostRequest) == HttpDeliveryMethods.PostRequest,
-					"Message too large for a HTTP GET, and HTTP POST is not allowed for this message type.");
+					MessagingStrings.MessageExceedsGetSizePostNotAllowed);
 			}
 
 			// If GET didn't work out, for whatever reason...
@@ -873,6 +873,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to forward.</param>
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		protected virtual OutgoingWebResponse CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
 			Requires.NotNull(message, "message");
 			Requires.True(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
@@ -946,6 +947,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message to serialize.</param>
 		/// <returns>A JSON string.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		protected virtual string SerializeAsJson(IMessage message) {
 			Requires.NotNull(message, "message");
 
@@ -966,6 +968,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="json">A JSON string.</param>
 		/// <returns>The simple "key":"value" pairs from a JSON-encoded object.</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		protected virtual IDictionary<string, string> DeserializeFromJson(string json) {
 			Requires.NotNullOrEmpty(json, "json");
 
@@ -1031,6 +1034,22 @@ namespace DotNetOpenAuth.Messaging {
 					recipient,
 					Environment.NewLine,
 					messageAccessor.ToStringDeferred());
+			}
+		}
+
+		/// <summary>
+		/// Applies message prescribed HTTP response headers to an outgoing web response.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <param name="response">The HTTP response.</param>
+		protected void ApplyMessageTemplate(IMessage message, OutgoingWebResponse response) {
+			Requires.NotNull(message, "message");
+			var httpMessage = message as IHttpDirectResponse;
+			if (httpMessage != null) {
+				response.Status = httpMessage.HttpStatusCode;
+				foreach (string headerName in httpMessage.Headers) {
+					response.Headers.Add(headerName, httpMessage.Headers[headerName]);
+				}
 			}
 		}
 

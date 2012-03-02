@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthServiceProviderChannel.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OAuthServiceProviderChannel.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -30,7 +30,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider = null)
 			: base(
 			signingBindingElement,
-			store,
 			tokenManager,
 			securitySettings,
 			messageTypeProvider ?? new OAuthServiceProviderMessageFactory(tokenManager),
@@ -59,10 +58,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		private static new IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
+		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
 			Contract.Requires(securitySettings != null);
 
-			var bindingElements = OAuthChannel.InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings);
+			var bindingElements = OAuthChannel.InitializeBindingElements(signingBindingElement, store);
 
 			var spTokenManager = tokenManager as IServiceProviderTokenManager;
 			var serviceProviderSecuritySettings = securitySettings as ServiceProviderSecuritySettings;

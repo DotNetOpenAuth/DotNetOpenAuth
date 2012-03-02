@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RelyingPartySecuritySettings.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="RelyingPartySecuritySettings.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -119,21 +119,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The default value is <c>false</c>.
 		/// </value>
 		public bool RequireAssociation { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether identifiers that are both OP Identifiers and Claimed Identifiers
-		/// should ever be recognized as claimed identifiers.
-		/// </summary>
-		/// <value>
-		/// 	The default value is <c>false</c>, per the OpenID 2.0 spec.
-		/// </value>
-		/// <remarks>
-		/// OpenID 2.0 sections 7.3.2.2 and 11.2 specify that OP Identifiers never be recognized as Claimed Identifiers.
-		/// However, for some scenarios it may be desirable for an RP to override this behavior and allow this.
-		/// The security ramifications of setting this property to <c>true</c> have not been fully explored and
-		/// therefore this setting should only be changed with caution.
-		/// </remarks>
-		public bool AllowDualPurposeIdentifiers { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether certain Claimed Identifiers that exploit

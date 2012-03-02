@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="PapeRoundTripTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="PapeRoundTripTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -13,14 +13,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 
 	[TestFixture]
 	public class PapeRoundTripTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void Trivial() {
 			var request = new PolicyRequest();
 			var response = new PolicyResponse();
 			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
-		[TestCase]
+		[Test]
 		public void Full() {
 			var request = new PolicyRequest();
 			request.MaximumAuthenticationAge = TimeSpan.FromMinutes(10);

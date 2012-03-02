@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdRelyingPartyTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdRelyingPartyTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			base.SetUp();
 		}
 
-		[TestCase]
+		[Test]
 		public void CreateRequestDumbMode() {
 			var rp = this.CreateRelyingParty(true);
 			Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			rp.SecuritySettings = null;
 		}
 
-		[TestCase]
+		[Test]
 		public void ExtensionFactories() {
 			var rp = new OpenIdRelyingParty(null);
 			var factories = rp.ExtensionFactories;
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsInstanceOf<StandardOpenIdExtensionFactory>(factories[0]);
 		}
 
-		[TestCase]
+		[Test]
 		public void CreateRequest() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsNotNull(req);
 		}
 
-		[TestCase]
+		[Test]
 		public void CreateRequests() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(1, requests.Count());
 		}
 
-		[TestCase]
+		[Test]
 		public void CreateRequestsWithEndpointFilter() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			rp.CreateRequest(nonOpenId, RPRealmUri, RPUri);
 		}
 
-		[TestCase]
+		[Test]
 		public void CreateRequestsOnNonOpenID() {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");
 			var rp = this.CreateRelyingParty();
@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that incoming positive assertions throw errors if they come from
 		/// OPs that are not approved by <see cref="OpenIdRelyingParty.EndpointFilter"/>.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AssertionWithEndpointFilter() {
 			var coordinator = new OpenIdCoordinator(
 				rp => {

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="CheckAuthenticationRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="CheckAuthenticationRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// and cause the authentication to inappropriately fail.
 		/// Designed to verify fix to Trac #198.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void ExactPositiveAssertionPreservation() {
 			var rp = CreateRelyingParty(true);
 

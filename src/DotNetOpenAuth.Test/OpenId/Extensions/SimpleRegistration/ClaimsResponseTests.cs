@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="ClaimsResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ClaimsResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 	[TestFixture]
 	public class ClaimsResponseTests {
-		[TestCase]
+		[Test]
 		public void EmptyMailAddress() {
 			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
 			response.Email = string.Empty;
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(fields, fields2);
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualityTest() {
 			ClaimsResponse fields1 = this.GetFilledData();
 
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreNotEqual(fields1, fields2);
 		}
 
-		[TestCase]
+		[Test]
 		public void Birthdates() {
 			var response = new ClaimsResponse();
 			// Verify that they both start out as null
@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			response.BirthDateRaw = "2008";
 		}
 
-		[TestCase]
+		[Test]
 		public void ResponseAlternateTypeUriTests() {
 			var request = new ClaimsRequest(Constants.sreg_ns10);
 			request.Email = DemandLevel.Require;

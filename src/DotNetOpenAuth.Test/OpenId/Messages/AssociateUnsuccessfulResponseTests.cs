@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssociateUnsuccessfulResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AssociateUnsuccessfulResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response = new AssociateUnsuccessfulResponse(request.Version, request);
 		}
 
-		[TestCase]
+		[Test]
 		public void ParameterNames() {
 			this.response.ErrorMessage = "Some Error";
 			this.response.AssociationType = "HMAC-SHA1";

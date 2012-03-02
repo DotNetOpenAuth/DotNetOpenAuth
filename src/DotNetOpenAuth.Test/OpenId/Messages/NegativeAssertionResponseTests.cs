@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="NegativeAssertionResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="NegativeAssertionResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			base.SetUp();
 		}
 
-		[TestCase]
+		[Test]
 		public void Mode() {
 			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV1.ReturnTo = RPUri;
@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			new NegativeAssertionResponse(immediateRequestV1).EnsureValidMessage();
 		}
 
-		[TestCase]
+		[Test]
 		public void UserSetupUrlSetForV1Immediate() {
 			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV1.ReturnTo = RPUri;
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			response.EnsureValidMessage();
 		}
 
-		[TestCase]
+		[Test]
 		public void UserSetupUrlNotRequiredInV1SetupOrV2() {
 			var setupRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Setup);
 			setupRequestV1.ReturnTo = RPUri;

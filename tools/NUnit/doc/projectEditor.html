@@ -5,6 +5,7 @@
 <title>NUnit - ProjectEditor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -26,12 +27,18 @@
 
 <h2>Project Editor</h2>
 
-<p>The Project Editor is displayed through the Project | Edit menu item and allows creating or
-modifying NUnit test projects. It should be noted that a Test Project is active whenever any tests
-have been loaded, even if no project was explicitly created or referenced. In the case of an
-assembly being loaded, an internal wrapper project is created. This allows the user to change
-settings and save the project directly without needing to perform any extra steps. The editor
-consists of a common area and two tabs, as seen in the image below.</p>
+<p>Beginning with NUnit 2.6, the Project Editor is a separate program, which may be executed
+directly or run through the Project | Edit dropdown menu of the NUnit GUI. The editor now
+provides two main views of the project: a property-oriented view based on the Project Editor
+that was built into earlier versions of the NUnit GUI and an xml view, which allows direct
+editing of the .nunit file.
+
+<h2>Property View</h2>
+
+<p>This view consists of a common area and two tabs, as seen in the image below.</p>
+
+<div class="screenshot-left">
+<img src="img/generalTab.jpg"></div>
 
 <h3>Common Area</h3>
 
@@ -88,9 +95,6 @@ consists of a common area and two tabs, as seen in the image below.</p>
    <a href="configEditor.html">Configuration Editor</a>,
    which allows you to add, delete or rename configs and set the
    active configuration.
-
-<div class="screenshot-left">
-<img src="img/generalTab.jpg"></div>
 
 <h3>General Tab</h3>
 
@@ -167,32 +171,39 @@ Stuio support is enabled, you may also select and add a VS project.</p>
 <p>This text box displays the full path to the selected assembly. You may edit
 the contents to change the path to the assembly.
 
+<h2>XML View</h2>
+
+<p>This view simply displays the XML from the project file, as seen here. You may
+edit the XML directly.</p>
+
+<div class="screenshot-left">
+<img src="img/xmlView.jpg"></div>
+
+<p><b>Note:</b> In this version of NUnit, the XML editor is somewhat primitive.
+Errors in XML formatting are caught and an error message displayed. However,
+the values of attributes are not validated as they are in the property-based
+view and it is possible to create a project file, which NUnit is unable to
+load. Improvements, including intellisense and better error handling, are
+planned in future versions of the Project Editor.
+
+
+
 </div>
 
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
-<li><a href="assertions.html">Assertions</a></li>
-<li><a href="constraintModel.html">Constraints</a></li>
-<li><a href="attributes.html">Attributes</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <ul>
 <li><a href="nunit-console.html">Console&nbsp;Runner</a></li>
 <li><a href="nunit-gui.html">Gui&nbsp;Runner</a></li>
-<ul>
-<li><a href="guiCommandLine.html">Command-Line</a></li>
-<li><a href="mainMenu.html">Main&nbsp;Menu</a></li>
-<li><a href="contextMenu.html">Context&nbsp;Menu</a></li>
-<li><a href="settingsDialog.html">Settings&nbsp;Dialog</a></li>
-<li><a href="addinsDialog.html">Addins&nbsp;Dialog</a></li>
-<li><a href="testProperties.html">Test&nbsp;Properties</a></li>
-<li><a href="configEditor.html">Configuration&nbsp;Editor</a></li>
-<li id="current"><a href="projectEditor.html">Project&nbsp;Editor</a></li>
-</ul>
 <li><a href="pnunit.html">PNUnit&nbsp;Runner</a></li>
+<li><a href="nunit-agent.html">NUnit&nbsp;Agent</a></li>
+<li id="current"><a href="projectEditor.html">Project&nbsp;Editor</a></li>
 <li><a href="runtimeSelection.html">Runtime&nbsp;Selection</a></li>
 <li><a href="assemblyIsolation.html">Assembly&nbsp;Isolation</a></li>
 <li><a href="configFiles.html">Configuration&nbsp;Files</a></li>
@@ -204,6 +215,12 @@ the contents to change the path to the assembly.
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -211,7 +228,7 @@ the contents to change the path to the assembly.
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthorizationCodeBindingElement.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AuthorizationCodeBindingElement.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (response != null) {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (EndUserAuthorizationRequest)directResponse.OriginatingRequest;
-				IAuthorizationCarryingRequest tokenCarryingResponse = response;
+				IAuthorizationCodeCarryingRequest tokenCarryingResponse = response;
 				tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(request.ClientIdentifier, request.Callback, response.Scope, response.AuthorizingUsername);
 
 				return MessageProtections.None;

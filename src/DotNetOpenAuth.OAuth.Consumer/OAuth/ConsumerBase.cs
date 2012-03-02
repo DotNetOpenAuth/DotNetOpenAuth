@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ConsumerBase.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ConsumerBase.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -84,8 +84,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// The token secret is stored in the <see cref="TokenManager"/>.
 		/// </remarks>
 		public string RequestNewClientAccount(IDictionary<string, string> requestParameters = null) {
-			// Obtain an unauthorized request token.  Assume the OAuth version given in the service description.
-			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint, this.ServiceProvider.Version) {
+			// Obtain an unauthorized request token.  Force use of OAuth 1.0 (not 1.0a) so that 
+			// we are not expected to provide an oauth_verifier which doesn't apply in 2-legged OAuth.
+			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint, Protocol.V10.Version) {
 				ConsumerKey = this.ConsumerKey,
 			};
 			var tokenAccessor = this.Channel.MessageDescriptions.GetAccessor(token);
@@ -93,7 +94,7 @@ namespace DotNetOpenAuth.OAuth {
 			var requestTokenResponse = this.Channel.Request<UnauthorizedTokenResponse>(token);
 			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
 
-			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {
+			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, Protocol.V10.Version) {
 				RequestToken = requestTokenResponse.RequestToken,
 				ConsumerKey = this.ConsumerKey,
 			};

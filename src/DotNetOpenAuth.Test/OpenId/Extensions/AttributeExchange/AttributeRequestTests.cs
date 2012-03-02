@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AttributeRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AttributeRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 	[TestFixture]
 	public class AttributeRequestTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void CtorDefault() {
 			AttributeRequest req = new AttributeRequest();
 			Assert.AreEqual(1, req.Count);
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			new AttributeRequest(WellKnownAttributes.Contact.Email, false, -1);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorFull() {
 			var req = new AttributeRequest(WellKnownAttributes.Contact.Email, true, 5);
 			Assert.AreEqual(WellKnownAttributes.Contact.Email, req.TypeUri);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			req.Count = -1;
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualityTests() {
 			var req1 = new AttributeRequest();
 			var req2 = new AttributeRequest();

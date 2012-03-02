@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright file="InfoCardImage.cs" company="Dominick Baier, Andrew Arnott">
-//     Copyright (c) Dominick Baier, Andrew Arnott. All rights reserved.
+//     Copyright (c) Dominick Baier, Outercurve Foundation. All rights reserved.
 // </copyright>
 // <license>New BSD License</license>
 //-----------------------------------------------------------------------

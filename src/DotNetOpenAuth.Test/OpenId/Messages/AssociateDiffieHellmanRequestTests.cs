@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssociateDiffieHellmanRequestTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="AssociateDiffieHellmanRequestTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -20,12 +20,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.request = new AssociateDiffieHellmanRequest(Protocol.V20.Version, Recipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			Assert.AreEqual(Recipient, this.request.Recipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void Mode() {
 			Assert.AreEqual("associate", this.request.Mode);
 		}

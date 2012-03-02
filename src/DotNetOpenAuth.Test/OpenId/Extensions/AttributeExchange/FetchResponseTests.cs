@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="FetchResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="FetchResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -13,13 +13,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 	[TestFixture]
 	public class FetchResponseTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void AddAttribute() {
 			var response = new FetchResponse();
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 		}
 
-		[TestCase]
+		[Test]
 		public void AddTwoAttributes() {
 			var response = new FetchResponse();
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			response.Attributes.Add(null);
 		}
 
-		[TestCase]
+		[Test]
 		public void GetAttributeValue() {
 			var response = new FetchResponse();
 
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual("a", response.GetAttributeValue("http://someattribute3"));
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualityTests() {
 			var response1 = new FetchResponse();
 			var response2 = new FetchResponse();
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Serializable() {
 			var fetch = new FetchResponse();
 			fetch.Attributes.Add("http://someAttribute", "val1", "val2");

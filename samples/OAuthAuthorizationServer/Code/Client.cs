@@ -7,13 +7,13 @@
 	/// <summary>
 	/// An OAuth 2.0 Client that has registered with this Authorization Server.
 	/// </summary>
-	public partial class Client : IConsumerDescription {
+	public partial class Client : IClientDescription {
 		#region IConsumerDescription Members
 
 		/// <summary>
 		/// Gets the client secret.
 		/// </summary>
-		string IConsumerDescription.Secret {
+		string IClientDescription.Secret {
 			get { return this.ClientSecret; }
 		}
 
@@ -24,8 +24,15 @@
 		/// <value>
 		/// An absolute URL; or <c>null</c> if none is registered.
 		/// </value>
-		Uri IConsumerDescription.DefaultCallback {
+		Uri IClientDescription.DefaultCallback {
 			get { return string.IsNullOrEmpty(this.Callback) ? null : new Uri(this.Callback); }
+		}
+
+		/// <summary>
+		/// Gets the type of the client.
+		/// </summary>
+		ClientType IClientDescription.ClientType {
+			get { return (ClientType)this.ClientType; }
 		}
 
 		/// <summary>
@@ -36,7 +43,7 @@
 		/// <returns>
 		///   <c>true</c> if the callback URL is allowable for this client; otherwise, <c>false</c>.
 		/// </returns>
-		bool IConsumerDescription.IsCallbackAllowed(Uri callback) {
+		bool IClientDescription.IsCallbackAllowed(Uri callback) {
 			if (string.IsNullOrEmpty(this.Callback)) {
 				// No callback rules have been set up for this client.
 				return true;

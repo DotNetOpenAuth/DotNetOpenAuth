@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="EndUserAuthorizationSuccessAuthCodeResponse.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="EndUserAuthorizationSuccessAuthCodeResponse.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, carrying an authorization code and possibly an access token,
 	/// and to return the user to the Client where they started their experience.
 	/// </summary>
-	internal class EndUserAuthorizationSuccessAuthCodeResponse : EndUserAuthorizationSuccessResponseBase, IAuthorizationCarryingRequest {
+	internal class EndUserAuthorizationSuccessAuthCodeResponse : EndUserAuthorizationSuccessResponseBase, IAuthorizationCodeCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessAuthCodeResponse"/> class.
 		/// </summary>
@@ -40,29 +40,27 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
 
-		#region IAuthorizationCarryingRequest Members
+		#region IAuthorizationCodeCarryingRequest Members
 
 		/// <summary>
-		/// Gets or sets the verification code or refresh/access token.
+		/// Gets or sets the authorization code.
 		/// </summary>
-		/// <value>The code or token.</value>
-		string IAuthorizationCarryingRequest.CodeOrToken {
+		string IAuthorizationCodeCarryingRequest.Code {
 			get { return this.AuthorizationCode; }
 			set { this.AuthorizationCode = value; }
 		}
 
 		/// <summary>
-		/// Gets the type of the code or token.
-		/// </summary>
-		/// <value>The type of the code or token.</value>
-		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.AuthorizationCode; }
-		}
-
-		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
-		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
+		AuthorizationCode IAuthorizationCodeCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets the authorization that the code describes.
+		/// </summary>
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
+			get { return ((IAuthorizationCodeCarryingRequest)this).AuthorizationDescription; }
+		}
 
 		#endregion
 

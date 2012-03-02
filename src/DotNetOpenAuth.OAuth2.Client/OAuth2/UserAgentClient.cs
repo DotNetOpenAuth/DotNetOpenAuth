@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="UserAgentClient.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="UserAgentClient.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -64,25 +64,19 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// this client to access protected data at some resource server.
 		/// </summary>
 		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
+		/// <param name="implicitResponseType">
+		/// <c>true</c> to request an access token in the fragment of the response's URL;
+		/// <c>false</c> to authenticate to the authorization server and acquire the access token (and possibly a refresh token) via a private channel.
+		/// </param>
 		/// <param name="state">The client state that should be returned with the authorization response.</param>
 		/// <returns>
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
-		public Uri RequestUserAuthorization(IAuthorizationState authorization, string state = null) {
+		public Uri RequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null) {
 			Requires.NotNull(authorization, "authorization");
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
-			if (authorization.Callback == null) {
-				authorization.Callback = new Uri("http://localhost/");
-			}
-
-			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
-				ClientIdentifier = this.ClientIdentifier,
-				Callback = authorization.Callback,
-				ClientState = state,
-			};
-			request.Scope.ResetContents(authorization.Scope);
-
+			var request = this.PrepareRequestUserAuthorization(authorization, implicitResponseType, state);
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);
 		}
 
@@ -105,6 +99,21 @@ namespace DotNetOpenAuth.OAuth2 {
 				return null;
 			}
 
+			return this.ProcessUserAuthorization(authorizationState, response);
+		}
+
+		/// <summary>
+		/// Scans the incoming request for an authorization response message.
+		/// </summary>
+		/// <param name="authorizationState">The authorization.</param>
+		/// <param name="response">The incoming authorization response message.</param>
+		/// <returns>
+		/// The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.
+		/// </returns>
+		internal IAuthorizationState ProcessUserAuthorization(IAuthorizationState authorizationState, IDirectedProtocolMessage response) {
+			Requires.NotNull(authorizationState, "authorizationState");
+			Requires.NotNull(response, "response");
+
 			EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess;
 			EndUserAuthorizationSuccessAuthCodeResponse authCodeSuccess;
 			EndUserAuthorizationFailedResponse failure;
@@ -118,6 +127,36 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			return authorizationState;
+		}
+
+		/// <summary>
+		/// Generates a URL that the user's browser can be directed to in order to authorize
+		/// this client to access protected data at some resource server.
+		/// </summary>
+		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
+		/// <param name="implicitResponseType">
+		/// <c>true</c> to request an access token in the fragment of the response's URL;
+		/// <c>false</c> to authenticate to the authorization server and acquire the access token (and possibly a refresh token) via a private channel.
+		/// </param>
+		/// <param name="state">The client state that should be returned with the authorization response.</param>
+		/// <returns>
+		/// A message to send to the authorization server.
+		/// </returns>
+		internal EndUserAuthorizationRequest PrepareRequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null) {
+			Requires.NotNull(authorization, "authorization");
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
+
+			if (authorization.Callback == null) {
+				authorization.Callback = new Uri("http://localhost/");
+			}
+
+			var request = implicitResponseType ? new EndUserAuthorizationImplicitRequest(this.AuthorizationServer) : new EndUserAuthorizationRequest(this.AuthorizationServer);
+			request.ClientIdentifier = this.ClientIdentifier;
+			request.Callback = authorization.Callback;
+			request.ClientState = state;
+			request.Scope.ResetContents(authorization.Scope);
+
+			return request;
 		}
 	}
 }

@@ -18,6 +18,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuth2\OAuth2Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OAuth2Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="OAuth2\ResourceServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -26,14 +31,20 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OAuth.ServiceProvider\DotNetOpenAuth.OAuth.ServiceProvider.csproj">
-      <Project>{FED1923A-6D70-49B5-A37A-FB744FEC1C86}</Project>
-      <Name>DotNetOpenAuth.OAuth.ServiceProvider</Name>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
+      <Project>{115217C5-22CD-415C-A292-0DD0238CDD89}</Project>
+      <Name>DotNetOpenAuth.OAuth.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OAuth2\OAuth2Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OAuth2Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

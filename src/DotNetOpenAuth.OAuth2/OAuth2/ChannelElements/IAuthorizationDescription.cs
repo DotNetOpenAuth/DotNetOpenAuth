@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IAuthorizationDescription.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="IAuthorizationDescription.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -68,11 +68,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		}
 
 		/// <summary>
-		/// Gets the name on the account whose data on the resource server is accessible using this authorization.
+		/// Gets the name on the account whose data on the resource server is accessible using this authorization, if applicable.
 		/// </summary>
+		/// <value>A username, or <c>null</c> if the authorization is to access the client's own data (not a distinct resource owner's data).</value>
 		string IAuthorizationDescription.User {
 			get {
-				Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
+				// Null and non-empty are allowed, but not empty.
+				Contract.Ensures(Contract.Result<string>() != String.Empty);
 				throw new NotImplementedException();
 			}
 		}

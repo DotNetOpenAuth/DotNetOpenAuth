@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="XrdElement.cs" company="Andrew Arnott, Scott Hanselman">
-//     Copyright (c) Andrew Arnott, Scott Hanselman. All rights reserved.
+// <copyright file="XrdElement.cs" company="Outercurve Foundation, Scott Hanselman">
+//     Copyright (c) Outercurve Foundation, Scott Hanselman. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

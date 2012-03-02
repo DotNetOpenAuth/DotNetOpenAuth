@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StandardMessageFactoryTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="StandardMessageFactoryTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies very simple recognition of a single message type
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SingleRequestMessageType() {
 			this.factory.AddMessageTypes(new MessageDescription[] { MessageDescriptions.Get(typeof(RequestMessageMock), V1) });
 			var fields = new Dictionary<string, string> {
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies very simple recognition of a single message type
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SingleResponseMessageType() {
 			this.factory.AddMessageTypes(new MessageDescription[] { MessageDescriptions.Get(typeof(DirectResponseMessageMock), V1) });
 			var fields = new Dictionary<string, string> {

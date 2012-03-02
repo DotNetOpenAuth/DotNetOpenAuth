@@ -15,6 +15,7 @@
       <Column Name="ClientSecret" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="Callback" Type="System.String" CanBeNull="true" />
       <Column Name="Name" Type="System.String" CanBeNull="false" />
+      <Column Member="ClientType" Type="System.Int32" CanBeNull="false" />
       <Association Name="Client_ClientAuthorization" Member="ClientAuthorizations" Storage="_OAuthTokens" ThisKey="ClientId" OtherKey="ClientId" Type="ClientAuthorization" />
     </Type>
   </Table>

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="PositiveAuthenticationResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="PositiveAuthenticationResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies good, positive assertions are accepted.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Valid() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			ClaimsResponse extension = new ClaimsResponse();
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that discovery verification of a positive assertion can match a dual identifier.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void DualIdentifierMatchesInAssertionVerification() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
 			ClaimsResponse extension = new ClaimsResponse();
@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
 		}
 
-		[TestCase]
+		[Test]
 		public void GetCallbackArguments() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			var rp = CreateRelyingParty();
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that certain problematic claimed identifiers pass through to the RP response correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ProblematicClaimedId() {
 			var providerEndpoint = new ProviderEndpointDescription(OpenIdTestBase.OPUri, Protocol.Default.Version);
 			string claimed_id = BaseMockUri + "a./b.";

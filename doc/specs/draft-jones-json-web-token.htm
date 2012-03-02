@@ -1,0 +1,1597 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en"><head><title>JSON Web Token (JWT)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="description" content="JSON Web Token (JWT)">
+<meta name="keywords" content="RFC, Request for Comments, I-D, Internet-Draft, Assertion, Claim, Simple Web Token, Security Token, SWT, JavaScript Object Notation, JSON, JSON Web Token, JWT, JSON Web Signature, JWS, JSON Web Encryption, JWE">
+<meta name="generator" content="xml2rfc v1.36 (http://xml.resource.org/)">
+<style type='text/css'><!--
+        body {
+                font-family: verdana, charcoal, helvetica, arial, sans-serif;
+                font-size: small; color: #000; background-color: #FFF;
+                margin: 2em;
+        }
+        h1, h2, h3, h4, h5, h6 {
+                font-family: helvetica, monaco, "MS Sans Serif", arial, sans-serif;
+                font-weight: bold; font-style: normal;
+        }
+        h1 { color: #900; background-color: transparent; text-align: right; }
+        h3 { color: #333; background-color: transparent; }
+
+        td.RFCbug {
+                font-size: x-small; text-decoration: none;
+                width: 30px; height: 30px; padding-top: 2px;
+                text-align: justify; vertical-align: middle;
+                background-color: #000;
+        }
+        td.RFCbug span.RFC {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: bold; color: #666;
+        }
+        td.RFCbug span.hotText {
+                font-family: charcoal, monaco, geneva, "MS Sans Serif", helvetica, verdana, sans-serif;
+                font-weight: normal; text-align: center; color: #FFF;
+        }
+
+        table.TOCbug { width: 30px; height: 15px; }
+        td.TOCbug {
+                text-align: center; width: 30px; height: 15px;
+                color: #FFF; background-color: #900;
+        }
+        td.TOCbug a {
+                font-family: monaco, charcoal, geneva, "MS Sans Serif", helvetica, sans-serif;
+                font-weight: bold; font-size: x-small; text-decoration: none;
+                color: #FFF; background-color: transparent;
+        }
+
+        td.header {
+                font-family: arial, helvetica, sans-serif; font-size: x-small;
+                vertical-align: top; width: 33%;
+                color: #FFF; background-color: #666;
+        }
+        td.author { font-weight: bold; font-size: x-small; margin-left: 4em; }
+        td.author-text { font-size: x-small; }
+
+        /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+        a.info {
+                /* This is the key. */
+                position: relative;
+                z-index: 24;
+                text-decoration: none;
+        }
+        a.info:hover {
+                z-index: 25;
+                color: #FFF; background-color: #900;
+        }
+        a.info span { display: none; }
+        a.info:hover span.info {
+                /* The span will display just on :hover state. */
+                display: block;
+                position: absolute;
+                font-size: smaller;
+                top: 2em; left: -5em; width: 15em;
+                padding: 2px; border: 1px solid #333;
+                color: #900; background-color: #EEE;
+                text-align: left;
+        }
+
+        a { font-weight: bold; }
+        a:link    { color: #900; background-color: transparent; }
+        a:visited { color: #633; background-color: transparent; }
+        a:active  { color: #633; background-color: transparent; }
+
+        p { margin-left: 2em; margin-right: 2em; }
+        p.copyright { font-size: x-small; }
+        p.toc { font-size: small; font-weight: bold; margin-left: 3em; }
+        table.toc { margin: 0 0 0 3em; padding: 0; border: 0; vertical-align: text-top; }
+        td.toc { font-size: small; font-weight: bold; vertical-align: text-top; }
+
+        ol.text { margin-left: 2em; margin-right: 2em; }
+        ul.text { margin-left: 2em; margin-right: 2em; }
+        li      { margin-left: 3em; }
+
+        /* RFC-2629 <spanx>s and <artwork>s. */
+        em     { font-style: italic; }
+        strong { font-weight: bold; }
+        dfn    { font-weight: bold; font-style: normal; }
+        cite   { font-weight: normal; font-style: normal; }
+        tt     { color: #036; }
+        tt, pre, pre dfn, pre em, pre cite, pre span {
+                font-family: "Courier New", Courier, monospace; font-size: small;
+        }
+        pre {
+                text-align: left; padding: 4px;
+                color: #000; background-color: #CCC;
+        }
+        pre dfn  { color: #900; }
+        pre em   { color: #66F; background-color: #FFC; font-weight: normal; }
+        pre .key { color: #33C; font-weight: bold; }
+        pre .id  { color: #900; }
+        pre .str { color: #000; background-color: #CFF; }
+        pre .val { color: #066; }
+        pre .rep { color: #909; }
+        pre .oth { color: #000; background-color: #FCF; }
+        pre .err { background-color: #FCC; }
+
+        /* RFC-2629 <texttable>s. */
+        table.all, table.full, table.headers, table.none {
+                font-size: small; text-align: center; border-width: 2px;
+                vertical-align: top; border-collapse: collapse;
+        }
+        table.all, table.full { border-style: solid; border-color: black; }
+        table.headers, table.none { border-style: none; }
+        th {
+                font-weight: bold; border-color: black;
+                border-width: 2px 2px 3px 2px;
+        }
+        table.all th, table.full th { border-style: solid; }
+        table.headers th { border-style: none none solid none; }
+        table.none th { border-style: none; }
+        table.all td {
+                border-style: solid; border-color: #333;
+                border-width: 1px 2px;
+        }
+        table.full td, table.headers td, table.none td { border-style: none; }
+
+        hr { height: 1px; }
+        hr.insert {
+                width: 80%; border-style: none; border-width: 0;
+                color: #CCC; background-color: #CCC;
+        }
+--></style>
+</head>
+<body>
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<table summary="layout" width="66%" border="0" cellpadding="0" cellspacing="0"><tr><td><table summary="layout" width="100%" border="0" cellpadding="2" cellspacing="1">
+<tr><td class="header">Network Working Group</td><td class="header">M. Jones</td></tr>
+<tr><td class="header">Internet-Draft</td><td class="header">Microsoft</td></tr>
+<tr><td class="header">Intended status: Standards Track</td><td class="header">D. Balfanz</td></tr>
+<tr><td class="header">Expires: June 15, 2012</td><td class="header">Google</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">J. Bradley</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">independent</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Y. Goland</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Microsoft</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">J. Panzer</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Google</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">N. Sakimura</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Nomura Research Institute</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">P. Tarjan</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">Facebook</td></tr>
+<tr><td class="header">&nbsp;</td><td class="header">December 13, 2011</td></tr>
+</table></td></tr></table>
+<h1><br />JSON Web Token (JWT)<br />draft-jones-json-web-token-07</h1>
+
+<h3>Abstract</h3>
+
+<p>
+	JSON Web Token (JWT) is a means of representing claims to be
+	transferred between two parties.  The claims in a JWT are
+	encoded as a JSON object that is digitally signed using JSON
+	Web Signature (JWS) and/or encrypted using JSON Web Encryption
+	(JWE).
+      
+</p>
+<p>
+        The suggested pronunciation of JWT is the same as the English
+        word "jot".
+      
+</p>
+<h3>Requirements Language</h3>
+
+<p>
+	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+	NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+	"OPTIONAL" in this document are to be interpreted as described
+	in <a class='info' href='#RFC2119'>RFC 2119<span> (</span><span class='info'>Bradner, S., &ldquo;Key words for use in RFCs to Indicate Requirement Levels,&rdquo; March&nbsp;1997.</span><span>)</span></a> [RFC2119].
+      
+</p>
+<h3>Status of this Memo</h3>
+<p>
+This Internet-Draft is submitted  in full
+conformance with the provisions of BCP&nbsp;78 and BCP&nbsp;79.</p>
+<p>
+Internet-Drafts are working documents of the Internet Engineering
+Task Force (IETF).  Note that other groups may also distribute
+working documents as Internet-Drafts.  The list of current
+Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
+<p>
+Internet-Drafts are draft documents valid for a maximum of six months
+and may be updated, replaced, or obsoleted by other documents at any time.
+It is inappropriate to use Internet-Drafts as reference material or to cite
+them other than as &ldquo;work in progress.&rdquo;</p>
+<p>
+This Internet-Draft will expire on June 15, 2012.</p>
+
+<h3>Copyright Notice</h3>
+<p>
+Copyright (c) 2011 IETF Trust and the persons identified as the
+document authors.  All rights reserved.</p>
+<p>
+This document is subject to BCP 78 and the IETF Trust's Legal
+Provisions Relating to IETF Documents
+(http://trustee.ietf.org/license-info) in effect on the date of
+publication of this document.  Please review these documents
+carefully, as they describe your rights and restrictions with respect
+to this document. Code Components extracted from this document must
+include Simplified BSD License text as described in Section 4.e of
+the Trust Legal Provisions and are provided without warranty as
+described in the Simplified BSD License.</p>
+<a name="toc"></a><br /><hr />
+<h3>Table of Contents</h3>
+<p class="toc">
+<a href="#anchor1">1.</a>&nbsp;
+Introduction<br />
+<a href="#anchor2">2.</a>&nbsp;
+Terminology<br />
+<a href="#anchor3">3.</a>&nbsp;
+JSON Web Token (JWT) Overview<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ExampleJWT">3.1.</a>&nbsp;
+Example JWT<br />
+<a href="#anchor4">4.</a>&nbsp;
+JWT Claims<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ReservedClaimName">4.1.</a>&nbsp;
+Reserved Claim Names<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#PublicClaimName">4.2.</a>&nbsp;
+Public Claim Names<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#PrivateClaimName">4.3.</a>&nbsp;
+Private Claim Names<br />
+<a href="#anchor5">5.</a>&nbsp;
+JWT Header<br />
+<a href="#Plaintext">6.</a>&nbsp;
+Plaintext JWTs<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ExamplePlaintextJWT">6.1.</a>&nbsp;
+Example Plaintext JWT<br />
+<a href="#anchor6">7.</a>&nbsp;
+Rules for Creating and Validating a JWT<br />
+<a href="#Algorithms">8.</a>&nbsp;
+Cryptographic Algorithms<br />
+<a href="#IANA">9.</a>&nbsp;
+IANA Considerations<br />
+<a href="#Security">10.</a>&nbsp;
+Security Considerations<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#anchor7">10.1.</a>&nbsp;
+Unicode Comparison Security Issues<br />
+<a href="#TBD">11.</a>&nbsp;
+Open Issues and Things To Be Done (TBD)<br />
+<a href="#rfc.references1">12.</a>&nbsp;
+References<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#rfc.references1">12.1.</a>&nbsp;
+Normative References<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#rfc.references2">12.2.</a>&nbsp;
+Informative References<br />
+<a href="#anchor10">Appendix&nbsp;A.</a>&nbsp;
+Relationship of JWTs to SAML Tokens<br />
+<a href="#anchor11">Appendix&nbsp;B.</a>&nbsp;
+Relationship of JWTs to Simple Web Tokens (SWTs)<br />
+<a href="#Acknowledgements">Appendix&nbsp;C.</a>&nbsp;
+Acknowledgements<br />
+<a href="#anchor12">Appendix&nbsp;D.</a>&nbsp;
+Document History<br />
+<a href="#rfc.authors">&#167;</a>&nbsp;
+Authors' Addresses<br />
+</p>
+<br clear="all" />
+
+<a name="anchor1"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.1"></a><h3>1.&nbsp;
+Introduction</h3>
+
+<p>
+	JSON Web Token (JWT) is a compact token format intended for
+	space constrained environments such as HTTP Authorization
+	headers and URI query parameters. JWTs encode claims to be
+	transmitted as a JSON object (as defined in <a class='info' href='#RFC4627'>RFC 4627<span> (</span><span class='info'>Crockford, D., &ldquo;The application/json Media Type for JavaScript Object Notation (JSON),&rdquo; July&nbsp;2006.</span><span>)</span></a> [RFC4627]) that is base64url encoded
+	and digitally signed and/or encrypted.  Signing is
+	accomplished using JSON Web Signature (JWS) <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a>.  Encryption is accomplished using JSON Web Encryption
+	(JWE) <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a>.
+      
+</p>
+<p>
+        The suggested pronunciation of JWT is the same as the English
+        word "jot".
+      
+</p>
+<a name="anchor2"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.2"></a><h3>2.&nbsp;
+Terminology</h3>
+
+<p>
+	</p>
+<blockquote class="text"><dl>
+<dt>JSON Web Token (JWT)</dt>
+<dd>
+	    A string consisting of three parts: the Encoded JWT Header, the
+	    JWT Second Part, and the JWT Third Part, in that order,
+	    with the parts being separated by period ('.') characters,
+	    and each part containing base64url encoded content.
+	  
+</dd>
+<dt>JWT Header</dt>
+<dd>
+	    A string representing a JSON object that
+	    describes the cryptographic operations applied to the JWT.
+	    When the JWT is signed, the JWT Header is the JWS Header.
+	    When the JWT is encrypted, the JWT Header is the JWE Header.
+	  
+</dd>
+<dt>Header Parameter Names</dt>
+<dd>
+	    The names of the members within the JWT Header.
+	  
+</dd>
+<dt>Header Parameter Values</dt>
+<dd>
+	    The values of the members within the JWT Header.
+	  
+</dd>
+<dt>JWT Second Part</dt>
+<dd>
+	    When the JWT is signed, the JWT Second Part is the Encoded JWS Payload.
+	    When the JWT is encrypted, the JWT Second Part is the Encoded JWE Encrypted Key.
+	  
+</dd>
+<dt>JWT Third Part</dt>
+<dd>
+	    When the JWT is signed, the JWT Third Part is the Encoded JWS Signature.
+	    When the JWT is encrypted, the JWT Third Part is the Encoded JWE Ciphertext.
+	  
+</dd>
+<dt>JWT Claims Set</dt>
+<dd>
+	    A string representing a JSON object that
+	    contains the claims conveyed by the JWT.
+	    When the JWT is signed, the bytes of the UTF-8 representation of the
+	    JWT Claims Set are base64url encoded to create the Encoded JWS Payload.
+	    When the JWT is encrypted, the bytes of the UTF-8 representation of the
+	    JWT Claims Set are used as the JWE Plaintext.
+	  
+</dd>
+<dt>Claim Names</dt>
+<dd>
+	    The names of the members of the JSON object represented by
+	    the JWT Claims Set.
+	  
+</dd>
+<dt>Claim Values</dt>
+<dd>
+	    The values of the members of the JSON object represented by
+	    the JWT Claims Set.
+	  
+</dd>
+<dt>Encoded JWT Header</dt>
+<dd>
+	    Base64url encoding of the bytes of the
+	    UTF-8 <a class='info' href='#RFC3629'>RFC 3629<span> (</span><span class='info'>Yergeau, F., &ldquo;UTF-8, a transformation format of ISO 10646,&rdquo; November&nbsp;2003.</span><span>)</span></a> [RFC3629]
+	    representation of the JWT Header.
+	  
+</dd>
+<dt>Base64url Encoding</dt>
+<dd>
+	    For the purposes of this specification, this term always
+	    refers to the URL- and filename-safe Base64 encoding
+	    described in <a class='info' href='#RFC4648'>RFC 4648<span> (</span><span class='info'>Josefsson, S., &ldquo;The Base16, Base32, and Base64 Data Encodings,&rdquo; October&nbsp;2006.</span><span>)</span></a> [RFC4648],
+	    Section 5, with the (non URL-safe) '=' padding characters
+	    omitted, as permitted by Section 3.2.  (See Appendix C of
+	    <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a> for notes on implementing base64url
+	    encoding without padding.)
+	  
+</dd>
+</dl></blockquote><p>
+      
+</p>
+<a name="anchor3"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.3"></a><h3>3.&nbsp;
+JSON Web Token (JWT) Overview</h3>
+
+<p>
+	JWTs represent a set of claims as a JSON object that is
+	base64url encoded and digitally signed and/or
+	encrypted.  The JWT Claims Set represents this JSON object.
+	As per <a class='info' href='#RFC4627'>RFC 4627<span> (</span><span class='info'>Crockford, D., &ldquo;The application/json Media Type for JavaScript Object Notation (JSON),&rdquo; July&nbsp;2006.</span><span>)</span></a> [RFC4627]
+	Section 2.2, the JSON object consists of zero or more
+	name/value pairs (or members), where the names are strings and
+	the values are arbitrary JSON values.  These members are the
+	claims represented by the JWT.
+      
+</p>
+<p>
+	The member names within the JWT Claims Set are
+	referred to as Claim Names.  The
+	corresponding values are referred to as Claim Values.
+      
+</p>
+<p>
+	The bytes of the UTF-8 representation of the JWT Claims Set
+	are signed in the manner described in JSON Web Signature (JWS)
+	<a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a> and/or encrypted in the manner described
+	in JSON Web Encryption (JWE) <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a>.
+      
+</p>
+<p>
+	The contents of the JWT Header describe the cryptographic
+	operations applied to the JWT Claims Set.
+	If the JWT Header is a JWS Header, the claims are signed.
+	If the JWT Header is a JWE Header, the claims are encrypted.
+      
+</p>
+<p>
+	A JWT is represented as the concatenation of the Encoded JWT Header,
+	the JWT Second Part, and the JWT Third Part, in that order,
+	with the parts being separated by period ('.') characters.
+	When signed, the three parts of the JWT are the three parts of
+	a JWS used to represent the JWT.  When encrypted, the three
+	parts of the JWT are the three parts of a JWE used to
+	represent the JWT.
+      
+</p>
+<a name="ExampleJWT"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.3.1"></a><h3>3.1.&nbsp;
+Example JWT</h3>
+
+<p>
+	  The following example JWT Header declares that the
+	  encoded object is a JSON Web Token (JWT) and the JWT is
+	  signed using the HMAC SHA-256 algorithm:
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>{"typ":"JWT",
+ "alg":"HS256"}</pre></div>
+<p>
+	  Base64url encoding the bytes of the UTF-8 representation of
+	  the JWT Header yields this Encoded JWS Header value,
+	  which is used as the Encoded JWT Header:
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9</pre></div>
+<p>
+	  The following is an example of a JWT Claims Set:
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>{"iss":"joe",
+ "exp":1300819380,
+ "http://example.com/is_root":true}</pre></div>
+<p>
+	  Base64url encoding the bytes of the UTF-8 representation of
+	  the JSON Claims Set yields this Encoded JWS Payload,
+	  which is used as the JWT Second Part
+	  (with line breaks for display purposes only):
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly
+9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ</pre></div>
+<p>
+	  Signing the Encoded JWS Header and Encoded JWS Payload with
+	  the HMAC SHA-256 algorithm and base64url encoding the
+	  signature in the manner specified in <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a>,
+	  yields this Encoded JWS Signature, which is used as the JWT
+	  Third Part:
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk</pre></div>
+<p>
+	  Concatenating these parts in the order
+	  Header.Second.Third with period characters between the
+	  parts yields this complete JWT (with line breaks for
+	  display purposes only):
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9
+.
+eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFt
+cGxlLmNvbS9pc19yb290Ijp0cnVlfQ
+.
+dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk</pre></div>
+<p>
+	  This computation is illustrated in more detail in <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a>, Appendix A.1.
+	
+</p>
+<a name="anchor4"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.4"></a><h3>4.&nbsp;
+JWT Claims</h3>
+
+<p>
+	The JWT Claims Set represents a JSON object whose members
+	are the claims conveyed by the JWT.
+	The Claim Names within this object MUST be unique.
+	Note however, that the set of claims that a
+	JWT must contain to be considered valid is context-dependent
+	and is outside the scope of this specification.  When used in
+	a security-related context, implementations MUST understand
+	and support all of the claims present; otherwise, the JWT MUST
+	be rejected for processing.
+      
+</p>
+<p>
+        There are three classes of JWT Claim Names: Reserved Claim
+        Names, Public Claim Names, and Private Claim Names.
+      
+</p>
+<a name="ReservedClaimName"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.4.1"></a><h3>4.1.&nbsp;
+Reserved Claim Names</h3>
+
+<p>
+	  The following claim names are reserved. None of the claims
+	  defined in the table below are intended to be mandatory, but
+	  rather, provide a starting point for a set of useful,
+	  interoperable claims.  All the names are short because a
+	  core goal of JWTs is for the tokens to be compact.
+	
+</p><br /><hr class="insert" />
+<a name="ClaimTable"></a>
+<table class="full" align="center" border="0" cellpadding="2" cellspacing="2">
+<col align="left"><col align="left"><col align="left"><col align="left">
+<tr><th align="left">Claim Name</th><th align="left">JSON Value Type</th><th align="left">Claim Syntax</th><th align="left">Claim Semantics</th></tr>
+<tr>
+<td align="left">exp</td>
+<td align="left">number</td>
+<td align="left">IntDate</td>
+<td align="left">
+	    The <tt>exp</tt> (expiration time)
+	    claim identifies the expiration time on or after which the
+	    token MUST NOT be accepted for processing.  The processing
+	    of the <tt>exp</tt> claim requires that
+	    the current date/time MUST be before the expiration
+	    date/time listed in the <tt>exp</tt>
+	    claim. Implementers MAY provide for some small leeway,
+	    usually no more than a few minutes, to account for clock
+	    skew.  This claim is OPTIONAL.
+	  </td>
+</tr>
+<tr>
+<td align="left">nbf</td>
+<td align="left">number</td>
+<td align="left">IntDate</td>
+<td align="left">
+	    The <tt>nbf</tt> (not before) claim
+	    identifies the time before which the token MUST NOT be
+	    accepted for processing.  The processing of the <tt>nbf</tt> claim requires that the current
+	    date/time MUST be after or equal to the not-before
+	    date/time listed in the <tt>nbf</tt>
+	    claim. Implementers MAY provide for some small leeway,
+	    usually no more than a few minutes, to account for clock
+	    skew.  This claim is OPTIONAL.
+	  </td>
+</tr>
+<tr>
+<td align="left">iat</td>
+<td align="left">number</td>
+<td align="left">IntDate</td>
+<td align="left">
+	    The <tt>iat</tt> (issued at) claim
+	    identifies the time at which the JWT was issued.  This
+	    claim can be used to determine the age of the token.
+	    This claim is OPTIONAL.
+	  </td>
+</tr>
+<tr>
+<td align="left">iss</td>
+<td align="left">string</td>
+<td align="left">StringOrURI</td>
+<td align="left">
+	    The <tt>iss</tt> (issuer) claim
+	    identifies the principal that issued the JWT.  The
+	    processing of this claim is generally application
+	    specific.
+	    The <tt>iss</tt> value is case sensitive.
+	    This claim is OPTIONAL.
+	  </td>
+</tr>
+<tr>
+<td align="left">aud</td>
+<td align="left">string</td>
+<td align="left">StringOrURI</td>
+<td align="left">
+	    The <tt>aud</tt> (audience) claim
+	    identifies the audience that the JWT is intended for.  The
+	    principal intended to process the JWT MUST be identified
+	    with the value of the audience claim. If the principal
+	    processing the claim does not identify itself with the
+	    identifier in the <tt>aud</tt> claim
+	    value then the JWT MUST be rejected.  The interpretation
+	    of the audience value is generally
+	    application specific.
+	    The <tt>aud</tt> value is case sensitive.
+	    This claim is OPTIONAL.
+	  </td>
+</tr>
+<tr>
+<td align="left">prn</td>
+<td align="left">string</td>
+<td align="left">StringOrURI</td>
+<td align="left">
+	    The <tt>prn</tt> (principal) claim
+	    identifies the subject of the JWT.  The processing of this
+	    claim is generally application specific.
+	    The <tt>prn</tt> value is case sensitive.
+	    This claim is OPTIONAL.
+	  </td>
+</tr>
+<tr>
+<td align="left">jti</td>
+<td align="left">string</td>
+<td align="left">String</td>
+<td align="left">
+	    The <tt>jti</tt> (JWT ID) claim
+	    provides a unique identifier for the JWT.  The identifier
+	    value MUST be assigned in a manner that ensures that there
+	    is a negligible probability that the same value will be
+	    accidentally assigned to a different data object.  The
+	    <tt>jti</tt> claim can be used to
+	    prevent the JWT from being replayed.
+	    The <tt>jti</tt> value is case sensitive.
+	    This claim is OPTIONAL.
+	  </td>
+</tr>
+<tr>
+<td align="left">typ</td>
+<td align="left">string</td>
+<td align="left">String</td>
+<td align="left">
+	    The <tt>typ</tt> (type) claim is used
+	    to declare a type for the contents of this JWT Claims Set.
+	    The <tt>typ</tt> value is case sensitive.
+	    This claim is OPTIONAL.
+	  </td>
+</tr>
+</table>
+<br clear="all" />
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Table 1: Reserved Claim Definitions&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<p>
+	  Additional reserved claim names MAY be defined via the IANA
+	  JSON Web Token Claims registry, as per <a class='info' href='#IANA'>Section&nbsp;9<span> (</span><span class='info'>IANA Considerations</span><span>)</span></a>.  The syntax values used above are defined as follows:
+	
+</p><br /><hr class="insert" />
+<a name="SyntaxDefinitions"></a>
+<table class="full" align="center" border="0" cellpadding="2" cellspacing="2">
+<col align="left"><col align="left">
+<tr><th align="left">Syntax Name</th><th align="left">Syntax Definition</th></tr>
+<tr>
+<td align="left">IntDate</td>
+<td align="left">
+	    The number of seconds from 1970-01-01T0:0:0Z as measured
+	    in UTC until the desired date/time. See <a class='info' href='#RFC3339'>RFC 3339<span> (</span><span class='info'>Klyne, G., Ed. and C. Newman, &ldquo;Date and Time on the Internet: Timestamps,&rdquo; July&nbsp;2002.</span><span>)</span></a> [RFC3339] for details regarding
+	    date/times in general and UTC in particular.
+	  </td>
+</tr>
+<tr>
+<td align="left">String</td>
+<td align="left">
+	    Any string value MAY be used.
+	  </td>
+</tr>
+<tr>
+<td align="left">StringOrURI</td>
+<td align="left">
+	    Any string value MAY be used but a value containing a ":"
+	    character MUST be a URI as defined in <a class='info' href='#RFC3986'>RFC 3986<span> (</span><span class='info'>Berners-Lee, T., Fielding, R., and L. Masinter, &ldquo;Uniform Resource Identifier (URI): Generic Syntax,&rdquo; January&nbsp;2005.</span><span>)</span></a> [RFC3986].
+	  </td>
+</tr>
+</table>
+<br clear="all" />
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Table 2: Claim Syntax Definitions&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<a name="PublicClaimName"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.4.2"></a><h3>4.2.&nbsp;
+Public Claim Names</h3>
+
+<p>
+	  Claim names can be defined at will by those using
+	  JWTs. However, in order to prevent collisions, any new claim
+	  name SHOULD either be defined in the IANA JSON Web Token
+	  Claims registry or be defined as a URI that contains a
+	  collision resistant namespace. Examples of collision
+	  resistant namespaces include:
+
+          </p>
+<ul class="text">
+<li>
+	      Domain Names,
+	    
+</li>
+<li>
+	      Object Identifiers (OIDs) as defined in the ITU-T X.660
+	      and X.670 Recommendation series, or
+	    
+</li>
+<li>
+	      Universally Unique IDentifier (UUID) as defined in <a class='info' href='#RFC4122'>RFC 4122<span> (</span><span class='info'>Leach, P., Mealling, M., and R. Salz, &ldquo;A Universally Unique IDentifier (UUID) URN Namespace,&rdquo; July&nbsp;2005.</span><span>)</span></a> [RFC4122].
+	    
+</li>
+</ul><p>
+
+          In each case, the definer of the name or value needs to take
+          reasonable precautions to make sure they are in control of
+          the part of the namespace they use to define the claim
+          name.
+</p>
+<a name="PrivateClaimName"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.4.3"></a><h3>4.3.&nbsp;
+Private Claim Names</h3>
+
+<p>
+	   A producer and consumer of a JWT may agree to any claim
+	   name that is not a Reserved Name <a class='info' href='#ReservedClaimName'>Section&nbsp;4.1<span> (</span><span class='info'>Reserved Claim Names</span><span>)</span></a> or a Public Name <a class='info' href='#PublicClaimName'>Section&nbsp;4.2<span> (</span><span class='info'>Public Claim Names</span><span>)</span></a>. Unlike Public Names,
+	   these private names are subject to collision and should be
+	   used with caution.
+	 
+</p>
+<a name="anchor5"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.5"></a><h3>5.&nbsp;
+JWT Header</h3>
+
+<p>
+	The members of the JSON object represented by the JWT Header
+	describe the cryptographic operations applied to the JWT and
+	optionally, additional properties of the JWT.
+	The member names within the JWT Header are
+	referred to as Header Parameter Names.  These names MUST be
+	unique.  The corresponding values are referred to as Header
+	Parameter Values.
+      
+</p>
+<p>
+	Implementations MUST understand the entire contents of the
+	header; otherwise, the JWT MUST be rejected for processing.
+      
+</p>
+<p>
+	There are two ways of distinguishing whether the JWT is a JWS
+	or JWE.  The first is by examining the <tt>alg</tt> (algorithm) header value.  If the
+	value represents a signature algorithm, the JWT is a JWS; if
+	it represents an encryption algorithm, the JWT is a JWE.  A
+	second method is determining whether an <tt>enc</tt> (encryption method) member exists.
+	If the <tt>enc</tt> member exists, the JWT
+	is a JWE; otherwise, the JWT is a JWS.  Both methods will
+	yield the same result.
+      
+</p>
+<p>
+	JWS Header Parameters are defined by <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a>.
+	JWE Header Parameters are defined by <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a>.
+	This specification further specifies the use of the following
+	header parameters in both the cases where the JWT is a JWS and
+	where it is a JWE.
+      
+</p><br /><hr class="insert" />
+<a name="HeaderParameterTable"></a>
+<table class="full" align="center" border="0" cellpadding="2" cellspacing="2">
+<col align="left"><col align="left"><col align="left"><col align="left">
+<tr><th align="left">Header Parameter Name</th><th align="left">JSON Value Type</th><th align="left">Header Parameter Syntax</th><th align="left">Header Parameter Semantics</th></tr>
+<tr>
+<td align="left">typ</td>
+<td align="left">string</td>
+<td align="left">String</td>
+<td align="left">
+	  The <tt>typ</tt> (type) header parameter
+	  is used to declare structural information about the JWT.
+	  In the normal case where nested signing or encryption
+	  operations are not employed, the use of this header
+	  parameter is OPTIONAL, and if present, it is RECOMMENDED that
+	  its value be either "JWT" or
+	  "http://openid.net/specs/jwt/1.0".
+	  In the case that nested signing or encryption steps are
+	  employed, the use of this header parameter is REQUIRED; in
+	  this case, the value MUST either be "JWS", to indicate that
+	  a nested signed JWT is carried in this JWT or "JWE", to
+	  indicate that a nested encrypted JWT is carried in this JWT.
+	</td>
+</tr>
+</table>
+<br clear="all" />
+<table border="0" cellpadding="0" cellspacing="2" align="center"><tr><td align="center"><font face="monaco, MS Sans Serif" size="1"><b>&nbsp;Table 3: Reserved Header Parameter Usage&nbsp;</b></font><br /></td></tr></table><hr class="insert" />
+
+<a name="Plaintext"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.6"></a><h3>6.&nbsp;
+Plaintext JWTs</h3>
+
+<p>
+	To support use cases where the JWT content is secured by a
+	means other than a signature and/or encryption contained
+	within the token (such as a signature on a data structure
+	containing the token), JWTs MAY also be created without a
+	signature or encryption.  Plaintext JWTs MUST use the <tt>alg</tt> value <tt>none</tt>, and are formatted identically to a
+	signed JWT with an empty signature.  This means that the
+	base64url encoding of the bytes representing the UTF-8
+	encoding of the JWT Claims Set is the JWT Second Part, and
+	the empty string is the JWT Third Part.
+      
+</p>
+<a name="ExamplePlaintextJWT"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.6.1"></a><h3>6.1.&nbsp;
+Example Plaintext JWT</h3>
+
+<p>
+	  The following example JWT Header declares that the
+	  encoded object is a Plaintext JWT:
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>{"alg":"none"}</pre></div>
+<p>
+	  Base64url encoding the bytes of the UTF-8 representation of
+	  the JWT Header yields this Encoded JWT Header:
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>eyJhbGciOiJub25lIn0</pre></div>
+<p>
+	  The following is an example of a JWT Claims Set:
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>{"iss":"joe",
+ "exp":1300819380,
+ "http://example.com/is_root":true}</pre></div>
+<p>
+	  Base64url encoding the bytes of the UTF-8 representation of
+	  the JSON Claims Set yields this Encoded JWS Payload,
+	  which is used as the JWT Second Part
+	  (with line breaks for display purposes only):
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFt
+cGxlLmNvbS9pc19yb290Ijp0cnVlfQ</pre></div>
+<p>
+	  The JWT Third Part is the empty string.
+	
+</p>
+<p>
+	  Concatenating these parts in the order
+	  Header.Second.Third with period characters between the
+	  parts yields this complete JWT (with line breaks for
+	  display purposes only):
+	
+</p><div style='display: table; width: 0; margin-left: 3em; margin-right: auto'><pre>eyJhbGciOiJub25lIn0
+.
+eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFt
+cGxlLmNvbS9pc19yb290Ijp0cnVlfQ
+.
+</pre></div>
+<a name="anchor6"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.7"></a><h3>7.&nbsp;
+Rules for Creating and Validating a JWT</h3>
+
+<p>
+	To create a JWT, one MUST perform these steps:
+
+        </p>
+<ol class="text">
+<li>
+	    Create a JWT Claims Set containing the desired claims.
+	    Note that white space is explicitly allowed in the
+	    representation and no canonicalization is performed before
+	    encoding.
+	  
+</li>
+<li>
+	    Let the Message be the bytes of the UTF-8 representation
+	    of the JWT Claims Set.
+	  
+</li>
+<li>
+	    Create a JWT Header containing the desired set of header
+	    parameters.  If the JWT is to be signed or encrypted, they
+	    MUST conform to either the <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a> or <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a> specifications, respectively.  Else, if
+	    the JWT is to be plaintext, the <tt>alg</tt> value <tt>none</tt> MUST be used.  Note that white
+	    space is explicitly allowed in the representation and no
+	    canonicalization is performed before encoding.
+	  
+</li>
+<li>
+	    Base64url encode the bytes of the UTF-8 representation of
+	    the JWT Header.  Let this be the Encoded JWT Header.
+	  
+</li>
+<li>
+	    Depending upon whether the JWT is to be signed, encrypted,
+	    or plaintext, there are three cases:
+	    
+<ul class="text">
+<li>
+		If the JWT is to be signed, create a JWS using the JWT
+		Header as the JWS Header and the Message as the JWS
+		Payload; all steps specified in <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a>
+		for creating a JWS MUST be followed.
+		Let the JWT Second Part be the Encoded JWS Payload and
+		let the JWT Third Part be the Encoded JWS Signature.
+	      
+</li>
+<li>
+		If the JWT is to be encrypted, create a JWE using the
+		JWT Header as the JWE Header and the Message as the
+		JWE Plaintext; all steps specified in <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a> for creating a JWE MUST be followed.
+		Let the JWT Second Part be the Encoded JWE Encrypted
+		Key and let the JWT Third Part be the Encoded JWS
+		Ciphertext.
+	      
+</li>
+<li>
+		Else, if the JWT is to be plaintext, let the JWT
+		Second Part be the base64url encoding of the Message
+		and let the JWT Third Part be the empty string.
+	      
+</li>
+</ul>
+	  
+</li>
+<li>
+	    Concatenate the Encoded JWT Header, the JWT Second Part,
+	    and the JWT Third Part in that order, separating each by
+	    period ('.') characters.
+	  
+</li>
+<li>
+	    If a nested signing or encryption operation will be
+	    performed, let the Message be this concatenation, and
+	    return to Step 3, using a <tt>typ</tt>
+	    value of either "JWS" or "JWE" respectively in the
+	    new JWT Header created in that step.
+	  
+</li>
+<li>
+	    Otherwise, let the resulting JWT be this concatenation.
+	  
+</li>
+</ol><p>
+      
+</p>
+<p>
+	When validating a JWT the following steps MUST be taken. If
+	any of the listed steps fails then the token MUST be rejected
+	for processing.
+      
+</p>
+<p>
+	</p>
+<ol class="text">
+<li>
+	    The JWT MUST contain exactly two period characters.
+	  
+</li>
+<li>
+	    The JWT MUST be split on the two period characters
+	    resulting in three strings.  The first string is the
+	    Encoded JWT Header; the second is the JWT Second Part; the
+	    third is the JWT Third Part.
+	  
+</li>
+<li>
+	    The Encoded JWT Header MUST be successfully base64url
+	    decoded following the restriction given in this
+	    specification that no padding characters have been used.
+	  
+</li>
+<li>
+	    The JWT Header MUST be completely valid JSON syntax
+	    conforming to <a class='info' href='#RFC4627'>RFC 4627<span> (</span><span class='info'>Crockford, D., &ldquo;The application/json Media Type for JavaScript Object Notation (JSON),&rdquo; July&nbsp;2006.</span><span>)</span></a> [RFC4627].
+	  
+</li>
+<li>
+	    The JWT Header MUST be validated to only include
+	    parameters and values whose syntax and semantics are both
+	    understood and supported.
+	  
+</li>
+<li>
+	    Determine whether the JWT is signed, encrypted, or
+	    plaintext by examining the <tt>alg</tt>
+	    (algorithm) header value and optionally, the <tt>enc</tt> (encryption method) header value,
+	    if present.
+	  
+</li>
+<li>
+	    Depending upon whether the JWT signed, encrypted,
+	    or plaintext, there are three cases:
+	    
+<ul class="text">
+<li>
+		If the JWT is signed, all steps specified in <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a> for validating a JWS MUST be followed.
+		Let the Message be the result of base64url decoding
+		the JWS Payload.
+	      
+</li>
+<li>
+		If the JWT is encrypted, all steps specified in <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a> for validating a JWE MUST be followed.
+		Let the Message be the JWE Plaintext.
+	      
+</li>
+<li>
+		Else, if the JWT is plaintext, let the Message be the
+		result of base64url decoding the JWE Second Part.  The
+		Third Part MUST be verified to be the empty string.
+	      
+</li>
+</ul>
+	  
+</li>
+<li>
+	    If the JWT Header contains a <tt>typ</tt> value of either "JWS" or "JWE",
+	    then the Message contains a JWT that was the subject of
+	    nested signing or encryption operations, respectively.  In
+	    this case, return to Step 1, using the Message as the JWT.
+	  
+</li>
+<li>
+	    Otherwise, let the JWT Claims Set be the Message.
+	  
+</li>
+<li>
+	    The JWT Claims Set MUST be completely valid
+	    JSON syntax conforming to <a class='info' href='#RFC4627'>RFC
+	    4627<span> (</span><span class='info'>Crockford, D., &ldquo;The application/json Media Type for JavaScript Object Notation (JSON),&rdquo; July&nbsp;2006.</span><span>)</span></a> [RFC4627].
+	  
+</li>
+<li>
+	    When used in a security-related context, the
+	    JWT Claims Set MUST be validated to only include claims
+	    whose syntax and semantics are both understood and
+	    supported.
+	  
+</li>
+</ol><p>
+      
+</p>
+<p>
+	Processing a JWT inevitably requires comparing known strings
+	to values in the token. For example, in checking what the
+	algorithm is, the Unicode string encoding <tt>alg</tt> will be
+	checked against the member names in the JWT Header
+	to see if there is a matching header parameter
+	name. A similar process occurs when determining if the value
+	of the <tt>alg</tt> header parameter represents a supported
+	algorithm.
+      
+</p>
+<p>
+	Comparisons between JSON strings and other Unicode strings
+	MUST be performed as specified below:
+
+	</p>
+<ol class="text">
+<li>
+	    Remove any JSON applied escaping to produce an array of
+	    Unicode code points.
+	  
+</li>
+<li>
+	    <a class='info' href='#USA15'>Unicode Normalization<span> (</span><span class='info'>Davis, M., Whistler, K., and M. D&uuml;rst, &ldquo;Unicode Normalization Forms,&rdquo; 09&nbsp;2009.</span><span>)</span></a> [USA15] MUST NOT
+	    be applied at any point to either the JSON string or to
+	    the string it is to be compared against.
+	  
+</li>
+<li>
+	    Comparisons between the two strings MUST be performed as a
+	    Unicode code point to code point equality comparison.
+	  
+</li>
+</ol><p>
+      
+</p>
+<a name="Algorithms"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.8"></a><h3>8.&nbsp;
+Cryptographic Algorithms</h3>
+
+<p>
+	JWTs use JSON Web Signature (JWS) <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a> and
+	JSON Web Encryption (JWE) <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a> to sign and/or
+	encrypt the contents of the JWT.
+      
+</p>
+<p>
+	Of the JWS signing algorithms, only HMAC SHA-256 MUST be
+	implemented by conforming JWT implementations.  It is
+	RECOMMENDED that implementations also support the RSA SHA-256
+	and ECDSA P-256 SHA-256 algorithms.  Support for other
+	algorithms and key sizes is OPTIONAL.
+      
+</p>
+<p>
+	If an implementation provides encryption capabilities,
+	of the JWE encryption algorithms, only RSA-PKCS1-1.5 with 2048 bit keys,
+	AES-128-CBC, and AES-256-CBC MUST be implemented by conforming
+	implementations.  It is RECOMMENDED that implementations also
+	support ECDH-ES with 256 bit keys, AES-128-GCM, and
+	AES-256-GCM.  Support for other algorithms and key sizes is
+	OPTIONAL.
+      
+</p>
+<a name="IANA"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.9"></a><h3>9.&nbsp;
+IANA Considerations</h3>
+
+<p>
+	This specification calls for:
+
+        </p>
+<ul class="text">
+<li>
+	    A new IANA registry entitled "JSON Web Token Claims" for
+	    reserved claim names is defined in <a class='info' href='#ReservedClaimName'>Section&nbsp;4.1<span> (</span><span class='info'>Reserved Claim Names</span><span>)</span></a>. Inclusion in the
+	    registry is RFC Required in the <a class='info' href='#RFC5226'>RFC
+	    5226<span> (</span><span class='info'>Narten, T. and H. Alvestrand, &ldquo;Guidelines for Writing an IANA Considerations Section in RFCs,&rdquo; May&nbsp;2008.</span><span>)</span></a> [RFC5226] sense for reserved JWT claim names that are
+	    intended to be interoperable between implementations.  The
+	    registry will just record the reserved claim name and a
+	    pointer to the RFC that defines it. This specification
+	    defines inclusion of the claim names defined in <a class='info' href='#ClaimTable'>Table&nbsp;1<span> (</span><span class='info'>Reserved Claim Definitions</span><span>)</span></a>.
+	  
+</li>
+</ul><p>
+      
+</p>
+<a name="Security"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.10"></a><h3>10.&nbsp;
+Security Considerations</h3>
+
+<p>
+	TBD: Lots of work to do here. We need to remember to look into
+	any issues relating to security and JSON parsing. One wonders
+	just how secure most JSON parsing libraries are. Were they
+	ever hardened for security scenarios? If not, what kind of
+	holes does that open up? Also, we need to walk through the
+	JSON standard and see what kind of issues we have especially
+	around comparison of names.  For instance, comparisons of
+	claim names and other parameters must occur after they are
+	unescaped. Need to also put in text about: Importance of
+	keeping secrets secret. Rotating keys. Strengths and
+	weaknesses of the different algorithms.
+      
+</p>
+<p>
+	TBD: Need to put in text about why strict JSON validation is
+	necessary.  Basically, that if malformed JSON is received then
+	the intent of the sender is impossible to reliably discern.
+	One example of malformed JSON that MUST be rejected is
+	an object in which the same member name occurs multiple times.
+	While in non-security contexts it's o.k. to be
+	generous in what one accepts, in security contexts this can
+	lead to serious security holes. For example, malformed JSON
+	might indicate that someone has managed to find a security
+	hole in the issuer's code and is leveraging it to get the
+	issuer to issue "bad" tokens whose content the attacker can
+	control.
+      
+</p>
+<p>
+	TBD: Write about the need to secure the token content if a
+	signature is not contained in the JWT itself.
+      
+</p>
+<a name="anchor7"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.10.1"></a><h3>10.1.&nbsp;
+Unicode Comparison Security Issues</h3>
+
+<p>
+	  Claim names in JWTs are Unicode strings.  For security
+	  reasons, the representations of these names must be compared
+	  verbatim after performing any escape processing (as per
+	  <a class='info' href='#RFC4627'>RFC 4627<span> (</span><span class='info'>Crockford, D., &ldquo;The application/json Media Type for JavaScript Object Notation (JSON),&rdquo; July&nbsp;2006.</span><span>)</span></a> [RFC4627], Section 2.5).
+	
+</p>
+<p>
+	  This means, for instance, that these JSON strings must
+	  compare as being equal ("JWT", "\u004aWT"), whereas these
+	  must all compare as being not equal to the first set or to
+	  each other ("jwt", "Jwt", "JW\u0074").
+	
+</p>
+<p>
+	  JSON strings MAY contain characters outside the Unicode
+	  Basic Multilingual Plane.  For instance, the G clef
+	  character (U+1D11E) may be represented in a JSON string as
+	  "\uD834\uDD1E".  Ideally, JWT implementations SHOULD ensure
+	  that characters outside the Basic Multilingual Plane are
+	  preserved and compared correctly; alternatively, if this is
+	  not possible due to these characters exercising limitations
+	  present in the underlying JSON implementation, then input
+	  containing them MUST be rejected.
+	
+</p>
+<a name="TBD"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.11"></a><h3>11.&nbsp;
+Open Issues and Things To Be Done (TBD)</h3>
+
+<p>
+	The following items remain to be done in this draft:
+
+	</p>
+<ul class="text">
+<li>
+	    Provide an example of an encrypted JWT.
+	  
+</li>
+<li>
+	    Clarify the optional ability to provide type information
+	    for JWTs and/or their parts.  Specifically, clarify 
+	    whether we need to specify the <tt>typ</tt>
+	    Claim Name in addition to the Header Parameter,
+	    whether it conveys syntax or semantics, and indeed,
+	    whether this is the right approach.  Also clarify the
+	    relationship between these type values and <a class='info' href='#RFC2045'>MIME<span> (</span><span class='info'>Freed, N. and N. Borenstein, &ldquo;Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies,&rdquo; November&nbsp;1996.</span><span>)</span></a> [RFC2045] types (if any).
+	  
+</li>
+<li>
+	    Think about how to best describe the concept currently
+	    described as "the bytes of the UTF-8 representation of".
+	    Possible terms to use instead of "bytes of" include "byte
+	    sequence", "octet series", and "octet sequence".  Also
+	    consider whether we want to add an overall clarifying
+	    statement somewhere in each spec something like "every
+	    place we say 'the UTF-8 representation of X', we mean 'the
+	    bytes of the UTF-8 representation of X'".  That would
+	    potentially allow us to omit the "the bytes of" part
+	    everywhere else.
+	  
+</li>
+<li>
+	    Consider whether a media type should be proposed, such as
+	    "application/jwt".
+	  
+</li>
+<li>
+	    Finish the Security Considerations section.
+	  
+</li>
+<li>
+	    Possibly write a companion specification that contains the former
+	    JWT JSON Serialization.
+	  
+</li>
+</ul><p>
+      
+</p>
+<a name="rfc.references"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.12"></a><h3>12.&nbsp;
+References</h3>
+
+<a name="rfc.references1"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<h3>12.1.&nbsp;Normative References</h3>
+<table width="99%" border="0">
+<tr><td class="author-text" valign="top"><a name="JWS">[JWS]</a></td>
+<td class="author-text"><a href="mailto:mbj@microsoft.com">Jones, M.</a>, <a href="mailto:balfanz@google.com">Balfanz, D.</a>, <a href="mailto:ve7jtb@ve7jtb.com">Bradley, J.</a>, <a href="mailto:yarong@microsoft.com">Goland, Y.</a>, <a href="mailto:jpanzer@google.com">Panzer, J.</a>, <a href="mailto:n-sakimura@nri.co.jp">Sakimura, N.</a>, and <a href="mailto:pt@fb.com">P. Tarjan</a>, &ldquo;<a href="http://tools.ietf.org/html/draft-jones-json-web-signature">JSON Web Signature (JWS)</a>,&rdquo; December&nbsp;2011.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2045">[RFC2045]</a></td>
+<td class="author-text"><a href="mailto:ned@innosoft.com">Freed, N.</a> and <a href="mailto:nsb@nsb.fv.com">N. Borenstein</a>, &ldquo;<a href="http://tools.ietf.org/html/rfc2045">Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies</a>,&rdquo; RFC&nbsp;2045, November&nbsp;1996 (<a href="http://www.rfc-editor.org/rfc/rfc2045.txt">TXT</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC2119">[RFC2119]</a></td>
+<td class="author-text"><a href="mailto:sob@harvard.edu">Bradner, S.</a>, &ldquo;<a href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>,&rdquo; BCP&nbsp;14, RFC&nbsp;2119, March&nbsp;1997 (<a href="http://www.rfc-editor.org/rfc/rfc2119.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc2119.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc2119.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3339">[RFC3339]</a></td>
+<td class="author-text"><a href="mailto:GK@ACM.ORG">Klyne, G., Ed.</a> and <a href="mailto:chris.newman@sun.com">C. Newman</a>, &ldquo;<a href="http://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>,&rdquo; RFC&nbsp;3339, July&nbsp;2002 (<a href="http://www.rfc-editor.org/rfc/rfc3339.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc3339.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc3339.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3629">[RFC3629]</a></td>
+<td class="author-text">Yergeau, F., &ldquo;<a href="http://tools.ietf.org/html/rfc3629">UTF-8, a transformation format of ISO 10646</a>,&rdquo; STD&nbsp;63, RFC&nbsp;3629, November&nbsp;2003 (<a href="http://www.rfc-editor.org/rfc/rfc3629.txt">TXT</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3986">[RFC3986]</a></td>
+<td class="author-text"><a href="mailto:timbl@w3.org">Berners-Lee, T.</a>, <a href="mailto:fielding@gbiv.com">Fielding, R.</a>, and <a href="mailto:LMM@acm.org">L. Masinter</a>, &ldquo;<a href="http://tools.ietf.org/html/rfc3986">Uniform Resource Identifier (URI): Generic Syntax</a>,&rdquo; STD&nbsp;66, RFC&nbsp;3986, January&nbsp;2005 (<a href="http://www.rfc-editor.org/rfc/rfc3986.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc3986.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc3986.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC4627">[RFC4627]</a></td>
+<td class="author-text">Crockford, D., &ldquo;<a href="http://tools.ietf.org/html/rfc4627">The application/json Media Type for JavaScript Object Notation (JSON)</a>,&rdquo; RFC&nbsp;4627, July&nbsp;2006 (<a href="http://www.rfc-editor.org/rfc/rfc4627.txt">TXT</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC4648">[RFC4648]</a></td>
+<td class="author-text">Josefsson, S., &ldquo;<a href="http://tools.ietf.org/html/rfc4648">The Base16, Base32, and Base64 Data Encodings</a>,&rdquo; RFC&nbsp;4648, October&nbsp;2006 (<a href="http://www.rfc-editor.org/rfc/rfc4648.txt">TXT</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC5226">[RFC5226]</a></td>
+<td class="author-text">Narten, T. and H. Alvestrand, &ldquo;<a href="http://tools.ietf.org/html/rfc5226">Guidelines for Writing an IANA Considerations Section in RFCs</a>,&rdquo; BCP&nbsp;26, RFC&nbsp;5226, May&nbsp;2008 (<a href="http://www.rfc-editor.org/rfc/rfc5226.txt">TXT</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="USA15">[USA15]</a></td>
+<td class="author-text"><a href="mailto:markdavis@google.com">Davis, M.</a>, <a href="mailto:ken@unicode.org">Whistler, K.</a>, and M. D&uuml;rst, &ldquo;Unicode Normalization Forms,&rdquo; Unicode Standard Annex&nbsp;15, 09&nbsp;2009.</td></tr>
+</table>
+
+<a name="rfc.references2"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<h3>12.2.&nbsp;Informative References</h3>
+<table width="99%" border="0">
+<tr><td class="author-text" valign="top"><a name="CanvasApp">[CanvasApp]</a></td>
+<td class="author-text">Facebook, &ldquo;<a href="http://developers.facebook.com/docs/authentication/canvas">Canvas Applications</a>,&rdquo; 2010.</td></tr>
+<tr><td class="author-text" valign="top"><a name="JSS">[JSS]</a></td>
+<td class="author-text">Bradley, J. and N. Sakimura (editor), &ldquo;<a href="http://jsonenc.info/jss/1.0/">JSON Simple Sign</a>,&rdquo; September&nbsp;2010.</td></tr>
+<tr><td class="author-text" valign="top"><a name="JWE">[JWE]</a></td>
+<td class="author-text"><a href="mailto:mbj@microsoft.com">Jones, M.</a>, <a href="mailto:ekr@rtfm.com">Rescorla, E.</a>, and <a href="mailto:jhildebr@cisco.com">J. Hildebrand</a>, &ldquo;<a href="http://tools.ietf.org/html/draft-jones-json-web-encryption">JSON Web Encryption (JWE)</a>,&rdquo; December&nbsp;2011.</td></tr>
+<tr><td class="author-text" valign="top"><a name="MagicSignatures">[MagicSignatures]</a></td>
+<td class="author-text">Panzer (editor), J., Laurie, B., and D. Balfanz, &ldquo;<a href="http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-experimental-00.html">Magic Signatures</a>,&rdquo; August&nbsp;2010.</td></tr>
+<tr><td class="author-text" valign="top"><a name="OASIS.saml-core-2.0-os">[OASIS.saml-core-2.0-os]</a></td>
+<td class="author-text"><a href="mailto:cantor.2@osu.edu">Cantor, S.</a>, <a href="mailto:John.Kemp@nokia.com">Kemp, J.</a>, <a href="mailto:rphilpott@rsasecurity.com">Philpott, R.</a>, and <a href="mailto:eve.maler@sun.com">E. Maler</a>, &ldquo;<a href="http://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf">Assertions and Protocol for the OASIS Security Assertion Markup Language
+            (SAML) V2.0</a>,&rdquo; OASIS Standard&nbsp;saml-core-2.0-os, March&nbsp;2005.</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC3275">[RFC3275]</a></td>
+<td class="author-text">Eastlake, D., Reagle, J., and D. Solo, &ldquo;<a href="http://tools.ietf.org/html/rfc3275">(Extensible Markup Language) XML-Signature Syntax and Processing</a>,&rdquo; RFC&nbsp;3275, March&nbsp;2002 (<a href="http://www.rfc-editor.org/rfc/rfc3275.txt">TXT</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="RFC4122">[RFC4122]</a></td>
+<td class="author-text"><a href="mailto:paulle@microsoft.com">Leach, P.</a>, <a href="mailto:michael@refactored-networks.com">Mealling, M.</a>, and <a href="mailto:rsalz@datapower.com">R. Salz</a>, &ldquo;<a href="http://tools.ietf.org/html/rfc4122">A Universally Unique IDentifier (UUID) URN Namespace</a>,&rdquo; RFC&nbsp;4122, July&nbsp;2005 (<a href="http://www.rfc-editor.org/rfc/rfc4122.txt">TXT</a>, <a href="http://xml.resource.org/public/rfc/html/rfc4122.html">HTML</a>, <a href="http://xml.resource.org/public/rfc/xml/rfc4122.xml">XML</a>).</td></tr>
+<tr><td class="author-text" valign="top"><a name="SWT">[SWT]</a></td>
+<td class="author-text">Hardt, D. and Y. Goland, &ldquo;<a href="http://oauth-wrap-wg.googlegroups.com/web/SWT-v0.9.5.1.pdf?gda=Sn4MsEMAAABFB7PFAFiVedPtjcqT8uuIImHXUksNUKMXLyrSumAs_dF2tzlQ33RhT1wW8BFYO1QytiJ-HdGYYcPi_09pl8N7FWLveOaWjzbYnpnkpmxcWg">Simple Web Token (SWT)</a>,&rdquo; Version&nbsp;0.9.5.1, November&nbsp;2009.</td></tr>
+<tr><td class="author-text" valign="top"><a name="W3C.CR-xml11-20021015">[W3C.CR-xml11-20021015]</a></td>
+<td class="author-text">Cowan, J., &ldquo;<a href="http://www.w3.org/TR/2002/CR-xml11-20021015">Extensible Markup Language (XML) 1.1</a>,&rdquo; W3C CR&nbsp;CR-xml11-20021015, October&nbsp;2002.</td></tr>
+</table>
+
+<a name="anchor10"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.A"></a><h3>Appendix A.&nbsp;
+Relationship of JWTs to SAML Tokens</h3>
+
+<p>
+	<a class='info' href='#OASIS.saml-core-2.0-os'>SAML 2.0<span> (</span><span class='info'>Cantor, S., Kemp, J., Philpott, R., and E. Maler, &ldquo;Assertions and Protocol for the OASIS Security Assertion Markup Language             (SAML) V2.0,&rdquo; March&nbsp;2005.</span><span>)</span></a> [OASIS.saml&#8209;core&#8209;2.0&#8209;os] provides
+	a standard for creating tokens with much greater expressivity
+	and more security options than supported by JWTs. However, the
+	cost of this flexibility and expressiveness is both size and
+	complexity. In addition, SAML's use of <a class='info' href='#W3C.CR-xml11-20021015'>XML<span> (</span><span class='info'>Cowan, J., &ldquo;Extensible Markup Language (XML) 1.1,&rdquo; October&nbsp;2002.</span><span>)</span></a> [W3C.CR&#8209;xml11&#8209;20021015] and <a class='info' href='#RFC3275'>XML DSIG<span> (</span><span class='info'>Eastlake, D., Reagle, J., and D. Solo, &ldquo;(Extensible Markup Language) XML-Signature Syntax and Processing,&rdquo; March&nbsp;2002.</span><span>)</span></a> [RFC3275] only contributes to the size
+	of SAML tokens.
+      
+</p>
+<p>
+	JWTs are intended to provide a simple token format that is
+	small enough to fit into HTTP headers and query arguments in
+	URIs. It does this by supporting a much simpler token model
+	than SAML and using the <a class='info' href='#RFC4627'>JSON<span> (</span><span class='info'>Crockford, D., &ldquo;The application/json Media Type for JavaScript Object Notation (JSON),&rdquo; July&nbsp;2006.</span><span>)</span></a> [RFC4627]
+	object encoding syntax. It also supports securing tokens using
+	Hash-based Message Authentication Codes (HMACs) and digital
+	signatures using a smaller (and less flexible) format than XML
+	DSIG.
+      
+</p>
+<p>
+	Therefore, while JWTs can do some of the things SAML tokens
+	do, JWTs are not intended as a full replacement for SAML
+	tokens, but rather as a compromise token format to be used
+	when space is at a premium.
+      
+</p>
+<a name="anchor11"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.B"></a><h3>Appendix B.&nbsp;
+Relationship of JWTs to Simple Web Tokens (SWTs)</h3>
+
+<p>
+	Both JWTs and Simple Web Tokens <a class='info' href='#SWT'>SWT<span> (</span><span class='info'>Hardt, D. and Y. Goland, &ldquo;Simple Web Token (SWT),&rdquo; November&nbsp;2009.</span><span>)</span></a> [SWT],
+	at their core, enable sets of claims to be communicated
+	between applications.  For SWTs, both the claim names and
+	claim values are strings.  For JWTs, while claim names are
+	strings, claim values can be any JSON type.  Both token types
+	offer cryptographic protection of their content: SWTs with
+	HMAC SHA-256 and JWTs with a choice of algorithms, including
+	HMAC SHA-256, RSA SHA-256, and ECDSA P-256 SHA-256.
+      
+</p>
+<a name="Acknowledgements"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.C"></a><h3>Appendix C.&nbsp;
+Acknowledgements</h3>
+
+<p>
+	The authors acknowledge that the design of JWTs was
+	intentionally influenced by the design and simplicity of <a class='info' href='#SWT'>Simple Web Tokens<span> (</span><span class='info'>Hardt, D. and Y. Goland, &ldquo;Simple Web Token (SWT),&rdquo; November&nbsp;2009.</span><span>)</span></a> [SWT] and ideas for JSON
+	tokens that Dick Hardt discussed within the OpenID community.
+      
+</p>
+<p>
+	Solutions for signing JSON content were previously explored by
+	<a class='info' href='#MagicSignatures'>Magic Signatures<span> (</span><span class='info'>Panzer (editor), J., Laurie, B., and D. Balfanz, &ldquo;Magic Signatures,&rdquo; August&nbsp;2010.</span><span>)</span></a> [MagicSignatures], <a class='info' href='#JSS'>JSON Simple Sign<span> (</span><span class='info'>Bradley, J. and N. Sakimura (editor), &ldquo;JSON Simple Sign,&rdquo; September&nbsp;2010.</span><span>)</span></a> [JSS], and <a class='info' href='#CanvasApp'>Canvas Applications<span> (</span><span class='info'>Facebook, &ldquo;Canvas Applications,&rdquo; 2010.</span><span>)</span></a> [CanvasApp], all of which
+	influenced this draft.
+      
+</p>
+<a name="anchor12"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<a name="rfc.section.D"></a><h3>Appendix D.&nbsp;
+Document History</h3>
+
+<p>
+        -07
+        </p>
+<ul class="text">
+<li>
+            Defined the <tt>prn</tt> (principal)
+            claim to identify the subject of the JWT.
+	  
+</li>
+<li>
+	    Defined the <tt>jti</tt> (JWT ID)
+	    claim to enable replay protection.
+          
+</li>
+<li>
+	    Use the term "JWT Claims Set" rather than "JWT Claims Object"
+	    since this is actually a string representing a JSON object
+	    and not the JSON object itself.
+	  
+</li>
+<li>
+	    Moved "MUST" requirements from the Overview to later in
+	    the spec.
+	  
+</li>
+<li>
+	    Respect line length restrictions in examples.
+	  
+</li>
+<li>
+	    Applied other editorial improvements.
+	  
+</li>
+</ul><p>
+      
+</p>
+<p>
+        -06
+        </p>
+<ul class="text">
+<li>
+	    Reference and use content from <a class='info' href='#JWS'>[JWS]<span> (</span><span class='info'>Jones, M., Balfanz, D., Bradley, J., Goland, Y., Panzer, J., Sakimura, N., and P. Tarjan, &ldquo;JSON Web Signature (JWS),&rdquo; December&nbsp;2011.</span><span>)</span></a> and
+	    <a class='info' href='#JWE'>[JWE]<span> (</span><span class='info'>Jones, M., Rescorla, E., and J. Hildebrand, &ldquo;JSON Web Encryption (JWE),&rdquo; December&nbsp;2011.</span><span>)</span></a>, rather than repeating it here.
+	  
+</li>
+<li>
+	    Simplified terminology to better match JWE, where the
+	    terms "JWT Header" and "Encoded JWT Header" are now used,
+	    for instance, rather than the previous terms "Decoded JWT
+	    Header Segment" and "JWT Header Segment".  Also changed to
+	    "Plaintext JWT" from "Unsigned JWT".
+	  
+</li>
+<li>
+	    Describe how to perform nested encryption and signing
+	    operations.
+	  
+</li>
+<li>
+	    Changed "integer" to "number", since that is the correct
+	    JSON type.
+	  
+</li>
+<li>
+            Changed StringAndURI to StringOrURI.
+          
+</li>
+</ul><p>
+      
+</p>
+<p>
+        -05
+        </p>
+<ul class="text">
+<li>
+            Added the <tt>nbf</tt> (not before)
+            claim and clarified the meaning of the <tt>iat</tt> (issued at) claim.
+          
+</li>
+</ul><p>
+      
+</p>
+<p>
+        -04
+        </p>
+<ul class="text">
+<li>
+            Correct typo found by John Bradley: "the JWT Claim Segment
+            is the empty string" -> "the JWT Crypto Segment is the
+            empty string".
+          
+</li>
+</ul><p>
+      
+</p>
+<p>
+	-03
+	</p>
+<ul class="text">
+<li>
+	    Added "http://openid.net/specs/jwt/1.0" as a token type
+	    identifier URI for JWTs.
+	  
+</li>
+<li>
+	    Added <tt>iat</tt> (issued at) claim.
+	  
+</li>
+<li>
+	    Changed RSA SHA-256 from MUST be supported to RECOMMENDED
+	    that it be supported.  Rationale: Several people have
+	    objected to the requirement for implementing RSA SHA-256,
+	    some because they will only be using HMACs and symmetric
+	    keys, and others because they only want to use ECDSA when
+	    using asymmetric keys, either for security or key length
+	    reasons, or both.
+	  
+</li>
+<li>
+	    Defined <tt>alg</tt> value <tt>none</tt> to represent unsigned JWTs.
+	  
+</li>
+</ul><p>
+      
+</p>
+<p>
+        -02
+        </p>
+<ul class="text">
+<li>
+            Split signature specification out into separate
+            draft-jones-json-web-signature-00.  This split introduced
+            no semantic changes.
+          
+</li>
+<li>
+	    The JWT Compact Serialization is now the only token
+	    serialization format specified in this draft.  The JWT
+	    JSON Serialization can continue to be defined in a
+	    companion specification.
+	  
+</li>
+</ul><p>
+      
+</p>
+<p>
+        -01
+        </p>
+<ul class="text">
+<li>
+            Draft incorporating consensus decisions reached at IIW.
+          
+</li>
+</ul><p>
+      
+</p>
+<p>
+        -00
+        </p>
+<ul class="text">
+<li>
+            Public draft published before November 2010 IIW based upon
+            the JSON token convergence proposal incorporating input
+            from several implementers of related specifications.
+          
+</li>
+</ul><p>
+      
+</p>
+<a name="rfc.authors"></a><br /><hr />
+<table summary="layout" cellpadding="0" cellspacing="2" class="TOCbug" align="right"><tr><td class="TOCbug"><a href="#toc">&nbsp;TOC&nbsp;</a></td></tr></table>
+<h3>Authors' Addresses</h3>
+<table width="99%" border="0" cellpadding="0" cellspacing="0">
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Michael B. Jones</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Microsoft</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:mbj@microsoft.com">mbj@microsoft.com</a></td></tr>
+<tr><td class="author" align="right">URI:&nbsp;</td>
+<td class="author-text"><a href="http://self-issued.info/">http://self-issued.info/</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Dirk Balfanz</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Google</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:balfanz@google.com">balfanz@google.com</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">John Bradley</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">independent</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:ve7jtb@ve7jtb.com">ve7jtb@ve7jtb.com</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Yaron Y. Goland</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Microsoft</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:yarong@microsoft.com">yarong@microsoft.com</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">John Panzer</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Google</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:jpanzer@google.com">jpanzer@google.com</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Nat Sakimura</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Nomura Research Institute</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:n-sakimura@nri.co.jp">n-sakimura@nri.co.jp</a></td></tr>
+<tr cellpadding="3"><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Paul Tarjan</td></tr>
+<tr><td class="author-text">&nbsp;</td>
+<td class="author-text">Facebook</td></tr>
+<tr><td class="author" align="right">Email:&nbsp;</td>
+<td class="author-text"><a href="mailto:pt@fb.com">pt@fb.com</a></td></tr>
+</table>
+</body></html>

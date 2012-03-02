@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			new OutgoingWebResponse().Respond();
 		}
 
-		[TestCase]
+		[Test]
 		public void Respond() {
 			StringWriter writer = new StringWriter();
 			HttpRequest httpRequest = new HttpRequest("file", "http://server", string.Empty);

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ExtensionsInteropHelperRPResponseTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="ExtensionsInteropHelperRPResponseTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that with no extensions present, UnifyExtensionsAsSreg returns an empty ClaimsResponse.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UnifyExtensionsAsSregNoExtensions() {
 			var sreg = ExtensionsInteropHelper.UnifyExtensionsAsSreg(this.response, true);
 			Assert.IsNotNull(sreg);
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that with sreg and AX extensions present, the sreg extension is returned.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UnifyExtensionsAsSregWithSreg() {
 			var sregInjected = new ClaimsResponse {
 				Nickname = "andy",
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies UnifyExtensionsAsSreg correctly converts AX to sreg.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UnifyExtensionsAsSregFromAXSchemaOrg() {
 			var axInjected = new FetchResponse();
 			axInjected.Attributes.Add(WellKnownAttributes.Name.Alias, "nate");
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies UnifyExtensionsAsSreg correctly converts AX in a non-standard format to sreg.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UnifyExtensionsasSregFromSchemaOpenIdNet() {
 			var axInjected = new FetchResponse();
 			axInjected.Attributes.Add(ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet), "nate");

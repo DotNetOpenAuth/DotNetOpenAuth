@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
-// <copyright file="Token.cs" company="Andrew Arnott, Microsoft Corporation">
-//     Copyright (c) Andrew Arnott, Microsoft Corporation. All rights reserved.
+// <copyright file="Token.cs" company="Outercurve Foundation, Microsoft Corporation">
+//     Copyright (c) Outercurve Foundation, Microsoft Corporation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 

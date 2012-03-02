@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="XriIdentifierTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="XriIdentifierTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			new XriIdentifier(this.badXri);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorGoodXri() {
 			var xri = new XriIdentifier(this.goodXri);
 			Assert.AreEqual(this.goodXri, xri.OriginalXri);
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsFalse(xri.IsDiscoverySecureEndToEnd);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorGoodXriSecure() {
 			var xri = new XriIdentifier(this.goodXri, true);
 			Assert.AreEqual(this.goodXri, xri.OriginalXri);
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(xri.IsDiscoverySecureEndToEnd);
 		}
 
-		[TestCase]
+		[Test]
 		public void IsValid() {
 			Assert.IsTrue(XriIdentifier.IsValidXri(this.goodXri));
 			Assert.IsFalse(XriIdentifier.IsValidXri(this.badXri));
@@ -62,25 +62,25 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies 2.0 spec section 7.2#1
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void StripXriScheme() {
 			var xri = new XriIdentifier("xri://" + this.goodXri);
 			Assert.AreEqual("xri://" + this.goodXri, xri.OriginalXri);
 			Assert.AreEqual(this.goodXri, xri.CanonicalXri);
 		}
 
-		[TestCase]
+		[Test]
 		public void TrimFragment() {
 			Identifier xri = new XriIdentifier(this.goodXri);
 			Assert.AreSame(xri, xri.TrimFragment());
 		}
 
-		[TestCase]
+		[Test]
 		public void ToStringTest() {
 			Assert.AreEqual(this.goodXri, new XriIdentifier(this.goodXri).ToString());
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualsTest() {
 			Assert.AreEqual(new XriIdentifier(this.goodXri), new XriIdentifier(this.goodXri));
 			Assert.AreNotEqual(new XriIdentifier(this.goodXri), new XriIdentifier(this.goodXri + "a"));

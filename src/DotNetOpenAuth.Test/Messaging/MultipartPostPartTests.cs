@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MultipartPostPartTests.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="MultipartPostPartTests.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that the Length property matches the length actually serialized.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void FormDataSerializeMatchesLength() {
 			var part = MultipartPostPart.CreateFormPart("a", "b");
 			VerifyLength(part);
@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that the length property matches the length actually serialized.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void FileSerializeMatchesLength() {
 			using (TempFileCollection tfc = new TempFileCollection()) {
 				string file = tfc.AddExtension(".txt");
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies file multiparts identify themselves as files and not merely form-data.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void FilePartAsFile() {
 			var part = MultipartPostPart.CreateFormFilePart("somename", "somefile", "plain/text", new MemoryStream());
 			Assert.AreEqual("file", part.ContentDisposition);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies MultiPartPost sends the right number of bytes.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void MultiPartPostAscii() {
 			using (TempFileCollection tfc = new TempFileCollection()) {
 				string file = tfc.AddExtension("txt");
@@ -64,7 +64,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies MultiPartPost sends the right number of bytes.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void MultiPartPostMultiByteCharacters() {
 			using (TempFileCollection tfc = new TempFileCollection()) {
 				string file = tfc.AddExtension("txt");

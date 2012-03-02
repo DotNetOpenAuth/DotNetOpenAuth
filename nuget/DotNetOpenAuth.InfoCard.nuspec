@@ -16,14 +16,14 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.InfoCard.dll" target="lib\net35-full\DotNetOpenAuth.InfoCard.dll" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.InfoCard.dll" target="lib\net40-full\DotNetOpenAuth.InfoCard.dll" />
+		<file src="$OutputPath35$signed\DotNetOpenAuth.InfoCard.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\DotNetOpenAuth.InfoCard.dll" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.InfoCard.pdb" target="lib\net35-full\DotNetOpenAuth.InfoCard.pdb" />
-		<file src="$OutputPath40$DotNetOpenAuth.InfoCard.pdb" target="lib\net40-full\DotNetOpenAuth.InfoCard.pdb" />
+		<file src="$OutputPath35$DotNetOpenAuth.InfoCard.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.InfoCard.pdb" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.InfoCard.xml" target="lib\net35-full\DotNetOpenAuth.InfoCard.xml" />
-		<file src="$OutputPath40$DotNetOpenAuth.InfoCard.xml" target="lib\net40-full\DotNetOpenAuth.InfoCard.xml" />
+		<file src="$OutputPath35$DotNetOpenAuth.InfoCard.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$DotNetOpenAuth.InfoCard.xml" target="lib\net40-full\" />
 
 		<file src="..\src\DotNetOpenAuth.InfoCard\**\*.cs" target="src" />
 	</files>

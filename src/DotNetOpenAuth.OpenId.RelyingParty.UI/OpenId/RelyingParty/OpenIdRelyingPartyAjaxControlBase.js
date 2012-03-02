@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdRelyingPartyAjaxControlBase.js" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdRelyingPartyAjaxControlBase.js" company="Outercurve Foundation>
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 //     This file may be used and redistributed under the terms of the
 //     Microsoft Public License (Ms-PL) http://opensource.org/licenses/ms-pl.html
 // </copyright>

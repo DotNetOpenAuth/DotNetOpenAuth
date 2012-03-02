@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdAjaxTextBox.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+// <copyright file="OpenIdAjaxTextBox.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -722,7 +722,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			var css = new HtmlLink();
 			try {
-				css.Href = this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedStylesheetResourceName);
+				css.Href = this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), EmbeddedStylesheetResourceName);
 				css.Attributes["rel"] = "stylesheet";
 				css.Attributes["type"] = "text/css";
 				ErrorUtilities.VerifyHost(this.Page.Header != null, OpenIdStrings.HeadTagMustIncludeRunatServer);
@@ -838,10 +838,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendFormat(
 				CultureInfo.InvariantCulture,
 				"initAjaxOpenId(box, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}, {18}, {19}, function() {{{20};}});{21}",
-				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), OpenIdTextBox.EmbeddedLogoResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedSpinnerResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginSuccessResourceName)),
-				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(this.GetType(), EmbeddedLoginFailureResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), OpenIdTextBox.EmbeddedLogoResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), EmbeddedSpinnerResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), EmbeddedLoginSuccessResourceName)),
+				MessagingUtilities.GetSafeJavascriptValue(this.Page.ClientScript.GetWebResourceUrl(typeof(OpenIdAjaxTextBox), EmbeddedLoginFailureResourceName)),
 				this.Throttle,
 				this.Timeout.TotalMilliseconds,
 				string.IsNullOrEmpty(this.OnClientAssertionReceived) ? "null" : "'" + this.OnClientAssertionReceived.Replace(@"\", @"\\").Replace("'", @"\'") + "'",
