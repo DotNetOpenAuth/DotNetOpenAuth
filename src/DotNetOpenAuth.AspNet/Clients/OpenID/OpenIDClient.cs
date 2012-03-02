@@ -8,9 +8,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Globalization;
 	using System.Web;
-	using DotNetOpenAuth.AspNet.Resources;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
@@ -23,18 +21,18 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The _openid relaying party.
 		/// </summary>
-		private static readonly OpenIdRelyingParty _openidRelayingParty =
+		private static readonly OpenIdRelyingParty RelyingParty =
 			new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 
 		/// <summary>
 		/// The _provider identifier.
 		/// </summary>
-		private readonly Identifier _providerIdentifier;
+		private readonly Identifier providerIdentifier;
 
 		/// <summary>
 		/// The _provider name.
 		/// </summary>
-		private readonly string _providerName;
+		private readonly string providerName;
 
 		#endregion
 
@@ -50,20 +48,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The provider identifier, which is the usually the login url of the specified provider. 
 		/// </param>
 		public OpenIdClient(string providerName, string providerIdentifier) {
-			if (string.IsNullOrEmpty(providerIdentifier)) {
-				throw new ArgumentException(
-					string.Format(CultureInfo.CurrentCulture, WebResources.Argument_Cannot_Be_Null_Or_Empty, "providerIdentifier"), 
-					"providerIdentifier");
-			}
+			Requires.NotNullOrEmpty(providerName, "providerName");
+			Requires.NotNullOrEmpty(providerIdentifier, "providerIdentifier");
 
-			if (string.IsNullOrEmpty(providerName)) {
-				throw new ArgumentException(
-					string.Format(CultureInfo.CurrentCulture, WebResources.Argument_Cannot_Be_Null_Or_Empty, "providerName"), 
-					"providerName");
-			}
-
-			this._providerName = providerName;
-			if (!Identifier.TryParse(providerIdentifier, out this._providerIdentifier) || this._providerIdentifier == null) {
+			this.providerName = providerName;
+			if (!Identifier.TryParse(providerIdentifier, out this.providerIdentifier) || this.providerIdentifier == null) {
 				throw new ArgumentException(WebResources.OpenIDInvalidIdentifier, "providerIdentifier");
 			}
 		}
@@ -77,7 +66,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		public string ProviderName {
 			get {
-				return this._providerName;
+				return this.providerName;
 			}
 		}
 
@@ -94,15 +83,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
-		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", 
+		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings",
 			Justification = "We don't have a Uri object handy.")]
 		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
-			if (returnUrl == null) {
-				throw new ArgumentNullException("returnUrl");
-			}
+			Requires.NotNull(returnUrl, "returnUrl");
 
 			var realm = new Realm(returnUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped));
-			IAuthenticationRequest request = _openidRelayingParty.CreateRequest(this._providerIdentifier, realm, returnUrl);
+			IAuthenticationRequest request = RelyingParty.CreateRequest(this.providerIdentifier, realm, returnUrl);
 
 			// give subclasses a chance to modify request message, e.g. add extension attributes, etc.
 			this.OnBeforeSendingAuthenticationRequest(request);
@@ -120,7 +107,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
 		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context) {
-			IAuthenticationResponse response = _openidRelayingParty.GetResponse();
+			IAuthenticationResponse response = RelyingParty.GetResponse();
 			if (response == null) {
 				throw new InvalidOperationException(WebResources.OpenIDFailedToGetResponse);
 			}
@@ -164,7 +151,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="request">
 		/// The request. 
 		/// </param>
-		protected virtual void OnBeforeSendingAuthenticationRequest(IAuthenticationRequest request) {}
+		protected virtual void OnBeforeSendingAuthenticationRequest(IAuthenticationRequest request) { }
 		#endregion
 	}
 }

@@ -42,13 +42,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <exception cref="ArgumentNullException">
 		/// </exception>
 		public DotNetOpenAuthWebConsumer(ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager) {
-			if (serviceDescription == null) {
-				throw new ArgumentNullException("consumer");
-			}
-
-			if (tokenManager == null) {
-				throw new ArgumentNullException("tokenManager");
-			}
+			Requires.NotNull(serviceDescription, "serviceDescription");
+			Requires.NotNull(tokenManager, "tokenManager");
 
 			this._webConsumer = new WebConsumer(serviceDescription, tokenManager);
 		}

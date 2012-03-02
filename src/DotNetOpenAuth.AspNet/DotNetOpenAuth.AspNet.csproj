@@ -65,14 +65,14 @@
     <Compile Include="OpenAuthAuthenticationTicketHelper.cs" />
     <Compile Include="OpenAuthSecurityManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\WebResources.Designer.cs">
+    <Compile Include="WebResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>WebResources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\WebResources.resx">
+    <EmbeddedResource Include="WebResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>WebResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>

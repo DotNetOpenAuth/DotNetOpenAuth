@@ -28,9 +28,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <exception cref="ArgumentNullException">
 		/// </exception>
 		public static T Deserialize<T>(Stream stream) where T : class {
-			if (stream == null) {
-				throw new ArgumentNullException("stream");
-			}
+			Requires.NotNull(stream, "stream");
 
 			var serializer = new DataContractJsonSerializer(typeof(T));
 			return (T)serializer.ReadObject(stream);

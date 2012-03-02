@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
@@ -35,13 +36,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The consumer secret. 
 		/// </param>
 		public InMemoryOAuthTokenManager(string consumerKey, string consumerSecret) {
-			if (consumerKey == null) {
-				throw new ArgumentNullException("consumerKey");
-			}
-
-			if (consumerSecret == null) {
-				throw new ArgumentNullException("consumerSecret");
-			}
+			Requires.NotNull(consumerKey, "consumerKey");
+			Requires.NotNull(consumerSecret, "consumerSecret");
 
 			this.ConsumerKey = consumerKey;
 			this.ConsumerSecret = consumerSecret;

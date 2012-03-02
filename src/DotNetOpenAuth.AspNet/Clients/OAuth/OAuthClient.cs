@@ -67,13 +67,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <exception cref="ArgumentNullException">
 		/// </exception>
 		protected OAuthClient(string providerName, IOAuthWebWorker webWorker) {
-			if (providerName == null) {
-				throw new ArgumentNullException("providerName");
-			}
-
-			if (webWorker == null) {
-				throw new ArgumentNullException("webWorker");
-			}
+			Requires.NotNull(providerName, "providerName");
+			Requires.NotNull(webWorker, "webWorker");
 
 			this.ProviderName = providerName;
 			this.WebWorker = webWorker;
@@ -93,7 +88,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Properties
 
 		/// <summary>
-		/// Gets the <see cref="OAuthWebConsumer" /> instance which handles constructing requests to the OAuth providers.
+		/// Gets the OAuthWebConsumer instance which handles constructing requests to the OAuth providers.
 		/// </summary>
 		protected IOAuthWebWorker WebWorker { get; private set; }
 
@@ -111,13 +106,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
 		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
-			if (returnUrl == null) {
-				throw new ArgumentNullException("returnUrl");
-			}
-
-			if (context == null) {
-				throw new ArgumentNullException("context");
-			}
+			Requires.NotNull(returnUrl, "returnUrl");
+			Requires.NotNull(context, "context");
 
 			Uri callback = returnUrl.StripQueryArgumentsWithPrefix("oauth_");
 			this.WebWorker.RequestAuthentication(callback);

@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.AspNet {
 	using System.Diagnostics;
 	using System.Web;
 	using System.Web.Security;
-	using DotNetOpenAuth.AspNet.Resources;
 
 	/// <summary>
 	/// Helper methods for setting and retrieving a custom forms authentication ticket for delegation protocols.
@@ -99,12 +98,12 @@ namespace DotNetOpenAuth.AspNet {
 
 			var ticket = new FormsAuthenticationTicket(
 				/* version */
-				2, 
-				userName, 
-				DateTime.Now, 
-				DateTime.Now.Add(FormsAuthentication.Timeout), 
-				createPersistentCookie, 
-				OpenAuthCookieToken, 
+				2,
+				userName,
+				DateTime.Now,
+				DateTime.Now.Add(FormsAuthentication.Timeout),
+				createPersistentCookie,
+				OpenAuthCookieToken,
 				FormsAuthentication.FormsCookiePath);
 
 			string encryptedTicket = FormsAuthentication.Encrypt(ticket);
@@ -112,10 +111,11 @@ namespace DotNetOpenAuth.AspNet {
 				throw new HttpException(WebResources.FailedToEncryptTicket);
 			}
 
-			var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket)
-			{
-      HttpOnly = true, Path = FormsAuthentication.FormsCookiePath, Secure = FormsAuthentication.RequireSSL 
-   };
+			var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket) {
+				HttpOnly = true,
+				Path = FormsAuthentication.FormsCookiePath,
+				Secure = FormsAuthentication.RequireSSL
+			};
 
 			if (FormsAuthentication.CookieDomain != null) {
 				cookie.Domain = FormsAuthentication.CookieDomain;

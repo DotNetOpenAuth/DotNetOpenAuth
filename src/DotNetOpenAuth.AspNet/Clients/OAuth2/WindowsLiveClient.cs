@@ -56,13 +56,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </exception>
 		public WindowsLiveClient(string appId, string appSecret)
 			: base("windowslive") {
-			if (string.IsNullOrEmpty(appId)) {
-				throw new ArgumentNullException("appId");
-			}
-
-			if (string.IsNullOrEmpty("appSecret")) {
-				throw new ArgumentNullException("appSecret");
-			}
+			Requires.NotNullOrEmpty(appId, "appId");
+			Requires.NotNullOrEmpty(appSecret, "appSecret");
 
 			this._appId = appId;
 			this._appSecret = appSecret;

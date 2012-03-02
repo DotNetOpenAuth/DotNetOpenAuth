@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Argument_Cannot_Be_Null_Or_Empty" xml:space="preserve">
-    <value>{0} cannot be null or an empty string.</value>
-  </data>
   <data name="ConnectionNotSecure" xml:space="preserve">
     <value>A setting in web.config requires a secure connection for this request but the current connection is not secured.</value>
   </data>

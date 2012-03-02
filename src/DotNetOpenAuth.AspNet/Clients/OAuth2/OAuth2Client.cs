@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The _provider name.
 		/// </summary>
-		private readonly string _providerName;
+		private readonly string providerName;
 
 		/// <summary>
 		/// The _return url.
@@ -37,11 +37,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Name of the provider. 
 		/// </param>
 		protected OAuth2Client(string providerName) {
-			if (providerName == null) {
-				throw new ArgumentNullException("providerName");
-			}
-
-			this._providerName = providerName;
+			Requires.NotNull(providerName, "providerName");
+			this.providerName = providerName;
 		}
 
 		#endregion
@@ -53,7 +50,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		public string ProviderName {
 			get {
-				return this._providerName;
+				return this.providerName;
 			}
 		}
 
@@ -71,13 +68,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
 		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
-			if (context == null) {
-				throw new ArgumentNullException("context");
-			}
-
-			if (returnUrl == null) {
-				throw new ArgumentNullException("returnUrl");
-			}
+			Requires.NotNull(context, "context");
+			Requires.NotNull(returnUrl, "returnUrl");
 
 			this._returnUrl = returnUrl;
 
@@ -95,9 +87,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
 		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context) {
-			if (context == null) {
-				throw new ArgumentNullException("context");
-			}
+			Requires.NotNull(context, "context");
 
 			string code = context.Request.QueryString["code"];
 			if (string.IsNullOrEmpty(code)) {
