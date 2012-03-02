@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.AspNet.Clients {
+﻿//-----------------------------------------------------------------------
+// <copyright file="LinkedInClient.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;

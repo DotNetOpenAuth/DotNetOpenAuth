@@ -1,9 +1,15 @@
-﻿namespace DotNetOpenAuth.AspNet.Clients {
+﻿//-----------------------------------------------------------------------
+// <copyright file="YahooOpenIdClient.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Collections.Generic;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
-	public sealed class YahooOpenIdClient : OpenIDClient {
+	public sealed class YahooOpenIdClient : OpenIdClient {
 		public YahooOpenIdClient() :
 			base("yahoo", "http://me.yahoo.com") {
 		}

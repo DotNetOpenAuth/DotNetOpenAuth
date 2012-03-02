@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.AspNet.Clients {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OAuth2AccessTokenData.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Runtime.Serialization;
 
 	[DataContract]

@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.AspNet.Clients {
+﻿//-----------------------------------------------------------------------
+// <copyright file="JsonHelper.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.IO;
 	using System.Runtime.Serialization.Json;

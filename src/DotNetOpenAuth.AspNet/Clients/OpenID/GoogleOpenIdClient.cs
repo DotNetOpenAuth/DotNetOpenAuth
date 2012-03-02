@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.AspNet.Clients {
+﻿//-----------------------------------------------------------------------
+// <copyright file="GoogleOpenIdClient.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Collections.Generic;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -6,7 +12,7 @@
 	/// <summary>
 	/// Represents Google OpenID client.
 	/// </summary>
-	public sealed class GoogleOpenIdClient : OpenIDClient {
+	public sealed class GoogleOpenIdClient : OpenIdClient {
 		public GoogleOpenIdClient() :
 			base("google", "https://www.google.com/accounts/o8/id") {
 		}

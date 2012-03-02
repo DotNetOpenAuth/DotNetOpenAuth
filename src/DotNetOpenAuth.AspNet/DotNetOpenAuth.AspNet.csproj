@@ -58,7 +58,7 @@
     <Compile Include="Clients\OAuth\OAuthClient.cs" />
     <Compile Include="Clients\OAuth\TwitterClient.cs" />
     <Compile Include="Clients\OpenID\GoogleOpenIdClient.cs" />
-    <Compile Include="Clients\OpenID\OpenIDClient.cs" />
+    <Compile Include="Clients\OpenID\OpenIdClient.cs" />
     <Compile Include="Clients\OpenID\YahooOpenIdClient.cs" />
     <Compile Include="UriHelper.cs" />
     <Compile Include="IOpenAuthDataProvider.cs" />

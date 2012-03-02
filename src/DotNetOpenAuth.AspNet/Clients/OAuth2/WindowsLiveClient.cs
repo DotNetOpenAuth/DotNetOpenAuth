@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.AspNet.Clients {
+﻿//-----------------------------------------------------------------------
+// <copyright file="WindowsLiveClient.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
@@ -30,12 +36,12 @@
 			var builder = new UriBuilder(AuthorizationEndpoint);
 			MessagingUtilities.AppendQueryArgs(builder,
 				new KeyValuePair<string, string>[]
-                {
-                    new KeyValuePair<string, string>("client_id", _appId),
-                    new KeyValuePair<string, string>("scope", "wl.basic"),
-                    new KeyValuePair<string, string>("response_type", "code"),
-                    new KeyValuePair<string, string>("redirect_uri", returnUrl.ToString())
-                });
+				{
+					new KeyValuePair<string, string>("client_id", _appId),
+					new KeyValuePair<string, string>("scope", "wl.basic"),
+					new KeyValuePair<string, string>("response_type", "code"),
+					new KeyValuePair<string, string>("redirect_uri", returnUrl.ToString())
+				});
 
 			return builder.Uri;
 		}

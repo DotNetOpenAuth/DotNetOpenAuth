@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.AspNet {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OpenAuthSecurityManager.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;

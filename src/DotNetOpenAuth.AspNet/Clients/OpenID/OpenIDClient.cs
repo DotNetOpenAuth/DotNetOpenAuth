@@ -1,16 +1,22 @@
-﻿namespace DotNetOpenAuth.AspNet.Clients {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OpenIdClient.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
 	using System.Web;
+	using DotNetOpenAuth.AspNet.Resources;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.AspNet.Resources;
 
 	/// <summary>
 	/// Base classes for OpenID clients.
 	/// </summary>
-	public class OpenIDClient : IAuthenticationClient {
+	public class OpenIdClient : IAuthenticationClient {
 		private readonly Identifier _providerIdentifier;
 		private readonly string _providerName;
 
@@ -18,11 +24,11 @@
 			new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIDClient"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdClient"/> class.
 		/// </summary>
 		/// <param name="providerName">Name of the provider.</param>
 		/// <param name="providerIdentifier">The provider identifier, which is the usually the login url of the specified provider.</param>
-		public OpenIDClient(string providerName, string providerIdentifier) {
+		public OpenIdClient(string providerName, string providerIdentifier) {
 			if (String.IsNullOrEmpty(providerIdentifier)) {
 				throw new ArgumentException(
 					String.Format(CultureInfo.CurrentCulture, WebResources.Argument_Cannot_Be_Null_Or_Empty, "providerIdentifier"),
