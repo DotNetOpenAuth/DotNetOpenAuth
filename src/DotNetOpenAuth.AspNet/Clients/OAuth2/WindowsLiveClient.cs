@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 					new KeyValuePair<string, string>("client_id", _appId),
 					new KeyValuePair<string, string>("scope", "wl.basic"),
 					new KeyValuePair<string, string>("response_type", "code"),
-					new KeyValuePair<string, string>("redirect_uri", returnUrl.ToString())
+					new KeyValuePair<string, string>("redirect_uri", returnUrl.AbsoluteUri)
 				});
 
 			return builder.Uri;
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
 			var builder = new StringBuilder();
 			builder.AppendFormat("client_id={0}", _appId);
-			builder.AppendFormat("&redirect_uri={0}", Uri.EscapeDataString(returnUrl.ToString()));
+			builder.AppendFormat("&redirect_uri={0}", Uri.EscapeDataString(returnUrl.AbsoluteUri));
 			builder.AppendFormat("&client_secret={0}", _appSecret);
 			builder.AppendFormat("&code={0}", authorizationCode);
 			builder.Append("&grant_type=authorization_code");
@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			userData.AddItemIfNotEmpty("id", graph.Id);
 			userData.AddItemIfNotEmpty("username", graph.Name);
 			userData.AddItemIfNotEmpty("name", graph.Name);
-			userData.AddItemIfNotEmpty("link", graph.Link == null ? null : graph.Link.ToString());
+			userData.AddItemIfNotEmpty("link", graph.Link == null ? null : graph.Link.AbsoluteUri);
 			userData.AddItemIfNotEmpty("gender", graph.Gender);
 			userData.AddItemIfNotEmpty("firstname", graph.FirstName);
 			userData.AddItemIfNotEmpty("lastname", graph.LastName);

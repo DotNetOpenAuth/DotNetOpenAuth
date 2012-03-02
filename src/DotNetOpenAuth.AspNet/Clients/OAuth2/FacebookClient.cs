@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			MessagingUtilities.AppendQueryArgs(builder,
 				new KeyValuePair<string, string>[] {
                     new KeyValuePair<string, string>("client_id", _appId),
-                    new KeyValuePair<string, string>("redirect_uri", returnUrl.ToString())
+                    new KeyValuePair<string, string>("redirect_uri", returnUrl.AbsoluteUri)
                 });
 			return builder.Uri;
 		}
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			MessagingUtilities.AppendQueryArgs(builder,
 				new KeyValuePair<string, string>[] {
                     new KeyValuePair<string, string>("client_id", _appId),
-                    new KeyValuePair<string, string>("redirect_uri", returnUrl.ToString()),
+                    new KeyValuePair<string, string>("redirect_uri", returnUrl.AbsoluteUri),
                     new KeyValuePair<string, string>("client_secret", _appSecret),
                     new KeyValuePair<string, string>("code", authorizationCode)
                 });
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			userData.AddItemIfNotEmpty("id", graphData.Id);
 			userData.AddItemIfNotEmpty("username", graphData.Email);
 			userData.AddItemIfNotEmpty("name", graphData.Name);
-			userData.AddItemIfNotEmpty("link", graphData.Link == null ? null : graphData.Link.ToString());
+			userData.AddItemIfNotEmpty("link", graphData.Link == null ? null : graphData.Link.AbsoluteUri);
 			userData.AddItemIfNotEmpty("gender", graphData.Gender);
 			userData.AddItemIfNotEmpty("birthday", graphData.Birthday);
 			return userData;

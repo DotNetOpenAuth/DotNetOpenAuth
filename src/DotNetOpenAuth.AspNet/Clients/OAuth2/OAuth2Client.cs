@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 			_returnUrl = returnUrl;
 
-			string redirectUrl = GetServiceLoginUrl(returnUrl).ToString();
+			string redirectUrl = GetServiceLoginUrl(returnUrl).AbsoluteUri;
 			context.Response.Redirect(redirectUrl, endResponse: true);
 		}
 
