@@ -80,11 +80,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			string userName = response.ExtraData["screen_name"];
 
 			string profileRequestUrl = "http://api.twitter.com/1/users/show.xml?user_id="
-			                           + MessagingUtilities.EscapeUriDataStringRfc3986(userId);
+									   + MessagingUtilities.EscapeUriDataStringRfc3986(userId);
 			var profileEndpoint = new MessageReceivingEndpoint(profileRequestUrl, HttpDeliveryMethods.GetRequest);
 			HttpWebRequest request = this.WebWorker.PrepareAuthorizedRequest(profileEndpoint, accessToken);
 
 			var extraData = new Dictionary<string, string>();
+			extraData.Add("accesstoken", accessToken);
 			try {
 				using (WebResponse profileResponse = request.GetResponse()) {
 					using (Stream responseStream = profileResponse.GetResponseStream()) {
