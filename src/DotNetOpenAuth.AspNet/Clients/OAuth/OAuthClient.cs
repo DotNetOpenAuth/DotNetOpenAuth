@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+    using System.Collections.Generic;
 
 	/// <summary>
 	/// Represents base class for OAuth 1.0 clients
@@ -128,13 +129,27 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				return AuthenticationResult.Failed;
 			}
 
-			// add the access token to the user data dictionary just in case page developers want to use it
 			AuthenticationResult result = this.VerifyAuthenticationCore(response);
-			if (result.IsSuccessful && result.ExtraData != null) {
-				result.ExtraData["accesstoken"] = response.AccessToken;
-			}
+            if (result.IsSuccessful && result.ExtraData != null)
+            {
+                // add the access token to the user data dictionary just in case page developers want to use it
+                var wrapExtraData = result.ExtraData.IsReadOnly 
+                    ? new Dictionary<string, string>(result.ExtraData) 
+                    : result.ExtraData;
+                wrapExtraData["accesstoken"] = response.AccessToken;
 
-			return result;
+                AuthenticationResult wrapResult = new AuthenticationResult(
+                    result.IsSuccessful,
+                    result.Provider,
+                    result.ProviderUserId,
+                    result.UserName,
+                    wrapExtraData
+                );
+
+                result = wrapResult;
+            }
+
+            return result;
 		}
 
 		#endregion

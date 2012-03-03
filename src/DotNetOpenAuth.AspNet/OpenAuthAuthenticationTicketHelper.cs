@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// The open auth cookie token.
 		/// </summary>
-		private const string OpenAuthCookieToken = "OpenAuth";
+		private const string OpenAuthCookieToken = "OAuth";
 
 		#endregion
 
