@@ -93,7 +93,7 @@
 			Assert.AreEqual("12345", result.ProviderUserId);
 			Assert.AreEqual("John Doe", result.UserName);
 			Assert.NotNull(result.ExtraData);
-			Assert.AreEqual("abcde", result.ExtraData["token"]);
+			Assert.AreEqual("abcde", result.ExtraData["accesstoken"]);
 		}
 
 		private class MockOAuth2Client : OAuth2Client {
@@ -115,7 +115,6 @@
 					return new Dictionary<string, string>
                                {
                                    {"id", "12345"},
-                                   {"token", accessToken},
                                    {"name", "John Doe"}
                                };
 				}

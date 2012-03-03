@@ -95,6 +95,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 						string userName = firstName + " " + lastName;
 
 						var extraData = new Dictionary<string, string>();
+						extraData.Add("accesstoken", accessToken);
 						extraData.Add("name", userName);
 						extraData.AddDataIfNotEmpty(document, "headline");
 						extraData.AddDataIfNotEmpty(document, "summary");
