@@ -279,7 +279,7 @@ namespace DotNetOpenAuth.InfoCard {
 				if (!string.IsNullOrEmpty(value)) {
 					if (this.Page != null && !this.DesignMode) {
 						// Validate new value by trying to construct a Uri based on it.
-						new Uri(new HttpRequestInfo(HttpContext.Current.Request).UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
+						new Uri(new HttpRequestWrapper(HttpContext.Current.Request).GetPublicFacingUrl(), this.Page.ResolveUrl(value)); // throws an exception on failure.
 					} else {
 						// We can't fully test it, but it should start with either ~/ or a protocol.
 						if (Regex.IsMatch(value, @"^https?://")) {

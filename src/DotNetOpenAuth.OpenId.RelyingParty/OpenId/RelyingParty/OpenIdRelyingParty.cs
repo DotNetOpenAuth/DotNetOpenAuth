@@ -502,12 +502,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			////Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));
 
 			// Build the return_to URL
-			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().UrlBeforeRewriting);
+			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().GetPublicFacingUrl());
 
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
-			NameValueCollection queryParams = this.Channel.GetRequestFromContext().QueryStringBeforeRewriting;
+			NameValueCollection queryParams = this.Channel.GetRequestFromContext().GetQueryStringBeforeRewriting();
 			var returnToParams = new Dictionary<string, string>(queryParams.Count);
 			foreach (string key in queryParams) {
 				if (!IsOpenIdSupportingParameter(key) && key != null) {
@@ -564,7 +564,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request that may be carrying an authentication response from the Provider.</param>
 		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
-		public IAuthenticationResponse GetResponse(HttpRequestInfo httpRequestInfo) {
+		public IAuthenticationResponse GetResponse(HttpRequestBase httpRequestInfo) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			try {
 				var message = this.Channel.ReadFromRequest(httpRequestInfo);
@@ -619,7 +619,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that is expected to carry an OpenID authentication response.</param>
 		/// <returns>The HTTP response to send to this HTTP request.</returns>
-		public OutgoingWebResponse ProcessResponseFromPopup(HttpRequestInfo request) {
+		public OutgoingWebResponse ProcessResponseFromPopup(HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
@@ -706,7 +706,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The HTTP response to send to this HTTP request.
 		/// </returns>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "real word"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "iframe", Justification = "Code contracts")]
-		internal OutgoingWebResponse ProcessResponseFromPopup(HttpRequestInfo request, Action<AuthenticationStatus> callback) {
+		internal OutgoingWebResponse ProcessResponseFromPopup(HttpRequestBase request, Action<AuthenticationStatus> callback) {
 			Requires.NotNull(request, "request");
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 

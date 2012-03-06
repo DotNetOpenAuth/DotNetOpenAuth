@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			if (authorization.Callback == null) {
-				authorization.Callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting
+				authorization.Callback = this.Channel.GetRequestFromContext().GetPublicFacingUrl()
 					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(EndUserAuthorizationSuccessResponseBase), Protocol.Default.Version))
 					.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(typeof(EndUserAuthorizationFailedResponse), Protocol.Default.Version));
 				authorization.SaveChanges();
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
-		public IAuthorizationState ProcessUserAuthorization(HttpRequestInfo request = null) {
+		public IAuthorizationState ProcessUserAuthorization(HttpRequestBase request = null) {
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientSecret), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientSecret");
 
@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			IMessageWithClientState response;
 			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {
-				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.UrlBeforeRewriting, this.Channel.MessageDescriptions.Get(response));
+				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.GetPublicFacingUrl(), this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState;
 				if (this.AuthorizationTracker != null) {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);

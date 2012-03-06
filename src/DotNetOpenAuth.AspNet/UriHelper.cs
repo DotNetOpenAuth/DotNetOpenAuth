@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.AspNet {
 				returnUrl = VirtualPathUtility.ToAbsolute(returnUrl);
 			}
 
-			Uri publicUrl = HttpRequestInfo.GetPublicFacingUrl(context.Request, context.Request.ServerVariables);
+			Uri publicUrl = context.Request.GetPublicFacingUrl();
 			return new Uri(publicUrl, returnUrl);
 		}
 

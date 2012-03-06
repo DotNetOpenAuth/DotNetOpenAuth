@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Requires HttpContext.Current.
 		/// </remarks>
 		public UserAuthorizationRequest PrepareRequestUserAuthorization() {
-			Uri callback = this.Channel.GetRequestFromContext().UrlBeforeRewriting.StripQueryArgumentsWithPrefix(Protocol.ParameterPrefix);
+			Uri callback = this.Channel.GetRequestFromContext().GetPublicFacingUrl().StripQueryArgumentsWithPrefix(Protocol.ParameterPrefix);
 			return this.PrepareRequestUserAuthorization(callback, null, null);
 		}
 
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestInfo request) {
+		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 
 			UserAuthorizationResponse authorizationMessage;

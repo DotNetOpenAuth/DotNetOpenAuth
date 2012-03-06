@@ -11,6 +11,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 	using log4net;
@@ -70,7 +72,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Gets or sets the delegate that handles authentication requests.
 		/// </summary>
-		internal Action<HttpRequestInfo, HttpListenerResponse> ProcessRequest { get; set; }
+		internal Action<HttpRequestBase, HttpListenerResponse> ProcessRequest { get; set; }
 
 		/// <summary>
 		/// Gets the provider endpoint.
@@ -225,7 +227,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			Uri providerEndpoint = providerEndpointBuilder.Uri;
 
 			if (context.Request.Url.AbsolutePath == ProviderPath) {
-				HttpRequestInfo requestInfo = new HttpRequestInfo(context.Request);
+				HttpRequestBase requestInfo = new HttpRequestInfo(context.Request);
 				this.ProcessRequest(requestInfo, context.Response);
 			} else if (context.Request.Url.AbsolutePath.StartsWith(UserIdentifierPath, StringComparison.Ordinal)) {
 				using (StreamWriter sw = new StreamWriter(outputStream)) {

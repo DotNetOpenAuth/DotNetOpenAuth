@@ -153,9 +153,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call should not be a property.")]
 		public static Uri GetRequestUrlFromContext() {
 			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			HttpContext context = HttpContext.Current;
-
-			return HttpRequestInfo.GetPublicFacingUrl(context.Request, context.Request.ServerVariables);
+			return new HttpRequestWrapper(HttpContext.Current.Request).GetPublicFacingUrl();
 		}
 
 		/// <summary>
@@ -1352,8 +1350,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to get recipient information from.</param>
 		/// <returns>The recipient.</returns>
 		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
-		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestInfo request) {
-			return new MessageReceivingEndpoint(request.UrlBeforeRewriting, GetHttpDeliveryMethod(request.HttpMethod));
+		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestBase request) {
+			return new MessageReceivingEndpoint(request.GetPublicFacingUrl(), GetHttpDeliveryMethod(request.HttpMethod));
 		}
 
 		/// <summary>
@@ -1481,6 +1479,15 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return dictionary;
+		}
+
+		internal static NameValueCollection ToNameValueCollection(this IDictionary<string,string> data) {
+			var nvc = new NameValueCollection();
+			foreach (var entry in data) {
+				nvc.Add(entry.Key, entry.Value);
+			}
+
+			return nvc;
 		}
 
 		/// <summary>
@@ -1662,6 +1669,103 @@ namespace DotNetOpenAuth.Messaging {
 			return value.ToUniversalTime();
 		}
 
+		/// <summary>
+		/// Gets the query data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
+		internal static NameValueCollection GetQueryStringBeforeRewriting(this HttpRequestBase request) {
+			// This request URL may have been rewritten by the host site.
+			// For openid protocol purposes, we really need to look at 
+			// the original query parameters before any rewriting took place.
+			Uri beforeRewriting = GetPublicFacingUrl(request);
+			if (beforeRewriting == request.Url) {
+				// No rewriting has taken place.
+				return request.QueryString;
+			} else {
+				// Rewriting detected!  Recover the original request URI.
+				ErrorUtilities.VerifyInternal(beforeRewriting != null, "UrlBeforeRewriting is null, so the query string cannot be determined.");
+				return HttpUtility.ParseQueryString(beforeRewriting.Query);
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the request's URL was rewritten by ASP.NET
+		/// or some other module.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if this request's URL was rewritten; otherwise, <c>false</c>.
+		/// </value>
+		internal static bool GetIsUrlRewritten(this HttpRequestBase request) {
+			return request.Url != GetPublicFacingUrl(request);
+		}
+
+		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="serverVariables">The server variables to consider part of the request.</param>
+		/// <returns>
+		/// The URI that the outside world used to create this request.
+		/// </returns>
+		/// <remarks>
+		/// Although the <paramref name="serverVariables"/> value can be obtained from
+		/// <see cref="HttpRequest.ServerVariables"/>, it's useful to be able to pass them
+		/// in so we can simulate injected values from our unit tests since the actual property
+		/// is a read-only kind of <see cref="NameValueCollection"/>.
+		/// </remarks>
+		internal static Uri GetPublicFacingUrl(this HttpRequestBase request, NameValueCollection serverVariables) {
+			Requires.NotNull(request, "request");
+			Requires.NotNull(serverVariables, "serverVariables");
+
+			// Due to URL rewriting, cloud computing (i.e. Azure)
+			// and web farms, etc., we have to be VERY careful about what
+			// we consider the incoming URL.  We want to see the URL as it would
+			// appear on the public-facing side of the hosting web site.
+			// HttpRequest.Url gives us the internal URL in a cloud environment,
+			// So we use a variable that (at least from what I can tell) gives us
+			// the public URL:
+			if (serverVariables["HTTP_HOST"] != null) {
+				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
+				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ?? request.Url.Scheme;
+				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + serverVariables["HTTP_HOST"]);
+				UriBuilder publicRequestUri = new UriBuilder(request.Url);
+				publicRequestUri.Scheme = scheme;
+				publicRequestUri.Host = hostAndPort.Host;
+				publicRequestUri.Port = hostAndPort.Port; // CC missing Uri.Port contract that's on UriBuilder.Port
+				return publicRequestUri.Uri;
+			} else {
+				// Failover to the method that works for non-web farm enviroments.
+				// We use Request.Url for the full path to the server, and modify it
+				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
+				// and the original path in case URL rewriting is going on.  We don't want to be
+				// fooled by URL rewriting because we're comparing the actual URL with what's in
+				// the return_to parameter in some cases.
+				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
+				// session, but not the URL rewriting problem.
+				return new Uri(request.Url, request.RawUrl);
+			}
+		}
+
+		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>The URI that the outside world used to create this request.</returns>
+		internal static Uri GetPublicFacingUrl(this HttpRequestBase request) {
+			Requires.NotNull(request, "request");
+			return GetPublicFacingUrl(request, request.ServerVariables);
+		}
+
+		/// <summary>
+		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
+		/// </summary>
+		/// <returns>A set of name=value pairs.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
+		internal static NameValueCollection GetQueryOrForm(this HttpRequestBase request) {
+			Requires.NotNull(request, "request");
+			return request.HttpMethod == "GET" ? GetQueryStringBeforeRewriting(request) : request.Form;
+		}
+		
 		/// <summary>
 		/// Creates a symmetric algorithm for use in encryption/decryption.
 		/// </summary>

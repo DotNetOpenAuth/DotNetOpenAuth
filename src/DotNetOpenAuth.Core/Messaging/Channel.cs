@@ -409,7 +409,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		public bool TryReadFromRequest<TRequest>(HttpRequestInfo httpRequest, out TRequest request)
+		public bool TryReadFromRequest<TRequest>(HttpRequestBase httpRequest, out TRequest request)
 			where TRequest : class, IProtocolMessage {
 			Requires.NotNull(httpRequest, "httpRequest");
 			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<TRequest>(out request) != null));
@@ -450,7 +450,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The deserialized message.  Never null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
-		public TRequest ReadFromRequest<TRequest>(HttpRequestInfo httpRequest)
+		public TRequest ReadFromRequest<TRequest>(HttpRequestBase httpRequest)
 			where TRequest : class, IProtocolMessage {
 			Requires.NotNull(httpRequest, "httpRequest");
 			TRequest request;
@@ -466,11 +466,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		public IDirectedProtocolMessage ReadFromRequest(HttpRequestInfo httpRequest) {
+		public IDirectedProtocolMessage ReadFromRequest(HttpRequestBase httpRequest) {
 			Requires.NotNull(httpRequest, "httpRequest");
 
-			if (Logger.Channel.IsInfoEnabled && httpRequest.UrlBeforeRewriting != null) {
-				Logger.Channel.InfoFormat("Scanning incoming request for messages: {0}", httpRequest.UrlBeforeRewriting.AbsoluteUri);
+			if (Logger.Channel.IsInfoEnabled && httpRequest.GetPublicFacingUrl() != null) {
+				Logger.Channel.InfoFormat("Scanning incoming request for messages: {0}", httpRequest.GetPublicFacingUrl().AbsoluteUri);
 			}
 			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest);
 			if (requestMessage != null) {
@@ -607,16 +607,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Costly call should not be a property.")]
-		protected internal virtual HttpRequestInfo GetRequestFromContext() {
+		protected internal virtual HttpRequestBase GetRequestFromContext() {
 			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			Contract.Ensures(Contract.Result<HttpRequestInfo>() != null);
-			Contract.Ensures(Contract.Result<HttpRequestInfo>().Url != null);
-			Contract.Ensures(Contract.Result<HttpRequestInfo>().RawUrl != null);
-			Contract.Ensures(Contract.Result<HttpRequestInfo>().UrlBeforeRewriting != null);
+			Contract.Ensures(Contract.Result<HttpRequestBase>() != null);
 
 			Contract.Assume(HttpContext.Current.Request.Url != null);
 			Contract.Assume(HttpContext.Current.Request.RawUrl != null);
-			return new HttpRequestInfo(HttpContext.Current.Request);
+			return new HttpRequestWrapper(HttpContext.Current.Request);
 		}
 
 		/// <summary>
@@ -731,16 +728,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
+		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 
-			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.UrlBeforeRewriting.AbsoluteUri);
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
 
 			// Search Form data first, and if nothing is there search the QueryString
-			Contract.Assume(request.Form != null && request.QueryStringBeforeRewriting != null);
+			Contract.Assume(request.Form != null && request.GetQueryStringBeforeRewriting() != null);
 			var fields = request.Form.ToDictionary();
 			if (fields.Count == 0 && request.HttpMethod != "POST") { // OpenID 2.0 section 4.1.2
-				fields = request.QueryStringBeforeRewriting.ToDictionary();
+				fields = request.GetQueryStringBeforeRewriting().ToDictionary();
 			}
 
 			MessageReceivingEndpoint recipient;

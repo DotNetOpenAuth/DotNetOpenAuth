@@ -41,7 +41,7 @@ namespace WebFormsRelyingParty {
 		public void ProcessRequest(HttpContext context) {
 			var serviceProvider = OAuthServiceProvider.AuthorizationServer;
 			IDirectResponseProtocolMessage response;
-			if (serviceProvider.TryPrepareAccessTokenResponse(new HttpRequestInfo(context.Request), out response)) {
+			if (serviceProvider.TryPrepareAccessTokenResponse(new HttpRequestWrapper(context.Request), out response)) {
 				serviceProvider.Channel.Respond(response);
 			} else {
 				throw new InvalidOperationException();

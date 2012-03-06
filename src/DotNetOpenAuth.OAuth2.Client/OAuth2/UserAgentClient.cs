@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
@@ -93,7 +95,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				authorizationState = new AuthorizationState();
 			}
 
-			var carrier = new HttpRequestInfo("GET", actualRedirectUrl, actualRedirectUrl.PathAndQuery, new System.Net.WebHeaderCollection(), null);
+			var carrier = new HttpRequestInfo("GET", actualRedirectUrl);
 			IDirectedProtocolMessage response = this.Channel.ReadFromRequest(carrier);
 			if (response == null) {
 				return null;

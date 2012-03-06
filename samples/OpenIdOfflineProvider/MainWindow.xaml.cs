@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Net;
 	using System.Runtime.InteropServices;
 	using System.Text;
+	using System.Web;
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Data;
@@ -99,7 +100,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="requestInfo">The request info.</param>
 		/// <param name="response">The response.</param>
-		private void ProcessRequest(HttpRequestInfo requestInfo, HttpListenerResponse response) {
+		private void ProcessRequest(HttpRequestBase requestInfo, HttpListenerResponse response) {
 			IRequest request = this.hostedProvider.Provider.GetRequest(requestInfo);
 			if (request == null) {
 				App.Logger.Error("A request came in that did not carry an OpenID message.");

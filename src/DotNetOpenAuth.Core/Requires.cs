@@ -28,12 +28,13 @@ namespace DotNetOpenAuth {
 		[ContractArgumentValidator]
 #endif
 		[Pure, DebuggerStepThrough]
-		internal static void NotNull<T>(T value, string parameterName) where T : class {
+		internal static T NotNull<T>(T value, string parameterName) where T : class {
 			if (value == null) {
 				throw new ArgumentNullException(parameterName);
 			}
 
 			Contract.EndContractBlock();
+			return value;
 		}
 
 		/// <summary>

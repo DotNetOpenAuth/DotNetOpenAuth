@@ -102,7 +102,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			ms.Position = 0;
 			var headers = new WebHeaderCollection();
 			headers.Add(HttpRequestHeader.ContentType, Channel.HttpFormUrlEncoded);
-			var httpRequest = new HttpRequestInfo("POST", opEndpoint, opEndpoint.PathAndQuery, headers, ms);
+			var httpRequest = new HttpRequestInfo("POST", opEndpoint, headers, ms);
 			return httpRequest;
 		}
 
@@ -122,8 +122,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Channel rpChannel = rp.Channel;
 			UriBuilder receiver = new UriBuilder(OPUri);
 			receiver.Query = MessagingUtilities.CreateQueryString(rpChannel.MessageDescriptions.GetAccessor(checkidMessage));
-			var headers = new WebHeaderCollection();
-			var httpRequest = new HttpRequestInfo("GET", receiver.Uri, receiver.Uri.PathAndQuery, headers, null);
+			var httpRequest = new HttpRequestInfo("GET", receiver.Uri);
 			return httpRequest;
 		}
 	}

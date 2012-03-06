@@ -82,6 +82,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					// Receive initial request for an HMAC-SHA256 association.
 					AutoResponsiveRequest req = (AutoResponsiveRequest)op.GetRequest();
 					AssociateRequest associateRequest = (AssociateRequest)req.RequestMessage;
+					Assert.That(associateRequest, Is.Not.Null);
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA256, associateRequest.AssociationType);
 
 					// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1

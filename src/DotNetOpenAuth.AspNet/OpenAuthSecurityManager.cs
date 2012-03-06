@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.AspNet {
 			if (!string.IsNullOrEmpty(returnUrl)) {
 				uri = UriHelper.ConvertToAbsoluteUri(returnUrl, this._requestContext);
 			} else {
-				uri = HttpRequestInfo.GetPublicFacingUrl(this._requestContext.Request, this._requestContext.Request.ServerVariables);
+				uri = this._requestContext.Request.GetPublicFacingUrl();
 			}
 
 			// attach the provider parameter so that we know which provider initiated 

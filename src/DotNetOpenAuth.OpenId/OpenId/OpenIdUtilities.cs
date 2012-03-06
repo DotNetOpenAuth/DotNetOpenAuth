@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
@@ -115,7 +116,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requestContext">The request context.</param>
 		/// <returns>The fully-qualified realm.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
-		internal static UriBuilder GetResolvedRealm(Page page, string realm, HttpRequestInfo requestContext) {
+		internal static UriBuilder GetResolvedRealm(Page page, string realm, HttpRequestBase requestContext) {
 			Requires.NotNull(page, "page");
 			Requires.NotNull(requestContext, "requestContext");
 
@@ -134,7 +135,7 @@ namespace DotNetOpenAuth.OpenId {
 			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.", matchDelegate);
 
 			UriBuilder fullyQualifiedRealm = new UriBuilder(
-				new Uri(requestContext.UrlBeforeRewriting, page.ResolveUrl(realmNoWildcard)));
+				new Uri(requestContext.GetPublicFacingUrl(), page.ResolveUrl(realmNoWildcard)));
 
 			if (foundWildcard) {
 				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;

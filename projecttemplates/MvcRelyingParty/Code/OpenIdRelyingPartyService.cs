@@ -24,7 +24,7 @@
 
 		IAuthenticationResponse GetResponse();
 
-		IAuthenticationResponse GetResponse(HttpRequestInfo request);
+		IAuthenticationResponse GetResponse(HttpRequestBase request);
 	}
 
 	/// <summary>
@@ -101,7 +101,7 @@
 			return relyingParty.GetResponse();
 		}
 
-		public IAuthenticationResponse GetResponse(HttpRequestInfo request) {
+		public IAuthenticationResponse GetResponse(HttpRequestBase request) {
 			return relyingParty.GetResponse(request);
 		}
 
