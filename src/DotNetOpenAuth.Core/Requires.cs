@@ -24,16 +24,18 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type of the parameter</typeparam>
 		/// <param name="value">The value.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
+		/// <returns>The tested value, guaranteed to not be null.</returns>
 #if !CLR4
 		[ContractArgumentValidator]
 #endif
 		[Pure, DebuggerStepThrough]
-		internal static void NotNull<T>(T value, string parameterName) where T : class {
+		internal static T NotNull<T>(T value, string parameterName) where T : class {
 			if (value == null) {
 				throw new ArgumentNullException(parameterName);
 			}
 
 			Contract.EndContractBlock();
+			return value;
 		}
 
 		/// <summary>

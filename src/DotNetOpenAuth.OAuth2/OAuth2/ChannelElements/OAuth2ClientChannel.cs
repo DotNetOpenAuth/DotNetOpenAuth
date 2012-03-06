@@ -76,16 +76,16 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.UrlBeforeRewriting.AbsoluteUri);
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
 
-			var fields = request.QueryStringBeforeRewriting.ToDictionary();
+			var fields = request.GetQueryStringBeforeRewriting().ToDictionary();
 
 			// Also read parameters from the fragment, if it's available.
 			// Typically the fragment is not available because the browser doesn't send it to a web server
 			// but this request may have been fabricated by an installed desktop app, in which case
 			// the fragment is available.
-			string fragment = request.UrlBeforeRewriting.Fragment;
+			string fragment = request.GetPublicFacingUrl().Fragment;
 			if (!string.IsNullOrEmpty(fragment)) {
 				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).ToDictionary()) {
 					fields.Add(pair.Key, pair.Value);

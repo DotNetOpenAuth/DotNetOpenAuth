@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
 			if (!string.IsNullOrEmpty(request.Url.Fragment)) {
 				var fields = HttpUtility.ParseQueryString(request.Url.Fragment.Substring(1)).ToDictionary();
 

@@ -696,7 +696,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Language = this.RequestLanguage,
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
-					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(this.PolicyUrl)),
+					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.Page.ResolveUrl(this.PolicyUrl)),
 			};
 
 			// Only actually add the extension request if fields are actually being requested.

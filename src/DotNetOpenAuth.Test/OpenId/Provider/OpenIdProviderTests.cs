@@ -92,10 +92,9 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// </summary>
 		[Test]
 		public void GetRequest() {
-			HttpRequestInfo httpInfo = new HttpRequestInfo();
-			httpInfo.UrlBeforeRewriting = new Uri("http://someUri");
+			var httpInfo = new HttpRequestInfo("GET", new Uri("http://someUri"));
 			Assert.IsNull(this.provider.GetRequest(httpInfo), "An irrelevant request should return null.");
-			var providerDescription = new ProviderEndpointDescription(OpenIdTestBase.OPUri, Protocol.Default.Version);
+			var providerDescription = new ProviderEndpointDescription(OPUri, Protocol.Default.Version);
 
 			// Test some non-empty request scenario.
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(

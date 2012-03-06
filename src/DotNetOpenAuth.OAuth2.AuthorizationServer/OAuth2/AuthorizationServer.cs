@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -51,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
-		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestInfo request = null) {
+		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestBase request = null) {
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
 			}
@@ -117,7 +119,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// This method assumes that the authorization server and the resource server are the same and that they share a single
 		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
 		/// </remarks>
-		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response) {
+		public bool TryPrepareAccessTokenResponse(HttpRequestBase httpRequestInfo, out IDirectResponseProtocolMessage response) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<IDirectResponseProtocolMessage>(out response) != null));
 
@@ -136,7 +138,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="requestInfo">The request info.</param>
 		/// <returns>The Client's request for an access token; or <c>null</c> if no such message was found in the request.</returns>
-		public AccessTokenRequestBase ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
+		public AccessTokenRequestBase ReadAccessTokenRequest(HttpRequestBase requestInfo = null) {
 			if (requestInfo == null) {
 				requestInfo = this.Channel.GetRequestFromContext();
 			}

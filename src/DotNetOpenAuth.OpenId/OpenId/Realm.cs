@@ -126,8 +126,8 @@ namespace DotNetOpenAuth.OpenId {
 				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<Realm>() != null);
 
-				HttpRequestInfo requestInfo = new HttpRequestInfo(HttpContext.Current.Request);
-				UriBuilder realmUrl = new UriBuilder(requestInfo.UrlBeforeRewriting);
+				HttpRequestBase requestInfo = new HttpRequestWrapper(HttpContext.Current.Request);
+				UriBuilder realmUrl = new UriBuilder(requestInfo.GetPublicFacingUrl());
 				realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
 				realmUrl.Query = null;
 				realmUrl.Fragment = null;

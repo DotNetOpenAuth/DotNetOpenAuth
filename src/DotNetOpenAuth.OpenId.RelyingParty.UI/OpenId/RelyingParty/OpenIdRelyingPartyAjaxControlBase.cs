@@ -183,11 +183,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					if (!string.IsNullOrEmpty(formAuthData) && !string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
 						this.ViewState[AuthDataViewStateKey] = formAuthData;
 
-						Uri authUri = new Uri(formAuthData);
-						HttpRequestInfo clientResponseInfo = new HttpRequestInfo {
-							UrlBeforeRewriting = authUri,
-						};
-
+						HttpRequestBase clientResponseInfo = new HttpRequestInfo("GET", new Uri(formAuthData));
 						this.authenticationResponse = this.RelyingParty.GetResponse(clientResponseInfo);
 						Logger.Controls.DebugFormat(
 							"The {0} control checked for an authentication response and found: {1}",

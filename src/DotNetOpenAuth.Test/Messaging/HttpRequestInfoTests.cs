@@ -13,25 +13,6 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 	[TestFixture]
 	public class HttpRequestInfoTests : TestBase {
-		[Test]
-		public void CtorDefault() {
-			HttpRequestInfo info = new HttpRequestInfo();
-			Assert.AreEqual("GET", info.HttpMethod);
-		}
-
-		[Test]
-		public void CtorRequest() {
-			HttpRequest request = new HttpRequest("file", "http://someserver?a=b", "a=b");
-			////request.Headers["headername"] = "headervalue"; // PlatformNotSupportedException prevents us mocking this up
-			HttpRequestInfo info = new HttpRequestInfo(request);
-			Assert.AreEqual(request.Headers["headername"], info.Headers["headername"]);
-			Assert.AreEqual(request.Url.Query, info.Query);
-			Assert.AreEqual(request.QueryString["a"], info.QueryString["a"]);
-			Assert.AreEqual(request.Url, info.Url);
-			Assert.AreEqual(request.Url, info.UrlBeforeRewriting);
-			Assert.AreEqual(request.HttpMethod, info.HttpMethod);
-		}
-
 		// All these tests are ineffective because ServerVariables[] cannot be set.
 		////[Test]
 		////public void CtorRequestWithDifferentPublicHttpHost() {
@@ -77,21 +58,11 @@ namespace DotNetOpenAuth.Test.Messaging {
 		////}
 
 		/// <summary>
-		/// Checks that a property dependent on another null property
-		/// doesn't generate a NullReferenceException.
-		/// </summary>
-		[Test]
-		public void QueryBeforeSettingUrl() {
-			HttpRequestInfo info = new HttpRequestInfo();
-			Assert.IsNull(info.Query);
-		}
-
-		/// <summary>
 		/// Verifies that looking up a querystring variable is gracefully handled without a query in the URL.
 		/// </summary>
 		[Test]
 		public void QueryStringLookupWithoutQuery() {
-			HttpRequestInfo info = new HttpRequestInfo();
+			var info = new HttpRequestInfo("GET", new Uri("http://somehost/somepath"));
 			Assert.IsNull(info.QueryString["hi"]);
 		}
 
@@ -104,7 +75,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			var serverVariables = new NameValueCollection();
 			serverVariables["HTTP_X_FORWARDED_PROTO"] = "https";
 			serverVariables["HTTP_HOST"] = "somehost";
-			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri actual = new HttpRequestWrapper(req).GetPublicFacingUrl(serverVariables);
 			Uri expected = new Uri("https://somehost/a.aspx?a=b");
 			Assert.AreEqual(expected, actual);
 		}
@@ -118,7 +89,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			var serverVariables = new NameValueCollection();
 			serverVariables["HTTP_X_FORWARDED_PROTO"] = "https";
 			serverVariables["HTTP_HOST"] = "somehost:999";
-			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri actual = new HttpRequestWrapper(req).GetPublicFacingUrl(serverVariables);
 			Uri expected = new Uri("https://somehost:999/a.aspx?a=b");
 			Assert.AreEqual(expected, actual);
 		}
@@ -131,7 +102,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
 			var serverVariables = new NameValueCollection();
 			serverVariables["HTTP_HOST"] = "somehost";
-			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri actual = new HttpRequestWrapper(req).GetPublicFacingUrl(serverVariables);
 			Uri expected = new Uri("http://somehost/a.aspx?a=b");
 			Assert.AreEqual(expected, actual);
 		}
@@ -144,7 +115,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			HttpRequest req = new HttpRequest("a.aspx", "http://someinternalhost/a.aspx?a=b", "a=b");
 			var serverVariables = new NameValueCollection();
 			serverVariables["HTTP_HOST"] = "somehost:79";
-			Uri actual = HttpRequestInfo.GetPublicFacingUrl(req, serverVariables);
+			Uri actual = new HttpRequestWrapper(req).GetPublicFacingUrl(serverVariables);
 			Uri expected = new Uri("http://somehost:79/a.aspx?a=b");
 			Assert.AreEqual(expected, actual);
 		}

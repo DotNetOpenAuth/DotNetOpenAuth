@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.Interop {
 	using System;
+	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Runtime.InteropServices;
@@ -173,12 +174,14 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <param name="form">The form data that may have been included in the case of a POST request.</param>
 		/// <returns>The Provider's response to a previous authentication request, or null if no response is present.</returns>
 		public AuthenticationResponseShim ProcessAuthentication(string url, string form) {
-			HttpRequestInfo requestInfo = new HttpRequestInfo { UrlBeforeRewriting = new Uri(url) };
+			string method = "GET";
+			NameValueCollection formMap = null;
 			if (!string.IsNullOrEmpty(form)) {
-				requestInfo.HttpMethod = "POST";
-				requestInfo.InputStream = new MemoryStream(Encoding.Unicode.GetBytes(form));
+				method = "POST";
+				formMap = HttpUtility.ParseQueryString(form);
 			}
 
+			HttpRequestBase requestInfo = new HttpRequestInfo(method, new Uri(url), form: formMap);
 			var response = relyingParty.GetResponse(requestInfo);
 			if (response != null) {
 				return new AuthenticationResponseShim(response);

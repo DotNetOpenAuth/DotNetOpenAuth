@@ -297,7 +297,7 @@ namespace DotNetOpenAuth {
 		/// Records statistics collected from incoming requests.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal static void RecordRequestStatistics(HttpRequestInfo request) {
+		internal static void RecordRequestStatistics(HttpRequestBase request) {
 			Contract.Requires(request != null);
 
 			// In release builds, just quietly return.
@@ -311,7 +311,7 @@ namespace DotNetOpenAuth {
 				}
 
 				if (Configuration.IncludeLocalRequestUris && !observedRequests.IsFull) {
-					var requestBuilder = new UriBuilder(request.UrlBeforeRewriting);
+					var requestBuilder = new UriBuilder(request.GetPublicFacingUrl());
 					requestBuilder.Query = null;
 					requestBuilder.Fragment = null;
 					observedRequests.Add(requestBuilder.Uri.AbsoluteUri);
