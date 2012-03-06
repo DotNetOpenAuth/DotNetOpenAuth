@@ -24,6 +24,7 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type of the parameter</typeparam>
 		/// <param name="value">The value.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
+		/// <returns>The tested value, guaranteed to not be null.</returns>
 #if !CLR4
 		[ContractArgumentValidator]
 #endif

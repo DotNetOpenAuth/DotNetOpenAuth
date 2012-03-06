@@ -1481,7 +1481,14 @@ namespace DotNetOpenAuth.Messaging {
 			return dictionary;
 		}
 
-		internal static NameValueCollection ToNameValueCollection(this IDictionary<string,string> data) {
+		/// <summary>
+		/// Converts a dictionary to a <see cref="NameValueCollection"/>
+		/// </summary>
+		/// <param name="data">The existing dictionary.</param>
+		/// <returns>The new collection.</returns>
+		internal static NameValueCollection ToNameValueCollection(this IDictionary<string, string> data) {
+			Requires.NotNull(data, "data");
+
 			var nvc = new NameValueCollection();
 			foreach (var entry in data) {
 				nvc.Add(entry.Key, entry.Value);
@@ -1672,7 +1679,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the query data from the original request (before any URL rewriting has occurred.)
 		/// </summary>
-		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
+		/// <param name="request">The request.</param>
+		/// <returns>
+		/// A <see cref="NameValueCollection"/> containing all the parameters in the query string.
+		/// </returns>
 		internal static NameValueCollection GetQueryStringBeforeRewriting(this HttpRequestBase request) {
 			// This request URL may have been rewritten by the host site.
 			// For openid protocol purposes, we really need to look at 
@@ -1692,8 +1702,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets a value indicating whether the request's URL was rewritten by ASP.NET
 		/// or some other module.
 		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>A value indicating whether there is evidence that the URL of the request has been changed to some internal server (farm) representation.</returns>
 		/// <value>
-		/// 	<c>true</c> if this request's URL was rewritten; otherwise, <c>false</c>.
+		///   <c>true</c> if this request's URL was rewritten; otherwise, <c>false</c>.
 		/// </value>
 		internal static bool GetIsUrlRewritten(this HttpRequestBase request) {
 			return request.Url != GetPublicFacingUrl(request);
@@ -1759,13 +1771,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
 		/// </summary>
-		/// <returns>A set of name=value pairs.</returns>
+		/// <param name="request">The request.</param>
+		/// <returns>
+		/// A set of name=value pairs.
+		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
 		internal static NameValueCollection GetQueryOrForm(this HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 			return request.HttpMethod == "GET" ? GetQueryStringBeforeRewriting(request) : request.Form;
 		}
-		
+
 		/// <summary>
 		/// Creates a symmetric algorithm for use in encryption/decryption.
 		/// </summary>

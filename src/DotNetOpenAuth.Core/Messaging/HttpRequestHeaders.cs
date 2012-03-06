@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="HttpRequestHeaders.cs" company="">
-// TODO: Update copyright text.
+﻿//-----------------------------------------------------------------------
+// <copyright file="HttpRequestHeaders.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
-// -----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 
 	/// <summary>
-	/// TODO: Update summary.
+	/// Well known HTTP headers.
 	/// </summary>
 	internal static class HttpRequestHeaders {
 		/// <summary>

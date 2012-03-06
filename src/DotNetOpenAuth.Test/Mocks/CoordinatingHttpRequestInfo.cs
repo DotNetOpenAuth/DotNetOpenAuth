@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal IDirectedProtocolMessage Message {
 			get {
 				if (this.message == null && this.messageData != null) {
-					var message = this.messageFactory.GetNewRequestMessage(recipient, this.messageData);
+					var message = this.messageFactory.GetNewRequestMessage(this.recipient, this.messageData);
 					if (message != null) {
 						this.channel.MessageDescriptions.GetAccessor(message).Deserialize(this.messageData);
 						this.message = message;
