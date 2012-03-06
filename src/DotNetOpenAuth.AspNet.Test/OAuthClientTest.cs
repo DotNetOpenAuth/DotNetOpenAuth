@@ -107,6 +107,9 @@
 			Assert.AreEqual("mockoauth", result.Provider);
 			Assert.AreEqual("12345", result.ProviderUserId);
 			Assert.AreEqual("super", result.UserName);
+			Assert.IsNotNull(result.ExtraData);
+			Assert.IsTrue(result.ExtraData.ContainsKey("accesstoken"));
+			Assert.AreEqual("ok", result.ExtraData["accesstoken"]);
 		}
 
 		private class MockOAuthClient : OAuthClient {
