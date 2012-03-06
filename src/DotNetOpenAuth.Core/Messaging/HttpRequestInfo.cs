@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Messaging {
 
 		private readonly NameValueCollection serverVariables;
 
-		public HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
+		internal HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(requestUri, "requestUri");
 
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Messaging {
 			Reporting.RecordRequestStatistics(this);
 		}
 
-		public HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection form = null, NameValueCollection headers = null) {
+		internal HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection form = null, NameValueCollection headers = null) {
 			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
 			Requires.NotNull(requestUri, "requestUri");
 
@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
 		/// <param name="listenerRequest">Details on the incoming HTTP request.</param>
-		public HttpRequestInfo(HttpListenerRequest listenerRequest) {
+		internal HttpRequestInfo(HttpListenerRequest listenerRequest) {
 			Requires.NotNull(listenerRequest, "listenerRequest");
 
 			this.httpMethod = listenerRequest.HttpMethod;
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Messaging {
 			Reporting.RecordRequestStatistics(this);
 		}
 
-		public HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection headers, Stream inputStream) {
+		internal HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection headers, Stream inputStream) {
 			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
 			Requires.NotNull(requestUri, "requestUri");
 
@@ -120,6 +120,22 @@ namespace DotNetOpenAuth.Messaging {
 
 		public override NameValueCollection ServerVariables {
 			get { return this.serverVariables; }
+		}
+
+		public static HttpRequestBase Create(HttpRequestMessageProperty request, Uri requestUri) {
+			return new HttpRequestInfo(request, requestUri);
+		}
+
+		public static HttpRequestBase Create(HttpListenerRequest listenerRequest) {
+			return new HttpRequestInfo(listenerRequest);
+		}
+
+		public static HttpRequestBase Create(string httpMethod, Uri requestUri, NameValueCollection form = null, NameValueCollection headers = null) {
+			return new HttpRequestInfo(httpMethod, requestUri, form, headers);
+		}
+
+		public static HttpRequestBase Create(string httpMethod, Uri requestUri, NameValueCollection headers, Stream inputStream) {
+			return new HttpRequestInfo(httpMethod, requestUri, headers, inputStream);
 		}
 
 		private static NameValueCollection ParseFormData(string httpMethod, NameValueCollection headers, Stream inputStream) {

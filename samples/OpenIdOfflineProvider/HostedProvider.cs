@@ -227,7 +227,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			Uri providerEndpoint = providerEndpointBuilder.Uri;
 
 			if (context.Request.Url.AbsolutePath == ProviderPath) {
-				HttpRequestBase requestInfo = new HttpRequestInfo(context.Request);
+				HttpRequestBase requestInfo = HttpRequestInfo.Create(context.Request);
 				this.ProcessRequest(requestInfo, context.Response);
 			} else if (context.Request.Url.AbsolutePath.StartsWith(UserIdentifierPath, StringComparison.Ordinal)) {
 				using (StreamWriter sw = new StreamWriter(outputStream)) {

@@ -123,7 +123,7 @@ namespace MvcRelyingParty.Controllers {
 			if (!string.IsNullOrEmpty(openid_openidAuthData)) {
 				// Always say it's a GET since the payload is all in the URL, even the large ones.
 				var auth = new Uri(openid_openidAuthData);
-				HttpRequestBase clientResponseInfo = new HttpRequestInfo("GET", auth, headers: Request.Headers);
+				HttpRequestBase clientResponseInfo = HttpRequestInfo.Create("GET", auth, headers: Request.Headers);
 				response = this.RelyingParty.GetResponse(clientResponseInfo);
 			} else {
 				response = this.RelyingParty.GetResponse();
@@ -165,7 +165,7 @@ namespace MvcRelyingParty.Controllers {
 				}
 
 				// Always say it's a GET since the payload is all in the URL, even the large ones.
-				HttpRequestBase clientResponseInfo = new HttpRequestInfo("GET", auth, headers: headers);
+				HttpRequestBase clientResponseInfo = HttpRequestInfo.Create("GET", auth, headers: headers);
 				response = this.RelyingParty.GetResponse(clientResponseInfo);
 			} else {
 				response = this.RelyingParty.GetResponse();
