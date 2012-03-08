@@ -70,6 +70,7 @@
     <Content Include="SampleWcf2Javascript.js" />
     <Content Include="Scripts\jquery-1.6.1.js" />
     <Content Include="Scripts\jquery-1.6.1.min.js" />
+    <Content Include="WindowsLive.aspx" />
     <Content Include="Yammer.aspx" />
     <None Include="Service References\SampleResourceServer\DataApi.disco" />
     <None Include="Service References\SampleResourceServer\configuration91.svcinfo" />
@@ -153,6 +154,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Twitter.aspx.designer.cs">
       <DependentUpon>Twitter.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WindowsLive.aspx.cs">
+      <DependentUpon>WindowsLive.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WindowsLive.aspx.designer.cs">
+      <DependentUpon>WindowsLive.aspx</DependentUpon>
     </Compile>
     <Compile Include="Yammer.aspx.cs">
       <DependentUpon>Yammer.aspx</DependentUpon>
