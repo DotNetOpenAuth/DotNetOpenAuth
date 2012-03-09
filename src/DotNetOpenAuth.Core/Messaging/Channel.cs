@@ -599,6 +599,15 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the HTTP context for the current HTTP request.
+		/// </summary>
+		/// <returns>An HttpContextBase instance.</returns>
+		protected internal virtual HttpContextBase GetHttpContext() {
+			Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+			return new HttpContextWrapper(HttpContext.Current);
+		}
+
+		/// <summary>
 		/// Gets the current HTTP request being processed.
 		/// </summary>
 		/// <returns>The HttpRequestInfo for the current request.</returns>

@@ -39,36 +39,33 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <param name="scope">The scope of authorized access requested.</param>
-		/// <param name="state">The state of the client that should be sent back with the authorization response.</param>
 		/// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
-		public void RequestUserAuthorization(IEnumerable<string> scope = null, string state = null, Uri returnTo = null) {
+		public void RequestUserAuthorization(IEnumerable<string> scope = null, Uri returnTo = null) {
 			var authorizationState = new AuthorizationState(scope) {
 				Callback = returnTo,
 			};
-			this.PrepareRequestUserAuthorization(authorizationState, state).Send();
+			this.PrepareRequestUserAuthorization(authorizationState).Send();
 		}
 
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <param name="scopes">The scope of authorized access requested.</param>
-		/// <param name="state">The state of the client that should be sent back with the authorization response.</param>
 		/// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
 		/// <returns>The authorization request.</returns>
-		public OutgoingWebResponse PrepareRequestUserAuthorization(IEnumerable<string> scopes = null, string state = null, Uri returnTo = null) {
+		public OutgoingWebResponse PrepareRequestUserAuthorization(IEnumerable<string> scopes = null, Uri returnTo = null) {
 			var authorizationState = new AuthorizationState(scopes) {
 				Callback = returnTo,
 			};
-			return this.PrepareRequestUserAuthorization(authorizationState, state);
+			return this.PrepareRequestUserAuthorization(authorizationState);
 		}
 
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <param name="authorization">The authorization state to associate with this particular request.</param>
-		/// <param name="state">The state of the client that should be sent back with the authorization response.</param>
 		/// <returns>The authorization request.</returns>
-		public OutgoingWebResponse PrepareRequestUserAuthorization(IAuthorizationState authorization, string state = null) {
+		public OutgoingWebResponse PrepareRequestUserAuthorization(IAuthorizationState authorization) {
 			Requires.NotNull(authorization, "authorization");
 			Requires.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
@@ -84,9 +81,16 @@ namespace DotNetOpenAuth.OAuth2 {
 			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
-				ClientState = state,
 			};
 			request.Scope.ResetContents(authorization.Scope);
+
+			// Mitigate XSRF attacks by including a state value that would be unpredictable between users, but
+			// verifiable for the same user/session.
+			// If the host is implementing the authorization tracker though, they're handling this protection themselves.
+			if (this.AuthorizationTracker == null) {
+				var context = this.Channel.GetHttpContext();
+				request.ClientState = context.Session.SessionID;
+			}
 
 			return this.Channel.PrepareResponse(request);
 		}
@@ -112,6 +116,8 @@ namespace DotNetOpenAuth.OAuth2 {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);
 					ErrorUtilities.VerifyProtocol(authorizationState != null, OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
 				} else {
+					var context = this.Channel.GetHttpContext();
+					ErrorUtilities.VerifyProtocol(String.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
 					authorizationState = new AuthorizationState { Callback = callback };
 				}
 				var success = response as EndUserAuthorizationSuccessAuthCodeResponse;
