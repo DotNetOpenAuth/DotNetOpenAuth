@@ -89,7 +89,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			// If the host is implementing the authorization tracker though, they're handling this protection themselves.
 			if (this.AuthorizationTracker == null) {
 				var context = this.Channel.GetHttpContext();
-				request.ClientState = context.Session.SessionID;
+				if (context.Session != null) {
+					request.ClientState = context.Session.SessionID;
+				} else {
+					Logger.OAuth.WarnFormat("No request context discovered, so no client state parameter could be set to mitigate XSRF attacks.");
+				}
 			}
 
 			return this.Channel.PrepareResponse(request);
@@ -117,7 +121,12 @@ namespace DotNetOpenAuth.OAuth2 {
 					ErrorUtilities.VerifyProtocol(authorizationState != null, OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
 				} else {
 					var context = this.Channel.GetHttpContext();
-					ErrorUtilities.VerifyProtocol(String.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
+					if (context.Session != null) {
+						ErrorUtilities.VerifyProtocol(String.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
+					} else {
+						Logger.OAuth.WarnFormat("No request context discovered, so no client state parameter could be checked to mitigate XSRF attacks.");
+					}
+
 					authorizationState = new AuthorizationState { Callback = callback };
 				}
 				var success = response as EndUserAuthorizationSuccessAuthCodeResponse;
