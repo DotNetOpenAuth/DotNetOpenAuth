@@ -19,17 +19,16 @@
 
 		protected void Page_Load(object sender, EventArgs e) {
 			if (String.Equals("localhost", this.Request.Headers["Host"].Split(':')[0], StringComparison.OrdinalIgnoreCase)) {
-				localhostDoesNotWorkPanel.Visible = true;
-				var builder = new UriBuilder(publicLink.NavigateUrl);
+				this.localhostDoesNotWorkPanel.Visible = true;
+				var builder = new UriBuilder(this.publicLink.NavigateUrl);
 				builder.Port = this.Request.Url.Port;
-				publicLink.NavigateUrl = builder.Uri.AbsoluteUri;
-				publicLink.Text = builder.Uri.AbsoluteUri;
+				this.publicLink.NavigateUrl = builder.Uri.AbsoluteUri;
+				this.publicLink.Text = builder.Uri.AbsoluteUri;
 			} else {
 				IAuthorizationState authorization = client.ProcessUserAuthorization();
 				if (authorization == null) {
 					// Kick off authorization request
-					client.RequestUserAuthorization(scope: new[] { WindowsLiveClient.Scopes.Basic });
-					// this scope isn't even required just to log in
+					client.RequestUserAuthorization(scope: new[] { WindowsLiveClient.Scopes.Basic }); // this scope isn't even required just to log in
 				} else {
 					var request =
 						WebRequest.Create("https://apis.live.net/v5.0/me?access_token=" + Uri.EscapeDataString(authorization.AccessToken));
