@@ -49,5 +49,4 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			public const string Basic = "wl.basic";
 		}
 	}
-
 }
