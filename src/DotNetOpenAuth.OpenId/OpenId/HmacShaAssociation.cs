@@ -24,28 +24,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// A list of HMAC-SHA algorithms in order of decreasing bit lengths.
 		/// </summary>
-		private static HmacSha[] hmacShaAssociationTypes = new List<HmacSha> {
-			new HmacSha {
-				CreateHasher = secretKey => new HMACSHA512(secretKey),
-				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
-				BaseHashAlgorithm = SHA512.Create(),
-			},
-			new HmacSha {
-				CreateHasher = secretKey => new HMACSHA384(secretKey),
-				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA384,
-				BaseHashAlgorithm = SHA384.Create(),
-			},
-			new HmacSha {
-				CreateHasher = secretKey => new HMACSHA256(secretKey),
-				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA256,
-				BaseHashAlgorithm = SHA256.Create(),
-			},
-			new HmacSha {
-				CreateHasher = secretKey => new HMACSHA1(secretKey),
-				GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
-				BaseHashAlgorithm = SHA1.Create(),
-			},
-		} .ToArray();
+		private static HmacSha[] hmacShaAssociationTypes = CreateAssociationTypes();
 
 		/// <summary>
 		/// The specific variety of HMAC-SHA this association is based on (whether it be HMAC-SHA1, HMAC-SHA256, etc.)
@@ -95,7 +74,7 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNullOrEmpty(associationType, "associationType");
 			Requires.NotNull(secret, "secret");
 			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
-			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(sha => String.Equals(sha.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
+			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(sha => string.Equals(sha.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
 			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
 			return new HmacShaAssociation(match, handle, secret, totalLifeLength);
 		}
@@ -125,7 +104,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The length (in bytes) of the association secret.</returns>
 		/// <exception cref="ProtocolException">Thrown if no association can be found by the given name.</exception>
 		public static int GetSecretLength(Protocol protocol, string associationType) {
-			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(shaType => String.Equals(shaType.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
+			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(shaType => string.Equals(shaType.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
 			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
 			return match.SecretLength;
 		}
@@ -232,6 +211,39 @@ namespace DotNetOpenAuth.OpenId {
 			var result = this.typeIdentity.CreateHasher(SecretKey);
 			Contract.Assume(result != null);
 			return result;
+		}
+
+		/// <summary>
+		/// Returns the value used to initialize the static field storing association types.
+		/// </summary>
+		/// <returns>A non-null, non-empty array.</returns>
+		/// <remarks>>
+		/// This is a method rather than being inlined to the field initializer to try to avoid
+		/// the CLR bug that crops up sometimes if we initialize arrays using object initializer syntax.
+		/// </remarks>
+		private static HmacSha[] CreateAssociationTypes() {
+			return new[] {
+				new HmacSha {
+					CreateHasher = secretKey => new HMACSHA512(secretKey),
+					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
+					BaseHashAlgorithm = SHA512.Create(),
+				},
+				new HmacSha {
+					CreateHasher = secretKey => new HMACSHA384(secretKey),
+					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA384,
+					BaseHashAlgorithm = SHA384.Create(),
+				},
+				new HmacSha {
+					CreateHasher = secretKey => new HMACSHA256(secretKey),
+					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA256,
+					BaseHashAlgorithm = SHA256.Create(),
+				},
+				new HmacSha {
+					CreateHasher = secretKey => new HMACSHA1(secretKey),
+					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
+					BaseHashAlgorithm = SHA1.Create(),
+				},
+			};
 		}
 
 		/// <summary>

@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 					// Clients with no secrets can only request implicit grant types.
 					var client = this.AuthorizationServerServices.GetClientOrThrow(message.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(client.Secret), Protocol.unauthorized_client);
+					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(client.Secret), Protocol.unauthorized_client);
 				}
 			}
 

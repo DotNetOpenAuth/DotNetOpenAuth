@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.OpenId {
 					XriIdentifier xri = this.ClaimedIdentifier as XriIdentifier;
 					UriIdentifier uri = this.ClaimedIdentifier as UriIdentifier;
 					if (xri != null) {
-						if (this.UserSuppliedIdentifier == null || String.Equals(this.UserSuppliedIdentifier, this.ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
+						if (this.UserSuppliedIdentifier == null || string.Equals(this.UserSuppliedIdentifier, this.ClaimedIdentifier, StringComparison.OrdinalIgnoreCase)) {
 							this.friendlyIdentifierForDisplay = this.ClaimedIdentifier;
 						} else {
 							this.friendlyIdentifierForDisplay = this.UserSuppliedIdentifier;

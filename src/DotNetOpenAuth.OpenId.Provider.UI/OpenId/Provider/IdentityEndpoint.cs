@@ -164,8 +164,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// We compare path and query with case sensitivity and host name without case sensitivity deliberately,
 			// and the fragment will be asserted or cleared by the OP during authentication.
 			if (normalizationArgs.NormalizedIdentifier != null &&
-				(!String.Equals(normalizationArgs.NormalizedIdentifier.Host, normalizationArgs.UserSuppliedIdentifier.Host, StringComparison.OrdinalIgnoreCase) ||
-				!String.Equals(normalizationArgs.NormalizedIdentifier.PathAndQuery, normalizationArgs.UserSuppliedIdentifier.PathAndQuery, StringComparison.Ordinal))) {
+				(!string.Equals(normalizationArgs.NormalizedIdentifier.Host, normalizationArgs.UserSuppliedIdentifier.Host, StringComparison.OrdinalIgnoreCase) ||
+				!string.Equals(normalizationArgs.NormalizedIdentifier.PathAndQuery, normalizationArgs.UserSuppliedIdentifier.PathAndQuery, StringComparison.Ordinal))) {
 				Page.Response.Redirect(normalizationArgs.NormalizedIdentifier.AbsoluteUri);
 			}
 		}

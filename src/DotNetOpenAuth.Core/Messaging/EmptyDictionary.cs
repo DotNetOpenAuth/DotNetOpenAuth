@@ -75,6 +75,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets or sets the value with the specified key.
 		/// </summary>
 		/// <param name="key">The key being read or written.</param>
+		/// <returns>Nothing.  It always throws.</returns>
 		public TValue this[TKey key] {
 			get { throw new KeyNotFoundException(); }
 			set { throw new NotSupportedException(); }

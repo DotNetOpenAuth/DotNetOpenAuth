@@ -28,7 +28,7 @@
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
-    <Compile Include="OpenIdXrdsHelper.cs" />
+    <Compile Include="OpenIdXrdsHelperRelyingParty.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransformBase.cs" />
@@ -69,6 +69,7 @@
     <Compile Include="OpenId\Extensions\OAuth\Constants.cs" />
     <Compile Include="OpenId\Extensions\OAuth\AuthorizationDeclinedResponse.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactoryAggregator.cs" />
+    <Compile Include="OpenId\Extensions\SimpleRegistration\GenderEncoder.cs" />
     <Compile Include="OpenId\Extensions\StandardOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\Constants.cs" />
@@ -121,7 +122,7 @@
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Realm.cs" />
-    <Compile Include="OpenId\RelyingPartyDescription.cs" />
+    <Compile Include="OpenId\RelyingPartyEndpointDescription.cs" />
     <Compile Include="OpenId\DiffieHellmanUtilities.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\HmacShaAssociation.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />

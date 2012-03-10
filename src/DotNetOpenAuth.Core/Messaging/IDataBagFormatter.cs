@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A non-null, non-empty value.</returns>
 		string IDataBagFormatter<T>.Serialize(T message) {
 			Requires.NotNull(message, "message");
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			throw new System.NotImplementedException();
 		}

@@ -256,7 +256,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
 		bool IAuthorizationServer.IsResourceOwnerCredentialValid(string userName, string password) {
-			Contract.Requires(!String.IsNullOrEmpty(userName));
+			Contract.Requires(!string.IsNullOrEmpty(userName));
 			Contract.Requires(password != null);
 			throw new NotImplementedException();
 		}

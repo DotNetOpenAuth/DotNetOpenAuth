@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		string IOpenIdMessageExtension.TypeUri {
 			get {
-				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+				Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 				throw new NotImplementedException();
 			}
 		}

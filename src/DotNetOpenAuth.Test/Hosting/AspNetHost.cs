@@ -38,8 +38,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 		}
 
 		public static AspNetHost CreateHost(string webDirectory) {
-			AspNetHost host = (AspNetHost)ApplicationHost.
-				CreateApplicationHost(typeof(AspNetHost), "/", webDirectory);
+			AspNetHost host = (AspNetHost)ApplicationHost.CreateApplicationHost(typeof(AspNetHost), "/", webDirectory);
 			return host;
 		}
 

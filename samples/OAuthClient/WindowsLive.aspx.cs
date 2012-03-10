@@ -18,7 +18,7 @@
 		};
 
 		protected void Page_Load(object sender, EventArgs e) {
-			if (String.Equals("localhost", this.Request.Headers["Host"].Split(':')[0], StringComparison.OrdinalIgnoreCase)) {
+			if (string.Equals("localhost", this.Request.Headers["Host"].Split(':')[0], StringComparison.OrdinalIgnoreCase)) {
 				this.localhostDoesNotWorkPanel.Visible = true;
 				var builder = new UriBuilder(this.publicLink.NavigateUrl);
 				builder.Port = this.Request.Url.Port;

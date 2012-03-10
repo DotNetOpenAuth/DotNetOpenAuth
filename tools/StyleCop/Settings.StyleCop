@@ -1,6 +1,6 @@
 <StyleCopSettings Version="4.3">
   <Parsers>
-    <Parser ParserId="Microsoft.StyleCop.CSharp.CsParser">
+    <Parser ParserId="StyleCop.CSharp.CsParser">
       <ParserSettings>
         <CollectionProperty Name="GeneratedFileFilters">
           <Value>\.g\.cs$</Value>
@@ -11,7 +11,7 @@
     </Parser>
   </Parsers>
   <Analyzers>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
           <Value>as</Value>

@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		string IAuthorizationDescription.User {
 			get {
 				// Null and non-empty are allowed, but not empty.
-				Contract.Ensures(Contract.Result<string>() != String.Empty);
+				Contract.Ensures(Contract.Result<string>() != string.Empty);
 				throw new NotImplementedException();
 			}
 		}

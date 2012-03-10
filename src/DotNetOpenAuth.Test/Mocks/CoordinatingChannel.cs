@@ -127,7 +127,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="message">The message to replay.</param>
 		internal void Replay(IProtocolMessage message) {
-			this.ProcessIncomingMessage(CloneSerializedParts(message));
+			this.ProcessIncomingMessage(this.CloneSerializedParts(message));
 		}
 
 		/// <summary>

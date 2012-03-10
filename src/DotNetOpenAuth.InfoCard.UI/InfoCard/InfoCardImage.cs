@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.InfoCard {
 			string imageSize = size.ToString();
 			Contract.Assume(imageSize.Length >= 6);
 			imageSize = imageSize.Substring(4);
-			return String.Format(CultureInfo.InvariantCulture, UrlFormatString, imageSize);
+			return string.Format(CultureInfo.InvariantCulture, UrlFormatString, imageSize);
 		}
 	}
 }

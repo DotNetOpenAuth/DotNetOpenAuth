@@ -10,7 +10,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 	/// and to tell a <see cref="ServiceProvider"/> about it.
 	/// </summary>
 	/// <remarks>
-	/// Immutable.
+	/// This type is immutable.
 	/// </remarks>
 	internal class ConsumerDescription {
 		/// <summary>

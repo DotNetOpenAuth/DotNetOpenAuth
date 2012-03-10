@@ -32,7 +32,7 @@
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
-    <Compile Include="Messaging\EnumerableCache.cs" />
+    <Compile Include="Messaging\EnumerableCacheExtensions.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />

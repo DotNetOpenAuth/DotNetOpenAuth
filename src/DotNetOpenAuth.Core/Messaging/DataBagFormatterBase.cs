@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected DataBagFormatterBase(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Requires.True(!String.IsNullOrEmpty(bucket) || cryptoKeyStore == null, null);
+			Requires.True(!string.IsNullOrEmpty(bucket) || cryptoKeyStore == null, null);
 			Requires.True(cryptoKeyStore != null || (!signed && !encrypted), null);
 
 			this.cryptoKeyStore = cryptoKeyStore;

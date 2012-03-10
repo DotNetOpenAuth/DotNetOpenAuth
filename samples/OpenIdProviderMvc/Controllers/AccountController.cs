@@ -55,7 +55,7 @@
 			}
 
 			this.FormsAuth.SignIn(userName, rememberMe);
-			if (!String.IsNullOrEmpty(returnUrl)) {
+			if (!string.IsNullOrEmpty(returnUrl)) {
 				return Redirect(returnUrl);
 			} else {
 				return RedirectToAction("Index", "Home");
@@ -173,16 +173,16 @@
 		}
 
 		private bool ValidateChangePassword(string currentPassword, string newPassword, string confirmPassword) {
-			if (String.IsNullOrEmpty(currentPassword)) {
+			if (string.IsNullOrEmpty(currentPassword)) {
 				ModelState.AddModelError("currentPassword", "You must specify a current password.");
 			}
 			if (newPassword == null || newPassword.Length < this.MembershipService.MinPasswordLength) {
 				ModelState.AddModelError(
 					"newPassword",
-					String.Format(CultureInfo.CurrentCulture, "You must specify a new password of {0} or more characters.", this.MembershipService.MinPasswordLength));
+					string.Format(CultureInfo.CurrentCulture, "You must specify a new password of {0} or more characters.", this.MembershipService.MinPasswordLength));
 			}
 
-			if (!String.Equals(newPassword, confirmPassword, StringComparison.Ordinal)) {
+			if (!string.Equals(newPassword, confirmPassword, StringComparison.Ordinal)) {
 				ModelState.AddModelError("_FORM", "The new password and confirmation password do not match.");
 			}
 
@@ -190,10 +190,10 @@
 		}
 
 		private bool ValidateLogOn(string userName, string password) {
-			if (String.IsNullOrEmpty(userName)) {
+			if (string.IsNullOrEmpty(userName)) {
 				ModelState.AddModelError("username", "You must specify a username.");
 			}
-			if (String.IsNullOrEmpty(password)) {
+			if (string.IsNullOrEmpty(password)) {
 				ModelState.AddModelError("password", "You must specify a password.");
 			}
 			if (!this.MembershipService.ValidateUser(userName, password)) {
@@ -204,18 +204,18 @@
 		}
 
 		private bool ValidateRegistration(string userName, string email, string password, string confirmPassword) {
-			if (String.IsNullOrEmpty(userName)) {
+			if (string.IsNullOrEmpty(userName)) {
 				ModelState.AddModelError("username", "You must specify a username.");
 			}
-			if (String.IsNullOrEmpty(email)) {
+			if (string.IsNullOrEmpty(email)) {
 				ModelState.AddModelError("email", "You must specify an email address.");
 			}
 			if (password == null || password.Length < this.MembershipService.MinPasswordLength) {
 				ModelState.AddModelError(
 					"password",
-					String.Format(CultureInfo.CurrentCulture, "You must specify a password of {0} or more characters.", this.MembershipService.MinPasswordLength));
+					string.Format(CultureInfo.CurrentCulture, "You must specify a password of {0} or more characters.", this.MembershipService.MinPasswordLength));
 			}
-			if (!String.Equals(password, confirmPassword, StringComparison.Ordinal)) {
+			if (!string.Equals(password, confirmPassword, StringComparison.Ordinal)) {
 				ModelState.AddModelError("_FORM", "The new password and confirmation password do not match.");
 			}
 			return ModelState.IsValid;

@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The HTML that should be returned to the user agent as part of a 301 Redirect.
 		/// </summary>
-		/// <value>A string that should be used as the first argument to String.Format, where the {0} should be replaced with the URL to redirect to.</value>
+		/// <value>A string that should be used as the first argument to string.Format, where the {0} should be replaced with the URL to redirect to.</value>
 		private const string RedirectResponseBodyFormat = @"<html><head><title>Object moved</title></head><body>
 <h2>Object moved to <a href=""{0}"">here</a>.</h2>
 </body></html>";

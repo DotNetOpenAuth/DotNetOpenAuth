@@ -134,7 +134,7 @@ namespace MvcRelyingParty.Controllers {
 						var token = RelyingPartyLogic.User.ProcessUserLogin(response);
 						this.FormsAuth.SignIn(token.ClaimedIdentifier, false);
 						string returnUrl = Request.Form["returnUrl"];
-						if (!String.IsNullOrEmpty(returnUrl)) {
+						if (!string.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
 						} else {
 							return RedirectToAction("Index", "Home");
