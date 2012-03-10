@@ -28,17 +28,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		public static readonly ServiceProviderDescription LinkedInServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"https://api.linkedin.com/uas/oauth/requestToken", 
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), 
+					"https://api.linkedin.com/uas/oauth/requestToken",
+					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			UserAuthorizationEndpoint =
 				new MessageReceivingEndpoint(
-					"https://www.linkedin.com/uas/oauth/authenticate", 
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), 
+					"https://www.linkedin.com/uas/oauth/authenticate",
+					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			AccessTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"https://api.linkedin.com/uas/oauth/accessToken", 
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), 
-			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() }, 
+					"https://api.linkedin.com/uas/oauth/accessToken",
+					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
+			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 		};
 
 		#endregion
@@ -54,10 +54,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="consumerSecret">
 		/// The LinkedIn app's consumer secret. 
 		/// </param>
-		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", 
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public LinkedInClient(string consumerKey, string consumerSecret)
-			: base("linkedIn", LinkedInServiceDescription, consumerKey, consumerSecret) {}
+			: base("linkedIn", LinkedInServiceDescription, consumerKey, consumerSecret) { }
 
 		#endregion
 
@@ -72,16 +72,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// Authentication result. 
 		/// </returns>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", 
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "We don't care if the request fails.")]
 		protected override AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response) {
 			// See here for Field Selectors API http://developer.linkedin.com/docs/DOC-1014
-			const string profileRequestUrl =
-				"http://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
+			const string ProfileRequestUrl = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
 
 			string accessToken = response.AccessToken;
 
-			var profileEndpoint = new MessageReceivingEndpoint(profileRequestUrl, HttpDeliveryMethods.GetRequest);
+			var profileEndpoint = new MessageReceivingEndpoint(ProfileRequestUrl, HttpDeliveryMethods.GetRequest);
 			HttpWebRequest request = this.WebWorker.PrepareAuthorizedRequest(profileEndpoint, accessToken);
 
 			try {

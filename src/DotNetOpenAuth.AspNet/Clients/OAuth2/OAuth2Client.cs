@@ -17,14 +17,14 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Constants and Fields
 
 		/// <summary>
-		/// The _provider name.
+		/// The provider name.
 		/// </summary>
 		private readonly string providerName;
 
 		/// <summary>
-		/// The _return url.
+		/// The return url.
 		/// </summary>
-		private Uri _returnUrl;
+		private Uri returnUrl;
 
 		#endregion
 
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(returnUrl, "returnUrl");
 
-			this._returnUrl = returnUrl;
+			this.returnUrl = returnUrl;
 
 			string redirectUrl = this.GetServiceLoginUrl(returnUrl).AbsoluteUri;
 			context.Response.Redirect(redirectUrl, endResponse: true);
@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				return AuthenticationResult.Failed;
 			}
 
-			string accessToken = this.QueryAccessToken(this._returnUrl, code);
+			string accessToken = this.QueryAccessToken(this.returnUrl, code);
 			if (accessToken == null) {
 				return AuthenticationResult.Failed;
 			}

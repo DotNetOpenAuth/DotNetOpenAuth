@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The _tokens and secrets.
 		/// </summary>
-		private readonly Dictionary<string, string> _tokensAndSecrets = new Dictionary<string, string>();
+		private readonly Dictionary<string, string> tokensAndSecrets = new Dictionary<string, string>();
 
 		#endregion
 
@@ -100,8 +100,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </remarks>
 		public void ExpireRequestTokenAndStoreNewAccessToken(
 			string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
-			this._tokensAndSecrets.Remove(requestToken);
-			this._tokensAndSecrets[accessToken] = accessTokenSecret;
+			this.tokensAndSecrets.Remove(requestToken);
+			this.tokensAndSecrets[accessToken] = accessTokenSecret;
 		}
 
 		/// <summary>
@@ -117,7 +117,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Thrown if the secret cannot be found for the given token.
 		/// </exception>
 		public string GetTokenSecret(string token) {
-			return this._tokensAndSecrets[token];
+			return this.tokensAndSecrets[token];
 		}
 
 		/// <summary>
@@ -149,7 +149,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Request tokens stored by this method SHOULD NOT associate any user account with this token. It usually opens up security holes in your application to do so. Instead, you associate a user account with access tokens (not request tokens) in the <see cref="ExpireRequestTokenAndStoreNewAccessToken"/> method.
 		/// </remarks>
 		public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
-			this._tokensAndSecrets[response.Token] = response.TokenSecret;
+			this.tokensAndSecrets[response.Token] = response.TokenSecret;
 		}
 
 		#endregion

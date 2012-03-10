@@ -25,15 +25,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="accessToken">
 		/// The access token.
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>An HTTP request.</returns>
 		HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint profileEndpoint, string accessToken);
 
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
-		/// <returns>
-		/// </returns>
+		/// <returns>The response message.</returns>
 		AuthorizedTokenResponse ProcessUserAuthorization();
 
 		/// <summary>
@@ -43,6 +41,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The callback.
 		/// </param>
 		void RequestAuthentication(Uri callback);
+
 		#endregion
 	}
 }

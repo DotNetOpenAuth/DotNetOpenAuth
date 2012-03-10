@@ -30,12 +30,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The _app id.
 		/// </summary>
-		private readonly string _appId;
+		private readonly string appId;
 
 		/// <summary>
 		/// The _app secret.
 		/// </summary>
-		private readonly string _appSecret;
+		private readonly string appSecret;
 
 		#endregion
 
@@ -50,17 +50,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="appSecret">
 		/// The app secret.
 		/// </param>
-		/// <exception cref="ArgumentNullException">
-		/// </exception>
-		/// <exception cref="ArgumentNullException">
-		/// </exception>
 		public WindowsLiveClient(string appId, string appSecret)
 			: base("windowslive") {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
 
-			this._appId = appId;
-			this._appSecret = appSecret;
+			this.appId = appId;
+			this.appSecret = appSecret;
 		}
 
 		#endregion
@@ -70,17 +66,18 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Gets the full url pointing to the login page for this client. The url should include the specified return url so that when the login completes, user is redirected back to that url.
 		/// </summary>
-		/// <param name="returnUrl">
-		/// The return URL. 
-		/// </param>
+		/// <param name="returnUrl">The return URL.</param>
+		/// <returns>
+		/// An absolute URL.
+		/// </returns>
 		protected override Uri GetServiceLoginUrl(Uri returnUrl) {
 			var builder = new UriBuilder(AuthorizationEndpoint);
 			builder.AppendQueryArgs(
 				new Dictionary<string, string> {
-					{ "client_id", this._appId }, 
-					{ "scope", "wl.basic" }, 
-					{ "response_type", "code" }, 
-					{ "redirect_uri", returnUrl.AbsoluteUri }, 
+					{ "client_id", this.appId },
+					{ "scope", "wl.basic" },
+					{ "response_type", "code" },
+					{ "redirect_uri", returnUrl.AbsoluteUri },
 				});
 
 			return builder.Uri;
@@ -133,11 +130,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			var entity =
 				MessagingUtilities.CreateQueryString(
 					new Dictionary<string, string> {
-						{ "client_id", this._appId }, 
-						{ "redirect_uri", returnUrl.AbsoluteUri }, 
-						{ "client_secret", this._appSecret }, 
-						{ "code", authorizationCode }, 
-						{ "grant_type", "authorization_code" }, 
+						{ "client_id", this.appId },
+						{ "redirect_uri", returnUrl.AbsoluteUri },
+						{ "client_secret", this.appSecret },
+						{ "code", authorizationCode },
+						{ "grant_type", "authorization_code" },
 					});
 
 			WebRequest tokenRequest = WebRequest.Create(TokenEndpoint);

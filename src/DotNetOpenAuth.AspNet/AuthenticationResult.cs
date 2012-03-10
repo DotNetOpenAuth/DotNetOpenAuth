@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// Returns an instance which indicates failed authentication.
 		/// </summary>
-		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", 
+		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes",
 			Justification = "This type is immutable.")]
 		public static readonly AuthenticationResult Failed = new AuthenticationResult(isSuccessful: false);
 
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// if set to <c>true</c> [is successful]. 
 		/// </param>
 		public AuthenticationResult(bool isSuccessful)
-			: this(isSuccessful, provider: null, providerUserId: null, userName: null, extraData: null) {}
+			: this(isSuccessful, provider: null, providerUserId: null, userName: null, extraData: null) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthenticationResult"/> class.

@@ -26,14 +26,12 @@ namespace DotNetOpenAuth.AspNet {
 		#region Public Methods and Operators
 
 		/// <summary>
-		/// The is valid authentication ticket.
+		/// Checks whether the specified HTTP request comes from an authenticated user.
 		/// </summary>
 		/// <param name="context">
 		/// The context.
 		/// </param>
-		/// <returns>
-		/// The is valid authentication ticket.
-		/// </returns>
+		/// <returns>True if the reuest is authenticated; false otherwise.</returns>
 		public static bool IsValidAuthenticationTicket(HttpContextBase context) {
 			HttpCookie cookie = context.Request.Cookies[FormsAuthentication.FormsCookieName];
 			if (cookie == null) {
@@ -54,7 +52,7 @@ namespace DotNetOpenAuth.AspNet {
 		}
 
 		/// <summary>
-		/// The set authentication ticket.
+		/// Adds an authentication cookie to the user agent in the next HTTP response.
 		/// </summary>
 		/// <param name="context">
 		/// The context.
@@ -63,10 +61,8 @@ namespace DotNetOpenAuth.AspNet {
 		/// The user name.
 		/// </param>
 		/// <param name="createPersistentCookie">
-		/// The create persistent cookie.
+		/// A value indicating whether the cookie should persist across sessions.
 		/// </param>
-		/// <exception cref="HttpException">
-		/// </exception>
 		public static void SetAuthenticationTicket(HttpContextBase context, string userName, bool createPersistentCookie) {
 			if (!context.Request.IsSecureConnection && FormsAuthentication.RequireSSL) {
 				throw new HttpException(WebResources.ConnectionNotSecure);
@@ -81,20 +77,17 @@ namespace DotNetOpenAuth.AspNet {
 		#region Methods
 
 		/// <summary>
-		/// The get auth cookie.
+		/// Creates an HTTP authentication cookie.
 		/// </summary>
 		/// <param name="userName">
 		/// The user name.
 		/// </param>
 		/// <param name="createPersistentCookie">
-		/// The create persistent cookie.
+		/// A value indicating whether the cookie should last across sessions.
 		/// </param>
-		/// <returns>
-		/// </returns>
-		/// <exception cref="HttpException">
-		/// </exception>
+		/// <returns>An authentication cookie.</returns>
 		private static HttpCookie GetAuthCookie(string userName, bool createPersistentCookie) {
-			Debug.Assert(!string.IsNullOrEmpty(userName));
+			Requires.NotNullOrEmpty(userName, "userName");
 
 			var ticket = new FormsAuthenticationTicket(
 				/* version */

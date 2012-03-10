@@ -28,8 +28,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="parameterValue">
 		/// The parameter value.
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>An absolute URI.</returns>
 		public static Uri AttachQueryStringParameter(this Uri url, string parameterName, string parameterValue) {
 			UriBuilder builder = new UriBuilder(url);
 			string query = builder.Query;
@@ -65,8 +64,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="context">
 		/// The context.
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>An absolute URI.</returns>
 		public static Uri ConvertToAbsoluteUri(string returnUrl, HttpContextBase context) {
 			if (Uri.IsWellFormedUriString(returnUrl, UriKind.Absolute)) {
 				return new Uri(returnUrl, UriKind.Absolute);

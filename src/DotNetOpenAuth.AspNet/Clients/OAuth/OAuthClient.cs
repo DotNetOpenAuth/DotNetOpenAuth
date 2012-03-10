@@ -6,13 +6,13 @@
 
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
-    using System.Collections.Generic;
 
 	/// <summary>
 	/// Represents base class for OAuth 1.0 clients
@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </param>
 		protected OAuthClient(
 			string providerName, ServiceProviderDescription serviceDescription, string consumerKey, string consumerSecret)
-			: this(providerName, serviceDescription, new InMemoryOAuthTokenManager(consumerKey, consumerSecret)) {}
+			: this(providerName, serviceDescription, new InMemoryOAuthTokenManager(consumerKey, consumerSecret)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthClient"/> class.
@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't know how to ensure this rule is followed given this API")]
 		protected OAuthClient(
 			string providerName, ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager)
-			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, tokenManager)) {}
+			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, tokenManager)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthClient"/> class.
@@ -65,10 +65,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="webWorker">
 		/// The web worker.
 		/// </param>
-		/// <exception cref="ArgumentNullException">
-		/// </exception>
-		/// <exception cref="ArgumentNullException">
-		/// </exception>
 		protected OAuthClient(string providerName, IOAuthWebWorker webWorker) {
 			Requires.NotNull(providerName, "providerName");
 			Requires.NotNull(webWorker, "webWorker");
@@ -132,26 +128,24 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			}
 
 			AuthenticationResult result = this.VerifyAuthenticationCore(response);
-            if (result.IsSuccessful && result.ExtraData != null)
-            {
-                // add the access token to the user data dictionary just in case page developers want to use it
-                var wrapExtraData = result.ExtraData.IsReadOnly 
-                    ? new Dictionary<string, string>(result.ExtraData) 
-                    : result.ExtraData;
-                wrapExtraData["accesstoken"] = response.AccessToken;
+			if (result.IsSuccessful && result.ExtraData != null) {
+				// add the access token to the user data dictionary just in case page developers want to use it
+				var wrapExtraData = result.ExtraData.IsReadOnly
+					? new Dictionary<string, string>(result.ExtraData)
+					: result.ExtraData;
+				wrapExtraData["accesstoken"] = response.AccessToken;
 
-                AuthenticationResult wrapResult = new AuthenticationResult(
-                    result.IsSuccessful,
-                    result.Provider,
-                    result.ProviderUserId,
-                    result.UserName,
-                    wrapExtraData
-                );
+				AuthenticationResult wrapResult = new AuthenticationResult(
+					result.IsSuccessful,
+					result.Provider,
+					result.ProviderUserId,
+					result.UserName,
+					wrapExtraData);
 
-                result = wrapResult;
-            }
+				result = wrapResult;
+			}
 
-            return result;
+			return result;
 		}
 
 		#endregion

@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Initializes a new instance of the <see cref="GoogleOpenIdClient"/> class.
 		/// </summary>
 		public GoogleOpenIdClient()
-			: base("google", "https://www.google.com/accounts/o8/id") {}
+			: base("google", "https://www.google.com/accounts/o8/id") { }
 
 		#endregion
 
@@ -31,8 +31,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="response">
 		/// The response message. 
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>A dictionary of profile data; or null if no data is available.</returns>
 		protected override Dictionary<string, string> GetExtraData(IAuthenticationResponse response) {
 			FetchResponse fetchResponse = response.GetExtension<FetchResponse>();
 			if (fetchResponse != null) {

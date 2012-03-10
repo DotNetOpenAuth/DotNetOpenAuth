@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Web;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
@@ -139,8 +140,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="response">
 		/// The response message. 
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>Always null.</returns>
 		protected virtual Dictionary<string, string> GetExtraData(IAuthenticationResponse response) {
 			return null;
 		}
@@ -152,6 +152,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The request. 
 		/// </param>
 		protected virtual void OnBeforeSendingAuthenticationRequest(IAuthenticationRequest request) { }
+
 		#endregion
 	}
 }

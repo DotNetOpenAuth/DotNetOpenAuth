@@ -6,24 +6,25 @@
 
 namespace DotNetOpenAuth.AspNet {
 	/// <summary>
-	/// The i open auth data provider.
+	/// Common methods available on identity issuers.
 	/// </summary>
 	public interface IOpenAuthDataProvider {
 		#region Public Methods and Operators
 
 		/// <summary>
-		/// The get user name from open auth.
+		/// Get a user name from an identity provider and their own assigned user ID.
 		/// </summary>
 		/// <param name="openAuthProvider">
-		/// The open auth provider.
+		/// The identity provider.
 		/// </param>
 		/// <param name="openAuthId">
-		/// The open auth id.
+		/// The issuer's ID for the user.
 		/// </param>
 		/// <returns>
-		/// The get user name from open auth.
+		/// The username of the user.
 		/// </returns>
 		string GetUserNameFromOpenAuth(string openAuthProvider, string openAuthId);
+
 		#endregion
 	}
 }

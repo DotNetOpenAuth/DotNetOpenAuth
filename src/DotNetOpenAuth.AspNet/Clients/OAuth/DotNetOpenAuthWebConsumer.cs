@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The _web consumer.
 		/// </summary>
-		private readonly WebConsumer _webConsumer;
+		private readonly WebConsumer webConsumer;
 
 		#endregion
 
@@ -37,15 +37,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="tokenManager">
 		/// The token manager.
 		/// </param>
-		/// <exception cref="ArgumentNullException">
-		/// </exception>
-		/// <exception cref="ArgumentNullException">
-		/// </exception>
 		public DotNetOpenAuthWebConsumer(ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager) {
 			Requires.NotNull(serviceDescription, "serviceDescription");
 			Requires.NotNull(tokenManager, "tokenManager");
 
-			this._webConsumer = new WebConsumer(serviceDescription, tokenManager);
+			this.webConsumer = new WebConsumer(serviceDescription, tokenManager);
 		}
 
 		#endregion
@@ -61,19 +57,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="accessToken">
 		/// The access token.
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>An HTTP request.</returns>
 		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint profileEndpoint, string accessToken) {
-			return this._webConsumer.PrepareAuthorizedRequest(profileEndpoint, accessToken);
+			return this.webConsumer.PrepareAuthorizedRequest(profileEndpoint, accessToken);
 		}
 
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
-		/// <returns>
-		/// </returns>
+		/// <returns>The response message.</returns>
 		public AuthorizedTokenResponse ProcessUserAuthorization() {
-			return this._webConsumer.ProcessUserAuthorization();
+			return this.webConsumer.ProcessUserAuthorization();
 		}
 
 		/// <summary>
@@ -84,9 +78,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </param>
 		public void RequestAuthentication(Uri callback) {
 			var redirectParameters = new Dictionary<string, string> { { "force_login", "false" } };
-			UserAuthorizationRequest request = this._webConsumer.PrepareRequestUserAuthorization(
+			UserAuthorizationRequest request = this.webConsumer.PrepareRequestUserAuthorization(
 				callback, null, redirectParameters);
-			this._webConsumer.Channel.PrepareResponse(request).Send();
+			this.webConsumer.Channel.PrepareResponse(request).Send();
 		}
 
 		#endregion
@@ -110,7 +104,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
-				this._webConsumer.Dispose();
+				this.webConsumer.Dispose();
 			}
 		}
 	}

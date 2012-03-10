@@ -28,17 +28,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		public static readonly ServiceProviderDescription TwitterServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/request_token", 
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), 
+					"http://twitter.com/oauth/request_token",
+					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			UserAuthorizationEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/authenticate", 
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), 
+					"http://twitter.com/oauth/authenticate",
+					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			AccessTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/access_token", 
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), 
-			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() }, 
+					"http://twitter.com/oauth/access_token",
+					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
+			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 		};
 
 		#endregion
@@ -54,10 +54,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="consumerSecret">
 		/// The consumer secret. 
 		/// </param>
-		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", 
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public TwitterClient(string consumerKey, string consumerSecret)
-			: base("twitter", TwitterServiceDescription, consumerKey, consumerSecret) {}
+			: base("twitter", TwitterServiceDescription, consumerKey, consumerSecret) { }
 
 		#endregion
 
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// Authentication result 
 		/// </returns>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", 
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "We don't care if the request for additional data fails.")]
 		protected override AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response) {
 			string accessToken = response.AccessToken;

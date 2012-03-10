@@ -21,12 +21,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="stream">
 		/// The stream.
 		/// </param>
-		/// <typeparam name="T">
-		/// </typeparam>
+		/// <typeparam name="T">The type of the value to deserialize.</typeparam>
 		/// <returns>
+		/// The deserialized value.
 		/// </returns>
-		/// <exception cref="ArgumentNullException">
-		/// </exception>
 		public static T Deserialize<T>(Stream stream) where T : class {
 			Requires.NotNull(stream, "stream");
 

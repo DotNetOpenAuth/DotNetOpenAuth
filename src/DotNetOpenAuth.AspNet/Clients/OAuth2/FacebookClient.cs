@@ -32,12 +32,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The _app id.
 		/// </summary>
-		private readonly string _appId;
+		private readonly string appId;
 
 		/// <summary>
 		/// The _app secret.
 		/// </summary>
-		private readonly string _appSecret;
+		private readonly string appSecret;
 
 		#endregion
 
@@ -52,17 +52,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="appSecret">
 		/// The app secret.
 		/// </param>
-		/// <exception cref="ArgumentException">
-		/// </exception>
-		/// <exception cref="ArgumentException">
-		/// </exception>
 		public FacebookClient(string appId, string appSecret)
 			: base("facebook") {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
 
-			this._appId = appId;
-			this._appSecret = appSecret;
+			this.appId = appId;
+			this.appSecret = appSecret;
 		}
 
 		#endregion
@@ -75,13 +71,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">
 		/// The return url.
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>An absolute URI.</returns>
 		protected override Uri GetServiceLoginUrl(Uri returnUrl) {
 			// Note: Facebook doesn't like us to url-encode the redirect_uri value
 			var builder = new UriBuilder(AuthorizationEndpoint);
 			builder.AppendQueryArgs(
-				new Dictionary<string, string> { { "client_id", this._appId }, { "redirect_uri", returnUrl.AbsoluteUri }, });
+				new Dictionary<string, string> { { "client_id", this.appId }, { "redirect_uri", returnUrl.AbsoluteUri }, });
 			return builder.Uri;
 		}
 
@@ -91,8 +86,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="accessToken">
 		/// The access token.
 		/// </param>
-		/// <returns>
-		/// </returns>
+		/// <returns>A dictionary of profile data.</returns>
 		protected override IDictionary<string, string> GetUserData(string accessToken) {
 			FacebookGraphData graphData;
 			var request =
@@ -116,7 +110,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		}
 
 		/// <summary>
-		/// The query access token.
+		/// Obtains an access token given an authorization code and callback URL.
 		/// </summary>
 		/// <param name="returnUrl">
 		/// The return url.
@@ -125,17 +119,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The authorization code.
 		/// </param>
 		/// <returns>
-		/// The query access token.
+		/// The access token.
 		/// </returns>
 		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
 			// Note: Facebook doesn't like us to url-encode the redirect_uri value
 			var builder = new UriBuilder(TokenEndpoint);
 			builder.AppendQueryArgs(
 				new Dictionary<string, string> {
-					{ "client_id", this._appId }, 
-					{ "redirect_uri", returnUrl.AbsoluteUri }, 
-					{ "client_secret", this._appSecret }, 
-					{ "code", authorizationCode }, 
+					{ "client_id", this.appId },
+					{ "redirect_uri", returnUrl.AbsoluteUri },
+					{ "client_secret", this.appSecret },
+					{ "code", authorizationCode },
 				});
 
 			using (WebClient client = new WebClient()) {

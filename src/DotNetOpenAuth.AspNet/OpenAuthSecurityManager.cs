@@ -24,17 +24,17 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// The _authentication provider.
 		/// </summary>
-		private readonly IAuthenticationClient _authenticationProvider;
+		private readonly IAuthenticationClient authenticationProvider;
 
 		/// <summary>
 		/// The _data provider.
 		/// </summary>
-		private readonly IOpenAuthDataProvider _dataProvider;
+		private readonly IOpenAuthDataProvider dataProvider;
 
 		/// <summary>
 		/// The _request context.
 		/// </summary>
-		private readonly HttpContextBase _requestContext;
+		private readonly HttpContextBase requestContext;
 
 		#endregion
 
@@ -47,7 +47,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// The request context. 
 		/// </param>
 		public OpenAuthSecurityManager(HttpContextBase requestContext)
-			: this(requestContext, provider: null, dataProvider: null) {}
+			: this(requestContext, provider: null, dataProvider: null) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenAuthSecurityManager"/> class.
@@ -67,9 +67,9 @@ namespace DotNetOpenAuth.AspNet {
 				throw new ArgumentNullException("requestContext");
 			}
 
-			this._requestContext = requestContext;
-			this._dataProvider = dataProvider;
-			this._authenticationProvider = provider;
+			this.requestContext = requestContext;
+			this.dataProvider = dataProvider;
+			this.authenticationProvider = provider;
 		}
 
 		#endregion
@@ -81,8 +81,8 @@ namespace DotNetOpenAuth.AspNet {
 		/// </summary>
 		public bool IsAuthenticatedWithOpenAuth {
 			get {
-				return this._requestContext.Request.IsAuthenticated
-				       && OpenAuthAuthenticationTicketHelper.IsValidAuthenticationTicket(this._requestContext);
+				return this.requestContext.Request.IsAuthenticated
+					   && OpenAuthAuthenticationTicketHelper.IsValidAuthenticationTicket(this.requestContext);
 			}
 		}
 
@@ -91,13 +91,13 @@ namespace DotNetOpenAuth.AspNet {
 		#region Public Methods and Operators
 
 		/// <summary>
-		/// The get provider name.
+		/// Gets the provider that is responding to an authentication request.
 		/// </summary>
 		/// <param name="context">
-		/// The context.
+		/// The HTTP request context.
 		/// </param>
 		/// <returns>
-		/// The get provider name.
+		/// The provider name, if one is available.
 		/// </returns>
 		public static string GetProviderName(HttpContextBase context) {
 			return context.Request.QueryString[ProviderQueryStringName];
@@ -115,16 +115,16 @@ namespace DotNetOpenAuth.AspNet {
 		/// <returns>
 		/// <c>true</c> if the login is successful. 
 		/// </returns>
-		[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login", 
+		[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login",
 			Justification = "Login is used more consistently in ASP.Net")]
 		public bool Login(string providerUserId, bool createPersistentCookie) {
-			string userName = this._dataProvider.GetUserNameFromOpenAuth(
-				this._authenticationProvider.ProviderName, providerUserId);
+			string userName = this.dataProvider.GetUserNameFromOpenAuth(
+				this.authenticationProvider.ProviderName, providerUserId);
 			if (string.IsNullOrEmpty(userName)) {
 				return false;
 			}
 
-			OpenAuthAuthenticationTicketHelper.SetAuthenticationTicket(this._requestContext, userName, createPersistentCookie);
+			OpenAuthAuthenticationTicketHelper.SetAuthenticationTicket(this.requestContext, userName, createPersistentCookie);
 			return true;
 		}
 
@@ -138,31 +138,30 @@ namespace DotNetOpenAuth.AspNet {
 			// convert returnUrl to an absolute path
 			Uri uri;
 			if (!string.IsNullOrEmpty(returnUrl)) {
-				uri = UriHelper.ConvertToAbsoluteUri(returnUrl, this._requestContext);
+				uri = UriHelper.ConvertToAbsoluteUri(returnUrl, this.requestContext);
 			} else {
-				uri = this._requestContext.Request.GetPublicFacingUrl();
+				uri = this.requestContext.Request.GetPublicFacingUrl();
 			}
 
 			// attach the provider parameter so that we know which provider initiated 
 			// the login when user is redirected back to this page
-			uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this._authenticationProvider.ProviderName);
-			this._authenticationProvider.RequestAuthentication(this._requestContext, uri);
+			uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
+			this.authenticationProvider.RequestAuthentication(this.requestContext, uri);
 		}
 
 		/// <summary>
 		/// Checks if user is successfully authenticated when user is redirected back to this user.
 		/// </summary>
-		/// <returns>
-		/// </returns>
+		/// <returns>The result of the authentication.</returns>
 		public AuthenticationResult VerifyAuthentication() {
-			AuthenticationResult result = this._authenticationProvider.VerifyAuthentication(this._requestContext);
+			AuthenticationResult result = this.authenticationProvider.VerifyAuthentication(this.requestContext);
 			if (!result.IsSuccessful) {
 				// if the result is a Failed result, creates a new Failed response which has providerName info.
 				result = new AuthenticationResult(
-					isSuccessful: false, 
-					provider: this._authenticationProvider.ProviderName, 
-					providerUserId: null, 
-					userName: null, 
+					isSuccessful: false,
+					provider: this.authenticationProvider.ProviderName,
+					providerUserId: null,
+					userName: null,
 					extraData: null);
 			}
 
