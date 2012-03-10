@@ -383,7 +383,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <exception cref="ProtocolException">Thrown when the URI is disallowed for security reasons.</exception>
 		private void EnsureAllowableRequestUri(Uri requestUri, bool requireSsl) {
 			ErrorUtilities.VerifyProtocol(this.IsUriAllowable(requestUri), MessagingStrings.UnsafeWebRequestDetected, requestUri);
-			ErrorUtilities.VerifyProtocol(!requireSsl || String.Equals(requestUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase), MessagingStrings.InsecureWebRequestWithSslRequired, requestUri);
+			ErrorUtilities.VerifyProtocol(!requireSsl || string.Equals(requestUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase), MessagingStrings.InsecureWebRequestWithSslRequired, requestUri);
 		}
 
 		/// <summary>

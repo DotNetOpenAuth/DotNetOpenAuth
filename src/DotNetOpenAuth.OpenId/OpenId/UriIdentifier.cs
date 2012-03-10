@@ -349,7 +349,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			// If this identifier already uses SSL for initial discovery, return one
 			// that guarantees it will be used throughout the discovery process.
-			if (String.Equals(Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
+			if (string.Equals(Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
 				secureIdentifier = new UriIdentifier(this.Uri, true);
 				return true;
 			}

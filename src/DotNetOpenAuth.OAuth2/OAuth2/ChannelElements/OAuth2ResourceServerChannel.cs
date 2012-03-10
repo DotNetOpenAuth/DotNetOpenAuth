@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			// Finally, check the least desirable location: the query string
 			var unrewrittenQuery = request.GetQueryStringBeforeRewriting();
-			if (!String.IsNullOrEmpty(unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName])) {
+			if (!string.IsNullOrEmpty(unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName])) {
 				return unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName];
 			}
 

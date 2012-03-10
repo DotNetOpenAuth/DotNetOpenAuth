@@ -446,7 +446,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string CombineKeyHandleAndPayload(string handle, string payload) {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNullOrEmpty(payload, "payload");
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			return handle + "!" + payload;
 		}

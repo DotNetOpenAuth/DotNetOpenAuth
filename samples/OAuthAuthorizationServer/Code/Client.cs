@@ -52,7 +52,7 @@
 			// In this sample, it's enough of a callback URL match if the scheme and host match.
 			// In a production app, it is advisable to require a match on the path as well.
 			Uri acceptableCallbackPattern = new Uri(this.Callback);
-			if (String.Equals(acceptableCallbackPattern.GetLeftPart(UriPartial.Authority), callback.GetLeftPart(UriPartial.Authority), StringComparison.Ordinal)) {
+			if (string.Equals(acceptableCallbackPattern.GetLeftPart(UriPartial.Authority), callback.GetLeftPart(UriPartial.Authority), StringComparison.Ordinal)) {
 				return true;
 			}
 

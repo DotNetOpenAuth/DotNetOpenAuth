@@ -34,8 +34,8 @@
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanProviderResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\IAssociateRequestProvider.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestProviderTools.cs" />
-    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseProvider.cs" />
-    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseProviderContract.cs" />
+    <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseProvider.cs" />
+    <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseProviderContract.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseProvider.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponseProvider.cs" />
     <Compile Include="OpenId\Provider\OpenIdProviderUtilities.cs" />

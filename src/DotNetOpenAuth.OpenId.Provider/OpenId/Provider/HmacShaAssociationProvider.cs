@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			Contract.Assert(protocol != null); // All the way up to the method call, the condition holds, yet we get a Requires failure next
 			Contract.Assert(secret != null);
-			Contract.Assert(!String.IsNullOrEmpty(associationType));
+			Contract.Assert(!string.IsNullOrEmpty(associationType));
 			var result = HmacShaAssociation.Create(protocol, associationType, handle, secret, lifetime);
 			return result;
 		}

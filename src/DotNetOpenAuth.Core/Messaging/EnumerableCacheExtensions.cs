@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="EnumerableCache.cs" company="Outercurve Foundation">
+// <copyright file="EnumerableCacheExtensions.cs" company="Outercurve Foundation">
 // Copyright (c) Outercurve Foundation. All rights reserved.
 // This code is released under the Microsoft Public License (Ms-PL).
 // </copyright>

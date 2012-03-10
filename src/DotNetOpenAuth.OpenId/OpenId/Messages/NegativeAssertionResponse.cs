@@ -72,9 +72,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				if (this.OriginatingRequest != null) {
 					return this.OriginatingRequest.Immediate;
 				} else {
-					if (String.Equals(this.Mode, Protocol.Args.Mode.setup_needed, StringComparison.Ordinal)) {
+					if (string.Equals(this.Mode, Protocol.Args.Mode.setup_needed, StringComparison.Ordinal)) {
 						return true;
-					} else if (String.Equals(this.Mode, Protocol.Args.Mode.cancel, StringComparison.Ordinal)) {
+					} else if (string.Equals(this.Mode, Protocol.Args.Mode.cancel, StringComparison.Ordinal)) {
 						return false;
 					} else {
 						throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessagePartValue, Protocol.openid.mode, this.Mode);
@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			base.EnsureValidMessage();
 
 			// Since there are a couple of negative assertion modes, ensure that the mode given is one of the allowed ones.
-			ErrorUtilities.VerifyProtocol(String.Equals(this.Mode, Protocol.Args.Mode.setup_needed, StringComparison.Ordinal) || String.Equals(this.Mode, Protocol.Args.Mode.cancel, StringComparison.Ordinal), MessagingStrings.UnexpectedMessagePartValue, Protocol.openid.mode, this.Mode);
+			ErrorUtilities.VerifyProtocol(string.Equals(this.Mode, Protocol.Args.Mode.setup_needed, StringComparison.Ordinal) || string.Equals(this.Mode, Protocol.Args.Mode.cancel, StringComparison.Ordinal), MessagingStrings.UnexpectedMessagePartValue, Protocol.openid.mode, this.Mode);
 
 			if (this.Immediate && Protocol.Version.Major < 2) {
 				ErrorUtilities.VerifyProtocol(this.UserSetupUrl != null, OpenIdStrings.UserSetupUrlRequiredInImmediateNegativeResponse);

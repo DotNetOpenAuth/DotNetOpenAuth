@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				} else {
 					var context = this.Channel.GetHttpContext();
 					if (context.Session != null) {
-						ErrorUtilities.VerifyProtocol(String.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
+						ErrorUtilities.VerifyProtocol(string.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
 					} else {
 						Logger.OAuth.WarnFormat("No request context discovered, so no client state parameter could be checked to mitigate XSRF attacks.");
 					}

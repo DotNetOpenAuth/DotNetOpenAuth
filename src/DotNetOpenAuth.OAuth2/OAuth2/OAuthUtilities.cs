@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopeToken">The scope token.</param>
 		internal static void VerifyValidScopeToken(string scopeToken) {
-			ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(scopeToken), OAuthStrings.InvalidScopeToken, scopeToken);
+			ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(scopeToken), OAuthStrings.InvalidScopeToken, scopeToken);
 			for (int i = 0; i < scopeToken.Length; i++) {
 				// The allowed set of characters comes from OAuth 2.0 section 3.3 (draft 23)
 				char ch = scopeToken[i];

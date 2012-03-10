@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	/// <summary>
 	/// Tests for the <see cref="MessageSerializer"/> class.
 	/// </summary>
-	[TestFixture()]
+	[TestFixture]
 	public class MessageSerializerTests : MessagingTestBase {
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNull() {
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessageSerializer.Get(null);
 		}
 
-		[TestCase()]
+		[TestCase]
 		public void SerializeTest() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);

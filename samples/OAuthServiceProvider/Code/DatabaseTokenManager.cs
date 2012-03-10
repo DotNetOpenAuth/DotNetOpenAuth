@@ -147,7 +147,7 @@ namespace OAuthServiceProvider.Code {
 		}
 
 		public OAuthConsumer GetConsumerForToken(string token) {
-			if (String.IsNullOrEmpty(token)) {
+			if (string.IsNullOrEmpty(token)) {
 				throw new ArgumentNullException("requestToken");
 			}
 

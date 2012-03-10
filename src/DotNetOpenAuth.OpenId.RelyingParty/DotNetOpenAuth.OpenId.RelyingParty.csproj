@@ -20,6 +20,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OpenId\Interop\IOpenIdRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\RelyingParty\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementRelyingParty.cs" />
@@ -35,7 +36,7 @@
     <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRelyingPartyResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
     <Compile Include="OpenId\Messages\AssociateRequestRelyingParty.cs" />
-    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseRelyingPartyContract.cs" />
+    <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingPartyContract.cs" />
     <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingParty.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />

@@ -49,7 +49,7 @@
 
 		protected void getNameButton_Click(object sender, EventArgs e) {
 			try {
-				this.nameLabel.Text = CallService(client => client.GetName());
+				this.nameLabel.Text = this.CallService(client => client.GetName());
 			} catch (SecurityAccessDeniedException) {
 				this.nameLabel.Text = "Access denied!";
 			}
@@ -57,7 +57,7 @@
 
 		protected void getAgeButton_Click(object sender, EventArgs e) {
 			try {
-				int? age = CallService(client => client.GetAge());
+				int? age = this.CallService(client => client.GetAge());
 				this.ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
 			} catch (SecurityAccessDeniedException) {
 				this.ageLabel.Text = "Access denied!";
@@ -66,7 +66,7 @@
 
 		protected void getFavoriteSites_Click(object sender, EventArgs e) {
 			try {
-				string[] favoriteSites = CallService(client => client.GetFavoriteSites());
+				string[] favoriteSites = this.CallService(client => client.GetFavoriteSites());
 				this.favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
 			} catch (SecurityAccessDeniedException) {
 				this.favoriteSitesLabel.Text = "Access denied!";

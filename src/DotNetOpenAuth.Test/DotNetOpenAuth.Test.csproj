@@ -221,6 +221,7 @@
     <Compile Include="Mocks\CoordinatingOAuth2AuthServerChannel.cs" />
     <Compile Include="Mocks\CoordinatingOutgoingWebResponse.cs" />
     <Compile Include="Mocks\CoordinatingOAuthConsumerChannel.cs" />
+    <Compile Include="Mocks\IBaseMessageExplicitMembers.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />

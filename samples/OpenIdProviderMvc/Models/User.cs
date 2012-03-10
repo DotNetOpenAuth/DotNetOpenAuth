@@ -13,7 +13,7 @@
 		}
 
 		internal static Uri GetClaimedIdentifierForUser(string username) {
-			if (String.IsNullOrEmpty(username)) {
+			if (string.IsNullOrEmpty(username)) {
 				throw new ArgumentNullException("username");
 			}
 

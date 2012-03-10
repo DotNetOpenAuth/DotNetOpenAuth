@@ -136,7 +136,7 @@ namespace DotNetOpenAuth {
 		[Pure, DebuggerStepThrough]
 		internal static void True(bool condition, string parameterName, string unformattedMessage, params object[] args) {
 			if (!condition) {
-				throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args), parameterName);
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args), parameterName);
 			}
 
 			Contract.EndContractBlock();
@@ -187,7 +187,7 @@ namespace DotNetOpenAuth {
 		[Pure, DebuggerStepThrough]
 		internal static void ValidState(bool condition, string unformattedMessage, params object[] args) {
 			if (!condition) {
-				throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
 			}
 
 			Contract.EndContractBlock();

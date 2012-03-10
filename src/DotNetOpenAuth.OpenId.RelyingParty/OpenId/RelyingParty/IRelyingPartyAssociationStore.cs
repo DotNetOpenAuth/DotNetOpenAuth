@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </returns>
 		Association IRelyingPartyAssociationStore.GetAssociation(Uri providerEndpoint, string handle) {
 			Requires.NotNull(providerEndpoint, "providerEndpoint");
-			Contract.Requires(!String.IsNullOrEmpty(handle));
+			Contract.Requires(!string.IsNullOrEmpty(handle));
 			throw new NotImplementedException();
 		}
 
@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		bool IRelyingPartyAssociationStore.RemoveAssociation(Uri providerEndpoint, string handle) {
 			Requires.NotNull(providerEndpoint, "providerEndpoint");
-			Contract.Requires(!String.IsNullOrEmpty(handle));
+			Contract.Requires(!string.IsNullOrEmpty(handle));
 			throw new NotImplementedException();
 		}
 
