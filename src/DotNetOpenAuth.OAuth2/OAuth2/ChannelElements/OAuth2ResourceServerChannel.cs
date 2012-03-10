@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			ErrorUtilities.VerifyInternal(unauthorizedResponse != null, "Only unauthorized responses are expected.");
 
 			// First initialize based on the specifics within the message.
-			this.ApplyMessageTemplate(response, webResponse);
+			ApplyMessageTemplate(response, webResponse);
 			if (!(response is IHttpDirectResponse)) {
 				webResponse.Status = HttpStatusCode.Unauthorized;
 			}

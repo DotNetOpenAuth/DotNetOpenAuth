@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.ComponentModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Runtime.Serialization;
 
 	/// <summary>
@@ -17,6 +18,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// </remarks>
 	[DataContract]
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Facebook", Justification = "Brand name")]
 	public class FacebookGraphData {
 		#region Public Properties
 

@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			var webResponse = new OutgoingWebResponse();
-			this.ApplyMessageTemplate(response, webResponse);
+			ApplyMessageTemplate(response, webResponse);
 			string json = this.SerializeAsJson(response);
 			webResponse.SetResponse(json, new ContentType(JsonEncoded));
 			return webResponse;

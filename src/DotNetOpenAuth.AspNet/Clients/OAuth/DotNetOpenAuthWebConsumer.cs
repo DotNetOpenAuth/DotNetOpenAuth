@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// <summary>
 	/// The dot net open auth web consumer.
 	/// </summary>
-	public class DotNetOpenAuthWebConsumer : IOAuthWebWorker {
+	public class DotNetOpenAuthWebConsumer : IOAuthWebWorker, IDisposable {
 		#region Constants and Fields
 
 		/// <summary>
@@ -90,5 +90,28 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		}
 
 		#endregion
+
+		#region IDisposable members
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		/// <filterpriority>2</filterpriority>
+		public void Dispose() {
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing) {
+			if (disposing) {
+				this._webConsumer.Dispose();
+			}
+		}
 	}
 }

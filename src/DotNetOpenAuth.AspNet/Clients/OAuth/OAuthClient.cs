@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
@@ -50,6 +51,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="tokenManager">
 		/// The token Manager.
 		/// </param>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't know how to ensure this rule is followed given this API")]
 		protected OAuthClient(
 			string providerName, ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager)
 			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, tokenManager)) {}

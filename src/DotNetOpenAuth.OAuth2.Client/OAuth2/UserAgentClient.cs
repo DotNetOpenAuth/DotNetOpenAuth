@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				Callback = returnTo,
 			};
 
-			return this.RequestUserAuthorization(authorization);
+			return this.RequestUserAuthorization(authorization, state: state);
 		}
 
 		/// <summary>
@@ -118,12 +118,11 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess;
 			EndUserAuthorizationSuccessAuthCodeResponse authCodeSuccess;
-			EndUserAuthorizationFailedResponse failure;
 			if ((accessTokenSuccess = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
 				UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
 			} else if ((authCodeSuccess = response as EndUserAuthorizationSuccessAuthCodeResponse) != null) {
 				this.UpdateAuthorizationWithResponse(authorizationState, authCodeSuccess);
-			} else if ((failure = response as EndUserAuthorizationFailedResponse) != null) {
+			} else if (response is EndUserAuthorizationFailedResponse) {
 				authorizationState.Delete();
 				return null;
 			}

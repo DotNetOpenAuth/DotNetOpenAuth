@@ -224,7 +224,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				Headers = new System.Net.WebHeaderCollection(),
 			};
 
-			this.ApplyMessageTemplate(response, encodedResponse);
+			ApplyMessageTemplate(response, encodedResponse);
 			return encodedResponse;
 		}
 

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Net;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -14,6 +15,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// <summary>
 	/// The facebook client.
 	/// </summary>
+	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Facebook", Justification = "Brand name")]
 	public sealed class FacebookClient : OAuth2Client {
 		#region Constants and Fields
 

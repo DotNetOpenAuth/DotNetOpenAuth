@@ -602,6 +602,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the HTTP context for the current HTTP request.
 		/// </summary>
 		/// <returns>An HttpContextBase instance.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Allocates memory")]
 		protected internal virtual HttpContextBase GetHttpContext() {
 			Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 			return new HttpContextWrapper(HttpContext.Current);
@@ -640,6 +641,22 @@ namespace DotNetOpenAuth.Messaging {
 				return true;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
+			}
+		}
+
+		/// <summary>
+		/// Applies message prescribed HTTP response headers to an outgoing web response.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <param name="response">The HTTP response.</param>
+		protected static void ApplyMessageTemplate(IMessage message, OutgoingWebResponse response) {
+			Requires.NotNull(message, "message");
+			var httpMessage = message as IHttpDirectResponse;
+			if (httpMessage != null) {
+				response.Status = httpMessage.HttpStatusCode;
+				foreach (string headerName in httpMessage.Headers) {
+					response.Headers.Add(headerName, httpMessage.Headers[headerName]);
+				}
 			}
 		}
 
@@ -1040,22 +1057,6 @@ namespace DotNetOpenAuth.Messaging {
 					recipient,
 					Environment.NewLine,
 					messageAccessor.ToStringDeferred());
-			}
-		}
-
-		/// <summary>
-		/// Applies message prescribed HTTP response headers to an outgoing web response.
-		/// </summary>
-		/// <param name="message">The message.</param>
-		/// <param name="response">The HTTP response.</param>
-		protected void ApplyMessageTemplate(IMessage message, OutgoingWebResponse response) {
-			Requires.NotNull(message, "message");
-			var httpMessage = message as IHttpDirectResponse;
-			if (httpMessage != null) {
-				response.Status = httpMessage.HttpStatusCode;
-				foreach (string headerName in httpMessage.Headers) {
-					response.Headers.Add(headerName, httpMessage.Headers[headerName]);
-				}
 			}
 		}
 
