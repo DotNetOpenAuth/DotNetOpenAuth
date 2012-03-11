@@ -29,6 +29,15 @@ namespace DotNetOpenAuth.BuildTasks {
 		public string SimpleVersion { get; private set; }
 
 		/// <summary>
+		/// Gets or sets the major.minor version string.
+		/// </summary>
+		/// <value>
+		/// The x.y string (no build number or revision number).
+		/// </value>
+		[Output]
+		public string MajorMinorVersion { get; set; }
+
+		/// <summary>
 		/// Gets or sets the prerelease version, or empty if this is a final release.
 		/// </summary>
 		/// <value>
@@ -74,6 +83,7 @@ namespace DotNetOpenAuth.BuildTasks {
 				this.PrereleaseVersion = prerelease;
 				this.OAuth2PackagesVersion = oauth2PackagesVersion;
 				this.SimpleVersion = typedVersion.ToString();
+				this.MajorMinorVersion = new Version(typedVersion.Major, typedVersion.Minor).ToString();
 				this.BuildNumber = this.CalculateJDate(DateTime.Now);
 
 				var fullVersion = new Version(typedVersion.Major, typedVersion.Minor, typedVersion.Build, this.BuildNumber);

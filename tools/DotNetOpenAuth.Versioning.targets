@@ -17,6 +17,7 @@
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 			<Output TaskParameter="SimpleVersion" PropertyName="BuildVersionSimple" />
 			<Output TaskParameter="PrereleaseVersion" PropertyName="PrereleaseVersion" />
+			<Output TaskParameter="MajorMinorVersion" PropertyName="MajorMinorVersion" />
 			<Output TaskParameter="OAuth2PackagesVersion" PropertyName="OAuth2PackagesVersion" />
 			<Output TaskParameter="GitCommitId" PropertyName="GitCommitId" />
 			<Output TaskParameter="BuildNumber" PropertyName="BuildNumber" />
@@ -45,8 +46,10 @@
 		</PropertyGroup>
 		<MakeDir Directories="$(IntermediatePath)"/>
 		<AssemblyInfo OutputFile="$(NewVersionCsFile)" CodeLanguage="C#"
-		              AssemblyVersion="$(BuildVersion)"
-		              AssemblyInformationalVersion="$(AssemblyInformationalVersion)" />
+		              AssemblyVersion="$(MajorMinorVersion)"
+		              AssemblyFileVersion="$(BuildVersion)"
+		              AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
+		              GenerateClass="true" />
 		<!-- Avoid applying the newly generated AssemblyInfo.cs file to the build 
 		     unless it has changed in order to allow for incremental building. -->
 		<CompareFiles OriginalItems="$(VersionCsFile)" NewItems="$(NewVersionCsFile)">
