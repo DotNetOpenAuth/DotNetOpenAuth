@@ -29,6 +29,21 @@ namespace DotNetOpenAuth.BuildTasks {
 		public string SimpleVersion { get; private set; }
 
 		/// <summary>
+		/// Gets or sets the prerelease version, or empty if this is a final release.
+		/// </summary>
+		/// <value>
+		/// The prerelease version.
+		/// </value>
+		[Output]
+		public string PrereleaseVersion { get; set; }
+
+		/// <summary>
+		/// Gets or sets the version string to use for NuGet packages containing OAuth 2 components.
+		/// </summary>
+		[Output]
+		public string OAuth2PackagesVersion { get; set; }
+
+		/// <summary>
 		/// Gets the Git revision control commit id for HEAD (the current source code version).
 		/// </summary>
 		[Output]
@@ -53,7 +68,11 @@ namespace DotNetOpenAuth.BuildTasks {
 
 		public override bool Execute() {
 			try {
-				Version typedVersion = ReadVersionFromFile();
+				Version typedVersion;
+				string prerelease, oauth2PackagesVersion;
+				this.ReadVersionFromFile(out typedVersion, out prerelease, out oauth2PackagesVersion);
+				this.PrereleaseVersion = prerelease;
+				this.OAuth2PackagesVersion = oauth2PackagesVersion;
 				this.SimpleVersion = typedVersion.ToString();
 				this.BuildNumber = this.CalculateJDate(DateTime.Now);
 
@@ -127,10 +146,21 @@ namespace DotNetOpenAuth.BuildTasks {
 			return commitId.Trim();
 		}
 
-		private Version ReadVersionFromFile() {
+		private void ReadVersionFromFile(out Version typedVersion, out string prereleaseVersion, out string oauth2PackagesVersion) {
 			string[] lines = File.ReadAllLines(VersionFile);
 			string versionLine = lines[0];
-			return new Version(versionLine);
+			prereleaseVersion = lines.Length >= 2 ? lines[1] : null;
+			oauth2PackagesVersion = lines.Length >= 3 ? lines[2] : null;
+			if (!String.IsNullOrEmpty(prereleaseVersion)) {
+				if (!prereleaseVersion.StartsWith("-")) {
+					// SemVer requires that prerelease suffixes begin with a hyphen, so add one if it's missing.
+					prereleaseVersion = "-" + prereleaseVersion;
+				}
+
+				this.VerifyValidPrereleaseVersion(prereleaseVersion);
+			}
+
+			typedVersion = new Version(versionLine);
 		}
 
 		private int CalculateJDate(DateTime date) {
@@ -139,6 +169,18 @@ namespace DotNetOpenAuth.BuildTasks {
 			int dayOfYear = (date - firstOfYear).Days + 1;
 			int jdate = yearLastDigit * 1000 + dayOfYear;
 			return jdate;
+		}
+
+		private void VerifyValidPrereleaseVersion(string prerelease) {
+			if (prerelease[0] != '-') {
+				throw new ArgumentOutOfRangeException("The prerelease string must begin with a hyphen.");
+			}
+
+			for (int i = 1; i < prerelease.Length; i++) {
+				if (!char.IsLetterOrDigit(prerelease[i])) {
+					throw new ArgumentOutOfRangeException("The prerelease string must be alphanumeric.");
+				}
+			}
 		}
 	}
 }

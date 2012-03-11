@@ -6,9 +6,6 @@
 	<PropertyGroup>
 		<VersionCsFile>$(IntermediatePath)\$(AssemblyName).Version.cs</VersionCsFile>
 		<NoWarn>$(NoWarn);1607</NoWarn>
-
-		<!-- PrereleaseVersion can be any alphanumeric identifier with a preceding hyphen, or blank. -->
-		<PrereleaseVersion>-beta2</PrereleaseVersion>
 	</PropertyGroup>
 
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
@@ -19,6 +16,8 @@
 		                 GitRepoRoot="$(ProjectRoot)">
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 			<Output TaskParameter="SimpleVersion" PropertyName="BuildVersionSimple" />
+			<Output TaskParameter="PrereleaseVersion" PropertyName="PrereleaseVersion" />
+			<Output TaskParameter="OAuth2PackagesVersion" PropertyName="OAuth2PackagesVersion" />
 			<Output TaskParameter="GitCommitId" PropertyName="GitCommitId" />
 			<Output TaskParameter="BuildNumber" PropertyName="BuildNumber" />
 		</GetBuildVersion>
