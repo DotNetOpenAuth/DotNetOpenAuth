@@ -46,6 +46,13 @@
 		<TestProjects Include="DotNetOpenAuth_AspNet_Test"  Condition=" '$(ClrVersion)' == '4' " />
 		<TestAssemblies Include="$(OutputPath)$(ProductName).Test.dll"  Condition=" '$(ClrVersion)' == '2' " />
 		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" Condition=" '$(ClrVersion)' == '4' " />
+
+		<ProjectsToPublish Include="
+											 doc\doc.proj;
+											 samples\samples.proj;
+											 ">
+			<Targets>Publish</Targets>
+		</ProjectsToPublish>
 	</ItemGroup>
 
 	<Target Name="TouchUpProjectsForDualFrameworks">
