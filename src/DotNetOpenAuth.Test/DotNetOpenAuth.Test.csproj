@@ -91,7 +91,7 @@
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
     </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -130,7 +130,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
