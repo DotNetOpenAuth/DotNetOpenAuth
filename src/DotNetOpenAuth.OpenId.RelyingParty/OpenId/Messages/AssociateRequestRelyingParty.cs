@@ -68,15 +68,15 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				associateRequest.AssociationType = associationType;
 				return associateRequest;
 			} else {
-#if !ExcludeDiffieHellman
-				var associateRequest = new AssociateDiffieHellmanRequest(provider.Version, provider.Uri);
-				associateRequest.AssociationType = associationType;
-				associateRequest.SessionType = sessionType;
-				associateRequest.InitializeRequest();
-				return associateRequest;
-#else
-				return null;
-#endif
+				if (OpenIdUtilities.IsDiffieHellmanPresent) {
+					var associateRequest = new AssociateDiffieHellmanRequest(provider.Version, provider.Uri);
+					associateRequest.AssociationType = associationType;
+					associateRequest.SessionType = sessionType;
+					associateRequest.InitializeRequest();
+					return associateRequest;
+				} else {
+					return null;
+				}
 			}
 		}
 	}

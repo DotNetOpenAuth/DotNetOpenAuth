@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.IO;
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
@@ -19,6 +20,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Org.Mentalis.Security.Cryptography;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
@@ -28,6 +30,31 @@ namespace DotNetOpenAuth.OpenId {
 		/// The prefix to designate this library's proprietary parameters added to the protocol.
 		/// </summary>
 		internal const string CustomParameterPrefix = "dnoa.";
+
+		private static bool? diffieHellmanPresent;
+
+		internal static bool IsDiffieHellmanPresent {
+			get {
+				if (!diffieHellmanPresent.HasValue) {
+					try {
+						LoadDiffieHellmanTypes();
+						diffieHellmanPresent = true;
+					} catch (FileNotFoundException) {
+						diffieHellmanPresent = false;
+					} catch (TypeLoadException) {
+						diffieHellmanPresent = false;
+					}
+
+					if (diffieHellmanPresent.Value) {
+						Logger.OpenId.Info("Diffie-Hellman supporting assemblies found and loaded.");
+					} else {
+						Logger.OpenId.Warn("Diffie-Hellman supporting assemblies failed to load.  Only associations with HTTPS OpenID Providers will be supported.");
+					}
+				}
+
+				return diffieHellmanPresent.Value;
+			}
+		}
 
 		/// <summary>
 		/// Creates a random association handle.
@@ -168,6 +195,10 @@ namespace DotNetOpenAuth.OpenId {
 			var aggregator = factory as OpenIdExtensionFactoryAggregator;
 			ErrorUtilities.VerifyOperation(aggregator != null, OpenIdStrings.UnsupportedChannelConfiguration);
 			return aggregator.Factories;
+		}
+
+		private static void LoadDiffieHellmanTypes() {
+			var dhAssemblyType = typeof(DiffieHellmanManaged);
 		}
 	}
 }

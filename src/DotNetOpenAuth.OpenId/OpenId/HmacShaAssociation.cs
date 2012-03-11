@@ -140,11 +140,13 @@ namespace DotNetOpenAuth.OpenId {
 					hashSizeInBits < securityRequirements.MinimumHashBitLength) {
 					continue;
 				}
-#if !ExcludeDiffieHellman
-				sessionType = DiffieHellmanUtilities.GetNameForSize(protocol, hashSizeInBits);
-#else
-				sessionType = requireMatchingDHSessionType ? null : protocol.Args.SessionType.NoEncryption;
-#endif
+
+				if (OpenIdUtilities.IsDiffieHellmanPresent) {
+					sessionType = DiffieHellmanUtilities.GetNameForSize(protocol, hashSizeInBits);
+				} else {
+					sessionType = requireMatchingDHSessionType ? null : protocol.Args.SessionType.NoEncryption;
+				}
+
 				if (requireMatchingDHSessionType && sessionType == null) {
 					continue;
 				}
@@ -178,14 +180,14 @@ namespace DotNetOpenAuth.OpenId {
 				return true;
 			}
 
-#if !ExcludeDiffieHellman
-			// When there _is_ a DH session, it must match in hash length with the association type.
-			int associationSecretLengthInBytes = GetSecretLength(protocol, associationType);
-			int sessionHashLengthInBytes = DiffieHellmanUtilities.Lookup(protocol, sessionType).HashSize / 8;
-			return associationSecretLengthInBytes == sessionHashLengthInBytes;
-#else
-			return false;
-#endif
+			if (OpenIdUtilities.IsDiffieHellmanPresent) {
+				// When there _is_ a DH session, it must match in hash length with the association type.
+				int associationSecretLengthInBytes = GetSecretLength(protocol, associationType);
+				int sessionHashLengthInBytes = DiffieHellmanUtilities.Lookup(protocol, sessionType).HashSize / 8;
+				return associationSecretLengthInBytes == sessionHashLengthInBytes;
+			} else {
+				return false;
+			}
 		}
 
 		/// <summary>
