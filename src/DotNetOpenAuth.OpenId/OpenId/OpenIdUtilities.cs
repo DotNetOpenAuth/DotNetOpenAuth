@@ -12,14 +12,12 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
-	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
-	using DotNetOpenAuth.OpenId.Messages;
 	using Org.Mentalis.Security.Cryptography;
 
 	/// <summary>
@@ -31,8 +29,18 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		internal const string CustomParameterPrefix = "dnoa.";
 
+		/// <summary>
+		/// A static variable that carries the results of a check for the presence of
+		/// assemblies that are required for the Diffie-Hellman algorithm.
+		/// </summary>
 		private static bool? diffieHellmanPresent;
 
+		/// <summary>
+		/// Gets a value indicating whether Diffie Hellman is available in this installation.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if Diffie-Hellman functionality is present; otherwise, <c>false</c>.
+		/// </value>
 		internal static bool IsDiffieHellmanPresent {
 			get {
 				if (!diffieHellmanPresent.HasValue) {
@@ -197,8 +205,14 @@ namespace DotNetOpenAuth.OpenId {
 			return aggregator.Factories;
 		}
 
+		/// <summary>
+		/// Loads the Diffie-Hellman assemblies.
+		/// </summary>
+		/// <exception cref="FileNotFoundException">Thrown if the DH assemblies are missing.</exception>
 		private static void LoadDiffieHellmanTypes() {
-			var dhAssemblyType = typeof(DiffieHellmanManaged);
+			// This seeming no-op instruction is enough for the CLR to throw a FileNotFoundException
+			// If the assemblies are missing.
+			new DiffieHellmanManaged();
 		}
 	}
 }
