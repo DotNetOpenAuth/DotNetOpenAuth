@@ -208,7 +208,7 @@
   <xsl:template name="bodyHeaderTopTable">
     <xsl:variable name="showDevlangsFilter" select="boolean(($languages != 'false') and (count($languages/language) &gt; 0))"/>
     <xsl:variable name="showMemberOptionsFilter" select="boolean($group='list' and $subgroup!='DerivedTypeList')"/>
-    <xsl:variable name="showMemberFrameworksFilter" select="boolean($group='list' and $subgroup!='DerivedTypeList' and /document/reference/elements//element[count(versions/versions) &gt; 1])"/>
+    <xsl:variable name="showMemberFrameworksFilter" select="boolean($group='list' and $subgroup!='DerivedTypeList' and /document/reference/elements//element[count(versions/versions[@name != 'netfwcp']) &gt; 1])"/>
     <table id="topTable" cellspacing="0" cellpadding="0">
       <tr>
         <td>
@@ -273,8 +273,8 @@
   <xsl:template name="memberFrameworksMenu">
     <div id="memberFrameworksMenu">
       <xsl:for-each select="/document/reference/elements//element/versions[versions]">
-        <xsl:if test="position()=1">
-          <xsl:for-each select="versions">
+        <xsl:if test="position()=1"> 
+          <xsl:for-each select="versions[@name != 'netfwcp']"> <!-- Don't show client profile, tfs 787027 -->
             <xsl:call-template name="FrameworksMenuCheckbox"/>
           </xsl:for-each>
         </xsl:if>
@@ -300,7 +300,7 @@
       </label>
       <xsl:for-each select="/document/reference/elements//element/versions[versions]">
         <xsl:if test="position()=1">
-          <xsl:for-each select="versions">
+          <xsl:for-each select="versions[@name != 'netfwcp']"> <!-- Don't show client profile, tfs 787027 -->
             <xsl:variable name="versionName" select="@name"/>
             <label id="memberFrameworksMenu{$versionName}Label" for="memberFrameworksDropdownImage" style="display: none;">
               <nobr><include item="memberFrameworks{$versionName}"/><xsl:text>&#160;</xsl:text></nobr>

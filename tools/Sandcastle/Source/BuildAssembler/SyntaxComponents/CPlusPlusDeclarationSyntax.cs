@@ -789,6 +789,7 @@ namespace Microsoft.Ddue.Tools {
 		}
 
 		private void WriteParameters (XPathNodeIterator parameters, bool multiline, SyntaxWriter writer) {
+            bool isVarargs = (bool)parameters.Current.Evaluate(apiIsVarargsExpression);
 
 			while (parameters.MoveNext()) {
 				XPathNavigator parameter = parameters.Current;
@@ -815,9 +816,16 @@ namespace Microsoft.Ddue.Tools {
 				writer.WriteString(" ");
 				writer.WriteParameter(name);
 
-				if (parameters.CurrentPosition < parameters.Count) writer.WriteString(", ");
+				if (parameters.CurrentPosition < parameters.Count || isVarargs) writer.WriteString(", ");
 				if (multiline) writer.WriteLine();
 			}
+            if (isVarargs)
+            {
+                if (multiline) writer.WriteString("\t");
+                writer.WriteString("...");
+                if (multiline) writer.WriteLine();
+            }
+
 
 		}
 

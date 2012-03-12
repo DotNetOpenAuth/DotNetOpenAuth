@@ -389,7 +389,7 @@ namespace Microsoft.Ddue.Tools {
             List < Interface > exposedContracts = new List < Interface >();
             for (int i = 0; i < contracts.Count; i++) {
                 Interface contract = contracts[i];
-                if (this.ApiFilter.IsExposedType(contract)) {
+                if (this.ApiFilter.IsDocumentedInterface(contract)) {
                     // if generic, check whether specialization types are exposed
                     exposedContracts.Add(contract);
                 }
@@ -1015,6 +1015,8 @@ namespace Microsoft.Ddue.Tools {
             WriteBooleanAttribute("abstract", method.IsAbstract, false);
             WriteBooleanAttribute("virtual", method.IsVirtual);
             WriteBooleanAttribute("final", method.IsFinal, false);
+            WriteBooleanAttribute("varargs", method.CallingConvention == CallingConventionFlags.VarArg, false);
+
 
             if (method.IsPrivate && method.IsVirtual) WriteBooleanAttribute("eii", true);
 

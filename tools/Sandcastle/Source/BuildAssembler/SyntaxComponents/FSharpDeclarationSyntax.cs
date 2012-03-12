@@ -111,6 +111,7 @@ namespace Microsoft.Ddue.Tools
 
         public override void WriteNormalMethodSyntax(XPathNavigator reflection, SyntaxWriter writer)
         {
+            if (IsUnsupportedVarargs(reflection, writer)) return;
 
             string name = (string)reflection.Evaluate(apiNameExpression);
             bool isOverride = (bool)reflection.Evaluate(apiIsOverrideExpression);
@@ -164,94 +165,100 @@ namespace Microsoft.Ddue.Tools
         public override void WriteOperatorSyntax(XPathNavigator reflection, SyntaxWriter writer)
         {
             string name = (string)reflection.Evaluate(apiNameExpression);
-            string identifier;
+            string identifier = null;
 
             bool isStatic = (bool)reflection.Evaluate(apiIsStaticExpression);
 
-            switch (name)
+            if (!(bool)reflection.Evaluate(apiIsUdtReturnExpression))
             {
-                // unary math operators
-                case "UnaryPlus":
-                    identifier = "+";
-                    break;
-                case "UnaryNegation":
-                    identifier = "-";
-                    break;
-                case "Increment":
-                    identifier = "++";
-                    break;
-                case "Decrement":
-                    identifier = "--";
-                    break;
-                // unary logical operators
-                case "LogicalNot":
-                    identifier = "not";
-                    break;
-                case "True":
-                    identifier = "true";
-                    break;
-                case "False":
-                    identifier = "false";
-                    break;
-                // binary comparison operators
-                case "Equality":
-                    identifier = "=";
-                    break;
-                case "Inequality":
-                    identifier = "<>";
-                    break;
-                case "LessThan":
-                    identifier = "<";
-                    break;
-                case "GreaterThan":
-                    identifier = ">";
-                    break;
-                case "LessThanOrEqual":
-                    identifier = "<=";
-                    break;
-                case "GreaterThanOrEqual":
-                    identifier = ">=";
-                    break;
-                // binary math operators
-                case "Addition":
-                    identifier = "+";
-                    break;
-                case "Subtraction":
-                    identifier = "-";
-                    break;
-                case "Multiply":
-                    identifier = "*";
-                    break;
-                case "Division":
-                    identifier = "/";
-                    break;
-                case "Modulus":
-                    identifier = "%";
-                    break;
-                // binary logical operators
-                case "BitwiseAnd":
-                    identifier = "&&&";
-                    break;
-                case "BitwiseOr":
-                    identifier = "|||";
-                    break;
-                case "ExclusiveOr":
-                    identifier = "^^^";
-                    break;
-                // bit-array operators
-                case "OnesComplement":
-                   identifier = null; // No F# equiv.
-                   break;
-                case "LeftShift":
-                    identifier = "<<<";
-                    break;
-                case "RightShift":
-                    identifier = ">>>";
-                    break;
-                // unrecognized operator
-                default:
-                    identifier = null;
-                    break;
+                switch (name)
+                {
+                    // unary math operators
+                    case "UnaryPlus":
+                        identifier = "+";
+                        break;
+                    case "UnaryNegation":
+                        identifier = "-";
+                        break;
+                    case "Increment":
+                        identifier = "++";
+                        break;
+                    case "Decrement":
+                        identifier = "--";
+                        break;
+                    // unary logical operators
+                    case "LogicalNot":
+                        identifier = "not";
+                        break;
+                    case "True":
+                        identifier = "true";
+                        break;
+                    case "False":
+                        identifier = "false";
+                        break;
+                    // binary comparison operators
+                    case "Equality":
+                        identifier = "=";
+                        break;
+                    case "Inequality":
+                        identifier = "<>";
+                        break;
+                    case "LessThan":
+                        identifier = "<";
+                        break;
+                    case "GreaterThan":
+                        identifier = ">";
+                        break;
+                    case "LessThanOrEqual":
+                        identifier = "<=";
+                        break;
+                    case "GreaterThanOrEqual":
+                        identifier = ">=";
+                        break;
+                    // binary math operators
+                    case "Addition":
+                        identifier = "+";
+                        break;
+                    case "Subtraction":
+                        identifier = "-";
+                        break;
+                    case "Multiply":
+                        identifier = "*";
+                        break;
+                    case "Division":
+                        identifier = "/";
+                        break;
+                    case "Modulus":
+                        identifier = "%";
+                        break;
+                    // binary logical operators
+                    case "BitwiseAnd":
+                        identifier = "&&&";
+                        break;
+                    case "BitwiseOr":
+                        identifier = "|||";
+                        break;
+                    case "ExclusiveOr":
+                        identifier = "^^^";
+                        break;
+                    // bit-array operators
+                    case "OnesComplement":
+                        identifier = null; // No F# equiv.
+                        break;
+                    case "LeftShift":
+                        identifier = "<<<";
+                        break;
+                    case "RightShift":
+                        identifier = ">>>";
+                        break;
+                    case "Assign":
+                        identifier = "=";
+                        break;
+                    // unrecognized operator
+                    default:
+                        identifier = null;
+                        break;
+                }
             }
             if (identifier == null)
             {

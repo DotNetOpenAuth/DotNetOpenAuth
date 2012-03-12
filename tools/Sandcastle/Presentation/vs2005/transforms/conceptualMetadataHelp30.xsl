@@ -93,10 +93,12 @@
     </xsl:if>
 
     <!-- Microsoft.Help.TocParent -->
-    <xsl:for-each select="/document/metadata/attribute[@name='TOCParent']">
-      <meta name="Microsoft.Help.TocParent" content="{.}" />
-      <meta name="Microsoft.Help.TocOrder" content="0" />
-    </xsl:for-each>
+    <xsl:if test="/document/metadata/attribute[@name='TOCParent']">
+      <meta name="Microsoft.Help.TocParent" content="{/document/metadata/attribute[@name='TOCParent']}" />      
+    </xsl:if>
+    <xsl:if test="/document/metadata/attribute[@name='TOCOrder']">
+      <meta name="Microsoft.Help.TocOrder" content="{/document/metadata/attribute[@name='TOCOrder']}" />
+    </xsl:if>
 
     <!-- Microsoft.Help.Product -->
     <!-- Added by MTPS -->

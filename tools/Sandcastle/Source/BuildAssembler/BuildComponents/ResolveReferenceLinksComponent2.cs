@@ -281,6 +281,12 @@ namespace Microsoft.Ddue.Tools {
                             writer.WriteAttributeString("href", msdnUrl);
                             writer.WriteAttributeString("target", linkTarget);
                             break;
+                        case LinkType2.Id:
+                            string xhelp = String.Format("ms-xhelp://?Id={0}", targetId);
+                            xhelp = xhelp.Replace("#", "%23");
+                            writer.WriteStartElement("a");
+                            writer.WriteAttributeString("href", xhelp);
+                            break;
                     }
 
                     // write the link text

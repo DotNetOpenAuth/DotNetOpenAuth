@@ -165,10 +165,6 @@
 	<item id="exceptionConditionHeader">Condition</item>
 	<item id="permissionNameHeader">Permission</item>
 	<item id="permissionDescriptionHeader">Description</item>
-  <item id="requiresNameHeader">Requires</item>
-  <item id="ensuresNameHeader">Ensures</item>
-  <item id="ensuresOnThrowNameHeader">EnsuresOnThrow</item>
-  <item id="invariantsNameHeader">Invariants</item>
 
 	<!-- filter control text -->
 	<item id="allTypesFilterLabel">All Types</item>
@@ -253,6 +249,8 @@
 	<item id="WinXpProfessional"><include item="WinXPPro"/></item>
 	<item id="Win2003Server"><include item="WinXPSvr"/></item>
 	<item id="NETCF"><include item="PocketPC"/>, <include item="SmartPhone"/>, <include item="WindowsCE"/></item>
+  
+  <item id="XNA"><include item="Xbox360"/>, <include item="Zune" /></item>
 	<!-- Platform Notes -->
 
   <item id="Platforms">Platforms</item>
@@ -376,11 +374,15 @@
   <item id="IncludeNetfwMembers">Include .NET Framework Members</item>
   <item id="IncludeNetcfwMembers">Include .NET Compact Framework Members</item>
   <item id="IncludeXnafwMembers">Include XNA Framework Members</item>
+  <item id="IncludeSilverlightMembers">Include <include item="silverlight" /> Members</item>
+  <item id="IncludeSilverlight_mobileMembers">Include <include item="silverlight_mobile"/> Members</item>
   <item id="memberFrameworksShowAll">Frameworks: Show All</item>
   <item id="memberFrameworksMultiple">Frameworks: Multiple</item>
   <item id="memberFrameworksNetfw">Frameworks: <include item="netfw"/> Only</item>
   <item id="memberFrameworksNetcfw">Frameworks: <include item="netcfw"/> Only</item>
   <item id="memberFrameworksXnafw">Frameworks: <include item="xnafw"/> Only</item>
+  <item id="memberFrameworksSilverlight">Frameworks: <include item="silverlight"/> Only</item>
+  <item id="memberFrameworksSilverlight_mobile">Frameworks: <include item="silverlight_mobile"/> Only</item>
 
   <item id="requirementsNamespaceLayout">
     <b>Namespace:</b> 
@@ -425,6 +427,7 @@
   <item id="derivedClasses">Derived Classes</item>
   <item id="CompactFrameworkAltText">Supported by the .NET Compact Framework</item>
   <item id="XNAFrameworkAltText">Supported by the XNA Framework</item>
+  <item id="SilverlightMobileAltText">Supported by <include item="silverlight_mobile"/></item>
   <item id="ExplicitInterfaceImplementation">Explicit Interface Implementations</item>
   <item id="ExplicitInterfaceAltText">Explicit interface implemetation</item>
   
@@ -462,7 +465,7 @@
   <item id="outKeyword"><span class="languageSpecificText"><span class="cs"><span class="keyword">out</span> </span><span class="vb"><span class="keyword">Out</span> </span><span class="cpp"><span class="keyword">out</span> </span><span class="nu"><span class="keyword">out</span> </span><span class="fs"></span></span></item>
   
   <item id="covariant">This type parameter is covariant. That is, you can use either the type you specified or any type that is more derived. </item>
-  <item id="contravariant">This type parameter is contavariant. That is, you can use either the type you specified or any type that is less derived. </item>
+  <item id="contravariant">This type parameter is contravariant. That is, you can use either the type you specified or any type that is less derived. </item>
   <item id="variance">For more information about covariance and contravariance, see <conceptualLink target="2678dc63-c7f9-4590-9ddc-0a4df684d42e" />.</item>
   
   <!-- Non Cls Compliant boilerplate text-->
@@ -473,6 +476,9 @@
   <item id="typeSecurityCriticalBoilerplate">This type has a SecurityCriticalAttribute attribute, which restricts it to internal use by the .NET Framework for Silverlight class library. Application code that uses any member of this type throws a MethodAccessException.</item>
   <item id="memberSecurityCriticalBoilerplate">This member has a SecurityCriticalAttribute attribute, which restricts it to internal use by the .NET Framework for Silverlight class library. Application code that uses this member throws a MethodAccessException.</item>
   <item id="securityCritical">[SECURITY CRITICAL] </item>
+  
+  <!-- Overload page boilerplate -->
+  <item id="overloadSummary">This member is overloaded. For complete information about this member, including syntax, usage, and examples, click a name in the overload list.</item>
        
   <!-- platform names that appear in the Platforms section on mref type and member pages 
        The id values must be in sync with the platform/@name values used in the manifold  platformFilters.xml filter files.
@@ -482,7 +488,7 @@
   <item id="WinME">Windows Millennium Edition</item>
   <item id="WinSvr2000">Windows Server 2000 SP4</item>
   <item id="WinXPPro64">Windows XP Professional x64 Edition</item>
-  <item id="WinXP">Windows XP SP2</item>
+  <item id="WinXP">Windows XP SP3</item>
   <item id="WindowsCE">Windows CE</item>
   <item id="PocketPC">Windows Mobile for Pocket PC</item>
   <item id="SmartPhone">Windows Mobile for Smartphone</item>
@@ -509,6 +515,7 @@
   <item id="netcfw">.NET Compact Framework</item>
   <item id="xnafw">XNA Framework</item>
   <item id="silverlight">Silverlight</item>
+  <item id="silverlight_mobile">Silverlight for Windows Phone</item>
   
   <!-- framework version ids
        These shared content item strings are used in the Version Information section.
@@ -533,8 +540,14 @@
   <item id="xnafw10">1.0</item>
 
   <!-- silverlight version ids used in Version Information section. -->
-  <item id="silverlight20">2.0</item>
   <item id="silverlight10">1.0</item>
+  <item id="silverlight20">2.0</item>
+  <item id="silverlight_v3">3.0</item>
+  <item id="silverlight_v4">4.0</item>
+  
+  <item id="silverlight_mobile_v1">Windows Phone OS 7.0</item>
+  
+  
 
   <!-- Used in the Requirements section to display an xmlns URI for apis that can be used in XAML -->
   <item id="xamlXmlnsRequirementsLayout"><b>XMLNS for XAML:</b> {0}</item>

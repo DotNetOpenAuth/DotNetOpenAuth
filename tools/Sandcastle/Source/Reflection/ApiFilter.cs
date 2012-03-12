@@ -62,6 +62,12 @@ namespace Microsoft.Ddue.Tools.Reflection {
 
 #region Public API
 
+        public virtual bool IsDocumentedInterface(TypeNode type)
+        {
+            if (type == null) throw new ArgumentException("type");
+            return (apiFilter.IsExposedType(type));
+        }
+
         public virtual bool HasExposedMembers(TypeNode type)
         {
             if (type == null) throw new ArgumentNullException("type");

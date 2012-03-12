@@ -1,11 +1,12 @@
 
 // Dropdown menu control
 
-function Dropdown(activatorId, dropdownId) {
+function Dropdown(activatorId, dropdownId, containerId) {
 
 	// store activator and dropdown elements
 	this.activator = document.getElementById(activatorId);
 	this.dropdown = document.getElementById(dropdownId);
+	this.container = document.getElementById(containerId);
 	this.activatorImage = document.getElementById(activatorId + "Image");
 
 	// wire up show/hide events
@@ -53,7 +54,7 @@ Dropdown.prototype.reposition = function(e) {
 	var offsetTop = 0;
 	var offsetElement = this.activator;
 	
-	while (offsetElement) {
+	while (offsetElement && offsetElement != this.container) {
 		offsetLeft += offsetElement.offsetLeft;
 		offsetTop += offsetElement.offsetTop;
 		offsetElement = offsetElement.offsetParent;

@@ -60,7 +60,11 @@
   </xsl:template>
   
   <xsl:template name="insertStylesheets">
-    <link rel="stylesheet" type="text/css" href="../styles/presentation.css" />
+    <link rel="stylesheet" type="text/css">
+      <includeAttribute name="href" item="stylePath">
+        <parameter>presentation.css</parameter>
+      </includeAttribute>
+    </link>
     <!-- make mshelp links work -->
     <link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />
     <!--<link rel="stylesheet" type="text/css" href="ms-help://Dx/DxRuntime/DxLink.css" />-->

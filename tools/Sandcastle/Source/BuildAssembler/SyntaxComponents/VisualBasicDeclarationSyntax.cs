@@ -161,6 +161,7 @@ namespace Microsoft.Ddue.Tools {
 
 
 		public override void WriteNormalMethodSyntax (XPathNavigator reflection, SyntaxWriter writer) {
+            if (IsUnsupportedVarargs(reflection, writer)) return;
 
 			string name = (string) reflection.Evaluate(apiNameExpression);
 			XPathNavigator type = reflection.SelectSingleNode(apiReturnTypeExpression);
@@ -211,106 +212,113 @@ namespace Microsoft.Ddue.Tools {
 			string name = (string) reflection.Evaluate(apiNameExpression);
 			XPathNavigator type = reflection.SelectSingleNode(apiReturnTypeExpression);
 
-			string identifier;
-			switch (name) {
-				// unary math operators
-				case "UnaryPlus":
-					identifier = "+";
-				break;
-				case "UnaryNegation":
-					identifier = "-";
-				break;
-				case "Increment":
-					identifier = "++";
-				break;
-				case "Decrement":
-					identifier = "--";
-				break;
-				// unary logical operators
-				case "LogicalNot":
-					identifier = "Not";
-				break;
-				case "True":
-					identifier = "IsTrue";
-				break;
-				case "False":
-					identifier = "IsFalse";
-				break;
-				// binary comparison operators
-				case "Equality":
-					identifier = "=";
-				break;
-				case "Inequality":
-					identifier = "<>";
-				break;
-				case "LessThan":
-					identifier = "<";
-				break;
-				case "GreaterThan":
-					identifier = ">";
-				break;
-				case "LessThanOrEqual":
-					identifier = "<=";
-				break;
-				case "GreaterThanOrEqual":
-					identifier = ">=";
-				break;	
-				// binary math operators
-				case "Addition":
-					identifier = "+";
-				break;
-				case "Subtraction":
-					identifier = "-";
-				break;
-				case "Multiply":
-					identifier = "*";
-				break;
-				case "Division":
-					identifier = "/";
-				break;
-				case "Exponent":
-					identifier = "^";
-				break;
-				case "Modulus":
-					identifier = "Mod";
-				break;
-				case "IntegerDivision":
-					identifier = @"\";
-				break;
-				// binary logical operators
-				case "BitwiseAnd":
-					identifier = "And";
-				break;
-				case "BitwiseOr":
-					identifier = "Or";
-				break;
-				case "ExclusiveOr":
-					identifier = "Xor";
-				break;
-				// bit-array operators
-				case "OnesComplement":
-					identifier = "~";
-				break;
-				case "LeftShift":
-					identifier = "<<";
-				break;
-				case "RightShift":
-					identifier = ">>";
-				break;
-				// concatenation
-				case "Concatenate":
-					identifier = "&";
-				break;
-				// casting operators
-				case "Implicit":
-				case "Explicit":
-					identifier = "CType";
-				break;
-				// didn't recognize an operator
-				default:
-					identifier = null;
-				break;
-			}
+			string identifier = null;
+            if (!(bool)reflection.Evaluate(apiIsUdtReturnExpression))
+            {
+                switch (name)
+                {
+                    // unary math operators
+                    case "UnaryPlus":
+                        identifier = "+";
+                        break;
+                    case "UnaryNegation":
+                        identifier = "-";
+                        break;
+                    case "Increment":
+                        identifier = "++";
+                        break;
+                    case "Decrement":
+                        identifier = "--";
+                        break;
+                    // unary logical operators
+                    case "LogicalNot":
+                        identifier = "Not";
+                        break;
+                    case "True":
+                        identifier = "IsTrue";
+                        break;
+                    case "False":
+                        identifier = "IsFalse";
+                        break;
+                    // binary comparison operators
+                    case "Equality":
+                        identifier = "=";
+                        break;
+                    case "Inequality":
+                        identifier = "<>";
+                        break;
+                    case "LessThan":
+                        identifier = "<";
+                        break;
+                    case "GreaterThan":
+                        identifier = ">";
+                        break;
+                    case "LessThanOrEqual":
+                        identifier = "<=";
+                        break;
+                    case "GreaterThanOrEqual":
+                        identifier = ">=";
+                        break;
+                    // binary math operators
+                    case "Addition":
+                        identifier = "+";
+                        break;
+                    case "Subtraction":
+                        identifier = "-";
+                        break;
+                    case "Multiply":
+                        identifier = "*";
+                        break;
+                    case "Division":
+                        identifier = "/";
+                        break;
+                    case "Exponent":
+                        identifier = "^";
+                        break;
+                    case "Modulus":
+                        identifier = "Mod";
+                        break;
+                    case "IntegerDivision":
+                        identifier = @"\";
+                        break;
+                    // binary logical operators
+                    case "BitwiseAnd":
+                        identifier = "And";
+                        break;
+                    case "BitwiseOr":
+                        identifier = "Or";
+                        break;
+                    case "ExclusiveOr":
+                        identifier = "Xor";
+                        break;
+                    // bit-array operators
+                    case "OnesComplement":
+                        identifier = "~";
+                        break;
+                    case "LeftShift":
+                        identifier = "<<";
+                        break;
+                    case "RightShift":
+                        identifier = ">>";
+                        break;
+                    // concatenation
+                    case "Concatenate":
+                        identifier = "&";
+                        break;
+                    // casting operators
+                    case "Implicit":
+                    case "Explicit":
+                        identifier = "CType";
+                        break;
+                    case "Assign":
+                        identifier = "=";
+                        break;
+                    // didn't recognize an operator
+                    default:
+                        identifier = null;
+                        break;
+                }
+            }
 			if (identifier == null) {
 				writer.WriteMessage("UnsupportedOperator_" + Language);
 				return;

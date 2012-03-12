@@ -89,6 +89,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HxfGeneratorComponent.cs" />
     <Compile Include="IntellisenseComponent2.cs" />
+    <Compile Include="MSHCComponent.cs" />
     <Compile Include="MsdnResolver.cs" />
     <Compile Include="References.cs" />
     <Compile Include="ResolveReferenceLinksComponent2.cs" />
