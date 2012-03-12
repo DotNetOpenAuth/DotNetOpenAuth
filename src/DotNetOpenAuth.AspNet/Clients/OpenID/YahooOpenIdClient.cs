@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Initializes a new instance of the <see cref="YahooOpenIdClient"/> class.
 		/// </summary>
 		public YahooOpenIdClient()
-			: base("yahoo", "http://me.yahoo.com") { }
+			: base("yahoo", WellKnownProviders.Yahoo) { }
 
 		#endregion
 

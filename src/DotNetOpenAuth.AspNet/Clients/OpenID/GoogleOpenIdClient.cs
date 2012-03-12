@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Initializes a new instance of the <see cref="GoogleOpenIdClient"/> class.
 		/// </summary>
 		public GoogleOpenIdClient()
-			: base("google", "https://www.google.com/accounts/o8/id") { }
+			: base("google", WellKnownProviders.Google) { }
 
 		#endregion
 
