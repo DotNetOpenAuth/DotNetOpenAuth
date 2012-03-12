@@ -107,13 +107,18 @@ namespace DotNetOpenAuth.AspNet {
 		public string Provider { get; private set; }
 
 		/// <summary>
-		/// Gets the unique user id that is returned from the provider.
+		/// Gets the user id that is returned from the provider.  It is unique only within the Provider's namespace.
 		/// </summary>
 		public string ProviderUserId { get; private set; }
 
 		/// <summary>
-		/// Gets the user name that is returned from the provider.
+		/// Gets an (insecure, non-unique) alias for the user that the user should recognize as himself/herself.
 		/// </summary>
+		/// <value>This may take the form of an email address, a URL, or any other value that the user may recognize.</value>
+		/// <remarks>
+		/// This alias may come from the Provider or may be derived by the relying party if the Provider does not supply one.
+		/// It is not guaranteed to be unique and certainly does not merit any trust in any suggested authenticity.
+		/// </remarks>
 		public string UserName { get; private set; }
 		#endregion
 	}
