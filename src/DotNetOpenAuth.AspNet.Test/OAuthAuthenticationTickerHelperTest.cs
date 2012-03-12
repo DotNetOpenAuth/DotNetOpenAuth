@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.Test.Web {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OAuthAuthenticationTickerHelperTest.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test.Web {
 	using System;
 	using System.Web;
 	using System.Web.Security;
@@ -10,12 +16,12 @@
 	public class OAuthAuthenticationTickerHelperTest {
 		[TestCase]
 		public void SetAuthenticationTicketSetCookieOnHttpResponseWithPersistentSet() {
-			SetAuthenticationTicketSetCookieOnHttpResponse(isPersistent: true);
+			this.SetAuthenticationTicketSetCookieOnHttpResponse(isPersistent: true);
 		}
 
 		[TestCase]
 		public void SetAuthenticationTicketSetCookieOnHttpResponseWithPersistentNotSet() {
-			SetAuthenticationTicketSetCookieOnHttpResponse(isPersistent: false);
+			this.SetAuthenticationTicketSetCookieOnHttpResponse(isPersistent: false);
 		}
 
 		[TestCase]
@@ -30,8 +36,7 @@
 							  "OAuth",
 							  FormsAuthentication.FormsCookiePath);
 
-			var cookie = new HttpCookie(name: FormsAuthentication.FormsCookieName,
-										value: FormsAuthentication.Encrypt(ticket));
+			var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
 			var cookies = new HttpCookieCollection { cookie };
 
 			var context = new Mock<HttpContextBase>();
@@ -69,8 +74,7 @@
 							  null,
 							  FormsAuthentication.FormsCookiePath);
 
-			var cookie = new HttpCookie(name: FormsAuthentication.FormsCookieName,
-										value: FormsAuthentication.Encrypt(ticket));
+			var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
 			var cookies = new HttpCookieCollection { cookie };
 
 			var context = new Mock<HttpContextBase>();
@@ -97,8 +101,7 @@
 							  "OAuth",
 							  FormsAuthentication.FormsCookiePath);
 
-			var cookie = new HttpCookie(name: "random cookie name",
-										value: FormsAuthentication.Encrypt(ticket));
+			var cookie = new HttpCookie("random cookie name", FormsAuthentication.Encrypt(ticket));
 			var cookies = new HttpCookieCollection { cookie };
 
 			var context = new Mock<HttpContextBase>();

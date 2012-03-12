@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.AspNet.Test {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OAuth2ClientTest.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Test {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
@@ -113,10 +119,10 @@
 			protected override IDictionary<string, string> GetUserData(string accessToken) {
 				if (accessToken == "abcde") {
 					return new Dictionary<string, string>
-                               {
-                                   {"id", "12345"},
-                                   {"name", "John Doe"}
-                               };
+					{
+						{ "id", "12345" },
+						{ "name", "John Doe" },
+					};
 				}
 
 				return null;

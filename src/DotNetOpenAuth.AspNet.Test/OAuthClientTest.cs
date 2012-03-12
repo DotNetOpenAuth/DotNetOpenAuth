@@ -1,12 +1,18 @@
-﻿namespace DotNetOpenAuth.AspNet.Test {
+﻿//-----------------------------------------------------------------------
+// <copyright file="OAuthClientTest.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.AspNet.Test {
 	using System;
 	using System.Web;
+	using DotNetOpenAuth.AspNet;
+	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
-	using DotNetOpenAuth.AspNet.Clients;
 	using Moq;
 	using NUnit.Framework;
-	using DotNetOpenAuth.AspNet;
 
 	[TestFixture]
 	public class OAuthClientTest {
@@ -26,10 +32,9 @@
 		public void RequestAuthenticationInvokeMethodOnWebWorker() {
 			// Arrange
 			var webWorker = new Mock<IOAuthWebWorker>(MockBehavior.Strict);
-			webWorker.Setup(
-						w => w.RequestAuthentication(
-							It.Is<Uri>(u => u.ToString().Equals("http://live.com/my/path.cshtml?q=one"))))
-					 .Verifiable();
+			webWorker
+				.Setup(w => w.RequestAuthentication(It.Is<Uri>(u => u.ToString().Equals("http://live.com/my/path.cshtml?q=one"))))
+				.Verifiable();
 
 			var client = new MockOAuthClient(webWorker.Object);
 			var returnUri = new Uri("http://live.com/my/path.cshtml?q=one");
@@ -113,10 +118,17 @@
 		}
 
 		private class MockOAuthClient : OAuthClient {
+			/// <summary>
+			/// Initializes a new instance of the <see cref="MockOAuthClient"/> class.
+			/// </summary>
 			public MockOAuthClient()
 				: this(new Mock<IOAuthWebWorker>().Object) {
 			}
 
+			/// <summary>
+			/// Initializes a new instance of the <see cref="MockOAuthClient"/> class.
+			/// </summary>
+			/// <param name="worker">The worker.</param>
 			public MockOAuthClient(IOAuthWebWorker worker)
 				: base("mockoauth", worker) {
 			}
