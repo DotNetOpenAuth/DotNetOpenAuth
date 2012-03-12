@@ -95,14 +95,5 @@ namespace DotNetOpenAuth.AspNet {
                 return ResourceManager.GetString("OpenIDFailedToGetResponse", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid identifier.
-        /// </summary>
-        internal static string OpenIDInvalidIdentifier {
-            get {
-                return ResourceManager.GetString("OpenIDInvalidIdentifier", resourceCulture);
-            }
-        }
     }
 }

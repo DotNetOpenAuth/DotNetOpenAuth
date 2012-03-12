@@ -48,14 +48,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="providerIdentifier">
 		/// The provider identifier, which is the usually the login url of the specified provider. 
 		/// </param>
-		public OpenIdClient(string providerName, string providerIdentifier) {
+		public OpenIdClient(string providerName, Identifier providerIdentifier) {
 			Requires.NotNullOrEmpty(providerName, "providerName");
-			Requires.NotNullOrEmpty(providerIdentifier, "providerIdentifier");
+			Requires.NotNull(providerIdentifier, "providerIdentifier");
 
 			this.providerName = providerName;
-			if (!Identifier.TryParse(providerIdentifier, out this.providerIdentifier) || this.providerIdentifier == null) {
-				throw new ArgumentException(WebResources.OpenIDInvalidIdentifier, "providerIdentifier");
-			}
+			this.providerIdentifier = providerIdentifier;
 		}
 
 		#endregion
