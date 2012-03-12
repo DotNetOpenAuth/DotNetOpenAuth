@@ -54,8 +54,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		protected override void OnBeforeSendingAuthenticationRequest(IAuthenticationRequest request) {
 			// Attribute Exchange extensions
 			var fetchRequest = new FetchRequest();
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Contact.Email, isRequired: true));
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Name.FullName, isRequired: false));
+			fetchRequest.Attributes.AddRequired(WellKnownAttributes.Contact.Email);
+			fetchRequest.Attributes.AddOptional(WellKnownAttributes.Name.FullName);
 
 			request.AddExtension(fetchRequest);
 		}

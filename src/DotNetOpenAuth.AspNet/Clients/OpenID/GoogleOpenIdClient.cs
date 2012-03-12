@@ -57,10 +57,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		protected override void OnBeforeSendingAuthenticationRequest(IAuthenticationRequest request) {
 			// Attribute Exchange extensions
 			var fetchRequest = new FetchRequest();
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Contact.Email, isRequired: true));
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Contact.HomeAddress.Country, isRequired: false));
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Name.First, isRequired: false));
-			fetchRequest.Attributes.Add(new AttributeRequest(WellKnownAttributes.Name.Last, isRequired: false));
+			fetchRequest.Attributes.AddRequired(WellKnownAttributes.Contact.Email);
+			fetchRequest.Attributes.AddOptional(WellKnownAttributes.Contact.HomeAddress.Country);
+			fetchRequest.Attributes.AddOptional(WellKnownAttributes.Name.First);
+			fetchRequest.Attributes.AddOptional(WellKnownAttributes.Name.Last);
 
 			request.AddExtension(fetchRequest);
 		}
