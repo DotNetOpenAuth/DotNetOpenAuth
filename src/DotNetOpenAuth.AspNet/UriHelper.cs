@@ -14,8 +14,6 @@ namespace DotNetOpenAuth.AspNet {
 	/// The uri helper.
 	/// </summary>
 	internal static class UriHelper {
-		#region Public Methods and Operators
-
 		/// <summary>
 		/// The attach query string parameter.
 		/// </summary>
@@ -77,7 +75,5 @@ namespace DotNetOpenAuth.AspNet {
 			Uri publicUrl = context.Request.GetPublicFacingUrl();
 			return new Uri(publicUrl, returnUrl);
 		}
-
-		#endregion
 	}
 }

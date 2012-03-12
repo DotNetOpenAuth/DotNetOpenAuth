@@ -12,16 +12,10 @@ namespace DotNetOpenAuth.AspNet {
 	/// Represents a client which can authenticate users via an external website/provider.
 	/// </summary>
 	public interface IAuthenticationClient {
-		#region Public Properties
-
 		/// <summary>
 		/// Gets the name of the provider which provides authentication service.
 		/// </summary>
 		string ProviderName { get; }
-
-		#endregion
-
-		#region Public Methods and Operators
 
 		/// <summary>
 		/// Attempts to authenticate users by forwarding them to an external website, and upon succcess or failure, redirect users back to the specified url.
@@ -44,6 +38,5 @@ namespace DotNetOpenAuth.AspNet {
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
 		AuthenticationResult VerifyAuthentication(HttpContextBase context);
-		#endregion
 	}
 }

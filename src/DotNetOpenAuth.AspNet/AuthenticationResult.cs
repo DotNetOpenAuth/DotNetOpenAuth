@@ -14,18 +14,12 @@ namespace DotNetOpenAuth.AspNet {
 	/// Represents the result of OAuth or OpenID authentication.
 	/// </summary>
 	public class AuthenticationResult {
-		#region Constants and Fields
-
 		/// <summary>
 		/// Returns an instance which indicates failed authentication.
 		/// </summary>
 		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes",
 			Justification = "This type is immutable.")]
 		public static readonly AuthenticationResult Failed = new AuthenticationResult(isSuccessful: false);
-
-		#endregion
-
-		#region Constructors and Destructors
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthenticationResult"/> class.
@@ -81,10 +75,6 @@ namespace DotNetOpenAuth.AspNet {
 			}
 		}
 
-		#endregion
-
-		#region Public Properties
-
 		/// <summary>
 		/// Gets the error that may have occured during the authentication process
 		/// </summary>
@@ -120,6 +110,5 @@ namespace DotNetOpenAuth.AspNet {
 		/// It is not guaranteed to be unique and certainly does not merit any trust in any suggested authenticity.
 		/// </remarks>
 		public string UserName { get; private set; }
-		#endregion
 	}
 }

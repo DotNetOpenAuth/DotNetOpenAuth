@@ -13,8 +13,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// The dictionary extensions.
 	/// </summary>
 	internal static class DictionaryExtensions {
-		#region Public Methods and Operators
-
 		/// <summary>
 		/// Adds the value from an XDocument with the specified element name if it's not empty.
 		/// </summary>
@@ -56,7 +54,5 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				dictionary[key] = value;
 			}
 		}
-
-		#endregion
 	}
 }
