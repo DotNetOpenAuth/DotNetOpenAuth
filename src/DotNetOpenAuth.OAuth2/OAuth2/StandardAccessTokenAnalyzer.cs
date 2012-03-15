@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </remarks>
 		public virtual bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope) {
 			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
-			var token = accessTokenFormatter.Deserialize(message, accessToken);
+			var token = accessTokenFormatter.Deserialize(message, accessToken, Protocol.access_token);
 			user = token.User;
 			scope = new HashSet<string>(token.Scope, OAuthUtilities.ScopeStringComparer);
 			return true;

@@ -24,10 +24,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Deserializes a <see cref="DataBag"/>.
 		/// </summary>
-		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
+		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be null.</param>
 		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
-		/// <returns>The deserialized value.  Never null.</returns>
-		T Deserialize(IProtocolMessage containingMessage, string data);
+		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation.</param>
+		/// <returns>
+		/// The deserialized value.  Never null.
+		/// </returns>
+		T Deserialize(IProtocolMessage containingMessage, string data, string messagePartName);
 	}
 
 	/// <summary>
@@ -62,9 +65,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
 		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <returns>The deserialized value.  Never null.</returns>
-		T IDataBagFormatter<T>.Deserialize(IProtocolMessage containingMessage, string data) {
+		T IDataBagFormatter<T>.Deserialize(IProtocolMessage containingMessage, string data, string messagePartName) {
 			Requires.NotNull(containingMessage, "containingMessage");
 			Requires.NotNullOrEmpty(data, "data");
+			Requires.NotNullOrEmpty(messagePartName, "messagePartName");
 			Contract.Ensures(Contract.Result<T>() != null);
 
 			throw new System.NotImplementedException();

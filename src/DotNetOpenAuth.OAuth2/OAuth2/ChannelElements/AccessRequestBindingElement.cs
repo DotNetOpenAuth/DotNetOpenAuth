@@ -118,11 +118,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
 					if (authCodeCarrier != null) {
 						var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code);
+						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code, Protocol.code);
 						authCodeCarrier.AuthorizationDescription = authorizationCode;
 					} else if (refreshTokenCarrier != null) {
 						var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken);
+						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken, Protocol.refresh_token);
 						refreshTokenCarrier.AuthorizationDescription = refreshToken;
 					} else if (resourceOwnerPasswordCarrier != null) {
 						try {
