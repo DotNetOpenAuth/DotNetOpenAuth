@@ -97,55 +97,33 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Checks the incoming HTTP request for an access token request and prepares a response if the request message was found.
+		/// Handles an incoming request to the authorization server's token endpoint.
 		/// </summary>
-		/// <param name="response">The formulated response, or <c>null</c> if the request was not found..</param>
-		/// <returns>A value indicating whether any access token request was found in the HTTP request.</returns>
-		/// <remarks>
-		/// This method assumes that the authorization server and the resource server are the same and that they share a single
-		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
-		/// </remarks>
-		public bool TryPrepareAccessTokenResponse(out IDirectResponseProtocolMessage response) {
-			return this.TryPrepareAccessTokenResponse(this.Channel.GetRequestFromContext(), out response);
-		}
-
-		/// <summary>
-		/// Checks the incoming HTTP request for an access token request and prepares a response if the request message was found.
-		/// </summary>
-		/// <param name="httpRequestInfo">The HTTP request info.</param>
-		/// <param name="response">The formulated response, or <c>null</c> if the request was not found..</param>
-		/// <returns>A value indicating whether any access token request was found in the HTTP request.</returns>
-		/// <remarks>
-		/// This method assumes that the authorization server and the resource server are the same and that they share a single
-		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
-		/// </remarks>
-		public bool TryPrepareAccessTokenResponse(HttpRequestBase httpRequestInfo, out IDirectResponseProtocolMessage response) {
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
-			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<IDirectResponseProtocolMessage>(out response) != null));
-
-			var request = this.ReadAccessTokenRequest(httpRequestInfo);
-			if (request != null) {
-				response = this.PrepareAccessTokenResponse(request);
-				return true;
+		/// <param name="request">The HTTP request.</param>
+		/// <returns>The HTTP response to send to the client.</returns>
+		public OutgoingWebResponse HandleTokenRequest(HttpRequestBase request = null) {
+			if (request == null) {
+				request = this.Channel.GetRequestFromContext();
 			}
 
-			response = null;
-			return false;
-		}
-
-		/// <summary>
-		/// Reads the access token request.
-		/// </summary>
-		/// <param name="requestInfo">The request info.</param>
-		/// <returns>The Client's request for an access token; or <c>null</c> if no such message was found in the request.</returns>
-		public AccessTokenRequestBase ReadAccessTokenRequest(HttpRequestBase requestInfo = null) {
-			if (requestInfo == null) {
-				requestInfo = this.Channel.GetRequestFromContext();
+			AccessTokenRequestBase requestMessage;
+			IProtocolMessage responseMessage;
+			try {
+				if (this.Channel.TryReadFromRequest(request, out requestMessage)) {
+					// TODO: refreshToken should be set appropriately based on authorization server policy.
+					responseMessage = this.PrepareAccessTokenResponse(requestMessage);
+				} else {
+					responseMessage = new AccessTokenFailedResponse() {
+						Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
+					};
+				}
+			} catch (ProtocolException ex) {
+				responseMessage = new AccessTokenFailedResponse() {
+					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
+				};
 			}
 
-			AccessTokenRequestBase request;
-			this.Channel.TryReadFromRequest(requestInfo, out request);
-			return request;
+			return this.Channel.PrepareResponse(responseMessage);
 		}
 
 		/// <summary>
@@ -214,7 +192,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The request for an access token.</param>
 		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
-		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
+		private IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
 			Requires.NotNull(request, "request");
 
 			if (includeRefreshToken) {

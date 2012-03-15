@@ -21,12 +21,7 @@
 		/// </summary>
 		/// <returns>The response to the Client.</returns>
 		public ActionResult Token() {
-			IDirectResponseProtocolMessage response;
-			if (this.authorizationServer.TryPrepareAccessTokenResponse(out response)) {
-				return this.authorizationServer.Channel.PrepareResponse(response).AsActionResult();
-			} else {
-				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing OAuth 2.0 request message.");
-			}
+			return this.authorizationServer.HandleTokenRequest(this.Request).AsActionResult();
 		}
 
 		/// <summary>

@@ -41,11 +41,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var request = server.ReadAuthorizationRequest();
 					Assert.That(request, Is.Not.Null);
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
-					var tokenRequest = server.ReadAccessTokenRequest();
-					IAccessTokenRequest accessTokenRequest = tokenRequest;
-					Assert.That(accessTokenRequest.ClientAuthenticated);
-					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
-					server.Channel.Respond(tokenResponse);
+					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
 		}

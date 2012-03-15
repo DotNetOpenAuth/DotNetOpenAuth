@@ -37,11 +37,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var request = server.ReadAuthorizationRequest();
 					Assert.That(request, Is.Not.Null);
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
-					var tokenRequest = server.ReadAccessTokenRequest();
-					IAccessTokenRequest accessTokenRequest = tokenRequest;
-					Assert.That(accessTokenRequest.ClientAuthenticated);
-					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
-					server.Channel.Respond(tokenResponse);
+					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
 		}
@@ -58,9 +54,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					Assert.That(authState.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
-					var request = server.ReadAccessTokenRequest();
-					var response = server.PrepareAccessTokenResponse(request);
-					server.Channel.Respond(response);
+					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
 		}
@@ -81,9 +75,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					Assert.That(authState.RefreshToken, Is.Null);
 				},
 				server => {
-					var request = server.ReadAccessTokenRequest();
-					var response = server.PrepareAccessTokenResponse(request);
-					server.Channel.Respond(response);
+					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
 		}
