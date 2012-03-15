@@ -14,7 +14,7 @@
 		<dependencies>
 			<dependency id="DotNetOpenAuth.OAuth.Consumer" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OAuth.ServiceProvider" version="[$version$]" />
-			<dependency id="DotNetOpenAuth.OpenId" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.OpenID.Core" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>
