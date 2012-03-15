@@ -64,7 +64,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
 		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
-		/// <returns>The deserialized value.  Never null.</returns>
+		/// <param name="messagePartName">Name of the message part whose value is to be deserialized.  Used for exception messages.</param>
+		/// <returns>
+		/// The deserialized value.  Never null.
+		/// </returns>
 		T IDataBagFormatter<T>.Deserialize(IProtocolMessage containingMessage, string data, string messagePartName) {
 			Requires.NotNull(containingMessage, "containingMessage");
 			Requires.NotNullOrEmpty(data, "data");

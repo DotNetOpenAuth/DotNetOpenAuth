@@ -117,7 +117,7 @@ namespace DotNetOpenAuth.OAuth2 {
 						Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
 					};
 				}
-			} catch (ProtocolException ex) {
+			} catch (ProtocolException) {
 				responseMessage = new AccessTokenFailedResponse() {
 					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
 				};
@@ -187,6 +187,32 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Gets the redirect URL to use for a particular authorization request.
+		/// </summary>
+		/// <param name="authorizationRequest">The authorization request.</param>
+		/// <returns>The URL to redirect to.  Never <c>null</c>.</returns>
+		/// <exception cref="ProtocolException">Thrown if no callback URL could be determined.</exception>
+		protected Uri GetCallback(EndUserAuthorizationRequest authorizationRequest) {
+			Requires.NotNull(authorizationRequest, "authorizationRequest");
+			Contract.Ensures(Contract.Result<Uri>() != null);
+
+			var client = this.AuthorizationServerServices.GetClientOrThrow(authorizationRequest.ClientIdentifier);
+
+			// Prefer a request-specific callback to the pre-registered one (if any).
+			if (authorizationRequest.Callback != null) {
+				// The OAuth channel has already validated the callback parameter against
+				// the authorization server's whitelist for this client.
+				return authorizationRequest.Callback;
+			}
+
+			// Since the request didn't include a callback URL, look up the callback from
+			// the client's preregistration with this authorization server.
+			Uri defaultCallback = client.DefaultCallback;
+			ErrorUtilities.VerifyProtocol(defaultCallback != null, OAuthStrings.NoCallback);
+			return defaultCallback;
+		}
+
+		/// <summary>
 		/// Prepares the response to an access token request.
 		/// </summary>
 		/// <param name="request">The request for an access token.</param>
@@ -211,32 +237,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			};
 			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 			return response;
-		}
-
-		/// <summary>
-		/// Gets the redirect URL to use for a particular authorization request.
-		/// </summary>
-		/// <param name="authorizationRequest">The authorization request.</param>
-		/// <returns>The URL to redirect to.  Never <c>null</c>.</returns>
-		/// <exception cref="ProtocolException">Thrown if no callback URL could be determined.</exception>
-		protected Uri GetCallback(EndUserAuthorizationRequest authorizationRequest) {
-			Requires.NotNull(authorizationRequest, "authorizationRequest");
-			Contract.Ensures(Contract.Result<Uri>() != null);
-
-			var client = this.AuthorizationServerServices.GetClientOrThrow(authorizationRequest.ClientIdentifier);
-
-			// Prefer a request-specific callback to the pre-registered one (if any).
-			if (authorizationRequest.Callback != null) {
-				// The OAuth channel has already validated the callback parameter against
-				// the authorization server's whitelist for this client.
-				return authorizationRequest.Callback;
-			}
-
-			// Since the request didn't include a callback URL, look up the callback from
-			// the client's preregistration with this authorization server.
-			Uri defaultCallback = client.DefaultCallback;
-			ErrorUtilities.VerifyProtocol(defaultCallback != null, OAuthStrings.NoCallback);
-			return defaultCallback;
 		}
 	}
 }
