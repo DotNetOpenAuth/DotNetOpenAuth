@@ -256,7 +256,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
 		/// but deviates from the protocol specification irrecoverably.</exception>
-		public IRequest GetRequest(HttpRequestInfo httpRequestInfo) {
+		public IRequest GetRequest(HttpRequestBase httpRequestInfo) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			IDirectedProtocolMessage incomingMessage = null;
 
@@ -266,7 +266,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					// If the incoming request does not resemble an OpenID message at all,
 					// it's probably a user who just navigated to this URL, and we should
 					// just return null so the host can display a message to the user.
-					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.UrlBeforeRewriting.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
+					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.GetPublicFacingUrl().QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
 						return null;
 					}
 
@@ -533,7 +533,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>
 		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.
 		/// </returns>
-		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestInfo httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
+		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestBase httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
 			Requires.NotNull(ex, "ex");
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 

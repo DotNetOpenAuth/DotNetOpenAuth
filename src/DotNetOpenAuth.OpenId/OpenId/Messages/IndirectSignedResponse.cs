@@ -26,6 +26,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// </summary>
 	[DebuggerDisplay("OpenID {Version} {Mode} (no id assertion)")]
 	[Serializable]
+	[SuppressMessage("Microsoft.StyleCop.CSharp.DocumentationRules", "SA1630:DocumentationTextMustContainWhitespace", Justification = "The samples are string literals.")]
+	[SuppressMessage("Microsoft.StyleCop.CSharp.DocumentationRules", "SA1631:DocumentationMustMeetCharacterPercentage", Justification = "The samples are string literals.")]
 	internal class IndirectSignedResponse : IndirectResponseBase, ITamperResistantOpenIdMessage {
 		/// <summary>
 		/// The allowed date/time formats for the response_nonce parameter.

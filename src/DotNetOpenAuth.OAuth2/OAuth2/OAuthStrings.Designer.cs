@@ -169,6 +169,15 @@ namespace DotNetOpenAuth.OAuth2 {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The return value of {0}.{1} should never be null..
+        /// </summary>
+        internal static string ResultShouldNotBeNull {
+            get {
+                return ResourceManager.GetString("ResultShouldNotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Individual scopes may not contain spaces..
         /// </summary>
         internal static string ScopesMayNotContainSpaces {

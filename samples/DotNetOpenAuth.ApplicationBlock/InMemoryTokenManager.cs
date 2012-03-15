@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <param name="consumerKey">The consumer key.</param>
 		/// <param name="consumerSecret">The consumer secret.</param>
 		public InMemoryTokenManager(string consumerKey, string consumerSecret) {
-			if (String.IsNullOrEmpty(consumerKey)) {
+			if (string.IsNullOrEmpty(consumerKey)) {
 				throw new ArgumentNullException("consumerKey");
 			}
 
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// send a follow-up request for the access token.</para>
 		/// </remarks>
 		public void StoreOpenIdAuthorizedRequestToken(string consumerKey, AuthorizationApprovedResponse authorization) {
-			this.tokensAndSecrets[authorization.RequestToken] = String.Empty;
+			this.tokensAndSecrets[authorization.RequestToken] = string.Empty;
 		}
 
 		#endregion

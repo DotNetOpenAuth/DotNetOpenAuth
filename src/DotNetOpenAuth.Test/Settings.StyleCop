@@ -1,6 +1,6 @@
 <StyleCopSettings Version="4.3">
   <Analyzers>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.DocumentationRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">
       <Rules>
         <Rule Name="ElementsMustBeDocumented">
           <RuleSettings>
@@ -15,7 +15,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.LayoutRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.LayoutRules">
       <Rules>
         <Rule Name="SingleLineCommentMustBePrecededByBlankLine">
           <RuleSettings>
@@ -25,7 +25,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
           <Value>op</Value>
@@ -34,7 +34,7 @@
         </CollectionProperty>
       </AnalyzerSettings>
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.MaintainabilityRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.MaintainabilityRules">
       <Rules>
         <Rule Name="FieldsMustBePrivate">
           <RuleSettings>

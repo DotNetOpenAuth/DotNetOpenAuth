@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 
 	[TestFixture]
 	public class UriDiscoveryServiceTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void DiscoveryWithRedirects() {
 			Identifier claimedId = this.GetMockIdentifier(ProtocolVersion.V20, false);
 
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Assert.AreEqual(1, this.Discover(userSuppliedIdentifier).Count());
 		}
 
-		[TestCase]
+		[Test]
 		public void DiscoverRequireSslWithSecureRedirects() {
 			Identifier claimedId = this.GetMockIdentifier(ProtocolVersion.V20, true);
 
@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			this.Discover(userSuppliedIdentifier);
 		}
 
-		[TestCase]
+		[Test]
 		public void DiscoveryRequireSslWithInsecureXrdsInSecureHtmlHead() {
 			var insecureXrdsSource = this.GetMockIdentifier(ProtocolVersion.V20, false);
 			Uri secureClaimedUri = new Uri("https://localhost/secureId");
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Assert.AreEqual(0, this.Discover(userSuppliedIdentifier).Count());
 		}
 
-		[TestCase]
+		[Test]
 		public void DiscoveryRequireSslWithInsecureXrdsInSecureHttpHeader() {
 			var insecureXrdsSource = this.GetMockIdentifier(ProtocolVersion.V20, false);
 
@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Assert.AreEqual(0, this.Discover(userSuppliedIdentifier).Count());
 		}
 
-		[TestCase]
+		[Test]
 		public void DiscoveryRequireSslWithInsecureXrdsButSecureLinkTags() {
 			var insecureXrdsSource = this.GetMockIdentifier(ProtocolVersion.V20, false);
 			string html = string.Format(
@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Assert.AreEqual(OPLocalIdentifiersSsl[1].AbsoluteUri, this.Discover(userSuppliedIdentifier).Single().ProviderLocalIdentifier.ToString());
 		}
 
-		[TestCase]
+		[Test]
 		public void DiscoveryRequiresSslIgnoresInsecureEndpointsInXrds() {
 			var insecureEndpoint = GetServiceEndpoint(0, ProtocolVersion.V20, 10, false);
 			var secureEndpoint = GetServiceEndpoint(1, ProtocolVersion.V20, 20, true);
@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, this.Discover(secureClaimedId).Single().ProviderLocalIdentifier);
 		}
 
-		[TestCase]
+		[Test]
 		public void XrdsDirectDiscovery_10() {
 			this.FailDiscoverXrds("xrds-irrelevant");
 			this.DiscoverXrds("xrds10", ProtocolVersion.V10, null, "http://a/b");
@@ -130,14 +130,14 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			this.DiscoverXrds("xrds1020", ProtocolVersion.V10, null, "http://a/b");
 		}
 
-		[TestCase]
+		[Test]
 		public void XrdsDirectDiscovery_20() {
 			this.DiscoverXrds("xrds20", ProtocolVersion.V20, null, "http://a/b");
 			this.DiscoverXrds("xrds2010a", ProtocolVersion.V20, null, "http://a/b");
 			this.DiscoverXrds("xrds2010b", ProtocolVersion.V20, null, "http://a/b");
 		}
 
-		[TestCase]
+		[Test]
 		public void HtmlDiscover_11() {
 			this.DiscoverHtml("html10prov", ProtocolVersion.V11, null, "http://a/b");
 			this.DiscoverHtml("html10both", ProtocolVersion.V11, "http://c/d", "http://a/b");
@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			this.DiscoverHtml("html2010combinedC", ProtocolVersion.V11, "http://c/d", "http://a/b");
 		}
 
-		[TestCase]
+		[Test]
 		public void HtmlDiscover_20() {
 			this.DiscoverHtml("html20prov", ProtocolVersion.V20, null, "http://a/b");
 			this.DiscoverHtml("html20both", ProtocolVersion.V20, "http://c/d", "http://a/b");
@@ -164,13 +164,13 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			this.FailDiscoverHtml("html20relative");
 		}
 
-		[TestCase]
+		[Test]
 		public void XrdsDiscoveryFromHead() {
 			this.MockResponder.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
 			this.DiscoverXrds("XrdsReferencedInHead.html", ProtocolVersion.V10, null, "http://a/b");
 		}
 
-		[TestCase]
+		[Test]
 		public void XrdsDiscoveryFromHttpHeader() {
 			WebHeaderCollection headers = new WebHeaderCollection();
 			headers.Add("X-XRDS-Location", new Uri("http://localhost/xrds1020.xml").AbsoluteUri);
@@ -181,7 +181,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		/// <summary>
 		/// Verifies HTML discovery proceeds if an XRDS document is referenced that doesn't contain OpenID endpoints.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void HtmlDiscoveryProceedsIfXrdsIsEmpty() {
 			this.MockResponder.RegisterMockResponse(new Uri("http://localhost/xrds-irrelevant.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds-irrelevant.xml"));
 			this.DiscoverHtml("html20provWithEmptyXrds", ProtocolVersion.V20, null, "http://a/b");
@@ -190,7 +190,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		/// <summary>
 		/// Verifies HTML discovery proceeds if the XRDS that is referenced cannot be found.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void HtmlDiscoveryProceedsIfXrdsIsBadOrMissing() {
 			this.DiscoverHtml("html20provWithBadXrds", ProtocolVersion.V20, null, "http://a/b");
 		}
@@ -198,7 +198,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		/// <summary>
 		/// Verifies that a dual identifier yields only one service endpoint by default.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void DualIdentifierOffByDefault() {
 			this.MockResponder.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml"));
 			var results = this.Discover(VanityUri).ToList();
@@ -209,7 +209,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		/// <summary>
 		/// Verifies that a dual identifier yields two service endpoints when that feature is turned on.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void DualIdentifier() {
 			this.MockResponder.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml"));
 			var rp = this.CreateRelyingParty(true);

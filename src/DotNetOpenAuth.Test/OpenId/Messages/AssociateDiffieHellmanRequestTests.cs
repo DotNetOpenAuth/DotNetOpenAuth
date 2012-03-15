@@ -20,12 +20,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.request = new AssociateDiffieHellmanRequest(Protocol.V20.Version, Recipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			Assert.AreEqual(Recipient, this.request.Recipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void Mode() {
 			Assert.AreEqual("associate", this.request.Mode);
 		}

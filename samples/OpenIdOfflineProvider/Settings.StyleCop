@@ -1,6 +1,6 @@
 <StyleCopSettings Version="4.3">
   <Analyzers>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.DocumentationRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">
       <Rules>
         <Rule Name="FileMustHaveHeader">
           <RuleSettings>

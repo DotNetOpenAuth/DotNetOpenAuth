@@ -129,6 +129,20 @@ namespace RelyingPartyLogic {
 			return this.IsAuthorizationValid(authorization.Scope, authorization.ClientIdentifier, authorization.UtcIssued, authorization.User);
 		}
 
+		/// <summary>
+		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database.
+		/// </summary>
+		/// <param name="userName">Username on the account.</param>
+		/// <param name="password">The user's password.</param>
+		/// <returns>
+		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
+		public bool IsResourceOwnerCredentialValid(string userName, string password) {
+			// This web site delegates user authentication to OpenID Providers, and as such no users have local passwords with this server.
+			throw new NotSupportedException();
+		}
+
 		#endregion
 
 		public bool CanBeAutoApproved(EndUserAuthorizationRequest authorizationRequest) {

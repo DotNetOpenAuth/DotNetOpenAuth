@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 
 	[TestFixture]
 	public class StandardExpirationBindingElementTests : MessagingTestBase {
-		[TestCase]
+		[Test]
 		public void SendSetsTimestamp() {
 			TestExpiringMessage message = new TestExpiringMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://localtest");
@@ -26,13 +26,13 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 			Assert.IsTrue(DateTime.UtcNow - ((IExpiringProtocolMessage)message).UtcCreationDate < TimeSpan.FromSeconds(3), "The timestamp on the message was not set on send.");
 		}
 
-		[TestCase]
+		[Test]
 		public void VerifyGoodTimestampIsAccepted() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
-		[TestCase]
+		[Test]
 		public void VerifyFutureTimestampWithinClockSkewIsAccepted() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew - TimeSpan.FromSeconds(1), false);

@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that the Text and Identifier properties interact correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void IdentifierTextInteraction() {
 			var box = new OpenIdTextBox();
 			Assert.AreEqual(string.Empty, box.Text);

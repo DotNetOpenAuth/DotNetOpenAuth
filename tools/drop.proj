@@ -162,7 +162,6 @@
 			Replacement="%(Replacement)" />
 		<DowngradeProjects
 			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
-			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
 			Condition=" '$(DowngradeVS2010ToVS2008)' != 'false' "
 			/>
 		<ItemGroup>

@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies null value encoding
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void NullValueEncoding() {
 			Assert.AreEqual("oob", this.encoding.EncodedNullValue);
 		}
@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies decoding "oob" results in a null uri.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void DecodeOobToNullUri() {
 			Assert.IsNull(this.encoding.Decode("oob"));
 		}
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies proper decoding/encoding of a Uri
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UriEncodeDecode() {
 			Uri original = new Uri("http://somehost/p?q=a#frag");
 			string encodedValue = this.encoding.Encode(original);

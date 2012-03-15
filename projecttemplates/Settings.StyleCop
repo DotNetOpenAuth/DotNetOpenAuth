@@ -1,6 +1,6 @@
 <StyleCopSettings Version="4.3">
   <Analyzers>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.DocumentationRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">
       <Rules>
         <Rule Name="FileMustHaveHeader">
           <RuleSettings>
@@ -20,7 +20,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.MaintainabilityRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.MaintainabilityRules">
       <Rules>
         <Rule Name="FieldsMustBePrivate">
           <RuleSettings>
@@ -30,7 +30,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
       <Rules>
         <Rule Name="ElementMustBeginWithUpperCaseLetter">
           <RuleSettings>

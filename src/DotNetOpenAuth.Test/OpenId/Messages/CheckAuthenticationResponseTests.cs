@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			base.SetUp();
 		}
 
-		[TestCase]
+		[Test]
 		public void IsValid() {
 			Protocol protocol = Protocol.Default;
 			var request = new CheckAuthenticationRequest(protocol.Version, OPUri);

@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		string IProviderAssociationStore.Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
 			Requires.NotNull(secret, "secret");
 			Requires.True(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc");
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 			throw new NotImplementedException();
 		}
 

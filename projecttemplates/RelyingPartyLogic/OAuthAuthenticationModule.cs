@@ -54,7 +54,7 @@ namespace RelyingPartyLogic {
 				var resourceServer = new ResourceServer(tokenAnalyzer);
 
 				IPrincipal principal;
-				var errorMessage = resourceServer.VerifyAccess(new HttpRequestInfo(this.application.Context.Request), out principal);
+				var errorMessage = resourceServer.VerifyAccess(new HttpRequestWrapper(this.application.Context.Request), out principal);
 				if (errorMessage == null) {
 					this.application.Context.User = principal;
 				}

@@ -28,10 +28,11 @@
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
     <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />
+    <Compile Include="Messaging\HttpRequestHeaders.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
-    <Compile Include="Messaging\EnumerableCache.cs" />
+    <Compile Include="Messaging\EnumerableCacheExtensions.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Messaging\ReadOnlyDictionary.cs" />
     <Compile Include="Reporting.cs" />
     <Compile Include="Requires.cs" />
     <Compile Include="Strings.Designer.cs">

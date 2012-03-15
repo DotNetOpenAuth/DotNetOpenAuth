@@ -1,13 +1,13 @@
 <StyleCopSettings Version="4.3">
   <Parsers>
-    <Parser ParserId="Microsoft.StyleCop.CSharp.CsParser">
+    <Parser ParserId="StyleCop.CSharp.CsParser">
       <ParserSettings>
         <BooleanProperty Name="AnalyzeDesignerFiles">False</BooleanProperty>
       </ParserSettings>
     </Parser>
   </Parsers>
   <Analyzers>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.SpacingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.SpacingRules">
       <Rules>
         <Rule Name="TabsMustNotBeUsed">
           <RuleSettings>
@@ -17,7 +17,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.LayoutRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.LayoutRules">
       <Rules>
         <Rule Name="CurlyBracketsForMultiLineStatementsMustNotShareLine">
           <RuleSettings>
@@ -37,7 +37,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.ReadabilityRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.ReadabilityRules">
       <Rules>
         <Rule Name="ParametersMustBeOnSameLineOrSeparateLines">
           <RuleSettings>
@@ -52,7 +52,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
           <Value>ax</Value>

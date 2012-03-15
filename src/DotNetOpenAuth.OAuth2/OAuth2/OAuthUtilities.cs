@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopeToken">The scope token.</param>
 		internal static void VerifyValidScopeToken(string scopeToken) {
-			ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(scopeToken), OAuthStrings.InvalidScopeToken, scopeToken);
+			ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(scopeToken), OAuthStrings.InvalidScopeToken, scopeToken);
 			for (int i = 0; i < scopeToken.Length; i++) {
 				// The allowed set of characters comes from OAuth 2.0 section 3.3 (draft 23)
 				char ch = scopeToken[i];
@@ -141,7 +141,9 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Ensures(Contract.Result<IClientDescription>() != null);
 
 			try {
-				return authorizationServer.GetClient(clientIdentifier);
+				var result = authorizationServer.GetClient(clientIdentifier);
+				ErrorUtilities.VerifyHost(result != null, OAuthStrings.ResultShouldNotBeNull, authorizationServer.GetType().FullName, "GetClient(string)");
+				return result;
 			} catch (KeyNotFoundException ex) {
 				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
 			} catch (ArgumentException ex) {

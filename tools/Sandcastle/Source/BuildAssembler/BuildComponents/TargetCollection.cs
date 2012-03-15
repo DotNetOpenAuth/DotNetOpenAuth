@@ -2733,7 +2733,8 @@ namespace Microsoft.Ddue.Tools {
         Local,
         Index,
         LocalOrIndex,
-        Msdn
+        Msdn,
+        Id
     }
 
 }

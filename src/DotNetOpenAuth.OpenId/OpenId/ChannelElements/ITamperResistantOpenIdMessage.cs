@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -39,6 +40,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// and if present in the response, "claimed_id" and "identity". 
 		/// Additional keys MAY be signed as part of the message. See Generating Signatures.
 		/// </remarks>
+		[SuppressMessage("Microsoft.StyleCop.CSharp.DocumentationRules", "SA1630:DocumentationTextMustContainWhitespace", Justification = "The samples are string literals.")]
 		string SignedParameterOrder { get; set; } // TODO: make sure we have a unit test to verify that an incoming message with fewer signed fields than required will be rejected.
 	}
 }

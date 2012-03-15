@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			var implicitGrantResponse = message as EndUserAuthorizationSuccessAccessTokenResponse;
 			if (implicitGrantResponse != null) {
-				IAuthorizationCarryingRequest tokenCarryingResponse = implicitGrantResponse;
+				IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
 				tokenCarryingResponse.AuthorizationDescription = new AccessToken(request.ClientIdentifier, implicitGrantResponse.Scope, implicitGrantResponse.AuthorizingUsername, implicitGrantResponse.Lifetime);
 
 				return MessageProtections.None;

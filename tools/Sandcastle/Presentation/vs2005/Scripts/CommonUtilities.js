@@ -312,25 +312,24 @@ function ShowBasedOnInheritance(memberdata)
     return false;
 }
 
-function ShowBasedOnFramework(memberdata)
-{
-    var isNetfw = (memberdata.indexOf("notNetfw") == -1);
-    var isNetcfw = (memberdata.indexOf("netcfw") != -1);
-    var isXnafw = (memberdata.indexOf("xnafw") != -1);
-    
-    var netfwCheck = docSettings["netfwCheckbox"];
-    var netcfwCheck = docSettings["netcfwCheckbox"];
-    var xnafwCheck = docSettings["xnafwCheckbox"];
-    
-    // if all the checkboxes are null, it means we have no framework filter; so return true to show member by default
-    if (netfwCheck == null && netcfwCheck == null && xnafwCheck == null)
-        return true;
+function ShowBasedOnFramework(memberdata) {
 
-    var showNetfw = (netfwCheck == "on");
-    var showNetcfw = (netcfwCheck == "on");
-    var showXnafw = (xnafwCheck == "on");
-    
-    if ( (isNetfw && showNetfw) || (isNetcfw && showNetcfw) || (isXnafw && showXnafw) )
+    var splitData = memberdata.split(";");
+    var foundNotNetfw = false;
+    var frameworkFilter = document.getElementById('memberFrameworksMenu') != null;
+
+    for (var i = 0; i < splitData.length; i++) {
+
+        if (splitData[i] == "notNetfw") {
+            foundNotNetfw = true;
+            continue;
+        }
+        if (docSettings[splitData[i] + "Checkbox"] == "on")
+            return true;
+    }
+    if (!foundNotNetfw && docSettings["netfwCheckbox"] == "on")
+        return true;
+    if (foundNotNetfw && docSettings["netfwCheckbox"] == null && !frameworkFilter)
         return true;
 
     return false;

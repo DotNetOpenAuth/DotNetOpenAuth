@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 
 	[TestFixture]
 	public class HmacSha1SigningBindingElementTests : MessagingTestBase {
-		[TestCase]
+		[Test]
 		public void SignatureTest() {
 			UnauthorizedTokenRequest message = SigningBindingElementBaseTests.CreateTestRequestTokenMessage(this.MessageDescriptions, null);
 

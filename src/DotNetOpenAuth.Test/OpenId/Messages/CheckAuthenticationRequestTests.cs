@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// and cause the authentication to inappropriately fail.
 		/// Designed to verify fix to Trac #198.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void ExactPositiveAssertionPreservation() {
 			var rp = CreateRelyingParty(true);
 

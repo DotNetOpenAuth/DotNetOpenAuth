@@ -61,8 +61,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);
 
+			var cryptoStore = authorizationServer.CryptoKeyStore;
+			ErrorUtilities.VerifyHost(cryptoStore != null, OAuthStrings.ResultShouldNotBeNull, authorizationServer.GetType(), "CryptoKeyStore");
+
 			return new UriStyleMessageFormatter<AuthorizationCode>(
-				authorizationServer.CryptoKeyStore,
+				cryptoStore,
 				AuthorizationCodeKeyBucket,
 				signed: true,
 				encrypted: true,

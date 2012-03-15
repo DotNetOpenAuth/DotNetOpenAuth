@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies the user_setup_url is set properly for immediate negative responses.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UserSetupUrl() {
 			// Construct a V1 immediate request
 			Protocol protocol = Protocol.V11;
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.IsNotNull(userSetupUrl);
 
 			// Now construct a new request as if it had just come in.
-			HttpRequestInfo httpRequest = new HttpRequestInfo { UrlBeforeRewriting = userSetupUrl };
+			HttpRequestInfo httpRequest = new HttpRequestInfo("GET", userSetupUrl);
 			var setupRequest = (AuthenticationRequest)provider.GetRequest(httpRequest);
 			var setupRequestMessage = (CheckIdRequest)setupRequest.RequestMessage;
 

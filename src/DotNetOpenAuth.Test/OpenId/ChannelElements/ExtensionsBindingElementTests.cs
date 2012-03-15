@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.request = new SignedResponseRequest(Protocol.Default.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
 		}
 
-		[TestCase]
+		[Test]
 		public void RoundTripFullStackTest() {
 			IOpenIdMessageExtension request = new MockOpenIdExtension("requestPart", "requestData");
 			IOpenIdMessageExtension response = new MockOpenIdExtension("responsePart", "responseData");
@@ -47,12 +47,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				new IOpenIdMessageExtension[] { response });
 		}
 
-		[TestCase]
+		[Test]
 		public void ExtensionFactory() {
 			Assert.AreSame(this.factory, this.rpElement.ExtensionFactory);
 		}
 
-		[TestCase]
+		[Test]
 		public void PrepareMessageForSendingNull() {
 			Assert.IsNull(this.rpElement.ProcessOutgoingMessage(null));
 		}
@@ -60,13 +60,13 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that false is returned when a non-extendable message is sent.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void PrepareMessageForSendingNonExtendableMessage() {
 			IProtocolMessage request = new AssociateDiffieHellmanRequest(Protocol.Default.Version, OpenIdTestBase.OPUri);
 			Assert.IsNull(this.rpElement.ProcessOutgoingMessage(request));
 		}
 
-		[TestCase]
+		[Test]
 		public void PrepareMessageForSending() {
 			this.request.Extensions.Add(new MockOpenIdExtension("part", "extra"));
 			Assert.IsNotNull(this.rpElement.ProcessOutgoingMessage(this.request));
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Assert.AreEqual("extra", this.request.ExtraData["openid." + alias + ".data"]);
 		}
 
-		[TestCase]
+		[Test]
 		public void PrepareMessageForReceiving() {
 			this.request.ExtraData["openid.ns.mock"] = MockOpenIdExtension.MockTypeUri;
 			this.request.ExtraData["openid.mock.Part"] = "part";
@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that extension responses are included in the OP's signature.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ExtensionResponsesAreSigned() {
 			Protocol protocol = Protocol.Default;
 			var op = this.CreateProvider();
@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that unsigned extension responses (where any or all fields are unsigned) are ignored.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ExtensionsAreIdentifiedAsSignedOrUnsigned() {
 			Protocol protocol = Protocol.Default;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
@@ -144,7 +144,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// OpenID Authentication 2.0 section 12 states that
 		/// "A namespace MUST NOT be assigned more than one alias in the same message".
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void TwoExtensionsSameTypeUri() {
 			IOpenIdMessageExtension request1 = new MockOpenIdExtension("requestPart1", "requestData1");
 			IOpenIdMessageExtension request2 = new MockOpenIdExtension("requestPart2", "requestData2");

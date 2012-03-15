@@ -38,9 +38,16 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The faulty request.</param>
 		/// <param name="invalidClientCredentialsInAuthorizationHeader">A value indicating whether this error response is in result to a request that had invalid client credentials which were supplied in the HTTP Authorization header.</param>
 		internal AccessTokenFailedResponse(AccessTokenRequestBase request, bool invalidClientCredentialsInAuthorizationHeader)
-			: base(request)
-		{
+			: base(request) {
 			this.invalidClientCredentialsInAuthorizationHeader = invalidClientCredentialsInAuthorizationHeader;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
+		/// </summary>
+		/// <param name="version">The protocol version.</param>
+		internal AccessTokenFailedResponse(Version version = null)
+			: base(version ?? Protocol.Default.Version) {
 		}
 
 		#region IHttpDirectResponse Members

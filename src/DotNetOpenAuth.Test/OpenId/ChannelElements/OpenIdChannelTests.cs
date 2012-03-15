@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.channel.WebRequestHandler = this.webHandler;
 		}
 
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			// Verify that the channel stack includes the expected types.
 			// While other binding elements may be substituted for these, we'd then have
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that the channel sends direct message requests as HTTP POST requests.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void DirectRequestsUsePost() {
 			IDirectedProtocolMessage requestMessage = new Mocks.TestDirectedMessage(MessageTransport.Direct) {
 				Recipient = new Uri("http://host"),
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// class is verified elsewhere.  We're only checking that the KVF class is being used by the 
 		/// <see cref="OpenIdChannel.SendDirectMessageResponse"/> method.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void DirectResponsesSentUsingKeyValueForm() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			MessageDictionary messageFields = this.MessageDescriptions.GetAccessor(message);
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that direct message responses are read in using the Key Value Form decoder.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void DirectResponsesReceivedAsKeyValueForm() {
 			var fields = new Dictionary<string, string> {
 				{ "var1", "value1" },
@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Verifies that messages asking for special HTTP status codes get them.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);

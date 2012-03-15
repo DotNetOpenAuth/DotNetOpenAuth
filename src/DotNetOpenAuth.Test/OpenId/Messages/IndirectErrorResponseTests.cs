@@ -23,12 +23,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response = new IndirectErrorResponse(request);
 		}
 
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			Assert.AreEqual(RPUri, this.response.Recipient);
 		}
 
-		[TestCase]
+		[Test]
 		public void ParameterNames() {
 			this.response.ErrorMessage = "Some Error";
 			this.response.Contact = "Andrew Arnott";

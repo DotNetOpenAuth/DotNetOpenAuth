@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="Code\Extensions.cs" />
     <Compile Include="Code\FormsAuthenticationService.cs" />
+    <Compile Include="Code\HttpHeaderAttribute.cs" />
     <Compile Include="Code\OpenIdRelyingPartyService.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AuthController.cs" />

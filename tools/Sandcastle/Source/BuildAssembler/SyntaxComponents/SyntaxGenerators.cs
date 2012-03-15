@@ -88,6 +88,7 @@ namespace Microsoft.Ddue.Tools {
 		protected static XPathExpression apiIsAbstractProcedureExpression = XPathExpression.Compile("boolean(proceduredata[@abstract='true'])");
 		protected static XPathExpression apiIsVirtualExpression = XPathExpression.Compile("boolean(proceduredata[@virtual='true'])");
 		protected static XPathExpression apiIsFinalExpression = XPathExpression.Compile("boolean(proceduredata[@final='true'])");
+        protected static XPathExpression apiIsVarargsExpression = XPathExpression.Compile("boolean(proceduredata[@varargs='true'])");
 		protected static XPathExpression apiOverridesMemberExpression = XPathExpression.Compile("string(proceduredata/@overrides/member)");
 		protected static XPathExpression apiIsExplicitImplementationExpression = XPathExpression.Compile("boolean(memberdata/@visibility='private' and proceduredata/@virtual='true' and boolean(implements/member))");
 		protected static XPathExpression apiImplementedMembersExpression = XPathExpression.Compile("implements/member");
@@ -98,6 +99,8 @@ namespace Microsoft.Ddue.Tools {
 		protected static XPathExpression apiIsWritePropertyExpression = XPathExpression.Compile("boolean(propertydata/@set='true')");
         protected static XPathExpression apiGetVisibilityExpression = XPathExpression.Compile("string(propertydata/@get-visibility)");
         protected static XPathExpression apiSetVisibilityExpression = XPathExpression.Compile("string(propertydata/@set-visibility)");
+        // return data
+        protected static XPathExpression apiIsUdtReturnExpression = XPathExpression.Compile("boolean(returns/type[@api='T:System.Void']/requiredModifier/type[@api='T:System.Runtime.CompilerServices.IsUdtReturn'])");
 
 		// event data
 		protected static XPathExpression apiHandlerOfEventExpression = XPathExpression.Compile("eventhandler/*[1]");
@@ -262,6 +265,11 @@ namespace Microsoft.Ddue.Tools {
                         WriteOperatorSyntax(reflection, writer);
                     }
                 }
+                // Write out let properties (no .Net equivalent) as methods
+                if(name.StartsWith("let_"))
+                {
+                    WriteNormalMethodSyntax(reflection, writer);
+                }
             } else {
                 WriteNormalMethodSyntax(reflection, writer);
             }
@@ -307,6 +315,16 @@ namespace Microsoft.Ddue.Tools {
                 writer.WriteString(", ");
                 writer.WriteReferenceLink(removerId);
             }
+        }
+
+        protected virtual bool IsUnsupportedVarargs(XPathNavigator reflection, SyntaxWriter writer)
+        {
+            bool isVarargs = (bool) reflection.Evaluate(apiIsVarargsExpression);
+            
+            if(isVarargs)
+                writer.WriteMessage("UnsupportedVarargs_" + Language);
+
+            return (isVarargs);
         }
 
         protected virtual bool IsUnsupportedUnsafe(XPathNavigator reflection, SyntaxWriter writer)

@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected DataBagFormatterBase(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Requires.True(!String.IsNullOrEmpty(bucket) || cryptoKeyStore == null, null);
+			Requires.True(!string.IsNullOrEmpty(bucket) || cryptoKeyStore == null, null);
 			Requires.True(cryptoKeyStore != null || (!signed && !encrypted), null);
 
 			this.cryptoKeyStore = cryptoKeyStore;
@@ -190,15 +190,22 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Deserializes a <see cref="DataBag"/>, including decompression, decryption, signature and nonce validation where applicable.
 		/// </summary>
-		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
+		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be null.</param>
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
-		/// <returns>The deserialized value.  Never null.</returns>
+		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation.</param>
+		/// <returns>
+		/// The deserialized value.  Never null.
+		/// </returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public T Deserialize(IProtocolMessage containingMessage, string value) {
+		public T Deserialize(IProtocolMessage containingMessage, string value, string messagePartName) {
+			Requires.NotNull(containingMessage, "containingMessage");
+			Requires.NotNullOrEmpty(value, "value");
+			Requires.NotNullOrEmpty(messagePartName, "messagePartName");
+
 			string symmetricSecretHandle = null;
 			if (this.encrypted && this.cryptoKeyStore != null) {
 				string valueWithoutHandle;
-				MessagingUtilities.ExtractKeyHandleAndPayload(containingMessage, "<TODO>", value, out symmetricSecretHandle, out valueWithoutHandle);
+				MessagingUtilities.ExtractKeyHandleAndPayload(containingMessage, messagePartName, value, out symmetricSecretHandle, out valueWithoutHandle);
 				value = valueWithoutHandle;
 			}
 

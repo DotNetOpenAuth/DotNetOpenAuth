@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (response != null) {
 				var directResponse = (IDirectResponseProtocolMessage)response;
 				var request = (EndUserAuthorizationRequest)directResponse.OriginatingRequest;
-				IAuthorizationCarryingRequest tokenCarryingResponse = response;
+				IAuthorizationCodeCarryingRequest tokenCarryingResponse = response;
 				tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(request.ClientIdentifier, request.Callback, response.Scope, response.AuthorizingUsername);
 
 				return MessageProtections.None;

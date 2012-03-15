@@ -12,6 +12,7 @@ namespace DotNetOpenAuth {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
+	using System.Runtime.Serialization;
 	using System.Text;
 
 	/// <summary>
@@ -39,7 +40,7 @@ namespace DotNetOpenAuth {
 		[Pure, DebuggerStepThrough]
 		internal static void True(bool condition, string unformattedMessage, params object[] args) {
 			if (!condition) {
-				Fail(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
+				Fail(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
 			}
 		}
 
@@ -84,8 +85,8 @@ namespace DotNetOpenAuth {
 			/// <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is null. </exception>
 			/// <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
 			protected InternalErrorException(
-			  System.Runtime.Serialization.SerializationInfo info,
-			  System.Runtime.Serialization.StreamingContext context)
+			  SerializationInfo info,
+			  StreamingContext context)
 				: base(info, context) {
 			}
 		}

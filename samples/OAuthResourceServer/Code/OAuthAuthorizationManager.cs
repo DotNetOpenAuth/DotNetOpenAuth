@@ -69,7 +69,7 @@
 					var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(signing, encrypting));
 
 					IPrincipal result;
-					var error = resourceServer.VerifyAccess(new HttpRequestInfo(httpDetails, requestUri), out result);
+					var error = resourceServer.VerifyAccess(HttpRequestInfo.Create(httpDetails, requestUri), out result);
 
 					// TODO: return the prepared error code.
 					return error != null ? null : result;

@@ -65,9 +65,6 @@
 
   <!-- section titles -->
   <item id="exceptionsTitle">Exceptions</item>
-  <item id="contractsTitle">Contracts</item>
-  <item id="setterTitle">Set</item>
-  <item id="getterTitle">Get</item>
   <item id="SeeAlso">See&#160;Also</item>
   <item id="SeeAlsoTasks">Tasks</item>
   <item id="SeeAlsoReference">Reference</item>
@@ -122,7 +119,7 @@
   <item id="XAML">XAML</item>
   <item id="usage">Usage</item>
   <item id="AspNet">ASP.NET</item>
-  <item id="VisualBasicDeclaration"><include item="VisualBasic"/> (Declaration)</item>
+  <item id="VisualBasicDeclaration"><include item="VisualBasic"/></item>
   <item id="VisualBasicUsage"><include item="VisualBasic"/> (<include item="usage"/>)</item>
   
   <item id="dropdownSeparator"><span>&#160;&#160;&#160;&#160;</span></item>
@@ -180,7 +177,7 @@
 			</includeAttribute>
 			comments
 		</a>
-			about this topic to Microsoft.
+			about this topic to the DotNetOpenAuth group.
 		</span>
 	</item>
 
@@ -197,7 +194,7 @@
       </includeAttribute>
       feedback
 		</a>
-			on this topic to the DotNetOpenAuth group.
+			on this topic to the DotNetOpenAuth team.
 		</span>
 </item>
   

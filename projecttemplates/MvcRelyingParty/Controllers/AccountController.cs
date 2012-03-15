@@ -49,6 +49,7 @@
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
+		[HttpHeader("x-frame-options", "SAMEORIGIN")] // mitigates clickjacking
 		public ActionResult Authorize() {
 			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
 			if (pendingRequest == null) {

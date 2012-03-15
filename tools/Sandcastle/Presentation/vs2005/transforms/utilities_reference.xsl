@@ -90,14 +90,18 @@
     </xsl:if>
   </xsl:template>
   
-	<xsl:template name="insertStylesheets">
-		<link rel="stylesheet" type="text/css" href="../styles/presentation.css" />
-		<!-- make mshelp links work -->
-		<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />
+  <xsl:template name="insertStylesheets">
+    <link rel="stylesheet" type="text/css">
+      <includeAttribute name="href" item="stylePath">
+        <parameter>presentation.css</parameter>
+      </includeAttribute>
+    </link>
+    <!-- make mshelp links work -->
+    <link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />
     <!--<link rel="stylesheet" type="text/css" href="ms-help://Dx/DxRuntime/DxLink.css" />-->
-	</xsl:template>
+  </xsl:template>
 
-	<xsl:template name="insertScripts">
+  <xsl:template name="insertScripts">
     <script type="text/javascript">
       <includeAttribute name="src" item="scriptPath"><parameter>EventUtilities.js</parameter></includeAttribute>
       <xsl:text> </xsl:text>
@@ -136,7 +140,20 @@
       </xsl:with-param>
       <xsl:with-param name="content">
         <xsl:for-each select="parameter">
-          <xsl:variable name="paramName" select="@name"/>
+
+          <!-- Use the reflection-generated parameter name when non-empty, otherwise use the authored parameter name. -->
+          <xsl:variable name="paramPosition" select="position()" />
+          <xsl:variable name="paramName">
+            <xsl:choose>
+              <xsl:when test="normalize-space(@name) != ''">
+                <xsl:value-of select="normalize-space(@name)" />
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="normalize-space(/document/comments/ddue:dduexml/ddue:parameters[1]/ddue:parameter[$paramPosition]/ddue:parameterReference)" />
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+          
           <dl paramName="{$paramName}">
             <dt>
               <span class="parameter">
@@ -153,7 +170,7 @@
               </include>
               <br />
               <xsl:call-template name="getParameterDescription">
-                <xsl:with-param name="name" select="@name" />
+                <xsl:with-param name="name" select="$paramName" />
               </xsl:call-template>
             </dd>
           </dl>
@@ -235,12 +252,15 @@
     </tr>
   </xsl:template>
 
-	<xsl:template match="element" mode="enumeration">
+  <xsl:template match="element" mode="enumeration">
     <xsl:variable name="supportedOnXna">
       <xsl:call-template name="IsMemberSupportedOnXna"/>
     </xsl:variable>
     <xsl:variable name="supportedOnCf">
       <xsl:call-template name="IsMemberSupportedOnCf"/>
+    </xsl:variable>
+    <xsl:variable name="supportedOnSilverlightMobile">
+      <xsl:call-template name="IsMemberSupportedOnSilverlightMobile" />
     </xsl:variable>
     <tr>
       <td>
@@ -264,20 +284,31 @@
             <includeAttribute name="title" item="XNAFrameworkAltText" />
           </img>
         </xsl:if>
+        <xsl:if test="normalize-space($supportedOnSilverlightMobile)!=''">
+          <img data="silverlight_mobile">
+            <includeAttribute name="src" item="iconPath">
+              <parameter>slMobile.gif</parameter>
+            </includeAttribute>
+            <includeAttribute name="alt" item="SilverlightMobileAltText" />
+            <includeAttribute name="title" item="SilverlightMobileAltText" />
+          </img>
+        </xsl:if>
       </td>
       <xsl:variable name="id" select="@api" />
-			<td target="{$id}">
-        <span class="selflink"><xsl:value-of select="apidata/@name"/></span>
+      <td target="{$id}">
+        <span class="selflink">
+          <xsl:value-of select="apidata/@name"/>
+        </span>
       </td>
-			<td>
+      <td>
         <xsl:if test="attributes/attribute/type[@api='T:System.ObsoleteAttribute']">
-            <xsl:text> </xsl:text>
-            <include item="obsoleteRed" />
-          </xsl:if>
-          <xsl:call-template name="getEnumMemberDescription" />
+          <xsl:text> </xsl:text>
+          <include item="obsoleteRed" />
+        </xsl:if>
+        <xsl:call-template name="getEnumMemberDescription" />
       </td>
-		</tr>
-	</xsl:template>
+    </tr>
+  </xsl:template>
 
   <xsl:template name="getEnumMemberDescription">
     <xsl:choose>
@@ -894,38 +925,47 @@
     </xsl:if>
   </xsl:template>
 
+
+
   <xsl:template match="elements" mode="member">
 
+    <!-- Filter out the Overload pages created by ApplyVSDocModel.xsl. These
+         pages (and the need for this filter) will go away once the full Brighton spec is implemented. -->
+    <xsl:variable name="filteredOverloadElements" select="element[starts-with(@api, 'Overload:')]/element | element[not(starts-with(@api, 'Overload:'))]" />
+    
     <xsl:call-template name="memberIntro" />
     
-    <xsl:if test="element[apidata[@subgroup='constructor']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
+    <!-- TODO: factor out these duplicated Xpaths by a new conditional in memberlistSection:
+         count($members) &gt; 0 -->
+    
+    <xsl:if test="$filteredOverloadElements[apidata[@subgroup='constructor']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
       <xsl:call-template name="memberlistSection">
         <xsl:with-param name="headerGroup" select="'constructor'" />
-        <xsl:with-param name="members" select="element[apidata[@subgroup='constructor']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
+        <xsl:with-param name="members" select="$filteredOverloadElements[apidata[@subgroup='constructor']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
       </xsl:call-template>
     </xsl:if>
    
     <!-- method table -->
-    <xsl:if test="element[apidata[@subgroup='method' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
+    <xsl:if test="$filteredOverloadElements[apidata[@subgroup='method' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
       <xsl:call-template name="memberlistSection">
         <xsl:with-param name="headerGroup">method</xsl:with-param>
-        <xsl:with-param name="members" select="element[apidata[@subgroup='method' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
+        <xsl:with-param name="members" select="$filteredOverloadElements[apidata[@subgroup='method' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
       </xsl:call-template>
     </xsl:if>
 
     <!-- operator table -->
-    <xsl:if test="element[apidata[@subsubgroup='operator']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
+    <xsl:if test="$filteredOverloadElements[apidata[@subsubgroup='operator']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
       <xsl:call-template name="memberlistSection">
         <xsl:with-param name="headerGroup">operator</xsl:with-param>
-        <xsl:with-param name="members" select="element[apidata[@subsubgroup='operator']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
+        <xsl:with-param name="members" select="$filteredOverloadElements[apidata[@subsubgroup='operator']][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
       </xsl:call-template>
     </xsl:if>
 
     <!-- extension method table -->
-    <xsl:if test="element/apidata[@subsubgroup='extension']">
+    <xsl:if test="$filteredOverloadElements[apidata[@subsubgroup='extension']]">
       <xsl:call-template name="memberlistSection">
         <xsl:with-param name="headerGroup">extensionMethod</xsl:with-param>
-        <xsl:with-param name="members" select="element[apidata[@subsubgroup='extension']]" />
+        <xsl:with-param name="members" select="$filteredOverloadElements[apidata[@subsubgroup='extension']]" />
       </xsl:call-template>
     </xsl:if>
 
@@ -938,10 +978,10 @@
     </xsl:if>
        
     <!-- property table -->
-    <xsl:if test="element[apidata[@subgroup='property' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
+    <xsl:if test="$filteredOverloadElements[apidata[@subgroup='property' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]">
       <xsl:call-template name="memberlistSection">
         <xsl:with-param name="headerGroup">property</xsl:with-param>
-        <xsl:with-param name="members" select="element[apidata[@subgroup='property' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
+        <xsl:with-param name="members" select="$filteredOverloadElements[apidata[@subgroup='property' and not(@subsubgroup)]][.//memberdata[@visibility='public' or @visibility='family' or @visibility='family or assembly' or @visibility='assembly'] or (.//memberdata[@visibility='private'] and not(.//proceduredata[@virtual = 'true']))]" />
       </xsl:call-template>
     </xsl:if>
     
@@ -968,12 +1008,12 @@
         <xsl:with-param name="members" select="element[apidata[@subsubgroup='attachedEvent']]" />
       </xsl:call-template>
     </xsl:if>
-    
+
     <!-- eii table -->
-    <xsl:if test="element[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]">
+    <xsl:if test="$filteredOverloadElements[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]">
       <xsl:call-template name="memberlistSection">
         <xsl:with-param name="headerGroup">ExplicitInterfaceImplementation</xsl:with-param>
-        <xsl:with-param name="members" select="element[.//memberdata[@visibility='private'] and .//proceduredata[@virtual = 'true']]" />
+        <xsl:with-param name="members" select="$filteredOverloadElements[.//memberdata[@visibility='private'] and .//proceduredata[@virtual = 'true']]" />
       </xsl:call-template>
     </xsl:if>
 
@@ -983,6 +1023,7 @@
     <xsl:param name="members"/>
     <xsl:param name="headerGroup" />
     <xsl:param name="showParameters" select="'false'" />
+    <xsl:param name="sort" select="'true'" />
             
     <xsl:variable name="header">
       <xsl:value-of select="concat($headerGroup, 'Table')"/>
@@ -1010,11 +1051,20 @@
           </tr>
 
           <!-- add a row for each member of the current subgroup-visibility -->
-          <xsl:apply-templates select="$members" mode="memberlistRow">
-            <xsl:with-param name="showParameters" select="$showParameters" />
-            <xsl:sort select="topicdata/@eiiName | apidata/@name" />
-            <xsl:sort select="count(templates/*)" />
-          </xsl:apply-templates>
+          <xsl:choose>
+            <xsl:when test="$sort = 'true'">
+              <xsl:apply-templates select="$members" mode="memberlistRow">
+                <xsl:with-param name="showParameters" select="$showParameters" />
+                <xsl:sort select="topicdata/@eiiName | apidata/@name"/>
+                <xsl:sort select="count(templates/*)" />
+              </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates select="$members" mode="memberlistRow">
+                <xsl:with-param name="showParameters" select="$showParameters" />
+              </xsl:apply-templates>
+            </xsl:otherwise>
+          </xsl:choose>
         </table>
       </xsl:with-param>
     </xsl:call-template>
@@ -1064,7 +1114,40 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+
+  <xsl:template name="IsMemberSupportedOnSilverlightMobile">
+    <xsl:choose>
+      <xsl:when test="element">
+        <xsl:for-each select="element">
+          <xsl:call-template name="IsMemberSupportedOnSilverlightMobile"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="platformFilterExcludesSilverlightMobile" select="boolean( platforms and not(platforms[platform[.='SilverlightPlatforms']]) )" />
+        <xsl:if test="boolean(not($platformFilterExcludesSilverlightMobile) and (@silverlight_mobile or element/@silverlight_mobile))">
+          <xsl:text>yes</xsl:text>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="IsMemberSupportedOnSilverlight">
+    <xsl:choose>
+      <xsl:when test="element">
+        <xsl:for-each select="element">
+          <xsl:call-template name="IsMemberSupportedOnSilverlight"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="platformFilterExcludesSilverlight" select="boolean( platforms and not(platforms[platform[.='SilverlightPlatforms']]) )" />
+        <xsl:if test="boolean(not($platformFilterExcludesSilverlight) and (@silverlight or element/@silverlight))">
+          <xsl:text>yes</xsl:text>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+
   <xsl:template name="IsMemberStatic">
     <xsl:choose>
       <xsl:when test="element and not(@signatureset)">
@@ -1199,6 +1282,12 @@
     <xsl:variable name="supportedOnCf">
       <xsl:call-template name="IsMemberSupportedOnCf"/>
     </xsl:variable>
+    <xsl:variable name="supportedOnSilverlight">
+      <xsl:call-template name="IsMemberSupportedOnSilverlight"/>
+    </xsl:variable>
+    <xsl:variable name="supportedOnSilverlightMobile">
+      <xsl:call-template name="IsMemberSupportedOnSilverlightMobile" />
+    </xsl:variable>
     <xsl:variable name="staticMember">
       <xsl:call-template name="IsMemberStatic"/>
     </xsl:variable>
@@ -1255,6 +1344,12 @@
           <xsl:if test="normalize-space($supportedOnXna)!=''">
             <xsl:text>xnafw;</xsl:text>
           </xsl:if>
+          <xsl:if test="normalize-space($supportedOnSilverlight) != ''">
+            <xsl:text>silverlight;</xsl:text>
+          </xsl:if>
+          <xsl:if test="normalize-space($supportedOnSilverlightMobile) != ''">
+            <xsl:text>silverlight_mobile;</xsl:text>
+          </xsl:if>
           <xsl:if test="normalize-space($notsupportedOnNetfw)!=''">
             <xsl:text>notNetfw;</xsl:text>
           </xsl:if>
@@ -1289,11 +1384,16 @@
             <xsl:with-param name="staticMember" select="normalize-space($staticMember)" />
             <xsl:with-param name="supportedOnXna" select="normalize-space($supportedOnXna)"/>
             <xsl:with-param name="supportedOnCf" select="normalize-space($supportedOnCf)"/>
+            <xsl:with-param name="supportedOnSilverlight" select="normalized-space($supportedOnSilverlight)" />
+            <xsl:with-param name="supportedOnSilverlightMobile" select="normalize-space($supportedOnSilverlightMobile)" />
           </xsl:call-template>
         </td>
         <td>
           <xsl:choose>
             <xsl:when test="normalize-space($conversionOperator)!=''">
+              <referenceLink target="{@api}" show-parameters="true" />
+            </xsl:when>
+            <xsl:when test="memberdata[@overload] or starts-with(../@api, 'Overload:')">
               <referenceLink target="{@api}" show-parameters="true" />
             </xsl:when>
             <xsl:when test="@source='extension'">
@@ -1455,6 +1555,7 @@
        <xsl:with-param name="headerGroup" select="'overloadMembers'" />
        <xsl:with-param name="members" select="element" />
        <xsl:with-param name="showParameters" select="'true'" />
+       <xsl:with-param name="sort" select="'false'" />
      </xsl:call-template>
 		</xsl:if>
     <xsl:apply-templates select="element" mode="overloadSections">
@@ -1497,6 +1598,7 @@
     <xsl:param name="staticMember" />
     <xsl:param name="supportedOnXna"/>
     <xsl:param name="supportedOnCf"/>
+    <xsl:param name="supportedOnSilverlightMobile" />
     
     <xsl:variable name="memberSubgroup">
       <xsl:choose>
@@ -1580,6 +1682,17 @@
         <includeAttribute name="title" item="XNAFrameworkAltText" />
       </img>
     </xsl:if>
+
+    <xsl:if test="$supportedOnSilverlightMobile!=''">
+      <img data="silverlight_mobile">
+        <includeAttribute name="src" item="iconPath">
+          <parameter>slMobile.gif</parameter>
+        </includeAttribute>
+        <includeAttribute name="alt" item="SilverlightMobileAltText" />
+        <includeAttribute name="title" item="SilverlightMobileAltText" />
+      </img>
+    </xsl:if>
+
   </xsl:template>
 
 	<!-- Assembly information -->
@@ -1892,6 +2005,20 @@
           <xsl:apply-templates select="templates" mode="decorated" />
         </xsl:for-each>
       </xsl:when>
+      <!-- Use just the plain, unadorned type.api name for overload pages with templates -->
+      <xsl:when test="$topic-group='list' and $topic-subgroup='overload' and /document/reference/templates">
+        <xsl:for-each select="/document/reference/containers/type[1]">
+          <xsl:call-template name="typeNameDecorated" />
+        </xsl:for-each>
+        <span class="languageSpecificText">
+          <span class="cs">.</span>
+          <span class="vb">.</span>
+          <span class="cpp">::</span>
+          <span class="nu">.</span>
+          <span class="fs">.</span>
+        </span>
+        <xsl:value-of select="/document/reference/apidata/@name" />
+      </xsl:when>
       <!-- normal member pages use the qualified member name -->
       <xsl:when test="($topic-group='api' and $api-group='member') or ($topic-subgroup='overload' and $api-group='member')">
         <xsl:for-each select="/document/reference/containers/type[1]">
@@ -1984,7 +2111,11 @@
               <xsl:text>.</xsl:text>
               <xsl:value-of select="apidata/@name" />
               <xsl:apply-templates select="templates" mode="plain" />
-            </xsl:for-each>            
+            </xsl:for-each>
+          </xsl:when>
+          <!-- Use just the plain, unadorned api name for overload pages with templates -->
+          <xsl:when test="$topic-group='list' and $topic-subgroup='overload' and /document/reference/templates">
+            <xsl:value-of select="/document/reference/apidata/@name" />
           </xsl:when>
           <xsl:otherwise>
             <!-- but other members just use the name -->
