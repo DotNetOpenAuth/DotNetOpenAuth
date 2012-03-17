@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to issue an access token to the client if permission is granted.
 	/// </summary>
 	[Serializable]
-	public class EndUserAuthorizationImplicitRequest : EndUserAuthorizationRequest, IAccessTokenRequest {
+	public class EndUserAuthorizationImplicitRequest : EndUserAuthorizationRequest, IAccessTokenRequestInternal {
 		/// <summary>
 		/// Gets or sets the grant type that the client expects of the authorization server.
 		/// </summary>
@@ -49,6 +49,14 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public override EndUserAuthorizationResponseType ResponseType {
 			get { return ResponseTypeConst; }
 		}
+
+		/// <summary>
+		/// Gets or sets the access token creation parameters.
+		/// </summary>
+		/// <remarks>
+		/// This property's value is set by a binding element in the OAuth 2 channel.
+		/// </remarks>
+		AccessTokenParameters IAccessTokenRequestInternal.AccessTokenCreationParameters { get; set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the client requesting the access token has authenticated itself.

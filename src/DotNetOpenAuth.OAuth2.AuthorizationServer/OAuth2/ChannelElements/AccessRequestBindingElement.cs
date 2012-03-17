@@ -14,10 +14,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.OAuth2.AuthServer.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
-	/// Decodes verification codes, refresh tokens and access tokens on incoming messages.
+	/// Decodes authorization codes, refresh tokens and access tokens on incoming messages.
 	/// </summary>
 	/// <remarks>
 	/// This binding element also ensures that the code/token coming in is issued to
@@ -55,6 +56,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+			var responseWithOriginatingRequest = message as IDirectResponseProtocolMessage;
+			var accessRequest = responseWithOriginatingRequest.OriginatingRequest as IAccessTokenRequestInternal;
+
 			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
 			if (authCodeCarrier != null) {
 				var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
@@ -63,16 +67,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return MessageProtections.None;
 			}
 
-			var accessTokenCarrier = message as IAccessTokenCarryingRequest;
+			var accessTokenCarrier = message as IAccessTokenIssuingResponse;
 			if (accessTokenCarrier != null) {
-				var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
-				var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
-
-				using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
-					var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
-					var token = accessTokenCarrier.AuthorizationDescription;
-					accessTokenCarrier.AccessToken = tokenFormatter.Serialize(token);
-				}
+				var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, accessRequest.AccessTokenCreationParameters.ResourceServerEncryptionKey);
+				var token = accessTokenCarrier.AuthorizationDescription;
+				accessTokenCarrier.AccessToken = tokenFormatter.Serialize(token);
+				accessTokenCarrier.Lifetime = accessRequest.AccessTokenCreationParameters.AccessTokenLifetime;
 
 				return MessageProtections.None;
 			}

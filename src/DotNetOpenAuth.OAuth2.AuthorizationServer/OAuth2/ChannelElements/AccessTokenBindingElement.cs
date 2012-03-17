@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -44,7 +45,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </returns>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var directResponse = message as IDirectResponseProtocolMessage;
-			IAccessTokenRequest request = directResponse != null ? directResponse.OriginatingRequest as IAccessTokenRequest : null;
+			var request = directResponse != null ? directResponse.OriginatingRequest as IAccessTokenRequestInternal : null;
+
+			if (request != null) {
+				request.AccessTokenCreationParameters = this.AuthorizationServer.GetAccessTokenParameters(request);
+				ErrorUtilities.VerifyHost(request.AccessTokenCreationParameters != null, "IAuthorizationServer.GetAccessTokenParameters must not return null.");
+			}
 
 			var implicitGrantResponse = message as EndUserAuthorizationSuccessAccessTokenResponse;
 			if (implicitGrantResponse != null) {
@@ -54,14 +60,19 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return MessageProtections.None;
 			}
 
+			AccessTokenParameters parameters = null;
+			var accessTokenRequest = request as IAccessTokenRequestInternal;
+			if (accessTokenRequest != null) {
+				parameters = accessTokenRequest.AccessTokenCreationParameters;
+			}
+
 			var accessTokenResponse = message as AccessTokenSuccessResponse;
 			if (accessTokenResponse != null) {
+				ErrorUtilities.VerifyInternal(parameters != null, "Unexpected request type.");
 				var authCarryingRequest = (IAuthorizationCarryingRequest)request;
 				var accessToken = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
-				using (var resourceServerEncryptionKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
-					var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerEncryptionKey);
-					accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessToken);
-				}
+				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, parameters.ResourceServerEncryptionKey);
+				accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessToken);
 
 				if (accessTokenResponse.HasRefreshToken) {
 					var refreshToken = new RefreshToken(authCarryingRequest.AuthorizationDescription);

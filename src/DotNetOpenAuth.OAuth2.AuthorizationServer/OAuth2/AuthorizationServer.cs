@@ -166,7 +166,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
 					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
-					accessTokenResponse.Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime((EndUserAuthorizationImplicitRequest)authorizationRequest);
 					response = accessTokenResponse;
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
@@ -231,8 +230,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
+			var accessTokenRequest = (IAccessTokenRequestInternal)request;
 			var response = new AccessTokenSuccessResponse(request) {
-				Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request),
 				HasRefreshToken = includeRefreshToken,
 			};
 			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);

@@ -56,37 +56,22 @@ namespace RelyingPartyLogic {
 		}
 
 		/// <summary>
-		/// Obtains the lifetime for a new access token.
+		/// Obtains parameters to go into the formulation of an access token.
 		/// </summary>
 		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
 		/// that will receive that access.
 		/// Based on this information the receiving resource server can be determined and the lifetime of the access
 		/// token can be set based on the sensitivity of the resources.</param>
 		/// <returns>
-		/// Receives the lifetime for this access token.  Note that within this lifetime, authorization <i>may</i> not be revokable.
-		/// Short lifetimes are recommended (i.e. one hour), particularly when the client is not authenticated or
-		/// the resources to which access is being granted are sensitive.
+		/// A non-null parameters instance that DotNetOpenAuth will dispose after it has been used.
 		/// </returns>
-		public TimeSpan GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage) {
-			return TimeSpan.FromHours(1);
-		}
-
-		/// <summary>
-		/// Obtains the encryption key for an access token being created.
-		/// </summary>
-		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
-		/// that will receive that access.
-		/// Based on this information the receiving resource server can be determined and the lifetime of the access
-		/// token can be set based on the sensitivity of the resources.</param>
-		/// <returns>
-		/// The crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
-		/// The caller is responsible to dispose of this value.
-		/// </returns>
-		public RSACryptoServiceProvider GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
-			// For this sample, we assume just one resource server.
-			// If this authorization server needs to mint access tokens for more than one resource server,
-			// we'd look at the request message passed to us and decide which public key to return.
-			return OAuthResourceServer.CreateRSA();
+		public AccessTokenParameters GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage) {
+			return new AccessTokenParameters() {
+				// For this sample, we assume just one resource server.
+				// If this authorization server needs to mint access tokens for more than one resource server,
+				// we'd look at the request message passed to us and decide which public key to return.
+				ResourceServerEncryptionKey = OAuthResourceServer.CreateRSA(),
+			};
 		}
 
 		/// <summary>

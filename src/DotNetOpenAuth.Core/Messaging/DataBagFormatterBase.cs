@@ -146,6 +146,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A non-null, non-empty value.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		public string Serialize(T message) {
+			Requires.NotNull(message, "message");
+
 			message.UtcCreationDate = DateTime.UtcNow;
 
 			if (this.decodeOnceOnly != null) {

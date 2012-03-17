@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, carrying an authorization code and possibly an access token,
 	/// and to return the user to the Client where they started their experience.
 	/// </summary>
-	internal class EndUserAuthorizationSuccessAuthCodeResponse : EndUserAuthorizationSuccessResponseBase, IAuthorizationCodeCarryingRequest {
+	internal class EndUserAuthorizationSuccessAuthCodeResponse : EndUserAuthorizationSuccessResponseBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessAuthCodeResponse"/> class.
 		/// </summary>
@@ -39,30 +39,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Requires.NotNull(request, "request");
 			((IMessageWithClientState)this).ClientState = request.ClientState;
 		}
-
-		#region IAuthorizationCodeCarryingRequest Members
-
-		/// <summary>
-		/// Gets or sets the authorization code.
-		/// </summary>
-		string IAuthorizationCodeCarryingRequest.Code {
-			get { return this.AuthorizationCode; }
-			set { this.AuthorizationCode = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the authorization that the token describes.
-		/// </summary>
-		AuthorizationCode IAuthorizationCodeCarryingRequest.AuthorizationDescription { get; set; }
-
-		/// <summary>
-		/// Gets the authorization that the code describes.
-		/// </summary>
-		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
-			get { return ((IAuthorizationCodeCarryingRequest)this).AuthorizationDescription; }
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Gets or sets the authorization code.

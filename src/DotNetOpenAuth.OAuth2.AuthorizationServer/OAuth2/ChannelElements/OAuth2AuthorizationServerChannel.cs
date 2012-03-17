@@ -11,17 +11,31 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Net.Mime;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
 	/// The channel for the OAuth protocol.
 	/// </summary>
 	internal class OAuth2AuthorizationServerChannel : OAuth2ChannelBase, IOAuth2ChannelWithAuthorizationServer {
 		/// <summary>
+		/// The messages receivable by this channel.
+		/// </summary>
+		private static readonly Type[] MessageTypes = new Type[] {
+			typeof(AccessTokenRefreshRequest),
+			typeof(AccessTokenAuthorizationCodeRequest),
+			typeof(AccessTokenResourceOwnerPasswordCredentialsRequest),
+			typeof(AccessTokenClientCredentialsRequest),
+			typeof(EndUserAuthorizationRequest),
+			typeof(EndUserAuthorizationImplicitRequest),
+			typeof(EndUserAuthorizationFailedResponse),
+		};
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2AuthorizationServerChannel"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		protected internal OAuth2AuthorizationServerChannel(IAuthorizationServer authorizationServer)
-			: base(InitializeBindingElements(authorizationServer)) {
+			: base(MessageTypes, InitializeBindingElements(authorizationServer)) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
 		}
