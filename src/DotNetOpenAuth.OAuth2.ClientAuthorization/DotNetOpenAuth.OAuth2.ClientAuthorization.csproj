@@ -18,10 +18,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuth2\AccessTokenParameters.cs" />
     <Compile Include="OAuth2\ChannelElements\EndUserAuthorizationResponseTypeEncoder.cs" />
     <Compile Include="OAuth2\ChannelElements\GrantTypeEncoder.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ChannelBase.cs" />
+    <Compile Include="OAuth2\ClientType.cs" />
     <Compile Include="OAuth2\IAuthorizationServer.cs" />
+    <Compile Include="OAuth2\IClientDescription.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenClientCredentialsRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenFailedResponse.cs" />

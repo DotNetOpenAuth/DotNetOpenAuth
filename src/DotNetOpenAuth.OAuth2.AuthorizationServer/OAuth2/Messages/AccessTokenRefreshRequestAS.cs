@@ -26,14 +26,6 @@ namespace DotNetOpenAuth.OAuth2.AuthServer.Messages {
 			: base(tokenEndpoint, version) {
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenRefreshRequestAS"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The authorization server.</param>
-		internal AccessTokenRefreshRequestAS(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
-		}
-
 	#region IRefreshTokenCarryingRequest members
 
 		/// <summary>

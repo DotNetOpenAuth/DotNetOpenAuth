@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				}
 			}
 
-			var request = new AccessTokenRefreshRequest(this.AuthorizationServer) {
+			var request = new AccessTokenRefreshRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				ClientSecret = this.ClientSecret,
 				RefreshToken = authorization.RefreshToken,
@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(scope, "scope");
 			Contract.Ensures(Contract.Result<IAuthorizationState>() != null);
 
-			var request = new AccessTokenRefreshRequest(this.AuthorizationServer) {
+			var request = new AccessTokenRefreshRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				ClientSecret = this.ClientSecret,
 				RefreshToken = refreshToken,
@@ -248,7 +248,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(authorizationSuccess, "authorizationSuccess");
 
-			var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
+			var accessTokenRequest = new AccessTokenAuthorizationCodeRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				ClientSecret = this.ClientSecret,
 				Callback = authorizationState.Callback,

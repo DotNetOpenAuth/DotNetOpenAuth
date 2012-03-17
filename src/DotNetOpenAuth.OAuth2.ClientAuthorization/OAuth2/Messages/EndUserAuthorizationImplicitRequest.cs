@@ -31,16 +31,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <param name="authorizationEndpoint">The Authorization Server's user authorization URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		internal EndUserAuthorizationImplicitRequest(Uri authorizationEndpoint, Version version)
+		protected EndUserAuthorizationImplicitRequest(Uri authorizationEndpoint, Version version)
 			: base(authorizationEndpoint, version) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationImplicitRequest"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The authorization server.</param>
-		internal EndUserAuthorizationImplicitRequest(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.AuthorizationEndpoint, authorizationServer.Version) {
 		}
 
 		/// <summary>

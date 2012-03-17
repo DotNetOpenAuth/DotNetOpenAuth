@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				authorization.Callback = new Uri("http://localhost/");
 			}
 
-			var request = implicitResponseType ? new EndUserAuthorizationImplicitRequest(this.AuthorizationServer) : new EndUserAuthorizationRequest(this.AuthorizationServer);
+			var request = implicitResponseType ? (EndUserAuthorizationRequest)new EndUserAuthorizationImplicitRequestC(this.AuthorizationServer) : new EndUserAuthorizationRequestC(this.AuthorizationServer);
 			request.ClientIdentifier = this.ClientIdentifier;
 			request.Callback = authorization.Callback;
 			request.ClientState = state;

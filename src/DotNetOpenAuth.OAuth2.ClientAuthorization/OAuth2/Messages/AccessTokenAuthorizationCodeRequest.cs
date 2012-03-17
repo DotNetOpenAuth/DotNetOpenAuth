@@ -24,17 +24,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <param name="tokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
-		internal AccessTokenAuthorizationCodeRequest(Uri tokenEndpoint, Version version)
+		protected AccessTokenAuthorizationCodeRequest(Uri tokenEndpoint, Version version)
 			: base(tokenEndpoint, version) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The authorization server.</param>
-		internal AccessTokenAuthorizationCodeRequest(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
-			Requires.NotNull(authorizationServer, "authorizationServer");
 		}
 
 		/// <summary>
