@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Net.Mime;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.AuthServer.Messages;
 	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
@@ -21,8 +22,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The messages receivable by this channel.
 		/// </summary>
 		private static readonly Type[] MessageTypes = new Type[] {
-			typeof(AccessTokenRefreshRequest),
-			typeof(AccessTokenAuthorizationCodeRequest),
+			typeof(AccessTokenRefreshRequestAS),
+			typeof(AccessTokenAuthorizationCodeRequestAS),
 			typeof(AccessTokenResourceOwnerPasswordCredentialsRequest),
 			typeof(AccessTokenClientCredentialsRequest),
 			typeof(EndUserAuthorizationRequest),

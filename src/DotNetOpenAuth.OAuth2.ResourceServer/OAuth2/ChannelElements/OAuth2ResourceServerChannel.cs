@@ -52,8 +52,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var fields = new Dictionary<string, string>();
 			string accessToken;
 			if ((accessToken = SearchForBearerAccessTokenInRequest(request)) != null) {
-				fields["token_type"] = Protocol.AccessTokenTypes.Bearer;
-				fields["access_token"] = accessToken;
+				fields[Protocol.token_type] = Protocol.AccessTokenTypes.Bearer;
+				fields[Protocol.access_token] = accessToken;
 			}
 
 			if (fields.Count > 0) {

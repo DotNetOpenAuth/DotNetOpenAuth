@@ -150,6 +150,10 @@
       <Project>{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}</Project>
       <Name>DotNetOpenAuth.OAuth2.AuthorizationServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj">
+      <Project>{CCF3728A-B3D7-404A-9BC6-75197135F2D7}</Project>
+      <Name>DotNetOpenAuth.OAuth2.ClientAuthorization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
