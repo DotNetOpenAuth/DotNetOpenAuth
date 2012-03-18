@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using DotNetOpenAuth.OAuth2.Messages;
 	using Moq;
 
 	public class OAuth2TestBase : TestBase {
@@ -53,6 +54,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 						d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername &&
 						MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
 			authHostMock.Setup(m => m.IsResourceOwnerCredentialValid(ResourceOwnerUsername, ResourceOwnerPassword)).Returns(true);
+			authHostMock.Setup(m => m.GetAccessTokenParameters(It.IsAny<IAccessTokenRequest>())).Returns(new AccessTokenParameters());
 			return authHostMock;
 		}
 	}
