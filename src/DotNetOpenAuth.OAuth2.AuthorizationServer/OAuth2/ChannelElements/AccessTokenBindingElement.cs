@@ -60,18 +60,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return MessageProtections.None;
 			}
 
-			AccessTokenParameters parameters = null;
-			var accessTokenRequest = request as IAccessTokenRequestInternal;
-			if (accessTokenRequest != null) {
-				parameters = accessTokenRequest.AccessTokenCreationParameters;
-			}
-
 			var accessTokenResponse = message as AccessTokenSuccessResponse;
 			if (accessTokenResponse != null) {
-				ErrorUtilities.VerifyInternal(parameters != null, "Unexpected request type.");
+				var accessTokenRequest = request as IAccessTokenRequestInternal;
+				ErrorUtilities.VerifyInternal(accessTokenRequest != null, MessagingStrings.UnexpectedMessageReceived, typeof(IAccessTokenRequestInternal), request.GetType());
 				var authCarryingRequest = (IAuthorizationCarryingRequest)request;
 				var accessToken = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
-				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, parameters.ResourceServerEncryptionKey);
+				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, accessTokenRequest.AccessTokenCreationParameters.ResourceServerEncryptionKey);
 				accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessToken);
 
 				if (accessTokenResponse.HasRefreshToken) {
