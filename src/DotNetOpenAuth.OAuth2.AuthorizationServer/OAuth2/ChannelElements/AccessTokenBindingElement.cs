@@ -46,34 +46,40 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
 			var directResponse = message as IDirectResponseProtocolMessage;
 			var request = directResponse != null ? directResponse.OriginatingRequest as IAccessTokenRequestInternal : null;
+			var authCarryingRequest = request as IAuthorizationCarryingRequest;
+			var accessTokenResponse = message as IAccessTokenIssuingResponse;
+			var implicitGrantResponse = message as EndUserAuthorizationSuccessAccessTokenResponse;
 
 			if (request != null) {
 				request.AccessTokenCreationParameters = this.AuthorizationServer.GetAccessTokenParameters(request);
 				ErrorUtilities.VerifyHost(request.AccessTokenCreationParameters != null, "IAuthorizationServer.GetAccessTokenParameters must not return null.");
+
+				if (accessTokenResponse != null) {
+					accessTokenResponse.Lifetime = request.AccessTokenCreationParameters.AccessTokenLifetime;
+				}
 			}
 
-			var implicitGrantResponse = message as EndUserAuthorizationSuccessAccessTokenResponse;
-			if (implicitGrantResponse != null) {
-				IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
-				tokenCarryingResponse.AuthorizationDescription = new AccessToken(request.ClientIdentifier, implicitGrantResponse.Scope, implicitGrantResponse.AuthorizingUsername, implicitGrantResponse.Lifetime);
-
-				return MessageProtections.None;
-			}
-
-			var accessTokenResponse = message as IAccessTokenIssuingResponse;
-			if (accessTokenResponse != null) {
+			AccessToken accessToken = null;
+			if (authCarryingRequest != null) {
 				ErrorUtilities.VerifyInternal(request != null, MessagingStrings.UnexpectedMessageReceived, typeof(IAccessTokenRequestInternal), request.GetType());
-				var authCarryingRequest = (IAuthorizationCarryingRequest)request;
-				var accessToken = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
-				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, request.AccessTokenCreationParameters.ResourceServerEncryptionKey);
+				accessToken = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
+			} else if (implicitGrantResponse != null) {
+				IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
+				accessToken = new AccessToken(
+					request.ClientIdentifier,
+					implicitGrantResponse.Scope,
+					implicitGrantResponse.AuthorizingUsername,
+					implicitGrantResponse.Lifetime);
+			}
+
+			if (accessToken != null) {
 				accessTokenResponse.AuthorizationDescription = accessToken;
+				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, request.AccessTokenCreationParameters.ResourceServerEncryptionKey);
 				accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessToken);
-				accessTokenResponse.Lifetime = request.AccessTokenCreationParameters.AccessTokenLifetime;
 			}
 
 			var refreshTokenResponse = message as AccessTokenSuccessResponse;
 			if (refreshTokenResponse != null && refreshTokenResponse.HasRefreshToken) {
-				var authCarryingRequest = (IAuthorizationCarryingRequest)request;
 				var refreshToken = new RefreshToken(authCarryingRequest.AuthorizationDescription);
 				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
 				refreshTokenResponse.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
