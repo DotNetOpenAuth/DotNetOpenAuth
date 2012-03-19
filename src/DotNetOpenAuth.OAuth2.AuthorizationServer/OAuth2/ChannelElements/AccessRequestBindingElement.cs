@@ -67,16 +67,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return MessageProtections.None;
 			}
 
-			var accessTokenCarrier = message as IAccessTokenIssuingResponse;
-			if (accessTokenCarrier != null) {
-				var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, accessRequest.AccessTokenCreationParameters.ResourceServerEncryptionKey);
-				var token = accessTokenCarrier.AuthorizationDescription;
-				accessTokenCarrier.AccessToken = tokenFormatter.Serialize(token);
-				accessTokenCarrier.Lifetime = accessRequest.AccessTokenCreationParameters.AccessTokenLifetime;
-
-				return MessageProtections.None;
-			}
-
 			var accessTokenResponse = message as AccessTokenSuccessResponse;
 			if (accessTokenResponse != null) {
 				var directResponseMessage = (IDirectResponseProtocolMessage)accessTokenResponse;

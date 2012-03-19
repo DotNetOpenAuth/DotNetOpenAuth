@@ -60,20 +60,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return MessageProtections.None;
 			}
 
-			var accessTokenResponse = message as AccessTokenSuccessResponse;
+			var accessTokenResponse = message as IAccessTokenIssuingResponse;
 			if (accessTokenResponse != null) {
-				var accessTokenRequest = request as IAccessTokenRequestInternal;
-				ErrorUtilities.VerifyInternal(accessTokenRequest != null, MessagingStrings.UnexpectedMessageReceived, typeof(IAccessTokenRequestInternal), request.GetType());
+				ErrorUtilities.VerifyInternal(request != null, MessagingStrings.UnexpectedMessageReceived, typeof(IAccessTokenRequestInternal), request.GetType());
 				var authCarryingRequest = (IAuthorizationCarryingRequest)request;
 				var accessToken = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
-				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, accessTokenRequest.AccessTokenCreationParameters.ResourceServerEncryptionKey);
+				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, request.AccessTokenCreationParameters.ResourceServerEncryptionKey);
+				accessTokenResponse.AuthorizationDescription = accessToken;
 				accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessToken);
+				accessTokenResponse.Lifetime = request.AccessTokenCreationParameters.AccessTokenLifetime;
+			}
 
-				if (accessTokenResponse.HasRefreshToken) {
-					var refreshToken = new RefreshToken(authCarryingRequest.AuthorizationDescription);
-					var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-					accessTokenResponse.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
-				}
+			var refreshTokenResponse = message as AccessTokenSuccessResponse;
+			if (refreshTokenResponse != null && refreshTokenResponse.HasRefreshToken) {
+				var authCarryingRequest = (IAuthorizationCarryingRequest)request;
+				var refreshToken = new RefreshToken(authCarryingRequest.AuthorizationDescription);
+				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
+				refreshTokenResponse.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
 			}
 
 			return null;
