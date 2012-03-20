@@ -20,7 +20,6 @@
     <MvcBuildViews>false</MvcBuildViews>
     <FileUpgradeFlags>0</FileUpgradeFlags>
     <OldToolsVersion>4.0</OldToolsVersion>
-    <UpgradeBackupLocation>C:\Users\andarno\git\dotnetopenauth\src\Backup\MvcRelyingParty\</UpgradeBackupLocation>
     <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
