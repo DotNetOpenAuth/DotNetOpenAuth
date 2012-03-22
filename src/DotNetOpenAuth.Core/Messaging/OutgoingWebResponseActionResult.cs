@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="context">The context in which to set the response.</param>
 		public override void ExecuteResult(ControllerContext context) {
-			this.response.Respond();
+			this.response.Respond(context.HttpContext);
 		}
 	}
 }

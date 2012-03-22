@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 		#region End user authorization messages
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.response_type, "code" },
@@ -41,10 +41,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationRequest)));
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationImplicitRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.response_type, "token" },
@@ -52,42 +52,42 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.redirect_uri, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationImplicitRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationImplicitRequest)));
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationSuccessResponseWithCode() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.code, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationSuccessResponseBase)));
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationSuccessResponseWithAccessToken() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.access_token, "abc" },
 				{ Protocol.token_type, "bearer" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationSuccessResponseBase), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationSuccessResponseBase)));
 		}
 
-		[TestCase]
+		[Test]
 		public void EndUserAuthorizationFailedResponse() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.error, "access-denied" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(EndUserAuthorizationFailedResponse), request);
+			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationFailedResponse)));
 		}
 
 		#endregion
 
 		#region Access token request messages
 
-		[TestCase]
+		[Test]
 		public void AccessTokenRefreshRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
@@ -95,10 +95,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.grant_type, "refresh-token" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenRefreshRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenRefreshRequest)));
 		}
 
-		[TestCase]
+		[Test]
 		public void AccessTokenAuthorizationCodeRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
@@ -107,10 +107,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.redirect_uri, "http://someUri" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenAuthorizationCodeRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenAuthorizationCodeRequest)));
 		}
 
-		[TestCase]
+		[Test]
 		public void AccessTokenBasicCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
@@ -120,10 +120,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.password, "abc" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenResourceOwnerPasswordCredentialsRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenResourceOwnerPasswordCredentialsRequest)));
 		}
 
-		[TestCase]
+		[Test]
 		public void AccessTokenClientCredentialsRequest() {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.client_id, "abc" },
@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.grant_type, "none" },
 			};
 			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
-			Assert.IsInstanceOf(typeof(AccessTokenClientCredentialsRequest), request);
+			Assert.That(request, Is.InstanceOf(typeof(AccessTokenClientCredentialsRequest)));
 		}
 
 		#endregion

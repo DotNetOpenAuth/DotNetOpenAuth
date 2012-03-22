@@ -167,27 +167,22 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNullOrEmpty(userName, "userName");
 			Requires.NotNull(password, "password");
 
-			var authorizationState = new AuthorizationState(scopes);
-
 			var request = new AccessTokenResourceOwnerPasswordCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version) {
-				ClientIdentifier = this.ClientIdentifier,
-				ClientSecret = this.ClientSecret,
 				UserName = userName,
 				Password = password,
 			};
 
-			var response = this.Channel.Request(request);
-			var success = response as AccessTokenSuccessResponse;
-			var failure = response as AccessTokenFailedResponse;
-			ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
-			if (success != null) {
-				UpdateAuthorizationWithResponse(authorizationState, success);
-			} else { // failure
-				Logger.OAuth.Info("Resource Owner credentials rejected by the Authorization Server.");
-				authorizationState.Delete();
-			}
+			return this.RequestAccessToken(request, scopes);
+		}
 
-			return authorizationState;
+		/// <summary>
+		/// Obtains an access token for accessing client-controlled resources on the resource server.
+		/// </summary>
+		/// <param name="scopes">The desired scopes.</param>
+		/// <returns>The result of the authorization request.</returns>
+		public IAuthorizationState GetClientAccessToken(IEnumerable<string> scopes = null) {
+			var request = new AccessTokenClientCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version);
+			return this.RequestAccessToken(request, scopes);
 		}
 
 		/// <summary>
@@ -286,6 +281,35 @@ namespace DotNetOpenAuth.OAuth2 {
 			TimeSpan elapsedLifetime = DateTime.UtcNow - authorization.AccessTokenIssueDateUtc.Value;
 			double proportionLifetimeRemaining = 1 - (elapsedLifetime.TotalSeconds / totalLifetime.TotalSeconds);
 			return proportionLifetimeRemaining;
+		}
+
+		/// <summary>
+		/// Requests an access token using a partially .initialized request message.
+		/// </summary>
+		/// <param name="request">The request message.</param>
+		/// <param name="scopes">The scopes requested by the client.</param>
+		/// <returns>The result of the request.</returns>
+		private IAuthorizationState RequestAccessToken(ScopedAccessTokenRequest request, IEnumerable<string> scopes = null) {
+			Requires.NotNull(request, "request");
+
+			var authorizationState = new AuthorizationState(scopes);
+
+			request.ClientIdentifier = this.ClientIdentifier;
+			request.ClientSecret = this.ClientSecret;
+			request.Scope.UnionWith(authorizationState.Scope);
+
+			var response = this.Channel.Request(request);
+			var success = response as AccessTokenSuccessResponse;
+			var failure = response as AccessTokenFailedResponse;
+			ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
+			if (success != null) {
+				UpdateAuthorizationWithResponse(authorizationState, success);
+			} else { // failure
+				Logger.OAuth.Info("Credentials rejected by the Authorization Server.");
+				authorizationState.Delete();
+			}
+
+			return authorizationState;
 		}
 	}
 }

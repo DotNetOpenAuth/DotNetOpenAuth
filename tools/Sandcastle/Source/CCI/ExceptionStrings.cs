@@ -28,15 +28,13 @@ namespace System.Compiler
                 System.Resources.ResourceManager rMgr = ExceptionStrings.resMgr.Target as System.Resources.ResourceManager;
                 if (rMgr == null)
                 {
-
-                    rMgr = new System.Resources.ResourceManager("CCI.ExceptionStrings", typeof(ExceptionStrings).Assembly);
-                    /*
-        #if CCINamespace
-                  rMgr = new System.Resources.ResourceManager("Microsoft.Cci.ExceptionStrings", typeof(ExceptionStrings).Assembly);
-        #else
-                  rMgr = new System.Resources.ResourceManager("System.Compiler.ExceptionStrings", typeof(ExceptionStrings).Assembly);
-        #endif
-                    */
+            
+#if STATIC
+          rMgr = new System.Resources.ResourceManager("Microsoft.Cci.System.Compiler.ExceptionStrings", typeof(ExceptionStrings).Assembly);
+#else
+          rMgr = new System.Resources.ResourceManager("CCI.ExceptionStrings", typeof(ExceptionStrings).Assembly);
+#endif
+            
                     ExceptionStrings.resMgr.Target = rMgr;
                 }
                 return rMgr;

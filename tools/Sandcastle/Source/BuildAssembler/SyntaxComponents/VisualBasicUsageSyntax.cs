@@ -249,6 +249,7 @@ namespace Microsoft.Ddue.Tools {
 
         public override void WriteMethodSyntax (XPathNavigator reflection, SyntaxWriter writer) {
             if (IsUnsupportedUnsafe(reflection, writer)) return;
+            if (IsUnsupportedVarargs(reflection, writer)) return;
             base.WriteMethodSyntax(reflection, writer);
         }
 
@@ -353,131 +354,141 @@ namespace Microsoft.Ddue.Tools {
             XPathNavigator returnType = reflection.SelectSingleNode(apiReturnTypeExpression);
 
             // Determine operator identifier and type
-            string identifier;
-            int type;
-            switch (name) {
-                // unary math operators
-                case "UnaryPlus":
-                    identifier = "+";
-                    type = -1;
-                    break;
-                case "UnaryNegation":
-                    identifier = "-";
-                    type = -1;
-                    break;
-                case "Increment":
-                    identifier = "++";
-                    type = +1;
-                    break;
-                case "Decrement":
-                    identifier = "--";
-                    type = +1;
-                    break;
-                // unary logical operators
-                case "LogicalNot":
-                    identifier = "Not";
-                    type = -1;
-                    break;
-                case "True":
-                    identifier = "IsTrue";
-                    type = -1;
-                    break;
-                case "False":
-                    identifier = "IsFalse";
-                    type = -1;
-                    break;
-                // binary comparison operators
-                case "Equality":
-                    identifier = "=";
-                    type = 2;
-                    break;
-                case "Inequality":
-                    identifier = "<>";
-                    type = 2;
-                    break;
-                case "LessThan":
-                    identifier = "<";
-                    type = 2;
-                    break;
-                case "GreaterThan":
-                    identifier = ">";
-                    type = 2;
-                    break;
-                case "LessThanOrEqual":
-                    identifier = "<=";
-                    type = 2;
-                    break;
-                case "GreaterThanOrEqual":
-                    identifier = ">=";
-                    type = 2;
-                    break;
-                // binary math operators
-                case "Addition":
-                    identifier = "+";
-                    type = 2;
-                    break;
-                case "Subtraction":
-                    identifier = "-";
-                    type = 2;
-                    break;
-                case "Multiply":
-                    identifier = "*";
-                    type = 2;
-                    break;
-                case "Division":
-                    identifier = "/";
-                    type = 2;
-                    break;
-                case "Exponent":
-                    identifier = "^";
-                    type = 2;
-                    break;
-                case "Modulus":
-                    identifier = "Mod";
-                    type = 2;
-                    break;
-                case "IntegerDivision":
-                    identifier = @"\";
-                    type = 2;
-                    break;
-                // binary logical operators
-                case "BitwiseAnd":
-                    identifier = "And";
-                    type = 2;
-                    break;
-                case "BitwiseOr":
-                    identifier = "Or";
-                    type = 2;
-                    break;
-                case "ExclusiveOr":
-                    identifier = "Xor";
-                    type = 2;
-                    break;
-                // bit-array operators
-                case "OnesComplement":
-                    identifier = "~";
-                    type = -1;
-                    break;
-                case "LeftShift":
-                    identifier = "<<";
-                    type = 2;
-                    break;
-                case "RightShift":
-                    identifier = ">>";
-                    type = 2;
-                    break;
-                // concatenation
-                case "Concatenate":
-                    identifier = "&";
-                    type = 2;
-                    break;
-                // didn't recognize an operator
-                default:
-                    identifier = null;
-                    type = 0;
-                break;
-            }
+            string identifier = null;
+            int type = 0;
 
+            if (!(bool)reflection.Evaluate(apiIsUdtReturnExpression))
+            {
+                switch (name)
+                {
+                    // unary math operators
+                    case "UnaryPlus":
+                        identifier = "+";
+                        type = -1;
+                        break;
+                    case "UnaryNegation":
+                        identifier = "-";
+                        type = -1;
+                        break;
+                    case "Increment":
+                        identifier = "++";
+                        type = +1;
+                        break;
+                    case "Decrement":
+                        identifier = "--";
+                        type = +1;
+                        break;
+                    // unary logical operators
+                    case "LogicalNot":
+                        identifier = "Not";
+                        type = -1;
+                        break;
+                    case "True":
+                        identifier = "IsTrue";
+                        type = -1;
+                        break;
+                    case "False":
+                        identifier = "IsFalse";
+                        type = -1;
+                        break;
+                    // binary comparison operators
+                    case "Equality":
+                        identifier = "=";
+                        type = 2;
+                        break;
+                    case "Inequality":
+                        identifier = "<>";
+                        type = 2;
+                        break;
+                    case "LessThan":
+                        identifier = "<";
+                        type = 2;
+                        break;
+                    case "GreaterThan":
+                        identifier = ">";
+                        type = 2;
+                        break;
+                    case "LessThanOrEqual":
+                        identifier = "<=";
+                        type = 2;
+                        break;
+                    case "GreaterThanOrEqual":
+                        identifier = ">=";
+                        type = 2;
+                        break;
+                    // binary math operators
+                    case "Addition":
+                        identifier = "+";
+                        type = 2;
+                        break;
+                    case "Subtraction":
+                        identifier = "-";
+                        type = 2;
+                        break;
+                    case "Multiply":
+                        identifier = "*";
+                        type = 2;
+                        break;
+                    case "Division":
+                        identifier = "/";
+                        type = 2;
+                        break;
+                    case "Exponent":
+                        identifier = "^";
+                        type = 2;
+                        break;
+                    case "Modulus":
+                        identifier = "Mod";
+                        type = 2;
+                        break;
+                    case "IntegerDivision":
+                        identifier = @"\";
+                        type = 2;
+                        break;
+                    // binary logical operators
+                    case "BitwiseAnd":
+                        identifier = "And";
+                        type = 2;
+                        break;
+                    case "BitwiseOr":
+                        identifier = "Or";
+                        type = 2;
+                        break;
+                    case "ExclusiveOr":
+                        identifier = "Xor";
+                        type = 2;
+                        break;
+                    // bit-array operators
+                    case "OnesComplement":
+                        identifier = "~";
+                        type = -1;
+                        break;
+                    case "LeftShift":
+                        identifier = "<<";
+                        type = 2;
+                        break;
+                    case "RightShift":
+                        identifier = ">>";
+                        type = 2;
+                        break;
+                    // concatenation
+                    case "Concatenate":
+                        identifier = "&";
+                        type = 2;
+                        break;
+                    case "Assign":
+                        identifier = "=";
+                        type = 2;
+                        break;
+
+
+                    // didn't recognize an operator
+                    default:
+                        identifier = null;
+                        type = 0;
+                        break;
+                }
+            }
             if (identifier == null) {
                 writer.WriteMessage("UnsupportedOperator_" + Language);
             } else {

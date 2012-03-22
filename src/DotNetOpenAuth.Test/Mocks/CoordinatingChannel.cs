@@ -11,6 +11,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Linq;
 	using System.Text;
 	using System.Threading;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Test.OpenId;
@@ -125,7 +127,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="message">The message to replay.</param>
 		internal void Replay(IProtocolMessage message) {
-			this.ProcessIncomingMessage(CloneSerializedParts(message));
+			this.ProcessIncomingMessage(this.CloneSerializedParts(message));
 		}
 
 		/// <summary>
@@ -146,7 +148,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.incomingMessageSignal.Set();
 		}
 
-		protected internal override HttpRequestInfo GetRequestFromContext() {
+		protected internal override HttpRequestBase GetRequestFromContext() {
 			MessageReceivingEndpoint recipient;
 			var messageData = this.AwaitIncomingMessage(out recipient);
 			if (messageData != null) {
@@ -191,12 +193,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.PrepareDirectResponse(message);
 		}
 
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			if (request.Message != null) {
-				this.ProcessMessageFilter(request.Message, false);
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+			var mockRequest = (CoordinatingHttpRequestInfo)request;
+			if (mockRequest.Message != null) {
+				this.ProcessMessageFilter(mockRequest.Message, false);
 			}
 
-			return request.Message;
+			return mockRequest.Message;
 		}
 
 		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {

@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
@@ -56,7 +58,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				Callback = returnTo,
 			};
 
-			return this.RequestUserAuthorization(authorization);
+			return this.RequestUserAuthorization(authorization, state: state);
 		}
 
 		/// <summary>
@@ -93,7 +95,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				authorizationState = new AuthorizationState();
 			}
 
-			var carrier = new HttpRequestInfo("GET", actualRedirectUrl, actualRedirectUrl.PathAndQuery, new System.Net.WebHeaderCollection(), null);
+			var carrier = new HttpRequestInfo("GET", actualRedirectUrl);
 			IDirectedProtocolMessage response = this.Channel.ReadFromRequest(carrier);
 			if (response == null) {
 				return null;
@@ -116,12 +118,11 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess;
 			EndUserAuthorizationSuccessAuthCodeResponse authCodeSuccess;
-			EndUserAuthorizationFailedResponse failure;
 			if ((accessTokenSuccess = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
 				UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
 			} else if ((authCodeSuccess = response as EndUserAuthorizationSuccessAuthCodeResponse) != null) {
 				this.UpdateAuthorizationWithResponse(authorizationState, authCodeSuccess);
-			} else if ((failure = response as EndUserAuthorizationFailedResponse) != null) {
+			} else if (response is EndUserAuthorizationFailedResponse) {
 				authorizationState.Delete();
 				return null;
 			}

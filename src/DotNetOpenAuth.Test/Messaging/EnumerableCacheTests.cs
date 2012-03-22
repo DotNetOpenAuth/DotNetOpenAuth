@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			this.generatorCompleted = 0;
 		}
 
-		[TestCase]
+		[Test]
 		public void EnumerableCache() {
 			// Baseline
 			var generator = this.NumberGenerator();
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			CollectionAssert.AreEqual(list1, list4);
 		}
 
-		[TestCase]
+		[Test]
 		public void GeneratesOnlyRequiredElements() {
 			var generator = this.NumberGenerator().CacheGeneratedResults();
 			Assert.AreEqual(0, this.generatorInvocations);
@@ -67,28 +67,28 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(0, this.generatorCompleted, "Only taking part of the list should not have completed the generator.");
 		}
 
-		[TestCase]
+		[Test]
 		public void PassThruDoubleCache() {
 			var cache1 = this.NumberGenerator().CacheGeneratedResults();
 			var cache2 = cache1.CacheGeneratedResults();
 			Assert.AreSame(cache1, cache2, "Two caches were set up rather than just sharing the first one.");
 		}
 
-		[TestCase]
+		[Test]
 		public void PassThruList() {
 			var list = this.NumberGenerator().ToList();
 			var cache = list.CacheGeneratedResults();
 			Assert.AreSame(list, cache);
 		}
 
-		[TestCase]
+		[Test]
 		public void PassThruArray() {
 			var array = this.NumberGenerator().ToArray();
 			var cache = array.CacheGeneratedResults();
 			Assert.AreSame(array, cache);
 		}
 
-		[TestCase]
+		[Test]
 		public void PassThruCollection() {
 			var collection = new Collection<int>();
 			var cache = collection.CacheGeneratedResults();

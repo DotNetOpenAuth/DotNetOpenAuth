@@ -39,13 +39,7 @@ namespace WebFormsRelyingParty {
 		/// </summary>
 		/// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to the intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
 		public void ProcessRequest(HttpContext context) {
-			var serviceProvider = OAuthServiceProvider.AuthorizationServer;
-			IDirectResponseProtocolMessage response;
-			if (serviceProvider.TryPrepareAccessTokenResponse(new HttpRequestInfo(context.Request), out response)) {
-				serviceProvider.Channel.Respond(response);
-			} else {
-				throw new InvalidOperationException();
-			}
+			OAuthServiceProvider.AuthorizationServer.HandleTokenRequest().Respond();
 		}
 	}
 }

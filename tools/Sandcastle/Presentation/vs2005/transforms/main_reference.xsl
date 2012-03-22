@@ -70,8 +70,8 @@
     <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.ObsoleteAttribute']">
       <xsl:call-template name="obsoleteSection" />
     </xsl:if>
-        
-      <!-- SecurityCritical boilerplate -->
+
+    <!-- SecurityCritical boilerplate -->
       <xsl:if test="$securityCriticalSection">
         <xsl:choose>
           <xsl:when test="boolean($api-group='type')">
@@ -122,6 +122,7 @@
       </xsl:otherwise>
     </xsl:choose>
 
+
     <!-- Flags attribute boilerplate -->
     <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.FlagsAttribute']">
       <p>
@@ -143,6 +144,13 @@
           </parameter>
         </include>
       </xsl:if>
+    </xsl:if>
+
+    <!-- Overload list page boilerplate -->
+    <xsl:if test="$group = 'list' and $subgroup = 'overload'">
+      <p>
+        <include item="overloadSummary" />
+      </p>
     </xsl:if>
 
     <xsl:if test="$group='namespace'">
@@ -269,14 +277,14 @@
 	
 	<xsl:template name="getParameterDescription">
 		<xsl:param name="name" />
-		<xsl:choose>
-      <xsl:when test="normalize-space(/document/comments/ddue:dduexml/ddue:parameters[1]/ddue:parameter) != ''">
+ 		<xsl:choose>
+      <xsl:when test="normalize-space(/document/comments/ddue:dduexml/ddue:parameters[1]/ddue:parameter[normalize-space(string(ddue:parameterReference))=$name]//ddue:para) != ''">
         <span sdata="authoredParameterSummary">
-        <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:parameters[1]/ddue:parameter[string(ddue:parameterReference)=$name]/ddue:content" />
+        <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:parameters[1]/ddue:parameter[normalize-space(string(ddue:parameterReference))=$name]//ddue:para" />
         </span>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:parameters[2]/ddue:parameter[string(ddue:parameterReference)=$name]/ddue:content" />
+        <xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:parameters[2]/ddue:parameter[normalize-space(string(ddue:parameterReference))=$name]//ddue:para" />
       </xsl:otherwise>
     </xsl:choose>
 	</xsl:template>
@@ -312,9 +320,19 @@
         <xsl:with-param name="content">
           <include item="typeLink">
             <parameter>
-              <xsl:apply-templates select="*[1]" mode="link">
-                <xsl:with-param name="qualified" select="true()" />
-              </xsl:apply-templates>
+              <xsl:choose>
+                <!-- special case for IsUdtReturn, see 780142 -->
+                <xsl:when test="type[@api='T:System.Void']/requiredModifier/type[@api='T:System.Runtime.CompilerServices.IsUdtReturn']">
+                  <xsl:apply-templates select="../parameters/parameter/referenceTo/type" mode="link">
+                    <xsl:with-param name="qualified" select="true()" />
+                  </xsl:apply-templates>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:apply-templates select="*[1]" mode="link">
+                    <xsl:with-param name="qualified" select="true()" />
+                  </xsl:apply-templates>
+                </xsl:otherwise>
+              </xsl:choose>
             </parameter>
           </include>
           <br />
@@ -343,8 +361,8 @@
               <xsl:copy-of select="$contravariant"/><xsl:copy-of select="$covariant" /><span class="parameter"><xsl:value-of select="$parameterName"/></span>
 						</dt>
 						<dd>
-              		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:genericParameters/ddue:genericParameter[string(ddue:parameterReference)=$parameterName]/ddue:content" />
-              <xsl:if test="variance"><p><xsl:if test="variance/@contravariant='true'"><include item="contravariant" /></xsl:if><xsl:if test="variance/@covariant='true'"><include item="covariant" /></xsl:if><include item="variance" /></p></xsl:if>
+              		<xsl:apply-templates select="/document/comments/ddue:dduexml/ddue:genericParameters/ddue:genericParameter[string(ddue:parameterReference)=$parameterName]//ddue:para" />
+              <xsl:apply-templates select="." />
             </dd>
 				</dl>
             </xsl:for-each>
@@ -352,6 +370,16 @@
 		</xsl:call-template>
     </div>
 	</xsl:template>
+
+  
+
+  <xsl:template match="template[variance[@covariant='true']][1]">
+    <p><include item="covariant"/><include item="variance" /></p>
+  </xsl:template>
+
+  <xsl:template match="template[variance[@contravariant='true']][1]">
+    <p><include item="contravariant" /><include item="variance" /></p>
+  </xsl:template>
 
 	<xsl:template name="getElementDescription">
     <xsl:choose>

@@ -15,6 +15,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	/// You can use new ones directly without adding them to this class, and can even make
 	/// up your own if you expect the other end to understand what you make up.
 	/// </remarks>
+	[SuppressMessage("Microsoft.StyleCop.CSharp.DocumentationRules", "SA1630:DocumentationTextMustContainWhitespace", Justification = "The samples are string literals.")]
+	[SuppressMessage("Microsoft.StyleCop.CSharp.DocumentationRules", "SA1631:DocumentationMustMeetCharacterPercentage", Justification = "The samples are string literals.")]
 	public static class WellKnownAttributes {
 		/// <summary>
 		/// Inherent attributes about a personality such as gender and bio.

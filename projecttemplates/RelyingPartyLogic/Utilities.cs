@@ -112,7 +112,7 @@ GO" };
 			if (objectContext == null) {
 				throw new ArgumentNullException("objectContext");
 			}
-			if (String.IsNullOrEmpty(command)) {
+			if (string.IsNullOrEmpty(command)) {
 				throw new ArgumentNullException("command");
 			}
 

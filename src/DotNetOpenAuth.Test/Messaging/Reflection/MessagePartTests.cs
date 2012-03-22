@@ -21,12 +21,12 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNonNullableOptionalStruct));
 		}
 
-		[TestCase]
+		[Test]
 		public void RequiredNonNullableStruct() {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNonNullableRequiredStruct));
 		}
 
-		[TestCase]
+		[Test]
 		public void OptionalNullableStruct() {
 			var message = new MessageWithNullableOptionalStruct();
 			var part = this.ParameterizedMessageTypeTest(message.GetType());
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("3", part.GetValue(message));
 		}
 
-		[TestCase]
+		[Test]
 		public void RequiredNullableStruct() {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNullableRequiredStruct));
 		}
@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			new MessagePart(field, null);
 		}
 
-		[TestCase]
+		[Test]
 		public void SetValue() {
 			var message = new MessageWithNonNullableRequiredStruct();
 			MessagePart part = this.ParameterizedMessageTypeTest(message.GetType());
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual(5, message.OptionalInt);
 		}
 
-		[TestCase]
+		[Test]
 		public void GetValue() {
 			var message = new MessageWithNonNullableRequiredStruct();
 			message.OptionalInt = 8;
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("8", part.GetValue(message));
 		}
 
-		[TestCase]
+		[Test]
 		public void Base64Member() {
 			var message = new MessageWithBase64EncodedString();
 			message.LastName = "andrew";
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("arnott", message.LastName);
 		}
 
-		[TestCase]
+		[Test]
 		public void ConstantFieldMemberValidValues() {
 			var message = new MessageWithConstantField();
 			MessagePart part = GetMessagePart(message.GetType(), "ConstantField");
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			new MessagePart(method, new MessagePartAttribute());
 		}
 
-		[TestCase]
+		[Test]
 		public void RequiredMinAndMaxVersions() {
 			Type messageType = typeof(MessageWithMinAndMaxVersionParts);
 			FieldInfo newIn2Field = messageType.GetField("NewIn2", BindingFlags.Public | BindingFlags.Instance);

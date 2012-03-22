@@ -25,55 +25,51 @@ namespace DotNetOpenAuth.Messaging {
 	/// ASP.NET does not let us fully initialize that class, so we have to write one
 	/// of our one.
 	/// </remarks>
-	public class HttpRequestInfo {
+	public class HttpRequestInfo : HttpRequestBase {
 		/// <summary>
-		/// The key/value pairs found in the entity of a POST request.
+		/// The HTTP verb in the request.
 		/// </summary>
-		private NameValueCollection form;
+		private readonly string httpMethod;
 
 		/// <summary>
-		/// The key/value pairs found in the querystring of the incoming request.
+		/// The full request URL.
 		/// </summary>
-		private NameValueCollection queryString;
+		private readonly Uri requestUri;
 
 		/// <summary>
-		/// Backing field for the <see cref="QueryStringBeforeRewriting"/> property.
+		/// The HTTP headers.
 		/// </summary>
-		private NameValueCollection queryStringBeforeRewriting;
+		private readonly NameValueCollection headers;
 
 		/// <summary>
-		/// Backing field for the <see cref="Message"/> property.
+		/// The variables defined in the query part of the URL.
 		/// </summary>
-		private IDirectedProtocolMessage message;
+		private readonly NameValueCollection queryString;
+
+		/// <summary>
+		/// The POSTed form variables.
+		/// </summary>
+		private readonly NameValueCollection form;
+
+		/// <summary>
+		/// The server variables collection.
+		/// </summary>
+		private readonly NameValueCollection serverVariables;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
-		/// <param name="request">The ASP.NET structure to copy from.</param>
-		public HttpRequestInfo(HttpRequest request) {
+		/// <param name="request">The request.</param>
+		/// <param name="requestUri">The request URI.</param>
+		internal HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
 			Requires.NotNull(request, "request");
-			Contract.Ensures(this.HttpMethod == request.HttpMethod);
-			Contract.Ensures(this.Url == request.Url);
-			Contract.Ensures(this.RawUrl == request.RawUrl);
-			Contract.Ensures(this.UrlBeforeRewriting != null);
-			Contract.Ensures(this.Headers != null);
-			Contract.Ensures(this.InputStream == request.InputStream);
-			Contract.Ensures(this.form == request.Form);
-			Contract.Ensures(this.queryString == request.QueryString);
+			Requires.NotNull(requestUri, "requestUri");
 
-			this.HttpMethod = request.HttpMethod;
-			this.Url = request.Url;
-			this.UrlBeforeRewriting = GetPublicFacingUrl(request);
-			this.RawUrl = request.RawUrl;
-			this.Headers = GetHeaderCollection(request.Headers);
-			this.InputStream = request.InputStream;
-
-			// These values would normally be calculated, but we'll reuse them from
-			// HttpRequest since they're already calculated, and there's a chance (<g>)
-			// that ASP.NET does a better job of being comprehensive about gathering
-			// these as well.
-			this.form = request.Form;
-			this.queryString = request.QueryString;
+			this.httpMethod = request.Method;
+			this.headers = request.Headers;
+			this.requestUri = requestUri;
+			this.form = new NameValueCollection();
+			this.serverVariables = new NameValueCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
@@ -81,45 +77,35 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
-		/// <param name="httpMethod">The HTTP method (i.e. GET or POST) of the incoming request.</param>
-		/// <param name="requestUrl">The URL being requested.</param>
-		/// <param name="rawUrl">The raw URL that appears immediately following the HTTP verb in the request,
-		/// before any URL rewriting takes place.</param>
-		/// <param name="headers">Headers in the HTTP request.</param>
-		/// <param name="inputStream">The entity stream, if any.  (POST requests typically have these).  Use <c>null</c> for GET requests.</param>
-		public HttpRequestInfo(string httpMethod, Uri requestUrl, string rawUrl, WebHeaderCollection headers, Stream inputStream) {
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <param name="requestUri">The request URI.</param>
+		/// <param name="form">The form variables.</param>
+		/// <param name="headers">The HTTP headers.</param>
+		internal HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection form = null, NameValueCollection headers = null) {
 			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
-			Requires.NotNull(requestUrl, "requestUrl");
-			Requires.NotNull(rawUrl, "rawUrl");
-			Requires.NotNull(headers, "headers");
+			Requires.NotNull(requestUri, "requestUri");
 
-			this.HttpMethod = httpMethod;
-			this.Url = requestUrl;
-			this.UrlBeforeRewriting = requestUrl;
-			this.RawUrl = rawUrl;
-			this.Headers = headers;
-			this.InputStream = inputStream;
-
-			Reporting.RecordRequestStatistics(this);
+			this.httpMethod = httpMethod;
+			this.requestUri = requestUri;
+			this.form = form ?? new NameValueCollection();
+			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
+			this.headers = headers ?? new NameValueCollection();
+			this.serverVariables = new NameValueCollection();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
 		/// <param name="listenerRequest">Details on the incoming HTTP request.</param>
-		public HttpRequestInfo(HttpListenerRequest listenerRequest) {
+		internal HttpRequestInfo(HttpListenerRequest listenerRequest) {
 			Requires.NotNull(listenerRequest, "listenerRequest");
 
-			this.HttpMethod = listenerRequest.HttpMethod;
-			this.Url = listenerRequest.Url;
-			this.UrlBeforeRewriting = listenerRequest.Url;
-			this.RawUrl = listenerRequest.RawUrl;
-			this.Headers = new WebHeaderCollection();
-			foreach (string key in listenerRequest.Headers) {
-				this.Headers[key] = listenerRequest.Headers[key];
-			}
-
-			this.InputStream = listenerRequest.InputStream;
+			this.httpMethod = listenerRequest.HttpMethod;
+			this.requestUri = listenerRequest.Url;
+			this.queryString = listenerRequest.QueryString;
+			this.headers = listenerRequest.Headers;
+			this.form = ParseFormData(listenerRequest.HttpMethod, listenerRequest.Headers, listenerRequest.InputStream);
+			this.serverVariables = new NameValueCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
@@ -127,297 +113,143 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
-		/// <param name="request">The WCF incoming request structure to get the HTTP information from.</param>
-		/// <param name="requestUri">The URI of the service endpoint.</param>
-		public HttpRequestInfo(HttpRequestMessageProperty request, Uri requestUri) {
-			Requires.NotNull(request, "request");
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <param name="requestUri">The request URI.</param>
+		/// <param name="headers">The headers.</param>
+		/// <param name="inputStream">The input stream.</param>
+		internal HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection headers, Stream inputStream) {
+			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
 			Requires.NotNull(requestUri, "requestUri");
 
-			this.HttpMethod = request.Method;
-			this.Headers = request.Headers;
-			this.Url = requestUri;
-			this.UrlBeforeRewriting = requestUri;
-			this.RawUrl = MakeUpRawUrlFromUrl(requestUri);
+			this.httpMethod = httpMethod;
+			this.requestUri = requestUri;
+			this.headers = headers;
+			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
+			this.form = ParseFormData(httpMethod, headers, inputStream);
+			this.serverVariables = new NameValueCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// Gets the HTTP method.
 		/// </summary>
-		internal HttpRequestInfo() {
-			Contract.Ensures(this.HttpMethod == "GET");
-			Contract.Ensures(this.Headers != null);
-
-			this.HttpMethod = "GET";
-			this.Headers = new WebHeaderCollection();
+		public override string HttpMethod {
+			get { return this.httpMethod; }
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// Gets the headers.
 		/// </summary>
-		/// <param name="request">The HttpWebRequest (that was never used) to copy from.</param>
-		internal HttpRequestInfo(WebRequest request) {
-			Requires.NotNull(request, "request");
-
-			this.HttpMethod = request.Method;
-			this.Url = request.RequestUri;
-			this.UrlBeforeRewriting = request.RequestUri;
-			this.RawUrl = MakeUpRawUrlFromUrl(request.RequestUri);
-			this.Headers = GetHeaderCollection(request.Headers);
-			this.InputStream = null;
-
-			Reporting.RecordRequestStatistics(this);
+		public override NameValueCollection Headers {
+			get { return this.headers; }
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// Gets the URL.
 		/// </summary>
-		/// <param name="message">The message being passed in through a mock transport.  May be null.</param>
-		/// <param name="httpMethod">The HTTP method that the incoming request came in on, whether or not <paramref name="message"/> is null.</param>
-		internal HttpRequestInfo(IDirectedProtocolMessage message, HttpDeliveryMethods httpMethod) {
-			this.message = message;
-			this.HttpMethod = MessagingUtilities.GetHttpVerb(httpMethod);
+		public override Uri Url {
+			get { return this.requestUri; }
 		}
 
 		/// <summary>
-		/// Gets or sets the message that is being sent over a mock transport (for testing).
+		/// Gets the raw URL.
 		/// </summary>
-		internal virtual IDirectedProtocolMessage Message {
-			get { return this.message; }
-			set { this.message = value; }
+		public override string RawUrl {
+			get { return this.requestUri.AbsolutePath + this.requestUri.Query; }
 		}
 
 		/// <summary>
-		/// Gets or sets the verb in the request (i.e. GET, POST, etc.)
+		/// Gets the form.
 		/// </summary>
-		internal string HttpMethod { get; set; }
-
-		/// <summary>
-		/// Gets or sets the entire URL of the request, after any URL rewriting.
-		/// </summary>
-		internal Uri Url { get; set; }
-
-		/// <summary>
-		/// Gets or sets the raw URL that appears immediately following the HTTP verb in the request,
-		/// before any URL rewriting takes place.
-		/// </summary>
-		internal string RawUrl { get; set; }
-
-		/// <summary>
-		/// Gets or sets the full public URL used by the remote client to initiate this request,
-		/// before any URL rewriting and before any changes made by web farm load distributors.
-		/// </summary>
-		internal Uri UrlBeforeRewriting { get; set; }
-
-		/// <summary>
-		/// Gets the query part of the URL (The ? and everything after it), after URL rewriting.
-		/// </summary>
-		internal string Query {
-			get { return this.Url != null ? this.Url.Query : null; }
+		public override NameValueCollection Form {
+			get { return this.form; }
 		}
 
 		/// <summary>
-		/// Gets or sets the collection of headers that came in with the request.
+		/// Gets the query string.
 		/// </summary>
-		internal WebHeaderCollection Headers { get; set; }
-
-		/// <summary>
-		/// Gets or sets the entity, or body of the request, if any.
-		/// </summary>
-		internal Stream InputStream { get; set; }
-
-		/// <summary>
-		/// Gets the key/value pairs found in the entity of a POST request.
-		/// </summary>
-		internal NameValueCollection Form {
-			get {
-				Contract.Ensures(Contract.Result<NameValueCollection>() != null);
-				if (this.form == null) {
-					ContentType contentType = string.IsNullOrEmpty(this.Headers[HttpRequestHeader.ContentType]) ? null : new ContentType(this.Headers[HttpRequestHeader.ContentType]);
-					if (this.HttpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal)) {
-						StreamReader reader = new StreamReader(this.InputStream);
-						long originalPosition = 0;
-						if (this.InputStream.CanSeek) {
-							originalPosition = this.InputStream.Position;
-						}
-						this.form = HttpUtility.ParseQueryString(reader.ReadToEnd());
-						if (this.InputStream.CanSeek) {
-							this.InputStream.Seek(originalPosition, SeekOrigin.Begin);
-						}
-					} else {
-						this.form = new NameValueCollection();
-					}
-				}
-
-				return this.form;
-			}
+		public override NameValueCollection QueryString {
+			get { return this.queryString; }
 		}
 
 		/// <summary>
-		/// Gets the key/value pairs found in the querystring of the incoming request.
+		/// Gets the server variables.
 		/// </summary>
-		internal NameValueCollection QueryString {
-			get {
-				if (this.queryString == null) {
-					this.queryString = this.Query != null ? HttpUtility.ParseQueryString(this.Query) : new NameValueCollection();
-				}
-
-				return this.queryString;
-			}
+		public override NameValueCollection ServerVariables {
+			get { return this.serverVariables; }
 		}
 
 		/// <summary>
-		/// Gets the query data from the original request (before any URL rewriting has occurred.)
-		/// </summary>
-		/// <returns>A <see cref="NameValueCollection"/> containing all the parameters in the query string.</returns>
-		internal NameValueCollection QueryStringBeforeRewriting {
-			get {
-				if (this.queryStringBeforeRewriting == null) {
-					// This request URL may have been rewritten by the host site.
-					// For openid protocol purposes, we really need to look at 
-					// the original query parameters before any rewriting took place.
-					if (!this.IsUrlRewritten) {
-						// No rewriting has taken place.
-						this.queryStringBeforeRewriting = this.QueryString;
-					} else {
-						// Rewriting detected!  Recover the original request URI.
-						ErrorUtilities.VerifyInternal(this.UrlBeforeRewriting != null, "UrlBeforeRewriting is null, so the query string cannot be determined.");
-						this.queryStringBeforeRewriting = HttpUtility.ParseQueryString(this.UrlBeforeRewriting.Query);
-					}
-				}
-
-				return this.queryStringBeforeRewriting;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the request's URL was rewritten by ASP.NET
-		/// or some other module.
-		/// </summary>
-		/// <value>
-		/// 	<c>true</c> if this request's URL was rewritten; otherwise, <c>false</c>.
-		/// </value>
-		internal bool IsUrlRewritten {
-			get { return this.Url != this.UrlBeforeRewriting; }
-		}
-
-		/// <summary>
-		/// Gets the public facing URL for the given incoming HTTP request.
+		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		/// <param name="serverVariables">The server variables to consider part of the request.</param>
-		/// <returns>
-		/// The URI that the outside world used to create this request.
-		/// </returns>
-		/// <remarks>
-		/// Although the <paramref name="serverVariables"/> value can be obtained from
-		/// <see cref="HttpRequest.ServerVariables"/>, it's useful to be able to pass them
-		/// in so we can simulate injected values from our unit tests since the actual property
-		/// is a read-only kind of <see cref="NameValueCollection"/>.
-		/// </remarks>
-		internal static Uri GetPublicFacingUrl(HttpRequest request, NameValueCollection serverVariables) {
-			Requires.NotNull(request, "request");
-			Requires.NotNull(serverVariables, "serverVariables");
-
-			// Due to URL rewriting, cloud computing (i.e. Azure)
-			// and web farms, etc., we have to be VERY careful about what
-			// we consider the incoming URL.  We want to see the URL as it would
-			// appear on the public-facing side of the hosting web site.
-			// HttpRequest.Url gives us the internal URL in a cloud environment,
-			// So we use a variable that (at least from what I can tell) gives us
-			// the public URL:
-			if (serverVariables["HTTP_HOST"] != null) {
-				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
-				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ?? request.Url.Scheme;
-				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + serverVariables["HTTP_HOST"]);
-				UriBuilder publicRequestUri = new UriBuilder(request.Url);
-				publicRequestUri.Scheme = scheme;
-				publicRequestUri.Host = hostAndPort.Host;
-				publicRequestUri.Port = hostAndPort.Port; // CC missing Uri.Port contract that's on UriBuilder.Port
-				return publicRequestUri.Uri;
-			} else {
-				// Failover to the method that works for non-web farm enviroments.
-				// We use Request.Url for the full path to the server, and modify it
-				// with Request.RawUrl to capture both the cookieless session "directory" if it exists
-				// and the original path in case URL rewriting is going on.  We don't want to be
-				// fooled by URL rewriting because we're comparing the actual URL with what's in
-				// the return_to parameter in some cases.
-				// Response.ApplyAppPathModifier(builder.Path) would have worked for the cookieless
-				// session, but not the URL rewriting problem.
-				return new Uri(request.Url, request.RawUrl);
-			}
+		/// <param name="requestUri">The request URI.</param>
+		/// <returns>An instance of <see cref="HttpRequestBase"/>.</returns>
+		public static HttpRequestBase Create(HttpRequestMessageProperty request, Uri requestUri) {
+			return new HttpRequestInfo(request, requestUri);
 		}
 
 		/// <summary>
-		/// Gets the query or form data from the original request (before any URL rewriting has occurred.)
+		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
-		/// <returns>A set of name=value pairs.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call")]
-		internal NameValueCollection GetQueryOrFormFromContext() {
-			NameValueCollection query;
-			if (this.HttpMethod == "GET") {
-				query = this.QueryStringBeforeRewriting;
-			} else {
-				query = this.Form;
-			}
-			return query;
+		/// <param name="listenerRequest">The listener request.</param>
+		/// <returns>An instance of <see cref="HttpRequestBase"/>.</returns>
+		public static HttpRequestBase Create(HttpListenerRequest listenerRequest) {
+			return new HttpRequestInfo(listenerRequest);
 		}
 
 		/// <summary>
-		/// Gets the public facing URL for the given incoming HTTP request.
+		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
-		/// <param name="request">The request.</param>
-		/// <returns>The URI that the outside world used to create this request.</returns>
-		private static Uri GetPublicFacingUrl(HttpRequest request) {
-			Requires.NotNull(request, "request");
-			return GetPublicFacingUrl(request, request.ServerVariables);
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <param name="requestUri">The request URI.</param>
+		/// <param name="form">The form variables.</param>
+		/// <param name="headers">The HTTP headers.</param>
+		/// <returns>An instance of <see cref="HttpRequestBase"/>.</returns>
+		public static HttpRequestBase Create(string httpMethod, Uri requestUri, NameValueCollection form = null, NameValueCollection headers = null) {
+			return new HttpRequestInfo(httpMethod, requestUri, form, headers);
 		}
 
 		/// <summary>
-		/// Makes up a reasonable guess at the raw URL from the possibly rewritten URL.
+		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
-		/// <param name="url">A full URL.</param>
-		/// <returns>A raw URL that might have come in on the HTTP verb.</returns>
-		private static string MakeUpRawUrlFromUrl(Uri url) {
-			Requires.NotNull(url, "url");
-			return url.AbsolutePath + url.Query + url.Fragment;
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <param name="requestUri">The request URI.</param>
+		/// <param name="headers">The headers.</param>
+		/// <param name="inputStream">The input stream.</param>
+		/// <returns>An instance of <see cref="HttpRequestBase"/>.</returns>
+		public static HttpRequestBase Create(string httpMethod, Uri requestUri, NameValueCollection headers, Stream inputStream) {
+			return new HttpRequestInfo(httpMethod, requestUri, headers, inputStream);
 		}
 
 		/// <summary>
-		/// Converts a NameValueCollection to a WebHeaderCollection.
+		/// Reads name=value pairs from the POSTed form entity when the HTTP headers indicate that that is the payload of the entity.
 		/// </summary>
-		/// <param name="pairs">The collection a HTTP headers.</param>
-		/// <returns>A new collection of the given headers.</returns>
-		private static WebHeaderCollection GetHeaderCollection(NameValueCollection pairs) {
-			Requires.NotNull(pairs, "pairs");
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <param name="headers">The headers.</param>
+		/// <param name="inputStream">The input stream.</param>
+		/// <returns>The non-null collection of form variables.</returns>
+		private static NameValueCollection ParseFormData(string httpMethod, NameValueCollection headers, Stream inputStream) {
+			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
+			Requires.NotNull(headers, "headers");
 
-			WebHeaderCollection headers = new WebHeaderCollection();
-			foreach (string key in pairs) {
-				try {
-					headers.Add(key, pairs[key]);
-				} catch (ArgumentException ex) {
-					Logger.Messaging.WarnFormat(
-						"{0} thrown when trying to add web header \"{1}: {2}\".  {3}",
-						ex.GetType().Name,
-						key,
-						pairs[key],
-						ex.Message);
+			ContentType contentType = string.IsNullOrEmpty(headers[HttpRequestHeaders.ContentType]) ? null : new ContentType(headers[HttpRequestHeaders.ContentType]);
+			if (inputStream != null && httpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal)) {
+				var reader = new StreamReader(inputStream);
+				long originalPosition = 0;
+				if (inputStream.CanSeek) {
+					originalPosition = inputStream.Position;
 				}
+				string postEntity = reader.ReadToEnd();
+				if (inputStream.CanSeek) {
+					inputStream.Seek(originalPosition, SeekOrigin.Begin);
+				}
+
+				return HttpUtility.ParseQueryString(postEntity);
 			}
 
-			return headers;
+			return new NameValueCollection();
 		}
-
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-		}
-#endif
 	}
 }

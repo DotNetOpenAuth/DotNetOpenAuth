@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test {
 
 	[TestFixture]
 	public class UriUtilTests {
-		[TestCase]
+		[Test]
 		public void QueryStringContainPrefixedParametersNull() {
 			Assert.IsFalse(UriUtil.QueryStringContainPrefixedParameters(null, "prefix."));
 		}

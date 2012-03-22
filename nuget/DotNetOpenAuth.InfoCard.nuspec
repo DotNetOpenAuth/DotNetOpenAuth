@@ -10,7 +10,12 @@
 		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Contains assemblies that are required to implement an InfoCard relying party.</description>
+		<summary>Add InfoCard login capability to ASP.NET web applications.</summary>
+		<description>
+			Adds an InfoCard button to your web application's login page.
+			InfoCards enhance user security while mitigating phishing attacks by removing the
+			need for a password credential or 3rd party identity issuer entirely.
+		</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.Core" version="[$version$]" />
 		</dependencies>

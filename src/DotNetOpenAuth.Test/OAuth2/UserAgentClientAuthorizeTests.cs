@@ -19,14 +19,14 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 	[TestFixture]
 	public class UserAgentClientAuthorizeTests : OAuth2TestBase {
-		[TestCase]
+		[Test]
 		public void AuthorizationCodeGrant() {
 			var coordinator = new OAuth2Coordinator<UserAgentClient>(
 				AuthorizationServerDescription,
 				AuthorizationServerMock,
 				new UserAgentClient(AuthorizationServerDescription),
 				client => {
-					var authState = new AuthorizationState {
+					var authState = new AuthorizationState(TestScopes) {
 						Callback = ClientCallback,
 					};
 					var request = client.PrepareRequestUserAuthorization(authState);
@@ -34,22 +34,19 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					client.Channel.Respond(request);
 					var incoming = client.Channel.ReadFromRequest();
 					var result = client.ProcessUserAuthorization(authState, incoming);
-					Assert.IsNotNullOrEmpty(result.AccessToken);
-					Assert.IsNotNullOrEmpty(result.RefreshToken);
+					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
+					Assert.That(request, Is.Not.Null);
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
-					var tokenRequest = server.ReadAccessTokenRequest();
-					IAccessTokenRequest accessTokenRequest = tokenRequest;
-					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
-					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
-					server.Channel.Respond(tokenResponse);
+					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void ImplicitGrant() {
 			var coordinatorClient = new UserAgentClient(AuthorizationServerDescription);
 			var coordinator = new OAuth2Coordinator<UserAgentClient>(
@@ -57,21 +54,22 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				AuthorizationServerMock,
 				coordinatorClient,
 				client => {
-					var authState = new AuthorizationState {
+					var authState = new AuthorizationState(TestScopes) {
 						Callback = ClientCallback,
 					};
 					var request = client.PrepareRequestUserAuthorization(authState, implicitResponseType: true);
-					Assert.AreEqual(EndUserAuthorizationResponseType.AccessToken, request.ResponseType);
+					Assert.That(request.ResponseType, Is.EqualTo(EndUserAuthorizationResponseType.AccessToken));
 					client.Channel.Respond(request);
 					var incoming = client.Channel.ReadFromRequest();
 					var result = client.ProcessUserAuthorization(authState, incoming);
-					Assert.IsNotNullOrEmpty(result.AccessToken);
-					Assert.IsNull(result.RefreshToken);
+					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(result.RefreshToken, Is.Null);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
+					Assert.That(request, Is.Not.Null);
 					IAccessTokenRequest accessTokenRequest = (EndUserAuthorizationImplicitRequest)request;
-					Assert.IsFalse(accessTokenRequest.ClientAuthenticated);
+					Assert.That(accessTokenRequest.ClientAuthenticated, Is.False);
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 				});
 

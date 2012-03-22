@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies IsDirectedIdentity returns true when appropriate.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void IsDirectedIdentity() {
 			var iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.IsFalse(iauthRequest.IsDirectedIdentity);
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies ClaimedIdentifier behavior.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ClaimedIdentifier() {
 			var iauthRequest = this.CreateAuthenticationRequest(this.claimedId, this.delegatedLocalId);
 			Assert.AreEqual(this.claimedId, iauthRequest.ClaimedIdentifier);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies ProviderVersion behavior.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ProviderVersion() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.AreEqual(this.protocol.Version, authRequest.DiscoveryResult.Version);
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies RedirectingResponse.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void CreateRequestMessage() {
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
 				rp => {
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that delegating authentication requests are filtered out when configured to do so.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void CreateFiltersDelegatingIdentifiers() {
 			Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
 			var rp = CreateRelyingParty();
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies the Provider property returns non-null.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Provider() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.IsNotNull(authRequest.Provider);
@@ -134,7 +134,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that AddCallbackArguments adds query arguments to the return_to URL of the message.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AddCallbackArgument() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.AreEqual(this.returnTo, authRequest.ReturnToUrl);
@@ -148,7 +148,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that AddCallbackArguments replaces pre-existing parameter values 
 		/// rather than appending them.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AddCallbackArgumentClearsPreviousArgument() {
 			UriBuilder returnToWithArgs = new UriBuilder(this.returnTo);
 			returnToWithArgs.AppendQueryArgs(new Dictionary<string, string> { { "p1", "v1" } });
@@ -163,7 +163,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies identity-less checkid_* request behavior.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void NonIdentityRequest() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			authRequest.IsExtensionOnly = true;
@@ -176,7 +176,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that discovery on identifiers that serve as OP identifiers and claimed identifiers
 		/// only generate OP Identifier auth requests.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void DualIdentifierUsedOnlyAsOPIdentifierForAuthRequest() {
 			var rp = this.CreateRelyingParty(true);
 			var results = AuthenticationRequest.Create(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false).ToList();

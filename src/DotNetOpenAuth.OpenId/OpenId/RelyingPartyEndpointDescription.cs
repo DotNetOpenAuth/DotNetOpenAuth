@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="RelyingPartyDescription.cs" company="Outercurve Foundation">
+// <copyright file="RelyingPartyEndpointDescription.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------

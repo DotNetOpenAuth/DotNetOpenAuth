@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OpenIdXrdsHelper.cs" company="Outercurve Foundation">
+// <copyright file="OpenIdXrdsHelperRelyingParty.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------

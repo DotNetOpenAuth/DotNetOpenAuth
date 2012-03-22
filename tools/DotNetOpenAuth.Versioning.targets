@@ -6,9 +6,6 @@
 	<PropertyGroup>
 		<VersionCsFile>$(IntermediatePath)\$(AssemblyName).Version.cs</VersionCsFile>
 		<NoWarn>$(NoWarn);1607</NoWarn>
-
-		<!-- PrereleaseVersion can be any alphanumeric identifier with a preceding hyphen, or blank. -->
-		<PrereleaseVersion>-beta</PrereleaseVersion>
 	</PropertyGroup>
 
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
@@ -19,6 +16,9 @@
 		                 GitRepoRoot="$(ProjectRoot)">
 			<Output TaskParameter="Version" PropertyName="BuildVersion" />
 			<Output TaskParameter="SimpleVersion" PropertyName="BuildVersionSimple" />
+			<Output TaskParameter="PrereleaseVersion" PropertyName="PrereleaseVersion" />
+			<Output TaskParameter="MajorMinorVersion" PropertyName="MajorMinorVersion" />
+			<Output TaskParameter="OAuth2PackagesVersion" PropertyName="OAuth2PackagesVersion" />
 			<Output TaskParameter="GitCommitId" PropertyName="GitCommitId" />
 			<Output TaskParameter="BuildNumber" PropertyName="BuildNumber" />
 		</GetBuildVersion>
@@ -26,7 +26,8 @@
 			<!-- In TeamCity, the build agent doesn't get the .git directory, but the commit id is available by other means. -->
 			<GitCommitId Condition=" '$(GitCommitId)' == '' ">$(BUILD_VCS_NUMBER)</GitCommitId>
 
-			<SemVerBuildSuffix>+build.$(BuildNumber).$(GitCommitId.Substring(0,10))</SemVerBuildSuffix>
+			<GitCommitIdShort Condition=" '$(GitCommitId)' != '' ">.$(GitCommitId.Substring(0,10))</GitCommitIdShort>
+			<SemVerBuildSuffix>+build.$(BuildNumber)$(GitCommitIdShort)</SemVerBuildSuffix>
 			<AssemblyInformationalVersion>$(BuildVersionSimple)$(PrereleaseVersion)$(SemVerBuildSuffix)</AssemblyInformationalVersion>
 
 			<!-- When NuGet supports SemVer 2.0, we can set NuGetPackageVersion to be the same as $(AssemblyInformationalVersion) -->
@@ -46,8 +47,10 @@
 		</PropertyGroup>
 		<MakeDir Directories="$(IntermediatePath)"/>
 		<AssemblyInfo OutputFile="$(NewVersionCsFile)" CodeLanguage="C#"
-		              AssemblyVersion="$(BuildVersion)"
-		              AssemblyInformationalVersion="$(AssemblyInformationalVersion)" />
+		              AssemblyVersion="$(MajorMinorVersion)"
+		              AssemblyFileVersion="$(BuildVersion)"
+		              AssemblyInformationalVersion="$(AssemblyInformationalVersion)"
+		              GenerateClass="true" />
 		<!-- Avoid applying the newly generated AssemblyInfo.cs file to the build 
 		     unless it has changed in order to allow for incremental building. -->
 		<CompareFiles OriginalItems="$(VersionCsFile)" NewItems="$(NewVersionCsFile)">

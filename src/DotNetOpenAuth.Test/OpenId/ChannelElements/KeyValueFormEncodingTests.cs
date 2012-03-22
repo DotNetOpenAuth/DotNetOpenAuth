@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Both = 0x3,
 		}
 
-		[TestCase]
+		[Test]
 		public void BasicEncodingTest() {
 			byte[] kvfBytes = KeyValueFormEncoding.GetBytes(this.sampleData);
 			string responseString = Encoding.UTF8.GetString(kvfBytes);
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			}
 		}
 
-		[TestCase]
+		[Test]
 		public void EncodeDecode() {
 			this.KVDictTest(UTF8Encoding.UTF8.GetBytes(string.Empty), new Dictionary<string, string>(), TestMode.Both);
 
@@ -133,7 +133,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.Illegal("x:b\n\n", KeyValueFormConformanceLevel.OpenId20);
 		}
 
-		[TestCase]
+		[Test]
 		public void EmptyLineLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			d.Add("x", "b");
@@ -145,7 +145,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			this.Illegal("x:y\na:b", KeyValueFormConformanceLevel.OpenId11);
 		}
 
-		[TestCase]
+		[Test]
 		public void LastLineNotTerminatedLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			d.Add("x", "y");

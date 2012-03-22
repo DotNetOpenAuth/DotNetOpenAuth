@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AssociateSuccessfulResponseProvider.cs" company="Outercurve Foundation">
+// <copyright file="IAssociateSuccessfulResponseProvider.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------

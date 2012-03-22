@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.ApplicationBlock.Facebook {
 		public string Birthday { get; set; }
 
 		public static FacebookGraph Deserialize(string json) {
-			if (String.IsNullOrEmpty(json)) {
+			if (string.IsNullOrEmpty(json)) {
 				throw new ArgumentNullException("json");
 			}
 

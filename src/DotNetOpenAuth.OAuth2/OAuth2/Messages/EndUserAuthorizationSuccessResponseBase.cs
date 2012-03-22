@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 
@@ -59,6 +60,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the scope of the <see cref="AccessToken"/> if one is given; otherwise the scope of the authorization code.
 		/// </summary>
 		/// <value>The scope.</value>
+		[SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Justification = "By design")]
 		public ICollection<string> Scope { get; protected set; }
 
 		/// <summary>

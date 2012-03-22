@@ -65,7 +65,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// Described in OAuth 2.0 section 7.1.
 		/// </remarks>
-		[MessagePart(Protocol.token_type, IsRequired = true)]
+		[MessagePart(Protocol.token_type, IsRequired = false)] // HACKHACK: This is actually required, but wasn't in older drafts of OAuth 2
 		public string TokenType { get; internal set; }
 
 		/// <summary>

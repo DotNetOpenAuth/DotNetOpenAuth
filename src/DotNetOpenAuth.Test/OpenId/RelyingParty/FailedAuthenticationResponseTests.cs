@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			new FailedAuthenticationResponse(null);
 		}
 
-		[TestCase]
+		[Test]
 		public void CommonProperties() {
 			Assert.AreEqual(AuthenticationStatus.Failed, this.response.Status);
 			Assert.AreSame(this.exception, this.response.Exception);
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsNull(this.response.FriendlyIdentifierForDisplay);
 		}
 
-		[TestCase]
+		[Test]
 		public void CommonMethods() {
 			Assert.IsNull(this.response.GetExtension<ClaimsRequest>());
 			Assert.IsNull(this.response.GetExtension(typeof(ClaimsRequest)));

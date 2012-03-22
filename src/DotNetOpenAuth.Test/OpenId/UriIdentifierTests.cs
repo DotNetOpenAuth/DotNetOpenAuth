@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			new UriIdentifier(this.badUri);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorGoodUri() {
 			var uri = new UriIdentifier(this.goodUri);
 			Assert.AreEqual(new Uri(this.goodUri), uri.Uri);
@@ -54,14 +54,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsFalse(uri.IsDiscoverySecureEndToEnd);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorStringNoSchemeSecure() {
 			var uri = new UriIdentifier("host/path", true);
 			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
 			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorStringHttpsSchemeSecure() {
 			var uri = new UriIdentifier("https://host/path", true);
 			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			new UriIdentifier("http://host/path", true);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorUriHttpsSchemeSecure() {
 			var uri = new UriIdentifier(new Uri("https://host/path"), true);
 			Assert.AreEqual("https://host/path", uri.Uri.AbsoluteUri);
@@ -93,21 +93,21 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// they should NOT be stripped from claimed identifiers.  So the UriIdentifier
 		/// class, which serves both identifier types, must not do the stripping.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void DoesNotStripFragment() {
 			Uri original = new Uri("http://a/b#c");
 			UriIdentifier identifier = new UriIdentifier(original);
 			Assert.AreEqual(original.Fragment, identifier.Uri.Fragment);
 		}
 
-		[TestCase]
+		[Test]
 		public void IsValid() {
 			Assert.IsTrue(UriIdentifier.IsValidUri(this.goodUri));
 			Assert.IsFalse(UriIdentifier.IsValidUri(this.badUri));
 			Assert.IsTrue(UriIdentifier.IsValidUri(this.relativeUri), "URL lacking http:// prefix should have worked anyway.");
 		}
 
-		[TestCase]
+		[Test]
 		public void TrimFragment() {
 			Identifier noFragment = UriIdentifier.Parse("http://a/b");
 			Identifier fragment = UriIdentifier.Parse("http://a/b#c");
@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			});
 		}
 
-		[TestCase]
+		[Test]
 		public void ToStringTest() {
 			Assert.AreEqual(this.goodUri, new UriIdentifier(this.goodUri).ToString());
 			TestAsFullAndPartialTrust(fullTrust => {
@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			});
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualsTest() {
 			TestAsFullAndPartialTrust(fulltrust => {
 				Assert.AreEqual(new UriIdentifier(this.goodUri), new UriIdentifier(this.goodUri));
@@ -163,7 +163,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			});
 		}
 
-		[TestCase]
+		[Test]
 		public void UnicodeTest() {
 			string unicodeUrl = "http://nerdbank.org/opaffirmative/崎村.aspx";
 			Assert.IsTrue(UriIdentifier.IsValidUri(unicodeUrl));
@@ -173,7 +173,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(Uri.EscapeUriString(unicodeUrl), id.ToString());
 		}
 
-		[TestCase]
+		[Test]
 		public void NormalizeCase() {
 			// only the host name can be normalized in casing safely.
 			Identifier id = "http://HOST:80/PaTH?KeY=VaLUE#fRag";
@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// which may end with a period.  The default .NET Uri parser trims off
 		/// trailing periods, which breaks OpenID unless special precautions are taken.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void TrailingPeriodsNotTrimmed() {
 			TestAsFullAndPartialTrust(fullTrust => {
 				string claimedIdentifier = "https://me.yahoo.com/a/AsDf.#asdf";
@@ -228,7 +228,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			});
 		}
 
-		[TestCase]
+		[Test]
 		public void HttpSchemePrepended() {
 			UriIdentifier id = new UriIdentifier("www.yahoo.com");
 			Assert.AreEqual("http://www.yahoo.com/", id.ToString());
@@ -242,7 +242,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(id.SchemeImplicitlyPrepended);
 		}
 
-		[TestCase]
+		[Test]
 		public void TryRequireSslAdjustsIdentifier() {
 			Identifier secureId;
 			// Try Parse and ctor without explicit scheme
@@ -275,7 +275,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies that unicode hostnames are handled.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UnicodeHostSupport() {
 			var id = new UriIdentifier("http://server崎/村");
 			Assert.AreEqual("server崎", id.Uri.Host);
@@ -284,7 +284,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies SimpleUri behavior
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SimpleUri() {
 			Assert.AreEqual("http://abc/D./e.?Qq#Ff", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq#Ff").ToString());
 			Assert.AreEqual("http://abc/D./e.?Qq", new UriIdentifier.SimpleUri("HTTP://ABC/D./e.?Qq").ToString());

@@ -10,14 +10,15 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
+	using System.IO;
 	using System.Linq;
-	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
-	using DotNetOpenAuth.OpenId.Messages;
+	using Org.Mentalis.Security.Cryptography;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
@@ -29,11 +30,46 @@ namespace DotNetOpenAuth.OpenId {
 		internal const string CustomParameterPrefix = "dnoa.";
 
 		/// <summary>
+		/// A static variable that carries the results of a check for the presence of
+		/// assemblies that are required for the Diffie-Hellman algorithm.
+		/// </summary>
+		private static bool? diffieHellmanPresent;
+
+		/// <summary>
+		/// Gets a value indicating whether Diffie Hellman is available in this installation.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if Diffie-Hellman functionality is present; otherwise, <c>false</c>.
+		/// </value>
+		internal static bool IsDiffieHellmanPresent {
+			get {
+				if (!diffieHellmanPresent.HasValue) {
+					try {
+						LoadDiffieHellmanTypes();
+						diffieHellmanPresent = true;
+					} catch (FileNotFoundException) {
+						diffieHellmanPresent = false;
+					} catch (TypeLoadException) {
+						diffieHellmanPresent = false;
+					}
+
+					if (diffieHellmanPresent.Value) {
+						Logger.OpenId.Info("Diffie-Hellman supporting assemblies found and loaded.");
+					} else {
+						Logger.OpenId.Warn("Diffie-Hellman supporting assemblies failed to load.  Only associations with HTTPS OpenID Providers will be supported.");
+					}
+				}
+
+				return diffieHellmanPresent.Value;
+			}
+		}
+
+		/// <summary>
 		/// Creates a random association handle.
 		/// </summary>
 		/// <returns>The association handle.</returns>
 		public static string GenerateRandomAssociationHandle() {
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			// Generate the handle.  It must be unique, and preferably unpredictable,
 			// so we use a time element and a random data element to generate it.
@@ -115,7 +151,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requestContext">The request context.</param>
 		/// <returns>The fully-qualified realm.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "DotNetOpenAuth.OpenId.Realm", Justification = "Using ctor for validation.")]
-		internal static UriBuilder GetResolvedRealm(Page page, string realm, HttpRequestInfo requestContext) {
+		internal static UriBuilder GetResolvedRealm(Page page, string realm, HttpRequestBase requestContext) {
 			Requires.NotNull(page, "page");
 			Requires.NotNull(requestContext, "requestContext");
 
@@ -134,7 +170,7 @@ namespace DotNetOpenAuth.OpenId {
 			string realmNoWildcard = Regex.Replace(realm, @"^(\w+://)\*\.", matchDelegate);
 
 			UriBuilder fullyQualifiedRealm = new UriBuilder(
-				new Uri(requestContext.UrlBeforeRewriting, page.ResolveUrl(realmNoWildcard)));
+				new Uri(requestContext.GetPublicFacingUrl(), page.ResolveUrl(realmNoWildcard)));
 
 			if (foundWildcard) {
 				fullyQualifiedRealm.Host = "*." + fullyQualifiedRealm.Host;
@@ -167,6 +203,16 @@ namespace DotNetOpenAuth.OpenId {
 			var aggregator = factory as OpenIdExtensionFactoryAggregator;
 			ErrorUtilities.VerifyOperation(aggregator != null, OpenIdStrings.UnsupportedChannelConfiguration);
 			return aggregator.Factories;
+		}
+
+		/// <summary>
+		/// Loads the Diffie-Hellman assemblies.
+		/// </summary>
+		/// <exception cref="FileNotFoundException">Thrown if the DH assemblies are missing.</exception>
+		private static void LoadDiffieHellmanTypes() {
+			// This seeming no-op instruction is enough for the CLR to throw a FileNotFoundException
+			// If the assemblies are missing.
+			new DiffieHellmanManaged();
 		}
 	}
 }

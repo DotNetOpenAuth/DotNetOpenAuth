@@ -8,10 +8,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.Threading;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.
@@ -48,9 +51,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal CoordinatingOAuthConsumerChannel RemoteChannel { get; set; }
 
 		internal OutgoingWebResponse RequestProtectedResource(AccessProtectedResourceRequest request) {
-			((ITamperResistantOAuthMessage)request).HttpMethod = this.GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
+			((ITamperResistantOAuthMessage)request).HttpMethod = GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
 			this.ProcessOutgoingMessage(request);
-			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
+			var requestInfo = this.SpoofHttpMethod(request);
 			TestBase.TestLogger.InfoFormat("Sending protected resource request: {0}", requestInfo.Message);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
 			this.RemoteChannel.IncomingMessage = requestInfo.Message;
@@ -63,13 +66,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.RemoteChannel.IncomingMessageSignal.Set();
 		}
 
-		protected internal override HttpRequestInfo GetRequestFromContext() {
+		protected internal override HttpRequestBase GetRequestFromContext() {
 			var directedMessage = (IDirectedProtocolMessage)this.AwaitIncomingMessage();
-			return new HttpRequestInfo(directedMessage, directedMessage.HttpMethods);
+			return new CoordinatingHttpRequestInfo(directedMessage, directedMessage.HttpMethods);
 		}
 
 		protected override IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
-			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
+			var requestInfo = this.SpoofHttpMethod(request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
 			this.RemoteChannel.IncomingMessage = requestInfo.Message;
 			this.RemoteChannel.IncomingMessageSignal.Set();
@@ -78,7 +81,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			this.RemoteChannel.IncomingMessage = CloneSerializedParts(response, null);
+			this.RemoteChannel.IncomingMessage = this.CloneSerializedParts(response);
 			this.RemoteChannel.IncomingMessageSignal.Set();
 			return new OutgoingWebResponse(); // not used, but returning null is not allowed
 		}
@@ -88,8 +91,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.PrepareDirectResponse(message);
 		}
 
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			return request.Message;
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+			var mockRequest = (CoordinatingHttpRequestInfo)request;
+			return mockRequest.Message;
+		}
+
+		private static string GetHttpMethod(HttpDeliveryMethods methods) {
+			return (methods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
 		}
 
 		/// <summary>
@@ -97,24 +105,20 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="message">The message to add a pretend HTTP method to.</param>
 		/// <returns>A spoofed HttpRequestInfo that wraps the new message.</returns>
-		private HttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
-			HttpRequestInfo requestInfo = new HttpRequestInfo(message, message.HttpMethods);
-
+		private CoordinatingHttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {
-				string httpMethod = this.GetHttpMethod(signedMessage.HttpMethods);
-				requestInfo.HttpMethod = httpMethod;
-				requestInfo.UrlBeforeRewriting = message.Recipient;
+				string httpMethod = GetHttpMethod(signedMessage.HttpMethods);
 				signedMessage.HttpMethod = httpMethod;
 			}
 
-			requestInfo.Message = this.CloneSerializedParts(message, requestInfo);
-
+			var requestInfo = new CoordinatingHttpRequestInfo(this.CloneSerializedParts(message), message.HttpMethods);
 			return requestInfo;
 		}
 
 		private IProtocolMessage AwaitIncomingMessage() {
 			this.IncomingMessageSignal.WaitOne();
+			Assert.That(this.IncomingMessage, Is.Not.Null, "Incoming message signaled, but none supplied.");
 			IProtocolMessage response = this.IncomingMessage;
 			this.IncomingMessage = null;
 			return response;
@@ -127,7 +131,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return response;
 		}
 
-		private T CloneSerializedParts<T>(T message, HttpRequestInfo requestInfo) where T : class, IProtocolMessage {
+		private T CloneSerializedParts<T>(T message) where T : class, IProtocolMessage {
 			Requires.NotNull(message, "message");
 
 			IProtocolMessage clonedMessage;
@@ -154,10 +158,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 			clonedMessageAccessor.Deserialize(fields);
 
 			return (T)clonedMessage;
-		}
-
-		private string GetHttpMethod(HttpDeliveryMethods methods) {
-			return (methods & HttpDeliveryMethods.PostRequest) != 0 ? "POST" : "GET";
 		}
 	}
 }

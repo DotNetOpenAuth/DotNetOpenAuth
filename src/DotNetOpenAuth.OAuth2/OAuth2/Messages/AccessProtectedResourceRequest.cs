@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Always "bearer".
 		/// </value>
 		[MessagePart("token_type", IsRequired = true)]
-		internal string TokenType {
+		internal static string TokenType {
 			get { return Protocol.AccessTokenTypes.Bearer; }
 		}
 

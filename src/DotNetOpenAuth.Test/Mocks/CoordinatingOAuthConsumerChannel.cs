@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.Threading;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -49,7 +51,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal OutgoingWebResponse RequestProtectedResource(AccessProtectedResourceRequest request) {
 			((ITamperResistantOAuthMessage)request).HttpMethod = this.GetHttpMethod(((ITamperResistantOAuthMessage)request).HttpMethods);
 			this.ProcessOutgoingMessage(request);
-			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
+			var requestInfo = this.SpoofHttpMethod(request);
 			TestBase.TestLogger.InfoFormat("Sending protected resource request: {0}", requestInfo.Message);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
 			this.RemoteChannel.IncomingMessage = requestInfo.Message;
@@ -57,13 +59,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.AwaitIncomingRawResponse();
 		}
 
-		protected internal override HttpRequestInfo GetRequestFromContext() {
+		protected internal override HttpRequestBase GetRequestFromContext() {
 			var directedMessage = (IDirectedProtocolMessage)this.AwaitIncomingMessage();
-			return new HttpRequestInfo(directedMessage, directedMessage.HttpMethods);
+			return new CoordinatingHttpRequestInfo(directedMessage, directedMessage.HttpMethods);
 		}
 
 		protected override IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
-			HttpRequestInfo requestInfo = this.SpoofHttpMethod(request);
+			var requestInfo = this.SpoofHttpMethod(request);
 			// Drop the outgoing message in the other channel's in-slot and let them know it's there.
 			this.RemoteChannel.IncomingMessage = requestInfo.Message;
 			this.RemoteChannel.IncomingMessageSignal.Set();
@@ -72,7 +74,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			this.RemoteChannel.IncomingMessage = CloneSerializedParts(response, null);
+			this.RemoteChannel.IncomingMessage = this.CloneSerializedParts(response);
 			this.RemoteChannel.IncomingMessageSignal.Set();
 			return new OutgoingWebResponse(); // not used, but returning null is not allowed
 		}
@@ -82,8 +84,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return this.PrepareDirectResponse(message);
 		}
 
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
-			return request.Message;
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+			var mockRequest = (CoordinatingHttpRequestInfo)request;
+			return mockRequest.Message;
 		}
 
 		/// <summary>
@@ -91,19 +94,14 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		/// <param name="message">The message to add a pretend HTTP method to.</param>
 		/// <returns>A spoofed HttpRequestInfo that wraps the new message.</returns>
-		private HttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
-			HttpRequestInfo requestInfo = new HttpRequestInfo(message, message.HttpMethods);
-
+		private CoordinatingHttpRequestInfo SpoofHttpMethod(IDirectedProtocolMessage message) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {
 				string httpMethod = this.GetHttpMethod(signedMessage.HttpMethods);
-				requestInfo.HttpMethod = httpMethod;
-				requestInfo.UrlBeforeRewriting = message.Recipient;
 				signedMessage.HttpMethod = httpMethod;
 			}
 
-			requestInfo.Message = this.CloneSerializedParts(message, requestInfo);
-
+			var requestInfo = new CoordinatingHttpRequestInfo(this.CloneSerializedParts(message), message.HttpMethods);
 			return requestInfo;
 		}
 
@@ -121,7 +119,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return response;
 		}
 
-		private T CloneSerializedParts<T>(T message, HttpRequestInfo requestInfo) where T : class, IProtocolMessage {
+		private T CloneSerializedParts<T>(T message) where T : class, IProtocolMessage {
 			Requires.NotNull(message, "message");
 
 			IProtocolMessage clonedMessage;

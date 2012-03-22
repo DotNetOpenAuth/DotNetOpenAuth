@@ -159,6 +159,9 @@
           <xsl:text>, </xsl:text>
         </xsl:if>
       </xsl:for-each>
+      <xsl:if test="proceduredata[@varargs='true']">
+        <xsl:text>, ...</xsl:text>
+      </xsl:if>
       <xsl:text>)</xsl:text>
     </xsl:if>
   </xsl:template>
@@ -247,6 +250,9 @@
           <xsl:text>, </xsl:text>
         </xsl:if>
       </xsl:for-each>
+      <xsl:if test="proceduredata[@varargs='true']">
+        <xsl:text>, ...</xsl:text>
+      </xsl:if>
       <xsl:text>)</xsl:text>
     </xsl:if>
   </xsl:template>

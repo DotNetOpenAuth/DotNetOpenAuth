@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.Hosting {
 
 	[TestFixture, Category("HostASPNET")]
 	public class HostingTests : TestBase {
-		[TestCase]
+		[Test]
 		public void AspHostBasicTest() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {

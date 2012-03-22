@@ -18,6 +18,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="OAuth2\AuthorizationState.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessRequestBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessToken.cs" />

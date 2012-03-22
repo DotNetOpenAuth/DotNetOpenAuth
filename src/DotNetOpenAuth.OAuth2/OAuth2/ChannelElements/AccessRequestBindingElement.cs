@@ -115,20 +115,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
 					var refreshTokenCarrier = message as IRefreshTokenCarryingRequest;
 					var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
+					var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
 					if (authCodeCarrier != null) {
 						var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code);
+						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code, Protocol.code);
 						authCodeCarrier.AuthorizationDescription = authorizationCode;
 					} else if (refreshTokenCarrier != null) {
 						var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken);
+						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken, Protocol.refresh_token);
 						refreshTokenCarrier.AuthorizationDescription = refreshToken;
 					} else if (resourceOwnerPasswordCarrier != null) {
 						try {
 							if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
 								resourceOwnerPasswordCarrier.CredentialsValidated = true;
 							} else {
-								Logger.OAuth.WarnFormat("Resource owner password credential for user \"{0}\" rejected by authorization server host.", resourceOwnerPasswordCarrier.UserName);
+								Logger.OAuth.WarnFormat(
+									"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
+									resourceOwnerPasswordCarrier.UserName);
 
 								// TODO: fix this to report the appropriate error code for a bad credential.
 								throw new ProtocolException();
@@ -140,6 +143,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
 							throw new ProtocolException();
 						}
+					} else if (clientCredentialOnly != null) {
+						// this method will throw later if the credentials are false.
+						clientCredentialOnly.CredentialsValidated = true;
 					} else {
 						throw ErrorUtilities.ThrowInternal("Unexpected message type: " + tokenRequest.GetType());
 					}
@@ -155,7 +161,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					// Check that the client secret is correct.
 					var client = this.AuthorizationServer.GetClientOrThrow(accessRequest.ClientIdentifier);
 					string secret = client.Secret;
-					ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(secret), Protocol.unauthorized_client); // an empty secret is not allowed for client authenticated calls.
+					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(secret), Protocol.unauthorized_client); // an empty secret is not allowed for client authenticated calls.
 					ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(secret, accessRequest.ClientSecret), Protocol.incorrect_client_credentials);
 
 					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;

@@ -10,7 +10,13 @@
 		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Contains assemblies that are required to implement an OpenID Provider.</description>
+		<summary>Add OpenID 1.1/2.0 Provider authentication functionality to a web application using ASP.NET controls.</summary>
+		<description>
+			Allow your customers to take their identities from your site with them as they visit other sites that accept
+			OpenID as relying parties.
+			Set up single-sign-on solutions within your organization using a standards-based, accepted protocol for
+			authentication delegation.
+		</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.OpenId.Core.UI" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OpenId.Provider" version="[$version$]" />

@@ -74,28 +74,24 @@
             <xsl:call-template name="typeNameWithTicks" />
           </xsl:for-each>
         </xsl:variable>
-        <xsl:choose>
-          <xsl:when test="$namespace=''">
-            <meta name="Microsoft.Help.F1" content="{$type}" />
-          </xsl:when>
-          <xsl:otherwise>
-            <meta name="Microsoft.Help.F1" content="{concat($namespace,'.',$type)}" />
-          </xsl:otherwise>
-        </xsl:choose>
+          <xsl:call-template name="writeF1WithApiName">
+            <xsl:with-param name="namespace" select="$namespace" />
+            <xsl:with-param name="type" select="$type" />
+            <xsl:with-param name="member" select="''" />
+          </xsl:call-template>
 
-        <!-- for enums, write F1 keywords for each enum member -->
+          <!-- for enums, write F1 keywords for each enum member -->
         <xsl:if test="$subgroup = 'enumeration'">
           <xsl:for-each select="/document/reference/elements/element">
-            <xsl:choose>
-              <xsl:when test="$namespace=''">
-                <meta name="Microsoft.Help.F1" content="{concat($type, '.', apidata/@name)}" />
-              </xsl:when>
-              <xsl:otherwise>
-                <meta name="Microsoft.Help.F1" content="{concat($namespace,'.',$type, '.', apidata/@name)}" />
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:call-template name="writeF1WithApiName">
+              <xsl:with-param name="namespace" select="$namespace" />
+              <xsl:with-param name="type" select="$type" />
+              <xsl:with-param name="member" select="apidata/@name" />
+            </xsl:call-template>
+
           </xsl:for-each>
         </xsl:if>
+
         
         <!-- Insert additional F1 keywords to support XAML for class, struct, and enum topics in a set of namespaces. -->
         <xsl:call-template name="xamlMSHelpFKeywords30"/>
@@ -103,12 +99,54 @@
 
       <!-- overload list pages get namespace.type.member keyword -->
       <xsl:when test="$group='list' and $subgroup='overload'">
+        <xsl:variable name="namespace" select="/document/reference/containers/namespace/apidata/@name" />
+        <xsl:variable name="type">
+          <xsl:for-each select="/document/reference[1]/containers">
+            <xsl:call-template name="typeNameWithTicks" />
+          </xsl:for-each>
+        </xsl:variable>
+
         <xsl:variable name="containingTypeId" select="/document/reference/containers/type[1]/@api" />
         <!-- do not write F1 keyword for overload list topics that contain only inherited members -->
         <xsl:if test="/document/reference/elements//element/containers/type[1][@api=$containingTypeId]">
-          <xsl:call-template name="memberF1KeywordsHelp30"/>
+
+          <!-- Generate a result tree fragment with all of the names for this overload page, TFS 856956, 864173-->
+          <xsl:variable name="F1Names">
+            <xsl:choose>
+              <xsl:when test="/document/reference/apidata[@subgroup='constructor']">
+                <name>
+                  <xsl:text>#ctor</xsl:text>
+                </name>
+                <name>
+                  <xsl:value-of select="/document/reference/containers/type[1]/apidata/@name" />
+                </name>
+              </xsl:when>
+              <xsl:otherwise>
+                <name>
+                  <xsl:value-of select="/document/reference/apidata/@name" />
+                </name>
+                <xsl:for-each select="/document/reference/elements/element[templates and containers/type[1][@api=$containingTypeId]]">
+                  <name>
+                    <xsl:value-of select="apidata/@name" />
+                    <xsl:text>``</xsl:text>
+                    <xsl:value-of select="count(templates/template)" />
+                  </name>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+
+          <xsl:for-each select="msxsl:node-set($F1Names)//name[not(. = preceding::name)]">
+            <xsl:sort select="." />
+            <xsl:call-template name="writeF1WithApiName">
+              <xsl:with-param name="namespace" select="$namespace" />
+              <xsl:with-param name="type" select="$type" />
+              <xsl:with-param name="member" select="." />
+            </xsl:call-template>
+          </xsl:for-each>          
         </xsl:if>
       </xsl:when>
+
 
 
       <!-- member pages -->
@@ -120,6 +158,24 @@
           <!-- no F1 help entries for explicit interface implementation members -->
           <xsl:when test="/document/reference[memberdata[@visibility='private'] and proceduredata[@virtual = 'true']]"/>
 
+          <!-- Property pages -->
+          <xsl:when test="$subgroup = 'property'">
+
+            <xsl:variable name="type">
+              <xsl:for-each select="/document/reference[1]/containers">
+                <xsl:call-template name="typeNameWithTicks" />
+              </xsl:for-each>
+            </xsl:variable>
+
+            <xsl:for-each select="document/reference/apidata/@name | document/reference/getter/@name | document/reference/setter/@name">
+              <xsl:call-template name="writeF1WithApiName">
+                <xsl:with-param name="namespace" select="/document/reference/containers/namespace/apidata/@name" />
+                <xsl:with-param name="type" select="$type" />
+                <xsl:with-param name="member" select="." />
+              </xsl:call-template>
+            </xsl:for-each>
+          </xsl:when>
+
           <!-- other member pages get namespace.type.member keywords -->
           <xsl:otherwise>
             <xsl:call-template name="memberF1KeywordsHelp30"/>
@@ -130,6 +186,51 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="writeF1WithApiName">
+    <xsl:param name="namespace"/>
+    <xsl:param name="type" />
+    <xsl:param name="member" />
+    
+    <!-- Make versions of namespace and member that are joinable. -->
+ 
+    <xsl:variable name="namespaceJoinable">
+    <xsl:choose>
+      <xsl:when test="$namespace = ''">
+        <xsl:value-of select="''" />
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="concat($namespace, '.')" />
+      </xsl:otherwise>
+    </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="memberJoinable">
+      <xsl:choose>
+        <xsl:when test="$member = ''">
+          <xsl:value-of select="''" />
+        </xsl:when>
+        <xsl:when test="substring($type, string-length($type)) = '.'">
+          <xsl:value-of select="$member" />
+        </xsl:when>
+        <xsl:when test="substring($member, string-length($member)) = '.'">
+          <xsl:value-of select="substring($member, string-length($member) - 1)" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat('.', $member)" />
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    
+    <xsl:variable name="apiName" select="concat($namespaceJoinable, $type, $memberJoinable)" />
+    
+    
+    <xsl:if test="not($namespaceJoinable != '' and $type = '' and $memberJoinable != '') and $apiName != ''">
+      <meta name="Microsoft.Help.F1" content="{concat($namespaceJoinable, $type, $memberJoinable)}" />
+    </xsl:if>
+    
+  </xsl:template>
+  
   <xsl:template name="memberF1KeywordsHelp30">
     <xsl:variable name="namespace" select="/document/reference/containers/namespace/apidata/@name" />
     <xsl:variable name="type">
@@ -151,14 +252,21 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:choose>
-      <xsl:when test="$namespace=''">
-        <meta name="Microsoft.Help.F1" content="{concat($type, '.', $member)}" />
-      </xsl:when>
-      <xsl:otherwise>
-        <meta name="Microsoft.Help.F1" content="{concat($namespace, '.', $type, '.', $member)}" />
-      </xsl:otherwise>
-    </xsl:choose>
+
+    <xsl:call-template name="writeF1WithApiName">
+      <xsl:with-param name="namespace" select="$namespace" />
+      <xsl:with-param name="type" select="$type" />
+      <xsl:with-param name="member" select="$member" />
+    </xsl:call-template>
+
+    <!-- Write the constructor again as type.type -->
+    <xsl:if test="/document/reference/apidata[@subgroup='constructor']">
+      <xsl:call-template name="writeF1WithApiName">
+        <xsl:with-param name="namespace" select="$namespace" />
+        <xsl:with-param name="type" select="$type" />
+        <xsl:with-param name="member" select="/document/reference/containers/type/apidata/@name" />
+      </xsl:call-template>
+    </xsl:if>
   </xsl:template>
   
   <!-- 
@@ -550,10 +658,12 @@
     </xsl:if>
 
     <!-- Microsoft.Help.TocParent -->
-    <xsl:for-each select="/document/metadata/attribute[@name='TOCParent']">
-      <meta name="Microsoft.Help.TocParent" content="{.}" />
-      <meta name="Microsoft.Help.TocOrder" content="0" />
-    </xsl:for-each>
+    <xsl:if test="/document/metadata/attribute[@name='TOCParent']">
+      <meta name="Microsoft.Help.TocParent" content="{/document/metadata/attribute[@name='TOCParent']}" />
+    </xsl:if>
+    <xsl:if test="/document/metadata/attribute[@name='TOCOrder']">
+      <meta name="Microsoft.Help.TocOrder" content="{/document/metadata/attribute[@name='TOCOrder']}" />
+    </xsl:if>
 
     <!-- Microsoft.Help.Product -->
     <!-- Added by MTPS -->

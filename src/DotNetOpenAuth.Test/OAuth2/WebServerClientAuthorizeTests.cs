@@ -9,54 +9,73 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Moq;
 	using NUnit.Framework;
 
 	[TestFixture]
 	public class WebServerClientAuthorizeTests : OAuth2TestBase {
-		[TestCase]
+		[Test]
 		public void AuthorizationCodeGrant() {
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
 				AuthorizationServerMock,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
-					var authState = new AuthorizationState {
+					var authState = new AuthorizationState(TestScopes) {
 						Callback = ClientCallback,
 					};
 					client.PrepareRequestUserAuthorization(authState).Respond();
 					var result = client.ProcessUserAuthorization();
-					Assert.IsNotNullOrEmpty(result.AccessToken);
-					Assert.IsNotNullOrEmpty(result.RefreshToken);
+					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
+					Assert.That(request, Is.Not.Null);
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
-					var tokenRequest = server.ReadAccessTokenRequest();
-					IAccessTokenRequest accessTokenRequest = tokenRequest;
-					Assert.IsTrue(accessTokenRequest.ClientAuthenticated);
-					var tokenResponse = server.PrepareAccessTokenResponse(tokenRequest);
-					server.Channel.Respond(tokenResponse);
+					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void ResourceOwnerPasswordCredentialGrant() {
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
 				AuthorizationServerMock,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
-					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword);
-					Assert.IsNotNullOrEmpty(authState.AccessToken);
-					Assert.IsNotNullOrEmpty(authState.RefreshToken);
+					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword, TestScopes);
+					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(authState.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
-					var request = server.ReadAccessTokenRequest();
-					var response = server.PrepareAccessTokenResponse(request);
-					server.Channel.Respond(response);
+					server.HandleTokenRequest().Respond();
+				});
+			coordinator.Run();
+		}
+
+		[Test]
+		public void ClientCredentialGrant() {
+			var authServer = CreateAuthorizationServerMock();
+			authServer.Setup(
+				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				.Returns(true);
+			var coordinator = new OAuth2Coordinator<WebServerClient>(
+				AuthorizationServerDescription,
+				authServer.Object,
+				new WebServerClient(AuthorizationServerDescription),
+				client => {
+					var authState = client.GetClientAccessToken(TestScopes);
+					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(authState.RefreshToken, Is.Null);
+				},
+				server => {
+					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
 		}

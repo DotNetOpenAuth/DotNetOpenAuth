@@ -1135,9 +1135,6 @@ namespace Microsoft.Ddue.Tools
             string[] stringSeparators = new string[] { "\r\n" };
             string[] lines = text.Split(stringSeparators, StringSplitOptions.None);
 
-            // no need to do this if there is only one line
-            if (lines.Length == 1) return (lines[0]);
-
             // figure out how many leading spaces to delete
             int spaces = Int32.MaxValue;
             for (int i = 0; i < lines.Length; i++)

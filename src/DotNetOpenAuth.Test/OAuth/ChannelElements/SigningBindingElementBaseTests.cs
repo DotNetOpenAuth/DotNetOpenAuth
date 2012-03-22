@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 
 	[TestFixture]
 	public class SigningBindingElementBaseTests : MessagingTestBase {
-		[TestCase]
+		[Test]
 		public void BaseSignatureStringTest() {
 			// Tests a message sent by HTTP GET, with no query string included in the endpoint.
 			UnauthorizedTokenRequest message = CreateTestRequestTokenMessage(
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				SigningBindingElementBase.ConstructSignatureBaseString(message, this.MessageDescriptions.GetAccessor(message)));
 		}
 
-		[TestCase]
+		[Test]
 		public void BaseSignatureStringResourceRequests() {
 			var message = this.CreateResourceRequest(new MessageReceivingEndpoint("http://tom.test.wishpot.com/restapi/List/Search?List.LastName=ciccotosto", HttpDeliveryMethods.GetRequest));
 			message.ConsumerKey = "public";

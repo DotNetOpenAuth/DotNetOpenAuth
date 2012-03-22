@@ -91,7 +91,7 @@
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
     </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -130,7 +130,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
@@ -221,6 +221,7 @@
     <Compile Include="Mocks\CoordinatingOAuth2AuthServerChannel.cs" />
     <Compile Include="Mocks\CoordinatingOutgoingWebResponse.cs" />
     <Compile Include="Mocks\CoordinatingOAuthConsumerChannel.cs" />
+    <Compile Include="Mocks\IBaseMessageExplicitMembers.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
@@ -242,6 +243,7 @@
     <Compile Include="Mocks\TestChannel.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Mocks\TestMessageFactory.cs" />
+    <Compile Include="OAuth2\AuthorizationServerTests.cs" />
     <Compile Include="OAuth2\MessageFactoryTests.cs" />
     <Compile Include="OAuth2\UserAgentClientAuthorizeTests.cs" />
     <Compile Include="OAuth2\OAuth2Coordinator.cs" />

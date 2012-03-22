@@ -121,7 +121,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>The calculated signature of the method.</returns>
 		protected string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
 			Requires.NotNull(signedMessage, "signedMessage");
-			Requires.True(!String.IsNullOrEmpty(signedMessage.SignedParameterOrder), "signedMessage");
+			Requires.True(!string.IsNullOrEmpty(signedMessage.SignedParameterOrder), "signedMessage");
 			Requires.NotNull(association, "association");
 
 			// Prepare the parts to sign, taking care to replace an openid.mode value

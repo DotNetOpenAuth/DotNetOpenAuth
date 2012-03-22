@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IDictionary&lt;System.String,System.String>.Values
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Values() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			Collection<string> expected = new Collection<string> {
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IDictionary&lt;System.String,System.String>.Keys
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Keys() {
 			// We expect that non-nullable value type fields will automatically have keys
 			// in the dictionary for them.
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IDictionary&lt;System.String,System.String>.Item
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Item() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 
@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.IsReadOnly
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void IsReadOnly() {
 			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
 			Assert.IsFalse(target.IsReadOnly);
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.Count
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Count() {
 			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
 			IDictionary<string, string> targetDictionary = (IDictionary<string, string>)target;
@@ -124,7 +124,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IEnumerable&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.GetEnumerator
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void GetEnumerator() {
 			IEnumerable<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
 			IDictionary<string, string> targetDictionary = (IDictionary<string, string>)target;
@@ -147,7 +147,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.IsTrue(keysLast == valuesLast && keysLast == actualLast);
 		}
 
-		[TestCase]
+		[Test]
 		public void GetEnumeratorUntyped() {
 			IEnumerable target = this.MessageDescriptions.GetAccessor(this.message);
 			IDictionary<string, string> targetDictionary = (IDictionary<string, string>)target;
@@ -174,7 +174,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IDictionary&lt;System.String,System.String>.TryGetValue
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void TryGetValue() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			this.message.Name = "andrew";
@@ -194,7 +194,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IDictionary&lt;System.String,System.String>.Remove
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RemoveTest1() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			this.message.Name = "andrew";
@@ -211,7 +211,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IDictionary&lt;System.String,System.String>.ContainsKey
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ContainsKey() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			Assert.IsTrue(target.ContainsKey("age"), "Value type declared element should have a key.");
@@ -225,7 +225,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.IDictionary&lt;System.String,System.String&gt;.Add
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AddByKeyAndValue() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			target.Add("extra", "value");
@@ -243,7 +243,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.Add
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AddByKeyValuePair() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			target.Add(new KeyValuePair<string, string>("extra", "value"));
@@ -264,14 +264,14 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			target.Add("Name", "andrew");
 		}
 
-		[TestCase]
+		[Test]
 		public void DefaultReferenceTypeDeclaredPropertyHasNoKey() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			Assert.IsFalse(target.ContainsKey("Name"), "A null value should result in no key.");
 			Assert.IsFalse(target.Keys.Contains("Name"), "A null value should result in no key.");
 		}
 
-		[TestCase]
+		[Test]
 		public void RemoveStructDeclaredProperty() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			this.message.Age = 5;
@@ -284,7 +284,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.Remove
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RemoveByKeyValuePair() {
 			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
 			this.message.Name = "Andrew";
@@ -297,7 +297,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.CopyTo
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void CopyTo() {
 			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
 			IDictionary<string, string> targetAsDictionary = (IDictionary<string, string>)target;
@@ -314,7 +314,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.Contains
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ContainsKeyValuePair() {
 			ICollection<KeyValuePair<string, string>> target = this.MessageDescriptions.GetAccessor(this.message);
 			IDictionary<string, string> targetAsDictionary = (IDictionary<string, string>)target;
@@ -330,7 +330,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// A test for System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.String&lt;&lt;.Clear
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ClearValues() {
 			MessageDictionary target = this.MessageDescriptions.GetAccessor(this.message);
 			IDictionary<string, string> targetAsDictionary = (IDictionary<string, string>)target;

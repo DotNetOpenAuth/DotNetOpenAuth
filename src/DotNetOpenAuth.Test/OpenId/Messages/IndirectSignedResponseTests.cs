@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.unsolicited = new IndirectSignedResponse(this.protocol.Version, RPUri);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorFromRequest() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.response.Mode);
 			Assert.AreEqual(this.request.Version, this.response.Version);
@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.IsTrue(DateTime.UtcNow - ((ITamperResistantOpenIdMessage)this.response).UtcCreationDate < TimeSpan.FromSeconds(5));
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorUnsolicited() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.unsolicited.Mode);
 			Assert.AreEqual(this.protocol.Version, this.unsolicited.Version);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(OPUri, this.unsolicited.ProviderEndpoint);
 		}
 
-		[TestCase]
+		[Test]
 		public void ResponseNonceSetter() {
 			const string HybridValue = CreationDateString + "UNIQUE";
 			IReplayProtectedProtocolMessage responseReplay = this.response;
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.IsNull(responseReplay.Nonce);
 		}
 
-		[TestCase]
+		[Test]
 		public void ResponseNonceGetter() {
 			IReplayProtectedProtocolMessage responseReplay = this.response;
 			responseReplay.Nonce = "UnIqUe";
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.creationDate, responseReplay.UtcCreationDate);
 		}
 
-		[TestCase]
+		[Test]
 		public void UtcCreationDateConvertsToUniversal() {
 			IReplayProtectedProtocolMessage responseReplay = this.response;
 			DateTime local = DateTime.Parse("1982-01-01", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(this.creationDate.Hour, utcCreationDate.Hour, "The hour should match since both times are UTC time.");
 		}
 
-		[TestCase]
+		[Test]
 		public void ReturnToDoesNotMatchRecipient() {
 			// Make sure its valid first, so we know that when it's invalid
 			// it is due to our tampering.
@@ -135,14 +135,14 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response.GetReturnToArgument(string.Empty);
 		}
 
-		[TestCase]
+		[Test]
 		public void GetReturnToArgumentDoesNotReturnExtraArgs() {
 			this.response.ExtraData["a"] = "b";
 			Assert.IsNull(this.response.GetReturnToArgument("a"));
 			Assert.AreEqual(0, this.response.GetReturnToParameterNames().Count());
 		}
 
-		[TestCase]
+		[Test]
 		public void GetReturnToArgumentAndNames() {
 			UriBuilder returnToBuilder = new UriBuilder(this.response.ReturnTo);
 			returnToBuilder.AppendQueryArgs(new Dictionary<string, string> { { "a", "b" } });

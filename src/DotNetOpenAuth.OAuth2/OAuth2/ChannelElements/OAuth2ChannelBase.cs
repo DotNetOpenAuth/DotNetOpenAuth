@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// Parameters sent without a value MUST be treated as if they were omitted from the request.
 			// The authorization server SHOULD ignore unrecognized request parameters.
 			var emptyKeys = from pair in fields
-							where String.IsNullOrEmpty(pair.Value)
+							where string.IsNullOrEmpty(pair.Value)
 							select pair.Key;
 			foreach (string emptyKey in emptyKeys.ToList()) {
 				fields.Remove(emptyKey);

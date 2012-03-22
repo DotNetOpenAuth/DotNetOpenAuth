@@ -170,7 +170,7 @@ namespace DotNetOpenAuth {
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "PersistentCounter instances are stored in a table for later use.")]
 		internal static void RecordEventOccurrence(string eventName, string category) {
-			Contract.Requires(!String.IsNullOrEmpty(eventName));
+			Contract.Requires(!string.IsNullOrEmpty(eventName));
 
 			// In release builds, just quietly return.
 			if (string.IsNullOrEmpty(eventName)) {
@@ -213,7 +213,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="feature">The feature.</param>
 		internal static void RecordFeatureUse(string feature) {
-			Contract.Requires(!String.IsNullOrEmpty(feature));
+			Contract.Requires(!string.IsNullOrEmpty(feature));
 
 			// In release builds, just quietly return.
 			if (string.IsNullOrEmpty(feature)) {
@@ -297,7 +297,7 @@ namespace DotNetOpenAuth {
 		/// Records statistics collected from incoming requests.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		internal static void RecordRequestStatistics(HttpRequestInfo request) {
+		internal static void RecordRequestStatistics(HttpRequestBase request) {
 			Contract.Requires(request != null);
 
 			// In release builds, just quietly return.
@@ -311,7 +311,7 @@ namespace DotNetOpenAuth {
 				}
 
 				if (Configuration.IncludeLocalRequestUris && !observedRequests.IsFull) {
-					var requestBuilder = new UriBuilder(request.UrlBeforeRewriting);
+					var requestBuilder = new UriBuilder(request.GetPublicFacingUrl());
 					requestBuilder.Query = null;
 					requestBuilder.Fragment = null;
 					observedRequests.Add(requestBuilder.Uri.AbsoluteUri);

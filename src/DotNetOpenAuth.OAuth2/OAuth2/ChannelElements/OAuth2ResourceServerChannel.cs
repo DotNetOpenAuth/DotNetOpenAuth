@@ -48,7 +48,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
 			var fields = new Dictionary<string, string>();
 			string accessToken;
 			if ((accessToken = SearchForBearerAccessTokenInRequest(request)) != null) {
@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			ErrorUtilities.VerifyInternal(unauthorizedResponse != null, "Only unauthorized responses are expected.");
 
 			// First initialize based on the specifics within the message.
-			this.ApplyMessageTemplate(response, webResponse);
+			ApplyMessageTemplate(response, webResponse);
 			if (!(response is IHttpDirectResponse)) {
 				webResponse.Status = HttpStatusCode.Unauthorized;
 			}
@@ -122,18 +122,18 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		/// <returns>The bearer access token, if one exists.  Otherwise <c>null</c>.</returns>
-		private static string SearchForBearerAccessTokenInRequest(HttpRequestInfo request) {
+		private static string SearchForBearerAccessTokenInRequest(HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 
 			// First search the authorization header.
-			string authorizationHeader = request.Headers[HttpRequestHeader.Authorization];
+			string authorizationHeader = request.Headers[HttpRequestHeaders.Authorization];
 			if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace, StringComparison.OrdinalIgnoreCase)) {
 				return authorizationHeader.Substring(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace.Length);
 			}
 
 			// Failing that, scan the entity
-			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeader.ContentType])) {
-				var contentType = new ContentType(request.Headers[HttpRequestHeader.ContentType]);
+			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeaders.ContentType])) {
+				var contentType = new ContentType(request.Headers[HttpRequestHeaders.ContentType]);
 				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
 					if (request.Form[Protocol.BearerTokenEncodedUrlParameterName] != null) {
 						return request.Form[Protocol.BearerTokenEncodedUrlParameterName];
@@ -142,8 +142,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			}
 
 			// Finally, check the least desirable location: the query string
-			if (!String.IsNullOrEmpty(request.QueryStringBeforeRewriting[Protocol.BearerTokenEncodedUrlParameterName])) {
-				return request.QueryStringBeforeRewriting[Protocol.BearerTokenEncodedUrlParameterName];
+			var unrewrittenQuery = request.GetQueryStringBeforeRewriting();
+			if (!string.IsNullOrEmpty(unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName])) {
+				return unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName];
 			}
 
 			return null;

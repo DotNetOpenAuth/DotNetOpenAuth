@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -33,7 +34,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return base.Receive(fields, recipient);
 		}
 
-		internal new IProtocolMessage ReadFromRequest(HttpRequestInfo request) {
+		internal new IProtocolMessage ReadFromRequest(HttpRequestBase request) {
 			return base.ReadFromRequest(request);
 		}
 

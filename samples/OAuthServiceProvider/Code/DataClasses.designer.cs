@@ -122,7 +122,7 @@ namespace OAuthServiceProvider.Code
 	public partial class User : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private int _UserId;
 		
@@ -336,7 +336,7 @@ namespace OAuthServiceProvider.Code
 	public partial class FavoriteSite : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private int _FavoriteSiteId;
 		
@@ -487,7 +487,7 @@ namespace OAuthServiceProvider.Code
 	public partial class OAuthConsumer : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private int _ConsumerId;
 		
@@ -697,7 +697,7 @@ namespace OAuthServiceProvider.Code
 	public partial class OAuthToken : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private int _TokenId;
 		
@@ -1081,7 +1081,7 @@ namespace OAuthServiceProvider.Code
 	public partial class Nonce : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private string _Context;
 		
