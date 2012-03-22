@@ -10,7 +10,11 @@
 		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Contains assemblies that are required to implement an OAuth 2.0 Authorization Server.</description>
+		<summary>Add an OAuth 2.0 Authorization Server role to an ASP.NET web application, allowing it to authorize calls to its users' protected data on resource servers.</summary>
+		<description>
+			Protect your users' data while allowing them to programmatically access it, including from other web applications,
+			all without disclosing their login credential with you to 3rd parties.  
+		</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.OAuth2.Core" version="[$oauth2version$]" />
 		</dependencies>
