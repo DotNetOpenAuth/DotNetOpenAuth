@@ -45,7 +45,6 @@
 	<dotNetOpenAuth>
 		<!-- This is an optional configuration section where aspects of dotnetopenauth can be customized. -->
 		<!-- For a complete set of configuration options see http://www.dotnetopenauth.net/developers/code-snippets/configuration-options/ -->
-		<!-- You may also refer to README.Bin.html for instructions on enabling Intellisense for this section. -->
 		<openid>
 			<relyingParty>
 				<security requireSsl="false">
