@@ -160,7 +160,7 @@
     <Folder Include="Schema Comparisons" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="C:\Users\andarno\git\dotnetopenauth\projecttemplates\RelyingPartyDatabase\Permissions.sql" />
+    <Build Include="Permissions.sql" />
     <Build Include="Schema Objects\Database Level Objects\Service Broker\Routes\AutoCreatedLocal.route.sql">
       <SubType>Code</SubType>
     </Build>
