@@ -26,7 +26,8 @@
 			<!-- In TeamCity, the build agent doesn't get the .git directory, but the commit id is available by other means. -->
 			<GitCommitId Condition=" '$(GitCommitId)' == '' ">$(BUILD_VCS_NUMBER)</GitCommitId>
 
-			<SemVerBuildSuffix>+build.$(BuildNumber).$(GitCommitId.Substring(0,10))</SemVerBuildSuffix>
+			<GitCommitIdShort Condition=" '$(GitCommitId)' != '' ">.$(GitCommitId.Substring(0,10))</GitCommitIdShort>
+			<SemVerBuildSuffix>+build.$(BuildNumber)$(GitCommitIdShort)</SemVerBuildSuffix>
 			<AssemblyInformationalVersion>$(BuildVersionSimple)$(PrereleaseVersion)$(SemVerBuildSuffix)</AssemblyInformationalVersion>
 
 			<!-- When NuGet supports SemVer 2.0, we can set NuGetPackageVersion to be the same as $(AssemblyInformationalVersion) -->
