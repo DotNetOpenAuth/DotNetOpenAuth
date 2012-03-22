@@ -80,7 +80,7 @@
 															$(ProjectRoot)Samples\**\*.refresh_;
 															$(ProjectRoot)Samples\*.proj;
 															" />
-			<ExcludedDropSamplesSourceFiles Condition=" '$(IncludeOAuth2)' != 'true' " Include="
+			<ExcludedDropSamplesSourceFiles Condition=" '$(IncludeOAuth2)' == 'false' " Include="
 															$(ProjectRoot)Samples\OAuthClient\**;
 															$(ProjectRoot)Samples\OAuthAuthorizationServer\**;
 															$(ProjectRoot)Samples\OAuthResourceServer\**;

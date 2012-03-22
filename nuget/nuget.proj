@@ -51,10 +51,10 @@
 
 	<Target Name="Build" DependsOnTargets="BuildIntermediates">
 		<ItemGroup>
-			<NuGetPackages Include="*.nuspec" Exclude="DotNetOpenAuth.Ultimate.nuspec">
+			<NuGetPackages Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
 				<Symbols>true</Symbols>
 			</NuGetPackages>
-			<NuGetPackages Include="DotNetOpenAuth.Ultimate.nuspec" />
+			<NuGetPackages Include="DotNetOpenAuth.nuspec" />
 
 			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
 			<NuGetProperties Include="oauth2version=$(OAuth2PackagesVersion)" />

@@ -82,7 +82,7 @@
 										 DotNetOpenAuth.OAuth2.Client.UI;
 										 DotNetOpenAuth.OAuth2.ResourceServer;
 										">
-			<MergeIntoUnifiedAssembly Condition=" '$(IncludeOAuth2)' != 'true' ">false</MergeIntoUnifiedAssembly>
+			<MergeIntoUnifiedAssembly Condition=" '$(IncludeOAuth2)' == 'false' ">false</MergeIntoUnifiedAssembly>
 		</ProductProjectNames>
 		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
 

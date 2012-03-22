@@ -10,8 +10,8 @@
 		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>Contains core assemblies of DotNetOpenOAuth library.</summary>
-		<description>Shared library implementing the messaging pipeline used by auxiliary DotNetOpenAuth libraries.</description>
+		<summary>Shared library implementing the messaging pipeline used by auxiliary DotNetOpenAuth libraries.</summary>
+		<description>This package contains shared code for other NuGet packages, and contains no public API in and of itself.</description>
 		<language>en-US</language>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.Core" version="[$version$]" />
