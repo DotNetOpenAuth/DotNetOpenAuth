@@ -15,12 +15,12 @@
 	</uri>
 
 	<runtime>
-		<!-- When targeting ASP.NET MVC 2, this assemblyBinding makes MVC 1 references relink
-		     to MVC 2 so libraries such as DotNetOpenAuth that compile against MVC 1 will work with it. -->
+		<!-- When targeting ASP.NET MVC 3, this assemblyBinding makes MVC 1 and 2 references relink
+		     to MVC 3 so libraries such as DotNetOpenAuth that compile against MVC 1 will work with it. -->
 		<assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
 			<dependentAssembly>
 				<assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35" />
-				<bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" />
+				<bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
 			</dependentAssembly>
 		</assemblyBinding>
 	</runtime>
