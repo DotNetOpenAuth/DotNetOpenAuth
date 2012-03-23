@@ -18,14 +18,14 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="http://localhost:65169/DataApi.svc" Protocol="http" SourceId="1" />
+    <MetadataSource Address="http://localhost:65170/DataApi.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="DataApi.xsd" MetadataType="Schema" ID="82a34da8-d721-4c35-aaf9-fc5d08771cd2" SourceId="1" SourceUrl="http://localhost:65169/DataApi.svc?xsd=xsd0" />
-    <MetadataFile FileName="DataApi.wsdl" MetadataType="Wsdl" ID="96350220-1df2-429e-8cb5-4fc33703bcc7" SourceId="1" SourceUrl="http://localhost:65169/DataApi.svc?wsdl" />
-    <MetadataFile FileName="DataApi.disco" MetadataType="Disco" ID="c4f66dee-ac01-4476-afb0-34f7350c06ad" SourceId="1" SourceUrl="http://localhost:65169/DataApi.svc?disco" />
-    <MetadataFile FileName="DataApi1.xsd" MetadataType="Schema" ID="7aaf262f-6342-421b-8f44-0e624be7a5fb" SourceId="1" SourceUrl="http://localhost:65169/DataApi.svc?xsd=xsd1" />
-    <MetadataFile FileName="DataApi2.xsd" MetadataType="Schema" ID="67c1ea8d-12c4-4a0c-aa33-7226018cf16e" SourceId="1" SourceUrl="http://localhost:65169/DataApi.svc?xsd=xsd2" />
+    <MetadataFile FileName="DataApi.xsd" MetadataType="Schema" ID="82a34da8-d721-4c35-aaf9-fc5d08771cd2" SourceId="1" SourceUrl="http://localhost:65170/DataApi.svc?xsd=xsd0" />
+    <MetadataFile FileName="DataApi.wsdl" MetadataType="Wsdl" ID="96350220-1df2-429e-8cb5-4fc33703bcc7" SourceId="1" SourceUrl="http://localhost:65170/DataApi.svc?wsdl" />
+    <MetadataFile FileName="DataApi.disco" MetadataType="Disco" ID="c4f66dee-ac01-4476-afb0-34f7350c06ad" SourceId="1" SourceUrl="http://localhost:65170/DataApi.svc?disco" />
+    <MetadataFile FileName="DataApi1.xsd" MetadataType="Schema" ID="7aaf262f-6342-421b-8f44-0e624be7a5fb" SourceId="1" SourceUrl="http://localhost:65170/DataApi.svc?xsd=xsd1" />
+    <MetadataFile FileName="DataApi2.xsd" MetadataType="Schema" ID="67c1ea8d-12c4-4a0c-aa33-7226018cf16e" SourceId="1" SourceUrl="http://localhost:65170/DataApi.svc?xsd=xsd2" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
