@@ -40,7 +40,7 @@
 				dc.Clients.InsertOnSubmit(new Client {
 					ClientIdentifier = "sampleImplicitConsumer",
 					Name = "Some sample client used for implicit grants (no secret)",
-					Callback = "http://localhost:59721/",
+					Callback = "http://localhost:59722/",
 				});
 
 				dc.SubmitChanges();
