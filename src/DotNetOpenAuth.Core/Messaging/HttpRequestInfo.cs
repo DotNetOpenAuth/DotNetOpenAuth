@@ -69,6 +69,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.headers = request.Headers;
 			this.requestUri = requestUri;
 			this.form = new NameValueCollection();
+			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
 			this.serverVariables = new NameValueCollection();
 
 			Reporting.RecordRequestStatistics(this);
