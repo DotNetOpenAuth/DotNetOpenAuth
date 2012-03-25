@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to issue an access token to the client if permission is granted.
 	/// </summary>
 	[Serializable]
-	public class EndUserAuthorizationImplicitRequestC : EndUserAuthorizationImplicitRequest {
+	internal class EndUserAuthorizationImplicitRequestC : EndUserAuthorizationImplicitRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationImplicitRequestC"/> class.
 		/// </summary>
