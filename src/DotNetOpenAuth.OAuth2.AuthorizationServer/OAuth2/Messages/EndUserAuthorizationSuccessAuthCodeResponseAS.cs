@@ -12,7 +12,9 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	/// <summary>
-	/// TODO: Update summary.
+	/// The message sent by the Authorization Server to the Client via the user agent
+	/// to indicate that user authorization was granted, carrying an authorization code and possibly an access token,
+	/// and to return the user to the Client where they started their experience.
 	/// </summary>
 	internal class EndUserAuthorizationSuccessAuthCodeResponseAS : EndUserAuthorizationSuccessAuthCodeResponse, IAuthorizationCodeCarryingRequest {
 			/// <summary>

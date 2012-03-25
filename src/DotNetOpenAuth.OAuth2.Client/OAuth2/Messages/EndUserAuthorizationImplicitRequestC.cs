@@ -11,8 +11,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Text;
 
 	/// <summary>
-	/// TODO: Update summary.
+	/// A message sent by a web application Client to the AuthorizationServer
+	/// via the user agent to obtain authorization from the user and prepare
+	/// to issue an access token to the client if permission is granted.
 	/// </summary>
+	[Serializable]
 	public class EndUserAuthorizationImplicitRequestC : EndUserAuthorizationImplicitRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationImplicitRequestC"/> class.

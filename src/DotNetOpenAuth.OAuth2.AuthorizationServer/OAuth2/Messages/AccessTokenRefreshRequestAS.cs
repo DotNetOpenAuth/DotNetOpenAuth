@@ -14,7 +14,8 @@ namespace DotNetOpenAuth.OAuth2.AuthServer.Messages {
 	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
-	/// TODO: Update summary.
+	/// A request from the client to the token endpoint for a new access token
+	/// in exchange for a refresh token that the client has previously obtained.
 	/// </summary>
 	internal class AccessTokenRefreshRequestAS : AccessTokenRefreshRequest, IRefreshTokenCarryingRequest {
 			/// <summary>

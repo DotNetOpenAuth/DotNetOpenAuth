@@ -12,7 +12,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	/// <summary>
-	/// TODO: Update summary.
+	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token,
+	/// and (at the authorization server's option) a refresh token.
 	/// </summary>
 	internal class AccessTokenAuthorizationCodeRequestAS : AccessTokenAuthorizationCodeRequest, IAuthorizationCodeCarryingRequest {
 			/// <summary>

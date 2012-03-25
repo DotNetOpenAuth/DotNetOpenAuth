@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// via the user agent to obtain authorization from the user and prepare
 	/// to issue an access token to the client if permission is granted.
 	/// </summary>
+	[Serializable]
 	internal class EndUserAuthorizationRequestC : EndUserAuthorizationRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequestC"/> class.
