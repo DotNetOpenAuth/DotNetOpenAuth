@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="EndUserAuthorizationImplicitRequestC.cs" company="">
-// TODO: Update copyright text.
+﻿//-----------------------------------------------------------------------
+// <copyright file="EndUserAuthorizationImplicitRequestC.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
-// -----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
@@ -15,12 +15,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// </summary>
 	public class EndUserAuthorizationImplicitRequestC : EndUserAuthorizationImplicitRequest {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationImplicitRequest"/> class.
+		/// Initializes a new instance of the <see cref="EndUserAuthorizationImplicitRequestC"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		internal EndUserAuthorizationImplicitRequestC(AuthorizationServerDescription authorizationServer)
 			: base(authorizationServer.AuthorizationEndpoint, authorizationServer.Version) {
 		}
-
 	}
 }

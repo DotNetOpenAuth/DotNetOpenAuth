@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="EndUserAuthorizationSuccessAuthCodeResponseAS.cs" company="">
-// TODO: Update copyright text.
+﻿//-----------------------------------------------------------------------
+// <copyright file="EndUserAuthorizationSuccessAuthCodeResponseAS.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
-// -----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// </summary>
 	internal class EndUserAuthorizationSuccessAuthCodeResponseAS : EndUserAuthorizationSuccessAuthCodeResponse, IAuthorizationCodeCarryingRequest {
 			/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessAuthCodeResponse"/> class.
+		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessAuthCodeResponseAS"/> class.
 		/// </summary>
 		/// <param name="clientCallback">The URL to redirect to so the client receives the message. This may not be built into the request message if the client pre-registered the URL with the authorization server.</param>
 		/// <param name="version">The protocol version.</param>
@@ -61,6 +61,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		#endregion
-
 	}
 }

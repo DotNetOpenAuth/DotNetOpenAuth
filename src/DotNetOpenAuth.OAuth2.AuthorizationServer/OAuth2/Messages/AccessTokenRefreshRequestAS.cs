@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="AccessTokenRefreshRequestAS.cs" company="">
-// TODO: Update copyright text.
+﻿//-----------------------------------------------------------------------
+// <copyright file="AccessTokenRefreshRequestAS.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
-// -----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.AuthServer.Messages {
 	using System;

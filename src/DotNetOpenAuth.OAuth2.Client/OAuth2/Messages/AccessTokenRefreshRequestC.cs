@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="AccessTokenRefreshRequestC.cs" company="">
-// TODO: Update copyright text.
+﻿//-----------------------------------------------------------------------
+// <copyright file="AccessTokenRefreshRequestC.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
-// -----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
@@ -14,9 +14,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// TODO: Update summary.
 	/// </summary>
 	internal class AccessTokenRefreshRequestC : AccessTokenRefreshRequest {
-
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenRefreshRequest"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenRefreshRequestC"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		internal AccessTokenRefreshRequestC(AuthorizationServerDescription authorizationServer)

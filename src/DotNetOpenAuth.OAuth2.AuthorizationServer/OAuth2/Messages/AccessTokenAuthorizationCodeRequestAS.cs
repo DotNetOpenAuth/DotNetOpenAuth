@@ -1,8 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="AccessTokenAuthorizationCodeRequestAS.cs" company="">
-// TODO: Update copyright text.
+﻿//-----------------------------------------------------------------------
+// <copyright file="AccessTokenAuthorizationCodeRequestAS.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
-// -----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// </summary>
 	internal class AccessTokenAuthorizationCodeRequestAS : AccessTokenAuthorizationCodeRequest, IAuthorizationCodeCarryingRequest {
 			/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequestAS"/> class.
 		/// </summary>
 		/// <param name="tokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
@@ -48,6 +48,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		#endregion
-
 	}
 }

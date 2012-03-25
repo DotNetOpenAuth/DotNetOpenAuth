@@ -25,6 +25,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2ChannelBase"/> class.
 		/// </summary>
+		/// <param name="messageTypes">The message types that are received by this channel.</param>
 		/// <param name="channelBindingElements">The channel binding elements.</param>
 		internal OAuth2ChannelBase(Type[] messageTypes, params IChannelBindingElement[] channelBindingElements)
 			: base(Requires.NotNull(messageTypes, "messageTypes"), Versions, channelBindingElements) {
