@@ -127,10 +127,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="WSHttpBinding_IDataApi" contract="SampleResourceServer.IDataApi" bindingType="wsHttpBinding" address="http://localhost:65169/DataApi.svc" bindingConfiguration="WSHttpBinding_IDataApi">
+    <endpoint name="WSHttpBinding_IDataApi" contract="SampleResourceServer.IDataApi" bindingType="wsHttpBinding" address="http://localhost:65170/DataApi.svc" bindingConfiguration="WSHttpBinding_IDataApi">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:65169/DataApi.svc</serializedValue>
+          <serializedValue>http://localhost:65170/DataApi.svc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
