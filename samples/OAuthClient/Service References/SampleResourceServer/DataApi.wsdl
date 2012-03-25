@@ -222,9 +222,9 @@
   </wsp:Policy>
   <wsdl:types>
     <xsd:schema targetNamespace="http://tempuri.org/Imports">
-      <xsd:import schemaLocation="http://localhost:65169/DataApi.svc?xsd=xsd0" namespace="http://tempuri.org/" />
-      <xsd:import schemaLocation="http://localhost:65169/DataApi.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://localhost:65169/DataApi.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:65170/DataApi.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:65170/DataApi.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:65170/DataApi.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IDataApi_GetAge_InputMessage">
@@ -298,9 +298,9 @@
   </wsdl:binding>
   <wsdl:service name="DataApi">
     <wsdl:port name="WSHttpBinding_IDataApi" binding="tns:WSHttpBinding_IDataApi">
-      <soap12:address location="http://localhost:65169/DataApi.svc" />
+      <soap12:address location="http://localhost:65170/DataApi.svc" />
       <wsa10:EndpointReference>
-        <wsa10:Address>http://localhost:65169/DataApi.svc</wsa10:Address>
+        <wsa10:Address>http://localhost:65170/DataApi.svc</wsa10:Address>
         <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
           <Dns>localhost</Dns>
         </Identity>

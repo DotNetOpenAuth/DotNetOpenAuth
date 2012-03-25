@@ -17,8 +17,8 @@
 		<pre>127.0.0.1 samples.dotnetopenauth.net</pre>
 		<p>
 			Then access this sample via this url:
-			<asp:HyperLink ID="publicLink" NavigateUrl="http://samples.dotnetopenauth.net:59721/WindowsLive.aspx"
-				runat="server">http://samples.dotnetopenauth.net:59721/WindowsLive.aspx</asp:HyperLink></p>
+			<asp:HyperLink ID="publicLink" NavigateUrl="http://samples.dotnetopenauth.net:59722/WindowsLive.aspx"
+				runat="server">http://samples.dotnetopenauth.net:59722/WindowsLive.aspx</asp:HyperLink></p>
 	</asp:Panel>
 	<div>
 		Welcome,
