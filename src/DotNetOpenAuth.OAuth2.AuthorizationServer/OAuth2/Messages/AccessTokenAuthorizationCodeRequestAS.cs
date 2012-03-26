@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// and (at the authorization server's option) a refresh token.
 	/// </summary>
 	internal class AccessTokenAuthorizationCodeRequestAS : AccessTokenAuthorizationCodeRequest, IAuthorizationCodeCarryingRequest {
-			/// <summary>
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequestAS"/> class.
 		/// </summary>
 		/// <param name="tokenEndpoint">The Authorization Server's access token endpoint URL.</param>
@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			: base(tokenEndpoint, version) {
 		}
 
-	#region IAuthorizationCodeCarryingRequest Members
+		#region IAuthorizationCodeCarryingRequest Members
 
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.

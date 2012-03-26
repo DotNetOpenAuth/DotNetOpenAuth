@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			var bindingElements = new List<IChannelBindingElement>();
 
-			bindingElements.Add(new AuthServerAllFlowsBindingElement());
+			bindingElements.Add(new IncomingMessageValidationBindingElement());
 			bindingElements.Add(new AuthorizationCodeBindingElement());
 			bindingElements.Add(new AccessTokenBindingElement());
 			bindingElements.Add(new AccessRequestBindingElement());

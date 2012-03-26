@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthServerAllFlowsBindingElement.cs" company="Outercurve Foundation">
+// <copyright file="IncomingMessageValidationBindingElement.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,16 +14,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using Messaging;
 
 	/// <summary>
-	/// A binding element that should be applied for authorization server channels regardless of which flows
-	/// are supported.
+	/// A guard for all messages incoming to an Authorization Server to ensure that they are well formed,
+	/// have valid secrets, callback URIs, etc.
 	/// </summary>
-	internal class AuthServerAllFlowsBindingElement : AuthServerBindingElementBase {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthServerAllFlowsBindingElement"/> class.
-		/// </summary>
-		internal AuthServerAllFlowsBindingElement() {
-		}
-
+	internal class IncomingMessageValidationBindingElement : AuthServerBindingElementBase {
 		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
@@ -68,16 +62,36 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+			bool applied = false;
+
+			// Check that the client secret is correct for client authenticated messages.
+			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
+			if (authenticatedClientRequest != null) {
+				var client = this.AuthorizationServer.GetClientOrThrow(authenticatedClientRequest.ClientIdentifier);
+				string secret = client.Secret;
+				ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(secret), Protocol.unauthorized_client); // an empty secret is not allowed for client authenticated calls.
+				ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(secret, authenticatedClientRequest.ClientSecret), Protocol.incorrect_client_credentials);
+				applied = true;
+			}
+
+			// Check that authorization requests come with an acceptable callback URI.
 			var authorizationRequest = message as EndUserAuthorizationRequest;
 			if (authorizationRequest != null) {
 				var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 				ErrorUtilities.VerifyProtocol(authorizationRequest.Callback == null || client.IsCallbackAllowed(authorizationRequest.Callback), OAuthStrings.ClientCallbackDisallowed, authorizationRequest.Callback);
 				ErrorUtilities.VerifyProtocol(authorizationRequest.Callback != null || client.DefaultCallback != null, OAuthStrings.NoCallback);
-
-				return MessageProtections.None;
+				applied = true;
 			}
 
-			return null;
+			// Check that the callback URI in a direct message from the client matches the one in the indirect message received earlier.
+			var request = message as AccessTokenAuthorizationCodeRequestAS;
+			if (request != null) {
+				IAuthorizationCodeCarryingRequest tokenRequest = request;
+				tokenRequest.AuthorizationDescription.VerifyCallback(request.Callback);
+				applied = true;
+			}
+
+			return applied ? (MessageProtections?)MessageProtections.None : null;
 		}
 	}
 }

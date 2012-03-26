@@ -19,12 +19,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// </summary>
 	internal class AuthorizationCodeBindingElement : AuthServerBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthorizationCodeBindingElement"/> class.
-		/// </summary>
-		internal AuthorizationCodeBindingElement() {
-		}
-
-		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
 		/// <value>Always <c>MessageProtections.None</c></value>
@@ -87,14 +81,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var request = message as AccessTokenAuthorizationCodeRequestAS;
-			if (request != null) {
-				IAuthorizationCarryingRequest tokenRequest = request;
-				((AuthorizationCode)tokenRequest.AuthorizationDescription).VerifyCallback(request.Callback);
-
-				return MessageProtections.None;
-			}
-
 			return null;
 		}
 	}

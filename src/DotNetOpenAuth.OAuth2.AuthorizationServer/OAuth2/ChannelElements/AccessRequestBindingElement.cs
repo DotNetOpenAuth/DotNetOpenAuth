@@ -27,12 +27,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// </remarks>
 	internal class AccessRequestBindingElement : AuthServerBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessRequestBindingElement"/> class.
-		/// </summary>
-		internal AccessRequestBindingElement() {
-		}
-
-		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
 		/// <value></value>
@@ -99,15 +93,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "authorizationexpired", Justification = "Protocol requirement")]
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
-			if (authenticatedClientRequest != null) {
-				// Check that the client secret is correct.
-				var client = this.AuthorizationServer.GetClientOrThrow(authenticatedClientRequest.ClientIdentifier);
-				string secret = client.Secret;
-				ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(secret), Protocol.unauthorized_client); // an empty secret is not allowed for client authenticated calls.
-				ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(secret, authenticatedClientRequest.ClientSecret), Protocol.incorrect_client_credentials);
-			}
-
 			var tokenRequest = message as IAuthorizationCarryingRequest;
 			if (tokenRequest != null) {
 				try {

@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "redirecturimismatch", Justification = "Protocol requirement")]
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
 		internal void VerifyCallback(Uri callback) {
-			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalent(this.CallbackHash, CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
+			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalentConstantTime(this.CallbackHash, CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
 		}
 
 		/// <summary>
