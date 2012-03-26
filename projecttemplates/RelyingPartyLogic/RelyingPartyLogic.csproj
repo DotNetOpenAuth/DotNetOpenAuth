@@ -187,7 +187,7 @@
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj">
+    <ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.sqlproj">
       <Name>RelyingPartyDatabase</Name>
       <!-- Deploy the latest SQL script first, so that this project can embed the latest version. -->
       <Targets>Build;Deploy</Targets>
