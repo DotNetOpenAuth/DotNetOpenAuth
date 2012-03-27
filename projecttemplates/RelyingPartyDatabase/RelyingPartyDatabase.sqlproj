@@ -21,13 +21,12 @@
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <RootNamespace>RelyingPartyDatabase</RootNamespace>
     <DefaultSchema>dbo</DefaultSchema>
-    <DeployScriptFileName>..\..\..\RelyingPartyLogic\CreateDatabase.sql</DeployScriptFileName>
     <PreviousProjectVersion>4.0</PreviousProjectVersion>
     <ValidateCasingOnIdentifiers>False</ValidateCasingOnIdentifiers>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{08a938b6-ebbd-4036-880e-ce7ba2d14510}</ProjectGuid>
     <GenerateDatabaseFile>False</GenerateDatabaseFile>
-    <GenerateCreateScript>False</GenerateCreateScript>
+    <GenerateCreateScript>True</GenerateCreateScript>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SqlServerVerification>False</SqlServerVerification>
     <TargetLanguage>CS</TargetLanguage>
@@ -301,8 +300,7 @@
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="Path1">
-      <DefaultValue>
-      </DefaultValue>
+      <DefaultValue>Path1_Placeholder</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
   </ItemGroup>
@@ -316,5 +314,8 @@
   <ItemGroup>
     <PostDeploy Include="Scripts\Post-Deployment\Script.PostDeployment.sql" />
   </ItemGroup>
+  <Target Name="GetDeployScriptPath" 
+          DependsOnTargets="Build"
+          Outputs="$(MSBuildProjectDirectory)$(OutDir)$(MSBuildProjectName)_Create.sql" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
 </Project>
