@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IncomingMessageValidationBindingElement.cs" company="Outercurve Foundation">
+// <copyright file="MessageValidationBindingElement.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,10 +14,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using Messaging;
 
 	/// <summary>
-	/// A guard for all messages incoming to an Authorization Server to ensure that they are well formed,
+	/// A guard for all messages to or from an Authorization Server to ensure that they are well formed,
 	/// have valid secrets, callback URIs, etc.
 	/// </summary>
-	internal class IncomingMessageValidationBindingElement : AuthServerBindingElementBase {
+	internal class MessageValidationBindingElement : AuthServerBindingElementBase {
 		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
@@ -41,6 +41,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+			var accessTokenResponse = message as AccessTokenSuccessResponse;
+			if (accessTokenResponse != null) {
+				var directResponseMessage = (IDirectResponseProtocolMessage)accessTokenResponse;
+				var accessTokenRequest = (AccessTokenRequestBase)directResponseMessage.OriginatingRequest;
+				ErrorUtilities.VerifyProtocol(accessTokenRequest.GrantType != GrantType.ClientCredentials || accessTokenResponse.RefreshToken == null, OAuthStrings.NoGrantNoRefreshToken);
+			}
+
 			return null;
 		}
 
