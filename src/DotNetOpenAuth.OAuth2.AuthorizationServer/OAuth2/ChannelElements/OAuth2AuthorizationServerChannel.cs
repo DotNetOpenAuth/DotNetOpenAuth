@@ -114,7 +114,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var bindingElements = new List<IChannelBindingElement>();
 
 			bindingElements.Add(new IncomingMessageValidationBindingElement());
-			bindingElements.Add(new AuthorizationCodeBindingElement());
 			bindingElements.Add(new AccessTokenBindingElement());
 			bindingElements.Add(new AccessRequestBindingElement());
 

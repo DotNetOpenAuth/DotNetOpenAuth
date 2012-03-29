@@ -23,7 +23,6 @@
     <Compile Include="OAuth2\ChannelElements\AccessRequestBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessTokenBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
-    <Compile Include="OAuth2\ChannelElements\AuthorizationCodeBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\IncomingMessageValidationBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerBindingElementBase.cs" />
     <Compile Include="OAuth2\ChannelElements\IOAuth2ChannelWithAuthorizationServer.cs" />

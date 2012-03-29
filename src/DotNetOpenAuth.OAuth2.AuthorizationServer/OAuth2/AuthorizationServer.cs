@@ -169,7 +169,14 @@ namespace DotNetOpenAuth.OAuth2 {
 					response = accessTokenResponse;
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
-					response = new EndUserAuthorizationSuccessAuthCodeResponseAS(callback, authorizationRequest);
+					var authCodeResponse = new EndUserAuthorizationSuccessAuthCodeResponseAS(callback, authorizationRequest);
+					IAuthorizationCodeCarryingRequest tokenCarryingResponse = authCodeResponse;
+					tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(
+						authorizationRequest.ClientIdentifier,
+						authorizationRequest.Callback,
+						authCodeResponse.Scope,
+						authCodeResponse.AuthorizingUsername);
+					response = authCodeResponse;
 					break;
 				default:
 					throw ErrorUtilities.ThrowInternal("Unexpected response type.");
